@@ -1205,6 +1205,30 @@ Desk — 메모/할일/가계부에서 비활성 상태(예: 완료된 할일 to
 - aria: `aria-disabled="true"` (focus 가능 — 다시 활성화 옵션 발견 가능)
 - 완료 할일: `aria-checked="true"` + `aria-label="완료된 할일: ..."`
 
+### Dropdown (Menu / Select 공통 패턴)
+
+Desk — 메모 카테고리 선택, 가계부 분류 선택, 할일 우선순위, 정렬 옵션. 모바일 우선이라 간단한 select는 native `<select>` 또는 bottom sheet picker 우선, 복잡한 menu는 dropdown panel.
+
+#### Structure (신규 토큰 없음)
+- panel: `surface-default` + `outline-strong-light` 1px + `shadow-md` + `radius-md` (Desk는 `radius-lg` 12px 옵션 — 친근감)
+- item: height 44px (모바일 touch 우선) — desktop은 36px 옵션
+- hover/active `surface-input`, selected primary `#0147AD` 강조
+
+#### Variant
+- menu(action sheet 대체 desktop), select, multi-select, combobox(search 가계부 카테고리 등)
+
+#### Layout
+- 모바일 select: 시스템 native `<select>` 또는 bottom sheet picker 권장 (스크롤 가능, 큰 hit area)
+- desktop panel: max-height 400px, min-width trigger width
+
+#### Motion
+- 모바일 sheet: 하단 슬라이드 `motion-duration-slow`
+- desktop panel: scale+fade `motion-duration-fast`
+
+#### A11y
+- HR과 동일 — role 분류, aria-expanded/haspopup, 키보드 nav, focus return
+- 모바일은 native control fallback 적극 — 시스템 a11y 자동 활용
+
 ### Tooltip
 
 Desk — 모바일 우선이라 hover-driven tooltip 사용 제한. 주로 desktop 사용 사례(메모/가계부 desktop view) + (i) 정보 아이콘 보조.
