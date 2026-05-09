@@ -1147,5 +1147,34 @@ Desk는 brand `primary`가 진해서 모든 표면에서 본문 AA(4.5:1) 충족
 - 모바일 키보드 사용자(외장 키보드 연결 시) 우선 — focus visible 강조
 - 다크 모드 자동 전환은 HR과 동일 패턴
 
-### Divider / Outline / Disabled label / Chart color
+### Divider
+
+Desk — 메모/할일 list separator, section break (월/주별 가계부 분할 등).
+
+#### Mode pair
+- `divider-light` → `border-default` (`#E5E8EF`)
+- `divider-dark` → `border-default-dark` (`#353B4D`)
+
+#### Layout
+- list item 사이 inline divider, padding 안쪽 inset (`lg` 16px) — Desk는 여백 톤
+- section break 위/아래 `xl`/`2xl` (24~32px)
+- 메모 카드 내부는 divider 자제 — surface 휘도 차로 분리
+
+#### A11y
+- HR과 동일
+
+### Outline (border 시각 요소)
+
+Desk — modal 외곽선 (shadow-xl + outline-strong), 선택된 entry highlight.
+
+#### Mode pair / contrast
+- `outline-strong-light` → `border-strong` (`#7D8593`): 3.13~3.34:1 (UI AA)
+- `outline-strong-dark` → `border-strong-dark` (`#8B95A8`): 3.39~4.05:1 (UI AA)
+
+#### 사용
+- modal: `shadow-lg` + `outline-strong-light` (Desk는 modal 자주 사용)
+- 다크 modal: `shadow-lg-dark` + `outline-strong-dark`
+- 선택된 메모/할일: `outline-strong-light` 1px + 약간의 `surface-input` tint
+
+### Disabled label / Chart color
 (작성 예정 — P0-A 후속 배치)
