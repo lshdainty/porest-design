@@ -10,7 +10,6 @@ colors:
   # === Brand-specific 토큰은 DESIGN.hr.md / DESIGN.desk.md로 분리 (v17) ===
   # primary, primary-light, border-focus, border-focus-light: 각 brand 파일에서 정의
   
-  # @sync:shared-start (colors-1)
   # === Neutral - Page background (HR/Desk 공유) ===
   bg-page: "#F5F6FA"
   bg-page-dark: "#1A1F2E"
@@ -37,11 +36,9 @@ colors:
   border-default-dark: "#353B4D"
   border-strong: "#7D8593"
   border-strong-dark: "#8B95A8"
-  # @sync:shared-end (colors-1)
   
   # === border-focus는 brand 파일로 분리 (v17) ===
   
-  # @sync:shared-start (colors-2)
   # === Semantic - Status (functional palette, base + light 페어, 듀얼 브랜드 공유) ===
   success: "#117A3A"
   success-light: "#5DC07B"
@@ -75,7 +72,6 @@ colors:
   chart-pink-light: "#ECA0BC"
   chart-brown-light: "#DCB088"
   chart-gray-light: "#B5BBC5"
-  # @sync:shared-end (colors-2)
   
   # (border-focus 정의 완료 — v16)
 
