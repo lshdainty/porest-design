@@ -94,6 +94,11 @@ typography:
     fontSize: 15px
     fontWeight: 600
     lineHeight: 1.6
+  heading-sm:
+    fontFamily: "Pretendard, Inter, sans-serif"
+    fontSize: 16px
+    fontWeight: 600
+    lineHeight: 1.4
   heading-md:
     fontFamily: "Pretendard, Inter, sans-serif"
     fontSize: 18px
@@ -104,7 +109,12 @@ typography:
     fontSize: 24px
     fontWeight: 700
     lineHeight: 1.3
-  # TODO: heading-sm (16px), heading-xl (32px+) — 사용 사례 등장 시
+  heading-xl:
+    fontFamily: "Pretendard, Inter, sans-serif"
+    fontSize: 32px
+    fontWeight: 700
+    lineHeight: 1.25
+  # (v26: heading-sm/xl 추가 완료. display(40px+)는 hero/marketing 사용 사례 등장 시 추가)
 
 rounded:
   sm: 4px
