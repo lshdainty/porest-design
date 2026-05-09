@@ -11,10 +11,6 @@ colors:
   accent-hr: "#1E7D4C"
   accent-desk: "#1B6ADB"
   
-  # === Brand - on-dark variants (텍스트/아이콘/외곽선 한정, 채움 fill 비대상) ===
-  accent-hr-on-dark: "#3FBF74"
-  accent-desk-on-dark: "#6DA8F2"
-  
   # === Neutral - Page background (공통) ===
   bg-page: "#F5F6FA"
   bg-page-dark: "#1A1F2E"
@@ -193,49 +189,6 @@ border는 시맨틱 계층을 둘로 분리합니다 — 장식적 외곽선과 
 #### HR / Desk 듀얼 브랜드
 - 모든 border는 neutral 토큰 — 브랜드 accent에 의존하지 않음, 양 브랜드 공유.
 - 미래 `border-focus`는 accent 기반(브랜드 분기) 또는 neutral 기반 단일 토큰 중 선택 — 다크 모드 accent 변형 결정 후 일관 적용.
-
-### Brand on-dark (v7 추가)
-
-다크 표면 위에서 브랜드 accent를 텍스트·아이콘·외곽선·focus 링 등 **비채움 사용**으로 안전하게 쓰기 위한 lightness 변형 페어. v3 `border-focus` 보류의 차단 사유였던 "accent의 다크 surface 3:1 미달"을 해소합니다.
-
-| 토큰 | hex | 사용 |
-|---|---|---|
-| `accent-hr-on-dark` | `#3FBF74` | HR 다크 모드 텍스트·아이콘·outlined 버튼·focus 링 |
-| `accent-desk-on-dark` | `#6DA8F2` | Desk 다크 모드 텍스트·아이콘·outlined 버튼·focus 링 |
-
-#### 추가 이유
-1. v3에서 `border-focus`가 보류된 직접 원인 해소 — `accent-hr` 2.77:1, `accent-desk` 2.85:1로 `surface-default-dark` 대비 3:1 미달. 다크 lightness 변형으로 4.5:1 이상 확보.
-2. **5개 한도 중 2개만 추가** — CLAUDE.md "사용자가 명시적으로 요청하지 않은 토큰 추가 금지" 준수. 별도 `border-focus` 토큰은 컴포넌트 레벨 모드 분기(`light=accent-{brand}`, `dark=accent-{brand}-on-dark`)로 해결 가능하므로 미추가.
-3. 동일 brand family 내 lightness만 조정 — HR 녹색, Desk 청색의 시각 식별성 유지.
-
-#### WCAG 검증 (사전 계산)
-
-본문 4.5:1 — 모든 다크 표면 통과:
-
-| 텍스트 | 다크 표면 | 대비 | 결과 |
-|---|---|---|---|
-| accent-hr-on-dark `#3FBF74` (L=0.396) | surface-default-dark | 6.07 | ✅ AAA |
-| accent-hr-on-dark | bg-page-dark | 6.89 | ✅ AAA |
-| accent-hr-on-dark | surface-input-dark | 5.23 | ✅ AA |
-| accent-desk-on-dark `#6DA8F2` (L=0.376) | surface-default-dark | 5.81 | ✅ AAA |
-| accent-desk-on-dark | bg-page-dark | 6.59 | ✅ AAA |
-| accent-desk-on-dark | surface-input-dark | 5.00 | ✅ AA |
-
-#### 채움 fill 비호환 — 사용 경계 명시
-
-`accent-*-on-dark` 위에 `text-on-accent` (`#FFFFFF`) 사용 시 본문 대비:
-- on `accent-hr-on-dark`: **2.36:1** ❌
-- on `accent-desk-on-dark`: **2.46:1** ❌
-
-따라서 **다크 모드 채움 버튼 fill은 `accent-hr`/`accent-desk`(원래 값)를 유지**합니다. 흰 텍스트 5.16/5.02:1로 본문 통과. 단, 이 경우 버튼 외곽 vs 다크 표면 대비는 2.77/2.85:1로 3:1 미달 — Toss·Material 패턴처럼 **inset shadow 또는 명시적 1px 외곽선**(예: `border-strong-dark`)으로 컴포넌트 식별 보강 필요(컴포넌트 스펙에서 처리).
-
-요약하면:
-- **다크 채움 버튼**: bg = `accent-hr` / `accent-desk`, text = `text-on-accent`(`#FFFFFF`), 외곽선 = `border-strong-dark` 보강
-- **다크 비채움 사용**(outlined 버튼 텍스트·링크·아이콘·focus): `accent-hr-on-dark` / `accent-desk-on-dark`
-
-#### HR / Desk 듀얼 브랜드
-- 각 브랜드 dedicated 변형 — neutral 토큰이 아닌 brand-specific. 라이트(`accent-{brand}`)·다크(`accent-{brand}-on-dark`) 페어 구조.
-- 컴포넌트는 brand 컨텍스트(HR vs Desk) × 모드 컨텍스트(light vs dark) 매트릭스로 4값 분기 — 토큰 자체에 분기 표현됨.
 
 ## Typography
 
