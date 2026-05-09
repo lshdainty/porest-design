@@ -32,8 +32,6 @@ colors:
   text-secondary-dark: "#B0B8C4"
   text-tertiary: "#62697A"
   text-tertiary-dark: "#9DA3B0"
-  text-disabled: "#828995"
-  text-disabled-dark: "#7A8294"
   text-on-accent: "#FFFFFF"
   
   # === Neutral - Border (장식 외곽선/필수 UI 외곽선, 공통) ===
@@ -48,7 +46,7 @@ colors:
   warning: "#A85800"
   info: "#006395"
   
-  # TODO: border-focus (accent-*-light 도입 후)
+  # TODO: border-focus (accent-*-light 도입 후), text-disabled
 
 typography:
   caption:
@@ -195,13 +193,6 @@ components:
   placeholder-on-input-dark:
     backgroundColor: "{colors.surface-input-dark}"
     textColor: "{colors.text-tertiary-dark}"
-  
-  # === Disabled 텍스트 (textColor만 — WCAG 1.4.3 incidental 예외 인정, lint contrast 룰 비대상) ===
-  # textColor만 가진 sparse 컴포넌트는 contrastCheck 미발동. 부모 표면 색은 런타임 상속.
-  disabled-label-light:
-    textColor: "{colors.text-disabled}"
-  disabled-label-dark:
-    textColor: "{colors.text-disabled-dark}"
 ---
 
 ## Overview
@@ -387,51 +378,6 @@ border는 시맨틱 계층을 둘로 분리합니다 — 장식적 외곽선과 
 
 #### HR / Desk 듀얼 브랜드
 - neutral 토큰, 양 브랜드 동일 사용. accent에 의존하지 않음.
-
-### Text disabled (v13 추가)
-
-비활성(disabled) 상태의 라벨·버튼 텍스트·입력값 등 — WCAG 1.4.3 *incidental text exception* 적용 대상으로, 색 대비 4.5:1 요건이 면제되는 시맨틱.
-
-| 토큰 | hex | 사용 |
-|---|---|---|
-| `text-disabled` | `#828995` | 라이트 표면 위 비활성 텍스트 |
-| `text-disabled-dark` | `#7A8294` | 다크 표면 위 비활성 텍스트 |
-
-#### 추가 이유
-1. **시맨틱 분리 필수**: text-tertiary(placeholder)는 ≥4.5:1 본문 대비 대상, text-disabled는 incidental 면제 대상 — 두 시맨틱을 같은 토큰에 묶으면 placeholder가 부당하게 약해지거나 disabled가 부당하게 진해짐.
-2. **시각 의도**: disabled는 "비활성"으로 보여야 하므로 의도적으로 ~3:1대 대비 — text-tertiary(~5:1)와 명확히 구분.
-
-#### WCAG 검증 — incidental 예외 적용
-
-**WCAG 1.4.3 (Contrast Minimum)**: "비활성 UI 컴포넌트의 일부인 텍스트는 대비 요건이 없다(no contrast requirement)." disabled 텍스트는 이 면제 조항에 해당.
-
-대비비 손계산 (참고용 — incidental이라 통과 강제 아님):
-
-| token | 표면 | 대비 (손계산) | 비고 |
-|---|---|---|---|
-| `text-disabled` `#828995` (L=0.248) | surface-default | 3.52 | <4.5:1 의도 — 비활성 시각 |
-| `text-disabled` | surface-input | 3.15 | 동일 |
-| `text-disabled` | bg-page | 3.26 | 동일 |
-| `text-disabled-dark` `#7A8294` (L=0.222) | surface-default-dark | 3.71 | 동일 |
-| `text-disabled-dark` | surface-input-dark | 3.20 | 동일 |
-| `text-disabled-dark` | bg-page-dark | 4.21 | 동일 |
-
-전 표면에서 ≥3:1 (UI 컴포넌트 식별 임계 통과) + <4.5:1 (incidental 의도) — 비활성으로 인지되되 식별 가능한 회색 균형.
-
-#### Spec 충돌 회피 — sparse component 전략
-
-design.md `contrastCheck` 룰은 incidental 인지 없이 모든 `backgroundColor`+`textColor` 페어에 4.5:1 강제. 현재 spec 한계로 disabled 시맨틱이 자동 검증과 충돌.
-
-**해결**: 토큰을 textColor만 가진 sparse component(`disabled-label-light`/`-dark`)로 referencing. `backgroundColor` 미선언이면 contrastCheck 룰 미발동(둘 다 있어야 트리거). 동시에 토큰이 referenced되어 orphan 경고도 회피. 부모 표면 색은 런타임에 CSS·컴포넌트 레벨에서 상속/적용.
-
-> **부수 효과 인지**: 이 sparse 패턴은 disabled 외 다른 시맨틱에 함부로 쓰면 lint의 contrast 안전망 무력화 위험 있음. disabled처럼 WCAG가 명시적 면제하는 케이스에만 적용.
-
-#### 운영 가이드
-- 컴포넌트 구현 시 `disabled-label-light/dark` 토큰을 textColor에 적용 + 추가로 `cursor: not-allowed`·`pointer-events: none`·`opacity` 등 비활성 인터랙션 시그널 동반.
-- 단순 색만으로 비활성을 표시하지 않음 — 색·커서·인터랙션 비활성을 함께 사용해야 시각·기능적 비활성 일치.
-
-#### HR / Desk 듀얼 브랜드
-- neutral 토큰 — 양 브랜드 공유. accent에 의존 없음.
 
 ### Semantic colors (v10 추가)
 
