@@ -67,6 +67,11 @@ colors:
   chart-yellow-light: "#D4B83A"
   chart-green-light: "#6BCB86"
   chart-blue-light: "#7BBBED"
+  chart-indigo-light: "#ABB0F0"
+  chart-violet-light: "#D2A8EC"
+  chart-pink-light: "#ECA0BC"
+  chart-brown-light: "#DCB088"
+  chart-gray-light: "#B5BBC5"
   
   # (border-focus 정의 완료 — v16)
 
@@ -237,6 +242,16 @@ components:
     backgroundColor: "{colors.chart-green-light}"
   chart-color-blue-on-dark:
     backgroundColor: "{colors.chart-blue-light}"
+  chart-color-indigo-on-dark:
+    backgroundColor: "{colors.chart-indigo-light}"
+  chart-color-violet-on-dark:
+    backgroundColor: "{colors.chart-violet-light}"
+  chart-color-pink-on-dark:
+    backgroundColor: "{colors.chart-pink-light}"
+  chart-color-brown-on-dark:
+    backgroundColor: "{colors.chart-brown-light}"
+  chart-color-gray-on-dark:
+    backgroundColor: "{colors.chart-gray-light}"
   
   # === Tertiary 텍스트 (placeholder, caption-tertiary, hint) ===
   caption-tertiary-on-card-light:
