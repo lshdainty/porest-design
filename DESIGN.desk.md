@@ -52,6 +52,14 @@ colors:
   info: "#006395"
   info-light: "#6FAEDF"
   
+  # === Chart palette (data viz, 10색 hue 균등, L≈0.16-0.18 통일, 듀얼 브랜드 공유) ===
+  # 1차 5색 (v21): red, orange, yellow, green, blue. 2차 5색은 v22, dark 변형은 v23-v24.
+  chart-red: "#C73838"
+  chart-orange: "#B36418"
+  chart-yellow: "#8C7400"
+  chart-green: "#2D8060"
+  chart-blue: "#2C70BF"
+  
   # (border-focus 정의 완료 — v16)
 
 typography:
@@ -199,6 +207,18 @@ components:
   alert-text-info-on-dark:
     backgroundColor: "{colors.surface-default-dark}"
     textColor: "{colors.info-light}"
+  
+  # === Chart elements (sparse, fill/stroke 용도 — chart 요소는 textColor 페어가 아님) ===
+  chart-color-red:
+    backgroundColor: "{colors.chart-red}"
+  chart-color-orange:
+    backgroundColor: "{colors.chart-orange}"
+  chart-color-yellow:
+    backgroundColor: "{colors.chart-yellow}"
+  chart-color-green:
+    backgroundColor: "{colors.chart-green}"
+  chart-color-blue:
+    backgroundColor: "{colors.chart-blue}"
   
   # === Tertiary 텍스트 (placeholder, caption-tertiary, hint) ===
   caption-tertiary-on-card-light:
@@ -483,6 +503,14 @@ design.md `contrastCheck` 룰은 incidental 인지 없이 모든 `backgroundColo
 - `surface-input` 위 semantic 텍스트 (input 검증 메시지 케이스): `surface-input-light` 표면이 카드 표면(`surface-default`)과 휘도 차 0.11 → 페어 정의해두면 lint 추가 검증 가능. 이번 배치 미정의.
 - 다크 표면 위 semantic 표시: ~v19까지 `success`/`error` base 색은 다크 표면 위 contrast 미달 → **v20에서 `-light` 변형 도입으로 해소** (아래 v20 섹션 참조).
 - `border-vs-surface` 패턴은 spec에 borderColor 없어 영구 자동 검증 불가 (v9 한계 그대로).
+
+### Chart palette (v21 추가, 4 배치 진행 중)
+
+데이터 시각화용 hue-균등 10색 팔레트. 양 brand 공유(unified, primary는 brand-specific 유지). L≈0.16-0.18로 통일.
+
+**v21 (1/4)**: light 표면 5색 — red, orange, yellow, green, blue. **v22 예정**: indigo, violet, pink, brown, gray. **v23-v24 예정**: dark 변형 10색.
+
+토큰: `chart-red` `#C73838`, `chart-orange` `#B36418`, `chart-yellow` `#8C7400`, `chart-green` `#2D8060`, `chart-blue` `#2C70BF`. sparse component(`chart-color-{name}`)로 referencing. chart는 brand 분기 비대상 — 양 brand 동일 사용. primary와 hue 비슷할 수 있으나 역할 분리(별도 토큰).
 
 #### v20 추가 — semantic 다크 변형 4개
 
