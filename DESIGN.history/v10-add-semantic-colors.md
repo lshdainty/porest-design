@@ -38,12 +38,6 @@ colors:
   border-strong: "#7D8593"
   border-strong-dark: "#8B95A8"
   
-  # === Semantic - Status (functional palette, 라이트 표면용 base, 듀얼 브랜드 공유) ===
-  success: "#117A3A"
-  error: "#C53030"
-  warning: "#A85800"
-  info: "#006395"
-  
   # TODO: border-focus (accent-*-light 도입 후), text-tertiary, text-disabled
 
 typography:
@@ -149,34 +143,6 @@ components:
     backgroundColor: "{colors.border-strong}"
   outline-strong-dark:
     backgroundColor: "{colors.border-strong-dark}"
-  
-  # === Semantic 채움 badge (semantic 배경 + 흰 텍스트) ===
-  badge-success:
-    backgroundColor: "{colors.success}"
-    textColor: "{colors.text-on-accent}"
-  badge-error:
-    backgroundColor: "{colors.error}"
-    textColor: "{colors.text-on-accent}"
-  badge-warning:
-    backgroundColor: "{colors.warning}"
-    textColor: "{colors.text-on-accent}"
-  badge-info:
-    backgroundColor: "{colors.info}"
-    textColor: "{colors.text-on-accent}"
-  
-  # === Semantic 인라인 텍스트 (흰 카드 위 semantic 텍스트) ===
-  alert-text-success:
-    backgroundColor: "{colors.surface-default}"
-    textColor: "{colors.success}"
-  alert-text-error:
-    backgroundColor: "{colors.surface-default}"
-    textColor: "{colors.error}"
-  alert-text-warning:
-    backgroundColor: "{colors.surface-default}"
-    textColor: "{colors.warning}"
-  alert-text-info:
-    backgroundColor: "{colors.surface-default}"
-    textColor: "{colors.info}"
 ---
 
 ## Overview
@@ -329,48 +295,6 @@ border는 시맨틱 계층을 둘로 분리합니다 — 장식적 외곽선과 
 
 #### HR / Desk 듀얼 브랜드
 - 각 브랜드 dedicated 변형 — neutral 토큰이 아닌 brand-specific. 표면 컨텍스트 페어: 밝은 표면용 `accent-{brand}` · 어두운 표면용 `accent-{brand}-light`.
-
-### Semantic colors (v10 추가)
-
-상태 전달을 위한 functional palette — 브랜드 정체성과 분리된 4개 status. HR/Desk 양 브랜드 공유, 라이트 표면 base만 이번 배치에서 확정.
-
-| 토큰 | hex | 시맨틱 |
-|---|---|---|
-| `success` | `#117A3A` | 완료·확인·긍정 결과 (forest green — accent-hr emerald와 hue 분리) |
-| `error` | `#C53030` | 오류·파괴적 액션·필수 입력 누락 |
-| `warning` | `#A85800` | 경고·주의·임박 만료 (deep amber) |
-| `info` | `#006395` | 안내·도움말·진행 중 (deep navy — accent-desk vibrant blue와 채도·명도 분리) |
-
-#### 추가 이유
-1. 폼 검증·토스트·alert·badge 컴포넌트는 모든 제품 공통 인터랙션 — accent로는 표현 불가능한 functional state 전달이 차단되어 있었음.
-2. **functional palette ≠ brand palette**: HR/Desk 어디서도 동일한 success/error/warning/info를 사용 — 브랜드 분기 시 인지 부하 증가 회피. 이미 accent로 brand identity 차별화는 완료.
-3. **라이트 표면 base만 4개** — 다크 표면용 `success-light` 등은 다크 모드 alert·toast 사용 사례 등장 시 v11+에서 추가(accent-light 패턴 답습). 5 한도 중 1개 여분.
-
-#### 색상 대비 — lint 실측 결과 (손계산 아님)
-
-8개 페어를 components 섹션에 정의해 lint contrast-ratio 룰로 직접 검증:
-
-| component | bg | text | lint 판정 |
-|---|---|---|---|
-| `badge-success` | success | text-on-accent | ✅ ≥4.5:1 |
-| `badge-error` | error | text-on-accent | ✅ ≥4.5:1 |
-| `badge-warning` | warning | text-on-accent | ✅ ≥4.5:1 |
-| `badge-info` | info | text-on-accent | ✅ ≥4.5:1 |
-| `alert-text-success` | surface-default | success | ✅ ≥4.5:1 |
-| `alert-text-error` | surface-default | error | ✅ ≥4.5:1 |
-| `alert-text-warning` | surface-default | warning | ✅ ≥4.5:1 |
-| `alert-text-info` | surface-default | info | ✅ ≥4.5:1 |
-
-(`npm run lint` 출력 기준: 0 errors, 0 contrast warnings — 8 페어 전부 silent pass.)
-
-#### 자동 검증 미적용 항목 (손계산 한계 명시)
-- `surface-input` 위 semantic 텍스트 (input 검증 메시지 케이스): `surface-input-light` 표면이 카드 표면(`surface-default`)과 휘도 차 0.11 → 페어 정의해두면 lint 추가 검증 가능. 이번 배치 미정의.
-- 다크 표면 위 semantic 표시: `success`/`error` 등의 dark 표면 contrast는 모두 미달 가능성 높음 → `-light` 변형 도입 시 검증.
-- `border-vs-surface` 패턴은 spec에 borderColor 없어 영구 자동 검증 불가 (v9 한계 그대로).
-
-#### HR / Desk 듀얼 브랜드
-- 4개 토큰 모두 양 브랜드 동일 사용 — functional state 전달은 브랜드 분기 비대상.
-- 시각 차별화: `success`(forest)는 `accent-hr`(emerald)와 미세 hue 분리, `info`(deep navy)는 `accent-desk`(vibrant)와 채도 분리. 단 단독 노출 시 식별성을 위해 컴포넌트 레벨에서 아이콘(✓/✕/!/i) 동반을 권장(prose 가이드 영역).
 - 컴포넌트는 brand 컨텍스트(HR vs Desk) × 모드 컨텍스트(light vs dark) 매트릭스로 4값 분기 — 토큰 자체에 분기 표현됨.
 
 ## Typography
