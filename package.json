@@ -19,6 +19,7 @@
     "sync:check": "node scripts/sync-shared-tokens.mjs --check",
     "verify": "npm run sync:check && npm run lint:all",
     "test:exports": "npm run export:tailwind:all && node scripts/test-tailwind-export.mjs",
+    "build:preview": "npm run export:tailwind:all && node scripts/build-preview-html.mjs",
     "lint:prose": "node scripts/lint-prose.mjs",
     "prepare": "git config core.hooksPath .husky 2>/dev/null || true"
   },
