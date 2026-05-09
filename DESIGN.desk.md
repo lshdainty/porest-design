@@ -1205,6 +1205,26 @@ Desk — 메모/할일/가계부에서 비활성 상태(예: 완료된 할일 to
 - aria: `aria-disabled="true"` (focus 가능 — 다시 활성화 옵션 발견 가능)
 - 완료 할일: `aria-checked="true"` + `aria-label="완료된 할일: ..."`
 
+### Tooltip
+
+Desk — 모바일 우선이라 hover-driven tooltip 사용 제한. 주로 desktop 사용 사례(메모/가계부 desktop view) + (i) 정보 아이콘 보조.
+
+#### Structure (신규 토큰 없음)
+- 표면: `surface-default-dark` + `text-primary-dark`
+- shadow `shadow-sm`, radius `radius-sm`
+
+#### Layout
+- text: `caption` (12/400), max-width 200px (모바일 viewport 고려 좁게)
+
+#### Motion
+- desktop: hover 500ms / focus 0ms, fade-in `motion-duration-fast`
+- 모바일: tap → 짧은 토스트 또는 inline expand로 대체 (tooltip 미사용 권장)
+
+#### A11y
+- WCAG 1.4.13 (desktop tooltip): dismissible/hoverable/persistent
+- 모바일은 (i) icon button → expand inline panel 또는 sheet가 더 적합
+- icon-only button은 항상 `aria-label` 필수
+
 ### Toast
 
 Desk — 메모/할일/가계부 저장 완료, 동기화 상태, 작업 취소 등 짧은 알림. 모바일 우선이라 top-center 또는 bottom-center 사용.
