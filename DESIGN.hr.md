@@ -1204,6 +1204,31 @@ HR — 권한 부재(비-승인자가 결재 버튼 보지만 누르지 못함),
 - aria: form은 `disabled`, focus 필요 메뉴는 `aria-disabled="true"`
 - screen reader가 "비활성화됨" 읽음
 
+### Tabs
+
+HR — 직원 detail page(기본정보/근태/평가/급여 등 섹션 전환), dashboard 카테고리(전체/내 부서/필터된 view), 설정 페이지 grouping.
+
+#### Variant
+- **underline** (default): bottom border 2px `border-focus` (`#357B5F`, primary alias) + `text-primary` active
+- **vertical** (sidebar): 좌측 border 2px + `surface-input` 배경 — HR sidebar nav 친화
+
+#### Size
+- 데이터 화면 default: `md` (44px) — `body-strong` 15/600
+- 빈도 높은 sub-tab: `sm` (36px) — `caption` 12/400
+
+#### Layout
+- tab list 하단 `divider-light` 1px line, active tab 2px border가 line 덮음
+- tab panel padding `lg` (16px)
+
+#### Motion
+- underline indicator slide: `motion-duration-fast`
+- panel 전환: instant (HR은 데이터 표시 우선이라 fade animation 없이 즉시)
+
+#### A11y
+- role tablist/tab/tabpanel + aria-selected/aria-controls/aria-labelledby
+- 키보드: ←→/Home/End/Enter/Space, vertical은 ↑↓
+- manual activation default (focus ≠ activation) — HR은 form 화면 많아 자동 전환 시 입력 손실 가능
+
 ### Dropdown (Menu / Select 공통 패턴)
 
 HR — 직원 선택, 부서 선택, 결재 액션 메뉴(승인/반려/위임), 평가 등급 선택, 필터 옵션 등에서 광범위 사용.

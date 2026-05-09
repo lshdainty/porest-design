@@ -1205,6 +1205,35 @@ Desk — 메모/할일/가계부에서 비활성 상태(예: 완료된 할일 to
 - aria: `aria-disabled="true"` (focus 가능 — 다시 활성화 옵션 발견 가능)
 - 완료 할일: `aria-checked="true"` + `aria-label="완료된 할일: ..."`
 
+### Tabs
+
+Desk — 메모 view(전체/즐겨찾기/태그별), 가계부 view(수입/지출/카테고리), 할일 view(오늘/예정/완료). 모바일 우선이라 fill/pills variant 적극.
+
+#### Variant
+- **fill** (모바일 default): active tab 배경 `primary` (`#0147AD`) + `text-on-accent` — bottom nav 또는 sticky top tabs
+- **pills** (sub-tab): active tab `radius-full` + `primary-light` 12% tint 배경 — 메모 태그 필터 등
+- **underline** (desktop): bottom border 2px + `text-primary`
+
+#### Size
+- 모바일 bottom nav: `lg` (52px) — touch hit area 우선
+- 모바일 top tab: `md` (44px)
+- desktop sub-tab: `sm` (36px)
+
+#### Layout
+- 모바일 bottom nav: 풀-width, 5 tab 균등 분할, label + icon
+- 모바일 top tab: horizontal scroll if 5+ tabs
+
+#### Motion
+- pill/fill transition: `motion-duration-base` × `motion-ease-out` (친근감)
+- panel 전환: `motion-duration-fast` fade — Desk는 콘텐츠 전환 부드럽게
+- swipe gesture로 tab 전환 가능 (mobile)
+
+#### A11y
+- role tablist/tab/tabpanel + aria 속성
+- 키보드: ←→/Home/End/Enter/Space, vertical은 ↑↓
+- 모바일 swipe-to-tab: 키보드 ←→ 동등 + `aria-live="polite"` panel 변경 알림
+- bottom nav는 `<nav role="navigation">` wrap
+
 ### Dropdown (Menu / Select 공통 패턴)
 
 Desk — 메모 카테고리 선택, 가계부 분류 선택, 할일 우선순위, 정렬 옵션. 모바일 우선이라 간단한 select는 native `<select>` 또는 bottom sheet picker 우선, 복잡한 menu는 dropdown panel.
