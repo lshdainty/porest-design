@@ -25,13 +25,11 @@ colors:
   surface-input: "#F0F2F7"
   surface-input-dark: "#2D3346"
   
-  # === Neutral - Text (본문/보조/3차/accent 위, 공통) ===
+  # === Neutral - Text (본문/보조/accent 위, 공통) ===
   text-primary: "#1A1F2E"
   text-primary-dark: "#F5F6FA"
   text-secondary: "#4E5968"
   text-secondary-dark: "#B0B8C4"
-  text-tertiary: "#62697A"
-  text-tertiary-dark: "#9DA3B0"
   text-on-accent: "#FFFFFF"
   
   # === Neutral - Border (장식 외곽선/필수 UI 외곽선, 공통) ===
@@ -46,7 +44,7 @@ colors:
   warning: "#A85800"
   info: "#006395"
   
-  # TODO: border-focus (accent-*-light 도입 후), text-disabled
+  # TODO: border-focus (accent-*-light 도입 후), text-tertiary, text-disabled
 
 typography:
   caption:
@@ -179,20 +177,6 @@ components:
   alert-text-info:
     backgroundColor: "{colors.surface-default}"
     textColor: "{colors.info}"
-  
-  # === Tertiary 텍스트 (placeholder, caption-tertiary, hint) ===
-  caption-tertiary-on-card-light:
-    backgroundColor: "{colors.surface-default}"
-    textColor: "{colors.text-tertiary}"
-  caption-tertiary-on-card-dark:
-    backgroundColor: "{colors.surface-default-dark}"
-    textColor: "{colors.text-tertiary-dark}"
-  placeholder-on-input-light:
-    backgroundColor: "{colors.surface-input}"
-    textColor: "{colors.text-tertiary}"
-  placeholder-on-input-dark:
-    backgroundColor: "{colors.surface-input-dark}"
-    textColor: "{colors.text-tertiary-dark}"
 ---
 
 ## Overview
@@ -345,39 +329,6 @@ border는 시맨틱 계층을 둘로 분리합니다 — 장식적 외곽선과 
 
 #### HR / Desk 듀얼 브랜드
 - 각 브랜드 dedicated 변형 — neutral 토큰이 아닌 brand-specific. 표면 컨텍스트 페어: 밝은 표면용 `accent-{brand}` · 어두운 표면용 `accent-{brand}-light`.
-
-### Text tertiary (v11 추가)
-
-3차 텍스트 위계 — placeholder, hint, caption-tertiary 등 본문보다 낮은 강조의 read-only 정보. 라이트/다크 페어 2개.
-
-| 토큰 | hex | 사용 |
-|---|---|---|
-| `text-tertiary` | `#62697A` | 라이트 표면 위 placeholder·hint·메타 (text-secondary보다 미묘) |
-| `text-tertiary-dark` | `#9DA3B0` | 다크 표면 위 placeholder·hint·메타 |
-
-#### 추가 이유
-1. v2 text 토큰(primary/secondary/on-accent)으로는 input placeholder의 시각 위계가 표현 불가 — secondary를 placeholder에 쓰면 입력값과 동등한 강조로 보여 혼란.
-2. `text-disabled`와 분리: tertiary는 "강조가 낮을 뿐 읽을 수 있는 텍스트"(WCAG 1.4.3 4.5:1 대상), disabled는 "비활성 — 색상 대비 적용 면제 가능"(WCAG 1.4.3 incidental 예외). 시맨틱이 다르므로 별도 토큰.
-3. **휘도 윈도우가 좁음**: 라이트 모드는 `text-secondary` L=0.098과 `surface-input` 위 4.5:1 ceiling L=0.158 사이 약 0.06 luminance gap만 가용. `#62697A`(L=0.141)로 윈도우 내 위치 확보.
-
-#### WCAG 검증 — lint 실측 결과
-
-4개 페어를 components(`caption-tertiary-on-card-{light,dark}`, `placeholder-on-input-{light,dark}`)로 정의하여 자동 검증:
-
-| component | bg | text | lint 판정 |
-|---|---|---|---|
-| `caption-tertiary-on-card-light` | surface-default | text-tertiary | ✅ ≥4.5:1 |
-| `caption-tertiary-on-card-dark` | surface-default-dark | text-tertiary-dark | ✅ ≥4.5:1 |
-| `placeholder-on-input-light` | surface-input | text-tertiary | ✅ ≥4.5:1 (가장 빡빡, 손계산 4.91) |
-| `placeholder-on-input-dark` | surface-input-dark | text-tertiary-dark | ✅ ≥4.5:1 (손계산 4.87) |
-
-(`npm run lint` 출력 기준: 0 errors, 0 contrast warnings.)
-
-#### bg-page 위 검증 미적용
-`text-tertiary` on `bg-page` (페이지 배경 위 직접 노출 케이스, 손계산 5.09:1)는 별도 component 정의 안 함 — 실제 사용 시 거의 항상 `surface-*` 표면 위에 있음. 필요 시 v12+에서 페어 추가 가능.
-
-#### HR / Desk 듀얼 브랜드
-- neutral 토큰, 양 브랜드 동일 사용. accent에 의존하지 않음.
 
 ### Semantic colors (v10 추가)
 
