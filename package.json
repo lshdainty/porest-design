@@ -1,0 +1,15 @@
+{
+  "name": "porest-design",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "lint": "design.md lint DESIGN.md",
+    "diff": "design.md diff DESIGN.history/$(ls -t DESIGN.history | head -1) DESIGN.md",
+    "export:tailwind": "design.md export --format css-tailwind DESIGN.md > exports/tokens.css",
+    "export:dtcg": "design.md export --format dtcg DESIGN.md > exports/tokens.json",
+    "snapshot": "cp DESIGN.md DESIGN.history/v$(date +%Y%m%d-%H%M%S).md"
+  },
+  "devDependencies": {
+    "@google/design.md": "^0.1.1"
+  }
+}

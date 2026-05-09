@@ -1,0 +1,6 @@
+node_modules/
+exports/
+.DS_Store
+.claude/local/
+.claude/settings.local.json
+DESIGN.history/v20[0-9][0-9]*-*.md
