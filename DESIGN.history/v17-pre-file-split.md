@@ -7,8 +7,13 @@ description: |
   all-ages accessibility.
 
 colors:
-  # === Brand-specific 토큰은 DESIGN.hr.md / DESIGN.desk.md로 분리 (v17) ===
-  # primary, primary-light, border-focus, border-focus-light: 각 brand 파일에서 정의
+  # === Brand (sub-brand accents) ===
+  primary-hr: "#357B5F"
+  primary-desk: "#0147AD"
+  
+  # === Brand - light variants (어두운 표면 위 텍스트/아이콘/외곽선 한정, 모드 무관) ===
+  primary-hr-light: "#6BAE8C"
+  primary-desk-light: "#6BA0EE"
   
   # === Neutral - Page background (HR/Desk 공유) ===
   bg-page: "#F5F6FA"
@@ -37,7 +42,11 @@ colors:
   border-strong: "#7D8593"
   border-strong-dark: "#8B95A8"
   
-  # === border-focus는 brand 파일로 분리 (v17) ===
+  # === Brand - Focus ring (per-brand × surface-mode, primary-* 시맨틱 alias) ===
+  border-focus-hr: "#357B5F"
+  border-focus-hr-light: "#6BAE8C"
+  border-focus-desk: "#0147AD"
+  border-focus-desk-light: "#6BA0EE"
   
   # === Semantic - Status (functional palette, 라이트 표면용 base, 듀얼 브랜드 공유) ===
   success: "#117A3A"
@@ -91,8 +100,21 @@ spacing:
   # TODO: 2xl(32px), 3xl(48px) — hero/major 레이아웃 등장 시 추가
 
 components:
-  # === Brand-specific 컴포넌트(button-primary, button-outlined-on-dark)는
-  # === DESIGN.hr.md / DESIGN.desk.md로 분리 (v17)
+  # === Primary 버튼 (accent 채움 + 흰 텍스트, 모드 무관) ===
+  button-primary-hr:
+    backgroundColor: "{colors.primary-hr}"
+    textColor: "{colors.text-on-accent}"
+  button-primary-desk:
+    backgroundColor: "{colors.primary-desk}"
+    textColor: "{colors.text-on-accent}"
+  
+  # === Outlined 버튼 (어두운 표면 위 -light accent 텍스트) ===
+  button-outlined-hr-on-dark:
+    backgroundColor: "{colors.surface-default-dark}"
+    textColor: "{colors.primary-hr-light}"
+  button-outlined-desk-on-dark:
+    backgroundColor: "{colors.surface-default-dark}"
+    textColor: "{colors.primary-desk-light}"
   
   # === 카드 (surface 위 primary 텍스트) ===
   card-light:
@@ -138,7 +160,15 @@ components:
   outline-strong-dark:
     backgroundColor: "{colors.border-strong-dark}"
   
-  # === focus-ring 컴포넌트는 brand 파일로 분리 (v17)
+  # === Focus ring (1px outline 시각 요소, sparse — primary 토큰이 contrast 검증 담당) ===
+  focus-ring-hr-on-light:
+    backgroundColor: "{colors.border-focus-hr}"
+  focus-ring-hr-on-dark:
+    backgroundColor: "{colors.border-focus-hr-light}"
+  focus-ring-desk-on-light:
+    backgroundColor: "{colors.border-focus-desk}"
+  focus-ring-desk-on-dark:
+    backgroundColor: "{colors.border-focus-desk-light}"
   
   # === Semantic 채움 badge (semantic 배경 + 흰 텍스트) ===
   badge-success:
@@ -193,16 +223,9 @@ components:
 ## Overview
 
 Porest는 "사람과 일상이 숲처럼 자라나는" 가치를 담은 듀얼 브랜드 시스템입니다.
-HR(조직 관리, B2B)과 Desk(개인 생산성, B2C)는 동일한 골격을 공유하되 primary 색상으로만 분기합니다.
+HR(조직 관리, B2B)과 Desk(개인 생산성, B2C)는 동일한 골격을 공유하되 accent 색상으로만 분기합니다.
 
 레퍼런스 — 토스의 신뢰감 있는 미니멀리즘, 전 연령 가독성.
-
-### 파일 분리 (v17부터)
-- **`DESIGN.md`** (이 파일): 공유 baseline — typography, spacing, rounded, neutral colors, neutral components. brand-agnostic이므로 `primary` literal 미정의 → lint missingPrimary warning 1건 영구 수용(공유 라이브러리 진실 신호).
-- **`DESIGN.hr.md`**: HR 브랜드 self-contained 시스템 — 공유 토큰 복제 + HR primary `#357B5F` + HR brand 컴포넌트. brand 컨텍스트가 암묵적이라 토큰명에 `-hr` 접미사 없음(`primary`, `border-focus`, `button-primary` 등).
-- **`DESIGN.desk.md`**: Desk 브랜드 self-contained 시스템 — 공유 토큰 복제 + Desk primary `#0147AD`.
-- **lint**: `npm run lint:all`로 3파일 검증. HR/Desk 파일은 0 warnings, DESIGN.md만 missingPrimary 1건.
-- **공유 토큰 변경 시**: 3파일 모두 수동 동기 — design.md spec이 cross-file token reference 미지원이라 자동화 불가.
 
 ## Colors
 
