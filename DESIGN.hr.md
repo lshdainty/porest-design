@@ -1204,6 +1204,33 @@ HR — 권한 부재(비-승인자가 결재 버튼 보지만 누르지 못함),
 - aria: form은 `disabled`, focus 필요 메뉴는 `aria-disabled="true"`
 - screen reader가 "비활성화됨" 읽음
 
+### Toast
+
+HR — 결재 처리 완료, 직원 정보 저장, 시스템 알림 등 짧은 작업 결과 표시.
+
+#### Structure (신규 토큰 없음)
+- 표면: `surface-default` + `shadow-md` + `radius-md`
+- semantic 4종 좌측 4px stroke + icon (`success`/`error`/`warning`/`info`)
+- text: `body` (15/400) + (선택) `body-strong` 제목
+
+#### Position
+- desktop default: top-right (24px 여백)
+- 모바일 앱(승인 등): top-center
+
+#### Layout
+- max-width 360px, padding `md` (12px), icon+text 간격 `sm` (8px)
+- 중첩 시 stack 위→아래, `xs` 간격
+
+#### Motion
+- 등장: slide-in + fade (`motion-duration-base`)
+- 자동 닫힘: success/info 4s, warning 6s, error 8s, hover pause
+- 사라짐: slide-out + fade (`motion-duration-fast`)
+
+#### A11y
+- error는 `role="alert"` + `aria-live="assertive"`, 그 외 `role="status"` + polite
+- 자동 닫힘 시간 prefers-reduced-motion +50% 또는 시스템 설정으로 조정 가능
+- focus 빼앗지 않음, dismissible `aria-label="알림 닫기"`
+
 ### Modal
 
 HR — 결재 처리(승인/반려 confirm), 직원 정보 편집, 평가 입력, 권한 변경 등 form/decision flow에서 광범위 사용. desktop 우선이라 centered modal 위주.

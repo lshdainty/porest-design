@@ -1205,6 +1205,31 @@ Desk — 메모/할일/가계부에서 비활성 상태(예: 완료된 할일 to
 - aria: `aria-disabled="true"` (focus 가능 — 다시 활성화 옵션 발견 가능)
 - 완료 할일: `aria-checked="true"` + `aria-label="완료된 할일: ..."`
 
+### Toast
+
+Desk — 메모/할일/가계부 저장 완료, 동기화 상태, 작업 취소 등 짧은 알림. 모바일 우선이라 top-center 또는 bottom-center 사용.
+
+#### Structure (신규 토큰 없음)
+- 표면: `surface-default` + `shadow-md` + `radius-md` (Desk는 친근감 톤이라 `radius-lg` 12px 옵션도 가능)
+- semantic 4 좌측 4px stroke + icon
+
+#### Position
+- 모바일 default: top-center (status bar 아래) — 콘텐츠 차단 최소화
+- desktop: top-right (24px 여백)
+- 가계부 입력 후 짧은 confirmation은 bottom-center (action 가까운 곳)
+
+#### Layout
+- max-width 모바일 viewport - `xl` (24px) 좌우 여백, padding `lg` (16px)
+- 중첩 시 stack, `xs` 간격
+
+#### Motion
+- 모바일 등장: 위에서 슬라이드 + fade (`motion-duration-base`), bottom은 아래에서
+- swipe-to-dismiss (모바일): horizontal swipe 시 `motion-duration-fast` 따라감
+- 자동 닫힘: 위와 동일 (success/info 4s, warning 6s, error 8s)
+
+#### A11y
+- HR과 동일 — role/aria-live, focus 안 받음, swipe 키보드 fallback (close button)
+
 ### Modal
 
 Desk — 메모/할일 편집, 가계부 entry 입력, 카테고리 관리 등. 모바일 우선이라 **bottom sheet** 형태가 default(centered modal은 desktop 보조).
