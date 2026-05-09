@@ -994,5 +994,46 @@ HR(B2B 데이터 밀도) — `sm`/`md` 사이즈 위주, 인라인 그리드 편
 - keyboard `Tab`/`Shift+Tab` focus, `aria-invalid`/`aria-describedby` for 에러, `aria-required` for 필수
 - screen reader: label은 `<label for>` 또는 `aria-labelledby` 필수
 
-### Page text / Card / Badge / Alert text / Focus ring / Divider / Outline / Disabled label / Caption / Chart color
+### Card
+
+HR(B2B 데이터 밀도) — `default`/`outlined` variant 위주, dashboard widget·data list 적극. `interactive`는 row click 행 단위.
+
+#### Mode pair
+- `card-light` (`#FFFFFF`) / `card-dark` (`#242938`)
+
+#### Variant
+| Variant | shadow | border | 사용 |
+|---|---|---|---|
+| **default** | `shadow-sm` | none | 일반 widget |
+| **interactive** | `shadow-sm` → hover `shadow-md` | none | row click, list item |
+| **outlined** | none | `border-default` 1px | flat 데이터 그리드 (밀도 우선) |
+| **flat** | none | none | inline 그룹 (dashboard 안 위젯) |
+
+다크 카드는 `interactive`에 `border-default-dark` 1px 보강.
+
+#### Padding
+| Level | 값 | 사용 |
+|---|---|---|
+| sm | `md` (12px) | 작은 KPI 카드, inline list item |
+| **md** (default) | `lg` (16px) | 대시보드 위젯, 데이터 카드 |
+| lg | `xl` (24px) | detail panel (직원 상세, 평가 상세) |
+
+HR은 `xl` padding은 hero 사용 사례 등장 시. 일반적으로 `sm`/`md` 위주.
+
+#### Radius
+- default `radius-md` (8px), 데이터 그리드 inline은 `radius-sm` (4px)
+
+#### Layout
+- 카드 그리드 gap: `md` (12px) — HR은 데이터 밀도 톤
+- 카드 내부 콘텐츠 간격: `sm` (8px)
+
+#### Motion
+- interactive hover: `motion-duration-fast` × `motion-ease-out`
+- accordion expand: `motion-duration-base`
+
+#### A11y
+- interactive: `<button>` 또는 `role="button"` + `tabindex="0"` + Enter/Space
+- focus: 카드 외곽 `border-focus` 2px outline + 1px offset
+
+### Page text / Badge / Alert text / Focus ring / Divider / Outline / Disabled label / Caption / Chart color
 (작성 예정 — P0-A 후속 배치)
