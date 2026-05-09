@@ -27,16 +27,11 @@ jobs:
       - name: Run verify (sync:check + lint:all)
         run: npm run verify
 
-      - name: Build Tailwind v4 exports (smoke test)
-        run: npm run export:tailwind:all
+      - name: Test Tailwind v4 exports (build + namespace 검증)
+        run: npm run test:exports
 
       - name: Build DTCG export (smoke test)
         run: npm run export:dtcg
 
-      - name: Verify exports produced expected files
-        run: |
-          test -s exports/tokens.css || (echo "tokens.css missing or empty"; exit 1)
-          test -s exports/tokens.hr.css || (echo "tokens.hr.css missing or empty"; exit 1)
-          test -s exports/tokens.desk.css || (echo "tokens.desk.css missing or empty"; exit 1)
-          test -s exports/tokens.dtcg.json || (echo "tokens.dtcg.json missing or empty"; exit 1)
-          echo "All exports OK."
+      - name: Verify DTCG export produced
+        run: test -s exports/tokens.dtcg.json || (echo "tokens.dtcg.json missing or empty"; exit 1)
