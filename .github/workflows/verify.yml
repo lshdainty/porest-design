@@ -27,6 +27,9 @@ jobs:
       - name: Run verify (sync:check + lint:all)
         run: npm run verify
 
+      - name: Lint prose token references
+        run: npm run lint:prose
+
       - name: Test Tailwind v4 exports (build + namespace 검증)
         run: npm run test:exports
 
