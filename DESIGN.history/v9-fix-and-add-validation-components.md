@@ -84,65 +84,7 @@ spacing:
   # TODO: 2xl(32px), 3xl(48px) — hero/major 레이아웃 등장 시 추가
 
 components:
-  # === Primary 버튼 (accent 채움 + 흰 텍스트, 모드 무관) ===
-  button-primary-hr:
-    backgroundColor: "{colors.accent-hr}"
-    textColor: "{colors.text-on-accent}"
-  button-primary-desk:
-    backgroundColor: "{colors.accent-desk}"
-    textColor: "{colors.text-on-accent}"
-  
-  # === Outlined 버튼 (어두운 표면 위 -light accent 텍스트) ===
-  button-outlined-hr-on-dark:
-    backgroundColor: "{colors.surface-default-dark}"
-    textColor: "{colors.accent-hr-light}"
-  button-outlined-desk-on-dark:
-    backgroundColor: "{colors.surface-default-dark}"
-    textColor: "{colors.accent-desk-light}"
-  
-  # === 카드 (surface 위 primary 텍스트) ===
-  card-light:
-    backgroundColor: "{colors.surface-default}"
-    textColor: "{colors.text-primary}"
-  card-dark:
-    backgroundColor: "{colors.surface-default-dark}"
-    textColor: "{colors.text-primary-dark}"
-  
-  # === 페이지 본문 (bg-page 위 primary 텍스트) ===
-  page-text-light:
-    backgroundColor: "{colors.bg-page}"
-    textColor: "{colors.text-primary}"
-  page-text-dark:
-    backgroundColor: "{colors.bg-page-dark}"
-    textColor: "{colors.text-primary-dark}"
-  
-  # === 입력 필드 (surface-input 위 primary 텍스트) ===
-  input-light:
-    backgroundColor: "{colors.surface-input}"
-    textColor: "{colors.text-primary}"
-  input-dark:
-    backgroundColor: "{colors.surface-input-dark}"
-    textColor: "{colors.text-primary-dark}"
-  
-  # === 캡션·메타 (secondary 텍스트, surface 위) ===
-  caption-on-card-light:
-    backgroundColor: "{colors.surface-default}"
-    textColor: "{colors.text-secondary}"
-  caption-on-card-dark:
-    backgroundColor: "{colors.surface-default-dark}"
-    textColor: "{colors.text-secondary-dark}"
-  
-  # === Divider / Outline (border 토큰을 1px 시각 요소의 배경색으로 사용) ===
-  # NOTE: 이 컴포넌트들은 textColor 없음 — lint contrast 룰은 미발동.
-  # border vs 인접 surface 대비는 spec에 borderColor 프로퍼티가 없어 자동 검증 불가.
-  divider-light:
-    backgroundColor: "{colors.border-default}"
-  divider-dark:
-    backgroundColor: "{colors.border-default-dark}"
-  outline-strong-light:
-    backgroundColor: "{colors.border-strong}"
-  outline-strong-dark:
-    backgroundColor: "{colors.border-strong-dark}"
+  # TODO
 ---
 
 ## Overview
@@ -353,7 +295,7 @@ CLAUDE.md "4px 베이스 추천" 규칙을 준수하는 t-shirt 사이즈 스케
 
 #### 검증
 - **WCAG 1.4.3 / 1.4.11**: 비대상(spacing은 색상 아님).
-- **WCAG 2.5.5 (Target Size, AAA 권장 44×44px)**: 버튼 패턴 점검 — `body` line-height = 15px × 1.6 = **24px**. `md(12px)` padding-y 적용 시 12+24+12 = **48px** ✅ (44px 통과). `sm(8px)` padding-y는 8+24+8 = 40px로 44px 미달 → 보조 액션·dense table 인라인 컨트롤에만 사용. (※ v4 작성 시 lh를 20px로 잘못 표기, v9에서 수정)
+- **WCAG 2.5.5 (Target Size, AAA 권장 44×44px)**: 버튼 패턴 점검 — `md(12px)` padding-y + 본문 텍스트(line-height 약 20px) = 12+20+12 = **44px** ✅. 더 작은 컴포넌트(예: `sm` padding-y = 8px → 8+20+8=36px)는 보조 액션에만 사용.
 - **WCAG 1.4.12 (Text Spacing)**: 사용자가 letter/word spacing을 오버라이드해도 4px 베이스는 절대값이라 영향 없음.
 
 #### HR / Desk 듀얼 브랜드
