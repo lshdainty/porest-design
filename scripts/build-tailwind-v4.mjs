@@ -103,6 +103,15 @@ function parseMotion(md) {
   return out;
 }
 
+function parseOverlay(md) {
+  // overlay-dim-* prose tokens (rgba(...) alpha values)
+  const re = /^\|\s*`(overlay-[a-z0-9-]+)`\s*\|\s*`([^`]+)`\s*\|/gm;
+  const out = {};
+  let m;
+  while ((m = re.exec(md)) !== null) out[m[1]] = m[2];
+  return out;
+}
+
 const args = parseArgs(argv.slice(2));
 const source = args.source;
 if (!source) {
@@ -119,6 +128,7 @@ const rounded = parseSimpleScale(lines, "rounded");
 const spacing = parseSimpleScale(lines, "spacing");
 const shadows = parseShadows(content);
 const motion = parseMotion(content);
+const overlays = parseOverlay(content);
 
 let out = "";
 out += `/* Generated from ${source} by scripts/build-tailwind-v4.mjs — do not edit. */\n`;
@@ -164,6 +174,13 @@ out += "\n";
 out += "  /* Motion (from prose-token table — DESIGN*.md '## Motion') */\n";
 for (const [name, val] of Object.entries(motion)) {
   // motion-duration-fast → --motion-duration-fast, motion-ease-out → --motion-ease-out
+  out += `  --${name}: ${val};\n`;
+}
+out += "\n";
+
+out += "  /* Overlay dim (from prose-token table — alpha 채널 rgba) */\n";
+for (const [name, val] of Object.entries(overlays)) {
+  // overlay-dim-light → --overlay-dim-light
   out += `  --${name}: ${val};\n`;
 }
 out += "}\n";
