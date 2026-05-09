@@ -129,7 +129,9 @@ spacing:
   md: "12px"
   lg: "16px"
   xl: "24px"
-  # TODO: 2xl(32px), 3xl(48px) — hero/major 레이아웃 등장 시 추가
+  2xl: "32px"
+  3xl: "48px"
+  # (v27: 2xl/3xl 추가 완료. 4px 베이스 그리드 유지(8/12/16/24/32/48))
 
 components:
   # === Primary 버튼 (Desk primary 채움 + 흰 텍스트) ===
