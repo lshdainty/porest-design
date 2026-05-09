@@ -42,11 +42,15 @@ colors:
   border-focus: "#0147AD"
   border-focus-light: "#6BA0EE"
   
-  # === Semantic - Status (functional palette, 라이트 표면용 base, 듀얼 브랜드 공유) ===
+  # === Semantic - Status (functional palette, base + light 페어, 듀얼 브랜드 공유) ===
   success: "#117A3A"
+  success-light: "#5DC07B"
   error: "#C53030"
+  error-light: "#F08080"
   warning: "#A85800"
+  warning-light: "#E8A05A"
   info: "#006395"
+  info-light: "#6FAEDF"
   
   # (border-focus 정의 완료 — v16)
 
@@ -181,6 +185,20 @@ components:
   alert-text-info:
     backgroundColor: "{colors.surface-default}"
     textColor: "{colors.info}"
+  
+  # === Semantic 다크 표면 위 인라인 텍스트 (-light 변형) ===
+  alert-text-success-on-dark:
+    backgroundColor: "{colors.surface-default-dark}"
+    textColor: "{colors.success-light}"
+  alert-text-error-on-dark:
+    backgroundColor: "{colors.surface-default-dark}"
+    textColor: "{colors.error-light}"
+  alert-text-warning-on-dark:
+    backgroundColor: "{colors.surface-default-dark}"
+    textColor: "{colors.warning-light}"
+  alert-text-info-on-dark:
+    backgroundColor: "{colors.surface-default-dark}"
+    textColor: "{colors.info-light}"
   
   # === Tertiary 텍스트 (placeholder, caption-tertiary, hint) ===
   caption-tertiary-on-card-light:
@@ -463,11 +481,26 @@ design.md `contrastCheck` 룰은 incidental 인지 없이 모든 `backgroundColo
 
 #### 자동 검증 미적용 항목 (손계산 한계 명시)
 - `surface-input` 위 semantic 텍스트 (input 검증 메시지 케이스): `surface-input-light` 표면이 카드 표면(`surface-default`)과 휘도 차 0.11 → 페어 정의해두면 lint 추가 검증 가능. 이번 배치 미정의.
-- 다크 표면 위 semantic 표시: `success`/`error` 등의 dark 표면 contrast는 모두 미달 가능성 높음 → `-light` 변형 도입 시 검증.
+- 다크 표면 위 semantic 표시: ~v19까지 `success`/`error` base 색은 다크 표면 위 contrast 미달 → **v20에서 `-light` 변형 도입으로 해소** (아래 v20 섹션 참조).
 - `border-vs-surface` 패턴은 spec에 borderColor 없어 영구 자동 검증 불가 (v9 한계 그대로).
 
+#### v20 추가 — semantic 다크 변형 4개
+
+다크 표면 위 alert·toast·인라인 semantic 텍스트용 lightness 변형. base는 라이트 표면 전용(흰 텍스트 fill 4.5:1↑), light는 다크 표면 위 텍스트 4.5:1↑.
+
+| 토큰 | hex | L | 다크 표면 contrast (lint 실측) |
+|---|---|---|---|
+| `success-light` | `#5DC07B` | 0.416 | surface-default-dark **6.35** / surface-input-dark **5.46** ✅ |
+| `error-light` | `#F08080` | 0.355 | surface-default-dark **5.52** / surface-input-dark **4.75** ✅ |
+| `warning-light` | `#E8A05A` | 0.430 | surface-default-dark **6.54** / surface-input-dark **5.63** ✅ |
+| `info-light` | `#6FAEDF` | 0.394 | surface-default-dark **6.05** / surface-input-dark **5.20** ✅ |
+
+4개 컴포넌트(`alert-text-{semantic}-on-dark`)에서 lint contrast 룰로 검증 — 모두 ≥4.5:1 통과.
+
+**채움 fill 비호환** (의도): white(`text-on-accent`)을 light 변형 위에 올리면 L 0.35~0.43이라 contrast 2.2~2.7로 미달. 다크 모드 채움 badge는 base 색 유지 + 외곽선 보강 또는 별도 패턴(향후 v21+에서 검토).
+
 #### HR / Desk 듀얼 브랜드
-- 4개 토큰 모두 양 브랜드 동일 사용 — functional state 전달은 브랜드 분기 비대상.
+- 8개 토큰 모두 양 브랜드 동일 사용 — functional state 전달은 브랜드 분기 비대상.
 - 시각 차별화: `success`(forest)는 HR primary(emerald 계열)와 미세 hue 분리, `info`(deep navy)는 Desk `primary`(vibrant blue 계열)와 채도 분리. 단 단독 노출 시 식별성을 위해 컴포넌트 레벨에서 아이콘(✓/✕/!/i) 동반을 권장.
 - 컴포넌트는 brand 컨텍스트(HR vs Desk) × 모드 컨텍스트(light vs dark) 매트릭스로 4값 분기 — 토큰 자체에 분기 표현됨.
 
