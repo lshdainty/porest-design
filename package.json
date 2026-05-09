@@ -17,6 +17,7 @@
     "sync": "node scripts/sync-shared-tokens.mjs",
     "sync:check": "node scripts/sync-shared-tokens.mjs --check",
     "verify": "npm run sync:check && npm run lint:all",
+    "test:exports": "npm run export:tailwind:all && node scripts/test-tailwind-export.mjs",
     "prepare": "git config core.hooksPath .husky 2>/dev/null || true"
   },
   "devDependencies": {
