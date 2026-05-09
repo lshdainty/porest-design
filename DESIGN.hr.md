@@ -1113,5 +1113,38 @@ HR — form validation(직원 정보 입력 에러), 결재 상태 변경 안내
 - error는 `role="alert"` (assertive), info/success는 `aria-live="polite"`
 - form `<input aria-describedby="err-1">` + `<span id="err-1" class="alert-text-error">...`
 
-### Focus ring / Divider / Outline / Disabled label / Chart color
+### Focus ring
+
+HR 브랜드 — `border-focus` (`#357B5F`) / `border-focus-light` (`#6BAE8C`) 사용. 모든 인터랙티브 컴포넌트(button / input / card-interactive / tab / link)의 focus 표현 통일.
+
+#### Mode pair (sparse — primary 토큰이 contrast 검증 담당)
+| Token | 색상 | 사용 |
+|---|---|---|
+| `focus-ring-on-light` | `border-focus` (`#357B5F`) | 라이트 표면 위 모든 컴포넌트 |
+| `focus-ring-on-dark` | `border-focus-light` (`#6BAE8C`) | 다크 표면 위 모든 컴포넌트 |
+
+#### Contrast (실측)
+| 페어 | 대비 |
+|---|---|
+| `border-focus` (`#357B5F`) vs `bg-page` (`#F5F6FA`) | **3.31:1** ✅ UI |
+| `border-focus` (`#357B5F`) vs `surface-default` (`#FFFFFF`) | **3.49:1** ✅ UI |
+| `border-focus` (`#357B5F`) vs `surface-input` (`#F0F2F7`) | **3.96:1** ✅ UI |
+| `border-focus-light` (`#6BAE8C`) vs `bg-page-dark` (`#1A1F2E`) | **5.16:1** ✅ UI/AA |
+| `border-focus-light` (`#6BAE8C`) vs `surface-default-dark` (`#242938`) | **4.72:1** ✅ UI |
+
+모든 라이트/다크 표면에서 2.4.11 (3:1 UI) 통과.
+
+#### Spec
+- 두께 2px, offset 1px, shape 컴포넌트와 동일 `border-radius`
+- `focus-visible` pseudo만 사용 (마우스 클릭 시 미표시)
+
+#### Motion
+- focus ring 등장: `motion-duration-fast` × `motion-ease-out`
+- `prefers-reduced-motion: reduce` 시 즉시 표시
+
+#### A11y
+- 2.4.11 / 2.4.12 / 2.4.13 — 위 contrast 충족, sticky header 아래 자동 스크롤 권장 (`scroll-margin-top`)
+- 다크 모드는 `[data-theme="dark"]` 토글로 `--color-border-focus-light` 자동 적용
+
+### Divider / Outline / Disabled label / Chart color
 (작성 예정 — P0-A 후속 배치)

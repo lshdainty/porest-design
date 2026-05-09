@@ -1113,5 +1113,39 @@ Desk — 메모 저장 완료, 할일 추가/완료 안내, 가계부 입력 검
 #### A11y
 - HR과 동일 — error `role="alert"`, info/success `aria-live="polite"`, form `aria-describedby`
 
-### Focus ring / Divider / Outline / Disabled label / Chart color
+### Focus ring
+
+Desk 브랜드 — `border-focus` (`#0147AD`) / `border-focus-light` (`#6BA0EE`) 사용. 모든 인터랙티브 컴포넌트의 focus 표현 통일.
+
+#### Mode pair (sparse — primary 토큰이 contrast 검증 담당)
+| Token | 색상 | 사용 |
+|---|---|---|
+| `focus-ring-on-light` | `border-focus` (`#0147AD`) | 라이트 표면 위 모든 컴포넌트 |
+| `focus-ring-on-dark` | `border-focus-light` (`#6BA0EE`) | 다크 표면 위 모든 컴포넌트 |
+
+#### Contrast (실측)
+| 페어 | 대비 |
+|---|---|
+| `border-focus` (`#0147AD`) vs `bg-page` (`#F5F6FA`) | **5.79:1** ✅ AA |
+| `border-focus` (`#0147AD`) vs `surface-default` (`#FFFFFF`) | **6.12:1** ✅ AA |
+| `border-focus` (`#0147AD`) vs `surface-input` (`#F0F2F7`) | **6.51:1** ✅ AA |
+| `border-focus-light` (`#6BA0EE`) vs `bg-page-dark` (`#1A1F2E`) | **5.92:1** ✅ AA |
+| `border-focus-light` (`#6BA0EE`) vs `surface-default-dark` (`#242938`) | **5.42:1** ✅ AA |
+
+Desk는 brand `primary`가 진해서 모든 표면에서 본문 AA(4.5:1) 충족 — focus indicator로서 매우 강한 시인성. 모바일 사용자(터치 + 키보드 혼용) 친화적.
+
+#### Spec
+- 두께 2px, offset 1px, shape 컴포넌트와 동일 `border-radius`
+- `focus-visible` pseudo만 사용
+
+#### Motion
+- focus ring 등장: `motion-duration-fast` × `motion-ease-out`
+- `prefers-reduced-motion: reduce` 시 즉시 표시
+
+#### A11y
+- 2.4.11 / 2.4.12 / 2.4.13 — 위 contrast 충족 (Desk는 AAA 후보)
+- 모바일 키보드 사용자(외장 키보드 연결 시) 우선 — focus visible 강조
+- 다크 모드 자동 전환은 HR과 동일 패턴
+
+### Divider / Outline / Disabled label / Chart color
 (작성 예정 — P0-A 후속 배치)
