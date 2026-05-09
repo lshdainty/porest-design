@@ -1194,5 +1194,33 @@ Desk — 메모/할일/가계부에서 비활성 상태(예: 완료된 할일 to
 - aria: `aria-disabled="true"` (focus 가능 — 다시 활성화 옵션 발견 가능)
 - 완료 할일: `aria-checked="true"` + `aria-label="완료된 할일: ..."`
 
-### Chart color
-(작성 예정 — P0-A 후속 배치)
+### Chart color (palette)
+
+Desk — 가계부 카테고리/월간 비교 chart, 할일 카테고리 분류, 메모 태그 색상 등에 사용. 10색 palette × 2 mode.
+
+#### 사용 시나리오
+- **pie chart**: 가계부 카테고리별 지출 비율 — 5~7 카테고리 권장, hue 선택 자유 (기본 hue 순서 또는 카테고리 의미 기반)
+- **line chart**: 월간 지출 추이 — `chart-color-blue` (default) 또는 카테고리당 1색
+- **bar chart**: 할일 카테고리별 완료 수
+- **카테고리 tag**: 메모 태그 색상 — 10색에서 사용자가 직접 선택
+
+#### Hue 의미 매핑 (Desk context)
+HR과 달리 Desk는 사용자 정의 카테고리가 많으므로 **hue 의미 강제 X**. 단 권장:
+| Hue | 사용 사례 |
+|---|---|
+| green | 수입 / 완료된 할일 |
+| red | 지출 / 마감 임박 |
+| blue | 일반 default |
+| pink/violet | 개인적 카테고리 (개인 메모) |
+| brown | 기타 |
+
+#### Layout
+- chart 영역 padding `xl` (24px), legend `sm` 간격 — Desk 여백 톤
+- 카드 안 chart: card padding `lg` (16px)
+- 모바일 chart: 풀 viewport width, legend는 위/아래 1줄 + horizontal scroll
+
+#### Motion / A11y
+- 진입 `motion-duration-slow`, hover/tap `motion-duration-fast`
+- 모바일 tap 인터랙션: 데이터 포인트 tap 시 tooltip + `motion-duration-fast` fade
+- 1.4.1 색상 단독 금지, 패턴/라벨 보강
+- screen reader: `<table>` fallback 또는 svg `role="img"`
