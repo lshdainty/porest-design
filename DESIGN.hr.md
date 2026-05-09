@@ -1070,5 +1070,24 @@ HR — meta 정보(직원명, 부서, 타임스탬프)·테이블 cell label에 
 - 본문과 `xs` (4px) 간격
 - 메타 그룹 구분자 `·`, 그룹 간 `xs` 간격
 
-### Badge / Alert text / Focus ring / Divider / Outline / Disabled label / Chart color
+### Badge
+
+HR — 직원 상태(재직/휴직/퇴사), 결재 상태(승인/반려/대기), 평가 등급 등 status indicator로 광범위 사용. semantic 4종 + count badge.
+
+#### Variant
+공유 토큰 그대로 — `badge-success` / `badge-error` / `badge-warning` / `badge-info`. contrast 5.27~6.31:1 모두 본문 AA.
+
+#### Size
+- 데이터 그리드 inline은 `sm` (18px), 일반 status는 `md` (22px), 강조 alert badge는 `lg` (28px)
+- shape: pill(`radius-full`) 위주 — status pill 톤
+
+#### Layout
+- 직원명 옆 status: `xs` 간격
+- 그룹(예: 평가 등급 + 부서) 시 `sm` 간격
+
+#### A11y
+- 1.4.1: status를 색상만으로 표현 금지 — 텍스트/아이콘 보강 ("재직 ✓", "휴직 ⏸")
+- count badge: `aria-live="polite"` + `aria-label`
+
+### Alert text / Focus ring / Divider / Outline / Disabled label / Chart color
 (작성 예정 — P0-A 후속 배치)

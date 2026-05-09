@@ -960,3 +960,42 @@ contrast 확인:
 #### A11y
 - semantic HTML: 메타 정보는 `<small>` 또는 `<span>` 클래스로
 - 타임스탬프는 `<time datetime="...">` 사용 (스크린 리더 + 검색엔진 친화)
+
+### Badge
+
+semantic 채움 라벨 — status indicator, count, category tag. small/inline 강조.
+
+#### Variant (semantic 4)
+| Token | fill | text | contrast |
+|---|---|---|---|
+| `badge-success` | `success` (`#117A3A`) | `text-on-accent` (`#FFFFFF`) | **5.86:1** ✅ |
+| `badge-error` | `error` (`#C53030`) | `text-on-accent` | **5.34:1** ✅ |
+| `badge-warning` | `warning` (`#A85800`) | `text-on-accent` | **5.27:1** ✅ |
+| `badge-info` | `info` (`#006395`) | `text-on-accent` | **6.31:1** ✅ |
+
+모두 본문 4.5:1 통과. badge text는 작은 크기(12px)이지만 `text-on-accent` (#FFFFFF) × semantic의 충분한 대비로 가독성 확보.
+
+#### Size
+| Size | height | padding (V/H) | text token | radius |
+|---|---|---|---|---|
+| sm | 18px | 0px / `xs` 4px | `caption` (12/400) | `radius-sm` (4px) 또는 `full` (pill) |
+| **md** (default) | 22px | `xs` 2px / `sm` 8px | `caption` (12/400) | `radius-sm` 또는 `full` |
+| lg | 28px | `xs` 4px / `sm` 8px | `caption` (12/600 — 강조) | `radius-sm` 또는 `full` |
+
+shape:
+- **rounded** (default `radius-sm`): 카드와 같은 라운드 — 정보 카드 밀도
+- **pill** (`radius-full`): count badge, status pill — 인터랙션 톤
+
+#### Layout
+- inline 텍스트와 `xs` (4px) 간격
+- 여러 badge 그룹은 `xs` 간격 + 줄바꿈 wrap
+
+#### Motion
+- 등장/사라짐: `motion-duration-fast` × `motion-ease-out` (`opacity` + `scale(0.9 → 1)`)
+- count 변경 (예: 5 → 6): `motion-duration-fast` 페이드
+
+#### Accessibility
+- [ ] semantic 색상에만 의존 금지 — 텍스트/아이콘으로 의미 보강 ("승인됨" / "거부됨" 등)
+- [ ] 1.4.1 Use of Color: success/error만으로 정보 전달하지 않기 — 색맹/저시력 사용자 대응
+- [ ] aria: 동적 count badge는 `aria-live="polite"` + `aria-label="알림 5개"` 등 명시
+- [ ] screen reader: text-only badge는 `<span>`, 아이콘 only는 `aria-label` 필수
