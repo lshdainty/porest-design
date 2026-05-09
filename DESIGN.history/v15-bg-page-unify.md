@@ -15,8 +15,9 @@ colors:
   primary-hr-light: "#6BAE8C"
   primary-desk-light: "#6BA0EE"
   
-  # === Neutral - Page background (HR/Desk 공유) ===
-  bg-page: "#F5F6FA"
+  # === Neutral - Page background (HR/Desk fork — 라이트는 브랜드별, 다크는 공유) ===
+  bg-page-hr: "#ECE8E5"
+  bg-page-desk: "#DCDCDC"
   bg-page-dark: "#1A1F2E"
   
   # === Neutral - Surface (카드/시트/입력 표면, 공통) ===
@@ -119,8 +120,11 @@ components:
     textColor: "{colors.text-primary-dark}"
   
   # === 페이지 본문 (bg-page 위 primary 텍스트) ===
-  page-text-light:
-    backgroundColor: "{colors.bg-page}"
+  page-text-hr-light:
+    backgroundColor: "{colors.bg-page-hr}"
+    textColor: "{colors.text-primary}"
+  page-text-desk-light:
+    backgroundColor: "{colors.bg-page-desk}"
     textColor: "{colors.text-primary}"
   page-text-dark:
     backgroundColor: "{colors.bg-page-dark}"
@@ -531,49 +535,6 @@ design.md `contrastCheck` 룰은 incidental 인지 없이 모든 `backgroundColo
 - v1 prose의 "bg-page #F5F6FA" 표기는 v14 이전 단일 token 시점 기록 — 현재는 `bg-page-hr`/`bg-page-desk`로 fork됨.
 - v3 prose의 "primary-hr 2.77 / primary-desk 2.85" 다크 surface 대비 수치는 v7 시점 `accent-hr` `#1E7D4C` 기준 — 새 `primary-hr` `#357B5F`는 2.83/...로 이동했으나 결론(3:1 미달, light 변형 필요)은 동일.
 - 이전 prose는 **역사적 기록**으로 보존 — v14 시점 현행 값은 본 섹션 표 기준.
-
-### bg-page 재통합 (v15)
-
-v14에서 fork했던 `bg-page-hr`/`bg-page-desk`를 단일 `bg-page #F5F6FA`로 되돌립니다. HR/Desk가 동일한 페이지 베이스를 공유 — neutral 시스템 단순화.
-
-#### 변경 매트릭스
-
-| 작업 | 이전(v14) | 이후(v15) |
-|---|---|---|
-| **제거** | `bg-page-hr` `#ECE8E5` | — |
-| **제거** | `bg-page-desk` `#DCDCDC` | — |
-| **추가** | — | `bg-page` `#F5F6FA` (v13 이전 값으로 복귀) |
-| **컴포넌트 통합** | `page-text-hr-light` + `page-text-desk-light` | `page-text-light` (단일) |
-| **유지** | `bg-page-dark` `#1A1F2E` | (그대로) |
-
-`primary-hr`/`primary-desk` 등 v14 브랜드 리프레시는 그대로 유지 — 본 변경은 neutral fork만 되돌림.
-
-#### v14 edge case 해소
-
-`bg-page #F5F6FA` (L=0.9223)는 v14 fork(L=0.812/0.716)보다 더 밝아 contrast headroom 증가:
-
-| 페어 | v14 (fork) | v15 (unified) | 상태 |
-|---|---|---|---|
-| `primary-hr` inline on bg-page | 4.14 ❌ | **4.67** ✅ | 해소 |
-| `primary-desk` inline on bg-page | 6.13 ✅ | **7.78** ✅ | 더 안전 |
-| `text-tertiary` on bg-page | 5.09 ✅ (HR) / 4.01 ❌ (Desk) | **5.09** ✅ | Desk 미달 해소 |
-
-v14에서 명시했던 운영 규칙 **"primary-hr는 fill 전용, inline link 금지"는 v15에서 무효화** — 단일 `bg-page` 위에서 `primary-hr`를 inline link/text로 사용 가능.
-
-#### 변경 이유
-1. **운영 규칙 단순화**: v14 fork는 브랜드별 페이지 톤 차별화를 의도했으나, primary-hr inline 4.14 미달 등 edge case가 운영 부담으로 작용. 단일 bg-page는 이 부담 제거.
-2. **HR/Desk neutral 일관성**: 페이지 베이스가 동일하면 컴포넌트 동작도 동일 — 다운스트림 코드의 분기 로직 감소.
-3. **브랜드 차별화는 primary로 충분**: `primary-hr` `#357B5F`(forest green) vs `primary-desk` `#0147AD`(deep navy)의 채도·hue 차이가 이미 강력한 식별 신호 제공. 페이지 베이스까지 분기할 동기 약화.
-
-#### lint 실측
-- ✅ 0 errors / 0 contrast warnings
-- 27 colors (v14 28에서 -1: bg-page-hr/desk 2개 제거, bg-page 1개 추가)
-- 30 components (v14 31에서 -1: page-text-hr/desk-light 2개 통합)
-- regression: false
-
-#### v14 prose 정합 노트
-- v14 prose의 "primary-hr는 fill 전용" 운영 규칙·edge case 표는 v15 시점에서 **부분 무효화** — bg-page 통합으로 4.14 미달이 4.67로 해소됨. v14 prose는 fork 시점 기록으로 보존.
-- "Desk neutral fork" 동기 부분도 보류 — 차별화는 primary 색에 위임.
 
 ## Typography
 
