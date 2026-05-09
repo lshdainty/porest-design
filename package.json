@@ -16,7 +16,8 @@
     "snapshot": "cp DESIGN.md DESIGN.history/v$(date +%Y%m%d-%H%M%S).md",
     "sync": "node scripts/sync-shared-tokens.mjs",
     "sync:check": "node scripts/sync-shared-tokens.mjs --check",
-    "verify": "npm run sync:check && npm run lint:all"
+    "verify": "npm run sync:check && npm run lint:all",
+    "prepare": "git config core.hooksPath .husky 2>/dev/null || true"
   },
   "devDependencies": {
     "@google/design.md": "^0.1.1"
