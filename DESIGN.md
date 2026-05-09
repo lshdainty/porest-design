@@ -114,11 +114,14 @@ typography:
   # (v26: heading-sm/xl 추가 완료. display(40px+)는 hero/marketing 사용 사례 등장 시 추가)
 
 rounded:
+  xs: 2px
   sm: 4px
   md: 8px
   lg: 12px
   xl: 16px
+  2xl: 20px
   full: 9999px
+  # (v28: xs(2px)·2xl(20px) 추가. xs는 미세 라운드(tag/chip/tooltip), 2xl은 large modal·hero card)
 
 spacing:
   xs: "4px"
