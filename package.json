@@ -8,6 +8,7 @@
     "lint:desk": "npx @google/design.md lint DESIGN.desk.md",
     "lint:all": "npm run lint && npm run lint:hr && npm run lint:desk",
     "diff": "npx @google/design.md diff DESIGN.history/$(ls -t DESIGN.history | head -1) DESIGN.md",
+    "diff:tailwind": "node scripts/diff-tailwind.mjs",
     "export:tailwind": "mkdir -p exports && node scripts/build-tailwind-v4.mjs --source DESIGN.md > exports/tokens.css",
     "export:tailwind:hr": "mkdir -p exports && node scripts/build-tailwind-v4.mjs --source DESIGN.hr.md > exports/tokens.hr.css",
     "export:tailwind:desk": "mkdir -p exports && node scripts/build-tailwind-v4.mjs --source DESIGN.desk.md > exports/tokens.desk.css",
