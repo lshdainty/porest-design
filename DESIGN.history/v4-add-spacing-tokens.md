@@ -44,12 +44,7 @@ rounded:
   # TODO
 
 spacing:
-  xs: "4px"
-  sm: "8px"
-  md: "12px"
-  lg: "16px"
-  xl: "24px"
-  # TODO: 2xl(32px), 3xl(48px) — hero/major 레이아웃 등장 시 추가
+  # TODO (4px 베이스 추천)
 
 components:
   # TODO
@@ -167,33 +162,6 @@ border는 시맨틱 계층을 둘로 분리합니다 — 장식적 외곽선과 
 한국어 본문 가독성 우선. Pretendard를 기본 패밀리로, 영문 fallback Inter.
 
 (타입 스케일 작성 예정)
-
-## Spacing
-
-### v4 추가 — 4px 베이스 5단계
-
-CLAUDE.md "4px 베이스 추천" 규칙을 준수하는 t-shirt 사이즈 스케일. 모든 값은 4의 배수이며, 의미 기반 명명(`xs/sm/md/lg/xl`)으로 값에 의존하지 않습니다.
-
-| 토큰 | 값 | 주 용도 |
-|---|---|---|
-| `xs` | 4px | atomic — 아이콘 inner padding, hairline gap |
-| `sm` | 8px | tight — 라벨↔입력 gap, 인라인 아이콘↔텍스트 |
-| `md` | 12px | comfortable — 버튼 padding-y, 카드 inner |
-| `lg` | 16px | default — 스택 gap, 카드 padding (가장 자주) |
-| `xl` | 24px | section — 섹션 간 분리 |
-
-#### 추가 이유
-1. v1~v3 색상 토큰만으로는 컴포넌트 치수가 결정되지 않음 — 버튼 padding, 카드 inner, 스택 gap 의사결정의 차단 요소 해소.
-2. 5단계는 80% 일반 컴포넌트 사용을 커버 — 추측성 hero/major(`2xl`, `3xl`)는 사용 사례 등장 후 추가.
-3. t-shirt 사이즈는 의미 기반 명명 — `space-4` 같은 값-기반 명명을 피해 향후 base 수정(예: 8px 베이스 전환) 시 명명 안정성 확보.
-
-#### 검증
-- **WCAG 1.4.3 / 1.4.11**: 비대상(spacing은 색상 아님).
-- **WCAG 2.5.5 (Target Size, AAA 권장 44×44px)**: 버튼 패턴 점검 — `md(12px)` padding-y + 본문 텍스트(line-height 약 20px) = 12+20+12 = **44px** ✅. 더 작은 컴포넌트(예: `sm` padding-y = 8px → 8+20+8=36px)는 보조 액션에만 사용.
-- **WCAG 1.4.12 (Text Spacing)**: 사용자가 letter/word spacing을 오버라이드해도 4px 베이스는 절대값이라 영향 없음.
-
-#### HR / Desk 듀얼 브랜드
-- spacing은 neutral 시스템 — 브랜드 분기 없음. HR(B2B 데이터 밀도 위주)·Desk(B2C 여백 위주) 모두 동일 스케일 사용, 화면별 적용 강도(예: HR은 `md` 위주, Desk는 `lg` 위주)로 분기.
 
 ## Components
 
