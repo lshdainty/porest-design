@@ -94,6 +94,15 @@ function parseShadows(md) {
   return out;
 }
 
+function parseMotion(md) {
+  // motion-duration-* and motion-ease-* prose tokens
+  const re = /^\|\s*`(motion-(?:duration|ease)-[a-z0-9-]+)`\s*\|\s*`([^`]+)`\s*\|/gm;
+  const out = {};
+  let m;
+  while ((m = re.exec(md)) !== null) out[m[1]] = m[2];
+  return out;
+}
+
 const args = parseArgs(argv.slice(2));
 const source = args.source;
 if (!source) {
@@ -109,6 +118,7 @@ const typography = parseTypography(lines);
 const rounded = parseSimpleScale(lines, "rounded");
 const spacing = parseSimpleScale(lines, "spacing");
 const shadows = parseShadows(content);
+const motion = parseMotion(content);
 
 let out = "";
 out += `/* Generated from ${source} by scripts/build-tailwind-v4.mjs — do not edit. */\n`;
@@ -147,6 +157,13 @@ out += "\n";
 out += "  /* Shadow (from prose-token table — DESIGN*.md '## Elevation & Depth') */\n";
 for (const [name, val] of Object.entries(shadows)) {
   // shadow-sm → --shadow-sm, shadow-md-dark → --shadow-md-dark
+  out += `  --${name}: ${val};\n`;
+}
+out += "\n";
+
+out += "  /* Motion (from prose-token table — DESIGN*.md '## Motion') */\n";
+for (const [name, val] of Object.entries(motion)) {
+  // motion-duration-fast → --motion-duration-fast, motion-ease-out → --motion-ease-out
   out += `  --${name}: ${val};\n`;
 }
 out += "}\n";
