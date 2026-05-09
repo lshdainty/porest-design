@@ -37,32 +37,8 @@ colors:
   # TODO: border-focus (accent-on-dark 도입 후), text-tertiary, text-disabled
 
 typography:
-  caption:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 12px
-    fontWeight: 400
-    lineHeight: 1.5
-  body:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 15px
-    fontWeight: 400
-    lineHeight: 1.6
-  body-strong:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 15px
-    fontWeight: 600
-    lineHeight: 1.6
-  heading-md:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 18px
-    fontWeight: 600
-    lineHeight: 1.4
-  heading-lg:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 24px
-    fontWeight: 700
-    lineHeight: 1.3
-  # TODO: heading-sm (16px), heading-xl (32px+) — 사용 사례 등장 시
+  # TODO: type scale (h1~h6, body, caption, label)
+  # 한국어 우선: Pretendard, fallback: Inter
 
 rounded:
   # TODO
@@ -190,36 +166,7 @@ border는 시맨틱 계층을 둘로 분리합니다 — 장식적 외곽선과 
 
 한국어 본문 가독성 우선. Pretendard를 기본 패밀리로, 영문 fallback Inter.
 
-### v5 추가 — 5단계 타입 스케일
-
-| 토큰 | size | weight | line-height | 주 용도 |
-|---|---|---|---|---|
-| `caption` | 12px | 400 | 1.5 | 메타·헬프·타임스탬프 |
-| `body` | 15px | 400 | 1.6 | default 본문 (한국어 가독성) |
-| `body-strong` | 15px | 600 | 1.6 | 본문 강조·입력 라벨·버튼 텍스트 |
-| `heading-md` | 18px | 600 | 1.4 | 카드·섹션 제목 |
-| `heading-lg` | 24px | 700 | 1.3 | 페이지 제목 |
-
-#### 추가 이유
-1. v1~v4 색상·spacing 토큰만으로는 컴포넌트의 텍스트 치수가 결정되지 않음 — 카드 제목 vs 본문, 라벨 vs 캡션의 시각 위계 의사결정 차단 요소 해소.
-2. 5단계는 80% 이상 일반 컴포넌트(버튼·카드·입력·헬프 텍스트·페이지 헤더)를 커버. `heading-sm(16px)`, `heading-xl(32px+)`는 사용 사례 등장 후 추가 — 추측성 선행 토큰 회피.
-3. `body` 15px / line-height 1.6은 한국어 본문 가독성 기준(Toss·네이버 본문 톤). 14px도 흔하나 한글 hinting 안정성과 노안 대응을 고려해 15px 채택.
-
-#### 폰트 패밀리
-모든 토큰: `Pretendard, Inter, sans-serif`
-- **Pretendard**: 한글 hinting과 영문 호환을 모두 지원하는 한국어 우선 가변폰트(CLAUDE.md 규칙).
-- **Inter**: 영문 fallback — Pretendard 미설치 환경에서도 일관된 영문 자형.
-- **sans-serif**: 시스템 fallback.
-
-#### WCAG 검증
-- **1.4.3 Contrast (4.5:1 본문)**: 본 토큰은 색상이 아닌 치수만 정의. 색상 대비는 v2 `text-*` 토큰이 담당, 모든 표면 페어에서 사전 통과 완료(`text-primary`: 11.40~16.22, `text-secondary`: 6.32~7.41, `text-on-accent`: 5.02~5.16).
-- **1.4.12 Text Spacing (line-height ≥1.5 본문)**: `caption` 1.5, `body`/`body-strong` 1.6 — 모두 통과. 헤딩은 단락 본문 비대상.
-- **1.4.4 Resize text (200% zoom)**: px 단위 사용하나 브라우저 zoom에 정상 대응.
-- **한국어 자형 안정성**: Pretendard는 한글 폭(전각) 자모와 영문 폭(반각)을 균형 있게 처리, 본문 lh 1.6은 한글 받침 영역 가독성을 확보.
-
-#### HR / Desk 듀얼 브랜드
-- 모든 typography 토큰은 brand-neutral — 양 브랜드 동일 스케일.
-- 향후 브랜드별 분위기 조정이 필요하면 컴포넌트 레벨에서 weight·tracking 조정으로 처리(예: HR 헤딩 weight 700, Desk 헤딩 weight 600). 토큰 자체 분기 불필요.
+(타입 스케일 작성 예정)
 
 ## Spacing
 
