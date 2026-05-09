@@ -7,10 +7,13 @@ description: |
   all-ages accessibility.
 
 colors:
+  # @sync:brand-start (colors-1)
   # === Brand (HR primary, single-brand 명명 — DESIGN.hr.md context) ===
   primary: "#357B5F"
   primary-light: "#6BAE8C"
+  # @sync:brand-end (colors-1)
   
+  # @sync:shared-start (colors-1)
   # === Neutral - Page background (HR/Desk 공유) ===
   bg-page: "#F5F6FA"
   bg-page-dark: "#1A1F2E"
@@ -37,11 +40,15 @@ colors:
   border-default-dark: "#353B4D"
   border-strong: "#7D8593"
   border-strong-dark: "#8B95A8"
+  # @sync:shared-end (colors-1)
   
+  # @sync:brand-start (colors-2)
   # === Brand - Focus ring (HR primary 시맨틱 alias) ===
   border-focus: "#357B5F"
   border-focus-light: "#6BAE8C"
+  # @sync:brand-end (colors-2)
   
+  # @sync:shared-start (colors-2)
   # === Semantic - Status (functional palette, base + light 페어, 듀얼 브랜드 공유) ===
   success: "#117A3A"
   success-light: "#5DC07B"
@@ -75,6 +82,7 @@ colors:
   chart-pink-light: "#ECA0BC"
   chart-brown-light: "#DCB088"
   chart-gray-light: "#B5BBC5"
+  # @sync:shared-end (colors-2)
   
   # (border-focus 정의 완료 — v16)
 

@@ -18,7 +18,7 @@
 - **공유**: typography, spacing, rounded, neutral colors(bg-page, surface-*, text-*, border-*, semantic) — DESIGN.md 정의 후 brand 파일에 **복제**(spec이 cross-file reference 미지원)
 - **brand-specific**: primary, primary-light, border-focus, border-focus-light, brand 컴포넌트 — brand 파일에서만 정의. brand 파일 내에선 `-hr`/`-desk` 접미사 없이 단순한 이름 사용(`primary`, `button-primary` 등 — context 암묵)
 - **lint 운영**: `npm run lint:all`로 3파일 일괄 검증. DESIGN.md는 missingPrimary warning 1건 영구 수용(brand-agnostic 의도 신호), HR/Desk 파일은 0 warnings 유지
-- **공유 토큰 변경 시 3파일 동기**: `npm run sync`로 `typography`/`rounded`/`spacing` 블록 자동 갱신(DESIGN.md → HR/Desk). `colors` 공유 토큰은 `npm run sync:check`로 drift 감지만 — brand 영역 interleaved로 자동 갱신 보류, 향후 마커 도입 후 확장. `npm run verify`로 sync 검사 + lint:all 통합 실행(머지 전 게이트로 권장).
+- **공유 토큰 변경 시 3파일 동기**: `npm run sync`로 `typography`/`rounded`/`spacing` 블록 + `colors` SHARED 영역(v50 마커 도입) 자동 갱신(DESIGN.md → HR/Desk). 마커 영역: `# @sync:shared-start (colors-N)` ... `# @sync:shared-end (colors-N)` 사이. `colors-1` = Neutral(bg/surface/text/border), `colors-2` = Semantic + Chart palette. brand 영역(`@sync:brand-*`)은 sync 비대상으로 보존. components 영역은 향후 마커 도입 후 확장. `npm run verify`로 sync 검사 + lint:all 통합 실행(머지 전 게이트로 권장).
 
 ## HOW (작업 규칙)
 
