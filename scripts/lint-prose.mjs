@@ -42,6 +42,8 @@ const NOISE = new Set([
   "button-primary", "button-outlined-on-dark",
   "focus-ring-on-light", "focus-ring-on-dark",
   "border-vs-surface", // 비교 표현 ("border vs surface")
+  // historical reference (v14~v15 fork 시도, v15에서 unified 회귀 기록 표)
+  "bg-page-hr", "bg-page-desk", "page-text-hr-light", "page-text-desk-light",
 ]);
 
 function looksLikeToken(s) {
