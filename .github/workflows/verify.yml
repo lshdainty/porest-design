@@ -1,0 +1,42 @@
+name: verify
+
+# P1-D — PR / push 시 sync:check + lint:all 자동 실행
+# pre-commit hook(.husky/pre-commit)이 로컬 게이트, CI는 push 후 검증.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run verify (sync:check + lint:all)
+        run: npm run verify
+
+      - name: Build Tailwind v4 exports (smoke test)
+        run: npm run export:tailwind:all
+
+      - name: Build DTCG export (smoke test)
+        run: npm run export:dtcg
+
+      - name: Verify exports produced expected files
+        run: |
+          test -s exports/tokens.css || (echo "tokens.css missing or empty"; exit 1)
+          test -s exports/tokens.hr.css || (echo "tokens.hr.css missing or empty"; exit 1)
+          test -s exports/tokens.desk.css || (echo "tokens.desk.css missing or empty"; exit 1)
+          test -s exports/tokens.dtcg.json || (echo "tokens.dtcg.json missing or empty"; exit 1)
+          echo "All exports OK."
