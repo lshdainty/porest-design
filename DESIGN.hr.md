@@ -1204,6 +1204,31 @@ HR — 권한 부재(비-승인자가 결재 버튼 보지만 누르지 못함),
 - aria: form은 `disabled`, focus 필요 메뉴는 `aria-disabled="true"`
 - screen reader가 "비활성화됨" 읽음
 
+### Dropdown (Menu / Select 공통 패턴)
+
+HR — 직원 선택, 부서 선택, 결재 액션 메뉴(승인/반려/위임), 평가 등급 선택, 필터 옵션 등에서 광범위 사용.
+
+#### Structure (신규 토큰 없음)
+- panel: `surface-default` + `outline-strong-light` 1px + `shadow-md` + `radius-md`
+- item: height 36px, padding `sm`/`md`, text `body` (15/400)
+- hover `surface-input`, selected primary 좌측 stroke 또는 ✓ (`#357B5F`)
+
+#### Variant
+- menu(action), select(form), multi-select(checkbox item), combobox(search input + filter)
+
+#### Layout
+- panel max-height 400px (초과 시 scroll), min-width trigger width 또는 `lg` (16rem)
+- offset `xs` (4px), 자동 flip
+
+#### Motion
+- 등장 scale+fade `motion-duration-fast`, 사라짐 동일
+
+#### A11y
+- role: menu/menuitem 또는 combobox/listbox/option, trigger `aria-expanded`+`aria-haspopup`
+- 키보드: ↑↓/Home/End/Enter/Esc/typeahead
+- focus: 열릴 때 첫 item, 닫힐 때 trigger return
+- dismiss: 외부 click/Esc/trigger 재click
+
 ### Tooltip
 
 HR — icon-only action button(승인/반려/편집/삭제 icon) 의미 설명, 데이터 테이블 cell truncated 텍스트, 키보드 단축키 안내. desktop 우선이라 hover-driven tooltip이 광범위 사용.
