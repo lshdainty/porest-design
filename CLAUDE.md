@@ -31,6 +31,11 @@
 - 사용자가 명시적으로 요청하지 않은 토큰은 추가하지 말 것
 - 색상에 감정적 이름 (예: "warm green") 금지 — 시맨틱 이름만
 
+## Git 작업 규칙
+- 브랜치·커밋 메시지·머지 전 점검 규칙은 `GIT_CONVENTION.md` 참조 — git 레이어 작업 시 반드시 사전 확인.
+- 요약: `main` 직접 commit 금지, 토픽 브랜치(`tokens/<카테고리>`, `components/<이름>`) 경유, Conventional Commits(`feat(tokens):`, `fix(tokens):`, `docs(rationale):`).
+
 ## 참고
 - Google 공식 스펙: https://github.com/google-labs-code/design.md
 - 사양 문서: https://stitch.withgoogle.com/docs/design-md/overview/
+- Git 규칙: `GIT_CONVENTION.md`
