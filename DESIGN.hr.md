@@ -1204,6 +1204,30 @@ HR — 권한 부재(비-승인자가 결재 버튼 보지만 누르지 못함),
 - aria: form은 `disabled`, focus 필요 메뉴는 `aria-disabled="true"`
 - screen reader가 "비활성화됨" 읽음
 
+### Switch / Checkbox / Radio (control 묶음)
+
+HR — 직원 정보 form(필수/선택 옵션), 권한 토글 switch, 평가 항목 다중 선택 checkbox, 평가 등급 radio 등 form 화면 광범위 사용.
+
+#### 공통 spec (신규 토큰 없음)
+- inactive: `border-strong` 1px outline + `surface-input` 채움
+- active: `primary` (`#357B5F`) 채움 + `text-on-accent` 표시 (체크/핸들/dot)
+- disabled: opacity 0.5 + cursor:not-allowed
+
+#### Variant
+- Switch: `md` 28×16 default, toggle 즉시 effect (권한 on/off 등)
+- Checkbox: 18×18 default, indeterminate 지원 (직원 multi-select header)
+- Radio: 18×18 default, group 내 단일 선택 (평가 등급 S/A/B/C/D)
+
+#### Layout
+- form 행: label + control + helper, 행 간 `lg` (16px)
+- group: vertical 시 항목 간 `md` (12px), horizontal `lg` (16px)
+- touch hit area 44×44 (label 포함)
+
+#### A11y
+- HTML native `<input>` + `<label for>` 우선
+- focus ring `border-focus` 2px, 키보드 Space (toggle/check), Radio arrow keys
+- error 상태 외곽 `error` 색 + alert text 동반
+
 ### Tabs
 
 HR — 직원 detail page(기본정보/근태/평가/급여 등 섹션 전환), dashboard 카테고리(전체/내 부서/필터된 view), 설정 페이지 grouping.
