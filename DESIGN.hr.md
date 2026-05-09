@@ -956,5 +956,43 @@ HR은 데이터 밀도 화면이 많으므로 `sm`/`md` 위주, `lg`는 onboardi
 - aria: 아이콘 only는 `aria-label`, loading은 `aria-busy="true"` + `disabled` 동시
 - disabled 텍스트 4.5:1 미달은 1.4.3 incidental 예외 (사용 불가 컴포넌트 텍스트)
 
-### Page text / Card / Input / Badge / Alert text / Focus ring / Divider / Outline / Disabled label / Caption / Chart color
+### Input
+
+HR(B2B 데이터 밀도) — `sm`/`md` 사이즈 위주, 인라인 그리드 편집(approval form 등)에서 `sm` 적극 사용. focus ring은 brand `primary` (`#357B5F`).
+
+#### Mode pair
+| Token | 배경 | text | placeholder |
+|---|---|---|---|
+| `input-light` | `surface-input` (`#F0F2F7`) | `text-primary` (`#1A1F2E`, 14.49:1 ✅) | `text-tertiary` (`#62697A`, 5.81:1 ✅ — placeholder는 1.4.3 incidental 예외이지만 본문 통과) |
+| `input-dark` | `surface-input-dark` (`#2D3346`) | `text-primary-dark` (`#F5F6FA`, 11.40:1 ✅) | `text-tertiary-dark` (`#9DA3B0`, 5.51:1 ✅) |
+
+#### State
+| State | border | 비고 |
+|---|---|---|
+| default | `border-default` 1px | 외곽선 단독 식별 부족 — label/형태 보강 |
+| focused | `border-focus` (`#357B5F`) 2px + 1px offset | `focus-visible` 한정. focus ring vs `surface-input` = 3.96:1 ✅ (1.4.11) |
+| filled | default 유지 | |
+| error | `error` (`#C53030`) 1px + helper text `error` 색상 | error vs `surface-input` = 5.34:1 ✅ |
+| disabled | default + `text-disabled` + opacity 0.5 | 1.4.3 incidental |
+
+#### Size
+| Size | height | padding (V/H) | text | radius |
+|---|---|---|---|---|
+| sm | 32px | `xs` / `sm` | `caption` (12/400) | `sm` |
+| **md** (default) | 40px | `sm` / `md` | `body` (15/400) | `sm` |
+| lg | 48px | `md` / `lg` | `body` (15/400) | `md` |
+
+#### Layout
+- label `caption` (12/400) + `xs` 간격, error/helper도 동일
+- form 행 간 `lg` (16px), section 간 `xl` (24px) — HR은 정보 밀도 높여야 하므로 spacing 보수적
+
+#### Motion
+- focus ring: `motion-duration-fast` × `motion-ease-out` (HR 절제 톤)
+- error 등장: `motion-duration-base` × `motion-ease-out`
+
+#### A11y
+- keyboard `Tab`/`Shift+Tab` focus, `aria-invalid`/`aria-describedby` for 에러, `aria-required` for 필수
+- screen reader: label은 `<label for>` 또는 `aria-labelledby` 필수
+
+### Page text / Card / Badge / Alert text / Focus ring / Divider / Outline / Disabled label / Caption / Chart color
 (작성 예정 — P0-A 후속 배치)

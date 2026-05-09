@@ -956,5 +956,44 @@ Desk는 모바일 우선 사용 사례(개인 메모/가계부)가 많으므로 
 - aria: 아이콘 only는 `aria-label`, loading은 `aria-busy="true"` + `disabled` 동시
 - disabled 텍스트 4.5:1 미달은 1.4.3 incidental 예외
 
-### Page text / Card / Input / Badge / Alert text / Focus ring / Divider / Outline / Disabled label / Caption / Chart color
+### Input
+
+Desk(B2C 모바일 우선) — `md`/`lg` 위주, `sm`은 inline action 한정. focus ring은 brand `primary` (`#0147AD`).
+
+#### Mode pair
+| Token | 배경 | text | placeholder |
+|---|---|---|---|
+| `input-light` | `surface-input` (`#F0F2F7`) | `text-primary` (14.49:1 ✅) | `text-tertiary` (5.81:1 ✅) |
+| `input-dark` | `surface-input-dark` (`#2D3346`) | `text-primary-dark` (11.40:1 ✅) | `text-tertiary-dark` (5.51:1 ✅) |
+
+#### State
+| State | border | 비고 |
+|---|---|---|
+| default | `border-default` 1px | label/형태 보강 |
+| focused | `border-focus` (`#0147AD`) 2px + 1px offset | focus ring vs `surface-input` = 6.51:1 ✅ (HR보다 진한 brand → 더 높은 대비) |
+| filled | default 유지 | |
+| error | `error` 1px + helper `error` 색상 | error vs `surface-input` = 5.34:1 ✅ |
+| disabled | default + `text-disabled` + opacity 0.5 | 1.4.3 incidental |
+
+#### Size
+| Size | height | padding (V/H) | text | radius |
+|---|---|---|---|---|
+| sm | 32px | `xs` / `sm` | `caption` (12/400) | `sm` |
+| **md** (default) | 40px | `sm` / `md` | `body` (15/400) | `md` |
+| lg | 48px | `md` / `lg` | `body` (15/400) | `md` |
+
+Desk는 친근감 톤이라 `md` radius default(8px). 모바일 입력 사용 사례(가계부 입금/지출 입력 등) 많아 `lg` 권장 — touch hit area 48px.
+
+#### Layout
+- label `caption` + `xs` 간격
+- form 행 간 `xl` (24px), section 간 `2xl` (32px) — Desk는 여백 톤
+
+#### Motion
+- focus ring: `motion-duration-base` × `motion-ease-out` (HR `fast`보다 한 단계 길어 친근감)
+- error 등장: `motion-duration-base` × `motion-ease-out`
+
+#### A11y
+- HR과 동일 — `Tab` focus, `aria-invalid`/`aria-describedby`, `aria-required`, `<label for>`
+
+### Page text / Card / Badge / Alert text / Focus ring / Divider / Outline / Disabled label / Caption / Chart color
 (작성 예정 — P0-A 후속 배치)
