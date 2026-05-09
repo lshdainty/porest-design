@@ -49,6 +49,14 @@ colors:
   info: "#006395"
   info-light: "#6FAEDF"
   
+  # === Chart palette (data viz, 10색 hue 균등, L≈0.16-0.18 통일, 듀얼 브랜드 공유) ===
+  # 1차 5색 (v21): red, orange, yellow, green, blue. 2차 5색은 v22, dark 변형은 v23-v24.
+  chart-red: "#C73838"
+  chart-orange: "#B36418"
+  chart-yellow: "#8C7400"
+  chart-green: "#2D8060"
+  chart-blue: "#2C70BF"
+  
   # (border-focus 정의 완료 — v16)
 
 typography:
@@ -185,6 +193,18 @@ components:
   alert-text-info-on-dark:
     backgroundColor: "{colors.surface-default-dark}"
     textColor: "{colors.info-light}"
+  
+  # === Chart elements (sparse, fill/stroke 용도 — chart 요소는 textColor 페어가 아님) ===
+  chart-color-red:
+    backgroundColor: "{colors.chart-red}"
+  chart-color-orange:
+    backgroundColor: "{colors.chart-orange}"
+  chart-color-yellow:
+    backgroundColor: "{colors.chart-yellow}"
+  chart-color-green:
+    backgroundColor: "{colors.chart-green}"
+  chart-color-blue:
+    backgroundColor: "{colors.chart-blue}"
   
   # === Tertiary 텍스트 (placeholder, caption-tertiary, hint) ===
   caption-tertiary-on-card-light:
@@ -434,6 +454,33 @@ design.md `contrastCheck` 룰은 incidental 인지 없이 모든 `backgroundColo
 - `surface-input` 위 semantic 텍스트 (input 검증 메시지 케이스): `surface-input-light` 표면이 카드 표면(`surface-default`)과 휘도 차 0.11 → 페어 정의해두면 lint 추가 검증 가능. 이번 배치 미정의.
 - 다크 표면 위 semantic 표시: ~v19까지 `success`/`error` base 색은 다크 표면 위 contrast 미달 → **v20에서 `-light` 변형 도입으로 해소** (아래 v20 섹션 참조).
 - `border-vs-surface` 패턴은 spec에 borderColor 없어 영구 자동 검증 불가 (v9 한계 그대로).
+
+### Chart palette (v21 추가, 4 배치 진행 중)
+
+데이터 시각화용 hue-균등 10색 팔레트. 양 brand 공유(unified, primary는 brand-specific 유지). L≈0.16-0.18로 통일해 어떤 색이 데이터 차원을 강조하지 않게 시각 균형 확보.
+
+**v21 (1/4)**: light 표면 위 5색 — `chart-red`, `chart-orange`, `chart-yellow`, `chart-green`, `chart-blue`.
+**v22 예정 (2/4)**: light 표면 위 나머지 5색 — indigo, violet, pink, brown, gray.
+**v23-v24 예정 (3-4/4)**: dark 표면 위 10색 변형 (`chart-*-light`, L≈0.45-0.55).
+
+#### 손계산 휘도 (lint sparse 검증, contrast 룰 미발동)
+
+| 토큰 | hex | L | bg-page 위 contrast |
+|---|---|---|---|
+| `chart-red` | `#C73838` | 0.153 | 4.85 |
+| `chart-orange` | `#B36418` | 0.187 | 4.10 |
+| `chart-yellow` | `#8C7400` | 0.180 | 4.22 |
+| `chart-green` | `#2D8060` | 0.169 | 4.45 |
+| `chart-blue` | `#2C70BF` | 0.159 | 4.66 |
+
+`chart-orange`(4.10), `chart-yellow`(4.22)는 본문 4.5:1 미달이나 chart fill 용도라 **UI 1.4.11 (3:1)** 기준 통과 — chart bar/line/marker로 사용 시 적정. 차트 위 inline 텍스트로는 사용 부적합 (텍스트는 `text-primary`/`text-secondary` 사용).
+
+#### sparse component 패턴
+각 chart 토큰은 `chart-color-{name}` (backgroundColor만)에서 referencing. v9 divider, v13 disabled-label, v16 focus-ring과 동일 — orphan 회피 + spec 한계(chart는 component property 아님) 우회.
+
+#### 듀얼 브랜드 — unified (배치 1과 다름)
+- chart는 functional data palette — brand 분기 비대상. HR/Desk 동일 5/10색 사용 (차후 5색 + dark 변형도 동일).
+- primary는 brand별 유지(`DESIGN.hr.md` `#357B5F`, `DESIGN.desk.md` `#0147AD`). chart-green과 primary-hr는 비슷한 hue지만 별도 토큰 — 역할 분리.
 
 #### v20 추가 — semantic 다크 변형 4개
 
