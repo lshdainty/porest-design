@@ -1205,6 +1205,35 @@ Desk — 메모/할일/가계부에서 비활성 상태(예: 완료된 할일 to
 - aria: `aria-disabled="true"` (focus 가능 — 다시 활성화 옵션 발견 가능)
 - 완료 할일: `aria-checked="true"` + `aria-label="완료된 할일: ..."`
 
+### Switch / Checkbox / Radio (control 묶음)
+
+Desk — 할일 완료 checkbox(즉시 적용), 메모 즐겨찾기 switch, 가계부 분류 radio, 알림 설정 switch 등.
+
+#### 공통 spec (신규 토큰 없음)
+- inactive: `border-strong` 1px + `surface-input` 채움
+- active: `primary` (`#0147AD`) 채움 + `text-on-accent`
+- disabled: opacity 0.5
+
+#### Variant
+- Switch: `lg` 32×20 (모바일 hit area 우선) — 알림 on/off, 다크모드 toggle 등
+- Checkbox: 20×20 (모바일 우선 lg 사이즈), 할일 완료 ↔ 미완료 즉시 toggle
+- Radio: 20×20 group, 카테고리 단일 선택
+
+#### Layout
+- 모바일 form 행: label + control 간격 `md` (12px), 행 간 `lg` (16px)
+- 할일 list 인라인 checkbox: list item left에 위치, 좌측 padding `md`
+- touch hit area 44×44 필수 (모바일 우선)
+
+#### Motion
+- toggle: `motion-duration-base` 200ms × `motion-ease-out` (HR 150ms보다 느려 친근감)
+- 할일 완료 시 strikethrough + opacity transition: `motion-duration-base` (사용자 만족감 표현)
+
+#### A11y
+- HTML native `<input>` + `<label for>` 우선
+- focus ring `border-focus` (`#0147AD`) 2px
+- Switch는 native `<input type="checkbox" role="switch">` + `aria-checked`
+- 키보드 Space, Radio arrow keys, group `role="radiogroup"`
+
 ### Tabs
 
 Desk — 메모 view(전체/즐겨찾기/태그별), 가계부 view(수입/지출/카테고리), 할일 view(오늘/예정/완료). 모바일 우선이라 fill/pills variant 적극.
