@@ -8,9 +8,17 @@
 레퍼런스 톤: 토스 — 심플, 신뢰감, 전 연령 범용.
 
 ## WHAT (산출물)
-- `DESIGN.md` — Google Stitch 공식 포맷의 단일 진실 (Source of Truth)
+- `DESIGN.md` — 공유 baseline (typography, spacing, rounded, neutral colors, neutral components)
+- `DESIGN.hr.md` — HR 브랜드 단독 self-contained 시스템 (primary `#357B5F`, primary-light, border-focus, brand 컴포넌트)
+- `DESIGN.desk.md` — Desk 브랜드 단독 self-contained 시스템 (primary `#0147AD`, primary-light, border-focus, brand 컴포넌트)
 - 토큰: color, typography, spacing, radius, shadow, motion
 - 컴포넌트 스펙: variant, state, accessibility 규칙
+
+### 파일 분리 규칙 (v17부터)
+- **공유**: typography, spacing, rounded, neutral colors(bg-page, surface-*, text-*, border-*, semantic) — DESIGN.md 정의 후 brand 파일에 **복제**(spec이 cross-file reference 미지원)
+- **brand-specific**: primary, primary-light, border-focus, border-focus-light, brand 컴포넌트 — brand 파일에서만 정의. brand 파일 내에선 `-hr`/`-desk` 접미사 없이 단순한 이름 사용(`primary`, `button-primary` 등 — context 암묵)
+- **lint 운영**: `npm run lint:all`로 3파일 일괄 검증. DESIGN.md는 missingPrimary warning 1건 영구 수용(brand-agnostic 의도 신호), HR/Desk 파일은 0 warnings 유지
+- **공유 토큰 변경 시 3파일 모두 동기 필수** — 자동화 미구축, 수동 동기화 부담 감수
 
 ## HOW (작업 규칙)
 
