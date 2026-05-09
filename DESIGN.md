@@ -903,3 +903,60 @@ input은 button과 달리 텍스트 굵기는 `400` 유지(가독성).
 - [ ] interactive variant는 `<button>` 또는 `<a>` 또는 `role="button"` + `tabindex="0"` + `Enter`/`Space` 키핸들러
 - [ ] focus indicator는 카드 외곽 2px outline (Button 동일 패턴)
 - [ ] aria: 카드가 expand/collapse하면 `aria-expanded`, list item이면 `role="listitem"` 또는 `<li>` 사용
+
+### Page text
+
+`bg-page` 위에 직접 놓이는 본문 텍스트 — 카드 외곽 영역(layout 본문, 빈 영역, sidebar 텍스트 등).
+
+#### Mode pair
+- **page-text-light** (`page-text-light`): `bg-page` (`#F5F6FA`) + `text-primary` (`#1A1F2E`)
+- **page-text-dark** (`page-text-dark`): `bg-page-dark` (`#1A1F2E`) + `text-primary-dark` (`#F5F6FA`)
+
+contrast 확인:
+- light: `#1A1F2E` × `#F5F6FA` = **15.04:1** ✅ AAA
+- dark: `#F5F6FA` × `#1A1F2E` = **15.04:1** ✅ AAA
+
+#### Typography 적용
+- 본문: `body` (15/400/1.6)
+- 강조: `body-strong` (15/600/1.6)
+- 보조 본문: `caption` (12/400/1.5) — `text-secondary` 또는 `text-tertiary` 색상 권장
+- 헤딩 위계: `heading-sm`(16) → `heading-md`(18) → `heading-lg`(24) → `heading-xl`(32)
+
+#### Layout
+- 본문 줄간격은 typography token의 `lineHeight` 1.6에서 처리
+- 단락 간 `md` (12px) 또는 `lg` (16px)
+- 본문 max-width: 640~720px (한국어 기준 1줄 35~45자) — 가독성 우선
+
+#### A11y
+- 1.4.3: 본문 텍스트 4.5:1 — 위 contrast 충족
+- 1.4.12 text spacing: `lineHeight` 1.5 이상 (현 1.6 OK), letter-spacing 자유 조정 가능 디자인
+- 1.4.4 resize: 200% 확대 시 가로 스크롤 없이 reflow 가능해야 — max-width + responsive
+
+### Caption
+
+`surface-default` (카드) 위에 놓이는 보조 텍스트 — meta 정보, 타임스탬프, 부가 설명. 위계 2단계 (secondary / tertiary).
+
+#### 위계 / Mode pair
+| Token | 배경 | text | contrast |
+|---|---|---|---|
+| `caption-on-card-light` | `surface-default` (`#FFFFFF`) | `text-secondary` (`#4E5968`) | **6.78:1** ✅ |
+| `caption-on-card-dark` | `surface-default-dark` (`#242938`) | `text-secondary-dark` (`#B0B8C4`) | **6.85:1** ✅ |
+| `caption-tertiary-on-card-light` | `surface-default` | `text-tertiary` (`#62697A`) | **5.36:1** ✅ |
+| `caption-tertiary-on-card-dark` | `surface-default-dark` | `text-tertiary-dark` (`#9DA3B0`) | **5.13:1** ✅ |
+
+**위계 규칙**:
+- **secondary** (caption): 일반 보조 텍스트(닉네임, 카테고리, 카드 부제) — 본문보다 한 단계 약하지만 정보로서 의미 있음
+- **tertiary** (caption-tertiary): 부가 메타(타임스탬프, "방금", "수정됨" 등) — 정보 우선순위 가장 낮음, hint 톤
+- 둘 다 본문 4.5:1 통과 — 1.4.3 incidental 예외 없이 정상 본문
+
+#### Typography 적용
+- text: `caption` (12/400/1.5)
+- 강조 caption은 `caption-strong`(가칭, 미정) 또는 inline `body-strong` 활용 — 향후 토큰화 후보
+
+#### Layout
+- 본문 텍스트와 `xs` (4px) 간격
+- meta 그룹(예: 닉네임 + "·" + 시간)은 `xs` 또는 `sm` 간격 + `·` 구분자 사용
+
+#### A11y
+- semantic HTML: 메타 정보는 `<small>` 또는 `<span>` 클래스로
+- 타임스탬프는 `<time datetime="...">` 사용 (스크린 리더 + 검색엔진 친화)
