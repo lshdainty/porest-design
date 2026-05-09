@@ -65,11 +65,7 @@ typography:
   # TODO: heading-sm (16px), heading-xl (32px+) — 사용 사례 등장 시
 
 rounded:
-  sm: 4px
-  md: 8px
-  lg: 12px
-  xl: 16px
-  full: 9999px
+  # TODO
 
 spacing:
   xs: "4px"
@@ -251,34 +247,6 @@ CLAUDE.md "4px 베이스 추천" 규칙을 준수하는 t-shirt 사이즈 스케
 
 #### HR / Desk 듀얼 브랜드
 - spacing은 neutral 시스템 — 브랜드 분기 없음. HR(B2B 데이터 밀도 위주)·Desk(B2C 여백 위주) 모두 동일 스케일 사용, 화면별 적용 강도(예: HR은 `md` 위주, Desk는 `lg` 위주)로 분기.
-
-## Rounded
-
-### v6 추가 — 5단계 라운드 스케일
-
-`sm/md/lg/xl`는 spacing 베이스(4px)와 정렬된 4px 배수, `full`은 완전 라운드(알약·원형) 관용값입니다.
-
-| 토큰 | 값 | 주 용도 |
-|---|---|---|
-| `sm` | 4px | 칩·태그·작은 뱃지 |
-| `md` | 8px | 버튼·입력 필드 default |
-| `lg` | 12px | 카드 default |
-| `xl` | 16px | 모달·큰 카드·시트 |
-| `full` | 9999px | 알약 버튼·아바타·원형 아이콘 버튼 |
-
-#### 추가 이유
-1. v1~v5에서 색상·표면·텍스트·외곽선·간격·타이포가 모두 정의됐으나 컴포넌트 모서리 처리 의사결정이 미완 — 버튼·카드·모달 스펙 작성의 마지막 차단 요소.
-2. `full` 포함 5단계는 80% 컴포넌트 사용 사례 커버. `2xl(24px+)`는 hero/major 사용 사례 등장 시 추가.
-3. spacing과 동일한 4px 배수 베이스 — radius와 padding이 동일 리듬을 유지해 시각 정합성 확보.
-
-#### WCAG 검증
-- **1.4.3 / 1.4.11 색상 대비**: 비대상 (치수 토큰).
-- **1.4.12 Text Spacing**: 비대상.
-- **2.5.5 Target Size (44×44 AAA / 24×24 AA)**: rounded는 hit-area에 직접 영향 없음. 단, `full`을 작은 아이콘 버튼에 적용 시 padding(`md(12px)`+) 또는 `min-width: 44px`로 별도 확보 필요 — 토큰 자체가 target size를 보장하지 않음을 컴포넌트 스펙에 명시.
-
-#### HR / Desk 듀얼 브랜드
-- 모든 rounded 토큰은 brand-neutral — 양 브랜드 동일.
-- 브랜드 톤 분기는 적용 강도로 처리: HR(B2B 절제) `md`/`lg` 위주, Desk(B2C 친근) `lg`/`xl` 위주. 토큰 분기 불필요.
 
 ## Components
 
