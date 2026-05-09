@@ -1176,5 +1176,22 @@ HR — modal 외곽선, 선택된 row highlight, inline editor in-progress.
 - 다크 modal: `shadow-xl-dark` + `outline-strong-dark`
 - 선택 row: `outline-strong-light` 1px + `surface-input` 6% tint (선택, 강조 시)
 
-### Disabled label / Chart color
+### Disabled label
+
+HR — 권한 부재(비-승인자가 결재 버튼 보지만 누르지 못함), 기간 만료(평가 종료 후 입력 disabled) 등 사용 불가 상태 표현.
+
+#### Mode pair (sparse — textColor only)
+- `disabled-label-light` → `text-disabled` (`#828995`, surface 위 약 3.69:1, 1.4.3 incidental 예외)
+- `disabled-label-dark` → `text-disabled-dark` (`#7A8294`, dark surface 위 약 3.74:1)
+
+#### Spec
+- text color disabled, 컴포넌트 자체 opacity 0.5 + cursor:not-allowed
+- **권장 동반 표현**: 컴포넌트 옆 `caption` (12/400) + `text-tertiary` "권한 없음" / "마감 종료" 등 reason text — 정상 contrast
+
+#### A11y
+- 1.4.3 incidental 예외 명시
+- aria: form은 `disabled`, focus 필요 메뉴는 `aria-disabled="true"`
+- screen reader가 "비활성화됨" 읽음
+
+### Chart color
 (작성 예정 — P0-A 후속 배치)

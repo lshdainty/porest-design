@@ -1176,5 +1176,23 @@ Desk — modal 외곽선 (shadow-xl + outline-strong), 선택된 entry highlight
 - 다크 modal: `shadow-lg-dark` + `outline-strong-dark`
 - 선택된 메모/할일: `outline-strong-light` 1px + 약간의 `surface-input` tint
 
-### Disabled label / Chart color
+### Disabled label
+
+Desk — 메모/할일/가계부에서 비활성 상태(예: 완료된 할일 toggle, 보관된 메모, 잠긴 가계부 entry).
+
+#### Mode pair (sparse — textColor only)
+- `disabled-label-light` → `text-disabled` (`#828995`, 1.4.3 incidental 예외)
+- `disabled-label-dark` → `text-disabled-dark` (`#7A8294`)
+
+#### Spec
+- text color disabled, 컴포넌트 자체 opacity 0.5 + cursor:not-allowed (또는 tap 불가)
+- 완료된 할일은 strikethrough(line-through) 추가 권장 — 시각적 완료 표시 보강
+- 보관/잠금 상태는 lock icon 추가
+
+#### A11y
+- 1.4.3 incidental 예외
+- aria: `aria-disabled="true"` (focus 가능 — 다시 활성화 옵션 발견 가능)
+- 완료 할일: `aria-checked="true"` + `aria-label="완료된 할일: ..."`
+
+### Chart color
 (작성 예정 — P0-A 후속 배치)
