@@ -999,3 +999,47 @@ shape:
 - [ ] 1.4.1 Use of Color: success/error만으로 정보 전달하지 않기 — 색맹/저시력 사용자 대응
 - [ ] aria: 동적 count badge는 `aria-live="polite"` + `aria-label="알림 5개"` 등 명시
 - [ ] screen reader: text-only badge는 `<span>`, 아이콘 only는 `aria-label` 필수
+
+### Alert text
+
+surface 위 inline 상태 텍스트 — form validation error, status notification, 변경 사항 안내. icon + text 조합 권장.
+
+#### Variant (semantic 4 × 2 mode)
+**Light surface (`surface-default` 위)**:
+| Token | text | contrast |
+|---|---|---|
+| `alert-text-success` | `success` (`#117A3A`) | **5.86:1** ✅ |
+| `alert-text-error` | `error` (`#C53030`) | **5.34:1** ✅ |
+| `alert-text-warning` | `warning` (`#A85800`) | **5.27:1** ✅ |
+| `alert-text-info` | `info` (`#006395`) | **6.31:1** ✅ |
+
+**Dark surface (`surface-default-dark` 위)** — `*-light` semantic 사용:
+| Token | text | contrast |
+|---|---|---|
+| `alert-text-success-on-dark` | `success-light` (`#5DC07B`) | **5.85:1** ✅ |
+| `alert-text-error-on-dark` | `error-light` (`#F08080`) | **5.42:1** ✅ |
+| `alert-text-warning-on-dark` | `warning-light` (`#E8A05A`) | **5.83:1** ✅ |
+| `alert-text-info-on-dark` | `info-light` (`#6FAEDF`) | **5.80:1** ✅ |
+
+모두 본문 4.5:1 통과 — 1.4.3 통과.
+
+#### Typography
+- 본문 길이 alert: `body` (15/400/1.6)
+- inline form helper: `caption` (12/400/1.5)
+- alert 제목 (있을 시): `body-strong` (15/600)
+
+#### Layout
+- icon + text 페어: icon `xs` (4px) 간격, icon size 16~20px (text height에 맞춤)
+- alert 영역 padding: `sm` (8px) ~ `md` (12px)
+- 여러 alert 누적 시 `xs` 간격 + 시각적 grouping
+
+#### Motion
+- 등장: `motion-duration-base` × `motion-ease-out` (slide-in + fade)
+- dismiss/사라짐: `motion-duration-fast` × `motion-ease-out` (fade out)
+- `prefers-reduced-motion: reduce` 시 즉시 표시
+
+#### Accessibility
+- [ ] 1.4.1: 색상에만 의존 금지 — 아이콘(`✓`/`!`/`⚠`/`ℹ`) + 텍스트 항상 동반
+- [ ] aria-live: 동적 alert는 `role="alert"` (assertive) 또는 `aria-live="polite"`. error는 `assertive`, info는 `polite` 권장
+- [ ] form validation: input의 `aria-describedby="error-id"`로 alert text 연결
+- [ ] dismissable alert는 `<button aria-label="알림 닫기">` 동반

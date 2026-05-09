@@ -1089,5 +1089,29 @@ Desk — 할일 우선순위/카테고리, 가계부 분류, 메모 태그. sema
 - 1.4.1: 우선순위/카테고리를 색상만으로 표현 금지 — 텍스트/아이콘 보강
 - count badge (알림 등): `aria-live="polite"` + `aria-label`
 
-### Alert text / Focus ring / Divider / Outline / Disabled label / Chart color
+### Alert text
+
+Desk — 메모 저장 완료, 할일 추가/완료 안내, 가계부 입력 검증 등 inline notification.
+
+#### Variant
+공유 토큰 8종 그대로 — semantic 4 × {light/on-dark}. contrast 5.27~6.31:1 (light), 5.42~5.85:1 (on-dark) 모두 본문 AA.
+
+#### Typography
+- form helper(필드 아래): `caption` (12/400) + `xs` 간격
+- 일반 alert 본문: `body` (15/400) — 모바일 가독성 우선
+- alert 제목: `body-strong` (15/600)
+
+#### Layout
+- icon + text 페어: icon `xs` 간격, size 16~20px
+- alert 영역 padding `md` (12px) — Desk는 여백 톤
+- 카드 안 inline alert는 카드 padding 안에서 `sm` 간격
+
+#### Motion
+- 등장: `motion-duration-base` × `motion-ease-out` (slide-in + fade, 친근감)
+- dismiss: `motion-duration-fast`
+
+#### A11y
+- HR과 동일 — error `role="alert"`, info/success `aria-live="polite"`, form `aria-describedby`
+
+### Focus ring / Divider / Outline / Disabled label / Chart color
 (작성 예정 — P0-A 후속 배치)
