@@ -1181,3 +1181,79 @@ WCAG 1.4.3 (Contrast Minimum)의 명시적 예외:
 - [ ] aria: `disabled` HTML 속성 (form 제어) 또는 `aria-disabled="true"` (focus 가능, 메뉴 아이템 등)
 - [ ] screen reader가 "비활성화됨"이라고 읽음 — 시각적 강조 없이도 전달
 - [ ] **disabled 컴포넌트 옆에 reason text 권장** (예: "권한 없음", "기간 만료") — `caption` 정상 contrast로
+
+### Chart color (palette)
+
+data visualization(bar/line/pie/donut/heatmap)·카테고리 색상·tag 분류용 10색 palette. fill / stroke 용도 sparse 매핑(`backgroundColor`만, `textColor` 페어 비대상).
+
+#### Mode pair (10색 × 2 = 20 토큰)
+**Light surface (`surface-default` 위)** — L≈0.16~0.18 통일:
+| Token | hex | Hue |
+|---|---|---|
+| `chart-color-red` | `#C73838` | red |
+| `chart-color-orange` | `#B36418` | orange |
+| `chart-color-yellow` | `#8C7400` | yellow |
+| `chart-color-green` | `#2D8060` | green |
+| `chart-color-blue` | `#2C70BF` | blue |
+| `chart-color-indigo` | `#5E60C8` | indigo |
+| `chart-color-violet` | `#8B4DBA` | violet |
+| `chart-color-pink` | `#B83B7A` | pink |
+| `chart-color-brown` | `#9A6536` | brown |
+| `chart-color-gray` | `#6B7484` | gray |
+
+**Dark surface (`surface-default-dark` 위)** — L≈0.45~0.55 (light variant):
+| Token | hex |
+|---|---|
+| `chart-color-red-on-dark` | `#ECA0A0` |
+| `chart-color-orange-on-dark` | `#E8B266` |
+| `chart-color-yellow-on-dark` | `#D4B83A` |
+| `chart-color-green-on-dark` | `#6BCB86` |
+| `chart-color-blue-on-dark` | `#7BBBED` |
+| `chart-color-indigo-on-dark` | `#ABB0F0` |
+| `chart-color-violet-on-dark` | `#D2A8EC` |
+| `chart-color-pink-on-dark` | `#ECA0BC` |
+| `chart-color-brown-on-dark` | `#DCB088` |
+| `chart-color-gray-on-dark` | `#B5BBC5` |
+
+#### Hue 정렬 의도
+red → orange → yellow → green → blue → indigo → violet → pink → brown → gray 순서는 **무지개 + 보조색 sort** — 인접 색상 간 시각 거리 균등. chart에서 1~3개 카테고리만 사용 시 처음 3개(red/orange/yellow) 또는 brand-친화 3개(green/blue/indigo) 권장.
+
+#### L 통일의 의도
+모든 chart 색상은 동일한 명도 → 휘도 차이로 인한 시각 우선순위 부여 없이 **hue 차이만으로** 카테고리 구분. 이는 색맹 사용자(특히 적-녹 색맹)에게 부분적 도움 — 명도 차이가 없으면 고대비 hue 색상도 동일 톤으로 보일 수 있어 **반드시 패턴/라벨 보강 필수**.
+
+#### Variant
+| 사용 | Token 그룹 | 비고 |
+|---|---|---|
+| 라이트 표면 fill | `chart-color-{hue}` | bar 채움, pie slice |
+| 라이트 표면 stroke | `chart-color-{hue}` | line 그래프 stroke |
+| 다크 표면 fill/stroke | `chart-color-{hue}-on-dark` | 다크 모드에서 light variant 사용 |
+| 카테고리 tag | `chart-color-{hue}` | category badge, label dot |
+
+#### Layout
+- pie/donut: 1~5 slice 권장 (그 이상은 가독성 저하 → "기타"로 묶기)
+- bar/column: 카테고리 ≤7 권장
+- line graph: ≤5 lines (더 많으면 highlight + 나머지 회색 처리)
+- legend: chart 옆 또는 아래, `caption` (12) + `xs` 간격
+
+#### Motion
+- chart entrance: `motion-duration-slow` (300ms) × `motion-ease-out` — 막대 grow / 선 draw 자연스럽게
+- hover highlight: `motion-duration-fast` (150ms) opacity 변화
+- `prefers-reduced-motion: reduce` 시 즉시 표시 (애니메이션 없이)
+
+#### Accessibility
+- [ ] **1.4.1 Use of Color (강조)**: chart에서 색상 단독 의존 절대 금지 — 패턴(diagonal/dot 등) 또는 라벨 직접 표시 보강 필수. 특히 적-녹(red/green) 동시 사용 시 색맹 대응 필수
+- [ ] **1.4.11 Non-text Contrast**: chart element vs surface 대비 3:1 이상 — `chart-color-yellow` (`#8C7400`) vs `surface-default` = **5.45:1** ✅, 가장 약한 hue도 UI 3:1 통과
+- [ ] **legend / data label**: 각 색상 옆에 텍스트 라벨 또는 패턴 표시. 시각만으로 식별하는 chart 금지
+- [ ] **screen reader**: chart는 `<table>` fallback 또는 `<svg role="img" aria-label="...">` + 데이터 요약 텍스트 동반
+- [ ] **focus**: 데이터 포인트 keyboard 탐색 가능(`tabindex="0"` per data point) — 각 포인트 focus 시 tooltip 표시
+
+#### 사용 예시 (CSS 의사코드)
+```css
+.chart-bar-1 { background-color: var(--color-chart-color-red); }
+.chart-bar-1[data-pattern="diagonal"] {
+  background: repeating-linear-gradient(45deg, var(--color-chart-color-red), var(--color-chart-color-red) 4px, transparent 4px, transparent 8px);
+}
+@media (prefers-color-scheme: dark) {
+  .chart-bar-1 { background-color: var(--color-chart-color-red-on-dark); }
+}
+```
