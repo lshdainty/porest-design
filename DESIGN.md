@@ -1365,3 +1365,49 @@ red → orange → yellow → green → blue → indigo → violet → pink → 
 - [ ] **2.2.1 Timing Adjustable**: 자동 닫힘 시간을 사용자가 끄거나 연장 가능하도록 옵션 제공 (시스템 설정 또는 prefers-reduced-motion 기반 +50% 시간)
 - [ ] **focus 가져오지 않기**: toast 등장이 사용자의 focus를 빼앗으면 안 됨 — `tabindex="-1"` (focus 안 받음, screen reader는 aria-live로 읽음)
 - [ ] **dismissible toast**: close button `aria-label="알림 닫기"` 필수
+
+### Tooltip
+
+hover / focus 시 나타나는 작은 hint — 아이콘 only 버튼의 의미 설명, truncated 텍스트 전체 보기, 키보드 단축키 안내 등.
+
+#### Structure (신규 토큰 없음)
+- 표면: `surface-default-dark` (`#242938`) — 라이트 모드에서도 다크 surface 사용 (시각적 강조 + Toss/Material 패턴)
+- 텍스트: `text-primary-dark` (`#F5F6FA`) — `surface-default-dark` 위 11.40:1 ✅ AAA
+- shadow: `shadow-sm` (light variant — tooltip은 다크 표면이지만 페이지 배경에 대한 elevation은 light shadow로)
+- radius: `radius-sm` (4px) — 작은 컴포넌트 톤
+- 다크 모드 페이지에서: 동일하게 `surface-default-dark` 사용 (페이지 자체가 어둡지만 카드/표면이 한 단 밝아 tooltip은 별도 색조 필요 — 또는 `bg-page-dark`보다 한 단 더 어둡게? 일관성 위해 `surface-default-dark` 유지)
+
+#### Layout
+- padding: `xs` 4px (V) / `sm` 8px (H)
+- text: `caption` (12/400) — 짧은 한 줄 권장, 최대 2줄
+- max-width: 240px (그 이상 길면 popover/dialog로 격상 권장)
+- arrow: optional 6px 삼각형 (anchor 방향)
+- offset from anchor: `xs` (4px) gap + (선택) arrow
+
+#### Position
+| Position | 사용 |
+|---|---|
+| top (default) | 일반 — anchor 위쪽 |
+| right | sidebar nav item, 좌측 정렬 inline 요소 |
+| bottom | 화면 상단 anchor (header icon 등) |
+| left | 우측 정렬 inline 요소 |
+
+자동 flip: viewport 경계 초과 시 반대 방향으로 자동 전환 (e.g. top → bottom).
+
+#### Motion
+- 등장: fade-in (`motion-duration-fast` 150ms × `motion-ease-out`) — scale 효과 X (작은 hint는 빠른 fade가 자연)
+- 사라짐: fade-out (`motion-duration-fast`)
+- delay 정책:
+  - **hover**: 500ms 지연 후 표시 (의도하지 않은 hover로 깜박임 방지)
+  - **focus**: 0ms 즉시 표시 (키보드 사용자는 즉시 정보 필요)
+  - 다른 tooltip이 이미 보이는 상태에서 인접 anchor로 이동 시: 0ms 즉시 (사용자가 tooltip을 적극 탐색 중)
+
+#### Accessibility
+- [ ] **role="tooltip"** 또는 anchor에 **aria-describedby="tooltip-id"** (둘 중 하나)
+- [ ] **anchor focusable**: tooltip은 hover만으로는 키보드 사용자에게 보이지 않음 — anchor가 `<button>`/`<a>`/focusable 또는 `tabindex="0"` 필수
+- [ ] **WCAG 1.4.13 Content on Hover or Focus** (AA 2.1):
+  - **Dismissible**: `Esc` 키로 tooltip 닫기 가능
+  - **Hoverable**: tooltip 자체에 hover 가능 (사용자가 텍스트 읽으려 mouse 이동해도 사라지지 않음)
+  - **Persistent**: trigger를 유지하는 동안(hover/focus 유지) tooltip 유지
+- [ ] **icon-only button**: tooltip 외에도 `aria-label` 필수 (tooltip 안 보일 때 screen reader가 의미 알 수 있어야)
+- [ ] **touch device**: tooltip은 hover 의존이라 모바일에서 미작동 — 모바일은 tap → tooltip 표시(2번째 tap으로 동작) 또는 별도 (i) 정보 아이콘 사용
