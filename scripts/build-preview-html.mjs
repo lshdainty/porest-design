@@ -242,6 +242,12 @@ function brandProfile(brandName, tokens) {
         primary: "결재 라인에 제출",
         secondary: "임시 저장",
       },
+      skeleton: {
+        title: "결재 큐 로딩 중",
+        description: "list-row 5개 — avatar (32) + 신청자 + 상태 + 시간. shimmer 1500ms × linear loop.",
+        layout: "list",
+        items: 5,
+      },
     };
   }
 
@@ -400,6 +406,12 @@ function brandProfile(brandName, tokens) {
         primary: "저장",
         secondary: "취소",
       },
+      skeleton: {
+        title: "메모 list 로딩 중",
+        description: "card 4개 — heading rect + body 2-line + tags placeholder. 모바일 친화 카드 톤.",
+        layout: "card",
+        items: 4,
+      },
     };
   }
 
@@ -549,6 +561,12 @@ function brandProfile(brandName, tokens) {
       ],
       primary: "제안 등록",
       secondary: "초안 저장",
+    },
+    skeleton: {
+      title: "Skeleton variant 데모",
+      description: "text-line / circle / rect / list-row 4 variant. shimmer 1500ms × linear loop · prefers-reduced-motion 시 정지.",
+      layout: "demo",
+      items: 4,
     },
   };
 }
@@ -1145,6 +1163,82 @@ function renderToasts(brand) {
   </section>`;
 }
 
+function renderSkeleton(brand) {
+  const sk = brand.skeleton;
+  if (!sk) return "";
+
+  let body = "";
+  if (sk.layout === "list") {
+    const rows = Array.from({ length: sk.items || 5 }, () => `
+      <div class="sk-row">
+        <div class="sk sk-circle" style="width:32px;height:32px;"></div>
+        <div class="sk-row-content">
+          <div class="sk sk-text" style="width:40%;"></div>
+          <div class="sk sk-text sk-text-sm" style="width:65%;"></div>
+        </div>
+        <div class="sk sk-rect" style="width:60px;height:20px;border-radius:9999px;"></div>
+      </div>`).join("");
+    body = `<div class="sk-stack">${rows}</div>`;
+  } else if (sk.layout === "card") {
+    const cards = Array.from({ length: sk.items || 4 }, () => `
+      <div class="sk-card">
+        <div class="sk sk-text" style="width:80%;height:24px;"></div>
+        <div class="sk sk-text" style="width:100%;"></div>
+        <div class="sk sk-text" style="width:60%;"></div>
+        <div class="sk-tags-row">
+          <div class="sk sk-rect" style="width:50px;height:18px;border-radius:9999px;"></div>
+          <div class="sk sk-rect" style="width:70px;height:18px;border-radius:9999px;"></div>
+        </div>
+      </div>`).join("");
+    body = `<div class="sk-grid">${cards}</div>`;
+  } else {
+    // demo: 4 variants
+    body = `
+      <div class="sk-demo">
+        <div class="sk-demo-cell">
+          <div class="sk-demo-label">text · 3 lines</div>
+          <div class="sk sk-text" style="width:100%;"></div>
+          <div class="sk sk-text" style="width:100%;"></div>
+          <div class="sk sk-text" style="width:60%;"></div>
+        </div>
+        <div class="sk-demo-cell">
+          <div class="sk-demo-label">circle · avatar</div>
+          <div style="display:flex;gap:var(--spacing-md);align-items:center;">
+            <div class="sk sk-circle" style="width:24px;height:24px;"></div>
+            <div class="sk sk-circle" style="width:32px;height:32px;"></div>
+            <div class="sk sk-circle" style="width:48px;height:48px;"></div>
+          </div>
+        </div>
+        <div class="sk-demo-cell">
+          <div class="sk-demo-label">rect · card</div>
+          <div class="sk sk-rect" style="width:100%;height:80px;"></div>
+        </div>
+        <div class="sk-demo-cell">
+          <div class="sk-demo-label">list-row</div>
+          <div class="sk-row">
+            <div class="sk sk-circle" style="width:32px;height:32px;"></div>
+            <div class="sk-row-content">
+              <div class="sk sk-text" style="width:50%;"></div>
+              <div class="sk sk-text sk-text-sm" style="width:75%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">13 — Skeleton / Loading</div>
+      <h2 class="section-title">${escape(sk.title)}</h2>
+      <p class="section-lede">${escape(sk.description)}</p>
+    </header>
+    <div class="sk-card-wrap" aria-busy="true" aria-label="콘텐츠 로딩 중">
+      ${body}
+    </div>
+  </section>`;
+}
+
 function renderForm(brand) {
   const f = brand.form;
   if (!f) return "";
@@ -1248,7 +1342,7 @@ function renderTokenCatalog(tokens) {
   return `
   <section class="catalog">
     <header class="section-head">
-      <div class="section-eyebrow">13 — Reference</div>
+      <div class="section-eyebrow">14 — Reference</div>
       <h2 class="section-title">Token catalog</h2>
       <p class="section-lede">검증·문서 용도 — 시스템에 정의된 모든 토큰을 한눈에.</p>
     </header>
@@ -1990,6 +2084,80 @@ function pageCss() {
       border-top: 1px solid var(--color-border-default);
     }
 
+    /* === Skeleton / Loading === */
+    .sk-card-wrap {
+      background: var(--color-surface-default);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      box-shadow: var(--shadow-sm);
+    }
+    @keyframes sk-shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .sk {
+      background-color: var(--color-surface-input);
+      background-image: linear-gradient(
+        90deg,
+        var(--color-surface-input) 0%,
+        var(--color-surface-default) 50%,
+        var(--color-surface-input) 100%
+      );
+      background-size: 200% 100%;
+      background-repeat: no-repeat;
+      background-position: 0 0;
+      animation: sk-shimmer var(--motion-duration-loop, 1500ms) var(--motion-ease-linear, linear) infinite;
+    }
+    .sk-text { height: 14px; border-radius: var(--radius-sm); margin: var(--spacing-xs) 0; }
+    .sk-text-sm { height: 12px; }
+    .sk-circle { border-radius: var(--radius-full); flex-shrink: 0; }
+    .sk-rect { border-radius: var(--radius-md); }
+    .sk-stack { display: flex; flex-direction: column; gap: var(--spacing-xs); }
+    .sk-row {
+      display: flex; align-items: center; gap: var(--spacing-md);
+      padding: var(--spacing-sm) var(--spacing-xs);
+      border-bottom: 1px solid var(--color-border-default);
+    }
+    .sk-row:last-child { border-bottom: none; }
+    .sk-row-content { flex: 1; }
+    .sk-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: var(--spacing-md);
+    }
+    .sk-card {
+      background: var(--color-surface-input);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-md);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-xs);
+    }
+    .sk-card .sk { background-color: var(--color-surface-default); background-image: linear-gradient(90deg, var(--color-surface-default) 0%, var(--color-surface-input) 50%, var(--color-surface-default) 100%); }
+    .sk-tags-row { display: flex; gap: var(--spacing-xs); margin-top: var(--spacing-xs); }
+    .sk-demo {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-lg);
+    }
+    .sk-demo-cell {
+      background: var(--color-surface-input);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-md);
+    }
+    .sk-demo-cell .sk { background-color: var(--color-surface-default); background-image: linear-gradient(90deg, var(--color-surface-default) 0%, var(--color-surface-input) 50%, var(--color-surface-default) 100%); }
+    .sk-demo-label {
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+      font-family: ui-monospace, monospace;
+      margin-bottom: var(--spacing-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .sk { animation: none; background-image: none; }
+    }
+
     /* Token catalog (기존 — 압축 유지) */
     .catalog { margin-top: var(--spacing-3xl); padding-top: var(--spacing-2xl); border-top: 1px dashed var(--color-border-default); }
     .catalog h3 { font-size: var(--text-heading-md); font-weight: 600; margin: var(--spacing-xl) 0 var(--spacing-md); }
@@ -2042,8 +2210,15 @@ function pageCss() {
       .form-card,
       .ld-highlights,
       .ld-host,
+      .sk-card-wrap,
       .swatch { background: var(--color-surface-default-dark); }
       .ld-highlight-icon { background: var(--color-surface-input-dark); }
+      .sk { background-color: var(--color-surface-input-dark); background-image: linear-gradient(90deg, var(--color-surface-input-dark) 0%, var(--color-surface-default-dark) 50%, var(--color-surface-input-dark) 100%); }
+      .sk-card,
+      .sk-demo-cell { background: var(--color-surface-input-dark); }
+      .sk-card .sk,
+      .sk-demo-cell .sk { background-color: var(--color-surface-default-dark); background-image: linear-gradient(90deg, var(--color-surface-default-dark) 0%, var(--color-surface-input-dark) 50%, var(--color-surface-default-dark) 100%); }
+      .sk-row { border-color: var(--color-border-default-dark); }
       .form-input,
       .form-select,
       .form-textarea { background: var(--color-surface-input-dark); color: var(--color-text-primary-dark); border-color: var(--color-border-default-dark); }
@@ -2079,6 +2254,7 @@ function pageCss() {
         grid-template-rows: 1fr 1fr 1fr;
       }
       .ld-gallery-cell--hero { grid-row: 1 / 2; grid-column: 1 / -1; }
+      .sk-demo { grid-template-columns: 1fr; }
     }
   `;
 }
@@ -2110,6 +2286,7 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     ${renderModal(brand)}
     ${renderToasts(brand)}
     ${renderForm(brand)}
+    ${renderSkeleton(brand)}
     ${renderTokenCatalog(tokens)}
     <p style="text-align:center;color:var(--color-text-tertiary);font-size:var(--text-caption);margin-top:var(--spacing-3xl);">
       source <code>${escape(sourceFile)}</code> · Porest Design System
