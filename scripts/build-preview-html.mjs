@@ -1503,6 +1503,310 @@ function renderBatchV67(brand) {
   </section>`;
 }
 
+// === v68-v72 shadcn batch showcase ===
+
+function renderShadcnNav(brand) {
+  // v68 Navigation 5
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">15 — Navigation (v68)</div>
+      <h2 class="section-title">Breadcrumb · Sidebar · Nav Menu · Menubar · Command</h2>
+      <p class="section-lede">5 navigation 컴포넌트 — 페이지 위계, 좌측 nav, 데스크탑 menu, 전역 command.</p>
+    </header>
+    <div class="sc-grid">
+      <div class="sc-card">
+        <div class="sc-head">Breadcrumb</div>
+        <nav class="bc" aria-label="경로">
+          <a class="bc-link">Home</a><span class="bc-sep">/</span>
+          <a class="bc-link">${brand.key === "hr" ? "결재" : brand.key === "desk" ? "메모" : "Tokens"}</a><span class="bc-sep">/</span>
+          <a class="bc-link">${brand.key === "hr" ? "결재 큐" : brand.key === "desk" ? "보관함" : "Colors"}</a><span class="bc-sep">/</span>
+          <span class="bc-current" aria-current="page">${brand.key === "hr" ? "김지원 휴가" : brand.key === "desk" ? "Porest 톤" : "Surface"}</span>
+        </nav>
+      </div>
+      <div class="sc-card">
+        <div class="sc-head">Sidebar (mini)</div>
+        <aside class="sb">
+          <div class="sb-group">${brand.key === "hr" ? "결재" : brand.key === "desk" ? "내 데이터" : "Tokens"}</div>
+          <div class="sb-item sb-item--active">${brand.key === "hr" ? "결재 큐" : brand.key === "desk" ? "메모" : "Colors"}</div>
+          <div class="sb-item">${brand.key === "hr" ? "직원" : brand.key === "desk" ? "할일" : "Typography"}</div>
+          <div class="sb-item">${brand.key === "hr" ? "평가" : brand.key === "desk" ? "가계부" : "Spacing"}</div>
+          <div class="sb-item">${brand.key === "hr" ? "분석" : brand.key === "desk" ? "캘린더" : "Components"}</div>
+        </aside>
+      </div>
+      <div class="sc-card">
+        <div class="sc-head">Navigation Menu</div>
+        <nav class="nm">
+          <button class="nm-item nm-item--active">Home</button>
+          <button class="nm-item">${brand.key === "hr" ? "결재" : brand.key === "desk" ? "메모" : "Products"}</button>
+          <button class="nm-item">${brand.key === "hr" ? "직원" : brand.key === "desk" ? "할일" : "Pricing"}</button>
+          <button class="nm-item">${brand.key === "hr" ? "분석" : brand.key === "desk" ? "가계부" : "Docs"}</button>
+        </nav>
+      </div>
+      <div class="sc-card">
+        <div class="sc-head">Menubar</div>
+        <div class="mb">
+          <button class="mb-item">File <span class="mb-key">⌘N</span></button>
+          <button class="mb-item">Edit <span class="mb-key">⌘E</span></button>
+          <button class="mb-item">View <span class="mb-key">⌘V</span></button>
+          <button class="mb-item">Help</button>
+        </div>
+      </div>
+      <div class="sc-card sc-card--full">
+        <div class="sc-head">Command (⌘K) — 전역 search/action</div>
+        <div class="cmd">
+          <input class="cmd-input" placeholder="명령 또는 검색..." readonly>
+          <div class="cmd-section">
+            <div class="cmd-group">${brand.key === "hr" ? "Recent" : "Suggestions"}</div>
+            <div class="cmd-item"><span>${brand.key === "hr" ? "김지원 휴가 승인" : brand.key === "desk" ? "새 메모 작성" : "Run verify"}</span><span class="cmd-shortcut">⌘P</span></div>
+            <div class="cmd-item"><span>${brand.key === "hr" ? "5월 평가 시작" : brand.key === "desk" ? "할일 추가" : "Build preview"}</span><span class="cmd-shortcut">⌘N</span></div>
+            <div class="cmd-group">Pages</div>
+            <div class="cmd-item"><span>${brand.key === "hr" ? "결재 큐" : brand.key === "desk" ? "메모 보관함" : "Token reference"}</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function renderShadcnInput(brand) {
+  // v69 Input 5
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">16 — Input (v69)</div>
+      <h2 class="section-title">Combobox · Slider · Toggle · Toggle Group · Input OTP</h2>
+      <p class="section-lede">5 input/selection 컴포넌트 — typing autocomplete, range, on/off, group, 일회용 코드.</p>
+    </header>
+    <div class="sc-grid">
+      <div class="sc-card">
+        <div class="sc-head">Combobox</div>
+        <div class="cb">
+          <span>${brand.key === "hr" ? "디자인 본부" : brand.key === "desk" ? "#brand · #design" : "spacing"}</span>
+          <span class="cb-caret">▾</span>
+        </div>
+        <div class="sc-note">typing 시 autocomplete dropdown</div>
+      </div>
+      <div class="sc-card">
+        <div class="sc-head">Slider</div>
+        <div class="sld">
+          <div class="sld-track">
+            <div class="sld-fill" style="width: 62%;"></div>
+            <div class="sld-thumb" style="left: 62%;"></div>
+          </div>
+          <div class="sld-meta"><span>${brand.key === "hr" ? "0" : "₩0"}</span><span>62%</span><span>${brand.key === "hr" ? "100" : "₩1M"}</span></div>
+        </div>
+      </div>
+      <div class="sc-card">
+        <div class="sc-head">Toggle (single)</div>
+        <div class="tg-row">
+          <button class="tg tg--on" aria-pressed="true">★ 즐겨찾기</button>
+          <button class="tg" aria-pressed="false">🔖 보관</button>
+        </div>
+      </div>
+      <div class="sc-card">
+        <div class="sc-head">Toggle Group (single)</div>
+        <div class="tgg" role="radiogroup">
+          <button class="tgg-item">${brand.key === "hr" ? "이름순" : "list"}</button>
+          <button class="tgg-item tgg-item--active" aria-checked="true">${brand.key === "hr" ? "날짜순" : "grid"}</button>
+          <button class="tgg-item">${brand.key === "hr" ? "우선순위" : "card"}</button>
+        </div>
+      </div>
+      <div class="sc-card sc-card--full">
+        <div class="sc-head">Input OTP — 6자리</div>
+        <div class="otp">
+          <div class="otp-cell otp-cell--filled">3</div>
+          <div class="otp-cell otp-cell--filled">7</div>
+          <div class="otp-cell otp-cell--filled">2</div>
+          <span class="otp-sep">-</span>
+          <div class="otp-cell otp-cell--focus">4</div>
+          <div class="otp-cell"></div>
+          <div class="otp-cell"></div>
+        </div>
+        <div class="sc-note">autocomplete="one-time-code" — iOS SMS 자동 채우기</div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function renderShadcnDisclose(brand) {
+  // v70 Disclosure 5
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">17 — Disclosure (v70)</div>
+      <h2 class="section-title">Accordion · Collapsible · Hover Card · Context Menu · Alert Dialog</h2>
+      <p class="section-lede">5 disclosure/overlay 컴포넌트 — 접기/펼치기, hover preview, right-click, destructive confirm.</p>
+    </header>
+    <div class="sc-grid">
+      <div class="sc-card">
+        <div class="sc-head">Accordion (single)</div>
+        <div class="acc">
+          <div class="acc-item acc-item--open">
+            <div class="acc-trigger">${brand.key === "hr" ? "신청 정보" : brand.key === "desk" ? "보기 옵션" : "Source"} <span>▴</span></div>
+            <div class="acc-body">${brand.key === "hr" ? "직원/기간/사유" : brand.key === "desk" ? "list / grid / card" : "DESIGN.md → HR/Desk"}</div>
+          </div>
+          <div class="acc-item">
+            <div class="acc-trigger">${brand.key === "hr" ? "첨부 파일" : brand.key === "desk" ? "정렬 옵션" : "Lint policy"} <span>▾</span></div>
+          </div>
+          <div class="acc-item">
+            <div class="acc-trigger">${brand.key === "hr" ? "결재 history" : brand.key === "desk" ? "알림" : "Sync"} <span>▾</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="sc-card">
+        <div class="sc-head">Collapsible</div>
+        <button class="col-trigger">${brand.key === "hr" ? "첨부 3개" : brand.key === "desk" ? "자세히 보기" : "더 보기"} <span>▾</span></button>
+        <div class="sc-note">단일 toggle — Accordion보다 가벼움</div>
+      </div>
+      <div class="sc-card">
+        <div class="sc-head">Hover Card</div>
+        <div class="hc">
+          <div class="hc-avatar">${brand.key === "hr" ? "박" : brand.key === "desk" ? "김" : "P"}</div>
+          <div class="hc-body">
+            <div class="hc-name">${brand.key === "hr" ? "박서연 · 본부장" : brand.key === "desk" ? "김지원 · 사용자" : "Porest"}</div>
+            <div class="hc-bio">${brand.key === "hr" ? "디자인 시스템 매니저, 6년차" : brand.key === "desk" ? "메모 234건 · 할일 58건" : "shared baseline"}</div>
+          </div>
+        </div>
+      </div>
+      <div class="sc-card">
+        <div class="sc-head">Context Menu</div>
+        <div class="ctx">
+          <div class="ctx-item">${brand.key === "hr" ? "승인" : brand.key === "desk" ? "즐겨찾기" : "Edit"}</div>
+          <div class="ctx-item">${brand.key === "hr" ? "반려" : brand.key === "desk" ? "보관" : "Duplicate"}</div>
+          <div class="ctx-sep"></div>
+          <div class="ctx-item ctx-item--destructive">${brand.key === "hr" ? "삭제" : brand.key === "desk" ? "삭제" : "Delete"}</div>
+        </div>
+        <div class="sc-note">right-click / long-press</div>
+      </div>
+      <div class="sc-card sc-card--full">
+        <div class="sc-head">Alert Dialog (destructive)</div>
+        <div class="ad">
+          <div class="ad-icon" aria-hidden="true">!</div>
+          <div class="ad-body">
+            <div class="ad-title">${brand.key === "hr" ? "정말 권한을 회수하시겠어요?" : brand.key === "desk" ? "메모를 영구 삭제할까요?" : "정말 삭제하시겠어요?"}</div>
+            <div class="ad-desc">${brand.key === "hr" ? "이 직원의 모든 권한이 회수돼요. 복구는 관리자 승인 필요." : brand.key === "desk" ? "30일 보관함을 거치지 않고 즉시 삭제됩니다." : "이 작업은 되돌릴 수 없어요."}</div>
+            <div class="ad-actions">
+              <button class="btn btn-outlined">취소</button>
+              <button class="btn btn-destructive">${brand.key === "hr" ? "회수" : "삭제"}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function renderShadcnData(brand) {
+  // v71 Data 5
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">18 — Data (v71)</div>
+      <h2 class="section-title">Table · Data Table · Carousel · Scroll Area · Resizable</h2>
+      <p class="section-lede">5 data display 컴포넌트 — 표, 정렬·필터, 슬라이더, 커스텀 scroll, 분할 panel.</p>
+    </header>
+    <div class="sc-grid">
+      <div class="sc-card sc-card--full">
+        <div class="sc-head">Data Table — sortable + selectable + bulk action</div>
+        <div class="dt">
+          <div class="dt-bulk">3개 선택됨 · <button class="dt-bulk-btn">${brand.key === "hr" ? "일괄 승인" : brand.key === "desk" ? "보관" : "Export"}</button> · <button class="dt-bulk-btn">삭제</button></div>
+          <table class="dt-table">
+            <thead><tr><th><input type="checkbox" checked></th><th>${brand.key === "hr" ? "신청자" : brand.key === "desk" ? "제목" : "Token"} <span class="dt-sort">↑</span></th><th>${brand.key === "hr" ? "기간" : brand.key === "desk" ? "수정일" : "Value"}</th><th>${brand.key === "hr" ? "상태" : brand.key === "desk" ? "태그" : "Type"}</th></tr></thead>
+            <tbody>
+              <tr><td><input type="checkbox" checked></td><td>${brand.key === "hr" ? "김지원" : brand.key === "desk" ? "Porest 톤" : "primary"}</td><td>${brand.key === "hr" ? "5/12-14" : brand.key === "desk" ? "2시간 전" : "#357B5F"}</td><td><span class="dt-badge dt-badge--success">${brand.key === "hr" ? "승인" : brand.key === "desk" ? "공개" : "color"}</span></td></tr>
+              <tr><td><input type="checkbox" checked></td><td>${brand.key === "hr" ? "이도현" : brand.key === "desk" ? "5월 회고" : "primary-light"}</td><td>${brand.key === "hr" ? "5/15-16" : brand.key === "desk" ? "어제" : "#5DAD86"}</td><td><span class="dt-badge dt-badge--warning">${brand.key === "hr" ? "대기" : brand.key === "desk" ? "초안" : "color"}</span></td></tr>
+              <tr><td><input type="checkbox" checked></td><td>${brand.key === "hr" ? "최가람" : brand.key === "desk" ? "참고 자료" : "border-focus"}</td><td>${brand.key === "hr" ? "5/20" : brand.key === "desk" ? "3일 전" : "#357B5F"}</td><td><span class="dt-badge">${brand.key === "hr" ? "반려" : brand.key === "desk" ? "보관" : "color"}</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="sc-card">
+        <div class="sc-head">Carousel</div>
+        <div class="car">
+          <button class="car-arrow">‹</button>
+          <div class="car-frame">${brand.key === "hr" ? "Slide 2 / 5" : brand.key === "desk" ? "Onboarding · 1/4" : "Slide"}</div>
+          <button class="car-arrow">›</button>
+        </div>
+        <div class="car-dots">
+          <span class="car-dot"></span>
+          <span class="car-dot car-dot--active"></span>
+          <span class="car-dot"></span>
+          <span class="car-dot"></span>
+          <span class="car-dot"></span>
+        </div>
+      </div>
+      <div class="sc-card">
+        <div class="sc-head">Scroll Area + Resizable hint</div>
+        <div class="sa">
+          <div class="sa-content">${"긴 콘텐츠 ".repeat(8)}</div>
+        </div>
+        <div class="sc-note">3-pane layout: nav | content | detail (resizable handles)</div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function renderShadcnExtras(brand) {
+  // v72 Extras 5
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">19 — Extras (v72)</div>
+      <h2 class="section-title">Sonner · Aspect Ratio · Chart · Date Range · Time Picker</h2>
+      <p class="section-lede">5 추가 컴포넌트 — toast stack, 비율 wrapper, 차트, 기간/시각 선택.</p>
+    </header>
+    <div class="sc-grid">
+      <div class="sc-card">
+        <div class="sc-head">Sonner — toast stack</div>
+        <div class="son">
+          <div class="son-toast son-toast--success"><span class="son-icon">✓</span><span>${brand.key === "hr" ? "결재 승인 완료" : brand.key === "desk" ? "메모 저장 완료" : "Build 통과"}</span></div>
+          <div class="son-toast son-toast--info"><span class="son-icon">i</span><span>${brand.key === "hr" ? "신규 평가 등록" : brand.key === "desk" ? "동기화 완료" : "Token 갱신"}</span></div>
+          <div class="son-toast son-toast--warning"><span class="son-icon">!</span><span>${brand.key === "hr" ? "기한 임박 D-3" : brand.key === "desk" ? "예산 80% 도달" : "warning 1건"}</span></div>
+        </div>
+      </div>
+      <div class="sc-card">
+        <div class="sc-head">Aspect Ratio (16:9)</div>
+        <div class="ar ar--16-9">
+          <div class="ar-content">${brand.key === "hr" ? "직원 cover" : brand.key === "desk" ? "메모 attachment" : "16:9 image"}</div>
+        </div>
+      </div>
+      <div class="sc-card">
+        <div class="sc-head">Chart (bar mini)</div>
+        <div class="chart-mini">
+          <div class="chart-bar" style="height: 30%; background: var(--color-chart-blue);"></div>
+          <div class="chart-bar" style="height: 55%; background: var(--color-chart-blue);"></div>
+          <div class="chart-bar" style="height: 70%; background: var(--color-chart-blue);"></div>
+          <div class="chart-bar" style="height: 45%; background: var(--color-chart-blue);"></div>
+          <div class="chart-bar" style="height: 85%; background: var(--color-chart-blue);"></div>
+          <div class="chart-bar" style="height: 60%; background: var(--color-chart-blue);"></div>
+          <div class="chart-bar" style="height: 75%; background: var(--color-chart-blue);"></div>
+        </div>
+        <div class="sc-note">${brand.key === "hr" ? "월별 결재 수" : brand.key === "desk" ? "주간 거래 합계" : "샘플 bar"}</div>
+      </div>
+      <div class="sc-card">
+        <div class="sc-head">Date Range Picker</div>
+        <div class="drp">
+          <span>2026-05-12</span>
+          <span class="drp-arrow">→</span>
+          <span>2026-05-14</span>
+          <span class="drp-days">3일</span>
+        </div>
+        <div class="sc-note">presets: 오늘 / 지난 7일 / 이번 달</div>
+      </div>
+      <div class="sc-card">
+        <div class="sc-head">Time Picker (5분 step)</div>
+        <div class="tp">
+          <span class="tp-hour">14</span>
+          <span class="tp-sep">:</span>
+          <span class="tp-min">30</span>
+        </div>
+        <div class="sc-note">${brand.key === "hr" ? "24h format · 결재 일정" : brand.key === "desk" ? "wheel picker · 모바일 native" : "시각 input"}</div>
+      </div>
+    </div>
+  </section>`;
+}
+
 function renderTokenCatalog(tokens) {
   const colorGrid = tokens.colors.map(t => `
     <div class="swatch">
@@ -1558,7 +1862,7 @@ function renderTokenCatalog(tokens) {
   return `
   <section class="catalog">
     <header class="section-head">
-      <div class="section-eyebrow">15 — Reference</div>
+      <div class="section-eyebrow">20 — Reference</div>
       <h2 class="section-title">Token catalog</h2>
       <p class="section-lede">검증·문서 용도 — 시스템에 정의된 모든 토큰을 한눈에.</p>
     </header>
@@ -2636,6 +2940,161 @@ function pageCss() {
       background: var(--color-success);
     }
 
+    /* === v68-v72 shadcn batch showcase === */
+    .sc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg); }
+    .sc-card { background: var(--color-surface-default); border-radius: var(--radius-lg); padding: var(--spacing-lg); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: var(--spacing-sm); }
+    .sc-card--full { grid-column: 1 / -1; }
+    .sc-head { font-size: var(--text-caption); color: var(--color-text-tertiary); font-family: ui-monospace, monospace; text-transform: uppercase; letter-spacing: 0.04em; }
+    .sc-note { font-size: var(--text-caption); color: var(--color-text-tertiary); margin-top: var(--spacing-xs); }
+
+    /* Breadcrumb */
+    .bc { display: flex; align-items: center; gap: var(--spacing-xs); font-size: var(--text-caption); flex-wrap: wrap; }
+    .bc-link { color: var(--color-text-secondary); cursor: pointer; }
+    .bc-link:hover { color: var(--color-text-primary); }
+    .bc-sep { color: var(--color-text-tertiary); }
+    .bc-current { color: var(--color-text-primary); font-weight: 600; }
+
+    /* Sidebar */
+    .sb { display: flex; flex-direction: column; gap: var(--spacing-xs); padding: var(--spacing-sm); background: var(--color-bg-page); border-radius: var(--radius-md); }
+    .sb-group { font-size: var(--text-caption); color: var(--color-text-tertiary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; padding: var(--spacing-xs) var(--spacing-sm); }
+    .sb-item { padding: var(--spacing-sm) var(--spacing-md); border-radius: var(--radius-sm); color: var(--color-text-secondary); font-size: var(--text-body); cursor: pointer; }
+    .sb-item:hover { background: var(--color-surface-input); color: var(--color-text-primary); }
+    .sb-item--active { background: var(--color-surface-input); color: var(--color-text-primary); font-weight: 600; border-left: 3px solid var(--color-primary, var(--color-text-primary)); padding-left: calc(var(--spacing-md) - 3px); }
+
+    /* Navigation Menu */
+    .nm { display: flex; gap: var(--spacing-xs); flex-wrap: wrap; }
+    .nm-item { padding: var(--spacing-sm) var(--spacing-md); border: none; background: transparent; border-radius: var(--radius-md); color: var(--color-text-secondary); cursor: pointer; font-size: var(--text-body); font-family: inherit; }
+    .nm-item:hover { background: var(--color-surface-input); color: var(--color-text-primary); }
+    .nm-item--active { color: var(--color-text-primary); font-weight: 600; }
+
+    /* Menubar */
+    .mb { display: flex; gap: 0; background: var(--color-bg-page); border-radius: var(--radius-md); padding: var(--spacing-xs); }
+    .mb-item { display: flex; gap: var(--spacing-sm); align-items: center; padding: var(--spacing-xs) var(--spacing-md); border: none; background: transparent; color: var(--color-text-secondary); cursor: pointer; font-size: var(--text-caption); font-family: inherit; border-radius: var(--radius-sm); }
+    .mb-item:hover { background: var(--color-surface-input); color: var(--color-text-primary); }
+    .mb-key { font-family: ui-monospace, monospace; font-size: 11px; color: var(--color-text-tertiary); }
+
+    /* Command (⌘K) */
+    .cmd { background: var(--color-bg-page); border-radius: var(--radius-md); padding: var(--spacing-md); }
+    .cmd-input { width: 100%; padding: var(--spacing-sm) var(--spacing-md); background: var(--color-surface-default); border: 1px solid var(--color-border-default); border-radius: var(--radius-sm); color: var(--color-text-primary); font-family: inherit; font-size: var(--text-body); }
+    .cmd-section { margin-top: var(--spacing-md); }
+    .cmd-group { font-size: var(--text-caption); color: var(--color-text-tertiary); padding: var(--spacing-xs) var(--spacing-sm); margin-top: var(--spacing-sm); text-transform: uppercase; letter-spacing: 0.04em; }
+    .cmd-item { display: flex; justify-content: space-between; align-items: center; padding: var(--spacing-sm) var(--spacing-md); border-radius: var(--radius-sm); cursor: pointer; font-size: var(--text-body); }
+    .cmd-item:hover { background: var(--color-surface-input); }
+    .cmd-shortcut { font-family: ui-monospace, monospace; font-size: var(--text-caption); color: var(--color-text-tertiary); }
+
+    /* Combobox */
+    .cb { display: flex; justify-content: space-between; align-items: center; padding: var(--spacing-sm) var(--spacing-md); background: var(--color-surface-input); border: 1px solid var(--color-border-default); border-radius: var(--radius-sm); cursor: pointer; }
+    .cb-caret { color: var(--color-text-tertiary); }
+
+    /* Slider */
+    .sld { padding: var(--spacing-sm) 0; }
+    .sld-track { position: relative; width: 100%; height: 4px; background: var(--color-surface-input); border-radius: var(--radius-full); }
+    .sld-fill { height: 100%; background: var(--color-primary, var(--color-text-primary)); border-radius: var(--radius-full); }
+    .sld-thumb { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 16px; height: 16px; background: var(--color-surface-default); border: 2px solid var(--color-primary, var(--color-text-primary)); border-radius: var(--radius-full); box-shadow: var(--shadow-sm); }
+    .sld-meta { display: flex; justify-content: space-between; font-size: var(--text-caption); color: var(--color-text-tertiary); margin-top: var(--spacing-md); }
+
+    /* Toggle */
+    .tg-row { display: flex; gap: var(--spacing-sm); flex-wrap: wrap; }
+    .tg { padding: var(--spacing-xs) var(--spacing-md); border: 1px solid var(--color-border-default); background: transparent; color: var(--color-text-secondary); border-radius: var(--radius-md); cursor: pointer; font-family: inherit; font-size: var(--text-caption); }
+    .tg:hover { background: var(--color-surface-input); }
+    .tg--on { background: var(--color-surface-input); color: var(--color-text-primary); border-color: var(--color-border-strong); font-weight: 600; }
+
+    /* Toggle Group */
+    .tgg { display: inline-flex; border: 1px solid var(--color-border-default); border-radius: var(--radius-md); overflow: hidden; }
+    .tgg-item { padding: var(--spacing-xs) var(--spacing-md); border: none; background: transparent; color: var(--color-text-secondary); cursor: pointer; font-family: inherit; font-size: var(--text-caption); }
+    .tgg-item + .tgg-item { border-left: 1px solid var(--color-border-default); }
+    .tgg-item:hover { background: var(--color-surface-input); }
+    .tgg-item--active { background: var(--color-surface-input); color: var(--color-text-primary); font-weight: 600; }
+
+    /* Input OTP */
+    .otp { display: flex; gap: var(--spacing-xs); align-items: center; }
+    .otp-cell { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--color-surface-input); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); font-size: 18px; font-weight: 600; color: var(--color-text-primary); font-family: ui-monospace, monospace; }
+    .otp-cell--filled { background: var(--color-surface-default); }
+    .otp-cell--focus { outline: 2px solid var(--color-border-focus, var(--color-primary, var(--color-text-primary))); outline-offset: 1px; }
+    .otp-sep { color: var(--color-text-tertiary); padding: 0 var(--spacing-xs); }
+
+    /* Accordion / Collapsible */
+    .acc { display: flex; flex-direction: column; border: 1px solid var(--color-border-default); border-radius: var(--radius-md); overflow: hidden; }
+    .acc-item + .acc-item { border-top: 1px solid var(--color-border-default); }
+    .acc-trigger { display: flex; justify-content: space-between; padding: var(--spacing-sm) var(--spacing-md); cursor: pointer; font-weight: 600; font-size: var(--text-body); background: transparent; }
+    .acc-trigger:hover { background: var(--color-surface-input); }
+    .acc-item--open .acc-trigger { background: var(--color-surface-input); }
+    .acc-body { padding: var(--spacing-sm) var(--spacing-md); color: var(--color-text-secondary); font-size: var(--text-caption); border-top: 1px solid var(--color-border-default); }
+    .col-trigger { padding: var(--spacing-sm) var(--spacing-md); border: 1px solid var(--color-border-default); background: transparent; border-radius: var(--radius-md); cursor: pointer; font-family: inherit; font-size: var(--text-body); display: inline-flex; gap: var(--spacing-sm); }
+    .col-trigger:hover { background: var(--color-surface-input); }
+
+    /* Hover Card */
+    .hc { display: flex; gap: var(--spacing-md); padding: var(--spacing-md); background: var(--color-bg-page); border-radius: var(--radius-md); align-items: flex-start; }
+    .hc-avatar { width: 40px; height: 40px; border-radius: var(--radius-full); background: var(--color-primary, var(--color-text-primary)); color: var(--color-text-on-accent, #fff); display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+    .hc-name { font-weight: 600; font-size: var(--text-body); }
+    .hc-bio { color: var(--color-text-secondary); font-size: var(--text-caption); margin-top: 2px; }
+
+    /* Context Menu */
+    .ctx { display: inline-flex; flex-direction: column; background: var(--color-surface-default); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); box-shadow: var(--shadow-md); padding: var(--spacing-xs); min-width: 160px; }
+    .ctx-item { padding: var(--spacing-sm) var(--spacing-md); border-radius: var(--radius-sm); cursor: pointer; font-size: var(--text-body); }
+    .ctx-item:hover { background: var(--color-surface-input); }
+    .ctx-item--destructive { color: var(--color-error); }
+    .ctx-item--destructive:hover { background: color-mix(in srgb, var(--color-error) 12%, transparent); }
+    .ctx-sep { height: 1px; background: var(--color-border-default); margin: var(--spacing-xs) 0; }
+
+    /* Alert Dialog */
+    .ad { display: flex; gap: var(--spacing-md); padding: var(--spacing-lg); background: var(--color-bg-page); border-radius: var(--radius-md); align-items: flex-start; }
+    .ad-icon { width: 32px; height: 32px; border-radius: var(--radius-full); background: var(--color-error); color: var(--color-text-on-accent, #fff); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; flex-shrink: 0; }
+    .ad-body { flex: 1; }
+    .ad-title { font-weight: 700; font-size: var(--text-heading-sm); margin-bottom: var(--spacing-xs); }
+    .ad-desc { color: var(--color-text-secondary); margin-bottom: var(--spacing-md); }
+    .ad-actions { display: flex; gap: var(--spacing-sm); justify-content: flex-end; }
+    .btn-destructive { background: var(--color-error); color: var(--color-text-on-accent, #fff); padding: var(--spacing-sm) var(--spacing-lg); border: none; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; }
+
+    /* Data Table */
+    .dt { display: flex; flex-direction: column; gap: var(--spacing-sm); }
+    .dt-bulk { background: color-mix(in srgb, var(--color-primary, var(--color-text-primary)) 10%, transparent); padding: var(--spacing-xs) var(--spacing-md); border-radius: var(--radius-sm); font-size: var(--text-caption); display: flex; gap: var(--spacing-md); align-items: center; }
+    .dt-bulk-btn { background: transparent; border: none; color: var(--color-primary, var(--color-text-primary)); font-weight: 600; cursor: pointer; font-family: inherit; font-size: var(--text-caption); }
+    .dt-table { width: 100%; border-collapse: collapse; font-size: var(--text-caption); }
+    .dt-table thead { background: var(--color-bg-page); }
+    .dt-table th { text-align: left; padding: var(--spacing-sm) var(--spacing-md); color: var(--color-text-tertiary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; font-size: 11px; }
+    .dt-table td { padding: var(--spacing-sm) var(--spacing-md); border-bottom: 1px solid var(--color-border-default); }
+    .dt-sort { color: var(--color-primary, var(--color-text-primary)); font-weight: 700; }
+    .dt-badge { padding: 2px var(--spacing-sm); border-radius: var(--radius-full); font-size: 11px; background: var(--color-surface-input); color: var(--color-text-secondary); }
+    .dt-badge--success { background: var(--color-success); color: var(--color-text-on-accent, #fff); }
+    .dt-badge--warning { background: var(--color-warning); color: var(--color-text-on-accent, #fff); }
+
+    /* Carousel */
+    .car { display: flex; gap: var(--spacing-sm); align-items: center; }
+    .car-arrow { width: 32px; height: 32px; border: 1px solid var(--color-border-default); background: var(--color-surface-default); border-radius: var(--radius-full); cursor: pointer; font-size: 16px; flex-shrink: 0; }
+    .car-arrow:hover { background: var(--color-surface-input); }
+    .car-frame { flex: 1; height: 100px; background: var(--color-bg-page); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--color-text-secondary); }
+    .car-dots { display: flex; gap: var(--spacing-xs); justify-content: center; margin-top: var(--spacing-sm); }
+    .car-dot { width: 8px; height: 8px; border-radius: var(--radius-full); background: var(--color-surface-input); }
+    .car-dot--active { background: var(--color-primary, var(--color-text-primary)); width: 24px; }
+
+    /* Scroll Area */
+    .sa { max-height: 100px; overflow-y: auto; padding: var(--spacing-sm); background: var(--color-bg-page); border-radius: var(--radius-md); }
+    .sa-content { font-size: var(--text-caption); color: var(--color-text-secondary); line-height: 1.6; }
+
+    /* Sonner toast stack */
+    .son { display: flex; flex-direction: column; gap: var(--spacing-sm); }
+    .son-toast { display: flex; gap: var(--spacing-sm); align-items: center; padding: var(--spacing-sm) var(--spacing-md); background: var(--color-surface-default); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); font-size: var(--text-caption); }
+    .son-icon { width: 20px; height: 20px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; color: var(--color-text-on-accent, #fff); font-weight: 700; font-size: 12px; flex-shrink: 0; }
+    .son-toast--success .son-icon { background: var(--color-success); }
+    .son-toast--info .son-icon { background: var(--color-info); }
+    .son-toast--warning .son-icon { background: var(--color-warning); }
+
+    /* Aspect Ratio */
+    .ar { background: var(--color-surface-input); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--color-text-tertiary); font-family: ui-monospace, monospace; font-size: var(--text-caption); }
+    .ar--16-9 { aspect-ratio: 16 / 9; }
+
+    /* Chart mini */
+    .chart-mini { display: flex; gap: var(--spacing-xs); align-items: flex-end; height: 100px; padding: var(--spacing-sm); background: var(--color-bg-page); border-radius: var(--radius-md); }
+    .chart-bar { flex: 1; border-radius: var(--radius-xs) var(--radius-xs) 0 0; min-height: 8px; }
+
+    /* Date Range Picker / Time Picker */
+    .drp { display: flex; gap: var(--spacing-sm); align-items: center; padding: var(--spacing-sm) var(--spacing-md); background: var(--color-surface-input); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); font-family: ui-monospace, monospace; font-size: var(--text-caption); }
+    .drp-arrow { color: var(--color-text-tertiary); }
+    .drp-days { margin-left: auto; padding: 2px var(--spacing-sm); background: var(--color-primary, var(--color-text-primary)); color: var(--color-text-on-accent, #fff); border-radius: var(--radius-full); font-size: 11px; }
+    .tp { display: flex; gap: var(--spacing-xs); align-items: center; padding: var(--spacing-md) var(--spacing-lg); background: var(--color-surface-input); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); justify-content: center; font-size: var(--text-heading-md); font-weight: 600; font-family: ui-monospace, monospace; }
+    .tp-sep { color: var(--color-text-tertiary); }
+
     /* Token catalog (기존 — 압축 유지) */
     .catalog { margin-top: var(--spacing-3xl); padding-top: var(--spacing-2xl); border-top: 1px dashed var(--color-border-default); }
     .catalog h3 { font-size: var(--text-heading-md); font-weight: 600; margin: var(--spacing-xl) 0 var(--spacing-md); }
@@ -2695,7 +3154,54 @@ function pageCss() {
     [data-theme="dark"] .batch-card,
     [data-theme="dark"] .drw-side,
     [data-theme="dark"] .drw-bottom,
+    [data-theme="dark"] .sc-card,
+    [data-theme="dark"] .ctx,
+    [data-theme="dark"] .car-arrow,
+    [data-theme="dark"] .son-toast,
     [data-theme="dark"] .swatch { background: var(--color-surface-default-dark); }
+    [data-theme="dark"] .sb,
+    [data-theme="dark"] .mb,
+    [data-theme="dark"] .cmd,
+    [data-theme="dark"] .hc,
+    [data-theme="dark"] .ad,
+    [data-theme="dark"] .car-frame,
+    [data-theme="dark"] .sa,
+    [data-theme="dark"] .chart-mini,
+    [data-theme="dark"] .dt-table thead { background: var(--color-bg-page-dark); }
+    [data-theme="dark"] .cb,
+    [data-theme="dark"] .otp-cell,
+    [data-theme="dark"] .otp-cell--filled,
+    [data-theme="dark"] .drp,
+    [data-theme="dark"] .tp,
+    [data-theme="dark"] .ar,
+    [data-theme="dark"] .car-dot { background: var(--color-surface-input-dark); }
+    [data-theme="dark"] .otp-cell--filled { background: var(--color-surface-default-dark); }
+    [data-theme="dark"] .acc,
+    [data-theme="dark"] .ctx,
+    [data-theme="dark"] .col-trigger,
+    [data-theme="dark"] .car-arrow,
+    [data-theme="dark"] .son-toast,
+    [data-theme="dark"] .tg,
+    [data-theme="dark"] .tgg,
+    [data-theme="dark"] .tgg-item + .tgg-item,
+    [data-theme="dark"] .acc-item + .acc-item,
+    [data-theme="dark"] .acc-body { border-color: var(--color-border-default-dark); }
+    [data-theme="dark"] .dt-table td { border-bottom-color: var(--color-border-default-dark); }
+    [data-theme="dark"] .acc-item--open .acc-trigger,
+    [data-theme="dark"] .sb-item--active,
+    [data-theme="dark"] .tg--on,
+    [data-theme="dark"] .tgg-item--active,
+    [data-theme="dark"] .tg:hover,
+    [data-theme="dark"] .tgg-item:hover,
+    [data-theme="dark"] .acc-trigger:hover,
+    [data-theme="dark"] .col-trigger:hover,
+    [data-theme="dark"] .nm-item:hover,
+    [data-theme="dark"] .mb-item:hover,
+    [data-theme="dark"] .cmd-item:hover,
+    [data-theme="dark"] .car-arrow:hover,
+    [data-theme="dark"] .ctx-item:hover,
+    [data-theme="dark"] .sb-item:hover { background: var(--color-surface-input-dark); }
+    [data-theme="dark"] .cmd-input { background: var(--color-surface-default-dark); border-color: var(--color-border-default-dark); color: var(--color-text-primary-dark); }
     [data-theme="dark"] .drw-frame { background: var(--color-bg-page-dark); }
     [data-theme="dark"] .drw-handle { background: var(--color-surface-input-dark); }
     [data-theme="dark"] .drw-row { border-color: var(--color-border-default-dark); }
@@ -2852,6 +3358,8 @@ function pageCss() {
       .sk-demo { grid-template-columns: 1fr; }
       .batch-grid { grid-template-columns: 1fr; }
       .drw-side { width: 100%; }
+      .sc-grid { grid-template-columns: 1fr; }
+      .dt-table { font-size: 11px; }
     }
   `;
 }
@@ -2903,6 +3411,11 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     ${renderForm(brand)}
     ${renderSkeleton(brand)}
     ${renderBatchV67(brand)}
+    ${renderShadcnNav(brand)}
+    ${renderShadcnInput(brand)}
+    ${renderShadcnDisclose(brand)}
+    ${renderShadcnData(brand)}
+    ${renderShadcnExtras(brand)}
     ${renderTokenCatalog(tokens)}
     <p style="text-align:center;color:var(--color-text-tertiary);font-size:var(--text-caption);margin-top:var(--spacing-3xl);">
       source <code>${escape(sourceFile)}</code> · Porest Design System
