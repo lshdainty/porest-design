@@ -27,9 +27,10 @@
 **v16 — Focus ring 분리**
 - v16: `border-focus`/`border-focus-light` per brand × surface mode (v3 시점 deferred 해결)
 
-**v22~v25 — Semantic dark / Chart palette / Shadow dark**
-- v22: semantic light variants (`success-light`/`error-light`/`warning-light`/`info-light`) — 다크 표면 위 inline 텍스트
-- v23~v24: chart palette 10색 × 2 mode (red·orange·yellow·green·blue·indigo·violet·pink·brown·gray × {base, light})
+**v20~v25 — Semantic dark / Chart palette / Shadow dark**
+- v20: semantic light variants (`success-light`/`error-light`/`warning-light`/`info-light`) — 다크 표면 위 inline 텍스트, 4 페어 lint 4.5:1 통과 검증
+- v21~v22: chart palette light surface 10색 base (v21 red/orange/yellow/green/blue + v22 indigo/violet/pink/brown/gray) — L≈0.16-0.18, UI 1.4.11 (3:1) 통과, sparse `chart-color-{name}` 매핑
+- v23~v24: chart palette dark surface 10색 변형 (`chart-*-light`, L≈0.45-0.55 — v23 5색 + v24 5색 분리 배치)
 - v25: `shadow-*-dark` 4종 (prose-token, Material 3 / Big Sur 패턴 — black opacity ↑ + inset white top highlight)
 
 **v26~v28 — Scale 확장**
@@ -57,9 +58,9 @@
 - **v31**: pre-commit hook (`.husky/pre-commit`) — `npm run verify` 자동 실행. 의존성 추가 0 (native `core.hooksPath`, husky 패키지 미사용).
 
 ### Docs
-- **v18**: `GIT_CONVENTION.md` (브랜치/커밋 규칙)
+- **v18**: spec 섹션명 정렬 (`## Layout`, `## Elevation & Depth` 등 spec 표기 일치)
 - **v19**: cross-brand dangling references 정리 (v17 split 후 잔재)
-- **v20**: spec 섹션명 정렬 (`## Layout` → `## Layout`, `## Elevation & Depth` 등 spec 표기 일치)
+- **(별도 commit `ab855c7`)**: `GIT_CONVENTION.md` 추가 (브랜치/커밋 규칙). 토큰/spec 변경 없는 docs(rationale) commit — `DESIGN.history/v{N}` milestone 번호 미부여 (원칙: 백업 대상은 spec 변경만).
 
 ## Format conventions
 
