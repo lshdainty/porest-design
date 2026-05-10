@@ -704,7 +704,7 @@ function renderTypographyMoment(brand, tokens) {
         <span>${escape(t.fontSize)} / ${escape(t.lineHeight)} · ${escape(t.fontWeight)}</span>
       </div>
       <div class="typo-scale-sample" style="font-size:${escape(t.fontSize)};line-height:${escape(t.lineHeight)};font-weight:${escape(t.fontWeight)};">
-        포레스트 디자인 — Porest
+        Porest
       </div>
     </div>`).join("");
 
@@ -719,15 +719,19 @@ function renderTypographyMoment(brand, tokens) {
     <header class="section-head">
       <div class="section-eyebrow">02 — Type</div>
       <h2 class="section-title">Pretendard · 한국어 우선, 절제된 weights</h2>
-      <p class="section-lede">큰 숫자 한 컷 + 7단계 스케일. 본문 15/1.6, heading은 1.25 ~ 1.4 line-height로 압축.</p>
+      <p class="section-lede">큰 숫자 한 컷 + 21단계 스케일(한국어 베이스 + Airbnb reference batch v55-v57). 본문 15/1.6, heading은 1.25 ~ 1.4 line-height.</p>
     </header>
     <div class="typo-moment">
-      <div class="typo-moment-left">
-        <div class="typo-meta">${meta}</div>
-        <div class="typo-bignum">${escape(brand.bigNumber)}</div>
-        <div class="typo-bignum-label">${escape(brand.bigNumberLabel)}</div>
+      <div class="typo-moment-top">
+        <div class="typo-moment-left">
+          <div class="typo-meta">${meta}</div>
+        </div>
+        <div class="typo-moment-right">
+          <div class="typo-bignum">${escape(brand.bigNumber)}</div>
+          <div class="typo-bignum-label">${escape(brand.bigNumberLabel)}</div>
+        </div>
       </div>
-      <div class="typo-moment-right">${scaleRows}</div>
+      <div class="typo-scale-grid">${scaleRows}</div>
     </div>
   </section>`;
 }
@@ -1543,19 +1547,26 @@ function pageCss() {
 
     /* Typography moment */
     .typo-moment {
-      display: grid; grid-template-columns: 1fr 1.2fr; gap: var(--spacing-2xl);
+      display: grid; grid-template-columns: 1fr; gap: var(--spacing-2xl);
       background: var(--color-surface-default);
       border-radius: var(--radius-lg);
       padding: var(--spacing-2xl);
       box-shadow: var(--shadow-sm);
     }
-    .typo-moment-left { align-self: center; }
+    .typo-moment-top {
+      display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-2xl);
+      align-items: end;
+      padding-bottom: var(--spacing-xl);
+      border-bottom: 1px solid var(--color-border-default);
+    }
+    .typo-moment-left { align-self: end; }
+    .typo-moment-right { align-self: end; }
     .typo-meta { display: flex; flex-direction: column; gap: var(--spacing-xs); margin-bottom: var(--spacing-lg); }
     .typo-meta-row { display: flex; gap: var(--spacing-md); padding-bottom: var(--spacing-xs); border-bottom: 1px solid var(--color-border-default); }
     .typo-meta-key { width: 80px; color: var(--color-text-tertiary); font-size: var(--text-caption); }
     .typo-meta-val { font-size: var(--text-caption); flex: 1; }
     .typo-bignum {
-      font-size: clamp(64px, 9vw, 128px);
+      font-size: clamp(56px, 7vw, 96px);
       line-height: 1;
       font-weight: 700;
       letter-spacing: -0.04em;
@@ -1563,17 +1574,30 @@ function pageCss() {
       color: var(--color-text-primary);
     }
     .typo-bignum-label { color: var(--color-text-tertiary); font-size: var(--text-caption); margin-top: var(--spacing-sm); }
+    .typo-scale-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 var(--spacing-2xl);
+    }
     .typo-scale-row {
-      display: grid; grid-template-columns: 200px 1fr;
+      display: grid; grid-template-columns: 140px 1fr;
       gap: var(--spacing-md);
       padding: var(--spacing-sm) 0;
       border-bottom: 1px solid var(--color-border-default);
       align-items: baseline;
+      min-width: 0;
     }
-    .typo-scale-row:last-of-type { border-bottom: none; }
-    .typo-scale-meta strong { font-size: var(--text-caption); display: block; }
+    .typo-scale-row:last-of-type { border-bottom: 1px solid var(--color-border-default); }
+    .typo-scale-meta { min-width: 0; }
+    .typo-scale-meta strong { font-size: var(--text-caption); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .typo-scale-meta span { color: var(--color-text-tertiary); font-family: ui-monospace, monospace; font-size: 11px; }
-    .typo-scale-sample { color: var(--color-text-secondary); }
+    .typo-scale-sample {
+      color: var(--color-text-secondary);
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
 
     /* Button gallery matrix */
     .btn-matrix { display: grid; gap: var(--spacing-sm); }
@@ -2340,7 +2364,7 @@ function pageCss() {
     [data-theme="dark"] .theme-toggle-light-icon { display: inline; }
 
     @media (max-width: 900px) {
-      .hero, .vignette-grid, .typo-moment, .ld-grid, .review-grid { grid-template-columns: 1fr; }
+      .hero, .vignette-grid, .typo-moment-top, .ld-grid, .review-grid, .typo-scale-grid { grid-template-columns: 1fr; }
       .btn-row { grid-template-columns: 80px repeat(5, 1fr); }
       .approval-row { grid-template-columns: 1fr 1fr; }
       .ld-rail, .review-summary { position: static; }
