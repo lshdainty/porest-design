@@ -573,6 +573,50 @@ function brandProfile(brandName, tokens) {
 
 // ===== 섹션 렌더러 =====
 
+function renderHeroArt(brandKey) {
+  if (brandKey === "hr") {
+    // 조직도 abstract — 4 connected nodes
+    return `
+      <svg class="hero-art-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <line x1="100" y1="50" x2="50" y2="130" stroke="currentColor" stroke-width="2" stroke-opacity="0.5"/>
+        <line x1="100" y1="50" x2="100" y2="130" stroke="currentColor" stroke-width="2" stroke-opacity="0.5"/>
+        <line x1="100" y1="50" x2="150" y2="130" stroke="currentColor" stroke-width="2" stroke-opacity="0.5"/>
+        <line x1="50" y1="130" x2="40" y2="170" stroke="currentColor" stroke-width="2" stroke-opacity="0.3"/>
+        <line x1="100" y1="130" x2="100" y2="170" stroke="currentColor" stroke-width="2" stroke-opacity="0.3"/>
+        <circle cx="100" cy="50" r="14" fill="currentColor" fill-opacity="0.85"/>
+        <circle cx="50" cy="130" r="11" fill="currentColor" fill-opacity="0.7"/>
+        <circle cx="100" cy="130" r="11" fill="currentColor" fill-opacity="0.7"/>
+        <circle cx="150" cy="130" r="11" fill="currentColor" fill-opacity="0.7"/>
+        <circle cx="40" cy="170" r="7" fill="currentColor" fill-opacity="0.5"/>
+        <circle cx="100" cy="170" r="7" fill="currentColor" fill-opacity="0.5"/>
+      </svg>`;
+  }
+  if (brandKey === "desk") {
+    // 메모 + 체크박스 abstract
+    return `
+      <svg class="hero-art-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="40" y="40" width="120" height="140" rx="10" fill="currentColor" fill-opacity="0.18"/>
+        <rect x="40" y="40" width="120" height="140" rx="10" stroke="currentColor" stroke-opacity="0.55" stroke-width="2"/>
+        <rect x="56" y="64" width="14" height="14" rx="3" stroke="currentColor" stroke-width="2" stroke-opacity="0.7"/>
+        <path d="M59 71 l3 3 l6 -7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.85"/>
+        <line x1="80" y1="72" x2="140" y2="72" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-opacity="0.7"/>
+        <rect x="56" y="92" width="14" height="14" rx="3" stroke="currentColor" stroke-width="2" stroke-opacity="0.55"/>
+        <line x1="80" y1="100" x2="130" y2="100" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-opacity="0.45"/>
+        <rect x="56" y="120" width="14" height="14" rx="3" stroke="currentColor" stroke-width="2" stroke-opacity="0.55"/>
+        <line x1="80" y1="128" x2="120" y2="128" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-opacity="0.45"/>
+        <line x1="56" y1="152" x2="144" y2="152" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-opacity="0.3"/>
+      </svg>`;
+  }
+  // shared baseline — typography composition
+  return `
+    <svg class="hero-art-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <text x="20" y="100" font-family="ui-sans-serif, system-ui" font-size="84" font-weight="700" fill="currentColor" fill-opacity="0.9">Aa</text>
+      <text x="100" y="160" font-family="ui-sans-serif, system-ui" font-size="56" font-weight="500" fill="currentColor" fill-opacity="0.55">가</text>
+      <line x1="20" y1="178" x2="180" y2="178" stroke="currentColor" stroke-width="2" stroke-opacity="0.35"/>
+      <line x1="20" y1="186" x2="120" y2="186" stroke="currentColor" stroke-width="2" stroke-opacity="0.2"/>
+    </svg>`;
+}
+
 function renderHero(brand) {
   const facts = brand.heroFacts.map(f => `
     <div class="hero-fact">
@@ -583,14 +627,17 @@ function renderHero(brand) {
   return `
   <section class="hero">
     <div class="hero-card hero-card--primary">
-      <div class="hero-eyebrow">Design System Inspiration of Porest</div>
-      <h1 class="hero-title">${escape(brand.title)}</h1>
-      <div class="hero-kicker">${escape(brand.kicker)}</div>
-      <p class="hero-tagline">${escape(brand.tagline)}</p>
-      <div class="hero-actions">
-        <button class="btn btn-on-accent">Browse</button>
-        <button class="btn btn-on-accent btn-outlined-on-dark">View tokens</button>
+      <div class="hero-card-content">
+        <div class="hero-eyebrow">Design System Inspiration of Porest</div>
+        <h1 class="hero-title">${escape(brand.title)}</h1>
+        <div class="hero-kicker">${escape(brand.kicker)}</div>
+        <p class="hero-tagline">${escape(brand.tagline)}</p>
+        <div class="hero-actions">
+          <button class="btn btn-on-accent">Browse</button>
+          <button class="btn btn-on-accent btn-outlined-on-dark">View tokens</button>
+        </div>
       </div>
+      <div class="hero-card-art">${renderHeroArt(brand.key)}</div>
     </div>
     <div class="hero-card hero-card--surface">
       <div class="hero-eyebrow">Foundation</div>
@@ -1426,7 +1473,29 @@ function pageCss() {
     .hero-card--primary {
       background: var(--color-primary, var(--color-text-primary));
       color: var(--color-text-on-accent, #fff);
+      position: relative;
+      overflow: hidden;
     }
+    .hero-card--primary .hero-card-content {
+      position: relative;
+      z-index: 1;
+      max-width: 60%;
+    }
+    .hero-card-art {
+      position: absolute;
+      top: 50%;
+      right: var(--spacing-xl);
+      transform: translateY(-50%);
+      width: 220px;
+      height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-on-accent, #fff);
+      pointer-events: none;
+      opacity: 0.95;
+    }
+    .hero-art-svg { width: 100%; height: 100%; }
     .hero-card--surface {
       background: var(--color-surface-default);
       color: var(--color-text-primary);
@@ -2365,6 +2434,8 @@ function pageCss() {
 
     @media (max-width: 900px) {
       .hero, .vignette-grid, .typo-moment-top, .ld-grid, .review-grid, .typo-scale-grid { grid-template-columns: 1fr; }
+      .hero-card--primary .hero-card-content { max-width: 100%; }
+      .hero-card-art { width: 120px; height: 120px; opacity: 0.4; right: var(--spacing-md); }
       .btn-row { grid-template-columns: 80px repeat(5, 1fr); }
       .approval-row { grid-template-columns: 1fr 1fr; }
       .ld-rail, .review-summary { position: static; }
