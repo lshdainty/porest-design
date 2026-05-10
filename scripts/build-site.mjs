@@ -1668,7 +1668,62 @@ const tokens = buildTokens();
 TAILWIND_BLOCK = tokens.tailwindBlock;
 writeFileSync(resolve(OUT, "assets/tokens.css"), tokens.rootCss);
 // site.css = 사이트 layout + preview.html demo CSS (preview의 sc-card / btn-* / son-toast 등)
-const combinedSiteCss = siteCss() + "\n\n/* === preview.html demo CSS === */\n" + previewPageCss();
+// 단, preview의 site-level 셀렉터(body, .theme-toggle, .app 등)는 제거 — site CSS와 충돌
+function sanitizePreviewCss(css) {
+  // 충돌 셀렉터 패턴 — selectorPart trim + comment 제거 후 매칭
+  // 셀렉터 끝(또는 다음 문자가 word-extension이 아닌)을 검사 — 더 길게 이어진 이름과 구분
+  const conflictPatterns = [
+    /^body(?![-a-zA-Z0-9_])/,
+    /^\.theme-toggle(?![-a-zA-Z0-9_])/,
+    /^\.theme-toggle-icon(?![-a-zA-Z0-9_])/,
+    /^\.theme-toggle-(?:dark|light)-(?:text|icon)(?![-a-zA-Z0-9_])/,
+    /^\[data-theme="(?:light|dark)"\]\s+body(?![-a-zA-Z0-9_])/,
+    /^\[data-theme="(?:light|dark)"\]\s+\.theme-toggle(?![-a-zA-Z0-9_])/,
+    /^main(?![-a-zA-Z0-9_])/,
+    /^html(?![-a-zA-Z0-9_])/,
+  ];
+  function cleanSelector(s) {
+    // 리딩 whitespace + CSS 주석 제거
+    return s.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s+/, "").replace(/\s+$/, "");
+  }
+  // CSS rule 블록 단위로 split + filter (간단한 brace 기반 파서)
+  const out = [];
+  let i = 0;
+  while (i < css.length) {
+    // selector 부분 (block 시작 전까지)
+    let j = i;
+    let depth = 0;
+    while (j < css.length) {
+      if (css[j] === "{") { depth = 1; break; }
+      j++;
+    }
+    if (depth === 0) { out.push(css.slice(i)); break; }
+    // selector 추출
+    const selectorPart = css.slice(i, j);
+    // body 매칭 (rule 단위) — block 끝까지 찾기
+    let k = j + 1;
+    let braceDepth = 1;
+    while (k < css.length && braceDepth > 0) {
+      if (css[k] === "{") braceDepth++;
+      else if (css[k] === "}") braceDepth--;
+      k++;
+    }
+    const ruleBlock = css.slice(i, k);
+    const cleanedSelector = cleanSelector(selectorPart);
+    // @media / @keyframes 등 at-rule은 그대로 통과 (내부 rule도 함께)
+    if (cleanedSelector.startsWith("@")) {
+      out.push(ruleBlock);
+    } else {
+      // 충돌 selector 검사 (cleaned 기준)
+      const conflicts = conflictPatterns.some(re => re.test(cleanedSelector));
+      if (!conflicts) out.push(ruleBlock);
+      else out.push(`/* SKIPPED conflicting: ${cleanedSelector.slice(0, 60)}... */\n`);
+    }
+    i = k;
+  }
+  return out.join("");
+}
+const combinedSiteCss = siteCss() + "\n\n/* === preview.html demo CSS (sanitized) === */\n" + sanitizePreviewCss(previewPageCss());
 writeFileSync(resolve(OUT, "assets/site.css"), combinedSiteCss);
 writeFileSync(resolve(OUT, "assets/site.js"), siteJs());
 

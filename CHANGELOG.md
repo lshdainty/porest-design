@@ -137,6 +137,11 @@
 
 **shadcn 확장 4 series 완료** — 총 20 컴포넌트 (v68 navigation 5 + v69 input 5 + v70 disclosure 5 + v71 data 5). 시스템 컴포넌트 75+ 보유 (기존 55 + v68-v71 batch).
 
+**v92 — preview.html demo CSS sanitize (사이트 layout 충돌 fix)**
+- v92: 사용자 시각 검증 — 데스크탑에서도 brand-switch의 Desk 버튼이 클릭 불가. 원인: v90에서 `assets/site.css` = `siteCss() + previewPageCss()` 합쳤는데, **preview.html의 `.theme-toggle`이 `position: fixed; top/right: 16px; z-index: 1400`로 정의되어 사이트의 topbar 토글 위에 떠서 brand-switch의 Desk 버튼을 가렸음**. v91 viewport-크기 수정은 미스타깃.
+- 수정: `sanitizePreviewCss()` 함수 추가 — preview pageCss에서 사이트 layout과 충돌하는 셀렉터 자동 제거. brace-balanced 파서로 rule 블록 단위 분리, 셀렉터의 leading 주석/whitespace 제거 후 `^pattern(?![-a-zA-Z0-9_])` 으로 word-boundary 매칭. 충돌 셀렉터는 `/* SKIPPED conflicting: ... */` 주석으로 대체.
+- 제거 대상 8 패턴 — `body`, `main`, `html`, `.theme-toggle`, `.theme-toggle-icon`, `.theme-toggle-{dark,light}-{text,icon}`, `[data-theme="..."] body`, `[data-theme="..."] .theme-toggle`. 결과 7 conflicting rule 자동 제거. 사이트 도구의 `.theme-toggle` 정의(`position: static`, topbar 안)만 활성.
+
 **v91 — 좁은 viewport topbar 오버플로 fix (Desk 버튼 클릭 불가)**
 - v91: 사용자 시각 검증 — narrow viewport(~700px)에서 brand-switch의 Desk 버튼이 theme-toggle에 가려져 클릭 불가. controls 영역 overflow 처리 누락.
 - 수정 1: `.controls` / `.brand-switch` / `.theme-toggle`에 `flex-shrink: 0` + `white-space: nowrap` 추가 — 강제 한 줄 유지.
