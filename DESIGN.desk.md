@@ -1678,3 +1678,30 @@ Desk(B2C) 4 컴포넌트 사용 패턴 — DESIGN.md 공통 spec 외 brand-speci
 - **vertical stepper**: 가계부 분류 설정 4단계 — 모바일 화면에서 자연스러움.
 - **free navigation**: 설정 메뉴는 모든 단계 자유 이동 (의존성 없음). 결재처럼 sequential 강제 안 함.
 - step circle 32 default, sm 24는 inline minimal (캘린더 위 진행 표시 등).
+
+### Navigation batch (v68 추가)
+
+Desk(B2C) 5 navigation 컴포넌트 — 모바일 우선 + 단순한 페이지 위계.
+
+#### Breadcrumb — Desk
+- 메모/할일은 1-2 depth 정도 — breadcrumb 거의 사용 안 함.
+- 가계부 카테고리 drill-down 시 사용 — `Home / 가계부 / 식비`. 모바일에서 truncation 적용.
+
+#### Sidebar — Desk
+- **floating drawer** 변형 위주 — 모바일 햄버거 메뉴 (좌측 swipe-in 또는 상단 toggle).
+- 데스크탑 `breakpoint-lg` 이상에서만 fixed 240px 사용 — Desk는 모바일 비중 ↑.
+- nav 그룹: 메모 / 할일 / 가계부 / 캘린더 / 설정 (5 그룹).
+- footer: 본인 profile + 다크 모드 toggle.
+
+#### Navigation Menu — Desk
+- 데스크탑 web 진입 시 header link — single-level (Home / 메모 / 할일 / 가계부 / 설정).
+- B2C라 mega menu는 부적합 (data app 톤이지 marketing 사이트 아님).
+
+#### Menubar — Desk
+- 모바일 우선이라 menubar 거의 사용 안 함 — 데스크탑 web에서만 옵션.
+- File / Edit / View 같은 application 메뉴 비활성 — Desk는 네이티브 app 톤이 아닌 web/PWA.
+
+#### Command (Cmd+K) — Desk
+- 메모/할일 빠른 검색 핵심 — typing 즉시 fuzzy match (제목 + 본문).
+- Sections: Recent memos / Tags (filter by tag) / Quick actions (새 메모, 새 할일) / Settings.
+- 모바일에서 search trigger는 상단 search bar (`/` shortcut), 데스크탑은 Cmd+K.
