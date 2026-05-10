@@ -23,6 +23,7 @@
     "test:exports": "npm run export:tailwind:all && node scripts/test-tailwind-export.mjs",
     "build:preview": "npm run export:tailwind:all && node scripts/build-preview-html.mjs",
     "build:examples": "npm run export:tailwind && node scripts/build-examples-html.mjs > exports/examples.html",
+    "build:site": "npm run export:tailwind:all && node scripts/build-site.mjs",
     "lint:prose": "node scripts/lint-prose.mjs",
     "lint:prose:strict": "node scripts/lint-prose.mjs --strict",
     "prepare": "git config core.hooksPath .husky 2>/dev/null || true"
