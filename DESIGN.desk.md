@@ -1050,6 +1050,29 @@ skeleton shimmer · spinner · pulse 등 **반복 애니메이션** 용 토큰 2
 
 DESIGN.md의 Loop motion 정의와 동일 (brand-neutral). Desk `base`/`slow`/`loop` 조합이 일반적 — 메모 카드 hover(`base`) + bottom sheet(`slow`) + skeleton(`loop`).
 
+### Animation library (v74 추가, prose-token)
+
+DESIGN.md baseline 정의 참고 — 14 keyframes (단발 10 + loop 4). 모바일 친근 톤이라 더 풍부한 motion 사용.
+
+#### Desk 우선 패턴
+- **메모 카드 등장** — `scale-in` + `motion-duration-base` (200ms): 새 메모 작성 후 list에 추가될 때 (`scale 0.96 → 1`).
+- **Bottom sheet (할일 추가, 가계부 입력)** — `slide-in-up` + `motion-duration-slow` (300ms): 화면 하단에서 올라옴, 모바일 핵심 패턴.
+- **Toast** — `slide-in-up` + `motion-duration-slow` (300ms): bottom-center 위치라 아래에서 올라옴.
+- **Modal (드물게)** — `scale-in` + `motion-duration-base` (200ms): 가계부 카테고리 편집 등.
+- **Skeleton (가계부 list 로딩)** — `shimmer` + `motion-duration-loop` linear.
+- **Pull-to-refresh spinner** — `spin` + `motion-duration-loop` linear.
+- **Notification dot (새 메시지/할일 알림)** — `ping` + `motion-duration-loop` (1500ms) ease-out: 모바일 attention 끌기.
+- **할일 완료 체크** — `bounce-in` + `motion-duration-slower` (500ms): 체크 시 잠깐 over-shoot — Desk B2C 친근 톤 핵심.
+- **Form validation error** — `shake` + `motion-duration-slow` (300ms): 가계부 금액 미입력 등.
+
+#### Desk 적극 사용
+- `bounce-in` — 할일 완료, 가계부 저장 success indicator. HR과 달리 일상 UI에서 작은 즐거움 표현.
+- `ping` — 새 알림 dot, 새 기능 spotlight. 모바일 attention.
+- `slide-in-up` — bottom sheet 핵심. 다른 motion 대비 사용 빈도 높음.
+
+#### Desk 회피 패턴
+- `slide-in-down` — 모바일 화면 작아 위에서 내려오는 toast는 가독성 낮음. bottom-up 위주.
+
 ## Shapes
 
 ### v6 추가 — 5단계 라운드 스케일

@@ -137,6 +137,13 @@
 
 **shadcn 확장 4 series 완료** — 총 20 컴포넌트 (v68 navigation 5 + v69 input 5 + v70 disclosure 5 + v71 data 5). 시스템 컴포넌트 75+ 보유 (기존 55 + v68-v71 batch).
 
+**v74 — Animation library (keyframes + 사용 패턴)**
+- v74: 14 정형 keyframe prose-token — 단발 10(`fade-in`/`fade-out`/`slide-in-{up,down,left,right}`/`scale-in`/`scale-out`/`bounce-in`/`shake`) + loop 4(`spin`/`pulse`/`shimmer`/`ping`). 권장 duration(`motion-duration-{fast,base,slow,slower,loop}`) + ease 매핑 표 + CSS keyframes 정의 + `animation` shorthand 패턴 (Toast/Modal/Skeleton/Spinner/Notification dot/Form error 등 7 사용 사례).
+- 추가 이유: v32(duration/ease) + v63(loop) → 컴포넌트 spec에서 keyframe 직접 작성 반복 누적, shadcn/ui + Material + Toss 표준 합집합 정형화.
+- WCAG: 2.3.3(`prefers-reduced-motion: reduce` 일괄 처리 권장 코드 명시) + 2.2.2(loop 자동 정지/cancel).
+- HR(결재 row fade-in / Toast slide-in-down / Modal scale-in / Drawer slide-in-left / 절제 톤, bounce 제한) / Desk(메모 카드 scale-in / Bottom sheet slide-in-up / 할일 완료 bounce-in / Notification ping / 모바일 친근 톤) brand-specific 적용.
+- prose-token이라 lint 비대상. 컴포넌트 spec에서 keyframe 이름 인용 (오타 시 silent failure).
+
 **v72 — Extras batch (Sonner/Aspect Ratio/Chart/Date Range Picker/Time Picker)**
 - v72: 5 추가 컴포넌트 prose-only — shadcn 외 자주 사용 패턴 보강.
   - **Sonner**: multi-toast stack, position 4종(top/bottom × left/center/right), max 3 + collapsed +N, hover stack pause, 5/7/10s auto-dismiss kind별, undo action 5s. v46 Toast의 상위 패턴.
