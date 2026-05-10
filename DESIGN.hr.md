@@ -616,16 +616,16 @@ design.md `contrastCheck` 룰은 incidental 인지 없이 모든 `backgroundColo
 #### HR / Desk 듀얼 브랜드
 - neutral 토큰 — 양 브랜드 공유. accent에 의존 없음.
 
-### Semantic colors (v10 추가)
+### Semantic colors (v10 추가, v51-v52에서 vivid refresh)
 
-상태 전달을 위한 functional palette — 브랜드 정체성과 분리된 4개 status. HR/Desk 양 브랜드 공유, 라이트 표면 base만 이번 배치에서 확정.
+상태 전달을 위한 functional palette — 브랜드 정체성과 분리된 4개 status. HR/Desk 양 브랜드 공유, 라이트 표면 base만 이번 배치에서 확정. **현재 사용 hex는 v51-v52 이후 vivid 톤** (DESIGN.md `### Semantic refresh` 섹션 참조). v10 시점 hex는 변천 history.
 
-| 토큰 | hex | 시맨틱 |
-|---|---|---|
-| `success` | `#117A3A` | 완료·확인·긍정 결과 (forest green — primary emerald와 hue 분리) |
-| `error` | `#C53030` | 오류·파괴적 액션·필수 입력 누락 |
-| `warning` | `#A85800` | 경고·주의·임박 만료 (deep amber) |
-| `info` | `#006395` | 안내·도움말·진행 중 (deep navy — Desk primary와 채도·명도 분리) |
+| 토큰 | v10 hex (이전) | v51-v52 hex (**현재**) | 시맨틱 |
+|---|---|---|---|
+| `success` | `#117A3A` | `#16803F` | 완료·확인·긍정 결과 (Tailwind green-700 톤) |
+| `error` | `#C53030` | `#DC2626` | 오류·파괴적 액션·필수 입력 누락 (Tailwind red-600) |
+| `warning` | `#A85800` | `#C84D0E` | 경고·주의·임박 만료 (orange — v52 미세 brighten) |
+| `info` | `#006395` | `#1D6FCB` | 안내·도움말·진행 중 (sky blue, Tailwind sky-600) |
 
 #### 추가 이유
 1. 폼 검증·토스트·alert·badge 컴포넌트는 모든 제품 공통 인터랙션 — accent로는 표현 불가능한 functional state 전달이 차단되어 있었음.
@@ -662,16 +662,16 @@ design.md `contrastCheck` 룰은 incidental 인지 없이 모든 `backgroundColo
 
 토큰: `chart-red` `#C73838`, `chart-orange` `#B36418`, `chart-yellow` `#8C7400`, `chart-green` `#2D8060`, `chart-blue` `#2C70BF`. sparse component(`chart-color-{name}`)로 referencing. chart는 brand 분기 비대상 — 양 brand 동일 사용. primary와 hue 비슷할 수 있으나 역할 분리(별도 토큰).
 
-#### v20 추가 — semantic 다크 변형 4개
+#### v20 추가, v53 vivid refresh — semantic 다크 변형 4개
 
-다크 표면 위 alert·toast·인라인 semantic 텍스트용 lightness 변형. base는 라이트 표면 전용(흰 텍스트 fill 4.5:1↑), light는 다크 표면 위 텍스트 4.5:1↑.
+다크 표면 위 alert·toast·인라인 semantic 텍스트용 lightness 변형. base는 라이트 표면 전용(흰 텍스트 fill 4.5:1↑), light는 다크 표면 위 텍스트 4.5:1↑. **현재 사용 hex는 v53 이후 Tailwind 400 톤** (DESIGN.md `### Semantic light refresh` 섹션 참조).
 
-| 토큰 | hex | L | 다크 표면 contrast (lint 실측) |
+| 토큰 | v20 hex (이전) | v53 hex (**현재**) | 다크 표면 contrast |
 |---|---|---|---|
-| `success-light` | `#5DC07B` | 0.416 | surface-default-dark **6.35** / surface-input-dark **5.46** ✅ |
-| `error-light` | `#F08080` | 0.355 | surface-default-dark **5.52** / surface-input-dark **4.75** ✅ |
-| `warning-light` | `#E8A05A` | 0.430 | surface-default-dark **6.54** / surface-input-dark **5.63** ✅ |
-| `info-light` | `#6FAEDF` | 0.394 | surface-default-dark **6.05** / surface-input-dark **5.20** ✅ |
+| `success-light` | `#5DC07B` | `#4ADE80` | surface-default-dark ≥4.5:1 ✅ (Tailwind green-400) |
+| `error-light` | `#F08080` | `#F87171` | surface-default-dark ≥4.5:1 ✅ (Tailwind red-400) |
+| `warning-light` | `#E8A05A` | `#FB923C` | surface-default-dark ≥4.5:1 ✅ (Tailwind orange-400 — 가장 큰 hue 변화, base와 일치) |
+| `info-light` | `#6FAEDF` | `#60A5FA` | surface-default-dark ≥4.5:1 ✅ (Tailwind blue-400) |
 
 4개 컴포넌트(`alert-text-{semantic}-on-dark`)에서 lint contrast 룰로 검증 — 모두 ≥4.5:1 통과.
 

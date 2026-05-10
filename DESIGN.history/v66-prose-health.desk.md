@@ -622,12 +622,10 @@ design.md `contrastCheck` 룰은 incidental 인지 없이 모든 `backgroundColo
 
 | 토큰 | hex | 시맨틱 |
 |---|---|---|
-| `success` | v10 `#117A3A` → v51 **`#16803F`** | 완료·확인·긍정 (Tailwind green-700 톤) |
-| `error` | v10 `#C53030` → v51 **`#DC2626`** | 오류·파괴적 액션·필수 입력 누락 (Tailwind red-600) |
-| `warning` | v10 `#A85800` → v51 `#C2410C` → v52 **`#C84D0E`** | 경고·주의·임박 만료 (orange — v52 미세 brighten) |
-| `info` | v10 `#006395` → v51 **`#1D6FCB`** | 안내·도움말·진행 중 (sky blue, Tailwind sky-600) |
-
-> **현재 사용 hex는 v51-v52 갱신 후** (DESIGN.md `### Semantic refresh` 섹션 참조). v10 시점 hex는 변천 history.
+| `success` | `#117A3A` | 완료·확인·긍정 결과 (forest green — HR primary와 hue 분리) |
+| `error` | `#C53030` | 오류·파괴적 액션·필수 입력 누락 |
+| `warning` | `#A85800` | 경고·주의·임박 만료 (deep amber) |
+| `info` | `#006395` | 안내·도움말·진행 중 (deep navy — primary vibrant blue와 채도·명도 분리) |
 
 #### 추가 이유
 1. 폼 검증·토스트·alert·badge 컴포넌트는 모든 제품 공통 인터랙션 — accent로는 표현 불가능한 functional state 전달이 차단되어 있었음.
@@ -670,12 +668,10 @@ design.md `contrastCheck` 룰은 incidental 인지 없이 모든 `backgroundColo
 
 | 토큰 | hex | L | 다크 표면 contrast (lint 실측) |
 |---|---|---|---|
-| `success-light` | v20 `#5DC07B` → v53 **`#4ADE80`** | Tailwind green-400, surface-default-dark ≥4.5:1 ✅ |
-| `error-light` | v20 `#F08080` → v53 **`#F87171`** | Tailwind red-400, surface-default-dark ≥4.5:1 ✅ |
-| `warning-light` | v20 `#E8A05A` → v53 **`#FB923C`** | Tailwind orange-400 (가장 큰 hue 변화, base와 일치), surface-default-dark ≥4.5:1 ✅ |
-| `info-light` | v20 `#6FAEDF` → v53 **`#60A5FA`** | Tailwind blue-400, surface-default-dark ≥4.5:1 ✅ |
-
-> **현재 사용 hex는 v53 갱신 후** (DESIGN.md `### Semantic light refresh` 섹션 참조). v20 시점 hex는 변천 history.
+| `success-light` | `#5DC07B` | 0.416 | surface-default-dark **6.35** / surface-input-dark **5.46** ✅ |
+| `error-light` | `#F08080` | 0.355 | surface-default-dark **5.52** / surface-input-dark **4.75** ✅ |
+| `warning-light` | `#E8A05A` | 0.430 | surface-default-dark **6.54** / surface-input-dark **5.63** ✅ |
+| `info-light` | `#6FAEDF` | 0.394 | surface-default-dark **6.05** / surface-input-dark **5.20** ✅ |
 
 4개 컴포넌트(`alert-text-{semantic}-on-dark`)에서 lint contrast 룰로 검증 — 모두 ≥4.5:1 통과.
 
