@@ -166,6 +166,7 @@
 - **(별도 commit `b4ee2c8`)**: pre-commit hook (`.husky/pre-commit`) — `npm run verify` 자동 실행. 의존성 추가 0 (native `core.hooksPath`, husky 패키지 미사용). 토큰/spec 변경 없는 tooling commit이라 milestone 번호 미부여 (CHANGELOG 초안에 v31로 잘못 표기 → 정정. 백업 부재로 ground truth 명확).
 - **v50**: `scripts/sync-shared-tokens.mjs` 확장 — `@sync:shared-{start,end} (colors-N)` markers 도입. colors-1 (neutral: bg/surface/text/border) + colors-2 (semantic + chart) region 자동 동기. typography/rounded/spacing 블록 + colors region 통합 drift detection.
 - **(v66 phase D)**: `scripts/lint-dark-contrast.mjs` 추가 — dark pair contrast 자동 검증 (spec @google/design.md lint는 light pair만 검증, dark는 토큰 변경 시 회귀 위험). 본문 4.5:1 (text-{primary,secondary}-dark / primary-light / semantic-light × dark surfaces), UI 3:1 (border-focus-light / chart-*-light × dark surfaces), tertiary는 1.4.3 incidental 가능 — warning. text-disabled-dark는 incidental 예외로 검증 제외, text-on-accent는 light pair lint가 이미 검증. `npm run lint:dark` / `lint:dark:strict` 등록, `verify`에 통합 (3 brand 파일 165 페어 검사).
+- **(v72 phase B)**: `scripts/lint-prose.mjs` 확장 — yaml hex 추출 + prose 표 row(`| `token` | `#hex` |`) 인용 hex 비교, mismatch 자동 검출. heuristic skip (history line: arrow `→` / milestone reference `v\d+` / `이전`·`현재` 키워드 / hex 2개 이상 = 변천 표). DESIGN.md v10/v20 표를 변천 형식(이전→현재 두 column)으로 변환 — yaml과 일관성 + lint 자동 skip. `npm run lint:prose:strict` 등록, `verify`에 통합. 발견된 outdated reference 자동 검출 + 정정.
 
 ### Docs
 - **v18**: spec 섹션명 정렬 (`## Layout`, `## Elevation & Depth` 등 spec 표기 일치)

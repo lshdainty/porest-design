@@ -19,10 +19,11 @@
     "sync:check": "node scripts/sync-shared-tokens.mjs --check",
     "lint:dark": "node scripts/lint-dark-contrast.mjs",
     "lint:dark:strict": "node scripts/lint-dark-contrast.mjs --strict",
-    "verify": "npm run sync:check && npm run lint:all && npm run lint:dark:strict",
+    "verify": "npm run sync:check && npm run lint:all && npm run lint:dark:strict && npm run lint:prose:strict",
     "test:exports": "npm run export:tailwind:all && node scripts/test-tailwind-export.mjs",
     "build:preview": "npm run export:tailwind:all && node scripts/build-preview-html.mjs",
     "lint:prose": "node scripts/lint-prose.mjs",
+    "lint:prose:strict": "node scripts/lint-prose.mjs --strict",
     "prepare": "git config core.hooksPath .husky 2>/dev/null || true"
   },
   "devDependencies": {
