@@ -909,27 +909,6 @@ WCAG 2.5.5 AAA + Apple Store reference 톤 5 토큰화 — DESIGN.md shared base
 #### Desk 적용 가이드 (B2C 모바일 우선)
 Desk는 모든 viewport에서 `touch-min` 44 / `touch-circular` 44 strict 적용 (WCAG AAA). bottom nav 사용자 프로필, 메모/할일 row tap target, 가계부 거래 항목 모두 44 hit area 충족. precision desktop 영역(`breakpoint-xl` 이상)에서만 `touch-nav-h`/`-w` 가능 — 다만 Desk는 desktop 비중 적어 자주 쓰이지 않음.
 
-### Z-index (v65 추가, prose-token)
-
-레이어 stacking order 6 토큰 — DESIGN.md shared baseline과 동일.
-
-| 토큰 | 값 | 주 사용 |
-|---|---|---|
-| `z-base` | `0` | default 평면 |
-| `z-dropdown` | `1000` | dropdown / select / autocomplete / tooltip |
-| `z-sticky` | `1100` | sticky header / 모바일 bottom nav / sticky CTA |
-| `z-drawer` | `1200` | bottom sheet (가계부 거래 입력, 메모 attachments) |
-| `z-modal` | `1300` | modal dialog (메모 삭제 확인 / 가계부 카테고리 변경) |
-| `z-toast` | `1400` | toast (저장 완료, 동기화 실패 등) |
-
-#### Desk 적용 가이드 (모바일 우선)
-- **bottom nav** = `z-sticky` — 페이지 스크롤 무관 항상 하단.
-- **bottom sheet** (거래 입력, 할일 추가) = `z-drawer` — bottom nav 위로 슬라이드 업.
-- **modal** (메모 삭제 확인) = `z-modal` — bottom sheet가 열린 상태에서도 modal 우선.
-- **toast** (저장 완료) = `z-toast` — 모든 layer 위, safe-area 고려.
-- iOS Safari `position: fixed` viewport 안전 영역(notch / home indicator) — 별도 padding-top/-bottom CSS env(safe-area-inset-*) 적용.
-- isolation 권장: 메모 카드 내부 dropdown은 `isolation: isolate`로 island 격리.
-
 ## Elevation & Depth
 
 Porest는 **Tonal Layers**(표면 휘도 차)를 1차 elevation 수단으로, **Layered Shadow**를 2차 보조 수단으로 사용합니다 — Toss 톤의 절제된 깊이감.

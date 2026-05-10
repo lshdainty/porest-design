@@ -46,6 +46,7 @@
 
 **v59 — Touch targets (WCAG 2.5.5 AAA + Apple Store reference)**
 - v59: touch target 5 prose-tokens — `touch-min` (44 WCAG minimum), `touch-pill-w` (100 Pill CTA min-width), `touch-circular` (44 alias), `touch-nav-h` (32 precision desktop), `touch-nav-w` (80). v54 Breakpoints의 reference 가이드를 토큰으로 격상. `scripts/build-tailwind-v4.mjs`에 `parseTouchTargets` 추가, CSS export `--touch-*`. 4의 배수 호환 (44/100/80/32 = 11/25/20/8 × 4). spacing 카테고리와 분리 — touch target은 컴포넌트 outer size, padding/margin과 의미 다름.
+- v65: z-index 6 prose-tokens — `z-base` (0), `z-dropdown` (1000), `z-sticky` (1100), `z-drawer` (1200), `z-modal` (1300), `z-toast` (1400). 100 단위 간격 — 중간 layer 삽입 여유. v43 Modal / v45 Dropdown / v46 Toast 등 spec의 prose 표현(최상단/위) 정형 numeric 토큰화. preview HTML `.theme-toggle z-index: 100` hardcode 등 향후 충돌 회피. `scripts/build-tailwind-v4.mjs`에 `parseZIndex` 추가, CSS export `--z-*`. HR(결재 큐 sticky / 직원 detail drawer / modal / toast 우선순위) / Desk(bottom nav sticky / bottom sheet drawer / safe-area-inset, isolation island 격리) brand-specific 적용 가이드.
 
 **v55~v57 — Typography expansion (Airbnb 14단계 reference)**
 - v55: display 4종 — `rating-display` (64/700/1.1 letterSpacing -1px), `display-xl` (28/700/1.43), `display-lg` (22/500/1.18 letterSpacing -0.44px), `display-md` (21/700/1.43). 영문 marketing/hero 영역 톤. **letterSpacing modifier export 추가** (`--text-{name}--letter-spacing`).

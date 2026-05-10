@@ -907,6 +907,26 @@ WCAG 2.5.5 AAA + Apple Store reference 톤 5 토큰화 — DESIGN.md shared base
 #### HR 적용 가이드 (B2B 데이터 밀도)
 HR은 데이터 그리드 inline action(승인/반려 row 액션, 결재 메뉴, 평가 등급 선택) 위주 — desktop(`breakpoint-xl` 1069+)에서 `touch-nav-h` 32 / `touch-nav-w` 80 적극 사용 (mouse pointer 가정, 정밀도 우선). 모바일 화면(approval 앱, 모바일 dashboard)은 `touch-min` 44 / `touch-circular` 44 strict 적용 — 데이터 밀도 톤이지만 hit target은 보수.
 
+### Z-index (v65 추가, prose-token)
+
+레이어 stacking order 6 토큰 — DESIGN.md shared baseline과 동일.
+
+| 토큰 | 값 | 주 사용 |
+|---|---|---|
+| `z-base` | `0` | default 평면 |
+| `z-dropdown` | `1000` | dropdown / select / autocomplete / tooltip |
+| `z-sticky` | `1100` | sticky header / 결재 큐 sticky 패널 / sticky CTA |
+| `z-drawer` | `1200` | side drawer (직원 detail panel, 권한 설정 panel) |
+| `z-modal` | `1300` | modal dialog (휴가 신청 확인 / 결재 의견) |
+| `z-toast` | `1400` | toast (결재 승인 알림 등) |
+
+#### HR 적용 가이드
+- **결재 큐 sticky 패널**: 우측 sticky list = `z-sticky` — 페이지 스크롤과 독립.
+- **직원 detail drawer**: 직원 클릭 시 우측 슬라이드 = `z-drawer` — 페이지 콘텐츠 위, 모달 아래.
+- **권한 설정 modal**: 권한 변경 확인 = `z-modal` — drawer가 열린 상태에서도 modal이 위.
+- **결재 승인 toast**: 어떤 layer 위에서도 최상단 = `z-toast`.
+- isolation 권장: 데이터 그리드 inline dropdown은 `isolation: isolate`로 island 격리 — 외부 layer와 우선순위 무관.
+
 ## Elevation & Depth
 
 Porest는 **Tonal Layers**(표면 휘도 차)를 1차 elevation 수단으로, **Layered Shadow**를 2차 보조 수단으로 사용합니다 — Toss 톤의 절제된 깊이감.

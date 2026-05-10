@@ -130,6 +130,15 @@ function parseTouchTargets(md) {
   return out;
 }
 
+function parseZIndex(md) {
+  // z-* prose tokens (layering stacking order)
+  const re = /^\|\s*`(z-[a-z0-9-]+)`\s*\|\s*`([^`]+)`\s*\|/gm;
+  const out = {};
+  let m;
+  while ((m = re.exec(md)) !== null) out[m[1]] = m[2];
+  return out;
+}
+
 const args = parseArgs(argv.slice(2));
 const source = args.source;
 if (!source) {
@@ -149,6 +158,7 @@ const motion = parseMotion(content);
 const overlays = parseOverlay(content);
 const breakpoints = parseBreakpoints(content);
 const touchTargets = parseTouchTargets(content);
+const zIndex = parseZIndex(content);
 
 let out = "";
 out += `/* Generated from ${source} by scripts/build-tailwind-v4.mjs — do not edit. */\n`;
@@ -216,6 +226,13 @@ out += "\n";
 out += "  /* Touch targets (from prose-token table — WCAG 2.5.5 AAA) */\n";
 for (const [name, val] of Object.entries(touchTargets)) {
   // touch-min → --touch-min
+  out += `  --${name}: ${val};\n`;
+}
+out += "\n";
+
+out += "  /* Z-index (from prose-token table — layering stacking order) */\n";
+for (const [name, val] of Object.entries(zIndex)) {
+  // z-modal → --z-modal
   out += `  --${name}: ${val};\n`;
 }
 out += "}\n";
