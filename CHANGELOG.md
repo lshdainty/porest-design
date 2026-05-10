@@ -137,6 +137,13 @@
 
 **shadcn 확장 4 series 완료** — 총 20 컴포넌트 (v68 navigation 5 + v69 input 5 + v70 disclosure 5 + v71 data 5). 시스템 컴포넌트 75+ 보유 (기존 55 + v68-v71 batch).
 
+**v90 — 컴포넌트 페이지에 preview.html 데모 직접 임베드**
+- v90: 사용자 시각 검증 + 명시적 요청 — preview.html의 풍부한 데모(variant × state 매트릭스, 카드 vignette, 캘린더, 결재 row 등)를 그대로 컴포넌트 페이지에 임베드. shadcn 톤 docs UX. 기존 EXAMPLES.md Tailwind 코드는 "코드 예제" 섹션으로 보존(copy-paste 참조용).
+- `build-preview-html.mjs` 18 함수에 `export` 추가 — `pageCss`, `parseTokensFromCss`, `brandProfile`, `escape`, `renderButtonGallery`, `renderListingDetail`, `renderCalendar`, `renderEmptyState`, `renderModal`, `renderToasts`, `renderSkeleton`, `renderForm`, `renderBatchV67`, `renderShadcnNav`, `renderShadcnInput`, `renderShadcnDisclose`, `renderShadcnData`, `renderShadcnExtras`, `renderBatchV73V78`. 기존 CLI 동작은 그대로(ESM `export` 추가만).
+- `build-site.mjs`에서 import — slug → render 함수 매핑(`getDemoFunctions`)으로 24 컴포넌트 각각 적절한 데모 호출. 예: button → `renderButtonGallery` (3 variant × 5 state matrix), card → `renderListingDetail`, modal-dialog → `renderModal`, calendar → `renderCalendar` 등.
+- `assets/site.css` = 사이트 layout CSS + preview.html `pageCss()` 합본 — preview의 모든 custom CSS class(`.btn-matrix`, `.son-toast`, `.fu-zone`, `.tv-row`, `.sc-card` 등 80+) 사이트에서 그대로 작동. Default brand로 정적 렌더, JS toggle로 색상 변경(CSS variable 통해).
+- 컴포넌트 페이지 구성: 헤더(제목+lede) → "데모" 섹션(preview.html 임베드) → "코드 예제 (Tailwind v4)" 섹션(EXAMPLES.md Tailwind utility) → 가이드 paragraph → 관련 문서 callout. 두 영역 모두 brand 토글 영향 받음.
+
 **v89 — EXAMPLES.md 예제 풍부화 + placeholder 정리**
 - v89: 사용자 시각 검증 — Button의 Sizes 변형이 `class="..."` placeholder 때문에 스타일 안 입혀지는 문제 등 6개 placeholder 정리. 또한 핵심 컴포넌트 EXAMPLES.md 풍부화 — 단일 큰 코드 블록 → 변형별 분리 multi-block 구조.
 - 정리 대상 placeholder: Button Sizes(3) / Tooltip(1) / Popover(1) / Dropdown(1) — 모두 실제 Tailwind class로 채움.

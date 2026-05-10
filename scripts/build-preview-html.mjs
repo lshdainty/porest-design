@@ -28,7 +28,7 @@ function parseArgs(arr) {
   return out;
 }
 
-function parseTokensFromCss(css) {
+export function parseTokensFromCss(css) {
   const tokens = {
     colors: [],
     text: [],
@@ -76,13 +76,13 @@ function parseTokensFromCss(css) {
   return tokens;
 }
 
-function escape(s) {
+export function escape(s) {
   return String(s).replace(/[<>&"]/g, c => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;" }[c]));
 }
 
 // brand 분기용 메타데이터 — Phase 1 showcase 데이터.
 // HR/Desk는 Explore agent가 정리한 도메인 시나리오에서 추출, shared는 brand-agnostic 데모.
-function brandProfile(brandName, tokens) {
+export function brandProfile(brandName, tokens) {
   const colorByName = Object.fromEntries(tokens.colors.map(c => [c.name, c.value]));
   const isHR = /HR/i.test(brandName);
   const isDesk = /Desk/i.test(brandName);
@@ -783,7 +783,7 @@ function renderTypographyMoment(brand, tokens) {
   </section>`;
 }
 
-function renderButtonGallery(brand) {
+export function renderButtonGallery(brand) {
   const states = ["default", "hover", "pressed", "focus", "disabled"];
   const variants = [
     { key: "primary", label: "primary" },
@@ -956,7 +956,7 @@ function renderVignettes(brand) {
   </section>`;
 }
 
-function renderListingDetail(brand) {
+export function renderListingDetail(brand) {
   const ld = brand.listingDetail;
   if (!ld) return "";
 
@@ -1038,7 +1038,7 @@ function renderListingDetail(brand) {
   </section>`;
 }
 
-function renderCalendar(brand) {
+export function renderCalendar(brand) {
   const cal = brand.calendar;
   if (!cal) return "";
 
@@ -1138,7 +1138,7 @@ function renderAmenities(brand) {
   </section>`;
 }
 
-function renderEmptyState(brand) {
+export function renderEmptyState(brand) {
   const e = brand.emptyState;
   if (!e) return "";
   return `
@@ -1160,7 +1160,7 @@ function renderEmptyState(brand) {
   </section>`;
 }
 
-function renderModal(brand) {
+export function renderModal(brand) {
   const m = brand.modal;
   if (!m) return "";
   const fields = m.fields.map(f => `
@@ -1190,7 +1190,7 @@ function renderModal(brand) {
   </section>`;
 }
 
-function renderToasts(brand) {
+export function renderToasts(brand) {
   const ts = brand.toasts || [];
   if (!ts.length) return "";
   const iconChar = (k) => k === "success" ? "✓" : k === "error" ? "✕" : k === "warning" ? "!" : "i";
@@ -1214,7 +1214,7 @@ function renderToasts(brand) {
   </section>`;
 }
 
-function renderSkeleton(brand) {
+export function renderSkeleton(brand) {
   const sk = brand.skeleton;
   if (!sk) return "";
 
@@ -1290,7 +1290,7 @@ function renderSkeleton(brand) {
   </section>`;
 }
 
-function renderForm(brand) {
+export function renderForm(brand) {
   const f = brand.form;
   if (!f) return "";
 
@@ -1338,7 +1338,7 @@ function renderForm(brand) {
   </section>`;
 }
 
-function renderBatchV67(brand) {
+export function renderBatchV67(brand) {
   const isHr = brand.key === "hr";
   const isDesk = brand.key === "desk";
 
@@ -1505,7 +1505,7 @@ function renderBatchV67(brand) {
 
 // === v68-v72 shadcn batch showcase ===
 
-function renderShadcnNav(brand) {
+export function renderShadcnNav(brand) {
   // v68 Navigation 5
   return `
   <section class="section">
@@ -1569,7 +1569,7 @@ function renderShadcnNav(brand) {
   </section>`;
 }
 
-function renderShadcnInput(brand) {
+export function renderShadcnInput(brand) {
   // v69 Input 5
   return `
   <section class="section">
@@ -1629,7 +1629,7 @@ function renderShadcnInput(brand) {
   </section>`;
 }
 
-function renderShadcnDisclose(brand) {
+export function renderShadcnDisclose(brand) {
   // v70 Disclosure 5
   return `
   <section class="section">
@@ -1697,7 +1697,7 @@ function renderShadcnDisclose(brand) {
   </section>`;
 }
 
-function renderShadcnData(brand) {
+export function renderShadcnData(brand) {
   // v71 Data 5
   return `
   <section class="section">
@@ -1747,7 +1747,7 @@ function renderShadcnData(brand) {
   </section>`;
 }
 
-function renderShadcnExtras(brand) {
+export function renderShadcnExtras(brand) {
   // v72 Extras 5
   return `
   <section class="section">
@@ -1807,7 +1807,7 @@ function renderShadcnExtras(brand) {
   </section>`;
 }
 
-function renderBatchV73V78(brand) {
+export function renderBatchV73V78(brand) {
   // v73(Banner/Tag/Popover/File Upload/Treeview) + v74(Animation) + v75(Form validation) + v76(RTL)
   const isHr = brand.key === "hr";
   const isDesk = brand.key === "desk";
@@ -2051,7 +2051,7 @@ function renderTokenCatalog(tokens) {
   </section>`;
 }
 
-function pageCss() {
+export function pageCss() {
   return `
     * { box-sizing: border-box; }
     body {
