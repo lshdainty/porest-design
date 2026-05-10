@@ -322,6 +322,11 @@ components:
     backgroundColor: "{colors.surface-default-dark}"
     textColor: "{colors.info-light}"
   
+  # === User identification (v58: avatar — chart palette categorical) ===
+  avatar:
+    backgroundColor: "{colors.chart-blue}"
+    textColor: "{colors.text-on-accent}"
+  
   # === Chart elements (sparse, fill/stroke 용도 — chart 요소는 textColor 페어가 아님) ===
   chart-color-red:
     backgroundColor: "{colors.chart-red}"
@@ -1495,3 +1500,23 @@ HR과 달리 Desk는 사용자 정의 카테고리가 많으므로 **hue 의미 
 - 모바일 tap 인터랙션: 데이터 포인트 tap 시 tooltip + `motion-duration-fast` fade
 - 1.4.1 색상 단독 금지, 패턴/라벨 보강
 - screen reader: `<table>` fallback 또는 svg `role="img"`
+
+### Avatar (v58 추가)
+
+Desk(B2C) — 사용자 본인 프로필 + 메모/할일 작성자 + 가계부 카테고리 아이콘 대체. 모바일 우선 톤이라 md/lg 사이즈 위주, 44×44 hit target 충족.
+
+#### Desk 사용 패턴
+- **bottom nav 사용자 프로필**: `md` 32px 원형 (`radius-full`).
+- **메모 author**: `sm` 24px inline + 작성자 `caption` 12px.
+- **profile settings 페이지**: `xl` 56px 원형 + 편집 버튼.
+- **할일 owner**: `sm` 24px 원형 (개인 + 공유 메모 구분).
+
+#### Color
+- B2C는 단일 사용자 → **Desk primary** `#0147AD` 단색 default 권장 (단순).
+- 공유 메모/할일에서 다른 사용자는 chart palette categorical 분배.
+
+#### Touch target
+모바일 우선 — `sm` 24px hit area 작아 외곽 padding `sm` (8px) 적용해 44×44 충족. `md` 32px 이상 권장 (default).
+
+#### Sparse 매핑
+DESIGN.md와 동일 (`avatar` chart-blue × text-on-accent, lint contrast 활성).
