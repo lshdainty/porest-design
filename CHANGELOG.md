@@ -126,6 +126,17 @@
   - **Alert Dialog**: Modal destructive 변형 — primary error 색, focus initial은 secondary(취소), role="alertdialog".
 - HR(Accordion 결재 detail / Hover Card 직원 mini profile / Context Menu 결재 row / Alert Dialog 권한 회수) / Desk(Accordion FAQ / Context Menu 메모 long-press / Alert Dialog 메모 영구 삭제 + OTP 결합) brand-specific prose.
 
+**v71 — Data batch (shadcn 확장 series 4/4 — 마지막)**
+- v71: 5 data display 컴포넌트 prose-only — Table / Data Table / Carousel / Scroll Area / Resizable.
+  - **Table**: 기본 표 (default/compact/striped variant), thead `caption` uppercase + tbody hover, cell type별 정렬(text/number/date/action/status).
+  - **Data Table**: Table + sortable(`aria-sort`)/filterable/selectable/pagination/column resize·reorder, bulk actions sticky bar, empty state + Skeleton loading.
+  - **Carousel**: single/multi/infinite variant, scroll-snap viewport + arrow + dot indicator, `aria-roledescription="carousel"` + slide grouping, autoplay pause 컨트롤(2.2.2).
+  - **Scroll Area**: custom scrollbar (always-visible/hover/scrolling 3 variant), webkit-scrollbar + Firefox scrollbar-color, native scroll 보존.
+  - **Resizable**: drag-able split (horizontal/vertical/nested), `role="separator" aria-orientation` + aria-valuenow, localStorage persistence.
+- HR(Data Table 결재/직원 그리드 핵심 + Resizable 3-pane layout + Scroll Area sticky thead) / Desk(Carousel onboarding hero + Table 가계부 거래 + Scroll Area 메모 본문) brand-specific prose.
+
+**shadcn 확장 4 series 완료** — 총 20 컴포넌트 (v68 navigation 5 + v69 input 5 + v70 disclosure 5 + v71 data 5). 시스템 컴포넌트 75+ 보유 (기존 55 + v68-v71 batch).
+
 ### Changed
 - **v8**: `accent-*-on-dark` → `accent-*-light` rename — `-dark` suffix가 mode pair 표기와 충돌(예: `accent-hr-on-dark` vs `surface-default-dark`)
 - **v14 → v15**: HR/Desk별 `bg-page` fork 시도 → `#F5F6FA` 통일 회귀 — fork 시 `primary-hr` × `bg-page-hr` 인라인 4.14:1(AA 미달) 발생
