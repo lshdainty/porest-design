@@ -137,6 +137,15 @@
 
 **shadcn 확장 4 series 완료** — 총 20 컴포넌트 (v68 navigation 5 + v69 input 5 + v70 disclosure 5 + v71 data 5). 시스템 컴포넌트 75+ 보유 (기존 55 + v68-v71 batch).
 
+**v72 — Extras batch (Sonner/Aspect Ratio/Chart/Date Range Picker/Time Picker)**
+- v72: 5 추가 컴포넌트 prose-only — shadcn 외 자주 사용 패턴 보강.
+  - **Sonner**: multi-toast stack, position 4종(top/bottom × left/center/right), max 3 + collapsed +N, hover stack pause, 5/7/10s auto-dismiss kind별, undo action 5s. v46 Toast의 상위 패턴.
+  - **Aspect Ratio**: 비율 wrapper utility (16:9 default, 4:3, 1:1, 3:2, 21:9, 9:16). CSS aspect-ratio + padding-bottom fallback + object-fit cover.
+  - **Chart**: 6 variant (bar/stacked-bar/line/area/pie/scatter), chart-* palette categorical 분배 + dark mode chart-*-light 자동 alias, brand primary 충돌 회피(HR chart-green / Desk chart-blue 비활성), `<table>` a11y 동반 + pattern fill 옵션.
+  - **Date Range Picker**: Calendar v61 range variant 활용, preset list (오늘/어제/지난 N일/이번 달), single picker(모바일) / dual picker(데스크탑).
+  - **Time Picker**: input only / dropdown picker / wheel picker(모바일 native), step 5/15/30분, 24h/12h format, role=listbox 커스텀 + native input type=time.
+- HR(Sonner top-right 결재 알림 / Chart bar/line dashboard / Date Range dual / Time 5분 step) / Desk(Sonner bottom-center 모바일 / Chart pie 가계부 / Aspect Ratio 16:9 attachment / Time wheel picker) brand-specific prose.
+
 ### Changed
 - **v8**: `accent-*-on-dark` → `accent-*-light` rename — `-dark` suffix가 mode pair 표기와 충돌(예: `accent-hr-on-dark` vs `surface-default-dark`)
 - **v14 → v15**: HR/Desk별 `bg-page` fork 시도 → `#F5F6FA` 통일 회귀 — fork 시 `primary-hr` × `bg-page-hr` 인라인 4.14:1(AA 미달) 발생

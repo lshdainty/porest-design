@@ -1791,3 +1791,39 @@ Desk(B2C) 5 data display 컴포넌트 — 모바일 우선 + 친근 톤.
 #### Resizable — Desk
 - 거의 사용 안 함 — 모바일 우선이라 layout 조정 UX 부적합.
 - 예외: 데스크탑 web에서 메모 list ↔ detail 2-pane resizable (선택 사용자만).
+
+### Extras batch (v72 추가)
+
+Desk(B2C) 5 추가 컴포넌트 — 모바일 우선.
+
+#### Sonner — Desk
+- **bottom-center position** 모바일 default — safe-area-inset-bottom 고려, 한 손 조작 시 시야 안.
+- 메모 저장 / 동기화 / 백업 stack — 동시 다수 등장 가능.
+- "실행 취소" action: 메모 삭제 후 5초 안에 클릭으로 복구.
+- 데스크탑은 bottom-right 변경 (모바일 ↔ 데스크탑 position 분기).
+
+#### Aspect Ratio — Desk
+- **16:9** 메모 attachment image preview
+- **1:1** 가계부 카테고리 icon, profile avatar
+- **9:16** 메모 vertical video (TikTok/Reels 톤 첨부)
+- **4:5** Instagram square+ 이미지 (소셜 import)
+- gallery grid (메모 attachment 다중 image): 1:1 + scroll-snap.
+
+#### Chart — Desk
+- **pie / donut**: 가계부 카테고리 점유율 — 식비/교통/취미 등 비율
+- **line**: 월별 잔액 변화, 주간 할일 완료 수
+- **bar**: 월별 지출 비교, 카테고리별 합계
+- chart palette Desk primary(blue)와 충돌 회피 — chart-blue 비활성, chart-violet/orange 우선
+- 모바일 친화: 차트 height 200-240, legend 하단 가로 배치.
+
+#### Date Range Picker — Desk
+- **single picker** 모바일 default — 1 calendar 표시.
+- 가계부 기간 통계: preset "이번 주" / "이번 달" / "지난 달" / "올해".
+- 메모 검색 기간 필터: preset "오늘" / "지난 7일".
+- 모바일 swipe gesture: 좌우 swipe로 월 이동.
+
+#### Time Picker — Desk
+- **wheel picker** 모바일 default — iOS/Android native scroll wheel 활용.
+- step **15분** default — 일상 스케줄 큰 단위.
+- 12h format 옵션 — B2C 친근 톤.
+- 할일 due time: 시각 + 알림 페어 ("16:30 알림").
