@@ -16,6 +16,28 @@ import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 
+// preview.html의 데모 render 함수 + CSS 재사용 — single source of truth
+import {
+  brandProfile,
+  pageCss as previewPageCss,
+  parseTokensFromCss,
+  renderButtonGallery,
+  renderListingDetail,
+  renderCalendar,
+  renderEmptyState,
+  renderModal,
+  renderToasts,
+  renderSkeleton,
+  renderForm,
+  renderBatchV67,
+  renderShadcnNav,
+  renderShadcnInput,
+  renderShadcnDisclose,
+  renderShadcnData,
+  renderShadcnExtras,
+  renderBatchV73V78,
+} from "./build-preview-html.mjs";
+
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = resolve(ROOT, "exports/site");
 
@@ -1486,7 +1508,39 @@ const COMPONENT_CATEGORIES = {
 
 const CATEGORY_ORDER = ["Forms", "Layout", "Navigation", "Data Display", "Feedback", "Overlay", "Disclosure", "Reference"];
 
-function pageComponent(component) {
+// 컴포넌트 slug → preview.html render 함수 매핑
+// 각 함수는 brand 객체 받아 <section> HTML 반환 (custom CSS 사용 — pageCss로 스타일링)
+function getDemoFunctions(slug) {
+  switch (slug) {
+    case "button": return [renderButtonGallery];
+    case "card": return [renderListingDetail];
+    case "input-textarea": return [renderForm];
+    case "form-layout-validation": return [renderForm, renderBatchV73V78];
+    case "select-combobox": return [renderShadcnInput];
+    case "checkbox-radio-switch": return [renderShadcnInput];
+    case "modal-dialog": return [renderModal];
+    case "drawer-sheet": return [renderBatchV67];
+    case "toast-sonner": return [renderToasts, renderShadcnExtras];
+    case "skeleton-spinner-progress": return [renderSkeleton, renderBatchV67];
+    case "empty-state": return [renderEmptyState];
+    case "calendar-date-range-picker": return [renderCalendar, renderShadcnExtras];
+    case "tabs": return [renderListingDetail];
+    case "breadcrumb-sidebar": return [renderShadcnNav];
+    case "pagination-stepper": return [renderBatchV67];
+    case "accordion-collapsible": return [renderShadcnDisclose];
+    case "tooltip-popover-hover-card": return [renderShadcnDisclose, renderBatchV73V78];
+    case "dropdown-context-menu": return [renderShadcnDisclose];
+    case "treeview": return [renderBatchV73V78];
+    case "file-upload": return [renderBatchV73V78];
+    case "banner": return [renderBatchV73V78];
+    case "badge-tag-chip": return [renderBatchV73V78];
+    case "avatar": return [renderListingDetail];
+    case "animation-patterns": return [renderBatchV73V78];
+    default: return [];
+  }
+}
+
+function pageComponent(component, brand) {
   const cat = COMPONENT_CATEGORIES[component.slug] || { category: "Other" };
 
   function inlineMarkdown(s) {
@@ -1503,16 +1557,29 @@ ${lede ? `<p class="lede">${inlineMarkdown(lede)}</p>` : ""}
 
 <div class="component-meta">
   <a class="tag">${escape(cat.category)}</a>
-  <a href="../../preview.html" target="_blank" rel="noopener">Live demo (preview.html) ↗</a>
   <a href="https://github.com/lshdainty/porest-design/blob/main/EXAMPLES.md#${escape(component.slug)}" target="_blank" rel="noopener">EXAMPLES.md ↗</a>
+  <a href="https://github.com/lshdainty/porest-design/blob/main/DESIGN.md" target="_blank" rel="noopener">DESIGN.md spec ↗</a>
 </div>
 `;
 
+  // === Live demo (preview.html의 render 함수 직접 호출) ===
+  const demoFns = getDemoFunctions(component.slug);
+  if (demoFns.length > 0) {
+    body += `<h2>데모</h2>\n`;
+    body += `<p class="lede" style="font-size: var(--text-caption-md); margin-bottom: 16px;">preview.html의 컴포넌트 데모를 그대로 임베드. 상단 Default / HR / Desk 토글로 색상 분기 확인 가능.</p>\n`;
+    body += `<div class="demo-frame">\n`;
+    for (const fn of demoFns) {
+      body += fn(brand) + "\n";
+    }
+    body += `</div>\n`;
+  }
+
+  // === EXAMPLES.md 코드 (참고용 — Tailwind utility 형태) ===
   if (component.examples.length > 0) {
-    body += `<h2>예제</h2>\n`;
+    body += `<h2>코드 예제 (Tailwind v4)</h2>\n`;
+    body += `<p class="lede" style="font-size: var(--text-caption-md); margin-bottom: 16px;">EXAMPLES.md의 Tailwind utility 코드. copy-paste 후 자기 프로젝트에 활용.</p>\n`;
     for (let i = 0; i < component.examples.length; i++) {
       const ex = component.examples[i];
-      // Live preview에 raw HTML(escape 없이) — Tailwind utility class가 preview-utilities.css 통해 렌더링됨
       body += `<div class="example-block" data-example>
   <div class="example-head">
     <div class="example-tabs">
@@ -1578,8 +1645,16 @@ NAV = buildNav(components);
 const tokens = buildTokens();
 TAILWIND_BLOCK = tokens.tailwindBlock;
 writeFileSync(resolve(OUT, "assets/tokens.css"), tokens.rootCss);
-writeFileSync(resolve(OUT, "assets/site.css"), siteCss());
+// site.css = 사이트 layout + preview.html demo CSS (preview의 sc-card / btn-* / son-toast 등)
+const combinedSiteCss = siteCss() + "\n\n/* === preview.html demo CSS === */\n" + previewPageCss();
+writeFileSync(resolve(OUT, "assets/site.css"), combinedSiteCss);
 writeFileSync(resolve(OUT, "assets/site.js"), siteJs());
+
+// brand 객체 — preview.html demo 함수에 전달. brand.key === "default" / "hr" / "desk".
+// 사이트는 한 번에 한 brand만 빌드 안 함 — Default brand로 정적 렌더, JS toggle로 색상 전환.
+const tokensCss = readFileSync(resolve(ROOT, "exports/tokens.css"), "utf8");
+const parsedTokens = parseTokensFromCss(tokensCss);
+const brand = brandProfile("Default", parsedTokens);
 
 writeFileSync(resolve(OUT, "index.html"), pageLanding());
 writeFileSync(resolve(OUT, "tokens/colors.html"), pageColors());
@@ -1592,11 +1667,11 @@ writeFileSync(resolve(OUT, "tokens/breakpoints.html"), pageBreakpoints());
 writeFileSync(resolve(OUT, "tokens/z-index.html"), pageZIndex());
 
 for (const c of components) {
-  writeFileSync(resolve(OUT, `components/${c.slug}.html`), pageComponent(c));
+  writeFileSync(resolve(OUT, `components/${c.slug}.html`), pageComponent(c, brand));
 }
 
 console.log("✓ exports/site/");
 console.log("  index.html");
 console.log("  tokens/{colors,typography,spacing,radius,shadows,motion,breakpoints,z-index}.html (8 페이지)");
-console.log(`  components/*.html (${components.length} 페이지, Preview/Code 탭 + Tailwind v4 CDN live compile)`);
+console.log(`  components/*.html (${components.length} 페이지 — preview.html 데모 임베드 + Tailwind 코드 참고)`);
 console.log("  assets/{tokens,site}.css + site.js");
