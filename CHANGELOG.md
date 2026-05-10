@@ -137,6 +137,12 @@
 
 **shadcn 확장 4 series 완료** — 총 20 컴포넌트 (v68 navigation 5 + v69 input 5 + v70 disclosure 5 + v71 data 5). 시스템 컴포넌트 75+ 보유 (기존 55 + v68-v71 batch).
 
+**v85 — Site layout 버그 수정 (mobile-overlay grid cell 누수)**
+- v85: `scripts/build-site.mjs` 사이트 layout 수정 — `.mobile-overlay` div가 `.app` grid의 column 2 cell을 차지해 main이 row 2 col 1(260px wide)로 강제 wrap되던 문제. 사용자 시각 확인 — 데스크탑 viewport(>880px)에서 main 콘텐츠가 sidebar 아래에 좁은 column으로 나타나거나 부분 가려짐.
+- 수정 1: `.mobile-overlay`를 `.app` 외부로 이동(`<body>` 직속). grid 영향 0.
+- 수정 2: `.mobile-overlay { display: none; }` base 추가 + `[data-open]` attribute 토글로 mobile에서만 표시. 기존 sibling selector(`.sidebar[data-open] ~ .mobile-overlay`)는 비형제로 무효화 → JS `syncOverlay` 함수로 sidebar↔overlay state 동기화.
+- 결과: desktop에서 sidebar(col 1, 260px) + main(col 2, 1fr) 정상 grid 레이아웃. mobile(≤880px)에서 sidebar fixed translateX + overlay backdrop 정상 동작.
+
 **v84 — 풀 docs site Phase 2 (컴포넌트 페이지 24)**
 - v84: `scripts/build-site.mjs`에 `parseExamplesMd` + `pageComponent` 추가 — `EXAMPLES.md` 24 섹션을 `exports/site/components/*.html` 24 페이지로 자동 변환. 카테고리 매핑(Forms / Layout / Navigation / Data Display / Feedback / Overlay / Disclosure / Reference)으로 사이드바 그룹 nav.
 - 페이지 구성: 제목 + lede + 메타(category 태그 / Live demo preview.html 링크 / EXAMPLES.md GitHub 링크) + 예제 코드 블록(각각 Copy 버튼 + lang label) + 가이드 paragraph + 관련 문서 callout(DESIGN.md / DESIGN.hr.md / DESIGN.desk.md GitHub 링크).

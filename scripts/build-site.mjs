@@ -505,6 +505,7 @@ body {
 
 /* === Mobile === */
 .mobile-toggle { display: none; }
+.mobile-overlay { display: none; }
 @media (max-width: 880px) {
   .app { grid-template-columns: 1fr; }
   .sidebar { position: fixed; inset: 0 30% 0 0; z-index: 200; transform: translateX(-100%); transition: transform var(--motion-duration-base) var(--motion-ease-out); box-shadow: var(--shadow-xl); }
@@ -512,8 +513,7 @@ body {
   .topbar { padding: 12px 16px; }
   .content { padding: 32px 16px 64px; }
   .mobile-toggle { display: inline-flex; }
-  .mobile-overlay { display: none; position: fixed; inset: 0; background: var(--overlay-dim-light); z-index: 150; }
-  .sidebar[data-open="true"] ~ .mobile-overlay { display: block; }
+  .mobile-overlay[data-open] { display: block; position: fixed; inset: 0; background: var(--overlay-dim-light); z-index: 150; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -573,6 +573,12 @@ function siteJs() {
   });
 
   // Mobile sidebar
+  function syncOverlay(open) {
+    var ov = document.querySelector(".mobile-overlay");
+    if (!ov) return;
+    if (open) ov.setAttribute("data-open", "");
+    else ov.removeAttribute("data-open");
+  }
   document.addEventListener("click", function(e) {
     var t = e.target.closest(".mobile-toggle");
     var ov = e.target.closest(".mobile-overlay");
@@ -580,9 +586,12 @@ function siteJs() {
     if (!sb) return;
     if (t) {
       var open = sb.getAttribute("data-open") === "true";
-      sb.setAttribute("data-open", open ? "false" : "true");
+      var next = open ? "false" : "true";
+      sb.setAttribute("data-open", next);
+      syncOverlay(next === "true");
     } else if (ov) {
       sb.setAttribute("data-open", "false");
+      syncOverlay(false);
     }
   });
 
@@ -728,7 +737,6 @@ function page({ title, currentPath, breadcrumb, body }) {
 <body>
   <div class="app">
     ${renderSidebar(currentPath)}
-    <div class="mobile-overlay"></div>
     <div class="main">
       ${renderTopbar(currentPath, breadcrumb)}
       <main class="content">
@@ -736,6 +744,7 @@ ${body}
       </main>
     </div>
   </div>
+  <div class="mobile-overlay" hidden></div>
   <script src="${prefix}/assets/site.js" defer></script>
 </body>
 </html>
