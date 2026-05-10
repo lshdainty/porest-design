@@ -1697,3 +1697,30 @@ HR(B2B) 5 input 컴포넌트 — 데이터 그리드 + form 입력 위주.
 #### Input OTP — HR
 - **2차 인증** (관리자 권한 변경 시): 6자리, SMS 자동 채우기.
 - **결재 승인 확인** (고액 결재): 4자리 PIN 입력으로 추가 보안.
+
+### Disclosure batch (v70 추가)
+
+HR(B2B) 5 disclosure/overlay 컴포넌트.
+
+#### Accordion — HR
+- **결재 detail 그룹**: 신청 정보 / 첨부 / 결재 history 3 섹션 — single mode (한 번에 하나만 펼침).
+- **권한 설정 그룹**: 일반 / 결재 / 평가 / 보고서 권한 — multiple mode (여러 영역 동시 검토).
+- **평가 항목 list**: 자기평가 5 카테고리 — 항목별 펼침으로 입력.
+
+#### Collapsible — HR
+- **결재 첨부 expansion**: "첨부 파일 3개" 트리거 → expand로 file list.
+- **권한 detail "더 보기"**: 기본 정보 + collapse된 추가 권한.
+
+#### Hover Card — HR
+- **직원 mini profile**: 직원 이름 hover → avatar + 부서 + 직급 + 이메일 + 결재라인 가능 여부 + "쪽지" 버튼.
+- **결재 라인 hover**: 결재자 이름 hover → 본인 외 결재 가능자 list.
+
+#### Context Menu — HR
+- **결재 row right-click**: 승인 / 반려 / 보류 / 위임 / 삭제 (destructive 우측 분리).
+- **직원 grid right-click**: 메시지 / 결재 위임 / 권한 변경 / 정보 export.
+- 데이터 그리드 power user (관리자) 빠른 action.
+
+#### Alert Dialog — HR
+- **결재 반려**: "정말 반려하시겠어요? 신청자에게 알림이 가요." + 사유 입력 textarea.
+- **권한 회수**: "이 직원의 모든 권한을 회수합니다. 복구는 관리자 승인 필요." (destructive 강조).
+- **평가 삭제**: 작성 중 평가 삭제 confirm — 영구 삭제 명시.
