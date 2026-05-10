@@ -137,6 +137,12 @@
 
 **shadcn 확장 4 series 완료** — 총 20 컴포넌트 (v68 navigation 5 + v69 input 5 + v70 disclosure 5 + v71 data 5). 시스템 컴포넌트 75+ 보유 (기존 55 + v68-v71 batch).
 
+**v88 — Tailwind v4 CDN @theme 인라인 fix (외부 link 미인식 문제)**
+- v88: 사용자 시각 검증 — Tabs 페이지 등에서 utility class 색상이 전혀 적용 안 되던 문제. 원인: Tailwind v4 browser CDN(`@tailwindcss/browser`)이 외부 `<link rel="stylesheet">` 파일의 `@theme {}` 블록을 인식하지 못함. CDN은 인라인 `<style type="text/tailwindcss">` 만 처리.
+- 수정: `buildTokens()` 함수가 두 형태로 분리 출력 — (1) `rootCss` 외부 stylesheet `:root` + brand override + dark mode (FOUC 방지, 사이트 layout 색상 즉시 적용) (2) `tailwindBlock` 인라인 `<style type="text/tailwindcss">` `@theme {}` + 동일 brand/dark override (Tailwind CDN이 utility class 컴파일).
+- 페이지 템플릿 — `<head>`에 두 단계 모두 포함: external `<link href="tokens.css">` (browser 즉시) + inline `<style type="text/tailwindcss">{TAILWIND_BLOCK}</style>` (Tailwind 처리 후 compiled CSS 주입).
+- 결과: `bg-primary`, `border-b-2 border-primary`, `text-on-accent`, `hover:opacity-90`, `focus:ring-error/20` 등 모든 Tailwind v4 utility 정확 컴파일 + brand 토글 즉시 반영.
+
 **v87 — Tailwind v4 browser CDN 전환 (어댑터 폐기, 100% utility 커버)**
 - v87: 컴포넌트 페이지 Live Preview를 자체 utility CSS adapter(v86)에서 **Tailwind v4 browser CDN**(`@tailwindcss/browser@4`)으로 전환. 모든 utility class 100% 정확 컴파일. 외부 의존 1개 추가 — 정확성 우선.
 - `preview-utilities.css` 폐기(–17KB) — 200+ utility 수동 매핑 → CDN script로 대체. 유지 비용 0.
