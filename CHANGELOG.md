@@ -99,6 +99,7 @@
 - **v52**: warning 톤 미세 brighten — `#C2410C`→`#C84D0E` (L 0.15→0.17, ~4.69:1). 다른 3개 대비 어두운 인상 해소, v53 light(orange-400)와 hue 일치 사전 조정.
 - **v53**: semantic 4 light vivid refresh — `success-light` `#5DC07B`→`#4ADE80` (green-400), `error-light` `#F08080`→`#F87171` (red-400), `warning-light` `#E8A05A`→`#FB923C` (orange-400 — 가장 큰 hue 변화, base와 일치), `info-light` `#6FAEDF`→`#60A5FA` (blue-400). Tailwind 400 톤 채택, 다크 alert 4.5:1 silent pass.
 - **v64**: Desk `primary-light` 톤 다운 — `#6BA0EE` → `#5FA0E5` (Y 0.354→0.329, surface-input-dark `#2D3346` 대비 4.81→4.51:1 마지널 통과). 사용자 시각 피드백: 다크 모드에서 outlined 버튼·focus 링이 너무 밝게 보임. 4.5:1 안전 마진 한계라 hex 추가 다운 불가(spec 변경 필요). HR `primary-light` `#6BAE8C`는 그대로 유지 (forest green hue가 cobalt blue 대비 시각 적정). `border-focus-light` 동일 hex 추적 동기.
+- **v66**: HR/Desk Semantic colors prose에 v51-v53 vivid refresh 반영 — 기존 brand prose는 v10 `#117A3A`/`#C53030`/`#A85800`/`#006395` 및 v20 `#5DC07B`/`#F08080`/`#E8A05A`/`#6FAEDF`만 표기 → "v10 → v51-v52" / "v20 → v53" 변천 표로 변환, 현재 사용 hex 강조 + history 보존. yaml은 sync `colors-2` region으로 이미 최신, prose만 outdated 상태였음.
 
 ### Fixed
 - **v9**: 매 batch마다 lint 결과를 손계산만 하던 방식 발견 → 16 sparse component를 매핑해 lint contrastCheck 자동 검증 활성. 이후 모든 토큰 추가는 components 매핑 동반.
