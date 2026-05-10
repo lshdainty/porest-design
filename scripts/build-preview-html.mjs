@@ -2330,7 +2330,7 @@ function pageCss() {
       position: fixed;
       top: var(--spacing-lg);
       right: var(--spacing-lg);
-      z-index: 100;
+      z-index: var(--z-toast, 1400);
       display: flex;
       align-items: center;
       gap: var(--spacing-xs);

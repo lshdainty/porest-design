@@ -1083,48 +1083,6 @@ v59에서 `parseTouchTargets` 추가, prose 표 직접 추출. CSS variable: `--
 #### 자동 검증 미적용
 touch target은 functional layout token — contrast 룰 무관. spec 외부(prose-token)라 lint 영향 0.
 
-### Z-index (v65 추가, prose-token)
-
-레이어 stacking order 체계화. 각 컴포넌트(modal/toast/dropdown/drawer/sticky)가 hardcoded z-index를 사용하면 layering 충돌·예측 불가능 발생 → 정형 토큰 5종으로 명시. spec이 z-index 카테고리 미지원이라 prose-token 패턴(shadow/motion/overlay/breakpoint/touch-target과 동일).
-
-| 토큰 | 값 | 주 사용 |
-|---|---|---|
-| `z-base` | `0` | default 평면. body / 일반 콘텐츠 |
-| `z-dropdown` | `1000` | dropdown / select panel / autocomplete / tooltip |
-| `z-sticky` | `1100` | sticky header / sticky reservation rail / sticky CTA |
-| `z-drawer` | `1200` | drawer / side panel / bottom sheet (페이지 내부 슬라이드) |
-| `z-modal` | `1300` | modal dialog + overlay-dim (포커스 가두기, 페이지 차단) |
-| `z-toast` | `1400` | toast / snackbar (모든 레이어 위, 사용자 피드백 최상단) |
-
-#### 추가 이유
-1. v43 Modal / v45 Dropdown / v46 Toast 등 컴포넌트 spec은 layering "최상단"·"위" 같은 prose 표현 — 정형 numeric 토큰 부재.
-2. preview HTML에서 `.theme-toggle z-index: 100` 같은 hardcoded 값 등장 — 향후 modal/toast 추가 시 충돌 가능.
-3. **6 토큰 (한도 5 + base)**: 기본 평면 `z-base` (0) 명시 + 5개 레이어. Material 3 / Bootstrap / Tailwind z-index scale 패턴 참고 — 100 단위로 충분 간격(추후 sub-layer 삽입 여유).
-
-#### 사용 패턴
-- modal: `z-index: var(--z-modal);` (overlay + dialog 둘 다 동일 layer 또는 dialog만)
-- dropdown: `z-index: var(--z-dropdown);`
-- toast stack: `position: fixed; z-index: var(--z-toast);`
-- sticky header: `position: sticky; z-index: var(--z-sticky);`
-- drawer: `position: fixed; z-index: var(--z-drawer);`
-- isolation: 부모에 `isolation: isolate` 권장 — z-index scope를 component island로 격리 (다른 island와 우선순위 충돌 회피).
-
-#### 레이어 충돌 우선순위
-```
-z-toast (1400) > z-modal (1300) > z-drawer (1200) > z-sticky (1100) > z-dropdown (1000) > z-base (0)
-```
-
-직관: 사용자 알림(toast)은 모달 위, 모달은 drawer 위, drawer는 sticky 위. dropdown은 페이지 콘텐츠 위지만 다른 layered 컴포넌트보단 아래.
-
-#### 100 단위 간격
-중간 layer 필요 시 사용 가능 — 예: dropdown 내부 nested submenu(`1010`), modal 내부 dropdown(`1310`). 별도 토큰 정의는 사용 사례 등장 후.
-
-#### 듀얼 브랜드 — unified
-HR / Desk 모두 동일 6 토큰. brand-agnostic. spec 외부 prose-token이라 lint 비대상.
-
-#### export 통합 (build-tailwind-v4.mjs)
-`parseZIndex` 추가 (v54 parseBreakpoints / v59 parseTouchTargets와 동일 패턴), prose 표 직접 추출. CSS variable: `--z-base`, `--z-dropdown`, `--z-sticky`, `--z-drawer`, `--z-modal`, `--z-toast`.
-
 ## Elevation & Depth
 
 Porest는 **Tonal Layers**(표면 휘도 차)를 1차 elevation 수단으로, **Layered Shadow**를 2차 보조 수단으로 사용합니다 — Toss 톤의 절제된 깊이감.
