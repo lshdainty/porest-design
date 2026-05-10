@@ -137,6 +137,12 @@
 
 **shadcn 확장 4 series 완료** — 총 20 컴포넌트 (v68 navigation 5 + v69 input 5 + v70 disclosure 5 + v71 data 5). 시스템 컴포넌트 75+ 보유 (기존 55 + v68-v71 batch).
 
+**v81 — EXAMPLES.md → 인터랙티브 HTML (build-examples-html.mjs)**
+- v81: `scripts/build-examples-html.mjs` 신규 — `EXAMPLES.md`를 컴포넌트별 copy-paste 페이지로 변환. 단일 markdown 파서 inline(headings/paragraphs/lists/tables/code blocks/inline code/links — 외부 의존성 0). 각 code block에 "Copy" 버튼 + clipboard API 호출. Code language label, hover/copied state(success 색 토글).
+- 토큰 통합: `exports/tokens.css` 인라인 — 페이지 전체 색상/타이포/spacing이 디자인 시스템 토큰 사용. `[data-theme="dark"]` toggle button + localStorage 기억(다른 preview들과 동일 cadence). 스타일 mode-aware — code block / table / heading 모두 dark pair 분기.
+- `package.json` `build:examples` 스크립트 추가 — `npm run build:examples` → `exports/examples.html` 생성.
+- 결과: 24+ section(Button/Input/Select/Checkbox/Card/Badge/Banner/Toast/Modal/Drawer/Tabs/Accordion/Tooltip/Popover/Dropdown/Skeleton/Pagination/Avatar/Breadcrumb/Sidebar/Form/Calendar/Treeview/File Upload/Empty state/Animation patterns) navigable HTML page, 각 code block copy-able.
+
 **v80 — Preview HTML v73-v78 시각 데모**
 - v80: `scripts/build-preview-html.mjs`에 `renderBatchV73V78` 추가 — v73 5종(Banner / Tag-Chip / Popover / File Upload / Treeview) + v74 Animation showcase(8 cell — fade-in/slide-in-up/scale-in/bounce-in/shake/spin/pulse/shimmer 라이브) + v75 Form validation 5 state(idle/focused/invalid/valid/validating) + v76 RTL 토글(`dir="rtl"` 스위치) 시각 데모.
 - 새 CSS class 80+ 추가 — banner(info/warning/error/success variant), chip(input + closeable), pop(textarea + actions), fu-zone(드래그-드롭) + fu-list(progress bar), tv(treeview hierarchical), anim-box(8 keyframe 매핑), fv-input(idle/focused/invalid/valid + spinner), rtl-demo(`dir` 토글). 모두 v74 keyframe + logical property 활용.

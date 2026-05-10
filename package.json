@@ -22,6 +22,7 @@
     "verify": "npm run sync:check && npm run lint:all && npm run lint:dark:strict && npm run lint:prose:strict",
     "test:exports": "npm run export:tailwind:all && node scripts/test-tailwind-export.mjs",
     "build:preview": "npm run export:tailwind:all && node scripts/build-preview-html.mjs",
+    "build:examples": "npm run export:tailwind && node scripts/build-examples-html.mjs > exports/examples.html",
     "lint:prose": "node scripts/lint-prose.mjs",
     "lint:prose:strict": "node scripts/lint-prose.mjs --strict",
     "prepare": "git config core.hooksPath .husky 2>/dev/null || true"
