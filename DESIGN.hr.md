@@ -145,6 +145,32 @@ typography:
     fontSize: 21px
     fontWeight: 700
     lineHeight: 1.43
+  # (v56: Airbnb reference batch 2 — title/body/caption-md, 영문 본문/캡션 영역)
+  title-md:
+    fontFamily: "Pretendard, Inter, sans-serif"
+    fontSize: 16px
+    fontWeight: 600
+    lineHeight: 1.25
+  title-sm:
+    fontFamily: "Pretendard, Inter, sans-serif"
+    fontSize: 16px
+    fontWeight: 500
+    lineHeight: 1.25
+  body-md:
+    fontFamily: "Pretendard, Inter, sans-serif"
+    fontSize: 16px
+    fontWeight: 400
+    lineHeight: 1.5
+  body-sm:
+    fontFamily: "Pretendard, Inter, sans-serif"
+    fontSize: 14px
+    fontWeight: 400
+    lineHeight: 1.43
+  caption-md:
+    fontFamily: "Pretendard, Inter, sans-serif"
+    fontSize: 14px
+    fontWeight: 500
+    lineHeight: 1.29
 
 rounded:
   xs: 2px
