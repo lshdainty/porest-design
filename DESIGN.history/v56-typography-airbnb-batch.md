@@ -138,32 +138,6 @@ typography:
     fontSize: 21px
     fontWeight: 700
     lineHeight: 1.43
-  # (v56: Airbnb reference batch 2 — title/body/caption-md, 영문 본문/캡션 영역)
-  title-md:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 16px
-    fontWeight: 600
-    lineHeight: 1.25
-  title-sm:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 16px
-    fontWeight: 500
-    lineHeight: 1.25
-  body-md:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 16px
-    fontWeight: 400
-    lineHeight: 1.5
-  body-sm:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 14px
-    fontWeight: 400
-    lineHeight: 1.43
-  caption-md:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 14px
-    fontWeight: 500
-    lineHeight: 1.29
 
 rounded:
   xs: 2px
@@ -793,42 +767,6 @@ v7 (brand light variants) · v14 (brand refresh + temporary bg-page fork) · v16
 #### HR / Desk 듀얼 브랜드
 - v5 정신 동일 — 모든 typography 토큰 brand-neutral. 양 브랜드 동일 스케일.
 - 사용 컨텍스트 차이는 컴포넌트 레벨 (HR dashboard 페이지 제목 `heading-xl`, Desk landing page hero `display-xl`).
-
-### v56 추가 — title / body / caption-md (Airbnb reference batch 2)
-
-Airbnb 14단계 reference 중 5종 추가 — title 2 + body 2 + caption-md (명명 충돌 회피). 한국어 본문 영역(`body` 15/1.6, `caption` 12/1.5)은 v5 그대로 보존, 영문 marketing/list 영역에서 신규 토큰 사용.
-
-| 토큰 | size | weight | line-height | 주 용도 (Airbnb reference) |
-|---|---|---|---|---|
-| `title-md` | 16px | 600 | 1.25 | 카드 제목, list item 제목 (예: "Wilmington") |
-| `title-sm` | 16px | 500 | 1.25 | 보조 제목, sidebar nav 항목 (예: "Support") |
-| `body-md` | 16px | 400 | 1.5 | 영문 본문 (예: 메모/설명 단락) |
-| `body-sm` | 14px | 400 | 1.43 | 영문 보조 본문 (예: 메타 한 줄 — "Cottage rentals · Mar 12–18") |
-| `caption-md` | 14px | 500 | 1.29 | 영문 캡션 (예: "Where · When · Who") |
-
-#### caption 명명 정책 — 3-tier 구성
-- 우리 기존 `caption` 12px / 1.5 / 400 (한국어 본문 캡션, v5) **보존**.
-- Airbnb의 `caption` 14px 토큰은 **명명 충돌 회피** 위해 `caption-md`로 별도 추가.
-- v57에서 `caption-sm` 13px 추가 예정 → 최종 3-tier: `caption` 12 (한국어) / `caption-md` 14 (영문 큰 캡션) / `caption-sm` 13 (작은 영문 캡션, footer/legal).
-
-#### body 명명 정책 — 듀얼 시스템
-- `body` 15px / 1.6 / 400 (v5, **한국어 본문**, Toss/네이버 톤) 그대로 보존.
-- `body-md` 16px / 1.5 / 400 (Airbnb, **영문 본문**, marketing/landing) 신규 추가.
-- 한국어 영역은 `body`, 영문 영역(landing page 설명 단락)은 `body-md` 사용. line-height 1.5 vs 1.6 차이는 한글 받침 영역 가독성을 1.6이 더 잘 다룸.
-
-#### `body-strong` (v5) vs `title-md` (v56) — 비교
-- `body-strong` 15/600/1.6: **본문 강조**, 라벨, 버튼 텍스트 (한국어 본문 영역).
-- `title-md` 16/600/1.25: **카드/list 제목** (영문 영역, line-height 압축).
-- 둘 다 600 weight지만 size + line-height 다름 — 한국어 강조와 영문 제목 분리.
-
-#### 추가 이유
-1. v55에서 큰 영역(rating/display)만 추가, 영문 본문/제목/캡션 영역은 미커버 — Airbnb listing card / detail row 톤 부재.
-2. Airbnb 영문 톤은 line-height 압축형(1.25 ~ 1.5) — 한국어 1.6 대비 vertical density 높음. 영문 본문 영역에서 자연스러운 정보 밀도.
-3. **명명 충돌 회피**: Airbnb의 `caption` 14를 그대로 채택하면 우리 `caption` 12와 충돌. `caption-md` 명명으로 두 시스템 공존.
-
-#### HR / Desk 듀얼 브랜드
-- v5 정신 — typography brand-neutral. 양 브랜드 동일.
-- 사용 컨텍스트: HR dashboard 데이터 행은 한국어 `body` 15/1.6 위주, Desk landing/marketing은 `body-md` 16/1.5 + `title-md` 16/600 결합 가능.
 
 ## Layout
 
