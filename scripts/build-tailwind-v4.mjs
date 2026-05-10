@@ -121,6 +121,15 @@ function parseBreakpoints(md) {
   return out;
 }
 
+function parseTouchTargets(md) {
+  // touch-* prose tokens (WCAG 2.5.5 AAA + Apple Store reference)
+  const re = /^\|\s*`(touch-[a-z0-9-]+)`\s*\|\s*`([^`]+)`\s*\|/gm;
+  const out = {};
+  let m;
+  while ((m = re.exec(md)) !== null) out[m[1]] = m[2];
+  return out;
+}
+
 const args = parseArgs(argv.slice(2));
 const source = args.source;
 if (!source) {
@@ -139,6 +148,7 @@ const shadows = parseShadows(content);
 const motion = parseMotion(content);
 const overlays = parseOverlay(content);
 const breakpoints = parseBreakpoints(content);
+const touchTargets = parseTouchTargets(content);
 
 let out = "";
 out += `/* Generated from ${source} by scripts/build-tailwind-v4.mjs — do not edit. */\n`;
@@ -196,9 +206,16 @@ for (const [name, val] of Object.entries(overlays)) {
 }
 out += "\n";
 
-out += "  /* Breakpoints (from prose-token table — Tailwind v4 default 호환) */\n";
+out += "  /* Breakpoints (from prose-token table — Apple Store reference) */\n";
 for (const [name, val] of Object.entries(breakpoints)) {
   // breakpoint-sm → --breakpoint-sm
+  out += `  --${name}: ${val};\n`;
+}
+out += "\n";
+
+out += "  /* Touch targets (from prose-token table — WCAG 2.5.5 AAA) */\n";
+for (const [name, val] of Object.entries(touchTargets)) {
+  // touch-min → --touch-min
   out += `  --${name}: ${val};\n`;
 }
 out += "}\n";
