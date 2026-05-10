@@ -137,6 +137,13 @@
 
 **shadcn 확장 4 series 완료** — 총 20 컴포넌트 (v68 navigation 5 + v69 input 5 + v70 disclosure 5 + v71 data 5). 시스템 컴포넌트 75+ 보유 (기존 55 + v68-v71 batch).
 
+**v76 — RTL support (CSS logical properties)**
+- v76: LTR(한국어/영어/일본어) ↔ RTL(아랍어/히브리어) 자동 분기 prose-only 가이드 — 18 logical property 매핑 표(`margin-inline-start`/`padding-inline-end`/`border-start-start-radius`/`inset-inline-*`/`text-align: start|end`/`inline-size`/`block-size` 등 physical → logical 1:1) + `dir="rtl"` HTML 속성 + 6 direction-specific 처리(drawer / chevron / breadcrumb / progress / 숫자 / URL) + 9 컴포넌트별 RTL 가이드(Button/Input/Dropdown/Tabs/Drawer/Breadcrumb/Toast/Banner/Calendar) + Tailwind v4 logical utility(`me-*`/`ms-*`/`pe-*`/`ps-*`/`text-start`/`text-end`/`start-0`/`end-0`/`rtl:`) 활용.
+- 추가 이유: Porest 1차 한국어 시장이지만 향후 글로벌 확장 시 vendor 이중 작업 회피 — 신규 컴포넌트 spec 작성 시점부터 logical 우선이면 spec 자체 변경 불필요. 추가 비용 0(동일 syntax).
+- WCAG 1.4.10 Reflow + 1.4.8 Visual Presentation 친화. lint 비대상.
+- HR(결재 큐 sticky 우측 → RTL 좌측, 직원 detail drawer slide direction 분기, 사번 LTR 강제) / Desk(메모 카드 swipe direction `:dir(rtl)` 분기, 통화기호+숫자 `<bdi>` LTR 유지, 모바일 bottom sheet block 축 무관) brand-specific 컨텍스트.
+- Migration: 이번 v76엔 기존 spec 변환 미시행 — 문서만. 신규/수정 시점에 logical 우선 점진 적용.
+
 **v75 — Form validation patterns**
 - v75: Form layout(v62)을 확장한 **validation 깊이** prose-only — 8 rule(required/min-max-length/min-max numeric/pattern/email/match/async/custom) + 한국어 error message 템플릿 + 5 field state(idle/focused/invalid/valid/validating) + form state machine(idle→submitting→success/error, validating-async 분기) + 3 error 위계(field-level/form-level banner/toast) + ARIA live(`role="alert"`/`aria-live="polite|assertive"`/`aria-busy`) + async pattern(debounce 500ms + AbortController) + multi-field(confirm match/date range/conditional required/mutually exclusive).
 - 추가 이유: v62는 layout/timing 골격, v75는 rule + message + state + ARIA 깊이 — 컴포넌트 spec에서 "validation v75 참조" 인용 가능.

@@ -927,18 +927,6 @@ HR은 데이터 그리드 inline action(승인/반려 row 액션, 결재 메뉴,
 - **결재 승인 toast**: 어떤 layer 위에서도 최상단 = `z-toast`.
 - isolation 권장: 데이터 그리드 inline dropdown은 `isolation: isolate`로 island 격리 — 외부 layer와 우선순위 무관.
 
-### RTL support (v76 추가, prose-only)
-
-DESIGN.md baseline 정의 참고 — CSS logical property 기반 LTR ↔ RTL 자동 분기.
-
-#### HR 적용 컨텍스트
-- **현 시점 active 사용 0** — Porest HR 1차 시장 한국어(LTR). RTL active 사용은 향후 글로벌 확장 시점에 평가.
-- **신규 컴포넌트 spec 작성 시 logical 우선** — `padding-inline-start`/`end`, `margin-inline-*`, `border-start-start-radius`, `inset-inline-*`, `text-align: start/end`. 추가 비용 0.
-- **결재 큐 sticky panel**: 우측 sticky → RTL 시 좌측. `inset-inline-end: 0` 선언 시 자동.
-- **직원 detail drawer**: 우측 슬라이드 → RTL 시 좌측에서 등장. keyframe `slide-in-left` ↔ `slide-in-right` `:dir(rtl)` 분기 필요.
-- **결재 row chevron icon**: forward `>` → RTL 시 mirror `<` (transform: scaleX(-1)).
-- **사번 / 결재번호** (HR-2026-0001 같은 LTR 식별자): RTL 환경에서도 LTR 강제 (`<bdi>` 또는 `direction: ltr`).
-
 ## Elevation & Depth
 
 Porest는 **Tonal Layers**(표면 휘도 차)를 1차 elevation 수단으로, **Layered Shadow**를 2차 보조 수단으로 사용합니다 — Toss 톤의 절제된 깊이감.

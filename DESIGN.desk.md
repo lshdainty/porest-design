@@ -934,6 +934,20 @@ Desk는 모든 viewport에서 `touch-min` 44 / `touch-circular` 44 strict 적용
 - iOS Safari `position: fixed` viewport 안전 영역(notch / home indicator) — 별도 padding-top/-bottom CSS env(safe-area-inset-*) 적용.
 - isolation 권장: 메모 카드 내부 dropdown은 `isolation: isolate`로 island 격리.
 
+### RTL support (v76 추가, prose-only)
+
+DESIGN.md baseline 정의 참고 — CSS logical property 기반 LTR ↔ RTL 자동 분기. 모바일 우선 컴포넌트에 RTL 적용 가이드.
+
+#### Desk 적용 컨텍스트
+- **현 시점 active 사용 0** — Porest Desk 1차 시장 한국어(LTR). RTL은 향후 글로벌 시점.
+- **신규 컴포넌트 spec 작성 시 logical 우선** — physical property 회피, `inline-start/end`/`block-start/end` 사용.
+- **bottom sheet swipe direction**: RTL 시에도 위·아래 그대로 (block 축은 RTL 무관).
+- **bottom nav 좌→우 순서** (홈/메모/할일/가계부/설정) → RTL 시 우→좌 자동 배치 (flex-direction 자체는 그대로, logical property 동작).
+- **메모 카드 swipe-to-delete** (좌측 swipe로 삭제 노출) → RTL 시 우측 swipe로 분기 — gesture handler `:dir(rtl)` 분기.
+- **가계부 통화 표시** (`₩1,234,500`): 통화기호 + 숫자 항상 LTR 유지 — `<bdi>` wrapping 또는 `unicode-bidi: embed`.
+- **할일 chevron expand icon**: `>` → RTL 시 mirror.
+- **카테고리 emoji icon**: 방향성 없음 (그대로 사용).
+
 ## Elevation & Depth
 
 Porest는 **Tonal Layers**(표면 휘도 차)를 1차 elevation 수단으로, **Layered Shadow**를 2차 보조 수단으로 사용합니다 — Toss 톤의 절제된 깊이감.
