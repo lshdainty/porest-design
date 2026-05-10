@@ -117,6 +117,15 @@
   - **Input OTP**: 6자리 분할 input, autocomplete="one-time-code" SMS 자동 채우기, paste 일괄 처리.
 - HR(Combobox 직원 검색 / Slider 평가 점수 / Toggle Group 결재 상태 필터) / Desk(Combobox 태그 자동완성 / Slider 가계부 예산 / Toggle 메모 즐겨찾기) brand-specific prose.
 
+**v70 — Disclosure batch (shadcn 확장 series 3/4)**
+- v70: 5 disclosure/overlay 컴포넌트 prose-only — Accordion / Collapsible / Hover Card / Context Menu / Alert Dialog.
+  - **Accordion**: 다중 Collapsible (single/multiple), height 트랜지션 motion-duration-base, role=region + aria-expanded.
+  - **Collapsible**: 단일 expand/collapse — Accordion보다 가벼운 toggle.
+  - **Hover Card**: hover preview card (Tooltip+Card 합성), 200-300ms hover delay, mobile은 long-press 대체.
+  - **Context Menu**: right-click(데스크탑) / long-press(모바일) menu, viewport flip, destructive 분리.
+  - **Alert Dialog**: Modal destructive 변형 — primary error 색, focus initial은 secondary(취소), role="alertdialog".
+- HR(Accordion 결재 detail / Hover Card 직원 mini profile / Context Menu 결재 row / Alert Dialog 권한 회수) / Desk(Accordion FAQ / Context Menu 메모 long-press / Alert Dialog 메모 영구 삭제 + OTP 결합) brand-specific prose.
+
 ### Changed
 - **v8**: `accent-*-on-dark` → `accent-*-light` rename — `-dark` suffix가 mode pair 표기와 충돌(예: `accent-hr-on-dark` vs `surface-default-dark`)
 - **v14 → v15**: HR/Desk별 `bg-page` fork 시도 → `#F5F6FA` 통일 회귀 — fork 시 `primary-hr` × `bg-page-hr` 인라인 4.14:1(AA 미달) 발생
