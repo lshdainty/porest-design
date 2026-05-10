@@ -1827,3 +1827,42 @@ Desk(B2C) 5 추가 컴포넌트 — 모바일 우선.
 - step **15분** default — 일상 스케줄 큰 단위.
 - 12h format 옵션 — B2C 친근 톤.
 - 할일 due time: 시각 + 알림 페어 ("16:30 알림").
+
+### Extras-2 batch (v73 추가)
+
+Desk(B2C) 5 추가 shadcn 누락 컴포넌트 — 모바일 우선.
+
+#### Banner — Desk
+- **시스템 점검 안내** info variant — "오늘 23:00-24:00 동기화 중단" 미리 알림, dismiss 가능.
+- **신규 기능 안내** info variant — "가계부 카테고리 자동 분류 기능 추가" 한 번만 표시 (dismiss 후 재표시 안 함).
+- **백업 실패 경고** error variant — "최근 7일간 백업 실패. 재시도해주세요" sticky 유지.
+- 모바일 — header 아래 fullwidth, dismiss 후 자리 차지 안 함.
+- 사용자가 직접 dismiss 전엔 유지 — localStorage `desk-banner-dismissed-{id}`.
+
+#### Tag / Chip — Desk
+- **메모 태그 input** — "#할일 #업무 #2026" multi-tag input, enter로 추가.
+- **가계부 카테고리 chip** — 거래 입력 시 categories chip 단일 선택.
+- **할일 priority chip** — "긴급 / 보통 / 미루기" 3개 chip toggle.
+- input variant 우선 — 메모 태그 자유 입력 핵심.
+- 자동완성 dropdown 결합 — 기존 tag list 제안 (recently used).
+
+#### Popover — Desk
+- **카테고리 quick edit** — 가계부 거래 row의 카테고리 클릭으로 popover, 다른 카테고리 선택 후 자동 닫기.
+- **메모 quick action** — 메모 카드 우상단 ⋯ 클릭으로 popover (편집/삭제/공유/duplicate).
+- **할일 due-date 빠른 변경** — 할일 카드 due chip 클릭으로 calendar popover.
+- 모바일 — popover 자동으로 bottom sheet으로 전환 (small screen detection).
+- bottom-end placement default — 카드 list context.
+
+#### File Upload — Desk
+- **영수증 다중 업로드** — 가계부 거래에 영수증 사진 multi (max 3장 / 거래 1건).
+- **메모 image attachment** — 메모 본문에 inline image (max 5장 / total 30MB).
+- **드래그-드롭** + 카메라 capture (`accept="image/*" capture="environment"`) 모바일.
+- 허용 type: 이미지 only (JPG/PNG/HEIC) — 영수증·사진 메모 위주.
+- 자동 압축: 5MB 초과 시 client-side resize 후 업로드 (네트워크 + storage 절약).
+
+#### Treeview — Desk
+- **가계부 카테고리 tree** — 대분류(식비/교통/주거) → 중분류(외식/배달/마트) 2단계.
+- 카테고리 노드 우클릭 (모바일 long-press) — 편집/하위 추가/삭제 popover.
+- 카테고리 추가 시 부모 자동 expand — 새 노드 즉시 보이도록.
+- **메모 폴더 tree** — 메모 그룹화, 폴더 안 메모 leaf node count 표시.
+- 모바일 — single-column 트리, 들여쓰기 12px (좁은 화면 효율).

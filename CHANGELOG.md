@@ -146,6 +146,15 @@
   - **Time Picker**: input only / dropdown picker / wheel picker(모바일 native), step 5/15/30분, 24h/12h format, role=listbox 커스텀 + native input type=time.
 - HR(Sonner top-right 결재 알림 / Chart bar/line dashboard / Date Range dual / Time 5분 step) / Desk(Sonner bottom-center 모바일 / Chart pie 가계부 / Aspect Ratio 16:9 attachment / Time wheel picker) brand-specific prose.
 
+**v73 — Extras-2 batch (Banner/Tag·Chip/Popover/File Upload/Treeview)**
+- v73: 5 추가 shadcn 누락 컴포넌트 prose-only — Phase 1 (Final-1) 완성 신호.
+  - **Banner**: 페이지 상단 영구 알림(Toast=임시와 구별), variant 4(info/success/warning/error), dismiss 후 localStorage `dismissed-banner-{id}` 영구 기억, sticky 영역 위치(header 아래).
+  - **Tag / Chip**: closeable variant + input variant, multi-tag 입력 패턴, dropdown 자동완성 결합, Badge(v37 정적)와 구별 — 사용자 mutable.
+  - **Popover**: bottom-start placement default, click trigger default, Hover Card(v70)/Dropdown(v45)와 구별 — interactive form content 가능. 모바일 자동 bottom sheet 전환.
+  - **File Upload**: 드래그-드롭 + click-to-browse, 진행률 bar + multi-file list, 허용 type/size 제약(client-side validation), 카메라 capture(`accept="image/*" capture`).
+  - **Treeview**: hierarchical list, expand/collapse + selected, ARIA `aria-expanded`/`aria-level`/`aria-setsize`/`aria-posinset`, 키보드 arrow 네비, 검색 동기화 자동 expand + highlight.
+- HR(Banner 약관 변경 / Tag 결재라인 chip / Popover 결재 의견 / File Upload 평가 첨부 / Treeview 조직도) / Desk(Banner 시스템 점검 / Tag 메모 태그 input / Popover 카테고리 quick edit / File Upload 영수증 다중 / Treeview 가계부 카테고리) brand-specific prose. shadcn/ui 카탈로그 거의 100% coverage.
+
 ### Changed
 - **v8**: `accent-*-on-dark` → `accent-*-light` rename — `-dark` suffix가 mode pair 표기와 충돌(예: `accent-hr-on-dark` vs `surface-default-dark`)
 - **v14 → v15**: HR/Desk별 `bg-page` fork 시도 → `#F5F6FA` 통일 회귀 — fork 시 `primary-hr` × `bg-page-hr` 인라인 4.14:1(AA 미달) 발생
