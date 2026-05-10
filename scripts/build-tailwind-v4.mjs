@@ -112,6 +112,15 @@ function parseOverlay(md) {
   return out;
 }
 
+function parseBreakpoints(md) {
+  // breakpoint-* prose tokens (px values, Tailwind v4 default 호환)
+  const re = /^\|\s*`(breakpoint-[a-z0-9-]+)`\s*\|\s*`([^`]+)`\s*\|/gm;
+  const out = {};
+  let m;
+  while ((m = re.exec(md)) !== null) out[m[1]] = m[2];
+  return out;
+}
+
 const args = parseArgs(argv.slice(2));
 const source = args.source;
 if (!source) {
@@ -129,6 +138,7 @@ const spacing = parseSimpleScale(lines, "spacing");
 const shadows = parseShadows(content);
 const motion = parseMotion(content);
 const overlays = parseOverlay(content);
+const breakpoints = parseBreakpoints(content);
 
 let out = "";
 out += `/* Generated from ${source} by scripts/build-tailwind-v4.mjs — do not edit. */\n`;
@@ -181,6 +191,13 @@ out += "\n";
 out += "  /* Overlay dim (from prose-token table — alpha 채널 rgba) */\n";
 for (const [name, val] of Object.entries(overlays)) {
   // overlay-dim-light → --overlay-dim-light
+  out += `  --${name}: ${val};\n`;
+}
+out += "\n";
+
+out += "  /* Breakpoints (from prose-token table — Tailwind v4 default 호환) */\n";
+for (const [name, val] of Object.entries(breakpoints)) {
+  // breakpoint-sm → --breakpoint-sm
   out += `  --${name}: ${val};\n`;
 }
 out += "}\n";

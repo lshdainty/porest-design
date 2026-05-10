@@ -740,51 +740,6 @@ CLAUDE.md "4px 베이스 추천" 규칙을 준수하는 t-shirt 사이즈 스케
 #### HR / Desk 듀얼 브랜드
 - spacing은 neutral 시스템 — 브랜드 분기 없음. HR(B2B 데이터 밀도 위주)·Desk(B2C 여백 위주) 모두 동일 스케일 사용, 화면별 적용 강도(예: HR은 `md` 위주, Desk는 `lg` 위주)로 분기.
 
-### Breakpoints (v54 추가, prose-token)
-
-반응형 layout breakpoint — 5단계 (Apple Store reference). spec이 breakpoint 카테고리 미지원이라 prose-token 패턴(shadow/motion/overlay와 동일) — yaml 정의 없이 표만 운영. 모든 파일(DESIGN.md / .hr.md / .desk.md) 수동 동기.
-
-| 토큰 | 값 | 의미 (Apple Store 가이드) |
-|---|---|---|
-| `breakpoint-sm` | `640px` | Phone max — 이하 single-column tiles, hero h1 34px |
-| `breakpoint-md` | `736px` | Tablet portrait — global nav hamburger collapse |
-| `breakpoint-lg` | `834px` | Tablet landscape — global nav full, 3-col → 2-col grids |
-| `breakpoint-xl` | `1069px` | Desktop — full layout, 4-5 col store grids |
-| `breakpoint-2xl` | `1441px` | Wide — content locks at 1440px |
-
-#### 추가 이유
-1. v1~v53까지 토큰은 색상·typography·spacing·radius·shadow·motion·overlay만 — 반응형 breakpoint 부재. 컴포넌트 spec(Button/Card/Tabs)에 "모바일 권장 사이즈 lg" prose는 있으나 *어떤 width에서* 모바일이 시작되는지 토큰화되지 않음 → 결정 차단.
-2. **Apple Store reference**: iPad portrait/landscape 분리(736/834) + desktop 시작(1069) + wide lock(1441)로 한국 디자이너 친화적 모바일 우선 톤. iPad 라인업(mini portrait 768 / Air landscape 1180 / Pro 11" landscape 1194 / Pro 12.9" landscape 1366) 정합.
-
-#### 단위·명명
-- **px**: 한국 디자이너 친화적 + Figma frame 단위 일치 + Apple HIG 친화 (rem 변환은 build 단계에서 가능).
-- **`breakpoint-{size}`**: Tailwind v4 namespace 표준 (`--breakpoint-*`). 값은 Apple Store 톤 — Tailwind default(640/768/1024/1280/1536)와 다름. 외부 라이브러리 마이그레이션 시 매핑 필요.
-
-#### 사용 패턴
-- min-width 기준 (mobile-first): `@media (min-width: var(--breakpoint-lg))` — 834 이상 적용 (tablet landscape +).
-- max-width 기준: `@media (max-width: calc(var(--breakpoint-md) - 1px))` — 735 이하 (phone).
-
-#### Touch targets (Apple reference, 토큰화 미적용)
-- Pill CTAs: ~44 × 100px (`button-lg` + `radius-full`)
-- Circular chips: 44 × 44px (icon button, Switch handle, Avatar)
-- Global nav utility links: ~32 × 80px (precision desktop only, breakpoint-xl 이상)
-- WCAG 2.5.5 AAA (44 × 44 minimum) 충족.
-
-본 prose는 reference 가이드 — 실제 토큰화는 컴포넌트 spec 별도 batch.
-
-#### Collapsing strategy (Apple reference, 토큰화 미적용)
-- Global nav: full row → 햄버거 collapse at 834px (`breakpoint-lg`)
-- Product/data tiles: 2-col → 1-col at 834px
-- Hero typography scale: 56px → 40px → 34px → 28px (responsive type 4단계 — breakpoint-xl/lg/md/sm 분기)
-
-responsive container layout / responsive typography spec은 별도 작업.
-
-#### 듀얼 브랜드 — unified
-HR (B2B 데이터 밀도) / Desk (B2C 모바일 우선) 모두 동일 5단계. 컴포넌트 spec에서 brand별 권장 사이즈(HR 데이터 그리드 우선, Desk 모든 사이즈 44×44 hit area) 차이는 prose 가이드.
-
-#### 자동 검증 미적용
-breakpoint는 functional layout token — contrast 룰 무관. spec 외부(prose-token)라 lint missingPrimary/contrast 영향 0.
-
 ## Elevation & Depth
 
 Porest는 **Tonal Layers**(표면 휘도 차)를 1차 elevation 수단으로, **Layered Shadow**를 2차 보조 수단으로 사용합니다 — Toss 톤의 절제된 깊이감.

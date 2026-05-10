@@ -792,6 +792,27 @@ CLAUDE.md "4px 베이스 추천" 규칙을 준수하는 t-shirt 사이즈 스케
 #### HR / Desk 듀얼 브랜드
 - spacing은 neutral 시스템 — 브랜드 분기 없음. HR(B2B 데이터 밀도 위주)·Desk(B2C 여백 위주) 모두 동일 스케일 사용, 화면별 적용 강도(예: HR은 `md` 위주, Desk는 `lg` 위주)로 분기.
 
+### Breakpoints (v54 추가, prose-token)
+
+반응형 layout breakpoint — 5단계 (Apple Store reference). spec이 breakpoint 카테고리 미지원이라 prose-token 패턴(shadow/motion/overlay와 동일) — yaml 정의 없이 표만 운영. DESIGN.md / .hr.md / .desk.md 수동 동기.
+
+| 토큰 | 값 | 의미 (Apple Store 가이드) |
+|---|---|---|
+| `breakpoint-sm` | `640px` | Phone max — 이하 single-column tiles, hero h1 34px |
+| `breakpoint-md` | `736px` | Tablet portrait — global nav hamburger |
+| `breakpoint-lg` | `834px` | Tablet landscape — full nav, 3-col → 2-col |
+| `breakpoint-xl` | `1069px` | Desktop — full layout |
+| `breakpoint-2xl` | `1441px` | Wide — content lock at 1440px |
+
+#### Desk 적용 가이드 (B2C 모바일 우선)
+Desk는 모바일 우선 — phone(`breakpoint-sm` 640 이하) viewport에서 모든 hit target 44×44px 충족 (WCAG 2.5.5 AAA). tablet portrait(736~833)에서는 메모/할일 list가 2-col grid, tablet landscape(834+) 부터 sidebar nav 활성. desktop(1069+)에서는 가계부 calendar full grid.
+
+Apple HIG hero typography scale (56 → 40 → 34 → 28)을 메인 페이지 헤더에 적용 권장 — `breakpoint-xl` 56px / `breakpoint-lg` 40px / `breakpoint-md` 34px / `breakpoint-sm` 28px.
+
+#### 사용 패턴
+- min-width (mobile-first): `@media (min-width: var(--breakpoint-lg))` — 834 이상.
+- `--breakpoint-*` namespace는 Tailwind v4 표준이라 별칭 없이 직접 사용. 값은 Apple Store 톤 (Tailwind default와 다름).
+
 ## Elevation & Depth
 
 Porest는 **Tonal Layers**(표면 휘도 차)를 1차 elevation 수단으로, **Layered Shadow**를 2차 보조 수단으로 사용합니다 — Toss 톤의 절제된 깊이감.
