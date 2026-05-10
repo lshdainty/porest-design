@@ -122,7 +122,29 @@ typography:
     fontSize: 32px
     fontWeight: 700
     lineHeight: 1.25
-  # (v26: heading-sm/xl 추가 완료. display(40px+)는 hero/marketing 사용 사례 등장 시 추가)
+  # (v26: heading-sm/xl 추가. v55: display 4종 추가 — Airbnb reference, 영문 marketing/hero 톤)
+  rating-display:
+    fontFamily: "Pretendard, Inter, sans-serif"
+    fontSize: 64px
+    fontWeight: 700
+    lineHeight: 1.1
+    letterSpacing: -1px
+  display-xl:
+    fontFamily: "Pretendard, Inter, sans-serif"
+    fontSize: 28px
+    fontWeight: 700
+    lineHeight: 1.43
+  display-lg:
+    fontFamily: "Pretendard, Inter, sans-serif"
+    fontSize: 22px
+    fontWeight: 500
+    lineHeight: 1.18
+    letterSpacing: -0.44px
+  display-md:
+    fontFamily: "Pretendard, Inter, sans-serif"
+    fontSize: 21px
+    fontWeight: 700
+    lineHeight: 1.43
 
 rounded:
   xs: 2px

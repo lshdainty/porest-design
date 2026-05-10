@@ -154,11 +154,12 @@ for (const [name, hex] of Object.entries(colors)) {
 }
 out += "\n";
 
-out += "  /* Typography (font-size + line-height + font-weight modifiers) */\n";
+out += "  /* Typography (font-size + line-height + font-weight + letter-spacing modifiers) */\n";
 for (const [name, props] of Object.entries(typography)) {
   if (props.fontSize) out += `  --text-${name}: ${props.fontSize};\n`;
   if (props.lineHeight) out += `  --text-${name}--line-height: ${props.lineHeight};\n`;
   if (props.fontWeight) out += `  --text-${name}--font-weight: ${props.fontWeight};\n`;
+  if (props.letterSpacing) out += `  --text-${name}--letter-spacing: ${props.letterSpacing};\n`;
 }
 out += "\n";
 

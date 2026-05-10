@@ -115,29 +115,7 @@ typography:
     fontSize: 32px
     fontWeight: 700
     lineHeight: 1.25
-  # (v26: heading-sm/xl 추가. v55: display 4종 추가 — Airbnb reference, 영문 marketing/hero 톤)
-  rating-display:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 64px
-    fontWeight: 700
-    lineHeight: 1.1
-    letterSpacing: -1px
-  display-xl:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 28px
-    fontWeight: 700
-    lineHeight: 1.43
-  display-lg:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 22px
-    fontWeight: 500
-    lineHeight: 1.18
-    letterSpacing: -0.44px
-  display-md:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 21px
-    fontWeight: 700
-    lineHeight: 1.43
+  # (v26: heading-sm/xl 추가 완료. display(40px+)는 hero/marketing 사용 사례 등장 시 추가)
 
 rounded:
   xs: 2px
@@ -734,39 +712,6 @@ v7 (brand light variants) · v14 (brand refresh + temporary bg-page fork) · v16
 #### HR / Desk 듀얼 브랜드
 - 모든 typography 토큰은 brand-neutral — 양 브랜드 동일 스케일.
 - 향후 브랜드별 분위기 조정이 필요하면 컴포넌트 레벨에서 weight·tracking 조정으로 처리(예: HR 헤딩 weight 700, Desk 헤딩 weight 600). 토큰 자체 분기 불필요.
-
-### v55 추가 — display 4종 (Airbnb reference)
-
-영문 marketing/hero 영역의 풍부한 typography 톤을 위해 4 추가. 한국어 본문은 v5 정의(`body` 15/1.6) 그대로 보존 — 영문 hero/rating 같은 영역만 신규 토큰 사용.
-
-| 토큰 | size | weight | line-height | letter-spacing | 주 용도 |
-|---|---|---|---|---|---|
-| `rating-display` | 64px | 700 | 1.1 | -1px | rating/score 큰 숫자 (4.81 등) |
-| `display-xl` | 28px | 700 | 1.43 | — | 영문 marketing display (Inspiration ...) |
-| `display-lg` | 22px | 500 | 1.18 | -0.44px | 위치/주소 강조 (Close to ...) |
-| `display-md` | 21px | 700 | 1.43 | — | 섹션 헤더 (What this place offers) |
-
-#### 추가 이유
-1. v5 7단계 (caption / body / body-strong / heading-{sm,md,lg,xl})는 한국어 본문 위계 충실 — 영문 marketing/hero 영역의 풍부한 display 톤은 부재.
-2. **Airbnb reference**: `rating-display` (64/700/1.1/-1) 큰 숫자, `display-xl` (28/700/1.43) 영문 hero, `display-lg` (22/500/1.18/-0.44) 위치/주소 강조, `display-md` (21/700/1.43) 섹션 헤더 — Airbnb Cereal VF "modest weights" 톤 (weight 400/500/600/700 4단계).
-3. **letter-spacing 첫 사용**: 큰 글자(`rating-display` -1px, `display-lg` -0.44px) trailing 시각 균형. design.md spec letterSpacing(Dimension) 지원으로 yaml 정형 정의.
-
-#### `heading-xl` 32 vs `display-xl` 28 — 사용 컨텍스트 분리
-- **`heading-xl` 32px / 1.25 / 700**: 한국어 페이지 제목 톤 (Toss 톤, line-height 압축).
-- **`display-xl` 28px / 1.43 / 700**: Airbnb 영문 marketing hero 톤 (line-height 여유, marketing copy 가독).
-- 한국어 본문 레이아웃은 `heading-xl` 권장, 영문 영역(landing page hero, rating 큰 숫자, score 영역)은 `display-*` 사용.
-
-#### 한국어 컨텍스트 — 보수적 적용
-- `body` (15/1.6), `body-strong` (15/1.6), `caption` (12/1.5)는 v5 그대로 — Airbnb `body-md` (16/1.5), `caption` (14/1.29)와 다름. **명명 충돌 회피** 위해 Airbnb 영문 본문 톤 채택 안 함.
-- 향후 영문 본문 사용 사례 등장 시 별도 batch (`body-en` 등) 검토.
-
-#### export 통합 (build-tailwind-v4.mjs)
-- 기존 fontSize / lineHeight / fontWeight modifier 외 **letterSpacing modifier 추가**: `--text-{name}--letter-spacing: {value};`
-- v55 4 토큰 모두 export. letterSpacing 미정의 토큰은 modifier 누락 (default `normal`).
-
-#### HR / Desk 듀얼 브랜드
-- v5 정신 동일 — 모든 typography 토큰 brand-neutral. 양 브랜드 동일 스케일.
-- 사용 컨텍스트 차이는 컴포넌트 레벨 (HR dashboard 페이지 제목 `heading-xl`, Desk landing page hero `display-xl`).
 
 ## Layout
 
