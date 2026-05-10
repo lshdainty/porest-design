@@ -35,7 +35,7 @@ npm run build:preview     # exports/preview*.html 시각 카탈로그
 │   └── preview*.html     # 토큰 시각 카탈로그
 ├── scripts/              # native Node 도구 (외부 의존성 없음)
 │   ├── sync-shared-tokens.mjs   # 공유 토큰 자동 동기 (typography/rounded/spacing + colors 마커 영역)
-│   ├── build-tailwind-v4.mjs    # @theme CSS 빌드 (prose shadow/motion/overlay 자동 추출)
+│   ├── build-tailwind-v4.mjs    # @theme CSS 빌드 (prose shadow/motion/overlay/breakpoint/touch-target 자동 추출)
 │   ├── test-tailwind-export.mjs # Tailwind export smoke test
 │   ├── build-preview-html.mjs   # HTML 카탈로그 빌드
 │   ├── lint-prose.mjs           # prose 토큰 reference 정합성 검사
@@ -44,7 +44,7 @@ npm run build:preview     # exports/preview*.html 시각 카탈로그
 ├── .github/workflows/verify.yml  # CI: sync:check + lint:all + test:exports
 ├── CLAUDE.md             # 작업 규칙 (내부 — 토큰 추가 절대 규칙, sync 정책)
 ├── GIT_CONVENTION.md     # 브랜치/커밋 규칙
-├── CHANGELOG.md          # v1~v50 milestone 누적 변경
+├── CHANGELOG.md          # v1~v63 milestone 누적 변경
 └── README.md             # (이 파일)
 ```
 
@@ -56,15 +56,17 @@ npm run build:preview     # exports/preview*.html 시각 카탈로그
 |---|---|---|---|
 | `colors` (neutral) | DESIGN.md (source) → HR/Desk 복제 | ✓ (마커 영역) | bg-page, surface-*, text-*, border-*, semantic, chart palette |
 | `colors` (brand) | DESIGN.hr.md / DESIGN.desk.md | — (보존) | primary, primary-light, border-focus, border-focus-light |
-| `typography` | DESIGN.md → 복제 | ✓ (블록) | 7종: caption, body, body-strong, heading-{sm,md,lg,xl} |
+| `typography` | DESIGN.md → 복제 | ✓ (블록) | 21종: caption / body / body-strong / heading-{sm,md,lg,xl} (한국어 베이스) + rating-display / display-{xl,lg,md} / title-{md,sm} / body-{md,sm} / caption-{md,sm} / badge / uppercase-tag / button-md / nav-link (Airbnb reference batch v55-v57) |
 | `rounded` | DESIGN.md → 복제 | ✓ (블록) | 7종: xs, sm, md, lg, xl, 2xl, full |
 | `spacing` | DESIGN.md → 복제 | ✓ (블록) | 7종: xs, sm, md, lg, xl, 2xl, 3xl (4px 베이스) |
 | `shadow` (prose-token) | 모든 파일 prose 표 | 수동 동기 | 8종: sm/md/lg/xl × {light, dark} (Material 3 / Big Sur 패턴) |
-| `motion` (prose-token) | 모든 파일 prose 표 | 수동 동기 | 5종: duration {fast/base/slow/slower} + ease-out |
+| `motion` (prose-token) | 모든 파일 prose 표 | 수동 동기 | 7종: duration {fast/base/slow/slower/loop} + ease-{out, linear} (v32 단발 전환 + v63 반복 애니메이션) |
 | `overlay-dim` (prose-token) | 모든 파일 prose 표 | 수동 동기 | 2종: light/dark dim (alpha 채널 rgba) |
+| `breakpoint` (prose-token) | 모든 파일 prose 표 | 수동 동기 | 5종: sm/md/lg/xl/2xl (640/736/834/1069/1441 — Apple Store reference, v54) |
+| `touch-target` (prose-token) | 모든 파일 prose 표 | 수동 동기 | 5종: min/pill-w/circular/nav-h/nav-w (44/100/44/32/80 — WCAG 2.5.5 AAA, v59) |
 
 Lint 자동 검증: WCAG 1.4.3 (본문 4.5:1) + 1.4.11 (UI 3:1) — `npm run lint:all`.
-prose-token은 lint 비대상 (spec이 shadow/motion/overlay 토큰 타입 미지원) — `scripts/build-tailwind-v4.mjs`가 표에서 추출해 v4 CSS로 export.
+prose-token은 lint 비대상 (spec이 shadow/motion/overlay/breakpoint/touch-target 토큰 타입 미지원) — `scripts/build-tailwind-v4.mjs`가 표에서 추출해 v4 CSS로 export.
 
 ---
 
