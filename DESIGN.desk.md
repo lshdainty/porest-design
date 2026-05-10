@@ -54,7 +54,7 @@ colors:
   success-light: "#5DC07B"
   error: "#DC2626"
   error-light: "#F08080"
-  warning: "#C2410C"
+  warning: "#C84D0E"
   warning-light: "#E8A05A"
   info: "#1D6FCB"
   info-light: "#6FAEDF"

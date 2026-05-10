@@ -47,7 +47,7 @@ colors:
   success-light: "#5DC07B"
   error: "#DC2626"
   error-light: "#F08080"
-  warning: "#C84D0E"
+  warning: "#C2410C"
   warning-light: "#E8A05A"
   info: "#1D6FCB"
   info-light: "#6FAEDF"
@@ -531,7 +531,7 @@ base 4개 vivid 갱신. light 변형은 v20에서 검증된 다크 alert contras
 |---|---|---|
 | `success` | `#117A3A` → `#16803F` | deep forest → emerald (Tailwind green-700 톤) |
 | `error` | `#C53030` → `#DC2626` | brick → vivid red (Linear/Tailwind red-600 톤) |
-| `warning` | `#A85800` → `#C84D0E` | brown amber → 명확한 orange. v52에서 미세 brighten (1차 `#C2410C` 어두운 인상 → L 0.15 → 0.17) |
+| `warning` | `#A85800` → `#C2410C` | brown amber → 명확한 orange (가장 큰 톤 개선) |
 | `info` | `#006395` → `#1D6FCB` | deep navy → sky blue |
 
 #### 변경 이유
@@ -545,7 +545,7 @@ v10 base는 본문 4.5:1 안전 마진을 위해 L 0.13~0.17로 어둡게 잡혀
 |---|---|---|---|
 | `badge-success` | success `#16803F` | text-on-accent | ✅ ≥4.5:1 |
 | `badge-error` | error `#DC2626` | text-on-accent | ✅ ≥4.5:1 |
-| `badge-warning` | warning `#C84D0E` | text-on-accent | ✅ ≥4.5:1 |
+| `badge-warning` | warning `#C2410C` | text-on-accent | ✅ ≥4.5:1 |
 | `badge-info` | info `#1D6FCB` | text-on-accent | ✅ ≥4.5:1 |
 | `alert-text-success` | surface-default | success | ✅ ≥4.5:1 |
 | `alert-text-error` | surface-default | error | ✅ ≥4.5:1 |
