@@ -110,6 +110,7 @@
 - **v30**: `scripts/build-tailwind-v4.mjs` 추가 — Tailwind v4 `@theme` CSS 빌드(외부 의존성 없음). prose shadow + (v32~) motion 자동 추출. `package.json` export scripts 정정 (잘못된 `css-tailwind` 포맷명, `design.md` 직접 호출 → `npx @google/design.md` + `tailwind`/`dtcg`).
 - **(별도 commit `b4ee2c8`)**: pre-commit hook (`.husky/pre-commit`) — `npm run verify` 자동 실행. 의존성 추가 0 (native `core.hooksPath`, husky 패키지 미사용). 토큰/spec 변경 없는 tooling commit이라 milestone 번호 미부여 (CHANGELOG 초안에 v31로 잘못 표기 → 정정. 백업 부재로 ground truth 명확).
 - **v50**: `scripts/sync-shared-tokens.mjs` 확장 — `@sync:shared-{start,end} (colors-N)` markers 도입. colors-1 (neutral: bg/surface/text/border) + colors-2 (semantic + chart) region 자동 동기. typography/rounded/spacing 블록 + colors region 통합 drift detection.
+- **(v66 phase D)**: `scripts/lint-dark-contrast.mjs` 추가 — dark pair contrast 자동 검증 (spec @google/design.md lint는 light pair만 검증, dark는 토큰 변경 시 회귀 위험). 본문 4.5:1 (text-{primary,secondary}-dark / primary-light / semantic-light × dark surfaces), UI 3:1 (border-focus-light / chart-*-light × dark surfaces), tertiary는 1.4.3 incidental 가능 — warning. text-disabled-dark는 incidental 예외로 검증 제외, text-on-accent는 light pair lint가 이미 검증. `npm run lint:dark` / `lint:dark:strict` 등록, `verify`에 통합 (3 brand 파일 165 페어 검사).
 
 ### Docs
 - **v18**: spec 섹션명 정렬 (`## Layout`, `## Elevation & Depth` 등 spec 표기 일치)
