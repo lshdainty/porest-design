@@ -41,6 +41,31 @@
 **v32 — Motion**
 - v32: motion 5종 (prose-token) — `motion-duration-{fast/base/slow/slower}` + `motion-ease-out`
 
+### Components
+
+**v33~v48 — Component spec batch (16 components, sparse 매핑 자동 검증 활성)**
+
+각 컴포넌트는 sparse 매핑(`{component-name}` 토큰)으로 lint contrast 자동 검증 활성. spec prose는 variant/state/size/a11y 가이드 + 듀얼 브랜드(HR/Desk) 톤 차이 명시.
+
+- v33: Button (variant 3 / state 5 / size 3 / a11y)
+- v34: Input (text/number/email/password/search × mode pair)
+- v35: Card (variant 4 / padding 3 / shadow guide)
+- v36: Page text + Caption (typography hierarchy, secondary/tertiary 위계)
+- v37: Badge (semantic 4 + size/shape, sparse fill 매핑)
+- v38: Alert text (semantic 4 × 2 mode = 8 페어)
+- v39: Focus ring (a11y 2.4.11/12/13 핵심, brand × surface 4 분기)
+- v40: Divider + Outline (border-* sparse 사용)
+- v41: Disabled label (1.4.3 incidental 예외 명시)
+- v42: Chart color palette (10색 × 2 mode, sparse fill 활성)
+- v43: Modal (overlay-dim prose-token + 외곽 강조)
+- v44: Toast (semantic 4 + auto-dismiss + a11y)
+- v45: Tooltip (hover/focus hint, 1.4.13 WCAG)
+- v46: Dropdown (Menu/Select/Combobox 공통 패턴)
+- v47: Tabs (variant 4 + manual activation)
+- v48: Switch / Checkbox / Radio (control 묶음)
+
+브랜드 분기: 일부 컴포넌트 prose에서 HR(B2B 데이터 밀도) vs Desk(B2C 친근 톤) 차이 명시 — Button hover 강도, Card shadow 톤, Tab variant 등.
+
 ### Changed
 - **v8**: `accent-*-on-dark` → `accent-*-light` rename — `-dark` suffix가 mode pair 표기와 충돌(예: `accent-hr-on-dark` vs `surface-default-dark`)
 - **v14 → v15**: HR/Desk별 `bg-page` fork 시도 → `#F5F6FA` 통일 회귀 — fork 시 `primary-hr` × `bg-page-hr` 인라인 4.14:1(AA 미달) 발생
@@ -51,11 +76,13 @@
 
 ### Fixed
 - **v9**: 매 batch마다 lint 결과를 손계산만 하던 방식 발견 → 16 sparse component를 매핑해 lint contrastCheck 자동 검증 활성. 이후 모든 토큰 추가는 components 매핑 동반.
+- **v49**: outdated prose token references 정리 (P2-F follow-up). v17 file split 후 brand-specific token reference 잔재 제거 + spec과 비동기 표현 cleanup. `scripts/lint-prose.mjs`가 prose token reference 정합성 자동 검증.
 
 ### Tooling
 - **v29**: `scripts/sync-shared-tokens.mjs` 추가 — `typography`/`rounded`/`spacing` 블록 자동 sync (DESIGN.md → HR/Desk), colors 47 공유 토큰 drift detection. `npm run sync` / `sync:check` / `verify` (sync:check + lint:all 통합).
 - **v30**: `scripts/build-tailwind-v4.mjs` 추가 — Tailwind v4 `@theme` CSS 빌드(외부 의존성 없음). prose shadow + (v32~) motion 자동 추출. `package.json` export scripts 정정 (잘못된 `css-tailwind` 포맷명, `design.md` 직접 호출 → `npx @google/design.md` + `tailwind`/`dtcg`).
-- **v31**: pre-commit hook (`.husky/pre-commit`) — `npm run verify` 자동 실행. 의존성 추가 0 (native `core.hooksPath`, husky 패키지 미사용).
+- **(별도 commit `b4ee2c8`)**: pre-commit hook (`.husky/pre-commit`) — `npm run verify` 자동 실행. 의존성 추가 0 (native `core.hooksPath`, husky 패키지 미사용). 토큰/spec 변경 없는 tooling commit이라 milestone 번호 미부여 (CHANGELOG 초안에 v31로 잘못 표기 → 정정. 백업 부재로 ground truth 명확).
+- **v50**: `scripts/sync-shared-tokens.mjs` 확장 — `@sync:shared-{start,end} (colors-N)` markers 도입. colors-1 (neutral: bg/surface/text/border) + colors-2 (semantic + chart) region 자동 동기. typography/rounded/spacing 블록 + colors region 통합 drift detection.
 
 ### Docs
 - **v18**: spec 섹션명 정렬 (`## Layout`, `## Elevation & Depth` 등 spec 표기 일치)
