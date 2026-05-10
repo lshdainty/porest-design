@@ -1338,6 +1338,171 @@ function renderForm(brand) {
   </section>`;
 }
 
+function renderBatchV67(brand) {
+  const isHr = brand.key === "hr";
+  const isDesk = brand.key === "desk";
+
+  // Pagination
+  const pgNumbered = [1, 2, 3, "...", 9, 10];
+  const pgCurrent = 2;
+  const pgItems = pgNumbered.map(n => {
+    if (n === "...") return `<span class="pg-ellipsis">...</span>`;
+    const cur = n === pgCurrent;
+    return `<button class="pg-btn${cur ? " pg-btn--current" : ""}" type="button"${cur ? ` aria-current="page"` : ""}>${n}</button>`;
+  }).join("");
+
+  const pagination = isDesk
+    ? `<div class="pg-block">
+        <div class="pg-label">Load-more variant (Desk 모바일 우선)</div>
+        <button class="btn btn-outlined pg-loadmore" type="button">더 보기 (12 / 58)</button>
+       </div>`
+    : `<div class="pg-block">
+        <div class="pg-label">Numbered variant (${isHr ? "HR 데이터 그리드 footer" : "shared baseline"})</div>
+        <nav class="pg-nav" aria-label="페이지 네비게이션">
+          <button class="pg-arrow" type="button" aria-label="이전 페이지">←</button>
+          <div class="pg-numbers">${pgItems}</div>
+          <button class="pg-arrow" type="button" aria-label="다음 페이지">→</button>
+        </nav>
+       </div>`;
+
+  // Drawer (정적 표시 — 실제 슬라이드 안 함)
+  const drawerLabel = isHr
+    ? "Side drawer (HR 직원 detail panel)"
+    : isDesk
+      ? "Bottom sheet (Desk 거래 입력)"
+      : "Drawer pattern (side / bottom 양쪽)";
+  const drawer = isDesk
+    ? `<div class="drw-frame">
+        <div class="drw-bottom">
+          <div class="drw-handle"></div>
+          <div class="drw-header">
+            <div class="drw-title">거래 추가</div>
+            <button class="drw-close" type="button" aria-label="닫기">✕</button>
+          </div>
+          <div class="drw-body">
+            <div class="drw-row"><span class="drw-key">유형</span><span class="drw-val">지출</span></div>
+            <div class="drw-row"><span class="drw-key">금액</span><span class="drw-val">₩28,500</span></div>
+            <div class="drw-row"><span class="drw-key">카테고리</span><span class="drw-val">식비 · 카페</span></div>
+          </div>
+          <div class="drw-actions">
+            <button class="btn btn-primary" type="button">저장</button>
+          </div>
+        </div>
+       </div>`
+    : `<div class="drw-frame">
+        <div class="drw-side">
+          <div class="drw-header">
+            <div class="drw-title">${isHr ? "직원 상세 — 김지원" : "Detail panel"}</div>
+            <button class="drw-close" type="button" aria-label="닫기">✕</button>
+          </div>
+          <div class="drw-body">
+            <div class="drw-row"><span class="drw-key">사번</span><span class="drw-val">PR-2024-0312</span></div>
+            <div class="drw-row"><span class="drw-key">부서</span><span class="drw-val">디자인 본부</span></div>
+            <div class="drw-row"><span class="drw-key">직급</span><span class="drw-val">시니어</span></div>
+            <div class="drw-row"><span class="drw-key">근속</span><span class="drw-val">2년차</span></div>
+          </div>
+          <div class="drw-actions">
+            <button class="btn btn-primary" type="button">${isHr ? "권한 수정" : "편집"}</button>
+            <button class="btn btn-outlined" type="button">취소</button>
+          </div>
+        </div>
+       </div>`;
+
+  // Spinner / Progress
+  const spinner = `
+    <div class="sp-block">
+      <div class="sp-row">
+        <div class="sp-cell">
+          <div class="sp-label">Circular · md 24</div>
+          <div class="sp-spinner" role="status" aria-label="로딩 중"></div>
+        </div>
+        <div class="sp-cell">
+          <div class="sp-label">Circular · lg 32</div>
+          <div class="sp-spinner sp-spinner--lg" role="status" aria-label="로딩 중"></div>
+        </div>
+        <div class="sp-cell">
+          <div class="sp-label">Inline + 라벨</div>
+          <div class="sp-inline">
+            <div class="sp-spinner sp-spinner--sm" role="status" aria-label="처리 중"></div>
+            <span>${isHr ? "결재 처리 중..." : isDesk ? "메모 저장 중..." : "처리 중..."}</span>
+          </div>
+        </div>
+      </div>
+      <div class="sp-row">
+        <div class="sp-cell sp-cell--full">
+          <div class="sp-label">Determinate progress · 62%</div>
+          <div class="sp-progress" role="progressbar" aria-valuenow="62" aria-valuemin="0" aria-valuemax="100" aria-label="${isHr ? "일괄 승인" : isDesk ? "이미지 업로드" : "진행"}">
+            <div class="sp-progress-fill" style="width: 62%;"></div>
+          </div>
+          <div class="sp-progress-meta"><span>${isHr ? "47 / 76 결재" : isDesk ? "1.2MB / 1.9MB" : "62 / 100"}</span><span>62%</span></div>
+        </div>
+      </div>
+      <div class="sp-row">
+        <div class="sp-cell sp-cell--full">
+          <div class="sp-label">Indeterminate progress (sweeping)</div>
+          <div class="sp-progress sp-progress--indeterminate" role="progressbar" aria-label="동기화 중">
+            <div class="sp-progress-sweep"></div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  // Stepper
+  const stepperData = isHr
+    ? { variant: "horizontal", steps: ["신청", "1차 결재", "2차 결재", "완료"], current: 1 }
+    : isDesk
+      ? { variant: "horizontal", steps: ["계정", "프로필", "카테고리", "알림", "완료"], current: 2 }
+      : { variant: "horizontal", steps: ["Token", "Component", "Lint", "Export"], current: 1 };
+  const stepper = `
+    <div class="stp-block">
+      <div class="stp-label">${stepperData.variant === "horizontal" ? "Horizontal" : "Vertical"} stepper · ${isHr ? "결재 단계 sequential" : isDesk ? "onboarding 5단계" : "build pipeline"}</div>
+      <nav class="stp" aria-label="단계 진행">
+        <ol class="stp-list">
+          ${stepperData.steps.map((label, i) => {
+            let state = "pending";
+            if (i < stepperData.current) state = "completed";
+            else if (i === stepperData.current) state = "current";
+            const aria = state === "current" ? ` aria-current="step"` : "";
+            const num = state === "completed" ? "✓" : (i + 1);
+            return `
+              <li class="stp-item stp-item--${state}"${aria}>
+                <div class="stp-circle">${num}</div>
+                <div class="stp-label-text">${escape(label)}</div>
+                ${i < stepperData.steps.length - 1 ? `<div class="stp-connector"></div>` : ""}
+              </li>`;
+          }).join("")}
+        </ol>
+      </nav>
+    </div>`;
+
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">14 — Components batch (v67)</div>
+      <h2 class="section-title">Pagination · Drawer · Spinner · Stepper</h2>
+      <p class="section-lede">시스템 빈틈 4 컴포넌트 — 모두 prose-only spec, 새 토큰 0 (기존 합성).</p>
+    </header>
+    <div class="batch-grid">
+      <div class="batch-card">
+        <div class="batch-card-head">${escape("Pagination")}</div>
+        ${pagination}
+      </div>
+      <div class="batch-card">
+        <div class="batch-card-head">${escape(drawerLabel)}</div>
+        ${drawer}
+      </div>
+      <div class="batch-card">
+        <div class="batch-card-head">Spinner / Progress</div>
+        ${spinner}
+      </div>
+      <div class="batch-card batch-card--full">
+        <div class="batch-card-head">Stepper</div>
+        ${stepper}
+      </div>
+    </div>
+  </section>`;
+}
+
 function renderTokenCatalog(tokens) {
   const colorGrid = tokens.colors.map(t => `
     <div class="swatch">
@@ -1393,7 +1558,7 @@ function renderTokenCatalog(tokens) {
   return `
   <section class="catalog">
     <header class="section-head">
-      <div class="section-eyebrow">14 — Reference</div>
+      <div class="section-eyebrow">15 — Reference</div>
       <h2 class="section-title">Token catalog</h2>
       <p class="section-lede">검증·문서 용도 — 시스템에 정의된 모든 토큰을 한눈에.</p>
     </header>
@@ -2251,6 +2416,226 @@ function pageCss() {
       .sk { animation: none; background-image: none; }
     }
 
+    /* === v67 batch (Pagination / Drawer / Spinner / Stepper) === */
+    .batch-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-lg);
+    }
+    .batch-card {
+      background: var(--color-surface-default);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      box-shadow: var(--shadow-sm);
+      display: flex; flex-direction: column; gap: var(--spacing-md);
+    }
+    .batch-card--full { grid-column: 1 / -1; }
+    .batch-card-head {
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+      font-family: ui-monospace, monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* Pagination */
+    .pg-block { display: flex; flex-direction: column; gap: var(--spacing-sm); }
+    .pg-label { font-size: var(--text-caption); color: var(--color-text-secondary); }
+    .pg-nav { display: flex; gap: var(--spacing-md); align-items: center; flex-wrap: wrap; }
+    .pg-numbers { display: flex; gap: var(--spacing-xs); }
+    .pg-arrow,
+    .pg-btn {
+      width: 40px; height: 40px;
+      border-radius: var(--radius-md);
+      border: none;
+      background: transparent;
+      color: var(--color-text-secondary);
+      font-size: var(--text-body);
+      font-family: inherit;
+      cursor: pointer;
+      transition: background var(--motion-duration-fast, 150ms) var(--motion-ease-out, ease-out);
+    }
+    .pg-arrow:hover,
+    .pg-btn:hover { background: var(--color-surface-input); color: var(--color-text-primary); }
+    .pg-btn--current {
+      background: var(--color-primary, var(--color-text-primary));
+      color: var(--color-text-on-accent, #fff);
+      font-weight: 700;
+    }
+    .pg-btn--current:hover { background: var(--color-primary, var(--color-text-primary)); color: var(--color-text-on-accent, #fff); }
+    .pg-ellipsis { display: flex; align-items: center; padding: 0 var(--spacing-xs); color: var(--color-text-tertiary); }
+    .pg-loadmore { align-self: flex-start; min-width: 200px; }
+
+    /* Drawer (정적 표시) */
+    .drw-frame {
+      background: var(--color-bg-page);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-md);
+      min-height: 280px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-end;
+      position: relative;
+    }
+    .drw-side {
+      background: var(--color-surface-default);
+      border-radius: var(--radius-xl) 0 0 var(--radius-xl);
+      box-shadow: var(--shadow-xl);
+      width: 280px;
+      padding: var(--spacing-lg);
+      display: flex; flex-direction: column; gap: var(--spacing-md);
+      align-self: stretch;
+    }
+    .drw-bottom {
+      background: var(--color-surface-default);
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      box-shadow: var(--shadow-xl);
+      width: 100%;
+      padding: var(--spacing-lg);
+      display: flex; flex-direction: column; gap: var(--spacing-md);
+    }
+    .drw-handle {
+      width: 40px; height: 4px;
+      background: var(--color-surface-input);
+      border-radius: var(--radius-full);
+      margin: -4px auto var(--spacing-sm);
+    }
+    .drw-header { display: flex; justify-content: space-between; align-items: center; }
+    .drw-title { font-weight: 600; font-size: var(--text-heading-sm); }
+    .drw-close {
+      width: 28px; height: 28px;
+      border: none; background: transparent;
+      color: var(--color-text-tertiary);
+      cursor: pointer; font-size: 16px;
+      border-radius: var(--radius-full);
+    }
+    .drw-close:hover { background: var(--color-surface-input); }
+    .drw-body { display: flex; flex-direction: column; gap: var(--spacing-xs); }
+    .drw-row { display: flex; justify-content: space-between; padding: var(--spacing-xs) 0; border-bottom: 1px solid var(--color-border-default); font-size: var(--text-caption); }
+    .drw-row:last-child { border-bottom: none; }
+    .drw-key { color: var(--color-text-tertiary); }
+    .drw-val { font-weight: 600; }
+    .drw-actions { display: flex; gap: var(--spacing-sm); padding-top: var(--spacing-sm); border-top: 1px solid var(--color-border-default); }
+    .drw-actions .btn { flex: 1; }
+
+    /* Spinner / Progress */
+    .sp-block { display: flex; flex-direction: column; gap: var(--spacing-md); }
+    .sp-row { display: flex; gap: var(--spacing-lg); flex-wrap: wrap; }
+    .sp-cell {
+      display: flex; flex-direction: column; gap: var(--spacing-sm);
+      min-width: 80px;
+    }
+    .sp-cell--full { flex: 1; min-width: 100%; }
+    .sp-label { font-size: var(--text-caption); color: var(--color-text-tertiary); font-family: ui-monospace, monospace; }
+    @keyframes sp-spin {
+      to { transform: rotate(360deg); }
+    }
+    .sp-spinner {
+      width: 24px; height: 24px;
+      border: 2px solid var(--color-surface-input);
+      border-top-color: var(--color-primary, var(--color-text-primary));
+      border-radius: var(--radius-full);
+      animation: sp-spin var(--motion-duration-loop, 1500ms) var(--motion-ease-linear, linear) infinite;
+    }
+    .sp-spinner--sm { width: 16px; height: 16px; border-width: 2px; }
+    .sp-spinner--lg { width: 32px; height: 32px; border-width: 3px; }
+    .sp-inline { display: flex; gap: var(--spacing-sm); align-items: center; font-size: var(--text-body); color: var(--color-text-secondary); }
+    .sp-progress {
+      width: 100%;
+      height: 4px;
+      background: var(--color-surface-input);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      position: relative;
+    }
+    .sp-progress-fill {
+      height: 100%;
+      background: var(--color-primary, var(--color-text-primary));
+      transition: width var(--motion-duration-base, 200ms) var(--motion-ease-out, ease-out);
+    }
+    @keyframes sp-sweep {
+      0% { left: -30%; }
+      100% { left: 100%; }
+    }
+    .sp-progress--indeterminate { background: var(--color-surface-input); }
+    .sp-progress-sweep {
+      position: absolute;
+      top: 0; left: -30%;
+      width: 30%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, var(--color-primary, var(--color-text-primary)), transparent);
+      animation: sp-sweep var(--motion-duration-loop, 1500ms) var(--motion-ease-linear, linear) infinite;
+    }
+    .sp-progress-meta {
+      display: flex; justify-content: space-between;
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+      margin-top: var(--spacing-xs);
+    }
+
+    /* Stepper */
+    .stp-block { display: flex; flex-direction: column; gap: var(--spacing-md); }
+    .stp-label { font-size: var(--text-caption); color: var(--color-text-secondary); }
+    .stp { display: flex; }
+    .stp-list {
+      display: flex;
+      gap: 0;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      width: 100%;
+    }
+    .stp-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-xs);
+      position: relative;
+    }
+    .stp-circle {
+      width: 32px; height: 32px;
+      border-radius: var(--radius-full);
+      display: flex; align-items: center; justify-content: center;
+      font-size: var(--text-caption);
+      font-weight: 700;
+      flex-shrink: 0;
+      z-index: 1;
+    }
+    .stp-item--completed .stp-circle {
+      background: var(--color-success);
+      color: var(--color-text-on-accent, #fff);
+    }
+    .stp-item--current .stp-circle {
+      background: var(--color-primary, var(--color-text-primary));
+      color: var(--color-text-on-accent, #fff);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary, var(--color-text-primary)) 25%, transparent);
+    }
+    .stp-item--pending .stp-circle {
+      background: var(--color-surface-input);
+      color: var(--color-text-tertiary);
+    }
+    .stp-label-text {
+      font-size: var(--text-caption);
+      text-align: center;
+      max-width: 100px;
+    }
+    .stp-item--completed .stp-label-text { color: var(--color-text-secondary); }
+    .stp-item--current .stp-label-text { color: var(--color-text-primary); font-weight: 600; }
+    .stp-item--pending .stp-label-text { color: var(--color-text-tertiary); }
+    .stp-connector {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      width: 100%;
+      height: 2px;
+      background: var(--color-border-default);
+      z-index: 0;
+    }
+    .stp-item--completed .stp-connector {
+      background: var(--color-success);
+    }
+
     /* Token catalog (기존 — 압축 유지) */
     .catalog { margin-top: var(--spacing-3xl); padding-top: var(--spacing-2xl); border-top: 1px dashed var(--color-border-default); }
     .catalog h3 { font-size: var(--text-heading-md); font-weight: 600; margin: var(--spacing-xl) 0 var(--spacing-md); }
@@ -2307,7 +2692,26 @@ function pageCss() {
     [data-theme="dark"] .ld-highlights,
     [data-theme="dark"] .ld-host,
     [data-theme="dark"] .sk-card-wrap,
+    [data-theme="dark"] .batch-card,
+    [data-theme="dark"] .drw-side,
+    [data-theme="dark"] .drw-bottom,
     [data-theme="dark"] .swatch { background: var(--color-surface-default-dark); }
+    [data-theme="dark"] .drw-frame { background: var(--color-bg-page-dark); }
+    [data-theme="dark"] .drw-handle { background: var(--color-surface-input-dark); }
+    [data-theme="dark"] .drw-row { border-color: var(--color-border-default-dark); }
+    [data-theme="dark"] .drw-actions { border-color: var(--color-border-default-dark); }
+    [data-theme="dark"] .drw-close:hover { background: var(--color-surface-input-dark); }
+    [data-theme="dark"] .stp-connector { background: var(--color-border-default-dark); }
+    [data-theme="dark"] .pg-btn:hover,
+    [data-theme="dark"] .pg-arrow:hover { background: var(--color-surface-input-dark); }
+    [data-theme="dark"] .sp-spinner { border-color: var(--color-surface-input-dark); border-top-color: var(--color-primary-light, var(--color-text-primary-dark)); }
+    [data-theme="dark"] .sp-progress-fill { background: var(--color-primary-light, var(--color-text-primary-dark)); }
+    [data-theme="dark"] .sp-progress-sweep { background: linear-gradient(90deg, transparent, var(--color-primary-light, var(--color-text-primary-dark)), transparent); }
+    [data-theme="dark"] .stp-item--current .stp-circle {
+      background: var(--color-primary-light, var(--color-primary, var(--color-text-primary-dark)));
+      color: var(--color-bg-page-dark, #0b0d12);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary-light, var(--color-primary, var(--color-text-primary-dark))) 25%, transparent);
+    }
     [data-theme="dark"] .ld-highlight-icon { background: var(--color-surface-input-dark); }
     [data-theme="dark"] .sk { background-color: var(--color-surface-input-dark); background-image: linear-gradient(90deg, var(--color-surface-input-dark) 0%, var(--color-surface-default-dark) 50%, var(--color-surface-input-dark) 100%); }
     [data-theme="dark"] .sk-card,
@@ -2446,6 +2850,8 @@ function pageCss() {
       }
       .ld-gallery-cell--hero { grid-row: 1 / 2; grid-column: 1 / -1; }
       .sk-demo { grid-template-columns: 1fr; }
+      .batch-grid { grid-template-columns: 1fr; }
+      .drw-side { width: 100%; }
     }
   `;
 }
@@ -2496,6 +2902,7 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     ${renderToasts(brand)}
     ${renderForm(brand)}
     ${renderSkeleton(brand)}
+    ${renderBatchV67(brand)}
     ${renderTokenCatalog(tokens)}
     <p style="text-align:center;color:var(--color-text-tertiary);font-size:var(--text-caption);margin-top:var(--spacing-3xl);">
       source <code>${escape(sourceFile)}</code> · Porest Design System
