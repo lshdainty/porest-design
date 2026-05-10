@@ -108,6 +108,15 @@
   - **Command (Cmd+K)**: 전역 search/action menu, sections grouping (Suggestions/Pages/Actions), filter typing, `role="dialog"` + listbox + activedescendant.
 - HR(Sidebar fixed 데스크탑 + Menubar 결재/평가 application + Command 직원 검색) / Desk(Sidebar floating 모바일 drawer + Command 메모 fuzzy search) brand-specific prose.
 
+**v69 — Input batch (shadcn 확장 series 2/4)**
+- v69: 5 input/selection 컴포넌트 prose-only — Combobox / Slider / Toggle / Toggle Group / Input OTP.
+  - **Combobox**: Input + Dropdown 결합, typing autocomplete + 선택, role=combobox + listbox + activedescendant. v45 Dropdown combobox variant 확장.
+  - **Slider**: track 4px + thumb 16 circle, single/range, hit area touch-min 44 padding, role=slider + aria-valuenow.
+  - **Toggle**: 단일 button on/off (icon/text/icon-text), aria-pressed. Switch와 의미 차이 (formatting/filtering vs setting).
+  - **Toggle Group**: single (radiogroup) / multiple. 인접 button radius join.
+  - **Input OTP**: 6자리 분할 input, autocomplete="one-time-code" SMS 자동 채우기, paste 일괄 처리.
+- HR(Combobox 직원 검색 / Slider 평가 점수 / Toggle Group 결재 상태 필터) / Desk(Combobox 태그 자동완성 / Slider 가계부 예산 / Toggle 메모 즐겨찾기) brand-specific prose.
+
 ### Changed
 - **v8**: `accent-*-on-dark` → `accent-*-light` rename — `-dark` suffix가 mode pair 표기와 충돌(예: `accent-hr-on-dark` vs `surface-default-dark`)
 - **v14 → v15**: HR/Desk별 `bg-page` fork 시도 → `#F5F6FA` 통일 회귀 — fork 시 `primary-hr` × `bg-page-hr` 인라인 4.14:1(AA 미달) 발생
