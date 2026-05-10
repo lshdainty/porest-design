@@ -1525,29 +1525,3 @@ HR(B2B) — 직원 카드, 조직도, 결재 큐 author, 평가 reviewer 등 모
 
 #### Sparse 매핑
 DESIGN.md와 동일 (`avatar` chart-blue × text-on-accent, lint contrast 활성).
-
-### Calendar (v61 추가)
-
-HR(B2B) — 휴가 신청·결재 일정·근태 캘린더·평가 일정 등 핵심 일정 컴포넌트. 데이터 밀도 우선이라 lg 사이즈(40px) 기본, 정보 표기 풍부.
-
-#### HR 사용 패턴
-- **휴가 신청 range**: 시작일·종료일 2-step 선택 → range-start/mid/end 표시. 주말·공휴일 자동 disabled (휴가 일수 계산 제외).
-- **결재 일정 marker**: 셀 우하단 4×4 dot (`primary` `#357B5F` 채움) — 해당일 결재 항목 존재 표시. 셀 클릭 시 결재 list dropdown.
-- **근태 캘린더**: 출근(`success` 4×4 dot 좌하단), 지각(`warning`), 결근(`error`) — 일별 상태 표기.
-- **평가 일정**: 평가 기간 range를 `primary-light` 배경으로 강조 (피선택 결과 아닌 정보 표시 — selected variant와 톤 분리 위해 stroke 1px outline 추가).
-
-#### Layout 차이
-- 데스크탑 우선: lg 사이즈 (40×40) default. 모바일은 md (36×36).
-- 휴가/근태 화면은 풀 페이지 캘린더 — month/year navigation 헤더 좌우에 `오늘로 이동` 버튼 (`button-primary` sm).
-- 결재 큐와 통합된 mini calendar: sm (32×32) inline + 우측 결재 list 패널 (sticky).
-
-#### Color
-- selected (single/range-start/range-end): `primary` `#357B5F` 채움 + `text-on-accent`.
-- range-mid: `primary-light` `#6BAE8C` 배경 + `text-primary`.
-- today indicator (선택 안 됐을 때): `border-focus` `#357B5F` 1px outline + `primary` 텍스트.
-
-#### Touch target
-데스크탑 우선이라 `touch-min` (44×44) 충족 위해 lg 사이즈(40×40)에 외곽 padding `xs` (4px) 보강. 모바일 화면 전환 시 md(36×36)에서 padding `sm` (8px) 적용.
-
-#### Sparse 매핑
-신규 yaml 컴포넌트 0. 기존 `button-primary`(selected cell), `alert-text-success/error/warning`(근태 dot color), `card-light`(셀 default ground)이 contrast 페어 활성.
