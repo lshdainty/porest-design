@@ -50,13 +50,13 @@ colors:
   
   # @sync:shared-start (colors-2)
   # === Semantic - Status (functional palette, base + light 페어, 듀얼 브랜드 공유) ===
-  success: "#117A3A"
+  success: "#16803F"
   success-light: "#5DC07B"
-  error: "#C53030"
+  error: "#DC2626"
   error-light: "#F08080"
-  warning: "#A85800"
+  warning: "#C2410C"
   warning-light: "#E8A05A"
-  info: "#006395"
+  info: "#1D6FCB"
   info-light: "#6FAEDF"
   
   # === Chart palette (data viz, 10색 hue 균등, L≈0.16-0.18 통일, 듀얼 브랜드 공유) ===
