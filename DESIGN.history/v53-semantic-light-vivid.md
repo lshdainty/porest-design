@@ -44,13 +44,13 @@ colors:
   # @sync:shared-start (colors-2)
   # === Semantic - Status (functional palette, base + light 페어, 듀얼 브랜드 공유) ===
   success: "#16803F"
-  success-light: "#4ADE80"
+  success-light: "#5DC07B"
   error: "#DC2626"
-  error-light: "#F87171"
+  error-light: "#F08080"
   warning: "#C84D0E"
-  warning-light: "#FB923C"
+  warning-light: "#E8A05A"
   info: "#1D6FCB"
-  info-light: "#60A5FA"
+  info-light: "#6FAEDF"
   
   # === Chart palette (data viz, 10색 hue 균등, L≈0.16-0.18 통일, 듀얼 브랜드 공유) ===
   # 1차 5색 (v21): red, orange, yellow, green, blue. 2차 5색은 v22, dark 변형은 v23-v24.
@@ -554,40 +554,8 @@ v10 base는 본문 4.5:1 안전 마진을 위해 L 0.13~0.17로 어둡게 잡혀
 
 (`npm run lint:all` 통과 — 0 errors, 0 contrast warnings. 8 페어 전부 silent pass.)
 
-#### light 변형 보존 이유 (v51 시점)
-v51에서는 `success-light`/`error-light`/`warning-light`/`info-light`를 v20 검증 hex 그대로 유지 — 변경 시 다크 alert contrast 회귀 위험을 우선 고려. **v53에서 vivid 톤으로 갱신** — 아래 `Semantic light refresh` 섹션 참조.
-
-### Semantic light refresh — vivid tone (v53 추가)
-
-v51에서 보류했던 light 변형 4개를 base와 hue 일관성 + 시각 통일감 위해 vivid 톤으로 갱신. Tailwind 400 톤 채택 (base는 600/700, light는 400 — 표준 lighter scale).
-
-| 토큰 | v20 → v53 | 변화 |
-|---|---|---|
-| `success-light` | `#5DC07B` → `#4ADE80` | cool emerald → vivid green-400 (saturation ↑) |
-| `error-light` | `#F08080` → `#F87171` | coral 유지, 살짝 saturated red-400 |
-| `warning-light` | `#E8A05A` → `#FB923C` | amber → 명확한 orange-400 (가장 큰 변화 — base와 hue 일치) |
-| `info-light` | `#6FAEDF` → `#60A5FA` | sky 유지, vivid blue-400 |
-
-#### 변경 이유
-1. v51 base를 vivid 톤으로 갱신 후 v20 light는 hue 일관성 약간 어긋남 (warning base orange vs light amber, success base emerald vs light cool-green).
-2. 다크 alert 4.5:1 contrast 마진은 v20 4.75~6.5:1로 충분 — vivid 톤(L 0.4~0.6)으로 가도 통과.
-3. Tailwind 400 톤 채택 — base 600/700과 hue 일관, lighter scale 표준.
-
-#### 색상 대비 — lint 실측 결과 (손계산 아님)
-
-4 페어를 components 섹션의 `alert-text-{semantic}-on-dark`로 lint contrast-ratio 직접 검증:
-
-| component | text | bg | v53 lint 판정 |
-|---|---|---|---|
-| `alert-text-success-on-dark` | success-light `#4ADE80` | surface-input-dark | ✅ ≥4.5:1 |
-| `alert-text-error-on-dark` | error-light `#F87171` | surface-input-dark | ✅ ≥4.5:1 |
-| `alert-text-warning-on-dark` | warning-light `#FB923C` | surface-input-dark | ✅ ≥4.5:1 |
-| `alert-text-info-on-dark` | info-light `#60A5FA` | surface-input-dark | ✅ ≥4.5:1 |
-
-(`npm run lint:all` 통과 — 0 errors, 0 contrast warnings. 4 페어 silent pass.)
-
-#### 채움 fill 비호환 유지
-v20과 동일 — light 위에 white 올리면 contrast 2~3:1 미달. 다크 모드 채움 badge는 여전히 base 색 + 외곽선 보강 또는 별도 패턴(향후 검토).
+#### light 변형 보존 이유
+`success-light`/`error-light`/`warning-light`/`info-light`는 v20에서 `surface-default-dark`/`surface-input-dark` 위 alert text 4.5~6.5:1 통과로 검증 — 변경 시 다크 alert 회귀 위험. base 톤 변화 따라 다크 시각 일관성은 별도 평가 후 추후 갱신.
 
 ### Chart palette (v21 추가, 4 배치 진행 중)
 
@@ -619,8 +587,6 @@ v20과 동일 — light 위에 white 올리면 contrast 2~3:1 미달. 다크 모
 #### v20 추가 — semantic 다크 변형 4개
 
 다크 표면 위 alert·toast·인라인 semantic 텍스트용 lightness 변형. base는 라이트 표면 전용(흰 텍스트 fill 4.5:1↑), light는 다크 표면 위 텍스트 4.5:1↑.
-
-**v20 시점 hex** (현재는 v53 톤으로 갱신 — `Semantic light refresh` 섹션 참조):
 
 | 토큰 | hex | L | 다크 표면 contrast (lint 실측) |
 |---|---|---|---|
