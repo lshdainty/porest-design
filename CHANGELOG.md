@@ -137,6 +137,14 @@
 
 **shadcn 확장 4 series 완료** — 총 20 컴포넌트 (v68 navigation 5 + v69 input 5 + v70 disclosure 5 + v71 data 5). 시스템 컴포넌트 75+ 보유 (기존 55 + v68-v71 batch).
 
+**v84 — 풀 docs site Phase 2 (컴포넌트 페이지 24)**
+- v84: `scripts/build-site.mjs`에 `parseExamplesMd` + `pageComponent` 추가 — `EXAMPLES.md` 24 섹션을 `exports/site/components/*.html` 24 페이지로 자동 변환. 카테고리 매핑(Forms / Layout / Navigation / Data Display / Feedback / Overlay / Disclosure / Reference)으로 사이드바 그룹 nav.
+- 페이지 구성: 제목 + lede + 메타(category 태그 / Live demo preview.html 링크 / EXAMPLES.md GitHub 링크) + 예제 코드 블록(각각 Copy 버튼 + lang label) + 가이드 paragraph + 관련 문서 callout(DESIGN.md / DESIGN.hr.md / DESIGN.desk.md GitHub 링크).
+- 사이드바 동적 구성 — `buildNav(components)` 함수가 컴포넌트 카테고리별 그룹화하여 8개 sub-section 생성("Components — Forms", "Components — Layout", ...). EXAMPLES.md만 source of truth.
+- Copy 버튼 JS — clipboard API + Copied! 1.6초 success 색 피드백. 외부 의존성 0.
+- inline markdown 처리 — lede / paragraph 안 백틱(\\\`token\\\`)이 `<code>` 태그로 변환.
+- Phase 3(Examples — 조합 layout) 별도 batch.
+
 **v83 — 풀 docs site 골격 (Phase 1 — Landing + Tokens 8 페이지)**
 - v83: `scripts/build-site.mjs` 신규 — shadcn/ui 스타일 multi-page documentation site 생성. `exports/site/` 디렉토리 + `index.html`(Landing) + `tokens/{colors,typography,spacing,radius,shadows,motion,breakpoints,z-index}.html` 8 페이지 + `assets/{tokens,site}.css + site.js`. 외부 의존성 0 — vanilla Node + 기존 build-tailwind-v4 산출물 재사용.
 - **3 브랜드 단일 사이트 토글**: `[data-brand="default|hr|desk"]` scoping으로 한 페이지에서 Default / HR / Desk primary 색 즉시 전환. localStorage 기억. `tokens.css` 통합 빌드 — Default(`:root` baseline) + HR override(4 토큰) + Desk override(4 토큰) + dark mode pair alias.
