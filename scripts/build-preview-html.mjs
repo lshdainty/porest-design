@@ -96,7 +96,7 @@ function brandProfile(brandName, tokens) {
       heroFacts: [
         { label: "primary", value: colorByName["primary"] || "#357B5F" },
         { label: "components", value: "15" },
-        { label: "milestone", value: "v53" },
+        { label: "milestone", value: "v57" },
       ],
       bigNumber: "87.3%",
       bigNumberLabel: "이번 달 평균 출근율",
@@ -200,7 +200,7 @@ function brandProfile(brandName, tokens) {
       heroFacts: [
         { label: "primary", value: colorByName["primary"] || "#0147AD" },
         { label: "components", value: "15" },
-        { label: "milestone", value: "v53" },
+        { label: "milestone", value: "v57" },
       ],
       bigNumber: "₩1,284,500",
       bigNumberLabel: "이번 달 잔액",
