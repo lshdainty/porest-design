@@ -1819,8 +1819,9 @@ for (const { source, output, brand } of targets) {
     exit(2);
   }
 
-  const css = readFileSync(cssPath, "utf8");
-  const tokens = parseTokensFromCss(css);
+  const rawCss = readFileSync(cssPath, "utf8");
+  const tokens = parseTokensFromCss(rawCss);
+  const css = rawCss.replace(/@theme\s*\{/, ":root {");
   const html = renderHtml(brand, css, tokens, basename(source));
 
   writeFileSync(output, html, "utf8");
