@@ -1724,3 +1724,32 @@ HR(B2B) 5 disclosure/overlay 컴포넌트.
 - **결재 반려**: "정말 반려하시겠어요? 신청자에게 알림이 가요." + 사유 입력 textarea.
 - **권한 회수**: "이 직원의 모든 권한을 회수합니다. 복구는 관리자 승인 필요." (destructive 강조).
 - **평가 삭제**: 작성 중 평가 삭제 confirm — 영구 삭제 명시.
+
+### Data batch (v71 추가)
+
+HR(B2B) 5 data display 컴포넌트 — 데이터 그리드 핵심 application 톤.
+
+#### Table — HR
+- **결재 list compact variant**: 행 padding `xs` (4px) — 한 화면에 더 많은 결재.
+- **직원 list striped variant**: 짝수 row tinted — 긴 list 가독성.
+- **평가 history default**: 일반 가독성, 표 안 status badge.
+
+#### Data Table — HR
+- **결재 큐**: sortable(date/요청자/금액) + filterable(상태/부서) + selectable(일괄 처리) + bulk actions(승인/반려/내보내기) + 50 per page numbered pagination.
+- **직원 검색**: 13 column 표시 (사번/이름/부서/직급/이메일/입사/근속/...). column visibility toggle, column resize, export Excel.
+- **평가 history**: 분기별 column, 검색·정렬·내보내기 모두 지원.
+- toolbar 좌측 search, 가운데 active filter chips, 우측 column toggle + Export.
+
+#### Carousel — HR
+- 거의 사용 안 함 — application 톤이라 광고 carousel 부적합.
+- 예외: dashboard 위젯 carousel (mobile에서 4 위젯 swipe).
+
+#### Scroll Area — HR
+- **데이터 그리드 sticky thead** + 본문 scroll: 표 머리 고정 + body 영역 scrollable.
+- **결재 detail 긴 panel**: 첨부 history 100+ — scroll area 안에서 native scroll 보존.
+- always-visible scrollbar — 데스크탑 application 톤.
+
+#### Resizable — HR
+- **3-pane layout**: 좌측 sidebar(고정) + 가운데 결재 list + 우측 detail panel — 가운데↔우측 resizable.
+- **dashboard split**: 위 KPI / 아래 차트 panel — vertical resize.
+- localStorage persistence — power user 자기 layout 기억.
