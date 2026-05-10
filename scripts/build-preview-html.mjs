@@ -188,6 +188,29 @@ function brandProfile(brandName, tokens) {
           { label: "Pretendard 패키지", note: "한국어 우선 폰트" },
         ],
       },
+      emptyState: {
+        title: "결재 대기 0건",
+        description: "현재 처리할 결재가 없어요. 새 결재를 시작하거나 잠시 휴식 시간을 가져보세요.",
+        primary: "새 결재 시작",
+        secondary: "이력 보기",
+      },
+      modal: {
+        title: "휴가 신청 확인",
+        description: "5/12 ~ 5/14 (3일) 휴가 신청을 결재 라인에 제출할까요?",
+        primary: "신청",
+        secondary: "취소",
+        fields: [
+          { k: "기간", v: "5/12 ~ 5/14 (3일)" },
+          { k: "잔여 연차", v: "8.5일 → 5.5일" },
+          { k: "결재 라인", v: "팀장 → 본부장" },
+        ],
+      },
+      toasts: [
+        { kind: "success", title: "결재 승인 완료", body: "김지원의 휴가 신청이 승인되었습니다." },
+        { kind: "error", title: "신청 실패", body: "잔여 연차가 부족합니다 (현재 0.5일)." },
+        { kind: "warning", title: "기한 임박", body: "이번 분기 평가 작성이 D-3 남았어요." },
+        { kind: "info", title: "신규 공고", body: "디자인 시스템 디자이너 공고가 등록됐어요." },
+      ],
     };
   }
 
@@ -291,6 +314,29 @@ function brandProfile(brandName, tokens) {
           { label: "보관함", note: "아카이브 412" },
         ],
       },
+      emptyState: {
+        title: "오늘 할일 0개",
+        description: "할일을 추가해 하루를 시작해보세요. 가벼운 메모나 빠른 한 줄도 좋아요.",
+        primary: "할일 추가",
+        secondary: "어제 보기",
+      },
+      modal: {
+        title: "메모 삭제 확인",
+        description: "이 메모를 삭제하면 30일 후 영구 삭제됩니다. 보관함에 그대로 둘까요?",
+        primary: "삭제",
+        secondary: "보관함으로",
+        fields: [
+          { k: "제목", v: "Porest 브랜드 톤" },
+          { k: "작성일", v: "2026-05-08" },
+          { k: "단어 수", v: "342" },
+        ],
+      },
+      toasts: [
+        { kind: "success", title: "메모 저장 완료", body: "Porest 브랜드 톤 메모가 저장되었습니다." },
+        { kind: "error", title: "동기화 실패", body: "인터넷 연결을 확인하고 다시 시도해주세요." },
+        { kind: "warning", title: "예산 80% 도달", body: "이번 달 가계부 예산이 80%에 도달했어요." },
+        { kind: "info", title: "백업 완료", body: "어제 자정 자동 백업이 완료됐어요 (412 항목)." },
+      ],
     };
   }
 
@@ -387,6 +433,29 @@ function brandProfile(brandName, tokens) {
         { label: "Motion", note: `${tokens.motion.length} (4 duration + ease-out, prose-token)` },
       ],
     },
+    emptyState: {
+      title: "Empty state demo",
+      description: "이 영역은 빈 상태 시각화 demo입니다. 실제 사용 시나리오는 brand 파일 (HR / Desk) 참조.",
+      primary: "더 알아보기",
+      secondary: "닫기",
+    },
+    modal: {
+      title: "토큰 갱신 확인",
+      description: "이 변경을 brand 파일에 적용하시겠습니까? sync 단계에서 colors-2 region이 자동 미러됩니다.",
+      primary: "적용",
+      secondary: "취소",
+      fields: [
+        { k: "변경 항목", v: "colors-2 region (semantic)" },
+        { k: "영향 파일", v: "DESIGN.{hr,desk}.md" },
+        { k: "verify 필수", v: "npm run verify" },
+      ],
+    },
+    toasts: [
+      { kind: "success", title: "Build 완료", body: `exports/tokens.css 생성 (${tokens.colors.length} colors, ${tokens.text.length} typography).` },
+      { kind: "error", title: "Sync drift 감지", body: "DESIGN.hr.md와 DESIGN.md 사이 동기화 실패." },
+      { kind: "warning", title: "missingPrimary 1건", body: "DESIGN.md baseline은 의도적으로 primary 미정의." },
+      { kind: "info", title: "Tailwind v4 export", body: "@theme CSS 빌드 정상 — 모든 namespace 통과." },
+    ],
   };
 }
 
@@ -870,6 +939,82 @@ function renderAmenities(brand) {
   </section>`;
 }
 
+function renderEmptyState(brand) {
+  const e = brand.emptyState;
+  if (!e) return "";
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">09 — Empty state</div>
+      <h2 class="section-title">${escape(e.title)}</h2>
+      <p class="section-lede">빈 상태 시각화 — 의미 + 다음 행동 가이드. surface-default 카드 + circular illustration + primary/outlined CTA.</p>
+    </header>
+    <div class="empty-card">
+      <div class="empty-illustration" aria-hidden="true"></div>
+      <div class="empty-title">${escape(e.title)}</div>
+      <div class="empty-description">${escape(e.description)}</div>
+      <div class="empty-actions">
+        <button class="btn btn-primary">${escape(e.primary)}</button>
+        <button class="btn btn-outlined">${escape(e.secondary)}</button>
+      </div>
+    </div>
+  </section>`;
+}
+
+function renderModal(brand) {
+  const m = brand.modal;
+  if (!m) return "";
+  const fields = m.fields.map(f => `
+    <div class="modal-row">
+      <div class="modal-key">${escape(f.k)}</div>
+      <div class="modal-val">${escape(f.v)}</div>
+    </div>`).join("");
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">10 — Modal</div>
+      <h2 class="section-title">${escape(m.title)}</h2>
+      <p class="section-lede">overlay-dim + 카드 + 결정 액션 — 정적 시연 (실제 modal은 focus trap + overlay click outside 동작 동반).</p>
+    </header>
+    <div class="modal-stage">
+      <div class="modal-overlay"></div>
+      <div class="modal-dialog">
+        <div class="modal-title">${escape(m.title)}</div>
+        <div class="modal-description">${escape(m.description)}</div>
+        <div class="modal-fields">${fields}</div>
+        <div class="modal-actions">
+          <button class="btn btn-outlined">${escape(m.secondary)}</button>
+          <button class="btn btn-primary">${escape(m.primary)}</button>
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function renderToasts(brand) {
+  const ts = brand.toasts || [];
+  if (!ts.length) return "";
+  const iconChar = (k) => k === "success" ? "✓" : k === "error" ? "✕" : k === "warning" ? "!" : "i";
+  const items = ts.map(t => `
+    <div class="toast toast-${t.kind}">
+      <div class="toast-icon" aria-hidden="true">${iconChar(t.kind)}</div>
+      <div class="toast-content">
+        <div class="toast-title">${escape(t.title)}</div>
+        <div class="toast-body">${escape(t.body)}</div>
+      </div>
+      <button class="toast-close" aria-label="닫기">×</button>
+    </div>`).join("");
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">11 — Toast</div>
+      <h2 class="section-title">시스템 알림 — 4 semantic</h2>
+      <p class="section-lede">자동 dismiss 톤. v51-v53 semantic vivid 색상 (success emerald / error vivid red / warning orange / info sky blue).</p>
+    </header>
+    <div class="toast-stack">${items}</div>
+  </section>`;
+}
+
 function renderTokenCatalog(tokens) {
   const colorGrid = tokens.colors.map(t => `
     <div class="swatch">
@@ -925,7 +1070,7 @@ function renderTokenCatalog(tokens) {
   return `
   <section class="catalog">
     <header class="section-head">
-      <div class="section-eyebrow">09 — Reference</div>
+      <div class="section-eyebrow">12 — Reference</div>
       <h2 class="section-title">Token catalog</h2>
       <p class="section-lede">검증·문서 용도 — 시스템에 정의된 모든 토큰을 한눈에.</p>
     </header>
@@ -1434,6 +1579,104 @@ function pageCss() {
     .amenity-label { font-weight: 600; font-size: var(--text-body); }
     .amenity-note { font-size: var(--text-caption); color: var(--color-text-tertiary); margin-top: 2px; }
 
+    /* === Empty state === */
+    .empty-card {
+      background: var(--color-surface-default);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-3xl);
+      box-shadow: var(--shadow-sm);
+      display: flex; flex-direction: column; align-items: center; text-align: center;
+      gap: var(--spacing-md);
+    }
+    .empty-illustration {
+      width: 96px; height: 96px;
+      border-radius: var(--radius-full);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--color-primary, var(--color-text-tertiary)) 15%, transparent), var(--color-surface-input));
+    }
+    .empty-title { font-size: var(--text-heading-md); font-weight: var(--text-heading-md--font-weight); line-height: var(--text-heading-md--line-height); }
+    .empty-description { color: var(--color-text-secondary); max-width: 40ch; line-height: 1.6; }
+    .empty-actions { display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-sm); flex-wrap: wrap; justify-content: center; }
+
+    /* === Modal === */
+    .modal-stage {
+      position: relative;
+      background: linear-gradient(135deg, var(--color-chart-blue), var(--color-chart-violet));
+      border-radius: var(--radius-lg);
+      height: 480px;
+      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .modal-overlay {
+      position: absolute; inset: 0;
+      background: var(--overlay-dim-light, rgba(0, 0, 0, 0.4));
+    }
+    .modal-dialog {
+      position: relative;
+      background: var(--color-surface-default);
+      border-radius: var(--radius-xl);
+      padding: var(--spacing-2xl);
+      box-shadow: var(--shadow-xl);
+      width: min(90%, 480px);
+      display: flex; flex-direction: column;
+      gap: var(--spacing-md);
+    }
+    .modal-title { font-size: var(--text-heading-lg); font-weight: var(--text-heading-lg--font-weight); line-height: var(--text-heading-lg--line-height); }
+    .modal-description { color: var(--color-text-secondary); line-height: 1.6; }
+    .modal-fields {
+      display: flex; flex-direction: column; gap: var(--spacing-xs);
+      background: var(--color-surface-input);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-md);
+    }
+    .modal-row { display: flex; justify-content: space-between; font-size: var(--text-caption); }
+    .modal-key { color: var(--color-text-tertiary); }
+    .modal-val { font-weight: 600; }
+    .modal-actions { display: flex; gap: var(--spacing-sm); justify-content: flex-end; margin-top: var(--spacing-md); }
+
+    /* === Toast === */
+    .toast-stack { display: flex; flex-direction: column; gap: var(--spacing-md); }
+    .toast {
+      display: grid; grid-template-columns: auto 1fr auto; gap: var(--spacing-md); align-items: flex-start;
+      background: var(--color-surface-default);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-md) var(--spacing-lg);
+      box-shadow: var(--shadow-md);
+      border-left: 4px solid var(--color-text-tertiary);
+    }
+    .toast-icon {
+      width: 24px; height: 24px;
+      border-radius: var(--radius-full);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700;
+      color: var(--color-text-on-accent);
+      font-size: 14px;
+    }
+    .toast-success { border-left-color: var(--color-success); }
+    .toast-success .toast-icon { background: var(--color-success); }
+    .toast-error { border-left-color: var(--color-error); }
+    .toast-error .toast-icon { background: var(--color-error); }
+    .toast-warning { border-left-color: var(--color-warning); }
+    .toast-warning .toast-icon { background: var(--color-warning); }
+    .toast-info { border-left-color: var(--color-info); }
+    .toast-info .toast-icon { background: var(--color-info); }
+    .toast-title { font-weight: 600; font-size: var(--text-body); }
+    .toast-body {
+      color: var(--color-text-secondary);
+      font-size: var(--text-caption);
+      margin-top: 2px;
+      line-height: 1.5;
+    }
+    .toast-close {
+      width: 28px; height: 28px;
+      border-radius: var(--radius-full);
+      border: none;
+      background: transparent;
+      color: var(--color-text-tertiary);
+      cursor: pointer;
+      font-size: 18px;
+    }
+    .toast-close:hover { background: var(--color-surface-input); }
+
     /* Token catalog (기존 — 압축 유지) */
     .catalog { margin-top: var(--spacing-3xl); padding-top: var(--spacing-2xl); border-top: 1px dashed var(--color-border-default); }
     .catalog h3 { font-size: var(--text-heading-md); font-weight: 600; margin: var(--spacing-xl) 0 var(--spacing-md); }
@@ -1480,7 +1723,12 @@ function pageCss() {
       .cal-card,
       .review-summary, .review-item,
       .amenity-grid,
+      .empty-card,
+      .modal-dialog,
+      .toast,
       .swatch { background: var(--color-surface-default-dark); }
+      .modal-fields { background: var(--color-surface-input-dark); }
+      .toast-close:hover { background: var(--color-surface-input-dark); }
       .ld-rail-row, .cal-legend { border-color: var(--color-border-default-dark); }
       .hero-fact,
       .typo-meta-row,
@@ -1530,6 +1778,9 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     ${renderCalendar(brand)}
     ${renderReviews(brand)}
     ${renderAmenities(brand)}
+    ${renderEmptyState(brand)}
+    ${renderModal(brand)}
+    ${renderToasts(brand)}
     ${renderTokenCatalog(tokens)}
     <p style="text-align:center;color:var(--color-text-tertiary);font-size:var(--text-caption);margin-top:var(--spacing-3xl);">
       source <code>${escape(sourceFile)}</code> · Porest Design System
