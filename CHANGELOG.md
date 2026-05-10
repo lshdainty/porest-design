@@ -91,6 +91,14 @@
 - v63: motion 2 prose-tokens — `motion-duration-loop` (1500ms, skeleton/spinner/pulse 1주기), `motion-ease-linear` (반복 일정 속도 — `ease-out` 반복은 끝에 멈춰 어색). v32 (단발 전환) 보완 → 반복 사용 사례. `scripts/build-tailwind-v4.mjs` `parseMotion`이 자동 추출 (스크립트 변경 0).
 - v63: Skeleton / Loading 컴포넌트 — 4 variant (text / circle / rect / list-row), shimmer gradient (`surface-input` ↔ `surface-default`) + pulse fallback, layout shift 0(실측 컴포넌트 사이즈 일치), CLS 페이드 전환 `motion-duration-fast` 150ms. WCAG 2.2.2 Pause/Stop/Hide(데이터 도착시 자동 정지, 5초 timeout) + 2.3.3 Reduced motion(`prefers-reduced-motion: reduce` 시 단색 fallback) + `aria-busy="true"` + `aria-live="polite"`. **새 yaml 컴포넌트 0** — skeleton은 텍스트 없는 표면 placeholder, contrast 페어 미발동(prose-only spec). HR(결재 큐 list-row, 직원 검색, dashboard 위젯 단위, 5초 timeout link) / Desk(메모 카드, 할일 list-row, 가계부 dashboard top-down, 모바일 친화 + pulse 저성능 fallback) brand-specific prose.
 
+**v67 — System completeness batch (Pagination + Drawer + Spinner + Stepper)**
+- v67: 시스템 빈틈 4 컴포넌트 추가 — 모두 prose-only spec (yaml 변경 0).
+  - **Pagination**: 3 variant (numbered / prev-next / load-more), 3 size (sm/md/lg), state 5종, ARIA navigation + aria-current="page" + aria-live 검색 갱신 알림.
+  - **Drawer / Sheet**: 4 variant (side-right/left / bottom / top), `z-drawer` (v65) 활용, motion-duration-slow 슬라이드 + overlay-dim, focus trap + Esc dismiss + return focus + scroll lock. bottom drawer swipe-down 30% threshold.
+  - **Spinner / Progress**: circular spinner indeterminate (4 size, primary + primary-light dark) / linear progress determinate·indeterminate / circular progress determinate. motion-duration-loop (1500ms) linear 회전. ARIA role="status" / "progressbar" + aria-valuenow.
+  - **Stepper**: 3 variant (horizontal / vertical / simple progress), state 5종 (completed/current/pending/error/disabled), connector line semantic 색, sequential vs free navigation, ARIA aria-current="step" + ordered list semantic.
+- HR(결재 단계 horizontal sequential / 직원 detail side drawer / numbered pagination 데이터 그리드 / 결재 처리 inline spinner) / Desk(가계부 distinct bottom sheet / load-more 모바일 / 메모 저장 spinner / vertical stepper 4단계) brand-specific prose.
+
 ### Changed
 - **v8**: `accent-*-on-dark` → `accent-*-light` rename — `-dark` suffix가 mode pair 표기와 충돌(예: `accent-hr-on-dark` vs `surface-default-dark`)
 - **v14 → v15**: HR/Desk별 `bg-page` fork 시도 → `#F5F6FA` 통일 회귀 — fork 시 `primary-hr` × `bg-page-hr` 인라인 4.14:1(AA 미달) 발생
