@@ -35,6 +35,7 @@ const NOISE = new Set([
   "primary", "secondary", "tertiary", // generic words (positional)
   "border", "input", "text", "outline", // CSS properties / HTML elements (단독)
   "outline-strong", "shadow-sm", "shadow-md", "shadow-lg", "shadow-xl", // 토큰 prefix 그룹 명 (실제 토큰은 -light/-dark suffix)
+  "overlay-dim", // overlay-dim-light/dark 그룹 prefix (실제 토큰은 -light/-dark suffix)
   "alert-text", "badge", // 컴포넌트 그룹 명 (실제 토큰은 -success 등 suffix)
   "focus-ring-enhanced", "divider-dashed", "caption-strong", // 미정 / 향후 후보 prose mention
   // DESIGN.md(brand-neutral)에서 brand 위임 안내용으로 reference하는 brand 토큰 — 의도된 패턴
@@ -147,42 +148,124 @@ function extractProseReferences(content) {
   return out;
 }
 
+// === yaml hex 추출 (colors block) ===
+function extractDefinedHex(content) {
+  const lines = content.split("\n");
+  const out = new Map(); // token → hex (lowercase)
+  const colors = findBlockLines(lines, "colors");
+  if (!colors) return out;
+  for (let i = colors.start + 1; i < colors.end; i++) {
+    const m = /^\s+([a-z][a-z0-9-]+):\s*"(#[0-9A-Fa-f]{6,8})"/.exec(lines[i]);
+    if (m) out.set(m[1], m[2].toLowerCase());
+  }
+  return out;
+}
+
+// === history context heuristic ===
+// line이 변천 history (의도된 outdated hex)면 true 반환 → mismatch 검사 skip
+function isHistoryLine(line) {
+  // arrow "→" 패턴 — 변천 매트릭스
+  if (line.includes("→")) return true;
+  // milestone reference (v10, v51 등) — 변천 시점 명시
+  if (/v\d{1,3}\s*(?:추가|시점|이전|이후|hex)/.test(line)) return true;
+  // "이전" / "현재" 키워드 — 변천 표 헤더
+  if (/(?:^|[\s|])(?:이전|이후|현재|history|previous|deprecated)(?:[\s|]|$)/.test(line)) return true;
+  // 한 line에 hex가 2개 이상 — 변천 표 (이전→현재 두 column)
+  const hexMatches = line.match(/#[0-9A-Fa-f]{6,8}/g);
+  if (hexMatches && hexMatches.length >= 2) return true;
+  return false;
+}
+
+// === prose 안 토큰명 + hex 페어 추출 ===
+// 보수적 heuristic — 표 row 패턴(`| `token` | `#hex` ... |`)만 페어로 인정.
+// 자유 prose 안 hex 인용은 false positive(한 line 여러 hex, 다른 토큰의 contrast 페어 표 등)
+// 너무 많아 검사 제외. 토큰값 변경 시 정정 우선순위 높은 표는 milestone history 표 + spec 표.
+function extractProseHexCitations(content) {
+  const fmEnd = findFrontmatterEnd(content);
+  const proseLines = content.split("\n").slice(fmEnd + 1);
+  let inCodeBlock = false;
+  const cites = []; // { token, hex, line, originalLine }
+  // 표 row: 첫 cell = `token` (괄호 옵션), 둘째 cell 시작에 `#hex`
+  const tableRowRe = /^\|\s*`([a-z][a-z0-9-]+)`(?:\s*\([^)]*\))?\s*\|\s*`(#[0-9A-Fa-f]{6,8})`/;
+  for (let i = 0; i < proseLines.length; i++) {
+    const line = proseLines[i];
+    if (line.trim().startsWith("```")) { inCodeBlock = !inCodeBlock; continue; }
+    if (inCodeBlock) continue;
+    if (isHistoryLine(line)) continue;
+    const m = tableRowRe.exec(line);
+    if (m && looksLikeToken(m[1])) {
+      cites.push({
+        token: m[1],
+        hex: m[2].toLowerCase(),
+        line: fmEnd + 1 + i + 1,
+        originalLine: line,
+      });
+    }
+  }
+  return cites;
+}
+
 const strict = argv.includes("--strict");
 let totalUndefined = 0;
+let totalMismatch = 0;
 
 for (const target of TARGETS) {
   const filePath = resolve(ROOT, target);
   console.log(`\n[${target}]`);
   const content = readFileSync(filePath, "utf8");
   const defined = extractDefinedTokens(content);
+  const definedHex = extractDefinedHex(content);
   const refs = extractProseReferences(content);
+  const cites = extractProseHexCitations(content);
 
-  console.log(`  정의된 토큰: ${defined.size}, prose reference: ${refs.size}`);
+  console.log(`  정의 토큰 ${defined.size} (hex 페어 ${definedHex.size}), prose reference ${refs.size}, hex 인용 ${cites.length}`);
 
+  // 1) Dangling reference
   const undef = [];
   for (const [ref, line] of refs) {
-    if (!defined.has(ref)) {
-      undef.push({ ref, line });
-    }
+    if (!defined.has(ref)) undef.push({ ref, line });
   }
-
   if (undef.length === 0) {
-    console.log(`  ✓ 모든 prose token reference가 정의되어 있음`);
+    console.log(`  ✓ 모든 prose token reference 정의됨`);
   } else {
     console.log(`  ⚠ 정의되지 않은 reference ${undef.length}건:`);
     for (const { ref, line } of undef.slice(0, 30)) {
       console.log(`    - ${target}:${line}  \`${ref}\``);
     }
-    if (undef.length > 30) {
-      console.log(`    ... (${undef.length - 30}건 추가)`);
-    }
+    if (undef.length > 30) console.log(`    ... (${undef.length - 30}건 추가)`);
     totalUndefined += undef.length;
+  }
+
+  // 2) Hex mismatch (yaml vs prose)
+  const mismatches = [];
+  for (const { token, hex, line, originalLine } of cites) {
+    const yamlHex = definedHex.get(token);
+    if (!yamlHex) continue; // yaml에 없는 토큰은 dangling reference로 이미 보고됨
+    if (yamlHex !== hex) {
+      mismatches.push({ token, yamlHex, proseHex: hex, line, snippet: originalLine.trim().slice(0, 100) });
+    }
+  }
+  if (mismatches.length === 0) {
+    console.log(`  ✓ yaml/prose hex 일관성 통과`);
+  } else {
+    console.log(`  ⚠ hex mismatch ${mismatches.length}건 (history line은 자동 skip — heuristic 한계):`);
+    for (const m of mismatches.slice(0, 20)) {
+      console.log(`    - ${target}:${m.line}  \`${m.token}\` yaml=${m.yamlHex} ↔ prose=${m.proseHex}`);
+      console.log(`         | ${m.snippet}`);
+    }
+    if (mismatches.length > 20) console.log(`    ... (${mismatches.length - 20}건 추가)`);
+    totalMismatch += mismatches.length;
   }
 }
 
 console.log("");
-if (strict && totalUndefined > 0) {
-  console.error(`strict 모드 — 정의되지 않은 prose reference ${totalUndefined}건 발견. exit 1`);
+const totalIssues = totalUndefined + totalMismatch;
+if (strict && totalIssues > 0) {
+  console.error(`strict 모드 — 총 ${totalIssues}건 발견 (dangling ${totalUndefined} + mismatch ${totalMismatch}). exit 1`);
   exit(1);
 }
-console.log(`완료. ${totalUndefined > 0 ? `${totalUndefined}건의 잠재적 typo/outdated reference 점검 권장 (false positive 가능 — strict 모드 X 기본).` : "이슈 없음."}`);
+if (totalIssues === 0) {
+  console.log("완료. 이슈 없음.");
+} else {
+  console.log(`완료. dangling ${totalUndefined} + hex mismatch ${totalMismatch}건 점검 권장 (false positive 가능 — heuristic).`);
+}
