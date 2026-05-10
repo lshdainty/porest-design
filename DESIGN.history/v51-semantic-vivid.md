@@ -43,13 +43,13 @@ colors:
   
   # @sync:shared-start (colors-2)
   # === Semantic - Status (functional palette, base + light 페어, 듀얼 브랜드 공유) ===
-  success: "#16803F"
+  success: "#117A3A"
   success-light: "#5DC07B"
-  error: "#DC2626"
+  error: "#C53030"
   error-light: "#F08080"
-  warning: "#C2410C"
+  warning: "#A85800"
   warning-light: "#E8A05A"
-  info: "#1D6FCB"
+  info: "#006395"
   info-light: "#6FAEDF"
   
   # === Chart palette (data viz, 10색 hue 균등, L≈0.16-0.18 통일, 듀얼 브랜드 공유) ===
@@ -487,8 +487,6 @@ design.md `contrastCheck` 룰은 incidental 인지 없이 모든 `backgroundColo
 
 상태 전달을 위한 functional palette — 브랜드 정체성과 분리된 4개 status. HR/Desk 양 브랜드 공유, 라이트 표면 base만 이번 배치에서 확정.
 
-**v10 시점 hex** (현재는 v51 톤으로 갱신 — 아래 `Semantic refresh` 섹션 참조):
-
 | 토큰 | hex | 시맨틱 |
 |---|---|---|
 | `success` | `#117A3A` | 완료·확인·긍정 결과 (forest green — HR primary와 hue 분리) |
@@ -522,40 +520,6 @@ design.md `contrastCheck` 룰은 incidental 인지 없이 모든 `backgroundColo
 - `surface-input` 위 semantic 텍스트 (input 검증 메시지 케이스): `surface-input` 표면이 카드 표면(`surface-default`)과 휘도 차 0.11 → 페어 정의해두면 lint 추가 검증 가능. 이번 배치 미정의.
 - 다크 표면 위 semantic 표시: ~v19까지 `success`/`error` base 색은 다크 표면 위 contrast 미달 → **v20에서 `-light` 변형 도입으로 해소** (아래 v20 섹션 참조).
 - `border-vs-surface` 패턴은 spec에 borderColor 없어 영구 자동 검증 불가 (v9 한계 그대로).
-
-### Semantic refresh — vivid tone (v51 추가)
-
-base 4개 vivid 갱신. light 변형은 v20에서 검증된 다크 alert contrast 회귀 회피 위해 보존.
-
-| 토큰 | v10 → v51 | 변화 |
-|---|---|---|
-| `success` | `#117A3A` → `#16803F` | deep forest → emerald (Tailwind green-700 톤) |
-| `error` | `#C53030` → `#DC2626` | brick → vivid red (Linear/Tailwind red-600 톤) |
-| `warning` | `#A85800` → `#C2410C` | brown amber → 명확한 orange (가장 큰 톤 개선) |
-| `info` | `#006395` → `#1D6FCB` | deep navy → sky blue |
-
-#### 변경 이유
-v10 base는 본문 4.5:1 안전 마진을 위해 L 0.13~0.17로 어둡게 잡혀 UI 무드가 칙칙. `text-on-accent`(white) 위 contrast 5~7:1로 과도한 마진 — L을 0.16~0.22로 조정해 4.5:1 통과 (`success`는 emerald hue 특성상 가장 빠듯하게 L 0.16). hue rotate는 최소화 (warning만 brown amber → orange로 미세 이동 — 갈색 인상이 칙칙함의 주범).
-
-#### 색상 대비 — lint 실측 결과 (손계산 아님)
-
-기존 8 페어를 그대로 사용 — components 섹션 변경 없음. lint가 새 hex 기준으로 contrast-ratio 자동 재검증.
-
-| component | bg | text | v51 lint 판정 |
-|---|---|---|---|
-| `badge-success` | success `#16803F` | text-on-accent | ✅ ≥4.5:1 |
-| `badge-error` | error `#DC2626` | text-on-accent | ✅ ≥4.5:1 |
-| `badge-warning` | warning `#C2410C` | text-on-accent | ✅ ≥4.5:1 |
-| `badge-info` | info `#1D6FCB` | text-on-accent | ✅ ≥4.5:1 |
-| `alert-text-success` | surface-default | success | ✅ ≥4.5:1 |
-| `alert-text-error` | surface-default | error | ✅ ≥4.5:1 |
-| `alert-text-warning` | surface-default | warning | ✅ ≥4.5:1 |
-| `alert-text-info` | surface-default | info | ✅ ≥4.5:1 |
-
-(`npm run lint:all` 통과 — 0 errors, 0 contrast warnings. 8 페어 전부 silent pass.)
-
-#### light 변형 보존 이유
-`success-light`/`error-light`/`warning-light`/`info-light`는 v20에서 `surface-default-dark`/`surface-input-dark` 위 alert text 4.5~6.5:1 통과로 검증 — 변경 시 다크 alert 회귀 위험. base 톤 변화 따라 다크 시각 일관성은 별도 평가 후 추후 갱신.
 
 ### Chart palette (v21 추가, 4 배치 진행 중)
 
