@@ -1475,17 +1475,20 @@ function pageCss() {
       padding: var(--spacing-lg);
       box-shadow: var(--shadow-sm);
       display: flex; flex-direction: column; gap: var(--spacing-md);
+      max-width: 420px;
     }
-    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: var(--spacing-xs); }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 40px); gap: var(--spacing-xs); justify-content: space-between; }
     .cal-weekday {
       text-align: center;
       font-size: var(--text-caption);
       color: var(--color-text-tertiary);
       font-weight: 600;
       padding: var(--spacing-xs) 0;
+      width: 40px;
     }
     .cal-cell {
-      aspect-ratio: 1;
+      width: 40px;
+      height: 40px;
       display: flex; align-items: center; justify-content: center;
       border-radius: var(--radius-full);
       font-size: var(--text-body);
