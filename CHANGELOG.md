@@ -137,6 +137,13 @@
 
 **shadcn 확장 4 series 완료** — 총 20 컴포넌트 (v68 navigation 5 + v69 input 5 + v70 disclosure 5 + v71 data 5). 시스템 컴포넌트 75+ 보유 (기존 55 + v68-v71 batch).
 
+**v86 — 컴포넌트 페이지 Preview/Code 탭 + Tailwind utility live render**
+- v86: 컴포넌트 페이지를 shadcn/ui 패턴으로 재구성 — 각 예제에 **Preview 탭(라이브 렌더링) + Code 탭(escape된 소스)** 두 view. 사용자가 위에서 컴포넌트 동작 확인, 아래에서 코드 copy. 기존 "Live demo (preview.html)" 외부 링크 패턴 폐기.
+- `assets/preview-utilities.css` 신규 — Tailwind v4 utility class 200+를 design token CSS variable로 매핑하는 어댑터. EXAMPLES.md 코드의 `bg-primary` / `text-on-accent` / `px-4` / `rounded-md` / `shadow-sm` / `hover:opacity-90` / `focus:ring-2` 등이 외부 컴파일 없이 즉시 렌더링. `.preview-frame` scoping으로 사이트 layout 외 영향 0.
+- 카테고리: 6 layout(flex/grid/items/justify/gap), 8 spacing(p/px/py/m/mt/mb/space-y), 9 sizing(w/h/max-w/min-w/aspect/size), 8 색상(bg/text/border × semantic + tokens with /opacity color-mix), 6 typography(text-{caption,body,heading} × variants), 5 border, 5 radius, 4 shadow, 5 position, 4 z-index, 4 transition, 3 animation, 4 cursor/misc, 12 hover/focus/active/disabled/checked variants.
+- inline JS — `.example-tab[data-tab]` 클릭 시 `[data-pane]` 토글 (`hidden` attribute). vanilla, 외부 의존성 0.
+- preview frame 스타일 — `padding: 32px 24px`, `bg-page` 배경, `min-height: 120px`, 가운데 정렬. shadcn 톤.
+
 **v85 — Site layout 버그 수정 (mobile-overlay grid cell 누수)**
 - v85: `scripts/build-site.mjs` 사이트 layout 수정 — `.mobile-overlay` div가 `.app` grid의 column 2 cell을 차지해 main이 row 2 col 1(260px wide)로 강제 wrap되던 문제. 사용자 시각 확인 — 데스크탑 viewport(>880px)에서 main 콘텐츠가 sidebar 아래에 좁은 column으로 나타나거나 부분 가려짐.
 - 수정 1: `.mobile-overlay`를 `.app` 외부로 이동(`<body>` 직속). grid 영향 0.

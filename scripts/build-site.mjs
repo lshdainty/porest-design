@@ -96,6 +96,338 @@ function buildCombinedTokens() {
 }
 
 // ============================================================
+// 2a. Preview utility CSS — Tailwind v4 utility를 design token 매핑
+// ============================================================
+// EXAMPLES.md 코드 안 utility class를 design token CSS variable로 매핑.
+// preview frame 안에서만 활성 — 외부 사이트 layout에 영향 0.
+// shadcn-style live preview 가능하게.
+
+function previewUtilitiesCss() {
+  return `
+.preview-frame, .preview-frame * { box-sizing: border-box; }
+.preview-frame {
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+}
+
+/* Display */
+.preview-frame .flex { display: flex; }
+.preview-frame .inline-flex { display: inline-flex; }
+.preview-frame .grid { display: grid; }
+.preview-frame .block { display: block; }
+.preview-frame .inline { display: inline; }
+.preview-frame .inline-block { display: inline-block; }
+.preview-frame .hidden { display: none; }
+
+/* Flex */
+.preview-frame .flex-col { flex-direction: column; }
+.preview-frame .flex-row { flex-direction: row; }
+.preview-frame .flex-1 { flex: 1 1 0%; }
+.preview-frame .flex-wrap { flex-wrap: wrap; }
+.preview-frame .flex-shrink-0 { flex-shrink: 0; }
+.preview-frame .items-center { align-items: center; }
+.preview-frame .items-start { align-items: flex-start; }
+.preview-frame .items-end { align-items: flex-end; }
+.preview-frame .items-baseline { align-items: baseline; }
+.preview-frame .justify-center { justify-content: center; }
+.preview-frame .justify-between { justify-content: space-between; }
+.preview-frame .justify-end { justify-content: flex-end; }
+.preview-frame .justify-start { justify-content: flex-start; }
+.preview-frame .self-end { align-self: flex-end; }
+.preview-frame .self-start { align-self: flex-start; }
+
+/* Grid */
+.preview-frame .grid-cols-7 { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.preview-frame .col-span-full { grid-column: 1 / -1; }
+
+/* Gap */
+.preview-frame .gap-1 { gap: 4px; }
+.preview-frame .gap-1\\.5 { gap: 6px; }
+.preview-frame .gap-2 { gap: 8px; }
+.preview-frame .gap-3 { gap: 12px; }
+.preview-frame .gap-4 { gap: 16px; }
+.preview-frame .gap-6 { gap: 24px; }
+
+/* Padding */
+.preview-frame .p-0 { padding: 0; }
+.preview-frame .p-1 { padding: 4px; }
+.preview-frame .p-2 { padding: 8px; }
+.preview-frame .p-3 { padding: 12px; }
+.preview-frame .p-4 { padding: 16px; }
+.preview-frame .p-5 { padding: 20px; }
+.preview-frame .p-6 { padding: 24px; }
+.preview-frame .p-8 { padding: 32px; }
+.preview-frame .px-1 { padding-inline: 4px; }
+.preview-frame .px-2 { padding-inline: 8px; }
+.preview-frame .px-2\\.5 { padding-inline: 10px; }
+.preview-frame .px-3 { padding-inline: 12px; }
+.preview-frame .px-4 { padding-inline: 16px; }
+.preview-frame .px-5 { padding-inline: 20px; }
+.preview-frame .px-6 { padding-inline: 24px; }
+.preview-frame .py-0\\.5 { padding-block: 2px; }
+.preview-frame .py-1 { padding-block: 4px; }
+.preview-frame .py-1\\.5 { padding-block: 6px; }
+.preview-frame .py-2 { padding-block: 8px; }
+.preview-frame .py-2\\.5 { padding-block: 10px; }
+.preview-frame .py-3 { padding-block: 12px; }
+.preview-frame .py-4 { padding-block: 16px; }
+.preview-frame .py-16 { padding-block: 64px; }
+.preview-frame .pb-4 { padding-bottom: 16px; }
+.preview-frame .pb-\\[env\\(safe-area-inset-bottom\\)\\] { padding-bottom: env(safe-area-inset-bottom); }
+.preview-frame .pt-2 { padding-top: 8px; }
+.preview-frame .pt-4 { padding-top: 16px; }
+
+/* Margin */
+.preview-frame .m-0 { margin: 0; }
+.preview-frame .mx-auto { margin-inline: auto; }
+.preview-frame .my-1 { margin-block: 4px; }
+.preview-frame .mt-0\\.5 { margin-top: 2px; }
+.preview-frame .mt-1 { margin-top: 4px; }
+.preview-frame .mt-2 { margin-top: 8px; }
+.preview-frame .mb-1 { margin-bottom: 4px; }
+.preview-frame .mb-2 { margin-bottom: 8px; }
+.preview-frame .mb-4 { margin-bottom: 16px; }
+.preview-frame .ml-4 { margin-left: 16px; }
+.preview-frame .mr-2 { margin-right: 8px; }
+.preview-frame .-mb-px { margin-bottom: -1px; }
+.preview-frame .-space-x-2 > * + * { margin-inline-start: -8px; }
+
+/* Sizing */
+.preview-frame .w-full { width: 100%; }
+.preview-frame .w-1\\/2 { width: 50%; }
+.preview-frame .w-1\\/3 { width: 33.333%; }
+.preview-frame .w-px { width: 1px; }
+.preview-frame .w-4 { width: 16px; }
+.preview-frame .w-5 { width: 20px; }
+.preview-frame .w-7 { width: 28px; }
+.preview-frame .w-8 { width: 32px; }
+.preview-frame .w-9 { width: 36px; }
+.preview-frame .w-10 { width: 40px; }
+.preview-frame .w-11 { width: 44px; }
+.preview-frame .w-16 { width: 64px; }
+.preview-frame .w-60 { width: 240px; }
+.preview-frame .w-64 { width: 256px; }
+.preview-frame .w-80 { width: 320px; }
+.preview-frame .w-96 { width: 384px; }
+.preview-frame .h-full { height: 100%; }
+.preview-frame .h-px { height: 1px; }
+.preview-frame .h-1 { height: 4px; }
+.preview-frame .h-2 { height: 8px; }
+.preview-frame .h-4 { height: 16px; }
+.preview-frame .h-5 { height: 20px; }
+.preview-frame .h-7 { height: 28px; }
+.preview-frame .h-8 { height: 32px; }
+.preview-frame .h-9 { height: 36px; }
+.preview-frame .h-10 { height: 40px; }
+.preview-frame .h-16 { height: 64px; }
+.preview-frame .h-screen { height: 100vh; }
+.preview-frame .aspect-square { aspect-ratio: 1 / 1; }
+.preview-frame .max-w-sm { max-width: 384px; }
+.preview-frame .max-w-md { max-width: 448px; }
+.preview-frame .max-w-lg { max-width: 512px; }
+.preview-frame .min-h-9 { min-height: 36px; }
+.preview-frame .min-w-32 { min-width: 128px; }
+.preview-frame .min-w-40 { min-width: 160px; }
+.preview-frame .min-w-0 { min-width: 0; }
+.preview-frame .size-5 { width: 20px; height: 20px; }
+.preview-frame .size-8 { width: 32px; height: 32px; }
+.preview-frame .size-10 { width: 40px; height: 40px; }
+
+/* Background — design tokens */
+.preview-frame .bg-primary { background: var(--color-primary); }
+.preview-frame .bg-primary\\/10 { background: color-mix(in srgb, var(--color-primary) 10%, transparent); }
+.preview-frame .bg-error { background: var(--color-error); }
+.preview-frame .bg-error\\/5 { background: color-mix(in srgb, var(--color-error) 5%, transparent); }
+.preview-frame .bg-error\\/10 { background: color-mix(in srgb, var(--color-error) 10%, transparent); }
+.preview-frame .bg-success { background: var(--color-success); }
+.preview-frame .bg-success\\/10 { background: color-mix(in srgb, var(--color-success) 10%, transparent); }
+.preview-frame .bg-warning { background: var(--color-warning); }
+.preview-frame .bg-warning\\/10 { background: color-mix(in srgb, var(--color-warning) 10%, transparent); }
+.preview-frame .bg-info { background: var(--color-info); }
+.preview-frame .bg-info\\/10 { background: color-mix(in srgb, var(--color-info) 10%, transparent); }
+.preview-frame .bg-surface-default { background: var(--color-surface-default); }
+.preview-frame .bg-surface-input { background: var(--color-surface-input); }
+.preview-frame .bg-surface-default-hover { background: color-mix(in srgb, var(--color-text-primary) 4%, var(--color-surface-default)); }
+.preview-frame .bg-bg-page { background: var(--color-bg-page); }
+.preview-frame .bg-text-primary { background: var(--color-text-primary); }
+.preview-frame .bg-on-accent { background: var(--color-text-on-accent); }
+.preview-frame .bg-overlay-dim { background: var(--overlay-dim-light); }
+.preview-frame .bg-transparent { background: transparent; }
+
+/* Text colors */
+.preview-frame .text-on-accent { color: var(--color-text-on-accent); }
+.preview-frame .text-text-primary { color: var(--color-text-primary); }
+.preview-frame .text-primary { color: var(--color-primary); }
+.preview-frame .text-secondary { color: var(--color-text-secondary); }
+.preview-frame .text-tertiary { color: var(--color-text-tertiary); }
+.preview-frame .text-error { color: var(--color-error); }
+.preview-frame .text-success { color: var(--color-success); }
+.preview-frame .text-warning { color: var(--color-warning); }
+.preview-frame .text-info { color: var(--color-info); }
+
+/* Typography sizes */
+.preview-frame .text-caption { font-size: var(--text-caption); line-height: var(--text-caption--line-height); }
+.preview-frame .text-caption-sm { font-size: var(--text-caption-sm); line-height: var(--text-caption-sm--line-height); }
+.preview-frame .text-caption-md { font-size: var(--text-caption-md); line-height: var(--text-caption-md--line-height); }
+.preview-frame .text-body { font-size: var(--text-body); line-height: var(--text-body--line-height); }
+.preview-frame .text-body-md { font-size: var(--text-body-md); line-height: var(--text-body-md--line-height); }
+.preview-frame .text-body-strong { font-size: var(--text-body-strong); font-weight: var(--text-body-strong--font-weight); line-height: var(--text-body-strong--line-height); }
+.preview-frame .text-heading-sm { font-size: var(--text-heading-sm); font-weight: var(--text-heading-sm--font-weight); line-height: var(--text-heading-sm--line-height); }
+.preview-frame .text-heading-md { font-size: var(--text-heading-md); font-weight: var(--text-heading-md--font-weight); line-height: var(--text-heading-md--line-height); }
+.preview-frame .text-heading-lg { font-size: var(--text-heading-lg); font-weight: var(--text-heading-lg--font-weight); line-height: var(--text-heading-lg--line-height); }
+
+/* Border */
+.preview-frame .border { border: 1px solid var(--color-border-default); }
+.preview-frame .border-0 { border: 0; }
+.preview-frame .border-t { border-top: 1px solid var(--color-border-default); }
+.preview-frame .border-b { border-bottom: 1px solid var(--color-border-default); }
+.preview-frame .border-l { border-left: 1px solid var(--color-border-default); }
+.preview-frame .border-r { border-right: 1px solid var(--color-border-default); }
+.preview-frame .border-b-2 { border-bottom-width: 2px; border-bottom-style: solid; }
+.preview-frame .border-l-4 { border-left-width: 4px; border-left-style: solid; }
+.preview-frame .border-2 { border-width: 2px; border-style: solid; }
+.preview-frame .border-dashed { border-style: dashed; }
+.preview-frame .border-default { border-color: var(--color-border-default); }
+.preview-frame .border-strong { border-color: var(--color-border-strong); }
+.preview-frame .border-error { border-color: var(--color-error); }
+.preview-frame .border-success { border-color: var(--color-success); }
+.preview-frame .border-warning { border-color: var(--color-warning); }
+.preview-frame .border-info { border-color: var(--color-info); }
+.preview-frame .border-focus { border-color: var(--color-border-focus); }
+.preview-frame .border-primary { border-color: var(--color-primary); }
+.preview-frame .border-on-accent { border-color: var(--color-text-on-accent); }
+.preview-frame .border-t-transparent { border-top-color: transparent; }
+.preview-frame .divide-default > * + * { border-top: 1px solid var(--color-border-default); }
+.preview-frame .divide-y > * + * { border-top: 1px solid var(--color-border-default); }
+
+/* Radius */
+.preview-frame .rounded { border-radius: var(--radius-md); }
+.preview-frame .rounded-sm { border-radius: var(--radius-sm); }
+.preview-frame .rounded-md { border-radius: var(--radius-md); }
+.preview-frame .rounded-lg { border-radius: var(--radius-lg); }
+.preview-frame .rounded-xl { border-radius: var(--radius-xl); }
+.preview-frame .rounded-full { border-radius: var(--radius-full); }
+.preview-frame .rounded-t-xl { border-top-left-radius: var(--radius-xl); border-top-right-radius: var(--radius-xl); }
+
+/* Shadow */
+.preview-frame .shadow-sm { box-shadow: var(--shadow-sm); }
+.preview-frame .shadow-md { box-shadow: var(--shadow-md); }
+.preview-frame .shadow-lg { box-shadow: var(--shadow-lg); }
+.preview-frame .shadow-xl { box-shadow: var(--shadow-xl); }
+
+/* Position */
+.preview-frame .relative { position: relative; }
+.preview-frame .absolute { position: absolute; }
+.preview-frame .fixed { position: absolute; }  /* preview 안에서는 absolute로 fallback */
+.preview-frame .sticky { position: sticky; }
+.preview-frame .inset-0 { inset: 0; }
+.preview-frame .top-0 { top: 0; }
+.preview-frame .top-0\\.5 { top: 2px; }
+.preview-frame .top-4 { top: 16px; }
+.preview-frame .top-full { top: 100%; }
+.preview-frame .right-0 { right: 0; }
+.preview-frame .right-4 { right: 16px; }
+.preview-frame .left-0 { left: 0; }
+.preview-frame .left-0\\.5 { left: 2px; }
+.preview-frame .bottom-0 { bottom: 0; }
+.preview-frame .bottom-4 { bottom: 16px; }
+
+/* Z-index */
+.preview-frame .z-dropdown { z-index: var(--z-dropdown); }
+.preview-frame .z-modal { z-index: var(--z-modal); }
+.preview-frame .z-toast { z-index: var(--z-toast); }
+.preview-frame .z-drawer { z-index: var(--z-drawer); }
+
+/* Transition */
+.preview-frame .transition { transition: all var(--motion-duration-fast) var(--motion-ease-out); }
+.preview-frame .transition-colors { transition: color var(--motion-duration-fast) var(--motion-ease-out), background var(--motion-duration-fast) var(--motion-ease-out); }
+.preview-frame .transition-opacity { transition: opacity var(--motion-duration-fast) var(--motion-ease-out); }
+.preview-frame .transition-transform { transition: transform var(--motion-duration-fast) var(--motion-ease-out); }
+.preview-frame .duration-300 { transition-duration: var(--motion-duration-slow); }
+
+/* Animation */
+.preview-frame .animate-spin { animation: spin var(--motion-duration-loop) linear infinite; }
+.preview-frame .animate-pulse { animation: pulse var(--motion-duration-loop) cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
+/* Cursor */
+.preview-frame .cursor-pointer { cursor: pointer; }
+.preview-frame .cursor-not-allowed { cursor: not-allowed; }
+
+/* Misc */
+.preview-frame .overflow-hidden { overflow: hidden; }
+.preview-frame .overflow-y-auto { overflow-y: auto; }
+.preview-frame .overflow-x-auto { overflow-x: auto; }
+.preview-frame .object-cover { object-fit: cover; }
+.preview-frame .text-center { text-align: center; }
+.preview-frame .text-start { text-align: start; }
+.preview-frame .text-end { text-align: end; }
+.preview-frame .underline { text-decoration: underline; }
+.preview-frame .resize-y { resize: vertical; }
+.preview-frame .resize-none { resize: none; }
+.preview-frame .pointer-events-none { pointer-events: none; }
+.preview-frame .opacity-50 { opacity: 0.5; }
+.preview-frame .opacity-80 { opacity: 0.8; }
+.preview-frame .opacity-90 { opacity: 0.9; }
+.preview-frame .outline-none { outline: none; }
+.preview-frame .ring-2 { box-shadow: 0 0 0 2px var(--color-border-focus); }
+.preview-frame .ring-surface-default { --tw-ring-color: var(--color-surface-default); box-shadow: 0 0 0 2px var(--color-surface-default); }
+.preview-frame .ring-focus\\/20 { box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-border-focus) 20%, transparent); }
+.preview-frame .ring-error\\/20 { box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-error) 20%, transparent); }
+.preview-frame .rotate-90 { transform: rotate(90deg); }
+.preview-frame .translate-x-5 { transform: translateX(20px); }
+
+.preview-frame .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+/* Spacing utilities */
+.preview-frame .space-y-1 > * + * { margin-top: 4px; }
+.preview-frame .space-y-2 > * + * { margin-top: 8px; }
+.preview-frame .space-y-3 > * + * { margin-top: 12px; }
+.preview-frame .space-y-4 > * + * { margin-top: 16px; }
+.preview-frame .space-y-6 > * + * { margin-top: 24px; }
+.preview-frame .space-x-2 > * + * { margin-left: 8px; }
+
+/* States */
+.preview-frame .hover\\:bg-surface-default-hover:hover { background: color-mix(in srgb, var(--color-text-primary) 4%, var(--color-surface-default)); }
+.preview-frame .hover\\:bg-surface-input:hover { background: var(--color-surface-input); }
+.preview-frame .hover\\:bg-error\\/5:hover { background: color-mix(in srgb, var(--color-error) 5%, transparent); }
+.preview-frame .hover\\:opacity-80:hover { opacity: 0.8; }
+.preview-frame .hover\\:opacity-90:hover { opacity: 0.9; }
+.preview-frame .hover\\:text-text-primary:hover { color: var(--color-text-primary); }
+.preview-frame .active\\:opacity-80:active { opacity: 0.8; }
+.preview-frame .disabled\\:opacity-50:disabled { opacity: 0.5; }
+.preview-frame .disabled\\:cursor-not-allowed:disabled { cursor: not-allowed; }
+.preview-frame .focus\\:outline-none:focus { outline: none; }
+.preview-frame .focus\\:border-focus:focus { border-color: var(--color-border-focus); }
+.preview-frame .focus\\:ring-2:focus { box-shadow: 0 0 0 2px var(--color-border-focus); }
+.preview-frame .focus\\:ring-focus\\/20:focus { box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-border-focus) 20%, transparent); }
+.preview-frame .focus\\:ring-error\\/20:focus { box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-error) 20%, transparent); }
+.preview-frame .focus-within\\:border-focus:focus-within { border-color: var(--color-border-focus); }
+.preview-frame .focus-within\\:ring-2:focus-within { box-shadow: 0 0 0 2px var(--color-border-focus); }
+.preview-frame .focus-within\\:ring-focus\\/20:focus-within { box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-border-focus) 20%, transparent); }
+.preview-frame .checked\\:bg-primary:checked { background: var(--color-primary); }
+.preview-frame .checked\\:border-primary:checked { border-color: var(--color-primary); }
+.preview-frame .group:hover .group-open\\:rotate-180 { transform: rotate(180deg); }
+.preview-frame .group-open\\:rotate-180 { transform: none; transition: transform var(--motion-duration-fast) var(--motion-ease-out); }
+.preview-frame details[open] .group-open\\:rotate-180 { transform: rotate(180deg); }
+
+/* aria-current / aria-selected variants */
+.preview-frame [aria-current="page"] { color: var(--color-primary); font-weight: 600; }
+.preview-frame [aria-selected="true"] { color: var(--color-primary); }
+
+/* Reset native */
+.preview-frame button { font-family: inherit; }
+.preview-frame input, .preview-frame textarea, .preview-frame select { font-family: inherit; font-size: inherit; }
+.preview-frame ul, .preview-frame ol { list-style: none; padding: 0; margin: 0; }
+.preview-frame summary { list-style: none; cursor: pointer; }
+.preview-frame summary::-webkit-details-marker { display: none; }
+.preview-frame fieldset { border: 0; padding: 0; margin: 0; }
+.preview-frame legend { padding: 0; }
+`;
+}
+
+// ============================================================
 // 2. 사이트 layout CSS (sidebar / topbar / content)
 // ============================================================
 
@@ -489,7 +821,10 @@ body {
 .example-copy.copied { color: var(--color-success); }
 .example-block pre { margin: 0; padding: 16px 20px; background: transparent; border: 0; border-radius: 0; }
 .example-block pre code { background: transparent; padding: 0; }
-.example-label { font-size: var(--text-caption-sm); color: var(--color-text-tertiary); padding: 6px 16px 0; font-style: italic; }
+.example-label { font-size: var(--text-caption-sm); color: var(--color-text-tertiary); padding: 6px 16px 12px; font-style: italic; }
+.example-preview { padding: 32px 24px; background: var(--color-bg-page); min-height: 120px; display: flex; align-items: center; justify-content: center; }
+.example-preview > .preview-frame { width: 100%; max-width: 600px; }
+.example-code { background: var(--color-surface-default); }
 
 .callout {
   display: flex;
@@ -609,6 +944,21 @@ function siteJs() {
         setTimeout(function() { btn.textContent = "Copy"; btn.classList.remove("copied"); }, 1600);
       });
     }
+  });
+
+  // Example Preview / Code 탭 toggle
+  document.addEventListener("click", function(e) {
+    var tab = e.target.closest(".example-tab");
+    if (!tab) return;
+    var which = tab.dataset.tab;
+    var block = tab.closest(".example-block");
+    if (!block) return;
+    block.querySelectorAll(".example-tab").forEach(function(t) {
+      t.setAttribute("aria-selected", t.dataset.tab === which ? "true" : "false");
+    });
+    block.querySelectorAll("[data-pane]").forEach(function(p) {
+      p.hidden = p.dataset.pane !== which;
+    });
   });
 })();
 `;
@@ -733,6 +1083,7 @@ function page({ title, currentPath, breadcrumb, body }) {
   <title>${escape(title)} — Porest Design</title>
   <link rel="stylesheet" href="${prefix}/assets/tokens.css">
   <link rel="stylesheet" href="${prefix}/assets/site.css">
+  <link rel="stylesheet" href="${prefix}/assets/preview-utilities.css">
 </head>
 <body>
   <div class="app">
@@ -1461,14 +1812,21 @@ ${lede ? `<p class="lede">${inlineMarkdown(lede)}</p>` : ""}
     body += `<h2>예제</h2>\n`;
     for (let i = 0; i < component.examples.length; i++) {
       const ex = component.examples[i];
+      // Live preview에 raw HTML(escape 없이) — Tailwind utility class가 preview-utilities.css 통해 렌더링됨
       body += `<div class="example-block" data-example>
   <div class="example-head">
     <div class="example-tabs">
-      <button class="example-tab" data-tab="code" aria-selected="true" type="button">CODE</button>
+      <button class="example-tab" data-tab="preview" aria-selected="true" type="button">Preview</button>
+      <button class="example-tab" data-tab="code" aria-selected="false" type="button">Code</button>
     </div>
     <button class="example-copy" type="button">Copy</button>
   </div>
-  <pre><code class="lang-${escape(ex.lang)}">${escape(ex.code)}</code></pre>
+  <div class="example-preview" data-pane="preview">
+    <div class="preview-frame">${ex.code}</div>
+  </div>
+  <div class="example-code" data-pane="code" hidden>
+    <pre><code class="lang-${escape(ex.lang)}">${escape(ex.code)}</code></pre>
+  </div>
   ${ex.label ? `<div class="example-label">${escape(ex.label)}</div>` : ""}
 </div>
 `;
@@ -1519,6 +1877,7 @@ NAV = buildNav(components);
 
 writeFileSync(resolve(OUT, "assets/tokens.css"), buildCombinedTokens());
 writeFileSync(resolve(OUT, "assets/site.css"), siteCss());
+writeFileSync(resolve(OUT, "assets/preview-utilities.css"), previewUtilitiesCss());
 writeFileSync(resolve(OUT, "assets/site.js"), siteJs());
 
 writeFileSync(resolve(OUT, "index.html"), pageLanding());
@@ -1538,5 +1897,5 @@ for (const c of components) {
 console.log("✓ exports/site/");
 console.log("  index.html");
 console.log("  tokens/{colors,typography,spacing,radius,shadows,motion,breakpoints,z-index}.html (8 페이지)");
-console.log(`  components/*.html (${components.length} 페이지)`);
-console.log("  assets/{tokens,site}.css + site.js");
+console.log(`  components/*.html (${components.length} 페이지, Preview/Code 탭 + Tailwind utility live render)`);
+console.log("  assets/{tokens,site,preview-utilities}.css + site.js");
