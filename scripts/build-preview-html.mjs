@@ -2193,55 +2193,97 @@ function pageCss() {
     .overlay-modal { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); background: var(--color-surface-default); padding: var(--spacing-md) var(--spacing-lg); border-radius: var(--radius-md); box-shadow: var(--shadow-xl); font-size: var(--text-caption); font-weight: 600; }
     .overlay-name { text-align: center; font-size: var(--text-caption); font-family: ui-monospace, monospace; margin-top: var(--spacing-sm); }
 
-    @media (prefers-color-scheme: dark) {
-      body { background: var(--color-bg-page-dark); color: var(--color-text-primary-dark); }
-      .hero-card--surface,
-      .ci-group,
-      .ci-swatch,
-      .vignette-card,
-      .typo-moment,
-      .ld-section, .ld-rating, .ld-meta-card, .ld-rail,
-      .cal-card,
-      .review-summary, .review-item,
-      .amenity-grid,
-      .empty-card,
-      .modal-dialog,
-      .toast,
-      .form-card,
-      .ld-highlights,
-      .ld-host,
-      .sk-card-wrap,
-      .swatch { background: var(--color-surface-default-dark); }
-      .ld-highlight-icon { background: var(--color-surface-input-dark); }
-      .sk { background-color: var(--color-surface-input-dark); background-image: linear-gradient(90deg, var(--color-surface-input-dark) 0%, var(--color-surface-default-dark) 50%, var(--color-surface-input-dark) 100%); }
-      .sk-card,
-      .sk-demo-cell { background: var(--color-surface-input-dark); }
-      .sk-card .sk,
-      .sk-demo-cell .sk { background-color: var(--color-surface-default-dark); background-image: linear-gradient(90deg, var(--color-surface-default-dark) 0%, var(--color-surface-input-dark) 50%, var(--color-surface-default-dark) 100%); }
-      .sk-row { border-color: var(--color-border-default-dark); }
-      .form-input,
-      .form-select,
-      .form-textarea { background: var(--color-surface-input-dark); color: var(--color-text-primary-dark); border-color: var(--color-border-default-dark); }
-      .form-input--readonly { color: var(--color-text-secondary-dark); }
-      .form-actions { border-color: var(--color-border-default-dark); }
-      .modal-fields { background: var(--color-surface-input-dark); }
-      .toast-close:hover { background: var(--color-surface-input-dark); }
-      .ld-rail-row, .cal-legend { border-color: var(--color-border-default-dark); }
-      .hero-fact,
-      .typo-meta-row,
-      .approval-row,
-      .text-row,
-      .motion-row,
-      .typo-scale-row,
-      .tabs,
-      .ci-swatch,
-      .btn-row--head { border-color: var(--color-border-default-dark); }
-      .catalog { border-color: var(--color-border-default-dark); }
-      .kpi-cell, .memo-row, .search-pill { background: var(--color-surface-input-dark); }
-      .btn-outlined { border-color: var(--color-border-default-dark); color: var(--color-text-primary-dark); }
-      .btn-outlined:hover { background: var(--color-surface-input-dark); }
-      .btn-on-accent { background: var(--color-surface-default-dark); color: var(--color-text-primary-dark); }
+    [data-theme="dark"] body { background: var(--color-bg-page-dark); color: var(--color-text-primary-dark); }
+    [data-theme="dark"] .hero-card--surface,
+    [data-theme="dark"] .ci-group,
+    [data-theme="dark"] .ci-swatch,
+    [data-theme="dark"] .vignette-card,
+    [data-theme="dark"] .typo-moment,
+    [data-theme="dark"] .ld-section,
+    [data-theme="dark"] .ld-rating,
+    [data-theme="dark"] .ld-meta-card,
+    [data-theme="dark"] .ld-rail,
+    [data-theme="dark"] .cal-card,
+    [data-theme="dark"] .review-summary,
+    [data-theme="dark"] .review-item,
+    [data-theme="dark"] .amenity-grid,
+    [data-theme="dark"] .empty-card,
+    [data-theme="dark"] .modal-dialog,
+    [data-theme="dark"] .toast,
+    [data-theme="dark"] .form-card,
+    [data-theme="dark"] .ld-highlights,
+    [data-theme="dark"] .ld-host,
+    [data-theme="dark"] .sk-card-wrap,
+    [data-theme="dark"] .swatch { background: var(--color-surface-default-dark); }
+    [data-theme="dark"] .ld-highlight-icon { background: var(--color-surface-input-dark); }
+    [data-theme="dark"] .sk { background-color: var(--color-surface-input-dark); background-image: linear-gradient(90deg, var(--color-surface-input-dark) 0%, var(--color-surface-default-dark) 50%, var(--color-surface-input-dark) 100%); }
+    [data-theme="dark"] .sk-card,
+    [data-theme="dark"] .sk-demo-cell { background: var(--color-surface-input-dark); }
+    [data-theme="dark"] .sk-card .sk,
+    [data-theme="dark"] .sk-demo-cell .sk { background-color: var(--color-surface-default-dark); background-image: linear-gradient(90deg, var(--color-surface-default-dark) 0%, var(--color-surface-input-dark) 50%, var(--color-surface-default-dark) 100%); }
+    [data-theme="dark"] .sk-row { border-color: var(--color-border-default-dark); }
+    [data-theme="dark"] .form-input,
+    [data-theme="dark"] .form-select,
+    [data-theme="dark"] .form-textarea { background: var(--color-surface-input-dark); color: var(--color-text-primary-dark); border-color: var(--color-border-default-dark); }
+    [data-theme="dark"] .form-input--readonly { color: var(--color-text-secondary-dark); }
+    [data-theme="dark"] .form-actions { border-color: var(--color-border-default-dark); }
+    [data-theme="dark"] .modal-fields { background: var(--color-surface-input-dark); }
+    [data-theme="dark"] .toast-close:hover { background: var(--color-surface-input-dark); }
+    [data-theme="dark"] .ld-rail-row,
+    [data-theme="dark"] .cal-legend { border-color: var(--color-border-default-dark); }
+    [data-theme="dark"] .hero-fact,
+    [data-theme="dark"] .typo-meta-row,
+    [data-theme="dark"] .approval-row,
+    [data-theme="dark"] .text-row,
+    [data-theme="dark"] .motion-row,
+    [data-theme="dark"] .typo-scale-row,
+    [data-theme="dark"] .tabs,
+    [data-theme="dark"] .btn-row--head { border-color: var(--color-border-default-dark); }
+    [data-theme="dark"] .catalog { border-color: var(--color-border-default-dark); }
+    [data-theme="dark"] .kpi-cell,
+    [data-theme="dark"] .memo-row,
+    [data-theme="dark"] .search-pill { background: var(--color-surface-input-dark); }
+    [data-theme="dark"] .btn-outlined { border-color: var(--color-border-default-dark); color: var(--color-text-primary-dark); }
+    [data-theme="dark"] .btn-outlined:hover { background: var(--color-surface-input-dark); }
+    [data-theme="dark"] .btn-on-accent { background: var(--color-surface-default-dark); color: var(--color-text-primary-dark); }
+
+    /* === Theme toggle === */
+    .theme-toggle {
+      position: fixed;
+      top: var(--spacing-lg);
+      right: var(--spacing-lg);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      padding: var(--spacing-sm) var(--spacing-md);
+      background: var(--color-surface-default);
+      color: var(--color-text-primary);
+      border: 1px solid var(--color-border-default);
+      border-radius: var(--radius-full);
+      box-shadow: var(--shadow-md);
+      font-family: inherit;
+      font-size: var(--text-caption);
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--motion-duration-fast, 150ms) var(--motion-ease-out, ease-out);
     }
+    .theme-toggle:hover { background: var(--color-surface-input); }
+    [data-theme="dark"] .theme-toggle {
+      background: var(--color-surface-default-dark);
+      color: var(--color-text-primary-dark);
+      border-color: var(--color-border-default-dark);
+    }
+    [data-theme="dark"] .theme-toggle:hover { background: var(--color-surface-input-dark); }
+    .theme-toggle-icon { font-size: 16px; line-height: 1; }
+    [data-theme="light"] .theme-toggle-dark-text,
+    [data-theme="light"] .theme-toggle-dark-icon { display: inline; }
+    [data-theme="light"] .theme-toggle-light-text,
+    [data-theme="light"] .theme-toggle-light-icon { display: none; }
+    [data-theme="dark"] .theme-toggle-dark-text,
+    [data-theme="dark"] .theme-toggle-dark-icon { display: none; }
+    [data-theme="dark"] .theme-toggle-light-text,
+    [data-theme="dark"] .theme-toggle-light-icon { display: inline; }
 
     @media (max-width: 900px) {
       .hero, .vignette-grid, .typo-moment, .ld-grid, .review-grid { grid-template-columns: 1fr; }
@@ -2268,10 +2310,28 @@ function renderHtml(brandName, css, tokens, sourceFile) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Porest Design — ${escape(brandName)}</title>
+  <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem("porest-theme");
+        var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+        var theme = saved || (prefersDark ? "dark" : "light");
+        document.documentElement.setAttribute("data-theme", theme);
+      } catch (e) {
+        document.documentElement.setAttribute("data-theme", "light");
+      }
+    })();
+  </script>
   <style>${css}</style>
   <style>${pageCss()}</style>
 </head>
 <body>
+  <button class="theme-toggle" type="button" aria-label="테마 전환" onclick="(function(){var c=document.documentElement.getAttribute('data-theme');var n=c==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);try{localStorage.setItem('porest-theme',n)}catch(e){}})()">
+    <span class="theme-toggle-icon theme-toggle-dark-icon">🌙</span>
+    <span class="theme-toggle-icon theme-toggle-light-icon">☀️</span>
+    <span class="theme-toggle-dark-text">Dark</span>
+    <span class="theme-toggle-light-text">Light</span>
+  </button>
   <main>
     ${renderHero(brand)}
     ${renderColorIdentity(tokens)}
