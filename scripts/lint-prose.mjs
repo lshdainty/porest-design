@@ -176,16 +176,19 @@ function extractDefinedHex(content) {
 
 // === history context heuristic ===
 // line이 변천 history (의도된 outdated hex)면 true 반환 → mismatch 검사 skip
-function isHistoryLine(line) {
+function isHistoryLine(line, opts = {}) {
   // arrow "→" 패턴 — 변천 매트릭스
   if (line.includes("→")) return true;
   // milestone reference (v10, v51 등) — 변천 시점 명시
   if (/v\d{1,3}\s*(?:추가|시점|이전|이후|hex)/.test(line)) return true;
   // "이전" / "현재" 키워드 — 변천 표 헤더
   if (/(?:^|[\s|])(?:이전|이후|현재|history|previous|deprecated)(?:[\s|]|$)/.test(line)) return true;
-  // 한 line에 hex가 2개 이상 — 변천 표 (이전→현재 두 column)
-  const hexMatches = line.match(/#[0-9A-Fa-f]{6,8}/g);
-  if (hexMatches && hexMatches.length >= 2) return true;
+  // 표 row 검사 시 — 한 line에 hex가 2개 이상이면 migration 표 가능성
+  // (`| token | old-hex | new-hex |` 패턴). spec 표(parenthetical)는 별도 처리.
+  if (opts.fromTableRow) {
+    const hexMatches = line.match(/#[0-9A-Fa-f]{6,8}/g);
+    if (hexMatches && hexMatches.length >= 2) return true;
+  }
   return false;
 }
 
@@ -198,21 +201,41 @@ function extractProseHexCitations(content) {
   const proseLines = content.split("\n").slice(fmEnd + 1);
   let inCodeBlock = false;
   const cites = []; // { token, hex, line, originalLine }
-  // 표 row: 첫 cell = `token` (괄호 옵션), 둘째 cell 시작에 `#hex`
+  // (A) 표 row: 첫 cell = `token` (괄호 옵션), 둘째 cell 시작에 `#hex`
   const tableRowRe = /^\|\s*`([a-z][a-z0-9-]+)`(?:\s*\([^)]*\))?\s*\|\s*`(#[0-9A-Fa-f]{6,8})`/;
+  // (B) 괄호 안 hex 패턴: `token` (`#hex`) — spec 표 cell 안 inline reference
+  // 같은 토큰이 여러 번 등장 가능 — 모두 수집
+  const inlineParenRe = /`([a-z][a-z0-9-]+)`\s*\(\s*`(#[0-9A-Fa-f]{6,8})`\s*\)/g;
   for (let i = 0; i < proseLines.length; i++) {
     const line = proseLines[i];
     if (line.trim().startsWith("```")) { inCodeBlock = !inCodeBlock; continue; }
     if (inCodeBlock) continue;
-    if (isHistoryLine(line)) continue;
-    const m = tableRowRe.exec(line);
-    if (m && looksLikeToken(m[1])) {
-      cites.push({
-        token: m[1],
-        hex: m[2].toLowerCase(),
-        line: fmEnd + 1 + i + 1,
-        originalLine: line,
-      });
+    // (A) 표 row 패턴 — migration 표(2 hex column) 자동 skip
+    if (!isHistoryLine(line, { fromTableRow: true })) {
+      const tableMatch = tableRowRe.exec(line);
+      if (tableMatch && looksLikeToken(tableMatch[1])) {
+        cites.push({
+          token: tableMatch[1],
+          hex: tableMatch[2].toLowerCase(),
+          line: fmEnd + 1 + i + 1,
+          originalLine: line,
+        });
+      }
+    }
+    // (B) 괄호 inline 페어 — spec 표 cell 안 reference, history skip 더 보수적
+    if (!isHistoryLine(line)) {
+      inlineParenRe.lastIndex = 0;
+      let pm;
+      while ((pm = inlineParenRe.exec(line)) !== null) {
+        if (looksLikeToken(pm[1])) {
+          cites.push({
+            token: pm[1],
+            hex: pm[2].toLowerCase(),
+            line: fmEnd + 1 + i + 1,
+            originalLine: line,
+          });
+        }
+      }
     }
   }
   return cites;
