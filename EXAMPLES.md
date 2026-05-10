@@ -37,42 +37,58 @@
 ## Button
 
 ```html
-<!-- Primary -->
-<button class="bg-primary text-on-accent px-4 py-2 rounded-md text-body-strong shadow-sm hover:opacity-90 active:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity">
-  결재 승인
-</button>
-
-<!-- Outlined -->
-<button class="bg-transparent text-primary border border-primary px-4 py-2 rounded-md text-body-strong hover:bg-surface-default-hover transition-colors">
-  반려
-</button>
-
-<!-- Ghost -->
-<button class="bg-transparent text-text-primary px-3 py-2 rounded-md text-body hover:bg-surface-default-hover transition-colors">
-  취소
-</button>
-
-<!-- Loading -->
-<button class="bg-primary text-on-accent px-4 py-2 rounded-md text-body-strong shadow-sm" disabled aria-busy="true">
-  <span class="inline-block w-4 h-4 border-2 border-on-accent border-t-transparent rounded-full animate-spin mr-2"></span>
-  저장 중...
-</button>
-
-<!-- Sizes -->
-<button class="... text-caption px-3 py-1.5">sm</button>
-<button class="... text-body px-4 py-2">md (default)</button>
-<button class="... text-body-strong px-5 py-3">lg</button>
+<div class="flex flex-wrap items-center gap-3">
+  <button class="bg-primary text-on-accent px-4 py-2 rounded-md text-body-strong shadow-sm hover:opacity-90 active:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity">
+    결재 승인
+  </button>
+  <button class="bg-transparent text-primary border border-primary px-4 py-2 rounded-md text-body-strong hover:bg-surface-default-hover transition-colors">
+    반려
+  </button>
+  <button class="bg-transparent text-text-primary px-3 py-2 rounded-md text-body hover:bg-surface-default-hover transition-colors">
+    취소
+  </button>
+  <button class="bg-error text-on-accent px-4 py-2 rounded-md text-body-strong shadow-sm hover:opacity-90 transition-opacity">
+    삭제
+  </button>
+</div>
 ```
 
-Touch target: `lg` 권장 (44×44 WCAG 2.5.5 AAA), 모바일 primary action 우선.
+Variants — Primary (default), Outlined, Ghost, Destructive (error 색).
+
+```html
+<div class="flex items-center gap-3">
+  <button class="bg-primary text-on-accent text-caption px-3 py-1.5 rounded-md shadow-sm hover:opacity-90 transition-opacity">sm</button>
+  <button class="bg-primary text-on-accent text-body px-4 py-2 rounded-md shadow-sm hover:opacity-90 transition-opacity">md (default)</button>
+  <button class="bg-primary text-on-accent text-body-strong px-5 py-3 rounded-md shadow-sm hover:opacity-90 transition-opacity">lg</button>
+</div>
+```
+
+Sizes — `sm` (보조 / dense), `md` (default), `lg` (모바일 primary, 44×44 WCAG 2.5.5 AAA 권장).
+
+```html
+<div class="flex flex-wrap items-center gap-3">
+  <button class="bg-primary text-on-accent px-4 py-2 rounded-md text-body-strong shadow-sm" disabled aria-busy="true">
+    <span class="inline-block w-4 h-4 border-2 border-on-accent border-t-transparent rounded-full animate-spin mr-2"></span>
+    저장 중...
+  </button>
+  <button class="bg-primary text-on-accent px-4 py-2 rounded-md text-body-strong shadow-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+    비활성
+  </button>
+  <button class="bg-primary text-on-accent px-4 py-2 rounded-md text-body-strong shadow-sm inline-flex items-center gap-2 hover:opacity-90 transition-opacity">
+    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+    추가
+  </button>
+</div>
+```
+
+States — Loading (`aria-busy`), Disabled, With icon. Touch target: `lg` 권장 (44×44 WCAG 2.5.5 AAA), 모바일 primary action 우선.
 
 ---
 
 ## Input / Textarea
 
 ```html
-<!-- Default with label / helper -->
-<div class="flex flex-col gap-1">
+<div class="flex flex-col gap-1 max-w-md">
   <label for="email" class="text-caption text-secondary">이메일 <span class="text-error">*</span></label>
   <input
     id="email"
@@ -85,32 +101,42 @@ Touch target: `lg` 권장 (44×44 WCAG 2.5.5 AAA), 모바일 primary action 우�
   />
   <span id="email-helper" class="text-caption text-tertiary">로그인 시 사용됩니다</span>
 </div>
+```
 
-<!-- Invalid state -->
-<div class="flex flex-col gap-1">
+Default — label + required mark + helper text. `inputmode="email"` 모바일 키보드 최적화.
+
+```html
+<div class="flex flex-col gap-1 max-w-md">
   <label for="email-bad" class="text-caption text-secondary">이메일</label>
   <input
     id="email-bad"
     type="email"
     aria-invalid="true"
     aria-describedby="email-bad-error"
+    value="hello@porest"
     class="px-3 py-2 rounded-md border border-error bg-surface-input text-text-primary text-body focus:outline-none focus:ring-2 focus:ring-error/20"
   />
   <span id="email-bad-error" role="alert" class="text-caption text-error">올바른 이메일 주소를 입력해주세요</span>
 </div>
+```
 
-<!-- Textarea with counter -->
-<div class="flex flex-col gap-1">
+Invalid — `aria-invalid="true"` + error border + `role="alert"` live region.
+
+```html
+<div class="flex flex-col gap-1 max-w-md">
   <label for="memo" class="text-caption text-secondary">메모</label>
   <textarea
     id="memo"
     maxlength="550"
     rows="4"
     class="px-3 py-2 rounded-md border border-default bg-surface-input text-text-primary text-body resize-y focus:border-focus focus:outline-none focus:ring-2 focus:ring-focus/20"
+    placeholder="자유롭게 입력하세요"
   ></textarea>
   <span class="text-caption text-tertiary self-end">0 / 550</span>
 </div>
 ```
+
+Textarea — max-length + counter (Desk 메모 550자 제한 등).
 
 ---
 
@@ -184,18 +210,42 @@ Touch target: `lg` 권장 (44×44 WCAG 2.5.5 AAA), 모바일 primary action 우�
 ## Card
 
 ```html
-<article class="bg-surface-default border border-default rounded-lg shadow-sm p-4 flex flex-col gap-3">
+<article class="bg-surface-default border border-default rounded-lg shadow-sm p-4 flex flex-col gap-3 max-w-md">
   <header class="flex items-start justify-between">
     <h3 class="text-heading-md text-text-primary">2026-05-10 점심</h3>
     <span class="text-caption text-tertiary">5분 전</span>
   </header>
   <p class="text-body text-text-primary">홍길동 / 김영희 / 박민수</p>
   <footer class="flex justify-end gap-2 pt-2 border-t border-default">
-    <button class="text-caption text-secondary px-3 py-1.5 rounded-sm hover:bg-surface-default-hover">편집</button>
-    <button class="text-caption text-error px-3 py-1.5 rounded-sm hover:bg-surface-default-hover">삭제</button>
+    <button class="text-caption text-secondary px-3 py-1.5 rounded-sm hover:bg-surface-default-hover transition-colors">편집</button>
+    <button class="text-caption text-error px-3 py-1.5 rounded-sm hover:bg-error/5 transition-colors">삭제</button>
   </footer>
 </article>
 ```
+
+Basic — 헤더 (제목 + 메타) + 본문 + 푸터 (액션). `radius-lg` (12px) 카드 default.
+
+```html
+<div class="grid grid-cols-3 gap-4 max-w-3xl">
+  <article class="bg-surface-default border border-default rounded-lg shadow-sm p-5 flex flex-col gap-2 hover:shadow-md transition-shadow cursor-pointer">
+    <span class="text-caption-sm text-tertiary uppercase">메모</span>
+    <h3 class="text-heading-sm text-text-primary">회의 요약</h3>
+    <p class="text-caption text-secondary">Q2 OKR 정의, 우선순위 정리, 다음 주까지 owner 지정.</p>
+  </article>
+  <article class="bg-surface-default border border-default rounded-lg shadow-sm p-5 flex flex-col gap-2 hover:shadow-md transition-shadow cursor-pointer">
+    <span class="text-caption-sm text-tertiary uppercase">할일</span>
+    <h3 class="text-heading-sm text-text-primary">디자인 리뷰</h3>
+    <p class="text-caption text-secondary">컴포넌트 라이브러리 v2 스펙 검토 + 피드백 수렴.</p>
+  </article>
+  <article class="bg-surface-default border border-default rounded-lg shadow-sm p-5 flex flex-col gap-2 hover:shadow-md transition-shadow cursor-pointer">
+    <span class="text-caption-sm text-tertiary uppercase">가계부</span>
+    <h3 class="text-heading-sm text-text-primary">5월 지출</h3>
+    <p class="text-caption text-secondary">총 ₩1,284,500 — 식비 32% / 교통 14% / 주거 41% / 기타 13%.</p>
+  </article>
+</div>
+```
+
+Card grid — 3열 그리드, hover 시 `shadow-md` lift. Desk 카드 list 톤.
 
 ---
 
@@ -227,72 +277,107 @@ Touch target: `lg` 권장 (44×44 WCAG 2.5.5 AAA), 모바일 primary action 우�
 ## Banner
 
 ```html
-<!-- Info -->
-<div role="status" class="flex items-start gap-3 p-4 bg-info/10 border-l-4 border-info">
-  <svg aria-hidden="true" class="w-5 h-5 text-info flex-shrink-0 mt-0.5"><!-- info icon --></svg>
+<div role="status" class="flex items-start gap-3 p-4 bg-info/10 border-l-4 border-info rounded-r-md">
+  <svg aria-hidden="true" class="w-5 h-5 text-info flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
   <div class="flex-1">
     <p class="text-body-strong text-text-primary">시스템 점검 안내</p>
     <p class="text-caption text-secondary mt-1">2026-05-15 23:00 ~ 24:00 동기화 일시 중단됩니다.</p>
   </div>
-  <button aria-label="배너 닫기" class="w-8 h-8 rounded-md hover:bg-surface-default-hover">×</button>
+  <button aria-label="배너 닫기" class="w-8 h-8 rounded-md hover:bg-surface-default-hover transition-colors">×</button>
 </div>
+```
 
-<!-- Warning / Error -->
-<div role="alert" class="flex items-start gap-3 p-4 bg-warning/10 border-l-4 border-warning">
+Info — 시스템 안내, 시각 (`rounded-r-md` 좌측 stripe + 우측 둥글기).
+
+```html
+<div role="alert" class="flex items-start gap-3 p-4 bg-warning/10 border-l-4 border-warning rounded-r-md">
+  <svg aria-hidden="true" class="w-5 h-5 text-warning flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
   <p class="text-body-strong">2026-06-01부터 개인정보 처리방침이 변경됩니다.</p>
 </div>
+```
 
-<div role="alert" class="flex items-start gap-3 p-4 bg-error/10 border-l-4 border-error">
+Warning — 약관 변경, sticky 영구 노출.
+
+```html
+<div role="alert" class="flex items-start gap-3 p-4 bg-error/10 border-l-4 border-error rounded-r-md">
+  <svg aria-hidden="true" class="w-5 h-5 text-error flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
   <p class="text-body-strong">결재 시스템 일시 장애 — 09:30 정상화 예정.</p>
 </div>
 ```
+
+Error — critical 알림, 즉시 발화 (`role="alert"`).
 
 ---
 
 ## Toast / Sonner
 
 ```html
-<!-- Single Toast -->
-<div role="status" aria-live="polite" class="fixed bottom-4 right-4 max-w-sm bg-surface-default border border-default rounded-md shadow-lg p-4 flex items-start gap-3 z-toast">
-  <svg aria-hidden="true" class="w-5 h-5 text-success"><!-- check icon --></svg>
+<div role="status" aria-live="polite" class="max-w-sm bg-surface-default border border-default rounded-md shadow-lg p-4 flex items-start gap-3">
+  <svg aria-hidden="true" class="w-5 h-5 text-success flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
   <div class="flex-1">
     <p class="text-body-strong">저장되었습니다</p>
     <p class="text-caption text-secondary mt-0.5">메모 #2026-05-10</p>
   </div>
-  <button class="text-caption text-primary">실행 취소</button>
+  <button class="text-caption text-primary hover:underline">실행 취소</button>
 </div>
+```
 
-<!-- Sonner stack (top-right HR) -->
-<ol class="fixed top-4 right-4 flex flex-col gap-2 z-toast" role="region" aria-label="알림">
-  <li class="bg-surface-default border border-default rounded-md shadow-lg p-3 max-w-sm">
+Single Toast — `role="status"` + `aria-live="polite"`. 실제 사용 시 `class="fixed bottom-4 right-4 z-toast"` 추가.
+
+```html
+<ol class="flex flex-col gap-2 max-w-sm list-none p-0 m-0" role="region" aria-label="알림">
+  <li class="bg-surface-default border border-default rounded-md shadow-lg p-3">
     <p class="text-body-strong">결재 승인 완료</p>
+    <p class="text-caption text-secondary mt-0.5">홍길동 휴가 신청 (5/12-5/14)</p>
   </li>
-  <li class="bg-surface-default border border-default rounded-md shadow-lg p-3 max-w-sm">
+  <li class="bg-surface-default border border-default rounded-md shadow-lg p-3">
     <p class="text-body-strong">2건 더 승인 대기</p>
+  </li>
+  <li class="bg-surface-default border border-default rounded-md shadow-lg p-3">
+    <p class="text-body-strong">새 결재 요청</p>
+    <p class="text-caption text-secondary mt-0.5">김철수 — 평가 코멘트</p>
   </li>
 </ol>
 ```
+
+Sonner stack — top-right (HR) / bottom-center (Desk 모바일) 위치. 실제 사용 시 `class="fixed top-4 right-4 z-toast"` 추가, max 3 + collapsed +N 패턴.
 
 ---
 
 ## Modal / Dialog
 
 ```html
-<!-- Overlay -->
-<div class="fixed inset-0 bg-overlay-dim z-modal" aria-hidden="true"></div>
-
-<!-- Dialog -->
-<div role="dialog" aria-modal="true" aria-labelledby="dialog-title" class="fixed inset-0 z-modal flex items-center justify-center p-4">
-  <div class="bg-surface-default rounded-xl shadow-xl max-w-md w-full p-6 flex flex-col gap-4 animate-[scale-in_200ms_var(--motion-ease-out)]">
+<div class="relative bg-overlay-dim p-8 rounded-md min-h-64 flex items-center justify-center">
+  <div role="dialog" aria-modal="true" aria-labelledby="dialog-title" class="bg-surface-default rounded-xl shadow-xl max-w-md w-full p-6 flex flex-col gap-4">
     <h2 id="dialog-title" class="text-heading-lg text-text-primary">메모를 삭제하시겠습니까?</h2>
-    <p class="text-body text-secondary">삭제된 메모는 복구할 수 없습니다.</p>
+    <p class="text-body text-secondary">삭제된 메모는 복구할 수 없습니다. 신중히 확인해주세요.</p>
     <footer class="flex justify-end gap-2 pt-2">
-      <button class="bg-transparent text-text-primary px-4 py-2 rounded-md hover:bg-surface-default-hover">취소</button>
-      <button class="bg-error text-on-accent px-4 py-2 rounded-md">삭제</button>
+      <button class="bg-transparent text-text-primary px-4 py-2 rounded-md hover:bg-surface-default-hover transition-colors">취소</button>
+      <button class="bg-error text-on-accent px-4 py-2 rounded-md hover:opacity-90 transition-opacity">삭제</button>
     </footer>
   </div>
 </div>
 ```
+
+Confirm dialog — `role="dialog"` + `aria-modal="true"` + `aria-labelledby`. 실제 사용 시 overlay는 `class="fixed inset-0 z-modal"`, dialog는 `class="fixed inset-0 z-modal flex items-center justify-center"`.
+
+```html
+<div class="relative bg-overlay-dim p-8 rounded-md min-h-64 flex items-center justify-center">
+  <form class="bg-surface-default rounded-xl shadow-xl max-w-md w-full p-6 flex flex-col gap-4" role="dialog" aria-modal="true" aria-labelledby="form-dialog-title">
+    <h2 id="form-dialog-title" class="text-heading-lg text-text-primary">새 폴더</h2>
+    <div class="flex flex-col gap-1">
+      <label for="folder-name" class="text-caption text-secondary">이름</label>
+      <input id="folder-name" type="text" class="px-3 py-2 rounded-md border border-default bg-surface-input text-body focus:border-focus focus:outline-none focus:ring-2 focus:ring-focus/20" placeholder="2026 회의록" />
+    </div>
+    <footer class="flex justify-end gap-2 pt-2">
+      <button type="button" class="bg-transparent text-text-primary px-4 py-2 rounded-md hover:bg-surface-default-hover transition-colors">취소</button>
+      <button type="submit" class="bg-primary text-on-accent px-4 py-2 rounded-md hover:opacity-90 transition-opacity">생성</button>
+    </footer>
+  </form>
+</div>
+```
+
+Form dialog — input/select 등 form control 포함. submit 핸들러 + Escape close.
 
 A11y: focus trap (Tab/Shift+Tab 내부 순환), Escape 닫기, 닫힌 후 trigger element로 focus 복원.
 
@@ -301,21 +386,49 @@ A11y: focus trap (Tab/Shift+Tab 내부 순환), Escape 닫기, 닫힌 후 trigge
 ## Drawer / Sheet
 
 ```html
-<!-- Right drawer (HR — 직원 detail) -->
-<aside role="dialog" aria-modal="true" class="fixed top-0 right-0 bottom-0 w-96 bg-surface-default border-l border-default shadow-xl z-drawer animate-[slide-in-left_300ms_var(--motion-ease-out)]">
-  <header class="flex items-center justify-between p-4 border-b border-default">
-    <h2 class="text-heading-md">홍길동 (HR-2026-0001)</h2>
-    <button aria-label="닫기" class="w-8 h-8 rounded-md hover:bg-surface-default-hover">×</button>
-  </header>
-  <div class="p-4 overflow-y-auto"><!-- detail content --></div>
-</aside>
-
-<!-- Bottom sheet (Desk — 거래 입력) -->
-<div role="dialog" aria-modal="true" class="fixed bottom-0 left-0 right-0 bg-surface-default rounded-t-xl shadow-xl z-drawer animate-[slide-in-up_300ms_var(--motion-ease-out)] pb-[env(safe-area-inset-bottom)]">
-  <header class="flex justify-center p-2"><div class="w-10 h-1 bg-surface-input rounded-full"></div></header>
-  <div class="p-4"><!-- form --></div>
+<div class="relative bg-overlay-dim p-0 rounded-md min-h-80 overflow-hidden flex justify-end">
+  <aside role="dialog" aria-modal="true" class="w-80 bg-surface-default border-l border-default shadow-xl flex flex-col">
+    <header class="flex items-center justify-between p-4 border-b border-default">
+      <h2 class="text-heading-md">홍길동 (HR-2026-0001)</h2>
+      <button aria-label="닫기" class="w-8 h-8 rounded-md hover:bg-surface-default-hover transition-colors">×</button>
+    </header>
+    <div class="p-4 flex flex-col gap-3 flex-1">
+      <div class="flex flex-col gap-1">
+        <span class="text-caption-sm text-tertiary">부서</span>
+        <span class="text-body">개발본부 / 프론트팀</span>
+      </div>
+      <div class="flex flex-col gap-1">
+        <span class="text-caption-sm text-tertiary">직급</span>
+        <span class="text-body">시니어 엔지니어</span>
+      </div>
+      <div class="flex flex-col gap-1">
+        <span class="text-caption-sm text-tertiary">이메일</span>
+        <span class="text-body">hong@porest.app</span>
+      </div>
+    </div>
+  </aside>
 </div>
 ```
+
+Right drawer (HR — 직원 detail) — 우측 슬라이드. 실제 사용 시 `class="fixed top-0 right-0 bottom-0 z-drawer"` + `animate-[slide-in-left]` 추가.
+
+```html
+<div class="relative bg-overlay-dim p-0 rounded-md min-h-80 overflow-hidden flex flex-col justify-end">
+  <div role="dialog" aria-modal="true" class="bg-surface-default rounded-t-xl shadow-xl">
+    <header class="flex justify-center p-2"><div class="w-10 h-1 bg-surface-input rounded-full"></div></header>
+    <div class="p-4 flex flex-col gap-3">
+      <h2 class="text-heading-md">거래 추가</h2>
+      <div class="flex flex-col gap-1">
+        <label for="amount" class="text-caption text-secondary">금액</label>
+        <input id="amount" type="text" inputmode="numeric" class="px-3 py-2 rounded-md border border-default bg-surface-input text-body" placeholder="₩0" />
+      </div>
+      <button class="bg-primary text-on-accent px-4 py-3 rounded-md text-body-strong hover:opacity-90 transition-opacity">저장</button>
+    </div>
+  </div>
+</div>
+```
+
+Bottom sheet (Desk — 거래 입력) — 하단 슬라이드 업. 모바일 친화. `radius-xl` 상단만, swipe-down close, `safe-area-inset-bottom` 고려.
 
 ---
 
@@ -368,47 +481,66 @@ A11y: focus trap (Tab/Shift+Tab 내부 순환), Escape 닫기, 닫힌 후 trigge
 ## Tooltip / Popover / Hover Card
 
 ```html
-<!-- Tooltip (delayed hover, terse) -->
-<button aria-describedby="tip-1" class="...">i</button>
-<div id="tip-1" role="tooltip" class="absolute bg-text-primary text-on-accent text-caption px-2 py-1 rounded-sm pointer-events-none">
-  단축키 ⌘K
-</div>
-
-<!-- Popover (interactive content, click trigger) -->
-<button aria-haspopup="dialog" aria-expanded="true" class="...">결재 의견</button>
-<div role="dialog" class="absolute top-full mt-2 w-80 bg-surface-default border border-default rounded-md shadow-md p-4 z-dropdown animate-[fade-in_200ms_var(--motion-ease-out)]">
-  <textarea class="w-full px-3 py-2 rounded-md border border-default bg-surface-input" placeholder="의견을 입력하세요"></textarea>
-  <div class="flex justify-end gap-2 mt-2">
-    <button class="text-caption px-3 py-1.5">취소</button>
-    <button class="bg-primary text-on-accent text-caption px-3 py-1.5 rounded-md">제출</button>
-  </div>
-</div>
-
-<!-- Hover Card (non-interactive preview) -->
-<a href="..." class="text-primary underline">@홍길동</a>
-<div role="tooltip" class="absolute bg-surface-default border border-default rounded-md shadow-md p-3 w-64">
-  <div class="flex items-center gap-2">
-    <img class="w-8 h-8 rounded-full" alt="" />
-    <div>
-      <p class="text-body-strong">홍길동</p>
-      <p class="text-caption text-tertiary">HR Team</p>
+<div class="flex items-start gap-12 p-6">
+  <div class="relative inline-block">
+    <button aria-describedby="tip-1" class="w-9 h-9 rounded-full bg-surface-input text-text-primary text-body-strong hover:bg-surface-default-hover transition-colors">i</button>
+    <div id="tip-1" role="tooltip" class="absolute top-full mt-2 left-1/2 -translate-x-1/2 bg-text-primary text-on-accent text-caption px-2 py-1 rounded-sm pointer-events-none whitespace-nowrap">
+      단축키 ⌘K
     </div>
   </div>
 </div>
 ```
+
+Tooltip — delayed hover, terse 텍스트. `aria-describedby` 연결 + `role="tooltip"`.
+
+```html
+<div class="relative inline-block">
+  <button aria-haspopup="dialog" aria-expanded="true" class="bg-surface-input text-text-primary px-3 py-2 rounded-md text-caption inline-flex items-center gap-1 hover:bg-surface-default-hover transition-colors">
+    결재 의견 ▾
+  </button>
+  <div role="dialog" class="absolute top-full mt-2 w-80 bg-surface-default border border-default rounded-md shadow-md p-4">
+    <textarea class="w-full px-3 py-2 rounded-md border border-default bg-surface-input text-body resize-none" rows="3" placeholder="의견을 입력하세요"></textarea>
+    <div class="flex justify-end gap-2 mt-2">
+      <button class="text-caption px-3 py-1.5 text-text-primary hover:bg-surface-default-hover rounded-sm transition-colors">취소</button>
+      <button class="bg-primary text-on-accent text-caption px-3 py-1.5 rounded-md hover:opacity-90 transition-opacity">제출</button>
+    </div>
+  </div>
+</div>
+```
+
+Popover — interactive content, click trigger. `aria-haspopup="dialog"` + `aria-expanded`.
+
+```html
+<div class="relative inline-block">
+  <a href="#" class="text-primary underline">@홍길동</a>
+  <div role="tooltip" class="absolute top-full mt-2 left-0 bg-surface-default border border-default rounded-md shadow-md p-3 w-64">
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 rounded-full bg-primary/10 text-primary inline-flex items-center justify-center text-body-strong">홍</div>
+      <div>
+        <p class="text-body-strong">홍길동</p>
+        <p class="text-caption text-tertiary">HR Team</p>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+Hover Card — non-interactive preview. delay 700ms hover, link/avatar에 mention.
 
 ---
 
 ## Dropdown / Context Menu
 
 ```html
-<button aria-haspopup="menu" aria-expanded="true" class="...">⋯</button>
-<ul role="menu" class="absolute top-full mt-1 min-w-40 bg-surface-default border border-default rounded-md shadow-md py-1 z-dropdown">
-  <li role="menuitem" class="px-3 py-2 text-body hover:bg-surface-default-hover cursor-pointer">편집</li>
-  <li role="menuitem" class="px-3 py-2 text-body hover:bg-surface-default-hover cursor-pointer">duplicate</li>
-  <li role="separator" class="border-t border-default my-1"></li>
-  <li role="menuitem" class="px-3 py-2 text-body text-error hover:bg-error/5 cursor-pointer">삭제</li>
-</ul>
+<div class="relative inline-block">
+  <button aria-haspopup="menu" aria-expanded="true" class="w-9 h-9 rounded-md hover:bg-surface-default-hover text-text-primary text-body-strong transition-colors">⋯</button>
+  <ul role="menu" class="absolute top-full mt-1 right-0 min-w-40 bg-surface-default border border-default rounded-md shadow-md py-1 z-dropdown list-none">
+    <li role="menuitem" class="px-3 py-2 text-body hover:bg-surface-default-hover cursor-pointer">편집</li>
+    <li role="menuitem" class="px-3 py-2 text-body hover:bg-surface-default-hover cursor-pointer">복제</li>
+    <li role="separator" class="border-t border-default my-1"></li>
+    <li role="menuitem" class="px-3 py-2 text-body text-error hover:bg-error/5 cursor-pointer">삭제</li>
+  </ul>
+</div>
 ```
 
 키보드: Arrow Up/Down navigate, Enter activate, Escape close, Tab close + focus next.
