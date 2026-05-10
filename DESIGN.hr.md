@@ -171,6 +171,33 @@ typography:
     fontSize: 14px
     fontWeight: 500
     lineHeight: 1.29
+  # (v57: Airbnb reference batch 3 — caption-sm/badge/uppercase-tag + button-md/nav-link)
+  caption-sm:
+    fontFamily: "Pretendard, Inter, sans-serif"
+    fontSize: 13px
+    fontWeight: 400
+    lineHeight: 1.23
+  badge:
+    fontFamily: "Pretendard, Inter, sans-serif"
+    fontSize: 11px
+    fontWeight: 600
+    lineHeight: 1.18
+  uppercase-tag:
+    fontFamily: "Pretendard, Inter, sans-serif"
+    fontSize: 8px
+    fontWeight: 700
+    lineHeight: 1.25
+    letterSpacing: 0.32px
+  button-md:
+    fontFamily: "Pretendard, Inter, sans-serif"
+    fontSize: 16px
+    fontWeight: 500
+    lineHeight: 1.25
+  nav-link:
+    fontFamily: "Pretendard, Inter, sans-serif"
+    fontSize: 16px
+    fontWeight: 600
+    lineHeight: 1.25
 
 rounded:
   xs: 2px
