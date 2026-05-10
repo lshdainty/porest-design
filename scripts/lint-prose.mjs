@@ -45,6 +45,19 @@ const NOISE = new Set([
   "border-vs-surface", // 비교 표현 ("border vs surface")
   // historical reference (v14~v15 fork 시도, v15에서 unified 회귀 기록 표)
   "bg-page-hr", "bg-page-desk", "page-text-hr-light", "page-text-desk-light",
+  // CSS logical properties (v76 RTL doc) — physical/logical property 표기, 토큰 아님
+  "margin-left", "margin-right", "margin-inline-start", "margin-inline-end",
+  "padding-left", "padding-right", "padding-inline-start", "padding-inline-end",
+  "border-left", "border-right", "border-inline-start", "border-inline-end",
+  "border-top-left-radius", "border-top-right-radius",
+  "border-bottom-left-radius", "border-bottom-right-radius",
+  "border-start-start-radius", "border-start-end-radius",
+  "border-end-start-radius", "border-end-end-radius",
+  "inset-inline-start", "inset-inline-end",
+  "padding-block-start", "padding-block-end",
+  "text-start", "text-end",
+  "inline-size", "block-size", "max-inline-size",
+  "border-default", "border-strong", "border-default-dark", // shared neutral border tokens (lint-prose 인식 prefix와 충돌 회피)
 ]);
 
 function looksLikeToken(s) {
