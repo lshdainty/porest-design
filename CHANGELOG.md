@@ -137,6 +137,14 @@
 
 **shadcn 확장 4 series 완료** — 총 20 컴포넌트 (v68 navigation 5 + v69 input 5 + v70 disclosure 5 + v71 data 5). 시스템 컴포넌트 75+ 보유 (기존 55 + v68-v71 batch).
 
+**v83 — 풀 docs site 골격 (Phase 1 — Landing + Tokens 8 페이지)**
+- v83: `scripts/build-site.mjs` 신규 — shadcn/ui 스타일 multi-page documentation site 생성. `exports/site/` 디렉토리 + `index.html`(Landing) + `tokens/{colors,typography,spacing,radius,shadows,motion,breakpoints,z-index}.html` 8 페이지 + `assets/{tokens,site}.css + site.js`. 외부 의존성 0 — vanilla Node + 기존 build-tailwind-v4 산출물 재사용.
+- **3 브랜드 단일 사이트 토글**: `[data-brand="default|hr|desk"]` scoping으로 한 페이지에서 Default / HR / Desk primary 색 즉시 전환. localStorage 기억. `tokens.css` 통합 빌드 — Default(`:root` baseline) + HR override(4 토큰) + Desk override(4 토큰) + dark mode pair alias.
+- **사이트 layout**: 좌측 sticky sidebar(260px) + 상단 topbar(브레드크럼 / 브랜드 스위처 / 테마 토글) + 본문 920px max-width. 모바일 hamburger nav (≤880px viewport, transform translate). prefers-reduced-motion 일괄 처리.
+- **Landing**: Hero("사람과 일상이 숲처럼 자라나는 시스템") + 두 브랜드 identity 카드(HR forest / Desk cobalt / Default neutral) + Quick start + 핵심 가치 5 + 현재 시스템 numbers(180+ tokens, 80+ components, v83 milestones).
+- **Token 페이지 8**: Colors(51 swatch + 그룹별 정렬 + WCAG 안내), Typography(21종 라이브 sample + 가이드), Spacing(7 visual bar), Radius(7 shape preview), Shadows(4 light + 4 dark 표), Motion(5 duration animated demo + 2 easing + 14 keyframes 표), Breakpoints(5 Apple Store 톤), Z-index(6 layer + visual stack). DESIGN.md frontmatter YAML 직접 파싱.
+- **Phase 2-3 계획**: Components(80+ spec 컴포넌트별 페이지), Examples(조합 layout 5-8 시나리오) — soon badge로 사이드바 표시. 별도 batch 진행.
+
 **v82 — README 정비 (v73-v81 milestone 반영)**
 - v82: README.md 갱신 — Quick start에 `build:examples` 추가, 파일 구조에 `EXAMPLES.md` / `exports/examples.html` / `build-examples-html.mjs` 신규 추가, 토큰 카테고리에 z-index(v65) + keyframes(v74) + Form validation(v75) + RTL(v76) prose 가이드 항목, npm scripts 표에 lint:prose:strict / lint:dark:strict / build:examples 동봉, 사용 예시에 v74 keyframes(animation: scale-in / slide-in-up / shimmer / spin / shake) + prefers-reduced-motion 일괄 처리 코드 보강. 80+ 컴포넌트 spec coverage 명시.
 

@@ -14,6 +14,7 @@ npm run verify                  # sync 검사 + lint:all + lint:dark + lint:pros
 npm run export:tailwind:all     # exports/tokens(.hr|.desk).css — 토큰 + 14 keyframe(@theme)
 npm run build:preview           # exports/preview*.html — 토큰 카탈로그 + 컴포넌트 vignette + v73-v78 시각 데모
 npm run build:examples          # exports/examples.html — copy-paste 컴포넌트 사용 예제
+npm run build:site              # exports/site/ — 풀 docs site (Landing + Tokens × 8, 사이드바 + 브랜드 스위처)
 ```
 
 브라우저로 `exports/preview.html` 열어 토큰 + 컴포넌트 미리보기. `exports/examples.html`은 copy-paste 친화 사용 예제 페이지.
@@ -107,6 +108,7 @@ Coverage: **80+ 컴포넌트 spec** (shadcn/ui 카탈로그 ~100% + Banner/Tag/P
 | `npm run test:exports` | export 빌드 + namespace + keyframe(≥14) 검증 |
 | `npm run build:preview` | exports/preview*.html — 토큰 카탈로그 + v67 4종 batch + v68-v72 shadcn 25종 + v73-v78 시각 데모 |
 | `npm run build:examples` | exports/examples.html — EXAMPLES.md → 인터랙티브 페이지 (Copy 버튼) |
+| `npm run build:site` | exports/site/ — 풀 documentation site (사이드바 + 브랜드 스위처 + Tokens 8 페이지). Phase 1 — Components/Examples는 Phase 2-3 |
 
 ### Diff & history
 | Script | 동작 |
