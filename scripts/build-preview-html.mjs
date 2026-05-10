@@ -131,6 +131,24 @@ function brandProfile(brandName, tokens) {
         meta: "디자인 본부 · 시니어 프로덕트 디자이너 · 입사 2024-03-15",
         ratingScore: "4.8",
         ratingCount: "12명 피드백",
+        gallery: [
+          { tone: "primary", label: "프로필" },
+          { tone: "chart-violet", label: "디자인본부" },
+          { tone: "chart-blue", label: "팀 사진" },
+          { tone: "chart-orange", label: "프로젝트" },
+        ],
+        highlights: [
+          { icon: "★", label: "4.8 / 5", note: "12명 피드백" },
+          { icon: "🪄", label: "디자인 시스템", note: "전문 분야" },
+          { icon: "📅", label: "근속 2년차", note: "2024-03-15 입사" },
+          { icon: "✓", label: "WCAG 2.1 AA", note: "사내 a11y 인증" },
+        ],
+        host: {
+          name: "박서연",
+          role: "디자인 본부장",
+          bio: "디자인 시스템과 한국어 typography에 강점. 6년차 매니저로 12명 팀 운영.",
+          since: "팀 합류 2022-04",
+        },
         sections: [
           { title: "기본 정보", body: "사번 PR-2024-0312 · 직급 시니어 · 팀 디자인 시스템 · 근속 2년차" },
           { title: "최근 활동", body: "이번 분기 디자인 리뷰 14건, 결재 처리 3건. 5월 8일 기준 평균 응답시간 2.3시간." },
@@ -138,6 +156,7 @@ function brandProfile(brandName, tokens) {
         ],
         rail: {
           title: "휴가 신청",
+          subtitle: "잔여 8.5일 · 이번 분기",
           fields: [
             { k: "잔여 연차", v: "8.5일" },
             { k: "사용 연차", v: "6.5일" },
@@ -269,6 +288,24 @@ function brandProfile(brandName, tokens) {
         meta: "메모 · 2026-05-08 작성 · 마지막 수정 2026-05-09",
         ratingScore: null,
         ratingCount: "342 단어 · 5분 읽기",
+        gallery: [
+          { tone: "primary", label: "메모 본문" },
+          { tone: "chart-blue", label: "스케치" },
+          { tone: "chart-yellow", label: "참고 자료" },
+          { tone: "chart-pink", label: "관련 메모" },
+        ],
+        highlights: [
+          { icon: "📝", label: "342 단어", note: "5분 읽기" },
+          { icon: "🏷️", label: "3 태그", note: "brand · design · v50" },
+          { icon: "🔗", label: "관련 메모 4건", note: "디자인 시스템 폴더" },
+          { icon: "⏱️", label: "수정 어제", note: "1번 수정" },
+        ],
+        host: {
+          name: "본인",
+          role: "Desk 사용자",
+          bio: "메모는 자동으로 본인 작성으로 기록. 공유 메모는 다른 사용자도 작성 가능.",
+          since: "Desk 시작 2024-09",
+        },
         sections: [
           { title: "핵심 톤", body: "절제·신뢰감 — 토스 레퍼런스. B2B(HR)와 B2C(Desk) 듀얼이지만 typographic baseline은 공유." },
           { title: "참고 사례", body: "Airbnb의 \"Inspiration\" 페이지처럼 Hero → Color → Typography → Components 흐름. 다만 우리 도메인(HR/Desk) 시나리오로 적응." },
@@ -276,6 +313,7 @@ function brandProfile(brandName, tokens) {
         ],
         rail: {
           title: "메타 정보",
+          subtitle: "마지막 동기화 12분 전",
           fields: [
             { k: "태그", v: "brand · design · v50" },
             { k: "작성일", v: "2026-05-08" },
@@ -400,6 +438,24 @@ function brandProfile(brandName, tokens) {
       meta: `shared baseline · ${tokens.colors.length} colors · ${tokens.text.length} typography · ${tokens.spacing.length} spacing · 50 components`,
       ratingScore: null,
       ratingCount: "Source of Truth",
+      gallery: [
+        { tone: "chart-blue", label: "Tokens" },
+        { tone: "chart-green", label: "Components" },
+        { tone: "chart-violet", label: "Lint" },
+        { tone: "chart-orange", label: "Sync" },
+      ],
+      highlights: [
+        { icon: "🎨", label: `${tokens.colors.length} colors`, note: "neutral + chart palette" },
+        { icon: "🔤", label: `${tokens.text.length} typography`, note: "Pretendard 한국어 우선" },
+        { icon: "📐", label: `${tokens.spacing.length} spacing`, note: "4px base grid" },
+        { icon: "✓", label: "0 errors", note: "lint:all 통과" },
+      ],
+      host: {
+        name: "Porest Design",
+        role: "Source of Truth · DESIGN.md",
+        bio: "HR/Desk 두 브랜드의 공유 baseline. typography·spacing·rounded·neutral colors·neutral components 정의.",
+        since: "v1 시작 2024 — 현재 v62",
+      },
       sections: [
         { title: "Source", body: "DESIGN.md (Source of Truth) → DESIGN.{hr,desk}.md (self-contained brand variants). v17 file split, v50 markers + colors region sync." },
         { title: "Lint policy", body: "WCAG 1.4.3 본문 4.5:1 + 1.4.11 UI 3:1. shared baseline은 missingPrimary 1 warning 영구 수용 (brand-agnostic 의도)." },
@@ -407,11 +463,12 @@ function brandProfile(brandName, tokens) {
       ],
       rail: {
         title: "Build pipeline",
+        subtitle: "최근 빌드 통과",
         fields: [
           { k: "lint", v: "0 errors / 1 intentional" },
           { k: "sync drift", v: "none" },
           { k: "exports", v: "Tailwind v4 + DTCG" },
-          { k: "milestone", v: "v53 (semantic refresh)" },
+          { k: "milestone", v: "v62 (Form layout)" },
         ],
         primary: "verify",
         primaryNote: "npm run verify",
@@ -853,6 +910,38 @@ function renderListingDetail(brand) {
     </div>` : ld.ratingCount ? `
     <div class="ld-meta-card">${escape(ld.ratingCount)}</div>` : "";
 
+  const galleryHtml = (ld.gallery && ld.gallery.length) ? `
+    <div class="ld-gallery">
+      ${ld.gallery.map((g, i) => `
+        <div class="ld-gallery-cell ld-gallery-cell--${i === 0 ? "hero" : "thumb"}" style="--cell-tone: var(--color-${escape(g.tone)});">
+          <span class="ld-gallery-label">${escape(g.label)}</span>
+        </div>`).join("")}
+    </div>` : "";
+
+  const highlightsHtml = (ld.highlights && ld.highlights.length) ? `
+    <div class="ld-highlights">
+      ${ld.highlights.map(h => `
+        <div class="ld-highlight">
+          <div class="ld-highlight-icon" aria-hidden="true">${escape(h.icon)}</div>
+          <div class="ld-highlight-text">
+            <div class="ld-highlight-label">${escape(h.label)}</div>
+            <div class="ld-highlight-note">${escape(h.note)}</div>
+          </div>
+        </div>`).join("")}
+    </div>` : "";
+
+  const hostHtml = ld.host ? `
+    <div class="ld-host">
+      <div class="ld-host-avatar" aria-hidden="true">${escape((ld.host.name || "?").slice(0, 1))}</div>
+      <div class="ld-host-text">
+        <div class="ld-host-name">${escape(ld.host.name)}<span class="ld-host-role"> · ${escape(ld.host.role)}</span></div>
+        <div class="ld-host-bio">${escape(ld.host.bio)}</div>
+        <div class="ld-host-since">${escape(ld.host.since)}</div>
+      </div>
+    </div>` : "";
+
+  const railSubtitle = ld.rail.subtitle ? `<div class="ld-rail-subtitle">${escape(ld.rail.subtitle)}</div>` : "";
+
   return `
   <section class="section">
     <header class="section-head">
@@ -860,13 +949,17 @@ function renderListingDetail(brand) {
       <h2 class="section-title">${escape(ld.title)}</h2>
       <p class="section-lede">${escape(ld.meta)}</p>
     </header>
+    ${galleryHtml}
     <div class="ld-grid">
       <div class="ld-main">
         ${headBlock}
+        ${highlightsHtml}
+        ${hostHtml}
         ${sections}
       </div>
       <aside class="ld-rail">
         <div class="ld-rail-title">${escape(ld.rail.title)}</div>
+        ${railSubtitle}
         <div class="ld-rail-fields">${railFields}</div>
         <button class="btn btn-primary ld-rail-primary">${escape(ld.rail.primary)}</button>
         ${ld.rail.primaryNote ? `<div class="ld-rail-note">${escape(ld.rail.primaryNote)}</div>` : ""}
@@ -1497,6 +1590,35 @@ function pageCss() {
     .search-input::placeholder { color: var(--color-text-tertiary); }
 
     /* === Listing detail === */
+    .ld-gallery {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: var(--spacing-xs);
+      margin-bottom: var(--spacing-lg);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      max-height: 360px;
+    }
+    .ld-gallery-cell {
+      background: var(--cell-tone, var(--color-surface-input));
+      display: flex; align-items: center; justify-content: center;
+      color: var(--color-text-on-accent, #fff);
+      font-size: var(--text-caption);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      opacity: 0.92;
+      min-height: 120px;
+    }
+    .ld-gallery-cell--hero {
+      grid-row: 1 / 3;
+      min-height: 240px;
+      font-size: var(--text-heading-md);
+      letter-spacing: 0;
+      text-transform: none;
+    }
+    .ld-gallery-label { padding: var(--spacing-md); }
     .ld-grid {
       display: grid;
       grid-template-columns: 1.6fr 1fr;
@@ -1538,7 +1660,52 @@ function pageCss() {
       box-shadow: var(--shadow-md);
       display: flex; flex-direction: column;
     }
+    .ld-highlights {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: var(--spacing-md);
+      background: var(--color-surface-default);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      box-shadow: var(--shadow-sm);
+    }
+    .ld-highlight {
+      display: flex; align-items: flex-start; gap: var(--spacing-sm);
+    }
+    .ld-highlight-icon {
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--color-surface-input);
+      border-radius: var(--radius-full);
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .ld-highlight-label { font-weight: 600; font-size: var(--text-body); }
+    .ld-highlight-note { font-size: var(--text-caption); color: var(--color-text-tertiary); }
+    .ld-host {
+      background: var(--color-surface-default);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      box-shadow: var(--shadow-sm);
+      display: flex; gap: var(--spacing-md);
+      align-items: flex-start;
+    }
+    .ld-host-avatar {
+      width: 48px; height: 48px;
+      border-radius: var(--radius-full);
+      background: var(--color-primary, var(--color-text-primary));
+      color: var(--color-text-on-accent, #fff);
+      display: flex; align-items: center; justify-content: center;
+      font-size: var(--text-heading-sm);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .ld-host-name { font-weight: 600; font-size: var(--text-body); margin-bottom: var(--spacing-xs); }
+    .ld-host-role { color: var(--color-text-secondary); font-weight: 400; }
+    .ld-host-bio { color: var(--color-text-secondary); line-height: 1.6; margin-bottom: var(--spacing-xs); }
+    .ld-host-since { font-size: var(--text-caption); color: var(--color-text-tertiary); }
     .ld-rail-title { font-weight: 600; font-size: var(--text-heading-sm); margin-bottom: var(--spacing-md); }
+    .ld-rail-subtitle { font-size: var(--text-caption); color: var(--color-text-tertiary); margin-top: calc(var(--spacing-md) * -1); margin-bottom: var(--spacing-md); }
     .ld-rail-fields { display: flex; flex-direction: column; gap: 0; margin-bottom: var(--spacing-md); }
     .ld-rail-row {
       display: flex; justify-content: space-between;
@@ -1873,7 +2040,10 @@ function pageCss() {
       .modal-dialog,
       .toast,
       .form-card,
+      .ld-highlights,
+      .ld-host,
       .swatch { background: var(--color-surface-default-dark); }
+      .ld-highlight-icon { background: var(--color-surface-input-dark); }
       .form-input,
       .form-select,
       .form-textarea { background: var(--color-surface-input-dark); color: var(--color-text-primary-dark); border-color: var(--color-border-default-dark); }
@@ -1904,6 +2074,11 @@ function pageCss() {
       .approval-row { grid-template-columns: 1fr 1fr; }
       .ld-rail, .review-summary { position: static; }
       .form-grid { grid-template-columns: 1fr; }
+      .ld-gallery {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr;
+      }
+      .ld-gallery-cell--hero { grid-row: 1 / 2; grid-column: 1 / -1; }
     }
   `;
 }
