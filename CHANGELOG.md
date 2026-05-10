@@ -137,6 +137,13 @@
 
 **shadcn 확장 4 series 완료** — 총 20 컴포넌트 (v68 navigation 5 + v69 input 5 + v70 disclosure 5 + v71 data 5). 시스템 컴포넌트 75+ 보유 (기존 55 + v68-v71 batch).
 
+**v89 — EXAMPLES.md 예제 풍부화 + placeholder 정리**
+- v89: 사용자 시각 검증 — Button의 Sizes 변형이 `class="..."` placeholder 때문에 스타일 안 입혀지는 문제 등 6개 placeholder 정리. 또한 핵심 컴포넌트 EXAMPLES.md 풍부화 — 단일 큰 코드 블록 → 변형별 분리 multi-block 구조.
+- 정리 대상 placeholder: Button Sizes(3) / Tooltip(1) / Popover(1) / Dropdown(1) — 모두 실제 Tailwind class로 채움.
+- 풍부화 컴포넌트: **Button** Variants(Primary/Outlined/Ghost/Destructive) + Sizes(sm/md/lg) + States(Loading/Disabled/With icon, 3 블록), **Input/Textarea** Default/Invalid/Textarea(3 블록), **Card** Basic + Card grid(2 블록), **Banner** Info/Warning/Error(3 블록 + SVG icon 인라인), **Toast/Sonner** Single + Sonner stack(2 블록), **Modal/Dialog** Confirm + Form(2 블록), **Drawer/Sheet** Right drawer + Bottom sheet(2 블록).
+- Modal/Drawer/Sheet `position: fixed` 제거 — preview frame 안 contained 렌더링. 실제 사용 시 추가 class(`class="fixed inset-0 z-modal"` 등) 별도 안내.
+- 결과: 각 컴포넌트 페이지가 변형별 Preview/Code 탭 multi-block으로 표시 → shadcn 톤 docs UX. 모든 utility class 정확 컴파일 + brand 토글 즉시 반영.
+
 **v88 — Tailwind v4 CDN @theme 인라인 fix (외부 link 미인식 문제)**
 - v88: 사용자 시각 검증 — Tabs 페이지 등에서 utility class 색상이 전혀 적용 안 되던 문제. 원인: Tailwind v4 browser CDN(`@tailwindcss/browser`)이 외부 `<link rel="stylesheet">` 파일의 `@theme {}` 블록을 인식하지 못함. CDN은 인라인 `<style type="text/tailwindcss">` 만 처리.
 - 수정: `buildTokens()` 함수가 두 형태로 분리 출력 — (1) `rootCss` 외부 stylesheet `:root` + brand override + dark mode (FOUC 방지, 사이트 layout 색상 즉시 적용) (2) `tailwindBlock` 인라인 `<style type="text/tailwindcss">` `@theme {}` + 동일 brand/dark override (Tailwind CDN이 utility class 컴파일).
