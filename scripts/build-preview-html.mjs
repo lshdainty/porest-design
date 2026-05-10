@@ -2279,6 +2279,28 @@ function pageCss() {
     }
     /* btn-outlined의 border/text는 다크 모드에서 brand 표현이 필요 없는 케이스(중성 outlined)라 primary-light 미적용 — 1503 line은 라이트 모드 텍스트가 primary, 다크 모드는 위 .btn-outlined 룰로 text-primary-dark로 이미 override 됨. */
 
+    /* === Dark mode token aliases ===
+       data-theme="dark" 시 light 페어 토큰을 dark 페어로 alias —
+       explicit color: var(--color-text-primary) 등이 자동 전환. 새 컴포넌트 추가 시
+       individual override 작성 부담 감소. brand --color-primary는 mode-independent
+       (.ld-host-avatar 등 채움 사용 보존), 비채움 brand 사용은 별도 [data-theme=dark]
+       룰에서 primary-light로 override (v64 패턴). */
+    [data-theme="dark"] {
+      --color-bg-page: var(--color-bg-page-dark);
+      --color-surface-default: var(--color-surface-default-dark);
+      --color-surface-input: var(--color-surface-input-dark);
+      --color-text-primary: var(--color-text-primary-dark);
+      --color-text-secondary: var(--color-text-secondary-dark);
+      --color-text-tertiary: var(--color-text-tertiary-dark);
+      --color-text-disabled: var(--color-text-disabled-dark);
+      --color-border-default: var(--color-border-default-dark);
+      --color-border-strong: var(--color-border-strong-dark);
+      --shadow-sm: var(--shadow-sm-dark);
+      --shadow-md: var(--shadow-md-dark);
+      --shadow-lg: var(--shadow-lg-dark);
+      --shadow-xl: var(--shadow-xl-dark);
+    }
+
     /* === Theme toggle === */
     .theme-toggle {
       position: fixed;
