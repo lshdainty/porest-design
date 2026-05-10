@@ -137,6 +137,12 @@
 
 **shadcn 확장 4 series 완료** — 총 20 컴포넌트 (v68 navigation 5 + v69 input 5 + v70 disclosure 5 + v71 data 5). 시스템 컴포넌트 75+ 보유 (기존 55 + v68-v71 batch).
 
+**v77 — Component usage examples (EXAMPLES.md)**
+- v77: `EXAMPLES.md` 신규 추가 — 24 컴포넌트 카테고리 copy-paste 가능한 HTML markup + Tailwind v4 utility class snippet (Button/Input/Textarea/Select/Combobox/Checkbox/Radio/Switch/Card/Badge/Tag-Chip/Banner/Toast-Sonner/Modal/Drawer/Tabs/Accordion/Tooltip-Popover-HoverCard/Dropdown/Skeleton-Spinner-Progress/Pagination-Stepper/Avatar/Breadcrumb-Sidebar/Form layout+validation/Calendar/Treeview/File Upload/Empty state/Animation patterns).
+- 추가 이유: spec 정의(`DESIGN.md`)는 *what/why* 위주, EXAMPLES는 *how* — 사용자가 "shadcn 정도로 가져다쓰면 될 정도" 요구에 응답. 토큰 alias 표 + Tailwind class binding + ARIA attribute 세트 + 키보드 패턴 명시.
+- 새 토큰 0, 새 yaml 컴포넌트 0 — 별도 docs 파일.
+- `motion-duration-loop` linear / `cubic-bezier(0, 0, 0.2, 1)` ping / `cubic-bezier(.36,.07,.19,.97)` shake 등 v74 keyframe 응용 CSS snippet 동봉. `prefers-reduced-motion` 일괄 처리 권장 코드.
+
 **v76 — RTL support (CSS logical properties)**
 - v76: LTR(한국어/영어/일본어) ↔ RTL(아랍어/히브리어) 자동 분기 prose-only 가이드 — 18 logical property 매핑 표(`margin-inline-start`/`padding-inline-end`/`border-start-start-radius`/`inset-inline-*`/`text-align: start|end`/`inline-size`/`block-size` 등 physical → logical 1:1) + `dir="rtl"` HTML 속성 + 6 direction-specific 처리(drawer / chevron / breadcrumb / progress / 숫자 / URL) + 9 컴포넌트별 RTL 가이드(Button/Input/Dropdown/Tabs/Drawer/Breadcrumb/Toast/Banner/Calendar) + Tailwind v4 logical utility(`me-*`/`ms-*`/`pe-*`/`ps-*`/`text-start`/`text-end`/`start-0`/`end-0`/`rtl:`) 활용.
 - 추가 이유: Porest 1차 한국어 시장이지만 향후 글로벌 확장 시 vendor 이중 작업 회피 — 신규 컴포넌트 spec 작성 시점부터 logical 우선이면 spec 자체 변경 불필요. 추가 비용 0(동일 syntax).
