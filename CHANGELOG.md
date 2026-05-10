@@ -137,6 +137,9 @@
 
 **shadcn 확장 4 series 완료** — 총 20 컴포넌트 (v68 navigation 5 + v69 input 5 + v70 disclosure 5 + v71 data 5). 시스템 컴포넌트 75+ 보유 (기존 55 + v68-v71 batch).
 
+**v82 — README 정비 (v73-v81 milestone 반영)**
+- v82: README.md 갱신 — Quick start에 `build:examples` 추가, 파일 구조에 `EXAMPLES.md` / `exports/examples.html` / `build-examples-html.mjs` 신규 추가, 토큰 카테고리에 z-index(v65) + keyframes(v74) + Form validation(v75) + RTL(v76) prose 가이드 항목, npm scripts 표에 lint:prose:strict / lint:dark:strict / build:examples 동봉, 사용 예시에 v74 keyframes(animation: scale-in / slide-in-up / shimmer / spin / shake) + prefers-reduced-motion 일괄 처리 코드 보강. 80+ 컴포넌트 spec coverage 명시.
+
 **v81 — EXAMPLES.md → 인터랙티브 HTML (build-examples-html.mjs)**
 - v81: `scripts/build-examples-html.mjs` 신규 — `EXAMPLES.md`를 컴포넌트별 copy-paste 페이지로 변환. 단일 markdown 파서 inline(headings/paragraphs/lists/tables/code blocks/inline code/links — 외부 의존성 0). 각 code block에 "Copy" 버튼 + clipboard API 호출. Code language label, hover/copied state(success 색 토글).
 - 토큰 통합: `exports/tokens.css` 인라인 — 페이지 전체 색상/타이포/spacing이 디자인 시스템 토큰 사용. `[data-theme="dark"]` toggle button + localStorage 기억(다른 preview들과 동일 cadence). 스타일 mode-aware — code block / table / heading 모두 dark pair 분기.
