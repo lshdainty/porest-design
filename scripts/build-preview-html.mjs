@@ -96,7 +96,7 @@ function brandProfile(brandName, tokens) {
       heroFacts: [
         { label: "primary", value: colorByName["primary"] || "#357B5F" },
         { label: "components", value: "15" },
-        { label: "milestone", value: "v50" },
+        { label: "milestone", value: "v53" },
       ],
       bigNumber: "87.3%",
       bigNumberLabel: "이번 달 평균 출근율",
@@ -126,6 +126,68 @@ function brandProfile(brandName, tokens) {
           ],
         },
       ],
+      listingDetail: {
+        title: "직원 상세 — 김지원",
+        meta: "디자인 본부 · 시니어 프로덕트 디자이너 · 입사 2024-03-15",
+        ratingScore: "4.8",
+        ratingCount: "12명 피드백",
+        sections: [
+          { title: "기본 정보", body: "사번 PR-2024-0312 · 직급 시니어 · 팀 디자인 시스템 · 근속 2년차" },
+          { title: "최근 활동", body: "이번 분기 디자인 리뷰 14건, 결재 처리 3건. 5월 8일 기준 평균 응답시간 2.3시간." },
+          { title: "전문 분야", body: "디자인 시스템, 한국어 typography, accessibility (WCAG 2.1 AA)." },
+        ],
+        rail: {
+          title: "휴가 신청",
+          fields: [
+            { k: "잔여 연차", v: "8.5일" },
+            { k: "사용 연차", v: "6.5일" },
+            { k: "기간", v: "5/12 ~ 5/14 (3일)" },
+          ],
+          primary: "신청",
+          primaryNote: "결재 라인 자동 적용",
+          secondary: "이력 보기",
+        },
+      },
+      calendar: {
+        title: "5월 휴가 캘린더",
+        month: "May 2026",
+        leadingEmpty: 4,
+        days: Array.from({ length: 31 }, (_, i) => {
+          const day = i + 1;
+          const dow = (i + 4) % 7;
+          if ([12, 13, 14].includes(day)) return { day, state: "selected" };
+          if (day === 10) return { day, state: "today" };
+          if ([7, 21].includes(day)) return { day, state: "scheduled" };
+          if (dow === 5 || dow === 6) return { day, state: "weekend" };
+          return { day, state: "available" };
+        }),
+        legend: [
+          { state: "selected", label: "휴가 (3일)" },
+          { state: "scheduled", label: "공휴일" },
+          { state: "today", label: "오늘" },
+        ],
+      },
+      reviews: {
+        title: "동료 피드백",
+        average: "4.8",
+        averageNote: "최근 12건 평균",
+        items: [
+          { author: "박서연", role: "프로덕트 매니저", date: "2026-04-22", rating: 5, text: "디자인 리뷰에서 항상 명확한 의도를 짚어주셔서 의사결정이 빨라집니다." },
+          { author: "이도현", role: "운영 디자이너", date: "2026-04-15", rating: 5, text: "design.md 도구 도입 후 스펙 일관성이 크게 개선됐어요. 시스템 사고가 깊습니다." },
+          { author: "최가람", role: "프론트엔드 엔지니어", date: "2026-03-30", rating: 4, text: "토큰 변경 시 prose까지 함께 갱신해주는 점이 큰 도움입니다." },
+        ],
+      },
+      amenities: {
+        title: "근무 정보",
+        items: [
+          { label: "디자인 본부 4F", note: "재택 가능" },
+          { label: "정규직", note: "유연 근무" },
+          { label: "코어 시간 10-16", note: "주 5일" },
+          { label: "근속 2년차", note: "입사 2024-03-15" },
+          { label: "디자인 시스템 인증", note: "내부 자격" },
+          { label: "Pretendard 패키지", note: "한국어 우선 폰트" },
+        ],
+      },
     };
   }
 
@@ -138,7 +200,7 @@ function brandProfile(brandName, tokens) {
       heroFacts: [
         { label: "primary", value: colorByName["primary"] || "#0147AD" },
         { label: "components", value: "15" },
-        { label: "milestone", value: "v50" },
+        { label: "milestone", value: "v53" },
       ],
       bigNumber: "₩1,284,500",
       bigNumberLabel: "이번 달 잔액",
@@ -167,6 +229,68 @@ function brandProfile(brandName, tokens) {
           ],
         },
       ],
+      listingDetail: {
+        title: "Porest 브랜드 톤",
+        meta: "메모 · 2026-05-08 작성 · 마지막 수정 2026-05-09",
+        ratingScore: null,
+        ratingCount: "342 단어 · 5분 읽기",
+        sections: [
+          { title: "핵심 톤", body: "절제·신뢰감 — 토스 레퍼런스. B2B(HR)와 B2C(Desk) 듀얼이지만 typographic baseline은 공유." },
+          { title: "참고 사례", body: "Airbnb의 \"Inspiration\" 페이지처럼 Hero → Color → Typography → Components 흐름. 다만 우리 도메인(HR/Desk) 시나리오로 적응." },
+          { title: "다음 액션", body: "Phase 2 listing detail / calendar / reviews 추가. v51-v53 semantic refresh 마무리." },
+        ],
+        rail: {
+          title: "메타 정보",
+          fields: [
+            { k: "태그", v: "brand · design · v50" },
+            { k: "작성일", v: "2026-05-08" },
+            { k: "마지막 수정", v: "2026-05-09" },
+            { k: "단어 수", v: "342" },
+          ],
+          primary: "편집",
+          primaryNote: "Markdown 지원",
+          secondary: "보관함으로",
+        },
+      },
+      calendar: {
+        title: "5월 가계부",
+        month: "May 2026",
+        leadingEmpty: 4,
+        days: Array.from({ length: 31 }, (_, i) => {
+          const day = i + 1;
+          const dow = (i + 4) % 7;
+          if (day === 10) return { day, state: "today" };
+          if ([5, 7, 12, 18, 22, 28].includes(day)) return { day, state: "scheduled" };
+          if (dow === 5 || dow === 6) return { day, state: "weekend" };
+          return { day, state: "available" };
+        }),
+        legend: [
+          { state: "scheduled", label: "거래 있음" },
+          { state: "today", label: "오늘" },
+          { state: "weekend", label: "주말" },
+        ],
+      },
+      reviews: {
+        title: "이번 달 회고",
+        average: "4.6",
+        averageNote: "주간 회고 평균",
+        items: [
+          { author: "5월 1주차", role: "주간 회고", date: "2026-05-05", rating: 5, text: "Porest 브랜드 톤 정의. semantic refresh 시작 — base 4개 emerald/red/orange/sky." },
+          { author: "5월 2주차", role: "주간 회고", date: "2026-05-08", rating: 4, text: "v51-v53 마무리. preview Phase 1 완료. Phase 2 시작 (listing/calendar/reviews)." },
+          { author: "4월 회고", role: "월간", date: "2026-04-30", rating: 5, text: "design.md 도구 도입 + Tailwind v4 export pipeline 안정화. 50 milestone 누적." },
+        ],
+      },
+      amenities: {
+        title: "내 카테고리",
+        items: [
+          { label: "메모", note: "234건 누적" },
+          { label: "할일", note: "58건 (12 완료)" },
+          { label: "가계부", note: "5월 22 거래" },
+          { label: "회고", note: "주간 / 월간" },
+          { label: "참고 자료", note: "북마크 18" },
+          { label: "보관함", note: "아카이브 412" },
+        ],
+      },
     };
   }
 
@@ -200,6 +324,69 @@ function brandProfile(brandName, tokens) {
         ],
       },
     ],
+    listingDetail: {
+      title: "Token reference — DESIGN.md",
+      meta: `shared baseline · ${tokens.colors.length} colors · ${tokens.text.length} typography · ${tokens.spacing.length} spacing · 50 components`,
+      ratingScore: null,
+      ratingCount: "Source of Truth",
+      sections: [
+        { title: "Source", body: "DESIGN.md (Source of Truth) → DESIGN.{hr,desk}.md (self-contained brand variants). v17 file split, v50 markers + colors region sync." },
+        { title: "Lint policy", body: "WCAG 1.4.3 본문 4.5:1 + 1.4.11 UI 3:1. shared baseline은 missingPrimary 1 warning 영구 수용 (brand-agnostic 의도)." },
+        { title: "Sync", body: "typography / rounded / spacing 블록 + colors-1 (neutral) + colors-2 (semantic + chart) 자동 동기. brand colors는 sync 비대상 (보존)." },
+      ],
+      rail: {
+        title: "Build pipeline",
+        fields: [
+          { k: "lint", v: "0 errors / 1 intentional" },
+          { k: "sync drift", v: "none" },
+          { k: "exports", v: "Tailwind v4 + DTCG" },
+          { k: "milestone", v: "v53 (semantic refresh)" },
+        ],
+        primary: "verify",
+        primaryNote: "npm run verify",
+        secondary: "build:preview",
+      },
+    },
+    calendar: {
+      title: "Calendar primitive",
+      month: "May 2026",
+      leadingEmpty: 4,
+      days: Array.from({ length: 31 }, (_, i) => {
+        const day = i + 1;
+        const dow = (i + 4) % 7;
+        if (day === 10) return { day, state: "today" };
+        if ([2, 9, 16, 23, 30].includes(day)) return { day, state: "scheduled" };
+        if (dow === 5 || dow === 6) return { day, state: "weekend" };
+        return { day, state: "available" };
+      }),
+      legend: [
+        { state: "scheduled", label: "이벤트" },
+        { state: "today", label: "오늘" },
+        { state: "weekend", label: "주말" },
+      ],
+    },
+    reviews: {
+      title: "Recent milestones",
+      average: "v53",
+      averageNote: "최신 milestone",
+      items: [
+        { author: "v53", role: "milestone", date: "2026-05-10", rating: 5, text: "semantic 4 light vivid refresh — Tailwind 400 톤. 다크 alert 4.5:1 silent pass." },
+        { author: "v52", role: "milestone", date: "2026-05-10", rating: 5, text: "warning 톤 미세 brighten — #C2410C → #C84D0E. L 0.15 → 0.17, ~4.69:1." },
+        { author: "v51", role: "milestone", date: "2026-05-10", rating: 5, text: "semantic 4 base vivid refresh. emerald/red/orange/sky. 1차안 미달 → 보수 조정 trace." },
+        { author: "v50", role: "milestone", date: "2026-05-09", rating: 5, text: "@sync markers + colors region sync. Drift detection 자동화." },
+      ],
+    },
+    amenities: {
+      title: "Token categories",
+      items: [
+        { label: "Colors", note: `${tokens.colors.length} (neutral + semantic + chart)` },
+        { label: "Typography", note: `${tokens.text.length} scales · Pretendard` },
+        { label: "Spacing", note: `${tokens.spacing.length} (4px base)` },
+        { label: "Rounded", note: `${tokens.radius.length} (xs ~ full)` },
+        { label: "Shadow", note: `${tokens.shadow.length} (4 × {light, dark}, prose-token)` },
+        { label: "Motion", note: `${tokens.motion.length} (4 duration + ease-out, prose-token)` },
+      ],
+    },
   };
 }
 
@@ -537,6 +724,152 @@ function renderVignettes(brand) {
   </section>`;
 }
 
+function renderListingDetail(brand) {
+  const ld = brand.listingDetail;
+  if (!ld) return "";
+
+  const sections = ld.sections.map(s => `
+    <div class="ld-section">
+      <div class="ld-section-title">${escape(s.title)}</div>
+      <div class="ld-section-body">${escape(s.body)}</div>
+    </div>`).join("");
+
+  const railFields = ld.rail.fields.map(f => `
+    <div class="ld-rail-row">
+      <div class="ld-rail-key">${escape(f.k)}</div>
+      <div class="ld-rail-val">${escape(f.v)}</div>
+    </div>`).join("");
+
+  const headBlock = ld.ratingScore ? `
+    <div class="ld-rating">
+      <div class="ld-rating-score">${escape(ld.ratingScore)}</div>
+      <div class="ld-rating-meta">${escape(ld.ratingCount)}</div>
+    </div>` : ld.ratingCount ? `
+    <div class="ld-meta-card">${escape(ld.ratingCount)}</div>` : "";
+
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">05 — Detail layout</div>
+      <h2 class="section-title">${escape(ld.title)}</h2>
+      <p class="section-lede">${escape(ld.meta)}</p>
+    </header>
+    <div class="ld-grid">
+      <div class="ld-main">
+        ${headBlock}
+        ${sections}
+      </div>
+      <aside class="ld-rail">
+        <div class="ld-rail-title">${escape(ld.rail.title)}</div>
+        <div class="ld-rail-fields">${railFields}</div>
+        <button class="btn btn-primary ld-rail-primary">${escape(ld.rail.primary)}</button>
+        ${ld.rail.primaryNote ? `<div class="ld-rail-note">${escape(ld.rail.primaryNote)}</div>` : ""}
+        <button class="btn btn-outlined ld-rail-secondary">${escape(ld.rail.secondary)}</button>
+      </aside>
+    </div>
+  </section>`;
+}
+
+function renderCalendar(brand) {
+  const cal = brand.calendar;
+  if (!cal) return "";
+
+  const weekdays = ["월", "화", "수", "목", "금", "토", "일"];
+  const weekdayCells = weekdays.map(w => `<div class="cal-weekday">${w}</div>`).join("");
+
+  const leading = Array.from({ length: cal.leadingEmpty || 0 }, () => `<div class="cal-cell cal-cell--empty"></div>`).join("");
+  const dayCells = cal.days.map(d => `
+    <div class="cal-cell cal-cell--${d.state}">
+      <span class="cal-cell-num">${d.day}</span>
+    </div>`).join("");
+
+  const totalCells = (cal.leadingEmpty || 0) + cal.days.length;
+  const trailing = Array.from({ length: (7 - (totalCells % 7)) % 7 }, () => `<div class="cal-cell cal-cell--empty"></div>`).join("");
+
+  const legend = cal.legend.map(l => `
+    <div class="cal-legend-item">
+      <span class="cal-legend-dot cal-legend-dot--${l.state}"></span>
+      <span>${escape(l.label)}</span>
+    </div>`).join("");
+
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">06 — Calendar</div>
+      <h2 class="section-title">${escape(cal.title)}</h2>
+      <p class="section-lede">circular day cells, ink-filled on selected — ${escape(cal.month)}.</p>
+    </header>
+    <div class="cal-card">
+      <div class="cal-grid">
+        ${weekdayCells}
+        ${leading}
+        ${dayCells}
+        ${trailing}
+      </div>
+      <div class="cal-legend">${legend}</div>
+    </div>
+  </section>`;
+}
+
+function renderReviews(brand) {
+  const r = brand.reviews;
+  if (!r) return "";
+
+  const stars = (n) => "★".repeat(n) + "☆".repeat(Math.max(0, 5 - n));
+
+  const items = r.items.map(item => `
+    <div class="review-item">
+      <div class="review-head">
+        <div class="review-author">
+          <div class="review-name">${escape(item.author)}</div>
+          <div class="review-role">${escape(item.role)} · ${escape(item.date)}</div>
+        </div>
+        <div class="review-rating">${typeof item.rating === "number" ? stars(item.rating) : escape(item.rating || "")}</div>
+      </div>
+      <div class="review-text">${escape(item.text)}</div>
+    </div>`).join("");
+
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">07 — Reviews</div>
+      <h2 class="section-title">${escape(r.title)}</h2>
+      <p class="section-lede">최근 피드백 / 회고 / milestone — 좌측 평균 + 우측 항목 목록.</p>
+    </header>
+    <div class="review-grid">
+      <div class="review-summary">
+        <div class="review-avg">${escape(r.average)}</div>
+        <div class="review-avg-note">${escape(r.averageNote)}</div>
+      </div>
+      <div class="review-list">${items}</div>
+    </div>
+  </section>`;
+}
+
+function renderAmenities(brand) {
+  const a = brand.amenities;
+  if (!a) return "";
+
+  const items = a.items.map(item => `
+    <div class="amenity-item">
+      <span class="amenity-dot"></span>
+      <div class="amenity-meta">
+        <div class="amenity-label">${escape(item.label)}</div>
+        ${item.note ? `<div class="amenity-note">${escape(item.note)}</div>` : ""}
+      </div>
+    </div>`).join("");
+
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">08 — At a glance</div>
+      <h2 class="section-title">${escape(a.title)}</h2>
+      <p class="section-lede">amenity · category 그리드 — 좌측 brand primary dot + label + note.</p>
+    </header>
+    <div class="amenity-grid">${items}</div>
+  </section>`;
+}
+
 function renderTokenCatalog(tokens) {
   const colorGrid = tokens.colors.map(t => `
     <div class="swatch">
@@ -592,7 +925,7 @@ function renderTokenCatalog(tokens) {
   return `
   <section class="catalog">
     <header class="section-head">
-      <div class="section-eyebrow">05 — Reference</div>
+      <div class="section-eyebrow">09 — Reference</div>
       <h2 class="section-title">Token catalog</h2>
       <p class="section-lede">검증·문서 용도 — 시스템에 정의된 모든 토큰을 한눈에.</p>
     </header>
@@ -933,6 +1266,174 @@ function pageCss() {
     .search-input { flex: 1; background: transparent; border: none; outline: none; font-size: var(--text-body); color: var(--color-text-primary); padding: var(--spacing-xs) 0; font-family: inherit; }
     .search-input::placeholder { color: var(--color-text-tertiary); }
 
+    /* === Listing detail === */
+    .ld-grid {
+      display: grid;
+      grid-template-columns: 1.6fr 1fr;
+      gap: var(--spacing-lg);
+      align-items: start;
+    }
+    .ld-main { display: flex; flex-direction: column; gap: var(--spacing-md); }
+    .ld-section {
+      background: var(--color-surface-default);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      box-shadow: var(--shadow-sm);
+    }
+    .ld-section-title { font-weight: 600; font-size: var(--text-heading-sm); margin-bottom: var(--spacing-xs); }
+    .ld-section-body { color: var(--color-text-secondary); line-height: 1.6; }
+    .ld-rating {
+      background: var(--color-surface-default);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      box-shadow: var(--shadow-sm);
+      display: flex; align-items: baseline; gap: var(--spacing-md);
+    }
+    .ld-rating-score { font-size: 56px; font-weight: 700; line-height: 1; letter-spacing: -0.02em; }
+    .ld-rating-meta { font-size: var(--text-caption); color: var(--color-text-tertiary); }
+    .ld-meta-card {
+      background: var(--color-surface-default);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-md) var(--spacing-lg);
+      box-shadow: var(--shadow-sm);
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+      font-family: ui-monospace, monospace;
+    }
+    .ld-rail {
+      position: sticky; top: var(--spacing-lg);
+      background: var(--color-surface-default);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      box-shadow: var(--shadow-md);
+      display: flex; flex-direction: column;
+    }
+    .ld-rail-title { font-weight: 600; font-size: var(--text-heading-sm); margin-bottom: var(--spacing-md); }
+    .ld-rail-fields { display: flex; flex-direction: column; gap: 0; margin-bottom: var(--spacing-md); }
+    .ld-rail-row {
+      display: flex; justify-content: space-between;
+      font-size: var(--text-caption);
+      padding: var(--spacing-xs) 0;
+      border-bottom: 1px solid var(--color-border-default);
+    }
+    .ld-rail-row:last-of-type { border-bottom: none; }
+    .ld-rail-key { color: var(--color-text-tertiary); }
+    .ld-rail-val { font-weight: 600; }
+    .ld-rail-primary { width: 100%; margin-top: var(--spacing-md); }
+    .ld-rail-secondary { width: 100%; margin-top: var(--spacing-sm); }
+    .ld-rail-note { font-size: 11px; color: var(--color-text-tertiary); text-align: center; margin-top: var(--spacing-xs); }
+
+    /* === Calendar === */
+    .cal-card {
+      background: var(--color-surface-default);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      box-shadow: var(--shadow-sm);
+      display: flex; flex-direction: column; gap: var(--spacing-md);
+    }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: var(--spacing-xs); }
+    .cal-weekday {
+      text-align: center;
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+      font-weight: 600;
+      padding: var(--spacing-xs) 0;
+    }
+    .cal-cell {
+      aspect-ratio: 1;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: var(--radius-full);
+      font-size: var(--text-body);
+      color: var(--color-text-primary);
+      position: relative;
+      cursor: pointer;
+      transition: background var(--motion-duration-fast, 150ms);
+    }
+    .cal-cell--empty { cursor: default; }
+    .cal-cell--available:hover { background: var(--color-surface-input); }
+    .cal-cell--weekend { color: var(--color-text-tertiary); }
+    .cal-cell--scheduled {
+      background: color-mix(in srgb, var(--color-primary, var(--color-text-primary)) 12%, transparent);
+      font-weight: 600;
+    }
+    .cal-cell--today {
+      outline: 2px solid var(--color-primary, var(--color-text-primary));
+      outline-offset: -2px;
+      font-weight: 700;
+    }
+    .cal-cell--selected {
+      background: var(--color-primary, var(--color-text-primary));
+      color: var(--color-text-on-accent, #fff);
+      font-weight: 600;
+    }
+    .cal-legend {
+      display: flex; gap: var(--spacing-md); flex-wrap: wrap;
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+      border-top: 1px solid var(--color-border-default);
+      padding-top: var(--spacing-md);
+    }
+    .cal-legend-item { display: flex; align-items: center; gap: var(--spacing-xs); }
+    .cal-legend-dot { width: 14px; height: 14px; border-radius: var(--radius-full); display: inline-block; }
+    .cal-legend-dot--selected { background: var(--color-primary, var(--color-text-primary)); }
+    .cal-legend-dot--scheduled { background: color-mix(in srgb, var(--color-primary, var(--color-text-primary)) 30%, transparent); }
+    .cal-legend-dot--today { box-shadow: inset 0 0 0 2px var(--color-primary, var(--color-text-primary)); }
+    .cal-legend-dot--weekend { background: var(--color-text-tertiary); opacity: 0.4; }
+
+    /* === Reviews === */
+    .review-grid { display: grid; grid-template-columns: 1fr 2fr; gap: var(--spacing-lg); align-items: start; }
+    .review-summary {
+      background: var(--color-surface-default);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-xl);
+      box-shadow: var(--shadow-sm);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+      position: sticky; top: var(--spacing-lg);
+    }
+    .review-avg {
+      font-size: 64px; font-weight: 700; line-height: 1; letter-spacing: -0.02em;
+      color: var(--color-primary, var(--color-text-primary));
+    }
+    .review-avg-note { font-size: var(--text-caption); color: var(--color-text-tertiary); margin-top: var(--spacing-sm); }
+    .review-list { display: flex; flex-direction: column; gap: var(--spacing-md); }
+    .review-item {
+      background: var(--color-surface-default);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      box-shadow: var(--shadow-sm);
+    }
+    .review-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--spacing-sm); gap: var(--spacing-md); }
+    .review-name { font-weight: 600; font-size: var(--text-body); }
+    .review-role { font-size: var(--text-caption); color: var(--color-text-tertiary); margin-top: 2px; }
+    .review-rating {
+      font-size: var(--text-caption);
+      color: var(--color-primary, var(--color-text-primary));
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+    .review-text { color: var(--color-text-secondary); line-height: 1.6; }
+
+    /* === Amenities === */
+    .amenity-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: var(--spacing-md);
+      background: var(--color-surface-default);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      box-shadow: var(--shadow-sm);
+    }
+    .amenity-item { display: flex; align-items: flex-start; gap: var(--spacing-md); padding: var(--spacing-sm); }
+    .amenity-dot {
+      width: 8px; height: 8px;
+      border-radius: var(--radius-full);
+      background: var(--color-primary, var(--color-text-primary));
+      margin-top: 8px;
+      flex-shrink: 0;
+    }
+    .amenity-meta { flex: 1; }
+    .amenity-label { font-weight: 600; font-size: var(--text-body); }
+    .amenity-note { font-size: var(--text-caption); color: var(--color-text-tertiary); margin-top: 2px; }
+
     /* Token catalog (기존 — 압축 유지) */
     .catalog { margin-top: var(--spacing-3xl); padding-top: var(--spacing-2xl); border-top: 1px dashed var(--color-border-default); }
     .catalog h3 { font-size: var(--text-heading-md); font-weight: 600; margin: var(--spacing-xl) 0 var(--spacing-md); }
@@ -975,7 +1476,12 @@ function pageCss() {
       .ci-swatch,
       .vignette-card,
       .typo-moment,
+      .ld-section, .ld-rating, .ld-meta-card, .ld-rail,
+      .cal-card,
+      .review-summary, .review-item,
+      .amenity-grid,
       .swatch { background: var(--color-surface-default-dark); }
+      .ld-rail-row, .cal-legend { border-color: var(--color-border-default-dark); }
       .hero-fact,
       .typo-meta-row,
       .approval-row,
@@ -993,9 +1499,10 @@ function pageCss() {
     }
 
     @media (max-width: 900px) {
-      .hero, .vignette-grid, .typo-moment { grid-template-columns: 1fr; }
+      .hero, .vignette-grid, .typo-moment, .ld-grid, .review-grid { grid-template-columns: 1fr; }
       .btn-row { grid-template-columns: 80px repeat(5, 1fr); }
       .approval-row { grid-template-columns: 1fr 1fr; }
+      .ld-rail, .review-summary { position: static; }
     }
   `;
 }
@@ -1019,6 +1526,10 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     ${renderTypographyMoment(brand, tokens)}
     ${renderButtonGallery(brand)}
     ${renderVignettes(brand)}
+    ${renderListingDetail(brand)}
+    ${renderCalendar(brand)}
+    ${renderReviews(brand)}
+    ${renderAmenities(brand)}
     ${renderTokenCatalog(tokens)}
     <p style="text-align:center;color:var(--color-text-tertiary);font-size:var(--text-caption);margin-top:var(--spacing-3xl);">
       source <code>${escape(sourceFile)}</code> · Porest Design System
