@@ -211,6 +211,18 @@ function brandProfile(brandName, tokens) {
         { kind: "warning", title: "기한 임박", body: "이번 분기 평가 작성이 D-3 남았어요." },
         { kind: "info", title: "신규 공고", body: "디자인 시스템 디자이너 공고가 등록됐어요." },
       ],
+      form: {
+        title: "휴가 신청 폼",
+        sectionDescription: "필수 필드는 별표(*)로 표시. 결재 라인은 권한 그룹 기준 자동 매핑.",
+        fields: [
+          { type: "input", label: "신청자", value: "김지원", helper: "근속 2년차 · 디자인본부", required: true, readonly: true },
+          { type: "select", label: "휴가 종류", value: "연차", options: ["연차", "반차(오전)", "반차(오후)", "병가", "특별휴가"], required: true },
+          { type: "input", label: "기간", value: "2026-05-12 ~ 2026-05-14", helper: "사용 일수 3일 / 잔여 연차 8.5일", required: true },
+          { type: "textarea", label: "사유", value: "가족 행사 참석으로 인한 연차 사용 요청드립니다.\n결재 후 인수인계 문서 공유드리겠습니다.", helper: "30 / 1000자", rows: 4 },
+        ],
+        primary: "결재 라인에 제출",
+        secondary: "임시 저장",
+      },
     };
   }
 
@@ -337,6 +349,19 @@ function brandProfile(brandName, tokens) {
         { kind: "warning", title: "예산 80% 도달", body: "이번 달 가계부 예산이 80%에 도달했어요." },
         { kind: "info", title: "백업 완료", body: "어제 자정 자동 백업이 완료됐어요 (412 항목)." },
       ],
+      form: {
+        title: "거래 추가",
+        sectionDescription: "가계부에 새 거래를 기록해요. 카테고리는 키워드 자동 추천.",
+        fields: [
+          { type: "select", label: "거래 유형", value: "지출", options: ["수입", "지출", "이체"], required: true },
+          { type: "input", label: "금액", value: "₩28,500", helper: "최근 카페 평균 ₩6,800", required: true },
+          { type: "select", label: "카테고리", value: "식비 · 카페", options: ["식비 · 카페", "식비 · 외식", "교통", "취미", "고정비"], required: true },
+          { type: "input", label: "날짜", value: "2026-05-10", helper: "오늘", required: true },
+          { type: "textarea", label: "메모", value: "친구와 디자인 토픽 미팅 — 2시간 작업 후 마무리.", helper: "32 / 200자", rows: 3 },
+        ],
+        primary: "저장",
+        secondary: "취소",
+      },
     };
   }
 
@@ -456,6 +481,18 @@ function brandProfile(brandName, tokens) {
       { kind: "warning", title: "missingPrimary 1건", body: "DESIGN.md baseline은 의도적으로 primary 미정의." },
       { kind: "info", title: "Tailwind v4 export", body: "@theme CSS 빌드 정상 — 모든 namespace 통과." },
     ],
+    form: {
+      title: "Token submission form",
+      sectionDescription: "신규 토큰 제안 demo — Input / Select / Textarea / required 필드 baseline.",
+      fields: [
+        { type: "input", label: "토큰 이름", value: "spacing-2xs", helper: "kebab-case · 의미 기반 명명", required: true },
+        { type: "select", label: "카테고리", value: "spacing", options: ["color", "typography", "spacing", "radius", "shadow", "motion"], required: true },
+        { type: "input", label: "값", value: "2px", helper: "단위 포함 — px / rem / em", required: true },
+        { type: "textarea", label: "근거 (rationale)", value: "4px-grid 미만 hairline 용도. v6 이후 추가 검토 필요.", helper: "33 / 500자", rows: 3 },
+      ],
+      primary: "제안 등록",
+      secondary: "초안 저장",
+    },
   };
 }
 
@@ -1015,6 +1052,54 @@ function renderToasts(brand) {
   </section>`;
 }
 
+function renderForm(brand) {
+  const f = brand.form;
+  if (!f) return "";
+
+  const renderField = (field) => {
+    const reqMark = field.required ? `<span class="form-required" aria-hidden="true">*</span>` : "";
+    const helper = field.helper ? `<div class="form-helper">${escape(field.helper)}</div>` : "";
+    let control = "";
+    if (field.type === "input") {
+      control = `<div class="form-input${field.readonly ? " form-input--readonly" : ""}">${escape(field.value)}</div>`;
+    } else if (field.type === "select") {
+      control = `<div class="form-select">
+        <span>${escape(field.value)}</span>
+        <span class="form-select-caret" aria-hidden="true">▾</span>
+      </div>`;
+    } else if (field.type === "textarea") {
+      const rows = field.rows || 4;
+      const minHeight = rows * 24 + 24;
+      const valueHtml = escape(field.value).replace(/\n/g, "<br>");
+      control = `<div class="form-textarea" style="min-height:${minHeight}px">${valueHtml}</div>`;
+    }
+    return `
+      <div class="form-group">
+        <div class="form-label">${escape(field.label)}${reqMark}</div>
+        ${control}
+        ${helper}
+      </div>`;
+  };
+
+  const fields = f.fields.map(renderField).join("");
+
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">12 — Form layout</div>
+      <h2 class="section-title">${escape(f.title)}</h2>
+      <p class="section-lede">${escape(f.sectionDescription)}</p>
+    </header>
+    <div class="form-card">
+      <div class="form-grid">${fields}</div>
+      <div class="form-actions">
+        <button class="btn btn-primary">${escape(f.primary)}</button>
+        <button class="btn btn-outlined">${escape(f.secondary)}</button>
+      </div>
+    </div>
+  </section>`;
+}
+
 function renderTokenCatalog(tokens) {
   const colorGrid = tokens.colors.map(t => `
     <div class="swatch">
@@ -1070,7 +1155,7 @@ function renderTokenCatalog(tokens) {
   return `
   <section class="catalog">
     <header class="section-head">
-      <div class="section-eyebrow">12 — Reference</div>
+      <div class="section-eyebrow">13 — Reference</div>
       <h2 class="section-title">Token catalog</h2>
       <p class="section-lede">검증·문서 용도 — 시스템에 정의된 모든 토큰을 한눈에.</p>
     </header>
@@ -1680,6 +1765,64 @@ function pageCss() {
     }
     .toast-close:hover { background: var(--color-surface-input); }
 
+    /* === Form layout === */
+    .form-card {
+      background: var(--color-surface-default);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-2xl);
+      box-shadow: var(--shadow-sm);
+      max-width: 640px;
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-xl);
+    }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg) var(--spacing-xl); }
+    .form-group { display: flex; flex-direction: column; gap: var(--spacing-xs); }
+    .form-group:has(.form-textarea) { grid-column: 1 / -1; }
+    .form-label {
+      font-size: var(--text-caption);
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+    }
+    .form-required { color: var(--color-error); font-weight: 700; }
+    .form-input,
+    .form-select,
+    .form-textarea {
+      background: var(--color-surface-input);
+      color: var(--color-text-primary);
+      border: 1px solid var(--color-border-default);
+      border-radius: var(--radius-sm);
+      padding: var(--spacing-sm) var(--spacing-md);
+      font-size: var(--text-body);
+      font-family: inherit;
+      line-height: 1.6;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+    }
+    .form-input--readonly { color: var(--color-text-secondary); cursor: not-allowed; }
+    .form-select { justify-content: space-between; cursor: pointer; }
+    .form-select-caret { color: var(--color-text-tertiary); font-size: 14px; }
+    .form-textarea {
+      align-items: flex-start;
+      white-space: pre-wrap;
+      line-height: 1.6;
+    }
+    .form-helper {
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+    }
+    .form-actions {
+      display: flex;
+      gap: var(--spacing-md);
+      justify-content: flex-end;
+      padding-top: var(--spacing-lg);
+      border-top: 1px solid var(--color-border-default);
+    }
+
     /* Token catalog (기존 — 압축 유지) */
     .catalog { margin-top: var(--spacing-3xl); padding-top: var(--spacing-2xl); border-top: 1px dashed var(--color-border-default); }
     .catalog h3 { font-size: var(--text-heading-md); font-weight: 600; margin: var(--spacing-xl) 0 var(--spacing-md); }
@@ -1729,7 +1872,13 @@ function pageCss() {
       .empty-card,
       .modal-dialog,
       .toast,
+      .form-card,
       .swatch { background: var(--color-surface-default-dark); }
+      .form-input,
+      .form-select,
+      .form-textarea { background: var(--color-surface-input-dark); color: var(--color-text-primary-dark); border-color: var(--color-border-default-dark); }
+      .form-input--readonly { color: var(--color-text-secondary-dark); }
+      .form-actions { border-color: var(--color-border-default-dark); }
       .modal-fields { background: var(--color-surface-input-dark); }
       .toast-close:hover { background: var(--color-surface-input-dark); }
       .ld-rail-row, .cal-legend { border-color: var(--color-border-default-dark); }
@@ -1754,6 +1903,7 @@ function pageCss() {
       .btn-row { grid-template-columns: 80px repeat(5, 1fr); }
       .approval-row { grid-template-columns: 1fr 1fr; }
       .ld-rail, .review-summary { position: static; }
+      .form-grid { grid-template-columns: 1fr; }
     }
   `;
 }
@@ -1784,6 +1934,7 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     ${renderEmptyState(brand)}
     ${renderModal(brand)}
     ${renderToasts(brand)}
+    ${renderForm(brand)}
     ${renderTokenCatalog(tokens)}
     <p style="text-align:center;color:var(--color-text-tertiary);font-size:var(--text-caption);margin-top:var(--spacing-3xl);">
       source <code>${escape(sourceFile)}</code> · Porest Design System
