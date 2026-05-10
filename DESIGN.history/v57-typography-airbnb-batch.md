@@ -164,33 +164,6 @@ typography:
     fontSize: 14px
     fontWeight: 500
     lineHeight: 1.29
-  # (v57: Airbnb reference batch 3 — caption-sm/badge/uppercase-tag + button-md/nav-link)
-  caption-sm:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 13px
-    fontWeight: 400
-    lineHeight: 1.23
-  badge:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 11px
-    fontWeight: 600
-    lineHeight: 1.18
-  uppercase-tag:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 8px
-    fontWeight: 700
-    lineHeight: 1.25
-    letterSpacing: 0.32px
-  button-md:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 16px
-    fontWeight: 500
-    lineHeight: 1.25
-  nav-link:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 16px
-    fontWeight: 600
-    lineHeight: 1.25
 
 rounded:
   xs: 2px
@@ -856,53 +829,6 @@ Airbnb 14단계 reference 중 5종 추가 — title 2 + body 2 + caption-md (명
 #### HR / Desk 듀얼 브랜드
 - v5 정신 — typography brand-neutral. 양 브랜드 동일.
 - 사용 컨텍스트: HR dashboard 데이터 행은 한국어 `body` 15/1.6 위주, Desk landing/marketing은 `body-md` 16/1.5 + `title-md` 16/600 결합 가능.
-
-### v57 추가 — caption-sm / badge / uppercase-tag / button-md / nav-link (Airbnb batch 3)
-
-Airbnb 14단계 reference 마지막 5종 — 작은 영역(caption-sm/badge/uppercase-tag) + 컴포넌트 텍스트(button-md/nav-link). 14단계 reference 적용 완료.
-
-| 토큰 | size | weight | lh | letter-spacing | 주 용도 |
-|---|---|---|---|---|---|
-| `caption-sm` | 13px | 400 | 1.23 | — | 작은 영문 캡션 — footer, legal copy (예: "© 2026 ...") |
-| `badge` | 11px | 600 | 1.18 | — | badge text (예: "Guest favorite") |
-| `uppercase-tag` | 8px | 700 | 1.25 | 0.32px | 영문 marketing pill (예: "NEW") — uppercase는 CSS text-transform |
-| `button-md` | 16px | 500 | 1.25 | — | 버튼 텍스트 (Airbnb default) |
-| `nav-link` | 16px | 600 | 1.25 | — | 네비 링크 (예: "Homes · Experiences · Services") |
-
-#### caption 3-tier 완성 (v5 + v56 + v57)
-- `caption` 12px / 1.5 / 400 — 한국어 본문 캡션 (Toss/네이버 톤)
-- `caption-md` 14px / 1.29 / 500 — Airbnb 영문 큰 캡션
-- `caption-sm` 13px / 1.23 / 400 — Airbnb 작은 영문 캡션 (footer/legal)
-
-위계: caption-md > caption (size 기준) > caption-sm. 사용 컨텍스트는 한국어/영문 영역 분리.
-
-#### `uppercase-tag` 8px 가독성 한계 — 사용 영역 제약
-- 8px는 본문 가독성 미달 — **영문 marketing tag/pill 영역만** 사용 (예: "NEW", "BETA", "TRENDING").
-- WCAG 1.4.4 (Resize text 200%): 8px → 16px (zoom 후) 가독 가능. 다만 default 8px에서는 노안/저시력 사용자 불편 — 본문 미사용 원칙.
-- **uppercase 처리는 CSS** (`text-transform: uppercase`). yaml 토큰값은 size/weight/lh/letterSpacing만 — design.md spec textTransform 미지원.
-- 한국어 환경에서는 거의 미사용 — 한글은 uppercase 개념 없음. 로마자 inline tag 영역만.
-
-#### `body-strong` (v5) vs `button-md` (v57) — 비교
-- `body-strong` 15/600/1.6: 한국어 버튼 텍스트 (라벨/입력 강조 겸용)
-- `button-md` 16/500/1.25: Airbnb 영문 버튼 텍스트
-- HR/Desk 컴포넌트 spec에 명시 — 한국어 버튼 영역 `body-strong`, 영문 버튼 영역 `button-md`.
-
-#### `nav-link` vs 기존 — 신규 영역
-- v17까지 nav 텍스트 토큰 부재 — Sidebar nav에서 `body-strong` 또는 `body` 사용.
-- `nav-link` 16/600/1.25는 **글로벌 nav / 네비 메뉴 텍스트 전용** — line-height 압축, weight 600. Sidebar nav 항목, header utility links.
-
-#### 추가 이유
-1. v55-v56까지 Airbnb display + title/body 추가. v57로 작은 영역(caption-sm/badge/uppercase-tag) + 컴포넌트 텍스트(button-md/nav-link) 마무리 — 14단계 reference 완성.
-2. `badge` 11px는 우리 기존 badge 컴포넌트(prose에 `caption` 12px 사용)에서 미세 조정 가능 — 별도 토큰화로 명확.
-3. `nav-link`는 Sidebar/Header nav 컴포넌트에 **dedicated typography** — 컴포넌트 spec 별도 batch에서 매핑.
-
-#### HR / Desk 듀얼 브랜드
-- 양 브랜드 공유. 사용 컨텍스트 차이는 컴포넌트 레벨.
-- HR dashboard nav는 `nav-link` 16/600 권장 (데이터 화면 nav 강조), Desk bottom nav는 `body-strong` 15/600 (모바일 친화 작은 사이즈) 가능 — 컴포넌트 spec 결정.
-
-#### 자동 검증
-- design.md lint contrast 룰은 색상에만 적용 — typography 자체는 통과.
-- letterSpacing은 v55부터 modifier로 export (`--text-{name}--letter-spacing`).
 
 ## Layout
 
