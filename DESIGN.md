@@ -956,7 +956,7 @@ CLAUDE.md "4px 베이스 추천" 규칙을 준수하는 t-shirt 사이즈 스케
 - max-width 기준: `@media (max-width: calc(var(--breakpoint-md) - 1px))` — 735 이하 (phone).
 
 #### Touch targets (Apple reference, 토큰화 미적용)
-- Pill CTAs: ~44 × 100px (`button-lg` + `radius-full`)
+- Pill CTAs: ~44 × 100px (Button lg size + `radius-full`)
 - Circular chips: 44 × 44px (icon button, Switch handle, Avatar)
 - Global nav utility links: ~32 × 80px (precision desktop only, breakpoint-xl 이상)
 - WCAG 2.5.5 AAA (44 × 44 minimum) 충족.
