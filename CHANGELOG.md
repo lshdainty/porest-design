@@ -137,6 +137,12 @@
 
 **shadcn 확장 4 series 완료** — 총 20 컴포넌트 (v68 navigation 5 + v69 input 5 + v70 disclosure 5 + v71 data 5). 시스템 컴포넌트 75+ 보유 (기존 55 + v68-v71 batch).
 
+**v78 — Prose health pass 2 (spec table inline hex 정정)**
+- v78: spec 표 안 inline parenthetical hex(`token` (`#hex`)) 17건 정정 — v51-v53 vivid refresh 후 prose 표가 v10/v20 base를 그대로 인용하던 잔존 outdated reference. DESIGN.md(16건) + DESIGN.hr.md(1건) — Input error border, Badge variant 4종, Alert text light/dark variants 8종, Toast variant 4종. 정확한 현재 contrast ratio 동시 갱신(success 5.86→5.01 / error 5.34→4.83 / warning 5.27→4.64 / info 6.31→5.01 light, dark는 5.85→9.42 / 5.42→5.93 / 5.83→7.25 / 5.80→6.46).
+- `scripts/lint-prose.mjs` 확장 — extractProseHexCitations에 (B) inline parenthetical 패턴(`token` (`#hex`)) 검출 추가. (A) 표 row 패턴(이전 검사)은 fromTableRow 옵션 분리하여 ≥2 hex line이면 migration 표로 자동 skip(보수적 유지). spec 표는 1-cell 안 paren hex로 쓰는 패턴이라 history skip 영향 안 받음. 결과 — hex 인용 카운트 34→96(DESIGN.md), 4→24(HR), 4→18(Desk).
+- HR 1건 추가 정정: Input error 행 contrast 표기 변경 — `error vs surface-input = 5.34:1` (vs `#FFFFFF` 5.47 오기재) → `border vs surface-input = 4.31:1` (1.4.11 UI 3:1 통과 명시), 의미 명확화.
+- v66(brand semantic refresh prose 변환)와 형제 관계 — v66은 brand 파일(HR/Desk) "이전→현재" 변천 표 변환, v78은 spec 표 inline 인용 갱신.
+
 **v77 — Component usage examples (EXAMPLES.md)**
 - v77: `EXAMPLES.md` 신규 추가 — 24 컴포넌트 카테고리 copy-paste 가능한 HTML markup + Tailwind v4 utility class snippet (Button/Input/Textarea/Select/Combobox/Checkbox/Radio/Switch/Card/Badge/Tag-Chip/Banner/Toast-Sonner/Modal/Drawer/Tabs/Accordion/Tooltip-Popover-HoverCard/Dropdown/Skeleton-Spinner-Progress/Pagination-Stepper/Avatar/Breadcrumb-Sidebar/Form layout+validation/Calendar/Treeview/File Upload/Empty state/Animation patterns).
 - 추가 이유: spec 정의(`DESIGN.md`)는 *what/why* 위주, EXAMPLES는 *how* — 사용자가 "shadcn 정도로 가져다쓰면 될 정도" 요구에 응답. 토큰 alias 표 + Tailwind class binding + ARIA attribute 세트 + 키보드 패턴 명시.
