@@ -2247,6 +2247,38 @@ function pageCss() {
     [data-theme="dark"] .btn-outlined:hover { background: var(--color-surface-input-dark); }
     [data-theme="dark"] .btn-on-accent { background: var(--color-surface-default-dark); color: var(--color-text-primary-dark); }
 
+    /* === Dark mode: brand primary → primary-light (어두운 표면 위 비채움 사용) === */
+    /* 채움(fill)은 primary 유지 — primary-light fill 위 흰 텍스트는 대비 미달.
+       비채움(text/border/outline/tint/small-dot)만 primary-light로 전환. */
+    [data-theme="dark"] .btn-primary:focus-visible,
+    [data-theme="dark"] .btn-state-focus { outline-color: var(--color-border-focus-light, var(--color-primary-light)); }
+    [data-theme="dark"] .memo-tag { color: var(--color-primary-light, var(--color-text-secondary-dark)); }
+    [data-theme="dark"] .tabs-underline .tab--active {
+      color: var(--color-primary-light, var(--color-text-primary-dark));
+      border-bottom-color: var(--color-primary-light, var(--color-text-primary-dark));
+    }
+    [data-theme="dark"] .cal-cell--scheduled {
+      background: color-mix(in srgb, var(--color-primary-light, var(--color-text-primary-dark)) 18%, transparent);
+    }
+    [data-theme="dark"] .cal-cell--today {
+      outline-color: var(--color-primary-light, var(--color-text-primary-dark));
+      color: var(--color-primary-light, var(--color-text-primary-dark));
+    }
+    [data-theme="dark"] .cal-legend-dot--selected { background: var(--color-primary-light, var(--color-text-primary-dark)); }
+    [data-theme="dark"] .cal-legend-dot--scheduled {
+      background: color-mix(in srgb, var(--color-primary-light, var(--color-text-primary-dark)) 40%, transparent);
+    }
+    [data-theme="dark"] .cal-legend-dot--today {
+      box-shadow: inset 0 0 0 2px var(--color-primary-light, var(--color-text-primary-dark));
+    }
+    [data-theme="dark"] .review-avg { color: var(--color-primary-light, var(--color-text-primary-dark)); }
+    [data-theme="dark"] .review-rating { color: var(--color-primary-light, var(--color-text-primary-dark)); }
+    [data-theme="dark"] .amenity-dot { background: var(--color-primary-light, var(--color-text-primary-dark)); }
+    [data-theme="dark"] .empty-illustration {
+      background: linear-gradient(135deg, color-mix(in srgb, var(--color-primary-light, var(--color-text-tertiary-dark)) 25%, transparent), var(--color-surface-input-dark));
+    }
+    /* btn-outlined의 border/text는 다크 모드에서 brand 표현이 필요 없는 케이스(중성 outlined)라 primary-light 미적용 — 1503 line은 라이트 모드 텍스트가 primary, 다크 모드는 위 .btn-outlined 룰로 text-primary-dark로 이미 override 됨. */
+
     /* === Theme toggle === */
     .theme-toggle {
       position: fixed;
