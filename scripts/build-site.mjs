@@ -226,8 +226,9 @@ body {
 .crumbs a:hover { color: var(--color-text-primary); }
 .crumbs span { color: var(--color-text-tertiary); }
 
-.controls { display: flex; align-items: center; gap: 8px; }
-.brand-switch { display: inline-flex; padding: 3px; background: var(--color-surface-input); border-radius: var(--radius-full); gap: 2px; }
+.controls { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.brand-switch { display: inline-flex; padding: 3px; background: var(--color-surface-input); border-radius: var(--radius-full); gap: 2px; flex-shrink: 0; }
+.sidebar .brand-switch { display: none; margin: 0 4px 16px; }
 .brand-switch button {
   border: 0; background: transparent;
   padding: 4px 12px;
@@ -236,6 +237,7 @@ body {
   cursor: pointer;
   color: var(--color-text-secondary);
   transition: all var(--motion-duration-fast) var(--motion-ease-out);
+  white-space: nowrap;
 }
 .brand-switch button[aria-pressed="true"] {
   background: var(--color-surface-default);
@@ -251,8 +253,11 @@ body {
   font-size: var(--text-caption-sm); font-weight: 500;
   color: var(--color-text-secondary);
   display: inline-flex; align-items: center; gap: 6px;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 .theme-toggle:hover { color: var(--color-text-primary); }
+.theme-toggle-label { display: inline; }
 
 /* === Content typography === */
 .content h1 {
@@ -559,10 +564,21 @@ body {
   .app { grid-template-columns: 1fr; }
   .sidebar { position: fixed; inset: 0 30% 0 0; z-index: 200; transform: translateX(-100%); transition: transform var(--motion-duration-base) var(--motion-ease-out); box-shadow: var(--shadow-xl); }
   .sidebar[data-open="true"] { transform: translateX(0); }
-  .topbar { padding: 12px 16px; }
+  .topbar { padding: 12px 16px; gap: 8px; }
   .content { padding: 32px 16px 64px; }
   .mobile-toggle { display: inline-flex; }
   .mobile-overlay[data-open] { display: block; position: fixed; inset: 0; background: var(--overlay-dim-light); z-index: 150; }
+  /* 좁은 viewport — crumbs 줄임, theme 라벨 숨김, brand-switch 컴팩트 */
+  .crumbs { min-width: 0; overflow: hidden; }
+  .crumbs > a:not(:last-child), .crumbs > span:not(:last-child) { display: none; }
+  .theme-toggle-label { display: none; }
+  .theme-toggle { padding: 4px 8px; }
+  .brand-switch button { padding: 4px 8px; }
+}
+@media (max-width: 600px) {
+  /* 더 좁아지면 topbar brand-switch 숨김 — sidebar 안에서 표시 */
+  .topbar .brand-switch { display: none; }
+  .sidebar .brand-switch { display: inline-flex; align-self: flex-start; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -742,6 +758,12 @@ function renderSidebar(currentPath) {
 
   let out = '<aside class="sidebar" aria-label="문서 네비게이션">';
   out += `<div class="brand-row"><strong>Porest</strong><span class="brand-tag">Default</span></div>`;
+  // 좁은 viewport에서 topbar의 brand-switch가 숨겨졌을 때 sidebar 안에서 사용 가능
+  out += `<div class="brand-switch" role="group" aria-label="브랜드 전환 (사이드바)">
+    <button data-brand="default" aria-pressed="true" type="button">Default</button>
+    <button data-brand="hr" aria-pressed="false" type="button">HR</button>
+    <button data-brand="desk" aria-pressed="false" type="button">Desk</button>
+  </div>`;
   for (const [section, items] of Object.entries(NAV)) {
     out += `<div class="nav-section"><div class="nav-eyebrow">${escape(section)}</div><ul class="nav-list">`;
     for (const it of items) {
@@ -781,7 +803,7 @@ function renderTopbar(currentPath, breadcrumb) {
         <button data-brand="hr" aria-pressed="false" type="button">HR</button>
         <button data-brand="desk" aria-pressed="false" type="button">Desk</button>
       </div>
-      <button class="theme-toggle" type="button" aria-label="테마 전환">🌓 Theme</button>
+      <button class="theme-toggle" type="button" aria-label="테마 전환">🌓<span class="theme-toggle-label"> Theme</span></button>
     </div>
   </header>`;
 }

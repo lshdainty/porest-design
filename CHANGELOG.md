@@ -137,6 +137,13 @@
 
 **shadcn 확장 4 series 완료** — 총 20 컴포넌트 (v68 navigation 5 + v69 input 5 + v70 disclosure 5 + v71 data 5). 시스템 컴포넌트 75+ 보유 (기존 55 + v68-v71 batch).
 
+**v91 — 좁은 viewport topbar 오버플로 fix (Desk 버튼 클릭 불가)**
+- v91: 사용자 시각 검증 — narrow viewport(~700px)에서 brand-switch의 Desk 버튼이 theme-toggle에 가려져 클릭 불가. controls 영역 overflow 처리 누락.
+- 수정 1: `.controls` / `.brand-switch` / `.theme-toggle`에 `flex-shrink: 0` + `white-space: nowrap` 추가 — 강제 한 줄 유지.
+- 수정 2: `@media (max-width: 880px)` — crumbs 줄임(중간 path 숨김 + overflow:hidden), theme-toggle 라벨 텍스트 숨김(아이콘만 표시), 양쪽 padding 축소(8px).
+- 수정 3: `@media (max-width: 600px)` — topbar brand-switch 자체 숨김 + sidebar 안에서 별도 brand-switch 표시(hamburger 메뉴 안). brand 토글 접근성 유지.
+- HTML — `<button class="theme-toggle">🌓<span class="theme-toggle-label"> Theme</span></button>` 라벨 wrapping. `renderSidebar` 시작에 brand-switch 추가(좁은 viewport용, 기본은 display:none).
+
 **v90 — 컴포넌트 페이지에 preview.html 데모 직접 임베드**
 - v90: 사용자 시각 검증 + 명시적 요청 — preview.html의 풍부한 데모(variant × state 매트릭스, 카드 vignette, 캘린더, 결재 row 등)를 그대로 컴포넌트 페이지에 임베드. shadcn 톤 docs UX. 기존 EXAMPLES.md Tailwind 코드는 "코드 예제" 섹션으로 보존(copy-paste 참조용).
 - `build-preview-html.mjs` 18 함수에 `export` 추가 — `pageCss`, `parseTokensFromCss`, `brandProfile`, `escape`, `renderButtonGallery`, `renderListingDetail`, `renderCalendar`, `renderEmptyState`, `renderModal`, `renderToasts`, `renderSkeleton`, `renderForm`, `renderBatchV67`, `renderShadcnNav`, `renderShadcnInput`, `renderShadcnDisclose`, `renderShadcnData`, `renderShadcnExtras`, `renderBatchV73V78`. 기존 CLI 동작은 그대로(ESM `export` 추가만).
