@@ -137,6 +137,12 @@
 
 **shadcn 확장 4 series 완료** — 총 20 컴포넌트 (v68 navigation 5 + v69 input 5 + v70 disclosure 5 + v71 data 5). 시스템 컴포넌트 75+ 보유 (기존 55 + v68-v71 batch).
 
+**v75 — Form validation patterns**
+- v75: Form layout(v62)을 확장한 **validation 깊이** prose-only — 8 rule(required/min-max-length/min-max numeric/pattern/email/match/async/custom) + 한국어 error message 템플릿 + 5 field state(idle/focused/invalid/valid/validating) + form state machine(idle→submitting→success/error, validating-async 분기) + 3 error 위계(field-level/form-level banner/toast) + ARIA live(`role="alert"`/`aria-live="polite|assertive"`/`aria-busy`) + async pattern(debounce 500ms + AbortController) + multi-field(confirm match/date range/conditional required/mutually exclusive).
+- 추가 이유: v62는 layout/timing 골격, v75는 rule + message + state + ARIA 깊이 — 컴포넌트 spec에서 "validation v75 참조" 인용 가능.
+- 새 토큰 0, 새 yaml 컴포넌트 0 — prose-only.
+- HR(사번 unique async / 휴가 일수 multi-field / 결재라인 conditional / 격식체 "입력해주세요") / Desk(가계부 금액 range / 메모 550자 max-length / 회원가입 이메일 async / 친근체 "이에요/예시" 부분 적용) brand-specific.
+
 **v74 — Animation library (keyframes + 사용 패턴)**
 - v74: 14 정형 keyframe prose-token — 단발 10(`fade-in`/`fade-out`/`slide-in-{up,down,left,right}`/`scale-in`/`scale-out`/`bounce-in`/`shake`) + loop 4(`spin`/`pulse`/`shimmer`/`ping`). 권장 duration(`motion-duration-{fast,base,slow,slower,loop}`) + ease 매핑 표 + CSS keyframes 정의 + `animation` shorthand 패턴 (Toast/Modal/Skeleton/Spinner/Notification dot/Form error 등 7 사용 사례).
 - 추가 이유: v32(duration/ease) + v63(loop) → 컴포넌트 spec에서 keyframe 직접 작성 반복 누적, shadcn/ui + Material + Toss 표준 합집합 정형화.

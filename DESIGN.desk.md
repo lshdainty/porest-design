@@ -1651,6 +1651,41 @@ stacked 강제 (horizontal 사용 안 함) — viewport 너비 한계 + 한 손 
 #### Bottom sheet form
 거래 입력·할일 추가 등 — 화면 하단 sheet (radius-xl 상단만, swipe-down close). primary 버튼은 sheet 하단 sticky `touch-comfortable` (48×48).
 
+### Form validation (v75 추가)
+
+DESIGN.md baseline 정의 참고 — 8 rule + 5 field state + form state machine + ARIA live + async + multi-field. Desk(B2C) 친근체 톤 적용 (그러나 존댓말 유지).
+
+#### Desk 우선 patterns
+- **금액 input (numeric range)** — 가계부 거래 금액 `min=1` (0원 거래 무의미). "0보다 큰 금액을 입력해주세요" — pattern.
+- **카테고리 required (dropdown)** — 거래 입력 시 카테고리 필수. 미선택 시 "카테고리를 선택해주세요".
+- **할일 due-date (optional but conditional)** — 알림 ON 시 due-date 자동 required toggle. `aria-required` 동적.
+- **메모 max-length (550 글자)** — `text-tertiary` counter "234 / 550". 80% 도달 시 `warning` tint, 100% 도달 시 `error`.
+- **이메일 가입 (async)** — 회원가입 시 이메일 unique check + 형식 검증. debounce 500ms, AbortController.
+- **비밀번호 강도 (on change)** — 가입 시 8자 + 영문 + 숫자, 강도 bar (`error`/`warning`/`success` 색).
+
+#### Desk error message 친근체 (예시)
+- "메모 내용을 입력해주세요" (required)
+- "올바른 이메일 주소를 입력해주세요 (예: hello@porest.app)" (email + 예시)
+- "이미 가입된 이메일이에요. 로그인 해주세요" (async — 친근한 체)
+- "비밀번호가 일치하지 않아요" (match)
+- "0보다 큰 금액을 입력해주세요" (custom)
+- "최대 550자까지 입력 가능해요" (max-length)
+
+비격식 어미("입니다" → "이에요/요")는 가입 후 toast 메시지나 settings에서 부분 적용. validation은 표준 "해주세요" 유지 (사용자에게 행동 요청 톤이 자연).
+
+#### Desk 위계 (짧은 form 위주)
+- 메모 작성 / 할일 추가 / 가계부 거래 — 1-3 필드 → field-level error 만으로 충분, 상단 banner 거의 미사용.
+- 회원가입 / 프로필 설정 — 4-6 필드 → 첫 invalid 필드 focus, banner 생략 (모바일 화면 좁음).
+
+#### 모바일 키보드 + validation
+- on blur validation: focus 떠날 때 즉시 → 사용자가 다음 필드로 이동 직후 error 발견 흐름 자연.
+- 키보드 노출 영역 고려: error message는 control 바로 아래 표시 (스크롤로 가려지지 않게), submit 버튼은 sheet 하단 sticky로 키보드 위에 항상 보이도록.
+- `inputmode` 속성 활용 — 금액(`numeric`/`decimal`), 이메일(`email`), 전화번호(`tel`).
+
+#### Desk async validation
+- 회원가입 이메일 unique check (async) — 핵심 사용. AbortController로 입력 중 stale 응답 차단.
+- 메모/할일 작성 — async 없음 (즉시 local 저장 + background sync).
+
 ### Skeleton / Loading (v63 추가)
 
 Desk(B2C) — 메모 list·할일 카드·가계부 dashboard 로딩 상태. 모바일 우선 + 친근 톤이라 카드 단위 placeholder, 적당한 shimmer.
