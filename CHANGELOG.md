@@ -137,6 +137,13 @@
 
 **shadcn 확장 4 series 완료** — 총 20 컴포넌트 (v68 navigation 5 + v69 input 5 + v70 disclosure 5 + v71 data 5). 시스템 컴포넌트 75+ 보유 (기존 55 + v68-v71 batch).
 
+**v80 — Preview HTML v73-v78 시각 데모**
+- v80: `scripts/build-preview-html.mjs`에 `renderBatchV73V78` 추가 — v73 5종(Banner / Tag-Chip / Popover / File Upload / Treeview) + v74 Animation showcase(8 cell — fade-in/slide-in-up/scale-in/bounce-in/shake/spin/pulse/shimmer 라이브) + v75 Form validation 5 state(idle/focused/invalid/valid/validating) + v76 RTL 토글(`dir="rtl"` 스위치) 시각 데모.
+- 새 CSS class 80+ 추가 — banner(info/warning/error/success variant), chip(input + closeable), pop(textarea + actions), fu-zone(드래그-드롭) + fu-list(progress bar), tv(treeview hierarchical), anim-box(8 keyframe 매핑), fv-input(idle/focused/invalid/valid + spinner), rtl-demo(`dir` 토글). 모두 v74 keyframe + logical property 활용.
+- inline JS 추가 — animation replay button(`offsetWidth` reflow 트릭으로 키프레임 재실행), RTL `dir` 토글, Banner dismiss. 외부 의존성 0 — vanilla JS.
+- `prefers-reduced-motion: reduce` 일괄 처리 — animation 일시 정지 권장 코드 적용.
+- 결과: 3 brand HTML(preview.html / preview.hr.html / preview.desk.html) 모두 v73-v76 6 milestone 시각 데모 추가, 토큰 카탈로그(하단)와 함께 노출. Banner 메시지·tag samples·popover 헤드·tree root 모두 brand별 분기.
+
 **v79 — Tailwind v4 export 확장 (keyframes 자동 추출 + test 강화)**
 - v79: `scripts/build-tailwind-v4.mjs`에 `parseKeyframes` 추가 — DESIGN.md v74 Animation library `#### CSS keyframes 정의` 아래 `\`\`\`css ... \`\`\`` 블록 추출, 각 `@keyframes name { ... }` 블록 brace-balanced parser로 분리(중첩 1 level 처리). `@theme {}` 외부 root level에 출력. brand-neutral baseline이라 brand 파일(HR/Desk) 빌드 시 fallback으로 DESIGN.md 직접 read.
 - 결과: `exports/tokens.css` / `tokens.hr.css` / `tokens.desk.css` 모두 14 keyframe(fade-in/out, slide-in-{up,down,left,right}, scale-in/out, bounce-in, shake, spin, pulse, shimmer, ping) 자동 포함. `animation: fade-in var(--motion-duration-base) var(--motion-ease-out)` 컴포넌트 spec 그대로 사용 가능.
