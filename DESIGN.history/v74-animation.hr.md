@@ -1043,24 +1043,6 @@ skeleton shimmer · spinner · pulse 등 **반복 애니메이션** 용 토큰 2
 
 DESIGN.md의 Loop motion 정의와 동일 (brand-neutral). HR `fast`/`base`/`loop` 조합이 일반적 — 결재 큐 row hover(`fast`) + dropdown(`base`) + skeleton(`loop`).
 
-### Animation library (v74 추가, prose-token)
-
-DESIGN.md baseline 정의 참고 — 14 keyframes (단발 10 + loop 4): fade-in/out, slide-in-{up,down,left,right}, scale-in/out, bounce-in, shake, spin, pulse, shimmer, ping. CSS keyframe 정의 + 권장 duration/ease 매핑.
-
-#### HR 우선 패턴
-- **결재 row 등장** — `fade-in` + `motion-duration-base` (200ms): 새 결재 도착 시 row 위에서 스무스 등장. dramatic motion 회피, 절제 톤.
-- **Toast 알림** — `slide-in-down` + `motion-duration-base` (200ms): top-right 위치라 위에서 내려옴.
-- **Modal/Dialog** — `scale-in` + `motion-duration-base` (200ms): 결재 confirm dialog, 직원 detail.
-- **Drawer (직원 detail)** — `slide-in-left` + `motion-duration-slow` (300ms): 우측에서 등장.
-- **Skeleton (결재 큐 로딩)** — `shimmer` + `motion-duration-loop` (1500ms) linear: 결재 row placeholder.
-- **Spinner (저장 중)** — `spin` + `motion-duration-loop` (1500ms) linear.
-- **Form validation error** — `shake` + `motion-duration-slow` (300ms): 결재 의견 미입력 등 금지 시.
-- **bounce-in 제한 사용** — 결재 완료 후 success indicator 정도. 일상 UI엔 과도.
-
-#### HR 회피 패턴
-- `slide-in-right` (drawer 좌측 등장) — sidebar 좌측 고정 layout이므로 우측에서 등장이 자연.
-- `ping` — alert·notification 위치만, 일반 row엔 distraction.
-
 ## Shapes
 
 ### v6 추가 — 5단계 라운드 스케일
