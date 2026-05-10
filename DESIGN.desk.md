@@ -1013,6 +1013,17 @@ modal/sheet/drawer dim overlay (alpha 채널 prose-token).
 - motion은 brand-neutral. HR/Desk 동일 스케일.
 - 적용 강도 분기 권장: HR(B2B)은 `fast`/`base` 위주(절제), Desk(B2C)는 `base`/`slow` 위주(친근감).
 
+### Loop motion (v63 추가, prose-token)
+
+skeleton shimmer · spinner · pulse 등 **반복 애니메이션** 용 토큰 2종.
+
+| 토큰 | 값 | 주 용도 |
+|---|---|---|
+| `motion-duration-loop` | `1500ms` | skeleton shimmer 1주기, pulse 1주기 |
+| `motion-ease-linear` | `linear` | 반복 일정 속도 |
+
+DESIGN.md의 Loop motion 정의와 동일 (brand-neutral). Desk `base`/`slow`/`loop` 조합이 일반적 — 메모 카드 hover(`base`) + bottom sheet(`slow`) + skeleton(`loop`).
+
 ## Shapes
 
 ### v6 추가 — 5단계 라운드 스케일
@@ -1590,3 +1601,24 @@ stacked 강제 (horizontal 사용 안 함) — viewport 너비 한계 + 한 손 
 
 #### Bottom sheet form
 거래 입력·할일 추가 등 — 화면 하단 sheet (radius-xl 상단만, swipe-down close). primary 버튼은 sheet 하단 sticky `touch-comfortable` (48×48).
+
+### Skeleton / Loading (v63 추가)
+
+Desk(B2C) — 메모 list·할일 카드·가계부 dashboard 로딩 상태. 모바일 우선 + 친근 톤이라 카드 단위 placeholder, 적당한 shimmer.
+
+#### Desk 사용 패턴
+- **메모 list 로딩**: card 4-5개 (rect heading + text 2-line + tags placeholder). 각 카드 사이 `md` (12px) gap — 친근감 있는 spacing.
+- **할일 카드 로딩**: list-row + checkbox circle 16 + text 1-line + due-date caption. 할일은 짧으니 1줄.
+- **가계부 dashboard 로딩**: 큰 KPI 카드 (잔액) + 차트 rect + 거래 list-row 5개. dashboard top-down 순서.
+- **메모 detail 로딩**: heading-xl (32) rect + tags row + body text 8-line + 첨부 placeholder. Markdown render 시작 전 골격.
+
+#### 모바일 친화
+- skeleton 등장: 모바일 viewport에서 첫 화면 즉시(0ms) → 깜빡임 없이 자연스러운 로딩 인상.
+- pull-to-refresh: 사용자가 이미 데이터를 본 후 새로고침 시 `surface-input` 0.4 opacity overlay + 작은 spinner (skeleton 대신).
+- bottom sheet 펼침 후 데이터 로딩 시 sheet 내부에 skeleton (sheet wrapper는 즉시 표시).
+
+#### Pulse fallback (저성능)
+shimmer gradient 비싸므로 — Android 저사양 또는 절전모드 시 자동 감지 → opacity pulse fallback. 사용자 인지 차이 미미.
+
+#### Reduced motion
+모바일 사용자 중 멀미 호소 사례 있음 — `prefers-reduced-motion: reduce` 더 적극 존중. shimmer/pulse 모두 정지, `surface-input` 단색만.
