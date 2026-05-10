@@ -322,6 +322,11 @@ components:
     backgroundColor: "{colors.surface-default-dark}"
     textColor: "{colors.info-light}"
   
+  # === User identification (v58: avatar — chart palette categorical) ===
+  avatar:
+    backgroundColor: "{colors.chart-blue}"
+    textColor: "{colors.text-on-accent}"
+  
   # === Chart elements (sparse, fill/stroke 용도 — chart 요소는 textColor 페어가 아님) ===
   chart-color-red:
     backgroundColor: "{colors.chart-red}"
@@ -1485,3 +1490,23 @@ semantic 토큰(success/error/warning/info)과 hue 일관성 유지 — `chart-c
 - 진입 `motion-duration-slow`, hover `motion-duration-fast`
 - 1.4.1 색상 단독 금지 — legend 라벨 + 패턴 (해당 시) 보강
 - screen reader: `<table>` fallback 또는 svg `role="img"` + 데이터 요약
+
+### Avatar (v58 추가)
+
+HR(B2B) — 직원 카드, 조직도, 결재 큐 author, 평가 reviewer 등 모든 사용자 식별. 데이터 밀도 톤이라 sm/md 사이즈 위주.
+
+#### HR 사용 패턴
+- **데이터 그리드 inline**: `sm` 24px 사각형 (`radius-md`) — 정보 밀도 우선.
+- **직원 list**: `md` 32px 원형 default.
+- **직원 detail panel**: `lg` 40px or `xl` 56px 원형.
+- **조직도 트리**: `sm` 24px 원형 + 이름 우측 `body` (15/400).
+
+#### Color
+- chart palette 10색 hash(이름) 분배 또는 부서별 매핑(예: 디자인본부 `chart-violet`, 운영본부 `chart-blue`) 컴포넌트 레벨 결정.
+- HR primary `#357B5F`(forest green)와 chart-green `#2D8060` hue 비슷 — 부서/직원 색 분배 시 `chart-green` 회피 권장.
+
+#### Status (선택, HR-specific)
+재직(`success`) / 휴직(`warning`) / 퇴직(`error`) inline indicator. avatar 우하단 8×8 dot.
+
+#### Sparse 매핑
+DESIGN.md와 동일 (`avatar` chart-blue × text-on-accent, lint contrast 활성).
