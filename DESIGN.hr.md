@@ -51,13 +51,13 @@ colors:
   # @sync:shared-start (colors-2)
   # === Semantic - Status (functional palette, base + light 페어, 듀얼 브랜드 공유) ===
   success: "#16803F"
-  success-light: "#5DC07B"
+  success-light: "#4ADE80"
   error: "#DC2626"
-  error-light: "#F08080"
+  error-light: "#F87171"
   warning: "#C84D0E"
-  warning-light: "#E8A05A"
+  warning-light: "#FB923C"
   info: "#1D6FCB"
-  info-light: "#6FAEDF"
+  info-light: "#60A5FA"
   
   # === Chart palette (data viz, 10색 hue 균등, L≈0.16-0.18 통일, 듀얼 브랜드 공유) ===
   # 1차 5색 (v21): red, orange, yellow, green, blue. 2차 5색은 v22, dark 변형은 v23-v24.
