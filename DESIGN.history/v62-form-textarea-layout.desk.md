@@ -1567,26 +1567,3 @@ Desk(B2C) — 가계부 거래일·할일 due date·메모 캡처일 등 일상 
 
 #### Sparse 매핑
 신규 yaml 컴포넌트 0. 기존 `button-primary`(selected cell), `alert-text-success/error/warning/info`(거래·할일 상태 dot), `card-light`(셀 default ground)이 contrast 페어 활성.
-
-### Textarea / Form layout (v62 추가)
-
-Desk(B2C) — 메모 본문, 할일 상세 설명, 가계부 거래 메모 등 일상 multi-line 입력. 모바일 우선이라 stacked layout + auto-grow 적극 활용.
-
-#### Desk 사용 패턴
-- **메모 본문**: textarea auto-grow + min 4 line max viewport 60%. 본문 영역은 `body-md` (16/400/1.5 영문) 또는 `body` (15/400/1.6 한국어) — 메모 톤에 맞춤.
-- **할일 상세 설명**: 할일 카드 펼침 시 inline textarea. min 2 line + counter `120 / 500`. 80% 도달 시 `warning` tint.
-- **가계부 거래 메모**: 단일 line Input이 default, optional textarea (메모/영수증 설명) — bottom sheet 펼침 시 노출.
-- **프로필·설정**: stacked layout (모바일 풀스크린 form) — label 위, control 아래, primary action 하단 sticky.
-
-#### Validation
-- **on blur** 활용 — 모바일에서 즉시 피드백 선호 (focus 후 다른 필드 이동 시).
-- error toast는 키보드 가린 영역 회피 위해 viewport 상단 + safe-area 고려.
-
-#### 모바일 mode
-stacked 강제 (horizontal 사용 안 함) — viewport 너비 한계 + 한 손 조작 친화. label/helper/error 모두 control 위·아래 인라인.
-
-#### Auto-grow
-모바일에서 scrollbar 회피 → JS auto-resize. iOS Safari focus 시 viewport zoom 방지(`font-size: 16px` 유지 — `body-md` 채택 이유 일치).
-
-#### Bottom sheet form
-거래 입력·할일 추가 등 — 화면 하단 sheet (radius-xl 상단만, swipe-down close). primary 버튼은 sheet 하단 sticky `touch-comfortable` (48×48).
