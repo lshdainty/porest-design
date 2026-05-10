@@ -421,6 +421,88 @@ body {
   font-weight: 600;
 }
 
+/* === Component pages === */
+.component-meta { display: flex; gap: 16px; margin: 16px 0 32px; padding-bottom: 16px; border-bottom: 1px solid var(--color-border-default); flex-wrap: wrap; }
+.component-meta a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  font-size: var(--text-caption);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  background: var(--color-surface-default);
+  transition: all var(--motion-duration-fast) var(--motion-ease-out);
+}
+.component-meta a:hover { color: var(--color-primary); border-color: var(--color-primary); }
+.component-meta a.tag {
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+  border-color: transparent;
+  color: var(--color-primary);
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.example-block {
+  margin: 16px 0 32px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-surface-default);
+}
+.example-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: var(--color-surface-input);
+  border-bottom: 1px solid var(--color-border-default);
+}
+.example-tabs { display: inline-flex; gap: 0; }
+.example-tab {
+  font-size: var(--text-caption-sm);
+  font-weight: 600;
+  padding: 4px 12px;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-family: inherit;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.example-tab[aria-selected="true"] { background: var(--color-surface-default); color: var(--color-primary); box-shadow: var(--shadow-sm); }
+.example-copy {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: var(--text-caption-sm);
+  color: var(--color-text-secondary);
+  font-family: inherit;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+}
+.example-copy:hover { color: var(--color-text-primary); background: var(--color-surface-default); }
+.example-copy.copied { color: var(--color-success); }
+.example-block pre { margin: 0; padding: 16px 20px; background: transparent; border: 0; border-radius: 0; }
+.example-block pre code { background: transparent; padding: 0; }
+.example-label { font-size: var(--text-caption-sm); color: var(--color-text-tertiary); padding: 6px 16px 0; font-style: italic; }
+
+.callout {
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px;
+  border-inline-start: 3px solid var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 6%, transparent);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  margin: 16px 0;
+  font-size: var(--text-caption-md);
+}
+.callout strong { color: var(--color-primary); }
+
 /* === Mobile === */
 .mobile-toggle { display: none; }
 @media (max-width: 880px) {
@@ -503,6 +585,22 @@ function siteJs() {
       sb.setAttribute("data-open", "false");
     }
   });
+
+  // Code copy
+  document.addEventListener("click", function(e) {
+    var btn = e.target.closest(".example-copy");
+    if (!btn) return;
+    var pre = btn.closest(".example-block").querySelector("pre code");
+    if (!pre) return;
+    var text = pre.textContent;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function() {
+        btn.textContent = "Copied!";
+        btn.classList.add("copied");
+        setTimeout(function() { btn.textContent = "Copy"; btn.classList.remove("copied"); }, 1600);
+      });
+    }
+  });
 })();
 `;
 }
@@ -511,39 +609,55 @@ function siteJs() {
 // 4. 공통 layout 래퍼
 // ============================================================
 
-const NAV = {
-  "Getting Started": [
-    { label: "Introduction", href: "/index.html" },
-    { label: "Brand identity", href: "/index.html#brand-identity" },
-    { label: "Quick start", href: "/index.html#quick-start" },
-  ],
-  "Tokens": [
-    { label: "Colors", href: "/tokens/colors.html" },
-    { label: "Typography", href: "/tokens/typography.html" },
-    { label: "Spacing", href: "/tokens/spacing.html" },
-    { label: "Radius", href: "/tokens/radius.html" },
-    { label: "Shadows", href: "/tokens/shadows.html" },
-    { label: "Motion", href: "/tokens/motion.html" },
-    { label: "Breakpoints", href: "/tokens/breakpoints.html" },
-    { label: "Z-index", href: "/tokens/z-index.html" },
-  ],
-  "Components": [
-    { label: "Coming soon (Phase 2)", soon: true },
-  ],
-  "Examples": [
-    { label: "Coming soon (Phase 3)", soon: true },
-  ],
-};
+// NAV는 빌드 시 컴포넌트로부터 동적 구성. buildNav()에서 호출.
+let NAV = null;
 
-function renderSidebar(currentPath) {
-  function link(item, depth) {
-    const href = item.href ? (depth + item.href).replace(/\/+/g, "/") : "#";
-    const active = item.href && currentPath === item.href ? ' aria-current="page"' : "";
-    const cls = item.soon ? "disabled" : "";
-    const badge = item.soon ? '<span class="badge-soon">soon</span>' : "";
-    return `<li><a href="${escape(href)}" class="${cls}"${active}>${escape(item.label)}${badge}</a></li>`;
+function buildNav(components) {
+  // Components 카테고리별 그룹화
+  const byCategory = {};
+  for (const c of components) {
+    const cat = COMPONENT_CATEGORIES[c.slug];
+    if (!cat) continue;
+    byCategory[cat.category] = byCategory[cat.category] || [];
+    byCategory[cat.category].push({ ...c, sort: cat.sort });
+  }
+  for (const k of Object.keys(byCategory)) {
+    byCategory[k].sort((a, b) => a.sort - b.sort);
   }
 
+  const nav = {
+    "Getting Started": [
+      { label: "Introduction", href: "/index.html" },
+      { label: "Brand identity", href: "/index.html#brand-identity" },
+      { label: "Quick start", href: "/index.html#quick-start" },
+    ],
+    "Tokens": [
+      { label: "Colors", href: "/tokens/colors.html" },
+      { label: "Typography", href: "/tokens/typography.html" },
+      { label: "Spacing", href: "/tokens/spacing.html" },
+      { label: "Radius", href: "/tokens/radius.html" },
+      { label: "Shadows", href: "/tokens/shadows.html" },
+      { label: "Motion", href: "/tokens/motion.html" },
+      { label: "Breakpoints", href: "/tokens/breakpoints.html" },
+      { label: "Z-index", href: "/tokens/z-index.html" },
+    ],
+  };
+
+  // Components 카테고리를 sub-section으로
+  for (const cat of CATEGORY_ORDER) {
+    if (!byCategory[cat]) continue;
+    nav[`Components — ${cat}`] = byCategory[cat].map(c => ({
+      label: c.name,
+      href: `/components/${c.slug}.html`,
+    }));
+  }
+
+  nav["Examples"] = [{ label: "Coming soon (Phase 3)", soon: true }];
+
+  return nav;
+}
+
+function renderSidebar(currentPath) {
   // 디렉토리 깊이 따라 상대 경로 prefix 계산
   const segments = currentPath.split("/").filter(Boolean).slice(0, -1).length;
   const prefix = segments === 0 ? "." : "..".repeat(segments - 1) + "..";
@@ -1197,14 +1311,202 @@ ${rows}
 }
 
 // ============================================================
-// 7. Build
+// 7. EXAMPLES.md 파서 + 컴포넌트 페이지
+// ============================================================
+
+function slugify(s) {
+  return s.toLowerCase()
+    .replace(/[\/&]/g, "-")
+    .replace(/[^a-z0-9가-힣\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
+// EXAMPLES.md → 섹션 배열. 각 섹션 = { name, slug, paragraphs, examples: [{ lang, code }] }
+function parseExamplesMd() {
+  const md = readFileSync(resolve(ROOT, "EXAMPLES.md"), "utf8");
+  const lines = md.split("\n");
+  const sections = [];
+  let current = null;
+  let inCode = false;
+  let codeBuf = [];
+  let codeLang = "";
+  let proseBuf = [];
+
+  function flushProse() {
+    if (current && proseBuf.length > 0) {
+      const text = proseBuf.join("\n").trim();
+      if (text) {
+        // 코드 직후 prose는 example label로, 그 외는 paragraph로
+        if (current.examples.length > 0 && !current.examples[current.examples.length - 1].label && proseBuf.length <= 3) {
+          current.examples[current.examples.length - 1].label = text;
+        } else {
+          current.paragraphs.push(text);
+        }
+      }
+      proseBuf = [];
+    }
+  }
+
+  for (const line of lines) {
+    // h2 = section
+    const h = /^##\s+(.+)$/.exec(line);
+    if (h && !inCode) {
+      flushProse();
+      const name = h[1].trim();
+      // Skip 목차 / 다음 참조 / 토큰 alias 안내 등 meta 섹션
+      if (/^(목차|다음 참조|토큰 alias 안내)/.test(name)) {
+        current = null;
+        continue;
+      }
+      current = { name, slug: slugify(name), paragraphs: [], examples: [] };
+      sections.push(current);
+      continue;
+    }
+    if (line.startsWith("```")) {
+      if (!inCode) {
+        flushProse();
+        inCode = true;
+        codeLang = line.slice(3).trim() || "html";
+        codeBuf = [];
+      } else {
+        if (current) {
+          current.examples.push({ lang: codeLang, code: codeBuf.join("\n"), label: null });
+        }
+        inCode = false;
+      }
+      continue;
+    }
+    if (inCode) {
+      codeBuf.push(line);
+      continue;
+    }
+    if (line.startsWith("---") && line.replace(/-/g, "").trim() === "") continue;
+    if (current) proseBuf.push(line);
+  }
+  flushProse();
+  return sections;
+}
+
+// 카테고리 매핑 (slug → { category, sortKey })
+const COMPONENT_CATEGORIES = {
+  "button": { category: "Forms", sort: 1 },
+  "input-textarea": { category: "Forms", sort: 2 },
+  "select-combobox": { category: "Forms", sort: 3 },
+  "checkbox-radio-switch": { category: "Forms", sort: 4 },
+  "form-layout-validation": { category: "Forms", sort: 5 },
+  "file-upload": { category: "Forms", sort: 6 },
+
+  "card": { category: "Layout", sort: 1 },
+  "avatar": { category: "Layout", sort: 2 },
+
+  "badge-tag-chip": { category: "Data Display", sort: 1 },
+  "calendar-date-range-picker": { category: "Data Display", sort: 2 },
+
+  "banner": { category: "Feedback", sort: 1 },
+  "toast-sonner": { category: "Feedback", sort: 2 },
+  "skeleton-spinner-progress": { category: "Feedback", sort: 3 },
+  "empty-state": { category: "Feedback", sort: 4 },
+
+  "modal-dialog": { category: "Overlay", sort: 1 },
+  "drawer-sheet": { category: "Overlay", sort: 2 },
+  "tooltip-popover-hover-card": { category: "Overlay", sort: 3 },
+  "dropdown-context-menu": { category: "Overlay", sort: 4 },
+
+  "tabs": { category: "Navigation", sort: 1 },
+  "breadcrumb-sidebar": { category: "Navigation", sort: 2 },
+  "pagination-stepper": { category: "Navigation", sort: 3 },
+
+  "accordion-collapsible": { category: "Disclosure", sort: 1 },
+  "treeview": { category: "Disclosure", sort: 2 },
+
+  "animation-patterns": { category: "Reference", sort: 1 },
+};
+
+const CATEGORY_ORDER = ["Forms", "Layout", "Navigation", "Data Display", "Feedback", "Overlay", "Disclosure", "Reference"];
+
+function pageComponent(component) {
+  const cat = COMPONENT_CATEGORIES[component.slug] || { category: "Other" };
+
+  function inlineMarkdown(s) {
+    return escape(s).replace(/`([^`]+)`/g, (_, c) => `<code>${c}</code>`);
+  }
+
+  // 첫 paragraph는 lede로
+  const lede = component.paragraphs[0] || "";
+  const restParas = component.paragraphs.slice(1);
+
+  let body = `
+<h1>${escape(component.name)}</h1>
+${lede ? `<p class="lede">${inlineMarkdown(lede)}</p>` : ""}
+
+<div class="component-meta">
+  <a class="tag">${escape(cat.category)}</a>
+  <a href="../../preview.html" target="_blank" rel="noopener">Live demo (preview.html) ↗</a>
+  <a href="https://github.com/lshdainty/porest-design/blob/main/EXAMPLES.md#${escape(component.slug)}" target="_blank" rel="noopener">EXAMPLES.md ↗</a>
+</div>
+`;
+
+  if (component.examples.length > 0) {
+    body += `<h2>예제</h2>\n`;
+    for (let i = 0; i < component.examples.length; i++) {
+      const ex = component.examples[i];
+      body += `<div class="example-block" data-example>
+  <div class="example-head">
+    <div class="example-tabs">
+      <button class="example-tab" data-tab="code" aria-selected="true" type="button">CODE</button>
+    </div>
+    <button class="example-copy" type="button">Copy</button>
+  </div>
+  <pre><code class="lang-${escape(ex.lang)}">${escape(ex.code)}</code></pre>
+  ${ex.label ? `<div class="example-label">${escape(ex.label)}</div>` : ""}
+</div>
+`;
+    }
+  }
+
+  if (restParas.length > 0) {
+    body += `<h2>가이드</h2>\n`;
+    for (const p of restParas) {
+      body += `<p>${inlineMarkdown(p)}</p>\n`;
+    }
+  }
+
+  body += `
+<div class="callout">
+  <div>
+    <strong>관련 문서</strong> · 사양은 <a href="https://github.com/lshdainty/porest-design/blob/main/DESIGN.md" target="_blank" rel="noopener">DESIGN.md</a> spec 참조 · HR/Desk 분기 톤은 <a href="https://github.com/lshdainty/porest-design/blob/main/DESIGN.hr.md" target="_blank" rel="noopener">DESIGN.hr.md</a> / <a href="https://github.com/lshdainty/porest-design/blob/main/DESIGN.desk.md" target="_blank" rel="noopener">DESIGN.desk.md</a>.
+  </div>
+</div>
+`;
+
+  return page({
+    title: component.name,
+    currentPath: `/components/${component.slug}.html`,
+    breadcrumb: [
+      { label: "Components" },
+      { label: cat.category },
+      { label: component.name },
+    ],
+    body,
+  });
+}
+
+// ============================================================
+// 8. Build
 // ============================================================
 
 function ensureDir(p) { mkdirSync(p, { recursive: true }); }
 
 ensureDir(OUT);
 ensureDir(resolve(OUT, "tokens"));
+ensureDir(resolve(OUT, "components"));
 ensureDir(resolve(OUT, "assets"));
+
+// EXAMPLES.md 파싱 → NAV 구성
+const components = parseExamplesMd().filter(c => COMPONENT_CATEGORIES[c.slug]);
+NAV = buildNav(components);
 
 writeFileSync(resolve(OUT, "assets/tokens.css"), buildCombinedTokens());
 writeFileSync(resolve(OUT, "assets/site.css"), siteCss());
@@ -1220,7 +1522,12 @@ writeFileSync(resolve(OUT, "tokens/motion.html"), pageMotion());
 writeFileSync(resolve(OUT, "tokens/breakpoints.html"), pageBreakpoints());
 writeFileSync(resolve(OUT, "tokens/z-index.html"), pageZIndex());
 
+for (const c of components) {
+  writeFileSync(resolve(OUT, `components/${c.slug}.html`), pageComponent(c));
+}
+
 console.log("✓ exports/site/");
 console.log("  index.html");
-console.log("  tokens/{colors,typography,spacing,radius,shadows,motion,breakpoints,z-index}.html");
+console.log("  tokens/{colors,typography,spacing,radius,shadows,motion,breakpoints,z-index}.html (8 페이지)");
+console.log(`  components/*.html (${components.length} 페이지)`);
 console.log("  assets/{tokens,site}.css + site.js");
