@@ -137,6 +137,13 @@
 
 **shadcn 확장 4 series 완료** — 총 20 컴포넌트 (v68 navigation 5 + v69 input 5 + v70 disclosure 5 + v71 data 5). 시스템 컴포넌트 75+ 보유 (기존 55 + v68-v71 batch).
 
+**v87 — Tailwind v4 browser CDN 전환 (어댑터 폐기, 100% utility 커버)**
+- v87: 컴포넌트 페이지 Live Preview를 자체 utility CSS adapter(v86)에서 **Tailwind v4 browser CDN**(`@tailwindcss/browser@4`)으로 전환. 모든 utility class 100% 정확 컴파일. 외부 의존 1개 추가 — 정확성 우선.
+- `preview-utilities.css` 폐기(–17KB) — 200+ utility 수동 매핑 → CDN script로 대체. 유지 비용 0.
+- `tokens.css` 통합 빌드 변경 — @theme {} 블록 보존(Tailwind 읽음) + `:root` 미러 블록 추가(FOUC 방지, 브라우저 즉시 var() 적용). 7 셀렉터 블록 — @theme / :root / [data-brand=hr] / [data-brand=desk] / [data-theme=dark] / 다크×HR / 다크×Desk.
+- 컴포넌트 페이지에 `<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>` 추가 — 페이지 로드 시 utility class 자동 스캔 + 컴파일 + 주입.
+- 결과: EXAMPLES.md 코드의 모든 Tailwind utility(bg-primary / px-4 / hover:opacity-90 / focus:ring-error/20 / data-state / animate-spin / ...) 외부 컴파일 없이 시각 렌더링. 자체 utility adapter 한계(예: `class="..."` placeholder 영향)는 native Tailwind 컴파일이 자연스럽게 해결.
+
 **v86 — 컴포넌트 페이지 Preview/Code 탭 + Tailwind utility live render**
 - v86: 컴포넌트 페이지를 shadcn/ui 패턴으로 재구성 — 각 예제에 **Preview 탭(라이브 렌더링) + Code 탭(escape된 소스)** 두 view. 사용자가 위에서 컴포넌트 동작 확인, 아래에서 코드 copy. 기존 "Live demo (preview.html)" 외부 링크 패턴 폐기.
 - `assets/preview-utilities.css` 신규 — Tailwind v4 utility class 200+를 design token CSS variable로 매핑하는 어댑터. EXAMPLES.md 코드의 `bg-primary` / `text-on-accent` / `px-4` / `rounded-md` / `shadow-sm` / `hover:opacity-90` / `focus:ring-2` 등이 외부 컴파일 없이 즉시 렌더링. `.preview-frame` scoping으로 사이트 layout 외 영향 0.
