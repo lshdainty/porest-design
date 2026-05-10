@@ -1807,6 +1807,167 @@ function renderShadcnExtras(brand) {
   </section>`;
 }
 
+function renderBatchV73V78(brand) {
+  // v73(Banner/Tag/Popover/File Upload/Treeview) + v74(Animation) + v75(Form validation) + v76(RTL)
+  const isHr = brand.key === "hr";
+  const isDesk = brand.key === "desk";
+  const bannerWarn = isHr ? "2026-06-01부터 개인정보 처리방침이 변경됩니다."
+                          : isDesk ? "2026-05-15 23:00 ~ 24:00 동기화 일시 중단됩니다."
+                                   : "약관 변경 예정 — sticky banner.";
+  const tagSamples = isHr ? ["관리자", "HR-only", "협력자"]
+                          : isDesk ? ["#업무", "#2026", "#회의록"]
+                                   : ["sample-1", "sample-2", "sample-3"];
+  const popoverHead = isHr ? "결재 의견" : isDesk ? "카테고리 빠른 변경" : "Popover (formal)";
+  const treeRoot = isHr ? ["개발본부", "백엔드팀", "프론트팀"]
+                        : isDesk ? ["식비", "외식", "마트"]
+                                 : ["루트", "자식 1", "자식 2"];
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">20 — Extras-2 (v73) · Animation (v74) · Form validation (v75) · RTL (v76)</div>
+      <h2 class="section-title">Banner · Tag/Chip · Popover · File Upload · Treeview · Animation · Form states · RTL</h2>
+      <p class="section-lede">v73-v76 6 milestone 시각 데모 — shadcn 누락 5종 + 14 keyframe 라이브 + form 5 state + dir 토글.</p>
+    </header>
+
+    <!-- v73 Banner — 4 variant -->
+    <div class="banner banner--info" role="status">
+      <span class="banner-icon">i</span>
+      <div class="banner-body"><strong>시스템 점검 안내</strong><span>${escape(bannerWarn)}</span></div>
+      <button class="banner-close" aria-label="배너 닫기" type="button">×</button>
+    </div>
+    <div class="banner banner--warning" role="alert">
+      <span class="banner-icon">!</span>
+      <div class="banner-body"><strong>약관 변경 예정</strong><span>4월 30일까지 미동의 시 일부 기능이 제한될 수 있습니다.</span></div>
+    </div>
+    <div class="banner banner--error" role="alert">
+      <span class="banner-icon">⚠</span>
+      <div class="banner-body"><strong>결제 실패</strong><span>등록된 카드가 만료되었습니다. 카드 정보를 갱신해주세요.</span></div>
+    </div>
+
+    <div class="sc-grid">
+      <!-- Tag / Chip -->
+      <div class="sc-card">
+        <div class="sc-head">Tag / Chip — closeable + input</div>
+        <div class="chip-row">
+          ${tagSamples.map(t => `<span class="chip"><span>${escape(t)}</span><button aria-label="제거" class="chip-x">×</button></span>`).join("")}
+          <span class="chip chip--input"><input placeholder="추가" /></span>
+        </div>
+        <div class="sc-note">closeable + multi-tag input. ${isHr ? "결재라인 / 권한" : isDesk ? "메모 태그 multi" : "기본"}</div>
+      </div>
+
+      <!-- Popover -->
+      <div class="sc-card">
+        <div class="sc-head">Popover — interactive</div>
+        <div class="pop-anchor">
+          <button class="pop-trigger" aria-expanded="true" aria-haspopup="dialog" type="button">${escape(popoverHead)} ▾</button>
+          <div class="pop" role="dialog">
+            <textarea rows="3" placeholder="의견을 입력하세요"></textarea>
+            <div class="pop-actions"><button class="btn btn--ghost" type="button">취소</button><button class="btn btn--primary" type="button">제출</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- File Upload -->
+      <div class="sc-card">
+        <div class="sc-head">File Upload — 드래그-드롭</div>
+        <div class="fu-zone">
+          <div class="fu-icon">⬆</div>
+          <div class="fu-label">파일을 드래그하거나 클릭</div>
+          <div class="sc-note">PDF / 이미지, 최대 10MB</div>
+        </div>
+        <div class="fu-list">
+          <div class="fu-item">
+            <span class="fu-file-icon">📄</span>
+            <div class="fu-meta"><span class="fu-name">${escape(isHr ? "Q1-evaluation.pdf" : isDesk ? "receipt-2026.jpg" : "sample.pdf")}</span>
+            <div class="fu-progress"><div class="fu-progress-bar" style="width: 67%"></div></div></div>
+            <button class="fu-remove" aria-label="제거" type="button">×</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Treeview -->
+      <div class="sc-card">
+        <div class="sc-head">Treeview — hierarchical</div>
+        <ul class="tv" role="tree">
+          <li role="treeitem" aria-expanded="true" aria-level="1">
+            <button class="tv-row tv-row--expanded" type="button"><span class="tv-chev">▾</span>${escape(treeRoot[0])}</button>
+            <ul role="group">
+              <li role="treeitem" aria-level="2"><button class="tv-row" type="button"><span class="tv-chev">▸</span>${escape(treeRoot[1])}</button></li>
+              <li role="treeitem" aria-level="2" aria-selected="true"><button class="tv-row tv-row--selected" type="button">${escape(treeRoot[2])}</button></li>
+            </ul>
+          </li>
+        </ul>
+        <div class="sc-note">arrow 네비 + Home/End / Enter select</div>
+      </div>
+
+      <!-- v74 Animation showcase -->
+      <div class="sc-card sc-card--full">
+        <div class="sc-head">Animation library (v74) — 4 keyframe 라이브 데모</div>
+        <div class="anim-grid">
+          <div class="anim-cell"><div class="anim-box anim-fade-in" key="fade-in">A</div><span class="sc-note">fade-in</span></div>
+          <div class="anim-cell"><div class="anim-box anim-slide-in-up" key="slide-in-up">B</div><span class="sc-note">slide-in-up</span></div>
+          <div class="anim-cell"><div class="anim-box anim-scale-in" key="scale-in">C</div><span class="sc-note">scale-in</span></div>
+          <div class="anim-cell"><div class="anim-box anim-bounce-in" key="bounce-in">D</div><span class="sc-note">bounce-in</span></div>
+          <div class="anim-cell"><div class="anim-box anim-shake" key="shake">E</div><span class="sc-note">shake (form error)</span></div>
+          <div class="anim-cell"><div class="anim-box anim-spin" key="spin">↻</div><span class="sc-note">spin (loop)</span></div>
+          <div class="anim-cell"><div class="anim-box anim-pulse" key="pulse">●</div><span class="sc-note">pulse (loop)</span></div>
+          <div class="anim-cell"><div class="anim-box anim-shimmer" key="shimmer"></div><span class="sc-note">shimmer (skeleton)</span></div>
+        </div>
+        <div class="anim-actions"><button class="btn btn--outlined anim-replay" type="button">▶ 다시 재생</button></div>
+      </div>
+
+      <!-- v75 Form validation states -->
+      <div class="sc-card sc-card--full">
+        <div class="sc-head">Form validation (v75) — 5 state machine</div>
+        <div class="fv-grid">
+          <div class="fv-cell">
+            <label class="fv-label">idle (default)</label>
+            <input class="fv-input" placeholder="이메일" />
+            <span class="fv-helper">로그인 시 사용됩니다</span>
+          </div>
+          <div class="fv-cell">
+            <label class="fv-label">focused</label>
+            <input class="fv-input fv-input--focused" placeholder="이메일" value="hello@porest" />
+            <span class="fv-helper">입력 중...</span>
+          </div>
+          <div class="fv-cell">
+            <label class="fv-label">invalid</label>
+            <input class="fv-input fv-input--invalid" value="hello@porest" aria-invalid="true" />
+            <span class="fv-error" role="alert">올바른 이메일 주소를 입력해주세요</span>
+          </div>
+          <div class="fv-cell">
+            <label class="fv-label">valid</label>
+            <input class="fv-input fv-input--valid" value="hello@porest.app" />
+            <span class="fv-success">사용 가능 ✓</span>
+          </div>
+          <div class="fv-cell">
+            <label class="fv-label">validating (async)</label>
+            <input class="fv-input" value="hello@porest.app" aria-busy="true" />
+            <span class="fv-helper"><span class="fv-spinner"></span> 중복 확인 중...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- v76 RTL toggle -->
+      <div class="sc-card sc-card--full">
+        <div class="sc-head">RTL support (v76) — dir 토글로 logical property mirror</div>
+        <div class="rtl-demo" id="rtl-demo">
+          <div class="rtl-row">
+            <button class="btn btn--primary rtl-btn"><span class="rtl-icon">→</span> ${isHr ? "결재 진행" : isDesk ? "거래 추가" : "Action"}</button>
+            <span class="chip chip--input"><input placeholder="검색" /></span>
+            <span class="chip">tag</span>
+          </div>
+          <div class="rtl-row">
+            <span>방향: <code id="rtl-dir-label">ltr</code></span>
+            <button class="btn btn--outlined rtl-toggle" type="button">dir 토글 (ltr ↔ rtl)</button>
+          </div>
+        </div>
+        <div class="sc-note">CSS logical property(margin-inline / padding-inline / inset-inline) 기반 자동 mirror — extra CSS 0.</div>
+      </div>
+    </div>
+  </section>`;
+}
+
 function renderTokenCatalog(tokens) {
   const colorGrid = tokens.colors.map(t => `
     <div class="swatch">
@@ -2947,6 +3108,95 @@ function pageCss() {
     .sc-head { font-size: var(--text-caption); color: var(--color-text-tertiary); font-family: ui-monospace, monospace; text-transform: uppercase; letter-spacing: 0.04em; }
     .sc-note { font-size: var(--text-caption); color: var(--color-text-tertiary); margin-top: var(--spacing-xs); }
 
+    /* === v73-v78 batch === */
+
+    /* Banner */
+    .banner { display: flex; align-items: flex-start; gap: var(--spacing-sm); padding: var(--spacing-md); margin-block: var(--spacing-sm); border-inline-start-width: 4px; border-inline-start-style: solid; border-radius: var(--radius-sm); }
+    .banner--info { background: color-mix(in srgb, var(--color-info) 8%, var(--color-surface-default)); border-inline-start-color: var(--color-info); }
+    .banner--warning { background: color-mix(in srgb, var(--color-warning) 8%, var(--color-surface-default)); border-inline-start-color: var(--color-warning); }
+    .banner--error { background: color-mix(in srgb, var(--color-error) 8%, var(--color-surface-default)); border-inline-start-color: var(--color-error); }
+    .banner--success { background: color-mix(in srgb, var(--color-success) 8%, var(--color-surface-default)); border-inline-start-color: var(--color-success); }
+    .banner-icon { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 700; font-size: 13px; color: var(--color-text-on-accent); }
+    .banner--info .banner-icon { background: var(--color-info); }
+    .banner--warning .banner-icon { background: var(--color-warning); }
+    .banner--error .banner-icon { background: var(--color-error); }
+    .banner-body { flex: 1; display: flex; flex-direction: column; gap: 2px; font-size: var(--text-body); }
+    .banner-body strong { font-size: var(--text-body-strong); }
+    .banner-close { width: 28px; height: 28px; border: 0; background: transparent; cursor: pointer; border-radius: var(--radius-sm); color: var(--color-text-tertiary); }
+
+    /* Tag / Chip */
+    .chip-row { display: flex; flex-wrap: wrap; gap: var(--spacing-xs); align-items: center; }
+    .chip { display: inline-flex; align-items: center; gap: var(--spacing-xs); padding-inline: var(--spacing-sm); padding-block: 4px; border-radius: var(--radius-full); background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface-default)); color: var(--color-primary); font-size: var(--text-caption); }
+    .chip-x { width: 16px; height: 16px; border: 0; background: transparent; cursor: pointer; color: inherit; padding: 0; }
+    .chip--input { background: var(--color-surface-input); padding: 2px 6px 2px 10px; }
+    .chip--input input { background: transparent; border: 0; outline: none; font-size: var(--text-caption); width: 80px; color: inherit; }
+
+    /* Popover */
+    .pop-anchor { position: relative; }
+    .pop-trigger { background: var(--color-surface-input); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); padding: 6px 10px; cursor: pointer; font-size: var(--text-caption); color: var(--color-text-primary); }
+    .pop { position: relative; margin-top: var(--spacing-xs); background: var(--color-surface-default); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); padding: var(--spacing-md); box-shadow: var(--shadow-md); display: flex; flex-direction: column; gap: var(--spacing-sm); }
+    .pop textarea { width: 100%; padding: 6px 8px; border: 1px solid var(--color-border-default); border-radius: var(--radius-sm); background: var(--color-surface-input); font-family: inherit; font-size: var(--text-caption); color: var(--color-text-primary); resize: vertical; }
+    .pop-actions { display: flex; justify-content: flex-end; gap: var(--spacing-xs); }
+
+    /* File Upload */
+    .fu-zone { border: 2px dashed var(--color-border-default); border-radius: var(--radius-md); padding: var(--spacing-lg); display: flex; flex-direction: column; align-items: center; gap: 4px; background: var(--color-bg-page); }
+    .fu-icon { font-size: 24px; color: var(--color-text-tertiary); }
+    .fu-label { font-size: var(--text-body-strong); color: var(--color-text-primary); }
+    .fu-list { display: flex; flex-direction: column; gap: var(--spacing-xs); margin-top: var(--spacing-xs); }
+    .fu-item { display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-xs) var(--spacing-sm); background: var(--color-surface-input); border-radius: var(--radius-sm); }
+    .fu-file-icon { font-size: 18px; }
+    .fu-meta { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+    .fu-name { font-size: var(--text-caption); color: var(--color-text-primary); }
+    .fu-progress { height: 4px; background: var(--color-surface-default); border-radius: 2px; overflow: hidden; }
+    .fu-progress-bar { height: 100%; background: var(--color-primary); }
+    .fu-remove { width: 24px; height: 24px; border: 0; background: transparent; cursor: pointer; color: var(--color-text-tertiary); border-radius: var(--radius-sm); }
+
+    /* Treeview */
+    .tv, .tv ul { list-style: none; margin: 0; padding: 0; }
+    .tv ul { padding-inline-start: var(--spacing-md); }
+    .tv-row { display: flex; align-items: center; gap: var(--spacing-xs); padding: 4px var(--spacing-sm); width: 100%; background: transparent; border: 0; cursor: pointer; text-align: start; font-size: var(--text-body); color: var(--color-text-primary); border-radius: var(--radius-sm); }
+    .tv-row:hover { background: var(--color-surface-input); }
+    .tv-row--selected { background: color-mix(in srgb, var(--color-primary) 10%, transparent); color: var(--color-primary); font-weight: 600; }
+    .tv-chev { display: inline-block; width: 12px; font-size: 10px; color: var(--color-text-tertiary); }
+
+    /* Animation showcase (v74) */
+    .anim-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--spacing-md); }
+    .anim-cell { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .anim-box { width: 56px; height: 56px; background: var(--color-primary); color: var(--color-text-on-accent); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: var(--text-body-strong); }
+    .anim-fade-in { animation: fade-in var(--motion-duration-base) var(--motion-ease-out) both; }
+    .anim-slide-in-up { animation: slide-in-up var(--motion-duration-slow) var(--motion-ease-out) both; }
+    .anim-scale-in { animation: scale-in var(--motion-duration-base) var(--motion-ease-out) both; }
+    .anim-bounce-in { animation: bounce-in var(--motion-duration-slower) cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+    .anim-shake { animation: shake var(--motion-duration-slow) cubic-bezier(.36,.07,.19,.97); background: var(--color-error); }
+    .anim-spin { animation: spin var(--motion-duration-loop) linear infinite; background: var(--color-info); }
+    .anim-pulse { animation: pulse var(--motion-duration-loop) cubic-bezier(0.4, 0, 0.6, 1) infinite; background: var(--color-success); }
+    .anim-shimmer { position: relative; overflow: hidden; background: var(--color-surface-input); }
+    .anim-shimmer::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--color-primary) 25%, transparent) 50%, transparent 100%); animation: shimmer var(--motion-duration-loop) linear infinite; }
+    .anim-actions { display: flex; justify-content: flex-end; margin-top: var(--spacing-sm); }
+    @media (prefers-reduced-motion: reduce) {
+      .anim-fade-in, .anim-slide-in-up, .anim-scale-in, .anim-bounce-in, .anim-shake, .anim-spin, .anim-pulse, .anim-shimmer::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+    }
+
+    /* Form validation (v75) */
+    .fv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--spacing-md); }
+    .fv-cell { display: flex; flex-direction: column; gap: 4px; }
+    .fv-label { font-size: var(--text-caption); color: var(--color-text-secondary); }
+    .fv-input { padding: 8px 10px; border: 1px solid var(--color-border-default); border-radius: var(--radius-sm); background: var(--color-surface-input); font-family: inherit; font-size: var(--text-body); color: var(--color-text-primary); }
+    .fv-input:focus, .fv-input--focused { border-color: var(--color-border-focus); outline: 2px solid color-mix(in srgb, var(--color-border-focus) 30%, transparent); outline-offset: 0; }
+    .fv-input--invalid { border-color: var(--color-error); }
+    .fv-input--valid { border-color: var(--color-success); }
+    .fv-helper { font-size: var(--text-caption); color: var(--color-text-tertiary); display: inline-flex; align-items: center; gap: 6px; }
+    .fv-error { font-size: var(--text-caption); color: var(--color-error); }
+    .fv-success { font-size: var(--text-caption); color: var(--color-success); }
+    .fv-spinner { width: 12px; height: 12px; border: 2px solid var(--color-border-default); border-top-color: var(--color-primary); border-radius: 50%; animation: spin var(--motion-duration-loop) linear infinite; }
+
+    /* RTL toggle (v76) */
+    .rtl-demo { display: flex; flex-direction: column; gap: var(--spacing-sm); }
+    .rtl-row { display: flex; align-items: center; gap: var(--spacing-sm); flex-wrap: wrap; }
+    .rtl-btn { display: inline-flex; align-items: center; gap: var(--spacing-xs); }
+    .rtl-icon { transition: transform var(--motion-duration-base) var(--motion-ease-out); }
+    [dir="rtl"] .rtl-icon { transform: scaleX(-1); }
+
     /* Breadcrumb */
     .bc { display: flex; align-items: center; gap: var(--spacing-xs); font-size: var(--text-caption); flex-wrap: wrap; }
     .bc-link { color: var(--color-text-secondary); cursor: pointer; }
@@ -3416,11 +3666,49 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     ${renderShadcnDisclose(brand)}
     ${renderShadcnData(brand)}
     ${renderShadcnExtras(brand)}
+    ${renderBatchV73V78(brand)}
     ${renderTokenCatalog(tokens)}
     <p style="text-align:center;color:var(--color-text-tertiary);font-size:var(--text-caption);margin-top:var(--spacing-3xl);">
       source <code>${escape(sourceFile)}</code> · Porest Design System
     </p>
   </main>
+  <script>
+    // Animation replay (v74) — 클릭으로 keyframe 다시 실행
+    document.querySelectorAll(".anim-replay").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        var boxes = btn.closest(".sc-card").querySelectorAll(".anim-box");
+        boxes.forEach(function(box) {
+          var k = box.getAttribute("key");
+          if (!k) return;
+          // loop animation은 제외 — 이미 영구 재생 중
+          if (["spin", "pulse", "shimmer"].indexOf(k) >= 0) return;
+          box.style.animation = "none";
+          // reflow 강제
+          void box.offsetWidth;
+          box.style.animation = "";
+        });
+      });
+    });
+    // RTL 토글 (v76) — dir 속성 mirror 시각 검증
+    document.querySelectorAll(".rtl-toggle").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        var demo = document.getElementById("rtl-demo");
+        if (!demo) return;
+        var current = demo.getAttribute("dir") || "ltr";
+        var next = current === "ltr" ? "rtl" : "ltr";
+        demo.setAttribute("dir", next);
+        var label = document.getElementById("rtl-dir-label");
+        if (label) label.textContent = next;
+      });
+    });
+    // Banner dismiss (v73)
+    document.querySelectorAll(".banner-close").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        var b = btn.closest(".banner");
+        if (b) b.style.display = "none";
+      });
+    });
+  </script>
 </body>
 </html>
 `;
