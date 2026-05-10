@@ -892,6 +892,21 @@ HR은 데이터 그리드(직원 목록, 결재 큐, 출퇴근 표) 위주라 de
 - min-width (mobile-first): `@media (min-width: var(--breakpoint-lg))` — 834 이상 (tablet landscape +).
 - `--breakpoint-*` namespace는 Tailwind v4 표준이라 별칭 없이 직접 사용. 값은 Apple Store 톤 (Tailwind default와 다름).
 
+### Touch targets (v59 추가, prose-token)
+
+WCAG 2.5.5 AAA + Apple Store reference 톤 5 토큰화 — DESIGN.md shared baseline과 동일. spec 외부(prose-token)라 자체 namespace.
+
+| 토큰 | 값 | 의미 |
+|---|---|---|
+| `touch-min` | `44px` | WCAG minimum (default — 모든 hit target 권장) |
+| `touch-pill-w` | `100px` | Pill CTA min-width |
+| `touch-circular` | `44px` | Circular chip (= touch-min alias) |
+| `touch-nav-h` | `32px` | Precision desktop nav height (`breakpoint-xl` 이상) |
+| `touch-nav-w` | `80px` | Precision desktop nav min-width |
+
+#### HR 적용 가이드 (B2B 데이터 밀도)
+HR은 데이터 그리드 inline action(승인/반려 row 액션, 결재 메뉴, 평가 등급 선택) 위주 — desktop(`breakpoint-xl` 1069+)에서 `touch-nav-h` 32 / `touch-nav-w` 80 적극 사용 (mouse pointer 가정, 정밀도 우선). 모바일 화면(approval 앱, 모바일 dashboard)은 `touch-min` 44 / `touch-circular` 44 strict 적용 — 데이터 밀도 톤이지만 hit target은 보수.
+
 ## Elevation & Depth
 
 Porest는 **Tonal Layers**(표면 휘도 차)를 1차 elevation 수단으로, **Layered Shadow**를 2차 보조 수단으로 사용합니다 — Toss 톤의 절제된 깊이감.
