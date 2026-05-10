@@ -99,6 +99,15 @@
   - **Stepper**: 3 variant (horizontal / vertical / simple progress), state 5종 (completed/current/pending/error/disabled), connector line semantic 색, sequential vs free navigation, ARIA aria-current="step" + ordered list semantic.
 - HR(결재 단계 horizontal sequential / 직원 detail side drawer / numbered pagination 데이터 그리드 / 결재 처리 inline spinner) / Desk(가계부 distinct bottom sheet / load-more 모바일 / 메모 저장 spinner / vertical stepper 4단계) brand-specific prose.
 
+**v68 — Navigation batch (shadcn 확장 series 1/4)**
+- v68: 5 navigation 컴포넌트 prose-only — Breadcrumb / Sidebar / Navigation Menu / Menubar / Command (Cmd+K). 모두 새 yaml 컴포넌트 0 (기존 토큰 합성).
+  - **Breadcrumb**: 페이지 위계 경로, separator `/`, 4+ segment truncation, `aria-current="page"`.
+  - **Sidebar**: fixed (240-280px) / collapsible (펼침 240 ↔ 접힘 64) / floating (모바일 drawer). active state primary 좌측 stroke.
+  - **Navigation Menu**: single-level (header link) / mega menu (multi-column panel + featured promo). hover intent 200ms delay.
+  - **Menubar**: 데스크탑 application metaphor (File/Edit/View). Alt+key shortcut, `role="menubar"`, keyboard-first.
+  - **Command (Cmd+K)**: 전역 search/action menu, sections grouping (Suggestions/Pages/Actions), filter typing, `role="dialog"` + listbox + activedescendant.
+- HR(Sidebar fixed 데스크탑 + Menubar 결재/평가 application + Command 직원 검색) / Desk(Sidebar floating 모바일 drawer + Command 메모 fuzzy search) brand-specific prose.
+
 ### Changed
 - **v8**: `accent-*-on-dark` → `accent-*-light` rename — `-dark` suffix가 mode pair 표기와 충돌(예: `accent-hr-on-dark` vs `surface-default-dark`)
 - **v14 → v15**: HR/Desk별 `bg-page` fork 시도 → `#F5F6FA` 통일 회귀 — fork 시 `primary-hr` × `bg-page-hr` 인라인 4.14:1(AA 미달) 발생
