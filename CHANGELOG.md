@@ -137,6 +137,12 @@
 
 **shadcn 확장 4 series 완료** — 총 20 컴포넌트 (v68 navigation 5 + v69 input 5 + v70 disclosure 5 + v71 data 5). 시스템 컴포넌트 75+ 보유 (기존 55 + v68-v71 batch).
 
+**v79 — Tailwind v4 export 확장 (keyframes 자동 추출 + test 강화)**
+- v79: `scripts/build-tailwind-v4.mjs`에 `parseKeyframes` 추가 — DESIGN.md v74 Animation library `#### CSS keyframes 정의` 아래 `\`\`\`css ... \`\`\`` 블록 추출, 각 `@keyframes name { ... }` 블록 brace-balanced parser로 분리(중첩 1 level 처리). `@theme {}` 외부 root level에 출력. brand-neutral baseline이라 brand 파일(HR/Desk) 빌드 시 fallback으로 DESIGN.md 직접 read.
+- 결과: `exports/tokens.css` / `tokens.hr.css` / `tokens.desk.css` 모두 14 keyframe(fade-in/out, slide-in-{up,down,left,right}, scale-in/out, bounce-in, shake, spin, pulse, shimmer, ping) 자동 포함. `animation: fade-in var(--motion-duration-base) var(--motion-ease-out)` 컴포넌트 spec 그대로 사용 가능.
+- `scripts/test-tailwind-export.mjs` namespace 검증 확장 — breakpoint(≥5) / touch(≥5) / z-index(≥6) / @keyframes(≥14) 4 카테고리 추가. v54/v59/v65/v74 export coverage drift detection.
+- 추가 비용 0 — prose CSS code block을 그대로 산출, 별도 keyframe 정의 중복 회피.
+
 **v78 — Prose health pass 2 (spec table inline hex 정정)**
 - v78: spec 표 안 inline parenthetical hex(`token` (`#hex`)) 17건 정정 — v51-v53 vivid refresh 후 prose 표가 v10/v20 base를 그대로 인용하던 잔존 outdated reference. DESIGN.md(16건) + DESIGN.hr.md(1건) — Input error border, Badge variant 4종, Alert text light/dark variants 8종, Toast variant 4종. 정확한 현재 contrast ratio 동시 갱신(success 5.86→5.01 / error 5.34→4.83 / warning 5.27→4.64 / info 6.31→5.01 light, dark는 5.85→9.42 / 5.42→5.93 / 5.83→7.25 / 5.80→6.46).
 - `scripts/lint-prose.mjs` 확장 — extractProseHexCitations에 (B) inline parenthetical 패턴(`token` (`#hex`)) 검출 추가. (A) 표 row 패턴(이전 검사)은 fromTableRow 옵션 분리하여 ≥2 hex line이면 migration 표로 자동 skip(보수적 유지). spec 표는 1-cell 안 paren hex로 쓰는 패턴이라 history skip 영향 안 받음. 결과 — hex 인용 카운트 34→96(DESIGN.md), 4→24(HR), 4→18(Desk).

@@ -33,6 +33,10 @@ const NAMESPACE_PATTERNS = [
   { name: "motion-duration", regex: /^\s+--motion-duration-[a-z]+:/gm, minCount: 4 },
   { name: "motion-ease", regex: /^\s+--motion-ease-[a-z]+:/gm, minCount: 1 },
   { name: "overlay-dim", regex: /^\s+--overlay-dim-[a-z]+:/gm, minCount: 2 },
+  { name: "breakpoint", regex: /^\s+--breakpoint-[a-z0-9]+:/gm, minCount: 5 },
+  { name: "touch", regex: /^\s+--touch-[a-z0-9-]+:/gm, minCount: 5 },
+  { name: "z-index", regex: /^\s+--z-[a-z]+:/gm, minCount: 6 },
+  { name: "@keyframes", regex: /^@keyframes\s+[a-z][a-z0-9-]*\s*\{/gm, minCount: 14 },
 ];
 
 const BRAND_COLORS = ["primary", "primary-light", "border-focus", "border-focus-light"];

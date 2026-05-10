@@ -19,6 +19,8 @@
 
 import { readFileSync } from "node:fs";
 import { argv, stdout, exit } from "node:process";
+import { fileURLToPath } from "node:url";
+import { dirname, resolve } from "node:path";
 
 function parseArgs(arr) {
   const out = {};
@@ -139,6 +141,35 @@ function parseZIndex(md) {
   return out;
 }
 
+function parseKeyframes(md) {
+  // v74 Animation library — "#### CSS keyframes 정의" 아래 ```css ... ``` 블록 추출
+  // CSS @keyframes는 @theme 밖에 root level로 출력
+  const sectionRe = /####\s+CSS keyframes 정의[\s\S]*?```css\n([\s\S]*?)```/;
+  const m = sectionRe.exec(md);
+  if (!m) return [];
+  const block = m[1];
+  // brace 매칭 — @keyframes name { ... } (중첩 1 level 처리)
+  const out = [];
+  const startRe = /@keyframes\s+([a-z][a-z0-9-]*)\s*\{/g;
+  let sm;
+  while ((sm = startRe.exec(block)) !== null) {
+    const name = sm[1];
+    let depth = 1;
+    let i = sm.index + sm[0].length;
+    while (i < block.length && depth > 0) {
+      const c = block[i];
+      if (c === "{") depth++;
+      else if (c === "}") depth--;
+      i++;
+    }
+    if (depth === 0) {
+      const css = block.slice(sm.index, i);
+      out.push({ name, css });
+    }
+  }
+  return out;
+}
+
 const args = parseArgs(argv.slice(2));
 const source = args.source;
 if (!source) {
@@ -159,6 +190,12 @@ const overlays = parseOverlay(content);
 const breakpoints = parseBreakpoints(content);
 const touchTargets = parseTouchTargets(content);
 const zIndex = parseZIndex(content);
+// keyframes는 baseline shared — DESIGN.md에서만 정의(brand-neutral). brand 파일 빌드 시도 fallback.
+let keyframes = parseKeyframes(content);
+if (keyframes.length === 0 && source !== "DESIGN.md") {
+  const baseline = readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), "..", "DESIGN.md"), "utf8");
+  keyframes = parseKeyframes(baseline);
+}
 
 let out = "";
 out += `/* Generated from ${source} by scripts/build-tailwind-v4.mjs — do not edit. */\n`;
@@ -236,5 +273,12 @@ for (const [name, val] of Object.entries(zIndex)) {
   out += `  --${name}: ${val};\n`;
 }
 out += "}\n";
+
+if (keyframes.length > 0) {
+  out += "\n/* Keyframes (from v74 Animation library — DESIGN.md '## Motion → Animation library') */\n";
+  for (const kf of keyframes) {
+    out += `${kf.css}\n`;
+  }
+}
 
 stdout.write(out);
