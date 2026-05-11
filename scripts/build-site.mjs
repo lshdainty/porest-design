@@ -12,11 +12,69 @@
 // Phase 1 — 사이트 골격 + Landing + Token 페이지.
 // Phase 2 (미래) — 컴포넌트 페이지. Phase 3 — 조합 layout.
 
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 
 // preview.html의 데모 render 함수 + CSS 재사용 — single source of truth
+// shadcn recipe examples — Preview + Code 토글로 컴포넌트 페이지에 노출
+import { buttonExamples } from "../recipes/shadcn/examples/button-examples.mjs";
+import { inputExamples } from "../recipes/shadcn/examples/input-examples.mjs";
+import { textareaExamples } from "../recipes/shadcn/examples/textarea-examples.mjs";
+import { labelExamples } from "../recipes/shadcn/examples/label-examples.mjs";
+import { checkboxExamples } from "../recipes/shadcn/examples/checkbox-examples.mjs";
+import { radioGroupExamples } from "../recipes/shadcn/examples/radio-group-examples.mjs";
+import { switchExamples } from "../recipes/shadcn/examples/switch-examples.mjs";
+import { badgeExamples } from "../recipes/shadcn/examples/badge-examples.mjs";
+import { avatarExamples } from "../recipes/shadcn/examples/avatar-examples.mjs";
+import { cardExamples } from "../recipes/shadcn/examples/card-examples.mjs";
+import { separatorExamples } from "../recipes/shadcn/examples/separator-examples.mjs";
+import { skeletonExamples } from "../recipes/shadcn/examples/skeleton-examples.mjs";
+import { aspectRatioExamples } from "../recipes/shadcn/examples/aspect-ratio-examples.mjs";
+import { progressExamples } from "../recipes/shadcn/examples/progress-examples.mjs";
+import { scrollAreaExamples } from "../recipes/shadcn/examples/scroll-area-examples.mjs";
+import { typographyExamples } from "../recipes/shadcn/examples/typography-examples.mjs";
+import { carouselExamples } from "../recipes/shadcn/examples/carousel-examples.mjs";
+import { resizableExamples } from "../recipes/shadcn/examples/resizable-examples.mjs";
+import { alertExamples } from "../recipes/shadcn/examples/alert-examples.mjs";
+import { tooltipExamples } from "../recipes/shadcn/examples/tooltip-examples.mjs";
+import { dialogExamples } from "../recipes/shadcn/examples/dialog-examples.mjs";
+import { alertDialogExamples } from "../recipes/shadcn/examples/alert-dialog-examples.mjs";
+import { popoverExamples } from "../recipes/shadcn/examples/popover-examples.mjs";
+import { hoverCardExamples } from "../recipes/shadcn/examples/hover-card-examples.mjs";
+import { sheetExamples } from "../recipes/shadcn/examples/sheet-examples.mjs";
+import { drawerExamples } from "../recipes/shadcn/examples/drawer-examples.mjs";
+import { sonnerExamples } from "../recipes/shadcn/examples/sonner-examples.mjs";
+// Phase 4 Navigation
+import { tabsExamples } from "../recipes/shadcn/examples/tabs-examples.mjs";
+import { breadcrumbExamples } from "../recipes/shadcn/examples/breadcrumb-examples.mjs";
+import { paginationExamples } from "../recipes/shadcn/examples/pagination-examples.mjs";
+import { dropdownMenuExamples } from "../recipes/shadcn/examples/dropdown-menu-examples.mjs";
+import { contextMenuExamples } from "../recipes/shadcn/examples/context-menu-examples.mjs";
+import { menubarExamples } from "../recipes/shadcn/examples/menubar-examples.mjs";
+import { navigationMenuExamples } from "../recipes/shadcn/examples/navigation-menu-examples.mjs";
+import { commandExamples } from "../recipes/shadcn/examples/command-examples.mjs";
+import { sidebarExamples } from "../recipes/shadcn/examples/sidebar-examples.mjs";
+// Phase 5 Disclosure
+import { accordionExamples } from "../recipes/shadcn/examples/accordion-examples.mjs";
+import { collapsibleExamples } from "../recipes/shadcn/examples/collapsible-examples.mjs";
+// Phase 1 Form remaining
+import { toggleExamples } from "../recipes/shadcn/examples/toggle-examples.mjs";
+import { toggleGroupExamples } from "../recipes/shadcn/examples/toggle-group-examples.mjs";
+import { sliderExamples } from "../recipes/shadcn/examples/slider-examples.mjs";
+import { selectExamples } from "../recipes/shadcn/examples/select-examples.mjs";
+import { formExamples } from "../recipes/shadcn/examples/form-examples.mjs";
+import { inputOtpExamples } from "../recipes/shadcn/examples/input-otp-examples.mjs";
+import { comboboxExamples } from "../recipes/shadcn/examples/combobox-examples.mjs";
+import { datePickerExamples } from "../recipes/shadcn/examples/date-picker-examples.mjs";
+// Phase 6 Data
+import { tableExamples } from "../recipes/shadcn/examples/table-examples.mjs";
+import { dataTableExamples } from "../recipes/shadcn/examples/data-table-examples.mjs";
+import { calendarExamples } from "../recipes/shadcn/examples/calendar-examples.mjs";
+import { chartExamples } from "../recipes/shadcn/examples/chart-examples.mjs";
+// Display extras (shadcn 외 — Porest 자체 정의)
+import { spinnerExamples } from "../recipes/shadcn/examples/spinner-examples.mjs";
+
 import {
   brandProfile,
   pageCss as previewPageCss,
@@ -36,13 +94,186 @@ import {
   renderShadcnData,
   renderShadcnExtras,
   renderBatchV73V78,
+  renderVignettes,
 } from "./build-preview-html.mjs";
+
+const SHADCN_EXAMPLES = {
+  // Form (Phase 1)
+  button: buttonExamples,
+  input: inputExamples,
+  textarea: textareaExamples,
+  label: labelExamples,
+  checkbox: checkboxExamples,
+  "radio-group": radioGroupExamples,
+  switch: switchExamples,
+  // Display (Phase 2)
+  badge: badgeExamples,
+  avatar: avatarExamples,
+  card: cardExamples,
+  separator: separatorExamples,
+  skeleton: skeletonExamples,
+  "aspect-ratio": aspectRatioExamples,
+  progress: progressExamples,
+  "scroll-area": scrollAreaExamples,
+  typography: typographyExamples,
+  carousel: carouselExamples,
+  resizable: resizableExamples,
+  // Overlay (Phase 3)
+  alert: alertExamples,
+  tooltip: tooltipExamples,
+  dialog: dialogExamples,
+  "alert-dialog": alertDialogExamples,
+  popover: popoverExamples,
+  "hover-card": hoverCardExamples,
+  sheet: sheetExamples,
+  drawer: drawerExamples,
+  sonner: sonnerExamples,
+  // Phase 4 Navigation
+  tabs: tabsExamples,
+  breadcrumb: breadcrumbExamples,
+  pagination: paginationExamples,
+  "dropdown-menu": dropdownMenuExamples,
+  "context-menu": contextMenuExamples,
+  menubar: menubarExamples,
+  "navigation-menu": navigationMenuExamples,
+  command: commandExamples,
+  sidebar: sidebarExamples,
+  // Phase 5 Disclosure
+  accordion: accordionExamples,
+  collapsible: collapsibleExamples,
+  // Phase 1 Form remaining
+  toggle: toggleExamples,
+  "toggle-group": toggleGroupExamples,
+  slider: sliderExamples,
+  select: selectExamples,
+  form: formExamples,
+  "input-otp": inputOtpExamples,
+  combobox: comboboxExamples,
+  "date-picker": datePickerExamples,
+  // Phase 6 Data
+  table: tableExamples,
+  "data-table": dataTableExamples,
+  calendar: calendarExamples,
+  chart: chartExamples,
+  // Display extras
+  spinner: spinnerExamples,
+};
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = resolve(ROOT, "exports/site");
 
 function escape(s) {
   return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+// 간단 Markdown → HTML 변환기 — specs/components/*.md 렌더 전용 (외부 의존성 0).
+// 처리: heading(#~####) / blockquote(>) / ul(- item) / fenced code(```) / table(|) / paragraph + inline (**bold** / `code` / [text](url)).
+function mdToHtml(md) {
+  const lines = md.split("\n");
+  const out = [];
+  let i = 0;
+
+  function inline(s) {
+    // escape 먼저 → 그 다음 inline 마크업을 HTML로 (escape 후라 안전한 패턴만 추가)
+    let t = escape(s);
+    // inline code `..`
+    t = t.replace(/`([^`]+)`/g, (_, c) => `<code>${c}</code>`);
+    // bold **..**
+    t = t.replace(/\*\*([^*]+)\*\*/g, (_, c) => `<strong>${c}</strong>`);
+    // link [text](url)
+    t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => `<a href="${url}">${text}</a>`);
+    return t;
+  }
+
+  while (i < lines.length) {
+    const line = lines[i];
+
+    // fenced code block
+    if (/^```/.test(line)) {
+      const lang = line.slice(3).trim();
+      const buf = [];
+      i++;
+      while (i < lines.length && !/^```/.test(lines[i])) {
+        buf.push(lines[i]);
+        i++;
+      }
+      i++; // skip closing ```
+      out.push(`<pre><code${lang ? ` class="lang-${escape(lang)}"` : ""}>${escape(buf.join("\n"))}</code></pre>`);
+      continue;
+    }
+
+    // heading
+    const h = /^(#{1,4})\s+(.*)$/.exec(line);
+    if (h) {
+      const lvl = h[1].length;
+      out.push(`<h${lvl}>${inline(h[2])}</h${lvl}>`);
+      i++;
+      continue;
+    }
+
+    // blockquote (연속된 > 줄을 한 블록으로)
+    if (/^>\s?/.test(line)) {
+      const buf = [];
+      while (i < lines.length && /^>\s?/.test(lines[i])) {
+        buf.push(lines[i].replace(/^>\s?/, ""));
+        i++;
+      }
+      out.push(`<blockquote>${inline(buf.join(" "))}</blockquote>`);
+      continue;
+    }
+
+    // table — 헤더 + separator + 0..N data row
+    if (/^\|.*\|\s*$/.test(line) && i + 1 < lines.length && /^\|[\s:|-]+\|\s*$/.test(lines[i + 1])) {
+      const splitRow = (l) => l.replace(/^\|/, "").replace(/\|\s*$/, "").split("|").map((c) => c.trim());
+      const header = splitRow(line);
+      i += 2; // skip header + separator
+      const rows = [];
+      while (i < lines.length && /^\|.*\|\s*$/.test(lines[i])) {
+        rows.push(splitRow(lines[i]));
+        i++;
+      }
+      const thead = `<thead><tr>${header.map((c) => `<th>${inline(c)}</th>`).join("")}</tr></thead>`;
+      const tbody = `<tbody>${rows.map((r) => `<tr>${r.map((c) => `<td>${inline(c)}</td>`).join("")}</tr>`).join("")}</tbody>`;
+      out.push(`<table class="spec-table">${thead}${tbody}</table>`);
+      continue;
+    }
+
+    // ul (연속된 - item 또는 * item)
+    if (/^[-*]\s+/.test(line)) {
+      const items = [];
+      while (i < lines.length && /^[-*]\s+/.test(lines[i])) {
+        items.push(lines[i].replace(/^[-*]\s+/, ""));
+        i++;
+      }
+      out.push(`<ul>${items.map((it) => `<li>${inline(it)}</li>`).join("")}</ul>`);
+      continue;
+    }
+
+    // 빈 줄
+    if (line.trim() === "") {
+      i++;
+      continue;
+    }
+
+    // paragraph (다음 빈 줄까지)
+    const buf = [line];
+    i++;
+    while (i < lines.length && lines[i].trim() !== "" && !/^(#{1,4}\s|>\s|```|[-*]\s|\|)/.test(lines[i])) {
+      buf.push(lines[i]);
+      i++;
+    }
+    out.push(`<p>${inline(buf.join(" "))}</p>`);
+  }
+
+  return out.join("\n");
+}
+
+// kebab-case slug → PascalCase 컴포넌트 이름. "button" → "Button", "input-textarea" → "InputTextarea".
+function capitalize(slug) {
+  return String(slug)
+    .split("-")
+    .map(p => p.charAt(0).toUpperCase() + p.slice(1))
+    .join("");
 }
 
 // ============================================================
@@ -57,16 +288,45 @@ function buildTokens() {
   const hr = readFileSync(resolve(ROOT, "exports/tokens.hr.css"), "utf8");
   const desk = readFileSync(resolve(ROOT, "exports/tokens.desk.css"), "utf8");
 
-  // Default에 brand fallback 4 토큰 추가
+  // Default에 brand fallback 4 토큰 + shadcn Tailwind v4 utility alias 추가.
+  // @theme 안에 정의해야 Tailwind v4 CDN이 utility(`ring-ring`, `bg-secondary`,
+  // `text-muted-foreground` 등)를 자동 생성함. 외부 tokens.css의 :root에만 두면
+  // CSS variable로만 작동하고 utility는 미생성 — 컴포넌트 className이 무용지물됨.
+  const shadcnAliases = [
+    "  /* shadcn Tailwind v4 utility alias — bg-secondary, ring-ring, text-muted-foreground 등 자동 생성 */",
+    "  --color-primary-foreground: var(--color-text-on-accent);",
+    "  --color-secondary: var(--color-surface-input);",
+    "  --color-secondary-foreground: var(--color-text-primary);",
+    "  --color-muted: var(--color-surface-input);",
+    "  --color-muted-foreground: var(--color-text-secondary);",
+    "  --color-accent: var(--color-surface-input);",
+    "  --color-accent-foreground: var(--color-text-primary);",
+    "  --color-destructive: var(--color-error);",
+    "  --color-destructive-foreground: var(--color-text-on-accent);",
+    "  --color-border: var(--color-border-default);",
+    "  --color-input: var(--color-border-default);",
+    "  --color-ring: var(--color-border-focus);",
+    "  --color-card: var(--color-surface-default);",
+    "  --color-card-foreground: var(--color-text-primary);",
+    "  --color-popover: var(--color-surface-default);",
+    "  --color-popover-foreground: var(--color-text-primary);",
+    "  --color-background: var(--color-bg-page);",
+    "  --color-foreground: var(--color-text-primary);",
+  ].join("\n");
+
   const defaultWithFallback = def.replace(
     /@theme\s*\{/,
-    "@theme {\n  /* Brand fallback — Default = neutral, no specific accent */\n  --color-primary: #1a1f2e;\n  --color-primary-light: #4a5568;\n  --color-border-focus: #1a1f2e;\n  --color-border-focus-light: #4a5568;"
+    "@theme {\n  /* Brand fallback — Default = neutral, no specific accent */\n  --color-primary: #1a1f2e;\n  --color-primary-light: #4a5568;\n  --color-border-focus: #1a1f2e;\n  --color-border-focus-light: #4a5568;\n" + shadcnAliases + "\n",
   );
 
   // @theme 내용 추출 → :root 미러 (브라우저가 즉시 적용)
   const themeMatch = /@theme\s*\{([\s\S]*?)\n\}/.exec(defaultWithFallback);
   const themeContent = themeMatch ? themeMatch[1] : "";
   const rootBlock = `:root, [data-brand="default"] {${themeContent}\n}`;
+
+  // Keyframes — preview tokens*.css의 Animation library 추출 (모든 브랜드 공통)
+  const keyframesMatch = def.match(/(\/\* Keyframes[\s\S]*?)$/);
+  const keyframes = keyframesMatch ? keyframesMatch[1].trim() : "";
 
   // brand override (@theme 외부, CSS variable만 재정의)
   const brandOverride = (cssText, attr) => {
@@ -91,24 +351,20 @@ function buildTokens() {
     "  --color-text-disabled: var(--color-text-disabled-dark);",
     "  --color-border-default: var(--color-border-default-dark);",
     "  --color-border-strong: var(--color-border-strong-dark);",
-    "  --color-success: var(--color-success-light);",
-    "  --color-error: var(--color-error-light);",
-    "  --color-warning: var(--color-warning-light);",
-    "  --color-info: var(--color-info-light);",
+    "  /* focus ring: 다크 표면 위에서 시인성 확보 — primary-light(=border-focus-light)로 swap */",
+    "  --color-border-focus: var(--color-border-focus-light);",
     "  --shadow-sm: var(--shadow-sm-dark);",
     "  --shadow-md: var(--shadow-md-dark);",
     "  --shadow-lg: var(--shadow-lg-dark);",
     "  --shadow-xl: var(--shadow-xl-dark);",
     "}",
-    "[data-theme=\"dark\"][data-brand=\"hr\"], [data-theme=\"dark\"] [data-brand=\"hr\"] {",
-    "  --color-primary: var(--color-primary-light);",
-    "  --color-border-focus: var(--color-border-focus-light);",
-    "}",
-    "[data-theme=\"dark\"][data-brand=\"desk\"], [data-theme=\"dark\"] [data-brand=\"desk\"] {",
-    "  --color-primary: var(--color-primary-light);",
-    "  --color-border-focus: var(--color-border-focus-light);",
-    "}",
   ].join("\n");
+
+  // shadcn alias bridge — recipes/shadcn/styles/porest-shadcn-bridge.css 그대로 합침
+  // (`--ring`, `--color-ring`, `--color-primary-foreground` 등 — shadcn 컴포넌트가
+  // 기대하는 변수명을 Porest 토큰으로 alias)
+  const bridgePath = resolve(ROOT, "recipes/shadcn/styles/porest-shadcn-bridge.css");
+  const bridgeCss = existsSync(bridgePath) ? readFileSync(bridgePath, "utf8") : "";
 
   // === rootCss: 외부 stylesheet ===
   const rootCss = [
@@ -122,6 +378,10 @@ function buildTokens() {
     brandOverride(desk, "desk"),
     "",
     darkBlock,
+    "",
+    keyframes,
+    "",
+    bridgeCss,
   ].join("\n");
 
   // === tailwindBlock: 인라인 <style type="text/tailwindcss"> ===
@@ -135,6 +395,8 @@ function buildTokens() {
     brandOverride(desk, "desk"),
     "",
     darkBlock,
+    "",
+    bridgeCss,
   ].join("\n");
 
   return { rootCss, tailwindBlock };
@@ -155,9 +417,13 @@ body {
   margin: 0;
   background: var(--color-bg-page);
   color: var(--color-text-primary);
-  font-size: var(--text-body);
+  font-size: var(--text-body-md);
   line-height: var(--text-body--line-height);
   letter-spacing: var(--text-body--letter-spacing);
+  /* macOS subpixel antialiasing 끄고 grayscale로 — preview-html과 시각 통일(얇은 Toss 톤).
+     기본 subpixel은 한글 같은 두께 글꼴을 더 굵게 보이게 함. */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* === Layout === */
@@ -188,12 +454,12 @@ body {
 
 /* === Sidebar === */
 .brand-row { display: flex; align-items: center; gap: 8px; padding: 4px 8px 24px; }
-.brand-row strong { font-size: var(--text-heading-md); font-weight: 700; color: var(--color-primary); letter-spacing: -0.01em; }
-.brand-row .brand-tag { font-size: var(--text-caption-sm); padding: 2px 8px; border-radius: var(--radius-sm); background: var(--color-surface-input); color: var(--color-text-tertiary); font-weight: 600; }
+.brand-row strong { font-size: var(--text-title-md); font-weight: 700; color: var(--color-primary); letter-spacing: -0.01em; }
+.brand-row .brand-tag { font-size: var(--text-label-sm); padding: 2px 8px; border-radius: var(--radius-sm); background: var(--color-surface-input); color: var(--color-text-tertiary); font-weight: 600; }
 
 .nav-section { margin-bottom: 24px; }
 .nav-eyebrow {
-  font-size: var(--text-caption-sm);
+  font-size: var(--text-label-sm);
   font-weight: 700;
   color: var(--color-text-tertiary);
   text-transform: uppercase;
@@ -208,7 +474,7 @@ body {
   border-radius: var(--radius-sm);
   color: var(--color-text-secondary);
   text-decoration: none;
-  font-size: var(--text-caption-md);
+  font-size: var(--text-label-md);
   transition: all var(--motion-duration-fast) var(--motion-ease-out);
 }
 .nav-list a:hover { background: var(--color-surface-input); color: var(--color-text-primary); }
@@ -233,7 +499,7 @@ body {
   border: 0; background: transparent;
   padding: 4px 12px;
   border-radius: var(--radius-full);
-  font-size: var(--text-caption-sm); font-weight: 600;
+  font-size: var(--text-label-sm); font-weight: 600;
   cursor: pointer;
   color: var(--color-text-secondary);
   transition: all var(--motion-duration-fast) var(--motion-ease-out);
@@ -250,7 +516,7 @@ body {
   border-radius: var(--radius-full);
   padding: 4px 10px;
   cursor: pointer;
-  font-size: var(--text-caption-sm); font-weight: 500;
+  font-size: var(--text-label-sm); font-weight: 500;
   color: var(--color-text-secondary);
   display: inline-flex; align-items: center; gap: 6px;
   flex-shrink: 0;
@@ -261,28 +527,30 @@ body {
 
 /* === Content typography === */
 .content h1 {
-  font-size: var(--text-heading-xl);
+  font-size: var(--text-display-md);
   font-weight: 700;
   margin: 0 0 8px;
   letter-spacing: -0.02em;
   line-height: 1.1;
 }
 .content .lede {
-  font-size: var(--text-body-md);
+  font-size: var(--text-body-lg);
   color: var(--color-text-secondary);
   margin: 0 0 40px;
   line-height: 1.6;
 }
-.content h2 {
-  font-size: var(--text-heading-lg);
+/* 직접 자식 selector로 격리 — spec-section 안의 h2, example-preview 안의
+   DialogTitle(h2)에 무차별 적용되어 양쪽 라인 충돌이 생겼던 문제 fix. */
+.content > h2 {
+  font-size: var(--text-display-sm);
   font-weight: 700;
   margin: 56px 0 16px;
   padding-bottom: 12px;
   border-bottom: 1px solid var(--color-border-default);
   letter-spacing: -0.01em;
 }
-.content h3 { font-size: var(--text-heading-md); font-weight: 600; margin: 32px 0 12px; }
-.content h4 { font-size: var(--text-heading-sm); font-weight: 600; margin: 24px 0 8px; color: var(--color-text-secondary); }
+.content h3 { font-size: var(--text-title-md); font-weight: 600; margin: 32px 0 12px; }
+.content h4 { font-size: var(--text-title-sm); font-weight: 600; margin: 24px 0 8px; color: var(--color-text-secondary); }
 .content p { margin: 12px 0; color: var(--color-text-primary); }
 .content code {
   background: var(--color-surface-input);
@@ -315,7 +583,7 @@ body {
 }
 .hero-eyebrow {
   display: inline-block;
-  font-size: var(--text-caption-sm);
+  font-size: var(--text-label-sm);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: 700;
@@ -330,7 +598,7 @@ body {
   margin: 0 0 20px;
 }
 .hero p {
-  font-size: var(--text-body-md);
+  font-size: var(--text-body-lg);
   line-height: 1.6;
   max-width: 640px;
   color: var(--color-text-secondary);
@@ -342,7 +610,7 @@ body {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 10px 20px;
   border-radius: var(--radius-md);
-  font-size: var(--text-body); font-weight: 600;
+  font-size: var(--text-body-md); font-weight: 600;
   cursor: pointer; border: 0;
   font-family: inherit;
   text-decoration: none;
@@ -350,8 +618,8 @@ body {
 }
 .btn--primary { background: var(--color-primary); color: var(--color-text-on-accent); }
 .btn--primary:hover { box-shadow: var(--shadow-md); }
-.btn--outlined { background: transparent; color: var(--color-primary); border: 1px solid var(--color-primary); }
-.btn--outlined:hover { background: color-mix(in srgb, var(--color-primary) 6%, transparent); }
+.btn--outline { background: transparent; color: var(--color-primary); border: 1px solid var(--color-primary); }
+.btn--outline:hover { background: color-mix(in srgb, var(--color-primary) 6%, transparent); }
 .btn--ghost { background: transparent; color: var(--color-text-primary); }
 .btn--ghost:hover { background: var(--color-surface-input); }
 
@@ -371,14 +639,14 @@ body {
 }
 .identity-tag {
   display: inline-block;
-  font-size: var(--text-caption-sm);
+  font-size: var(--text-label-sm);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--color-text-tertiary);
 }
-.identity-card h3 { margin: 0; font-size: var(--text-heading-sm); }
-.identity-card p { margin: 0; color: var(--color-text-secondary); font-size: var(--text-caption-md); line-height: 1.6; }
+.identity-card h3 { margin: 0; font-size: var(--text-title-sm); }
+.identity-card p { margin: 0; color: var(--color-text-secondary); font-size: var(--text-label-md); line-height: 1.6; }
 .identity-swatch {
   width: 56px; height: 56px;
   border-radius: var(--radius-md);
@@ -399,8 +667,8 @@ body {
 }
 .swatch-color { height: 80px; }
 .swatch-meta { padding: 12px; display: flex; flex-direction: column; gap: 2px; }
-.swatch-name { font-size: var(--text-caption-md); font-weight: 600; font-family: ui-monospace, monospace; }
-.swatch-hex { font-size: var(--text-caption-sm); color: var(--color-text-tertiary); font-family: ui-monospace, monospace; }
+.swatch-name { font-size: var(--text-label-md); font-weight: 600; font-family: ui-monospace, monospace; }
+.swatch-hex { font-size: var(--text-label-sm); color: var(--color-text-tertiary); font-family: ui-monospace, monospace; }
 
 .spec-grid {
   display: grid;
@@ -414,7 +682,7 @@ body {
   border-radius: var(--radius-lg);
   padding: 20px;
 }
-.spec-card h4 { margin: 0 0 12px; font-size: var(--text-caption-md); color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.06em; font-family: ui-monospace, monospace; }
+.spec-card h4 { margin: 0 0 12px; font-size: var(--text-label-md); color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.06em; font-family: ui-monospace, monospace; }
 
 .type-row {
   display: grid; grid-template-columns: 200px 1fr; gap: 24px;
@@ -423,7 +691,7 @@ body {
   border-bottom: 1px solid var(--color-border-default);
 }
 .type-row:last-child { border-bottom: 0; }
-.type-row .meta { font-size: var(--text-caption-sm); color: var(--color-text-tertiary); font-family: ui-monospace, monospace; line-height: 1.6; }
+.type-row .meta { font-size: var(--text-label-sm); color: var(--color-text-tertiary); font-family: ui-monospace, monospace; line-height: 1.6; }
 .type-row .meta strong { color: var(--color-text-primary); display: block; margin-bottom: 4px; }
 .type-row .sample { color: var(--color-text-primary); }
 
@@ -434,7 +702,7 @@ body {
   border-bottom: 1px solid var(--color-border-default);
 }
 .spacing-row:last-child { border-bottom: 0; }
-.spacing-name { font-family: ui-monospace, monospace; font-size: var(--text-caption-md); font-weight: 600; }
+.spacing-name { font-family: ui-monospace, monospace; font-size: var(--text-label-md); font-weight: 600; }
 .spacing-value { font-size: var(--text-caption); color: var(--color-text-tertiary); font-family: ui-monospace, monospace; }
 .spacing-bar { height: 24px; background: color-mix(in srgb, var(--color-primary) 30%, transparent); border-radius: var(--radius-sm); }
 
@@ -446,8 +714,8 @@ body {
 .shadow-card { background: var(--color-surface-default); border-radius: var(--radius-md); padding: 24px; text-align: center; }
 
 .motion-card { background: var(--color-surface-default); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); padding: 20px; display: flex; flex-direction: column; gap: 12px; align-items: center; }
-.motion-name { font-family: ui-monospace, monospace; font-size: var(--text-caption-md); font-weight: 600; }
-.motion-value { font-size: var(--text-caption-sm); color: var(--color-text-tertiary); font-family: ui-monospace, monospace; }
+.motion-name { font-family: ui-monospace, monospace; font-size: var(--text-label-md); font-weight: 600; }
+.motion-value { font-size: var(--text-label-sm); color: var(--color-text-tertiary); font-family: ui-monospace, monospace; }
 .motion-demo { width: 56px; height: 56px; border-radius: var(--radius-md); background: var(--color-primary); }
 
 @keyframes site-fade-in { from { opacity: 0 } to { opacity: 1 } }
@@ -457,7 +725,7 @@ body {
 .bp-row:last-child { border-bottom: 0; }
 .bp-name { font-family: ui-monospace, monospace; font-weight: 600; }
 .bp-value { color: var(--color-text-tertiary); font-family: ui-monospace, monospace; font-size: var(--text-caption); }
-.bp-note { color: var(--color-text-secondary); font-size: var(--text-caption-md); }
+.bp-note { color: var(--color-text-secondary); font-size: var(--text-label-md); }
 
 .zindex-stack { position: relative; height: 280px; background: var(--color-bg-page); border-radius: var(--radius-md); padding: 16px; overflow: hidden; }
 .zindex-card {
@@ -513,7 +781,7 @@ body {
 }
 .example-tabs { display: inline-flex; gap: 0; }
 .example-tab {
-  font-size: var(--text-caption-sm);
+  font-size: var(--text-label-sm);
   font-weight: 600;
   padding: 4px 12px;
   background: transparent;
@@ -530,7 +798,7 @@ body {
   border: 0;
   background: transparent;
   cursor: pointer;
-  font-size: var(--text-caption-sm);
+  font-size: var(--text-label-sm);
   color: var(--color-text-secondary);
   font-family: inherit;
   padding: 4px 8px;
@@ -540,8 +808,10 @@ body {
 .example-copy.copied { color: var(--color-success); }
 .example-block pre { margin: 0; padding: 16px 20px; background: transparent; border: 0; border-radius: 0; }
 .example-block pre code { background: transparent; padding: 0; }
-.example-label { font-size: var(--text-caption-sm); color: var(--color-text-tertiary); padding: 6px 16px 12px; font-style: italic; }
-.example-preview { padding: 32px 24px; background: var(--color-bg-page); min-height: 120px; display: flex; align-items: center; justify-content: center; }
+.example-label { font-size: var(--text-label-sm); color: var(--color-text-tertiary); padding: 6px 16px 12px; font-style: italic; }
+/* font-family 명시 — Tailwind v4 browser CDN의 preflight가 body font-family를
+   override할 수 있어, preview wrapper에서 Pretendard을 강제로 다시 인용. */
+.example-preview { padding: 32px 24px; background: var(--color-bg-page); min-height: 120px; display: flex; align-items: center; justify-content: center; font-family: var(--font-sans); }
 .example-preview > .preview-frame { width: 100%; max-width: 600px; }
 .example-code { background: var(--color-surface-default); }
 
@@ -553,7 +823,7 @@ body {
   background: color-mix(in srgb, var(--color-primary) 6%, transparent);
   border-radius: 0 var(--radius-md) var(--radius-md) 0;
   margin: 16px 0;
-  font-size: var(--text-caption-md);
+  font-size: var(--text-label-md);
 }
 .callout strong { color: var(--color-primary); }
 
@@ -586,6 +856,135 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* === Spec section (M3 톤 detailed spec, specs/components/*.md 렌더) === */
+.spec-section {
+  margin: 32px 0 48px;
+  padding: 24px;
+  border: 1px solid var(--color-border-default);
+  border-radius: 12px;
+  background: var(--color-surface-default);
+}
+.spec-section > h1:first-child {
+  margin-top: 0;
+  font-size: var(--text-display-sm);
+  line-height: var(--text-display-sm--line-height);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+.spec-section h2 {
+  margin: 32px 0 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border-default);
+  font-size: var(--text-title-lg);
+  line-height: var(--text-title-lg--line-height);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+.spec-section h3 {
+  margin: 20px 0 8px;
+  font-size: var(--text-title-md);
+  line-height: var(--text-title-md--line-height);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+.spec-section h4 {
+  margin: 16px 0 6px;
+  font-size: var(--text-title-sm);
+  line-height: var(--text-title-sm--line-height);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+.spec-section p {
+  margin: 0 0 12px;
+  font-size: var(--text-body-md);
+  line-height: var(--text-body-md--line-height);
+  color: var(--color-text-primary);
+}
+.spec-section ul {
+  margin: 0 0 12px;
+  padding-left: 20px;
+}
+.spec-section li {
+  margin: 4px 0;
+  font-size: var(--text-body-md);
+  line-height: var(--text-body-md--line-height);
+  color: var(--color-text-primary);
+}
+.spec-section blockquote {
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  border-left: 3px solid var(--color-border-focus);
+  background: color-mix(in srgb, var(--color-border-focus) 6%, transparent);
+  border-radius: 0 4px 4px 0;
+  font-size: var(--text-body-md);
+  line-height: var(--text-body-md--line-height);
+  color: var(--color-text-primary);
+}
+.spec-section code {
+  padding: 1px 6px;
+  background: var(--color-surface-input);
+  border-radius: 3px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9em;
+  color: var(--color-text-primary);
+}
+.spec-section pre {
+  margin: 12px 0 16px;
+  padding: 16px;
+  background: var(--color-surface-input);
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--text-body-sm);
+  line-height: 1.6;
+  color: var(--color-text-primary);
+}
+.spec-section pre code {
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+}
+.spec-section table.spec-table {
+  width: 100%;
+  margin: 8px 0 16px;
+  border-collapse: collapse;
+  font-size: var(--text-body-sm);
+  line-height: 1.5;
+}
+.spec-section table.spec-table thead {
+  background: var(--color-surface-input);
+}
+.spec-section table.spec-table th {
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  border-bottom: 1px solid var(--color-border-default);
+}
+.spec-section table.spec-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border-default);
+  color: var(--color-text-primary);
+  vertical-align: top;
+}
+.spec-section table.spec-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+.spec-section a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--color-primary) 40%, transparent);
+  text-underline-offset: 2px;
+}
+.spec-section a:hover {
+  text-decoration-color: var(--color-primary);
+}
+.tag-spec {
+  background: color-mix(in srgb, var(--color-border-focus) 12%, transparent);
+  color: var(--color-primary);
+  border: 1px solid color-mix(in srgb, var(--color-border-focus) 30%, transparent);
 }
 `;
 }
@@ -858,7 +1257,7 @@ function pageLanding() {
   <p>HR과 Desk, 두 서비스를 위한 단일 디자인 시스템. 한국어 우선, 전 연령 접근성, Toss 톤의 절제와 신뢰감을 레퍼런스로 삼아 토큰부터 컴포넌트까지 일관된 톤을 정의합니다.</p>
   <div class="hero-actions">
     <a class="btn btn--primary" href="./tokens/colors.html">토큰 둘러보기</a>
-    <a class="btn btn--outlined" href="https://github.com/lshdainty/porest-design">GitHub</a>
+    <a class="btn btn--outline" href="https://github.com/lshdainty/porest-design">GitHub</a>
   </div>
 </section>
 
@@ -914,17 +1313,17 @@ npm run build:site</code></pre>
   <div class="spec-grid">
     <div class="spec-card">
       <h4>Tokens</h4>
-      <p style="font-size: var(--text-display-md); font-weight: 700; color: var(--color-primary); margin: 0;">180+</p>
+      <p style="font-size: var(--text-title-md); font-weight: 700; color: var(--color-primary); margin: 0;">180+</p>
       <p style="margin: 4px 0 0; font-size: var(--text-caption); color: var(--color-text-tertiary);">colors · typography · spacing · radius · shadow · motion · breakpoint · touch · z-index · keyframes</p>
     </div>
     <div class="spec-card">
       <h4>Components</h4>
-      <p style="font-size: var(--text-display-md); font-weight: 700; color: var(--color-primary); margin: 0;">80+</p>
+      <p style="font-size: var(--text-title-md); font-weight: 700; color: var(--color-primary); margin: 0;">80+</p>
       <p style="margin: 4px 0 0; font-size: var(--text-caption); color: var(--color-text-tertiary);">shadcn/ui ~100% coverage + Banner/Tag/Popover/File Upload/Treeview 누락 보강</p>
     </div>
     <div class="spec-card">
       <h4>Milestones</h4>
-      <p style="font-size: var(--text-display-md); font-weight: 700; color: var(--color-primary); margin: 0;">v82</p>
+      <p style="font-size: var(--text-title-md); font-weight: 700; color: var(--color-primary); margin: 0;">v82</p>
       <p style="margin: 4px 0 0; font-size: var(--text-caption); color: var(--color-text-tertiary);">v1 → v82 누적 milestone, DESIGN.history/ milestone 백업 1:1</p>
     </div>
   </div>
@@ -1212,7 +1611,7 @@ function pageShadows() {
     cards += `<div class="shadow-card" style="box-shadow: var(--${s.name});">
       <div style="font-family: ui-monospace, monospace; font-weight: 600;">${escape(s.name)}</div>
       <div style="font-size: var(--text-caption); color: var(--color-text-tertiary); margin-top: 4px;">${escape(s.desc)}</div>
-      <div style="font-size: var(--text-caption-sm); color: var(--color-text-secondary); margin-top: 8px;">${escape(s.use)}</div>
+      <div style="font-size: var(--text-label-sm); color: var(--color-text-secondary); margin-top: 8px;">${escape(s.use)}</div>
     </div>`;
   }
   const body = `
@@ -1264,7 +1663,7 @@ function pageMotion() {
       <div class="motion-demo" style="animation: site-fade-in ${d.value} var(--motion-ease-out) infinite alternate;"></div>
       <div class="motion-name">${escape(d.name)}</div>
       <div class="motion-value">${escape(d.value)}</div>
-      <div style="font-size: var(--text-caption-sm); color: var(--color-text-secondary); text-align: center;">${escape(d.use)}</div>
+      <div style="font-size: var(--text-label-sm); color: var(--color-text-secondary); text-align: center;">${escape(d.use)}</div>
     </div>`;
   }
   let eRows = "";
@@ -1273,7 +1672,7 @@ function pageMotion() {
       <div class="motion-demo" style="animation: site-spin var(--motion-duration-loop) ${e.value === 'linear' ? 'linear' : `var(--motion-ease-out)`} infinite;"></div>
       <div class="motion-name">${escape(e.name)}</div>
       <div class="motion-value" style="word-break: break-all; text-align: center;">${escape(e.value)}</div>
-      <div style="font-size: var(--text-caption-sm); color: var(--color-text-secondary); text-align: center;">${escape(e.use)}</div>
+      <div style="font-size: var(--text-label-sm); color: var(--color-text-secondary); text-align: center;">${escape(e.use)}</div>
     </div>`;
   }
 
@@ -1494,41 +1893,79 @@ function parseExamplesMd() {
 }
 
 // 카테고리 매핑 (slug → { category, sortKey })
-const COMPONENT_CATEGORIES = {
-  "button": { category: "Forms", sort: 1 },
-  "input-textarea": { category: "Forms", sort: 2 },
-  "select-combobox": { category: "Forms", sort: 3 },
-  "checkbox-radio-switch": { category: "Forms", sort: 4 },
-  "form-layout-validation": { category: "Forms", sort: 5 },
-  "file-upload": { category: "Forms", sort: 6 },
+// shadcn/ui 공식 컴포넌트 카탈로그 (49개) — https://ui.shadcn.com/docs/components
+// 각 항목: slug, name, category, description.
+// 페이지 1대1 매핑: 묶지 않음 (input-textarea 같은 묶음 폐기).
+const SHADCN_CATALOG = [
+  // Form (15)
+  { slug: "button", name: "Button", category: "Form", description: "주요 액션을 트리거하는 버튼. variant 6종 × size 4종." },
+  { slug: "checkbox", name: "Checkbox", category: "Form", description: "여러 선택 가능한 박스." },
+  { slug: "combobox", name: "Combobox", category: "Form", description: "검색·필터 가능한 select." },
+  { slug: "date-picker", name: "Date Picker", category: "Form", description: "calendar + popover 조합 날짜 선택." },
+  { slug: "form", name: "Form", category: "Form", description: "react-hook-form + zod 통합 폼." },
+  { slug: "input", name: "Input", category: "Form", description: "한 줄 텍스트 입력." },
+  { slug: "input-otp", name: "Input OTP", category: "Form", description: "OTP / 인증 코드 입력." },
+  { slug: "label", name: "Label", category: "Form", description: "form 레이블 (label-md, peer 인식)." },
+  { slug: "radio-group", name: "Radio Group", category: "Form", description: "여러 옵션 중 하나만 선택." },
+  { slug: "select", name: "Select", category: "Form", description: "옵션 드롭다운 — Radix Select 베이스." },
+  { slug: "slider", name: "Slider", category: "Form", description: "범위 값 선택 슬라이더." },
+  { slug: "switch", name: "Switch", category: "Form", description: "on/off 토글." },
+  { slug: "textarea", name: "Textarea", category: "Form", description: "여러 줄 텍스트 입력." },
+  { slug: "toggle", name: "Toggle", category: "Form", description: "on/off 버튼 (인라인)." },
+  { slug: "toggle-group", name: "Toggle Group", category: "Form", description: "단일 또는 복수 선택 토글 그룹." },
 
-  "card": { category: "Layout", sort: 1 },
-  "avatar": { category: "Layout", sort: 2 },
+  // Display (11)
+  { slug: "aspect-ratio", name: "Aspect Ratio", category: "Display", description: "고정 비율 컨테이너 (16:9, 4:3 등)." },
+  { slug: "avatar", name: "Avatar", category: "Display", description: "프로필 이미지 + fallback 텍스트." },
+  { slug: "badge", name: "Badge", category: "Display", description: "상태·카테고리 마이크로 라벨." },
+  { slug: "card", name: "Card", category: "Display", description: "콘텐츠 컨테이너 (header / content / footer)." },
+  { slug: "carousel", name: "Carousel", category: "Display", description: "슬라이드 갤러리 — Embla 베이스." },
+  { slug: "progress", name: "Progress", category: "Display", description: "진행률 막대 (determinate / indeterminate)." },
+  { slug: "spinner", name: "Spinner", category: "Display", description: "원형 indeterminate 인디케이터 (shadcn 카탈로그 외, Porest 자체 정의)." },
+  { slug: "resizable", name: "Resizable", category: "Display", description: "드래그로 크기 조절 가능 패널." },
+  { slug: "scroll-area", name: "Scroll Area", category: "Display", description: "스타일된 스크롤 컨테이너." },
+  { slug: "separator", name: "Separator", category: "Display", description: "콘텐츠 사이 구분선." },
+  { slug: "skeleton", name: "Skeleton", category: "Display", description: "로딩 placeholder (shimmer)." },
+  { slug: "typography", name: "Typography", category: "Display", description: "텍스트 위계 (h1~h4, p, blockquote, code)." },
 
-  "badge-tag-chip": { category: "Data Display", sort: 1 },
-  "calendar-date-range-picker": { category: "Data Display", sort: 2 },
+  // Overlay (9)
+  { slug: "alert", name: "Alert", category: "Overlay", description: "인라인 정보·경고 메시지." },
+  { slug: "alert-dialog", name: "Alert Dialog", category: "Overlay", description: "확인이 필요한 위험 액션 다이얼로그." },
+  { slug: "dialog", name: "Dialog", category: "Overlay", description: "모달 다이얼로그." },
+  { slug: "drawer", name: "Drawer", category: "Overlay", description: "하단 슬라이드 패널 (모바일 친화)." },
+  { slug: "hover-card", name: "Hover Card", category: "Overlay", description: "호버 시 표시되는 카드 (프로필 미리보기 등)." },
+  { slug: "popover", name: "Popover", category: "Overlay", description: "트리거 클릭 시 떠오르는 패널." },
+  { slug: "sheet", name: "Sheet", category: "Overlay", description: "사이드 슬라이드 패널." },
+  { slug: "sonner", name: "Sonner", category: "Overlay", description: "토스트 알림 (shadcn 권장)." },
+  { slug: "tooltip", name: "Tooltip", category: "Overlay", description: "호버 시 짧은 설명." },
 
-  "banner": { category: "Feedback", sort: 1 },
-  "toast-sonner": { category: "Feedback", sort: 2 },
-  "skeleton-spinner-progress": { category: "Feedback", sort: 3 },
-  "empty-state": { category: "Feedback", sort: 4 },
+  // Navigation (9)
+  { slug: "breadcrumb", name: "Breadcrumb", category: "Navigation", description: "현재 위치 경로 표시." },
+  { slug: "command", name: "Command", category: "Navigation", description: "Cmd+K 검색 팔레트 — cmdk 베이스." },
+  { slug: "context-menu", name: "Context Menu", category: "Navigation", description: "우클릭 / 길게 누르기 메뉴." },
+  { slug: "dropdown-menu", name: "Dropdown Menu", category: "Navigation", description: "트리거 클릭 시 드롭다운." },
+  { slug: "menubar", name: "Menubar", category: "Navigation", description: "데스크탑 앱 스타일 메뉴 바." },
+  { slug: "navigation-menu", name: "Navigation Menu", category: "Navigation", description: "메가 메뉴 / 글로벌 nav." },
+  { slug: "pagination", name: "Pagination", category: "Navigation", description: "페이지 분할 네비." },
+  { slug: "sidebar", name: "Sidebar", category: "Navigation", description: "사이드 네비게이션 (그룹/접기 지원)." },
+  { slug: "tabs", name: "Tabs", category: "Navigation", description: "탭 네비게이션 (underline / pills)." },
 
-  "modal-dialog": { category: "Overlay", sort: 1 },
-  "drawer-sheet": { category: "Overlay", sort: 2 },
-  "tooltip-popover-hover-card": { category: "Overlay", sort: 3 },
-  "dropdown-context-menu": { category: "Overlay", sort: 4 },
+  // Disclosure (2)
+  { slug: "accordion", name: "Accordion", category: "Disclosure", description: "접고 펼치는 패널 (단일/다중)." },
+  { slug: "collapsible", name: "Collapsible", category: "Disclosure", description: "콘텐츠 접고 펼치기 (단일)." },
 
-  "tabs": { category: "Navigation", sort: 1 },
-  "breadcrumb-sidebar": { category: "Navigation", sort: 2 },
-  "pagination-stepper": { category: "Navigation", sort: 3 },
+  // Data (4)
+  { slug: "calendar", name: "Calendar", category: "Data", description: "달력 위젯 — react-day-picker 베이스." },
+  { slug: "chart", name: "Chart", category: "Data", description: "데이터 시각화 — Recharts 베이스." },
+  { slug: "data-table", name: "Data Table", category: "Data", description: "정렬·필터·페이징 테이블 — TanStack Table 베이스." },
+  { slug: "table", name: "Table", category: "Data", description: "기본 HTML 테이블 스타일." },
+];
 
-  "accordion-collapsible": { category: "Disclosure", sort: 1 },
-  "treeview": { category: "Disclosure", sort: 2 },
+const COMPONENT_CATEGORIES = Object.fromEntries(
+  SHADCN_CATALOG.map((c, i) => [c.slug, { category: c.category, sort: i }])
+);
 
-  "animation-patterns": { category: "Reference", sort: 1 },
-};
-
-const CATEGORY_ORDER = ["Forms", "Layout", "Navigation", "Data Display", "Feedback", "Overlay", "Disclosure", "Reference"];
+const CATEGORY_ORDER = ["Form", "Display", "Overlay", "Navigation", "Disclosure", "Data"];
 
 // 컴포넌트 slug → preview.html render 함수 매핑
 // 각 함수는 brand 객체 받아 <section> HTML 반환 (custom CSS 사용 — pageCss로 스타일링)
@@ -1546,7 +1983,7 @@ function getDemoFunctions(slug) {
     case "skeleton-spinner-progress": return [renderSkeleton, renderBatchV67];
     case "empty-state": return [renderEmptyState];
     case "calendar-date-range-picker": return [renderCalendar, renderShadcnExtras];
-    case "tabs": return [renderListingDetail];
+    case "tabs": return [renderVignettes];
     case "breadcrumb-sidebar": return [renderShadcnNav];
     case "pagination-stepper": return [renderBatchV67];
     case "accordion-collapsible": return [renderShadcnDisclose];
@@ -1564,44 +2001,76 @@ function getDemoFunctions(slug) {
 
 function pageComponent(component, brand) {
   const cat = COMPONENT_CATEGORIES[component.slug] || { category: "Other" };
-
-  function inlineMarkdown(s) {
-    return escape(s).replace(/`([^`]+)`/g, (_, c) => `<code>${c}</code>`);
-  }
-
-  // 첫 paragraph는 lede로
-  const lede = component.paragraphs[0] || "";
-  const restParas = component.paragraphs.slice(1);
+  const recipePath = resolve(ROOT, `recipes/shadcn/components/ui/${component.slug}.tsx`);
+  const hasRecipe = existsSync(recipePath);
+  const specPath = resolve(ROOT, `specs/components/${component.slug}.md`);
+  const hasSpec = existsSync(specPath);
 
   let body = `
 <h1>${escape(component.name)}</h1>
-${lede ? `<p class="lede">${inlineMarkdown(lede)}</p>` : ""}
+${component.description ? `<p class="lede">${escape(component.description)}</p>` : ""}
 
 <div class="component-meta">
   <a class="tag">${escape(cat.category)}</a>
-  <a href="https://github.com/lshdainty/porest-design/blob/main/EXAMPLES.md#${escape(component.slug)}" target="_blank" rel="noopener">EXAMPLES.md ↗</a>
-  <a href="https://github.com/lshdainty/porest-design/blob/main/DESIGN.md" target="_blank" rel="noopener">DESIGN.md spec ↗</a>
+  ${hasSpec ? `<a class="tag tag-spec">M3 톤 detailed spec</a>` : ""}
+  <a href="https://ui.shadcn.com/docs/components/${escape(component.slug)}" target="_blank" rel="noopener">shadcn/ui ↗</a>
+  <a href="https://github.com/lshdainty/porest-design/blob/main/recipes/shadcn/components/ui/${escape(component.slug)}.tsx" target="_blank" rel="noopener">소스 ↗</a>
+  ${hasSpec ? `<a href="https://github.com/lshdainty/porest-design/blob/main/specs/components/${escape(component.slug)}.md" target="_blank" rel="noopener">spec ↗</a>` : ""}
 </div>
 `;
 
-  // === Live demo (preview.html의 render 함수 직접 호출) ===
-  const demoFns = getDemoFunctions(component.slug);
-  if (demoFns.length > 0) {
-    body += `<h2>데모</h2>\n`;
-    body += `<p class="lede" style="font-size: var(--text-caption-md); margin-bottom: 16px;">preview.html의 컴포넌트 데모를 그대로 임베드. 상단 Default / HR / Desk 토글로 색상 분기 확인 가능.</p>\n`;
-    body += `<div class="demo-frame">\n`;
-    for (const fn of demoFns) {
-      body += fn(brand) + "\n";
-    }
-    body += `</div>\n`;
+  // === Spec (M3 톤 detailed spec, 있을 때만 — 코드 위에 둠) ===
+  if (hasSpec) {
+    const specMd = readFileSync(specPath, "utf8");
+    body += `<section class="spec-section">\n${mdToHtml(specMd)}\n</section>\n`;
   }
 
-  // === EXAMPLES.md 코드 (참고용 — Tailwind utility 형태) ===
-  if (component.examples.length > 0) {
-    body += `<h2>코드 예제 (Tailwind v4)</h2>\n`;
-    body += `<p class="lede" style="font-size: var(--text-caption-md); margin-bottom: 16px;">EXAMPLES.md의 Tailwind utility 코드. copy-paste 후 자기 프로젝트에 활용.</p>\n`;
-    for (let i = 0; i < component.examples.length; i++) {
-      const ex = component.examples[i];
+  const hasExamples = !!(SHADCN_EXAMPLES[component.slug] && SHADCN_EXAMPLES[component.slug].length);
+
+  if (!hasRecipe && !hasExamples) {
+    body += `
+<div class="callout">
+  <div>
+    <strong>곧 작성 예정</strong> · 이 컴포넌트는 Phase 진행 중. shadcn 표준 구조(cva + Radix primitives) + Porest 토큰으로 작성됩니다.
+  </div>
+</div>
+`;
+    return page({
+      title: component.name,
+      currentPath: `/components/${component.slug}.html`,
+      breadcrumb: [
+        { label: "Components" },
+        { label: cat.category },
+        { label: component.name },
+      ],
+      body,
+    });
+  }
+
+  // === 설치 ===
+  body += `<h2>설치</h2>\n`;
+  body += `<pre><code class="lang-bash">npm install clsx tailwind-merge class-variance-authority @radix-ui/react-slot</code></pre>\n`;
+
+  // === 컴포넌트 코드 (있을 때만) ===
+  if (hasRecipe) {
+    const recipeCode = readFileSync(recipePath, "utf8");
+    body += `<h2>components/ui/${escape(component.slug)}.tsx</h2>\n`;
+    body += `<pre><code class="lang-tsx">${escape(recipeCode)}</code></pre>\n`;
+  } else {
+    body += `<h2>조립 컴포넌트</h2>\n`;
+    body += `<p style="font-size: var(--text-label-md); color: var(--color-text-secondary); margin: 0 0 16px;">${escape(component.name)}는 별도 파일이 아닌 다른 primitive를 조립해 사용합니다. 아래 예제 코드를 참고하세요.</p>\n`;
+  }
+
+  // === 예제 (Preview + Code 토글) ===
+  const examples = SHADCN_EXAMPLES[component.slug];
+  if (examples && examples.length > 0) {
+    body += `<h2>예제</h2>\n`;
+    body += `<p class="lede" style="font-size: var(--text-label-md); margin-bottom: 16px;">Preview는 우리 토큰 적용된 실제 동작. Code는 React 프로젝트로 그대로 복사.</p>\n`;
+    for (const ex of examples) {
+      body += `<h3 style="margin-top: 32px;">${escape(ex.title)}</h3>\n`;
+      if (ex.description) {
+        body += `<p style="font-size: var(--text-label-md); color: var(--color-text-secondary); margin: 0 0 12px;">${escape(ex.description)}</p>\n`;
+      }
       body += `<div class="example-block" data-example>
   <div class="example-head">
     <div class="example-tabs">
@@ -1611,28 +2080,34 @@ ${lede ? `<p class="lede">${inlineMarkdown(lede)}</p>` : ""}
     <button class="example-copy" type="button">Copy</button>
   </div>
   <div class="example-preview" data-pane="preview">
-    <div class="preview-frame">${ex.code}</div>
+    <div class="preview-frame">${ex.render()}</div>
   </div>
   <div class="example-code" data-pane="code" hidden>
-    <pre><code class="lang-${escape(ex.lang)}">${escape(ex.code)}</code></pre>
+    <pre><code class="lang-tsx">${escape(ex.jsx)}</code></pre>
   </div>
-  ${ex.label ? `<div class="example-label">${escape(ex.label)}</div>` : ""}
 </div>
 `;
     }
   }
 
-  if (restParas.length > 0) {
-    body += `<h2>가이드</h2>\n`;
-    for (const p of restParas) {
-      body += `<p>${inlineMarkdown(p)}</p>\n`;
-    }
+  // === bridge & utils (모든 shadcn 페이지 공통 — 한 번만 보여주는 details) ===
+  body += `<h2>bridge & utils</h2>\n`;
+  body += `<p style="font-size: var(--text-label-md); color: var(--color-text-secondary);">아래 두 파일은 프로젝트당 한 번만 추가 — 모든 shadcn 컴포넌트가 공유.</p>\n`;
+  const bridgePath = resolve(ROOT, "recipes/shadcn/styles/porest-shadcn-bridge.css");
+  const utilsPath = resolve(ROOT, "recipes/shadcn/lib/utils.ts");
+  if (existsSync(bridgePath)) {
+    const bridgeCode = readFileSync(bridgePath, "utf8");
+    body += `<details><summary><code>styles/porest-shadcn-bridge.css</code> — Porest 토큰 → shadcn variables alias</summary><pre><code class="lang-css">${escape(bridgeCode)}</code></pre></details>\n`;
+  }
+  if (existsSync(utilsPath)) {
+    const utilsCode = readFileSync(utilsPath, "utf8");
+    body += `<details><summary><code>lib/utils.ts</code> — cn() helper</summary><pre><code class="lang-ts">${escape(utilsCode)}</code></pre></details>\n`;
   }
 
   body += `
 <div class="callout">
   <div>
-    <strong>관련 문서</strong> · 사양은 <a href="https://github.com/lshdainty/porest-design/blob/main/DESIGN.md" target="_blank" rel="noopener">DESIGN.md</a> spec 참조 · HR/Desk 분기 톤은 <a href="https://github.com/lshdainty/porest-design/blob/main/DESIGN.hr.md" target="_blank" rel="noopener">DESIGN.hr.md</a> / <a href="https://github.com/lshdainty/porest-design/blob/main/DESIGN.desk.md" target="_blank" rel="noopener">DESIGN.desk.md</a>.
+    <strong>참고</strong> · shadcn 공식 문서 <a href="https://ui.shadcn.com/docs/components/${escape(component.slug)}" target="_blank" rel="noopener">ui.shadcn.com/docs/components/${escape(component.slug)}</a> · 디자인 토큰 사양 <a href="https://github.com/lshdainty/porest-design/blob/main/DESIGN.md" target="_blank" rel="noopener">DESIGN.md</a>.
   </div>
 </div>
 `;
@@ -1657,11 +2132,21 @@ function ensureDir(p) { mkdirSync(p, { recursive: true }); }
 
 ensureDir(OUT);
 ensureDir(resolve(OUT, "tokens"));
-ensureDir(resolve(OUT, "components"));
+// 옛 슬러그 페이지(input-textarea.html 등) 잔존 방지 — 매 빌드마다 components/ 비움
+const componentsDir = resolve(OUT, "components");
+if (existsSync(componentsDir)) rmSync(componentsDir, { recursive: true, force: true });
+ensureDir(componentsDir);
 ensureDir(resolve(OUT, "assets"));
 
-// EXAMPLES.md 파싱 → NAV 구성
-const components = parseExamplesMd().filter(c => COMPONENT_CATEGORIES[c.slug]);
+// shadcn 카탈로그가 페이지 1대1. paragraphs/examples는 빈 배열 (옛 EXAMPLES.md
+// 매핑 폐기 — 각 페이지는 recipe + examples mjs 기반).
+const components = SHADCN_CATALOG.map(c => ({
+  slug: c.slug,
+  name: c.name,
+  description: c.description,
+  paragraphs: [c.description],
+  examples: [],
+}));
 NAV = buildNav(components);
 
 const tokens = buildTokens();
@@ -1750,5 +2235,11 @@ for (const c of components) {
 console.log("✓ exports/site/");
 console.log("  index.html");
 console.log("  tokens/{colors,typography,spacing,radius,shadows,motion,breakpoints,z-index}.html (8 페이지)");
-console.log(`  components/*.html (${components.length} 페이지 — preview.html 데모 임베드 + Tailwind 코드 참고)`);
+const filledCount = SHADCN_CATALOG.filter(c => {
+  const hasRecipe = existsSync(resolve(ROOT, `recipes/shadcn/components/ui/${c.slug}.tsx`));
+  const hasExamples = !!(SHADCN_EXAMPLES[c.slug] && SHADCN_EXAMPLES[c.slug].length);
+  return hasRecipe || hasExamples;
+}).length;
+const placeholderSuffix = filledCount === components.length ? "" : ", 나머지 placeholder";
+console.log(`  components/*.html (${components.length} 페이지 shadcn 카탈로그 — ${filledCount}/${components.length} 작성 완료${placeholderSuffix})`);
 console.log("  assets/{tokens,site}.css + site.js");

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Porest × shadcn — Button preview</title>
+  <script>
+    (function () {
+      try {
+        var brand = localStorage.getItem("porest-brand") || "default";
+        var theme = localStorage.getItem("porest-theme") ||
+          (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        document.documentElement.setAttribute("data-brand", brand);
+        document.documentElement.setAttribute("data-theme", theme);
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="../../../exports/tokens.css">
+  <link rel="stylesheet" href="../../../exports/tokens.hr.css">
+  <link rel="stylesheet" href="../../../exports/tokens.desk.css">
+  <link rel="stylesheet" href="../styles/porest-shadcn-bridge.css">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style>
+    /*
+     * tokens.hr.css / tokens.desk.css는 root scope으로 import되면 default를 덮어
+     * 씀 — 그래서 brand override를 [data-brand="..."] scope으로 직접 정의.
+     * (실제 React 환경에서는 build-site.mjs 패턴처럼 brand-scoped CSS variable을
+     * 한 파일로 통합하면 더 단순.)
+     */
+    [data-brand="hr"] {
+      --color-primary: #357b5f;
+      --color-primary-light: #6bae8c;
+      --color-border-focus: #357b5f;
+      --color-border-focus-light: #6bae8c;
+    }
+    [data-brand="desk"] {
+      --color-primary: #0147ad;
+      --color-primary-light: #5fa0e5;
+      --color-border-focus: #0147ad;
+      --color-border-focus-light: #5fa0e5;
+    }
+    [data-brand="default"], :root {
+      --color-primary: #1a1f2e;
+      --color-primary-light: #4a5568;
+      --color-border-focus: #1a1f2e;
+      --color-border-focus-light: #4a5568;
+    }
+
+    [data-theme="dark"] {
+      --color-bg-page: var(--color-bg-page-dark);
+      --color-surface-default: var(--color-surface-default-dark);
+      --color-surface-input: var(--color-surface-input-dark);
+      --color-text-primary: var(--color-text-primary-dark);
+      --color-text-secondary: var(--color-text-secondary-dark);
+      --color-text-tertiary: var(--color-text-tertiary-dark);
+      --color-border-default: var(--color-border-default-dark);
+      --color-border-strong: var(--color-border-strong-dark);
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-bg-page);
+      color: var(--color-text-primary);
+      margin: 0;
+      padding: 32px 24px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      max-width: 920px;
+      margin: 0 auto 32px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--color-border-default);
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: var(--text-title-md);
+      line-height: var(--text-title-md--line-height);
+      font-weight: var(--text-title-md--font-weight);
+    }
+
+    .topbar .controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .toggle {
+      border: 1px solid var(--color-border-default);
+      background: var(--color-surface-default);
+      border-radius: 9999px;
+      padding: 4px 12px;
+      font-size: var(--text-label-sm);
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+    }
+
+    .toggle.is-active {
+      background: var(--color-primary);
+      color: var(--color-text-on-accent);
+      border-color: var(--color-primary);
+    }
+
+    main {
+      max-width: 920px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    section {
+      background: var(--color-surface-default);
+      border: 1px solid var(--color-border-default);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+    }
+
+    section h2 {
+      margin: 0 0 16px;
+      font-size: var(--text-title-sm);
+      font-weight: var(--text-title-sm--font-weight);
+      color: var(--color-text-primary);
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .row + .row {
+      margin-top: 16px;
+    }
+
+    .label {
+      min-width: 100px;
+      font-size: var(--text-label-sm);
+      color: var(--color-text-tertiary);
+      font-family: ui-monospace, monospace;
+    }
+
+    code {
+      font-family: ui-monospace, monospace;
+      background: var(--color-surface-input);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+      color: var(--color-text-primary);
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <h1>Porest × shadcn — Button preview</h1>
+    <div class="controls">
+      <button class="toggle" data-brand-toggle="default">Default</button>
+      <button class="toggle" data-brand-toggle="hr">HR</button>
+      <button class="toggle" data-brand-toggle="desk">Desk</button>
+      <button class="toggle" data-theme-toggle>🌙</button>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <h2>Variant × Size matrix</h2>
+
+      <div class="row">
+        <span class="label">default</span>
+        <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 bg-primary text-text-on-accent shadow-sm hover:brightness-105 h-8 px-3 text-label-sm">저장</button>
+        <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 bg-primary text-text-on-accent shadow-sm hover:brightness-105 h-10 px-4 text-title-sm">저장</button>
+        <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 bg-primary text-text-on-accent shadow-sm hover:brightness-105 h-12 px-6 text-title-md">저장하기</button>
+      </div>
+
+      <div class="row">
+        <span class="label">destructive</span>
+        <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 bg-error text-text-on-accent shadow-sm hover:brightness-105 h-8 px-3 text-label-sm">삭제</button>
+        <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 bg-error text-text-on-accent shadow-sm hover:brightness-105 h-10 px-4 text-title-sm">삭제</button>
+        <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 bg-error text-text-on-accent shadow-sm hover:brightness-105 h-12 px-6 text-title-md">영구 삭제</button>
+      </div>
+
+      <div class="row">
+        <span class="label">outline</span>
+        <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 border border-border-default bg-surface-default text-text-primary hover:bg-surface-input h-8 px-3 text-label-sm">취소</button>
+        <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 border border-border-default bg-surface-default text-text-primary hover:bg-surface-input h-10 px-4 text-title-sm">취소</button>
+        <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 border border-border-default bg-surface-default text-text-primary hover:bg-surface-input h-12 px-6 text-title-md">취소하기</button>
+      </div>
+
+      <div class="row">
+        <span class="label">secondary</span>
+        <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 bg-surface-input text-text-primary hover:bg-border-default h-8 px-3 text-label-sm">필터</button>
+        <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 bg-surface-input text-text-primary hover:bg-border-default h-10 px-4 text-title-sm">필터</button>
+        <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 bg-surface-input text-text-primary hover:bg-border-default h-12 px-6 text-title-md">필터 적용</button>
+      </div>
+
+      <div class="row">
+        <span class="label">ghost</span>
+        <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 text-text-primary hover:bg-surface-input h-8 px-3 text-label-sm">더보기</button>
+        <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 text-text-primary hover:bg-surface-input h-10 px-4 text-title-sm">더보기</button>
+        <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 text-text-primary hover:bg-surface-input h-12 px-6 text-title-md">더보기</button>
+      </div>
+
+      <div class="row">
+        <span class="label">link</span>
+        <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 text-primary underline-offset-4 hover:underline h-8 px-3 text-label-sm">자세히 보기</button>
+        <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 text-primary underline-offset-4 hover:underline h-10 px-4 text-title-sm">자세히 보기</button>
+      </div>
+
+      <div class="row">
+        <span class="label">disabled</span>
+        <button disabled class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 bg-primary text-text-on-accent shadow-sm h-10 px-4 text-title-sm">저장</button>
+        <button disabled class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 border border-border-default bg-surface-default text-text-primary h-10 px-4 text-title-sm">취소</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>실전 예시</h2>
+
+      <div class="row" style="gap: 8px;">
+        <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors bg-primary text-text-on-accent shadow-sm hover:brightness-105 h-10 px-4 text-title-sm">저장</button>
+        <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors border border-border-default bg-surface-default text-text-primary hover:bg-surface-input h-10 px-4 text-title-sm">취소</button>
+      </div>
+
+      <div class="row" style="margin-top: 24px; padding: 16px; background: var(--color-surface-input); border-radius: 8px; gap: 12px;">
+        <div style="flex: 1;">
+          <div style="font-weight: 600; margin-bottom: 4px;">5월 휴가 신청</div>
+          <div style="font-size: var(--text-label-sm); color: var(--color-text-secondary);">김지원 · 5/12 ~ 5/14 · 연차 3일</div>
+        </div>
+        <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors bg-primary text-text-on-accent shadow-sm hover:brightness-105 h-8 px-3 text-label-sm">승인</button>
+        <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors bg-error text-text-on-accent shadow-sm hover:brightness-105 h-8 px-3 text-label-sm">반려</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>React 코드</h2>
+      <pre style="margin: 0; padding: 16px; background: var(--color-surface-input); border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.6;"><code>import { Button } from "@/components/ui/button"
+
+export function SavePanel() {
+  return (
+    &lt;div className="flex gap-2"&gt;
+      &lt;Button variant="default" size="md"&gt;저장&lt;/Button&gt;
+      &lt;Button variant="outline" size="md"&gt;취소&lt;/Button&gt;
+    &lt;/div&gt;
+  )
+}</code></pre>
+    </section>
+  </main>
+
+  <script>
+    document.querySelectorAll("[data-brand-toggle]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var b = btn.dataset.brandToggle;
+        document.documentElement.setAttribute("data-brand", b);
+        try { localStorage.setItem("porest-brand", b); } catch (e) {}
+        syncToggleStates();
+      });
+    });
+
+    document.querySelectorAll("[data-theme-toggle]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var cur = document.documentElement.getAttribute("data-theme");
+        var next = cur === "dark" ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", next);
+        try { localStorage.setItem("porest-theme", next); } catch (e) {}
+        btn.textContent = next === "dark" ? "☀️" : "🌙";
+      });
+    });
+
+    function syncToggleStates() {
+      var cur = document.documentElement.getAttribute("data-brand");
+      document.querySelectorAll("[data-brand-toggle]").forEach(function (b) {
+        b.classList.toggle("is-active", b.dataset.brandToggle === cur);
+      });
+    }
+    syncToggleStates();
+
+    var theme = document.documentElement.getAttribute("data-theme");
+    document.querySelector("[data-theme-toggle]").textContent = theme === "dark" ? "☀️" : "🌙";
+  </script>
+</body>
+</html>

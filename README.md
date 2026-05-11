@@ -14,7 +14,7 @@ npm run verify                  # sync 검사 + lint:all + lint:dark + lint:pros
 npm run export:tailwind:all     # exports/tokens(.hr|.desk).css — 토큰 + 14 keyframe(@theme)
 npm run build:preview           # exports/preview*.html — 토큰 카탈로그 + 컴포넌트 vignette + v73-v78 시각 데모
 npm run build:examples          # exports/examples.html — copy-paste 컴포넌트 사용 예제
-npm run build:site              # exports/site/ — 풀 docs site (Landing + Tokens × 8, 사이드바 + 브랜드 스위처)
+npm run build:site              # exports/site/ — 풀 docs site (Landing + Tokens × 8 + shadcn 컴포넌트 50, 사이드바 + 브랜드 스위처)
 ```
 
 브라우저로 `exports/preview.html` 열어 토큰 + 컴포넌트 미리보기. `exports/examples.html`은 copy-paste 친화 사용 예제 페이지.
@@ -36,13 +36,21 @@ npm run build:site              # exports/site/ — 풀 docs site (Landing + Tok
 │   ├── tokens.desk.css   # Tailwind v4 @theme (Desk)
 │   ├── tokens.dtcg.json  # W3C DTCG (shadow/motion 누락 — prose 직접 참조)
 │   ├── preview*.html     # 토큰 카탈로그 + 20+ 컴포넌트 시각 vignette + v73-v78 인터랙티브 데모
-│   └── examples.html     # 컴포넌트 사용 예제 페이지 (Copy 버튼 + dark mode toggle)
+│   ├── examples.html     # 컴포넌트 사용 예제 페이지 (Copy 버튼 + dark mode toggle)
+│   └── site/             # 풀 docs site — Landing + Tokens × 8 + Components × 50 (shadcn 1:1 매핑)
+├── recipes/              # 사용처에 그대로 복사 가능한 컴포넌트 레시피
+│   └── shadcn/
+│       ├── components/ui/   # 47개 .tsx 컴포넌트 (cva + Slot + forwardRef + Radix 표준)
+│       ├── examples/        # 50개 *-examples.mjs (Preview HTML + JSX 코드 토글 데이터)
+│       ├── styles/porest-shadcn-bridge.css  # Porest 토큰 → shadcn variables alias
+│       └── lib/utils.ts     # cn() helper
 ├── scripts/              # native Node 도구 (외부 의존성 없음)
 │   ├── sync-shared-tokens.mjs   # 공유 토큰 자동 동기 (typography/rounded/spacing + colors 마커 영역)
 │   ├── build-tailwind-v4.mjs    # @theme CSS 빌드 (prose shadow/motion/overlay/breakpoint/touch-target/z-index/keyframes 자동 추출)
 │   ├── test-tailwind-export.mjs # Tailwind export smoke test (namespace + keyframes 검증)
 │   ├── build-preview-html.mjs   # HTML 토큰 카탈로그 + 컴포넌트 시각 데모
 │   ├── build-examples-html.mjs  # EXAMPLES.md → 인터랙티브 HTML (Copy 버튼)
+│   ├── build-site.mjs           # 풀 docs site 빌드 (Tokens 8 + Components 50 페이지, Preview/Code 토글)
 │   ├── lint-prose.mjs           # prose 토큰 reference 정합성 + yaml/prose hex mismatch 검출
 │   ├── lint-dark-contrast.mjs   # dark pair contrast 자동 검증 (4.5:1 / 3:1, spec lint 보완)
 │   └── diff-tailwind.mjs        # Tailwind v4 CSS unified diff (이전 백업 대비)
@@ -50,7 +58,7 @@ npm run build:site              # exports/site/ — 풀 docs site (Landing + Tok
 ├── .github/workflows/verify.yml  # CI: sync:check + lint:all + lint:dark + lint:prose + test:exports
 ├── CLAUDE.md             # 작업 규칙 (내부 — 토큰 추가 절대 규칙, sync 정책)
 ├── GIT_CONVENTION.md     # 브랜치/커밋 규칙
-├── CHANGELOG.md          # v1 ~ v81 milestone 누적 변경
+├── CHANGELOG.md          # v1 ~ v92 milestone 누적 변경
 └── README.md             # (이 파일)
 ```
 
@@ -62,8 +70,8 @@ npm run build:site              # exports/site/ — 풀 docs site (Landing + Tok
 |---|---|---|---|
 | `colors` (neutral) | DESIGN.md (source) → HR/Desk 복제 | ✓ (마커 영역) | bg-page, surface-*, text-*, border-*, semantic, chart palette |
 | `colors` (brand) | DESIGN.hr.md / DESIGN.desk.md | — (보존) | primary, primary-light, border-focus, border-focus-light |
-| `typography` | DESIGN.md → 복제 | ✓ (블록) | 21종: caption / body / body-strong / heading-{sm,md,lg,xl} (한국어 베이스) + rating-display / display-{xl,lg,md} / title-{md,sm} / body-{md,sm} / caption-{md,sm} / badge / uppercase-tag / button-md / nav-link (Airbnb reference batch v55-v57) |
-| `rounded` | DESIGN.md → 복제 | ✓ (블록) | 7종: xs, sm, md, lg, xl, 2xl, full |
+| `typography` | DESIGN.md → 복제 | ✓ (블록) | 15종 (Airbnb 네이밍 + Pretendard 한국어 우선): display-{xl,lg,md,sm} / title-{lg,md,sm} / body-{lg,md,sm} / label-{md,sm} / caption / badge / overline |
+| `rounded` | DESIGN.md → 복제 | ✓ (블록) | 7종: xs(2px), sm(4px), md(8px), lg(12px), xl(16px), 2xl(24px), full(9999px) — **v83 Toss 톤 컴포넌트 매핑**(button/input/select/textarea→sm, card/dialog→md, drawer→lg, tooltip/checkbox→xs, badge/avatar/switch/radio/progress→full) |
 | `spacing` | DESIGN.md → 복제 | ✓ (블록) | 7종: xs, sm, md, lg, xl, 2xl, 3xl (4px 베이스) |
 | `shadow` (prose-token) | 모든 파일 prose 표 | 수동 동기 | 8종: sm/md/lg/xl × {light, dark} (Material 3 / Big Sur 패턴) |
 | `motion` (prose-token) | 모든 파일 prose 표 | 수동 동기 | 7종: duration {fast/base/slow/slower/loop} + ease-{out, linear} (v32 단발 전환 + v63 반복 애니메이션) |
@@ -80,7 +88,11 @@ npm run build:site              # exports/site/ — 풀 docs site (Landing + Tok
 Lint 자동 검증: WCAG 1.4.3 (본문 4.5:1) + 1.4.11 (UI 3:1) — `npm run lint:all`.
 prose-token은 lint 비대상 (spec이 shadow/motion/overlay/breakpoint/touch-target/z-index/keyframe 토큰 타입 미지원) — `scripts/build-tailwind-v4.mjs`가 표·코드 블록에서 추출해 v4 CSS로 export.
 
-Coverage: **80+ 컴포넌트 spec** (shadcn/ui 카탈로그 ~100% + Banner/Tag/Popover/File Upload/Treeview 등 누락 보강), 14 keyframes, 6 z-index layer, 5 breakpoint, 5 touch target.
+Coverage:
+- **80+ 컴포넌트 prose spec** (shadcn/ui 카탈로그 ~100% + Banner/Tag/Popover/File Upload/Treeview 등 누락 보강)
+- **shadcn 컴포넌트 페이지 50/50** (`exports/site/components/*.html`) — Form 17 / Display 12 / Overlay 9 / Navigation 9 / Disclosure 2 / Data 4 / Status 1, 각 페이지에 Preview(토큰 적용된 라이브 렌더) + Code(JSX) 토글
+- **47개 `.tsx` 레시피** (`recipes/shadcn/components/ui/`, cva + Slot + forwardRef + Radix 표준) + 3 조립 컴포넌트(combobox / date-picker / data-table — Command/Calendar/Table 조립)
+- 14 keyframes, 6 z-index layer, 5 breakpoint, 5 touch target.
 
 ---
 
@@ -108,7 +120,7 @@ Coverage: **80+ 컴포넌트 spec** (shadcn/ui 카탈로그 ~100% + Banner/Tag/P
 | `npm run test:exports` | export 빌드 + namespace + keyframe(≥14) 검증 |
 | `npm run build:preview` | exports/preview*.html — 토큰 카탈로그 + v67 4종 batch + v68-v72 shadcn 25종 + v73-v78 시각 데모 |
 | `npm run build:examples` | exports/examples.html — EXAMPLES.md → 인터랙티브 페이지 (Copy 버튼) |
-| `npm run build:site` | exports/site/ — 풀 documentation site (사이드바 + 브랜드 스위처 + Tokens 8 페이지). Phase 1 — Components/Examples는 Phase 2-3 |
+| `npm run build:site` | exports/site/ — 풀 documentation site: 사이드바 + 브랜드 스위처 + Tokens 8 페이지 + **shadcn 컴포넌트 50/50 페이지** (Preview/Code 토글, Tailwind v4 browser CDN으로 라이브 렌더) |
 
 ### Diff & history
 | Script | 동작 |
@@ -155,7 +167,10 @@ Coverage: **80+ 컴포넌트 spec** (shadcn/ui 카탈로그 ~100% + Banner/Tag/P
 /* app.css */
 @import "tailwindcss";
 @import "./node_modules/@porest/design/exports/tokens.hr.css";  /* HR 브랜드 */
+@import "./node_modules/@porest/design/recipes/shadcn/styles/porest-shadcn-bridge.css";  /* shadcn variables alias */
 ```
+
+shadcn/ui 컴포넌트 사용 시 — `recipes/shadcn/components/ui/`의 `.tsx` 파일을 프로젝트로 복사 + 위 bridge.css import. Porest 토큰이 자동으로 shadcn 변수(`--color-primary`, `--color-ring` 등)에 매핑되어 그대로 동작.
 
 또는 직접 CSS variable 사용:
 
@@ -193,7 +208,9 @@ Coverage: **80+ 컴포넌트 spec** (shadcn/ui 카탈로그 ~100% + Banner/Tag/P
 }
 ```
 
-컴포넌트별 copy-paste HTML markup + Tailwind v4 utility class 예제는 [`EXAMPLES.md`](./EXAMPLES.md) 또는 빌드된 [`exports/examples.html`](./exports/examples.html) 참조 (24+ 카테고리, Copy 버튼 + dark mode toggle).
+컴포넌트별 사용 예제:
+- **shadcn React 컴포넌트**: [`exports/site/components/`](./exports/site/components/) (50 페이지, Preview/Code 토글) — 추천
+- **HTML markup + Tailwind v4 utility**: [`EXAMPLES.md`](./EXAMPLES.md) 또는 [`exports/examples.html`](./exports/examples.html) (24+ 카테고리, Copy 버튼 + dark mode toggle)
 
 ---
 
@@ -201,7 +218,8 @@ Coverage: **80+ 컴포넌트 spec** (shadcn/ui 카탈로그 ~100% + Banner/Tag/P
 
 - 작업 규칙 (내부): [`CLAUDE.md`](./CLAUDE.md)
 - 브랜치/커밋 규칙: [`GIT_CONVENTION.md`](./GIT_CONVENTION.md)
-- 변경 이력: [`CHANGELOG.md`](./CHANGELOG.md) (v1 ~ v81)
+- 변경 이력: [`CHANGELOG.md`](./CHANGELOG.md) (v1 ~ v92)
+- shadcn 컴포넌트 페이지: `exports/site/components/*.html` (50 페이지, build:site 산출)
 - 컴포넌트 사용 예제: [`EXAMPLES.md`](./EXAMPLES.md) (markdown) / `exports/examples.html` (built)
 - 시각 카탈로그: `exports/preview.html` / `preview.hr.html` / `preview.desk.html`
 - design.md spec: https://github.com/google-labs-code/design.md

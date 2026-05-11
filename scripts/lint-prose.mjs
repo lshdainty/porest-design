@@ -36,11 +36,11 @@ const NOISE = new Set([
   "border", "input", "text", "outline", // CSS properties / HTML elements (단독)
   "outline-strong", "shadow-sm", "shadow-md", "shadow-lg", "shadow-xl", // 토큰 prefix 그룹 명 (실제 토큰은 -light/-dark suffix)
   "overlay-dim", // overlay-dim-light/dark 그룹 prefix (실제 토큰은 -light/-dark suffix)
-  "alert-text", "badge", // 컴포넌트 그룹 명 (실제 토큰은 -success 등 suffix)
+  "alert-text", "badge", "button", "card", "chart", // 컴포넌트 그룹 명 (실제 토큰은 -success 등 suffix). v83 radius mapping에서 prose에 등장.
   "focus-ring-enhanced", "divider-dashed", "caption-strong", // 미정 / 향후 후보 prose mention
   // DESIGN.md(brand-neutral)에서 brand 위임 안내용으로 reference하는 brand 토큰 — 의도된 패턴
   "border-focus", "border-focus-light", "primary-light",
-  "button-primary", "button-outlined-on-dark",
+  "button-primary", "button-outline-on-dark",
   "focus-ring-on-light", "focus-ring-on-dark",
   "border-vs-surface", // 비교 표현 ("border vs surface")
   // historical reference (v14~v15 fork 시도, v15에서 unified 회귀 기록 표)
