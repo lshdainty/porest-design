@@ -203,7 +203,10 @@ out += `/* Tailwind v4 @theme CSS (CSS-first config). */\n\n`;
 out += "@theme {\n";
 
 out += "  /* Font family — Korean-first Pretendard, Inter fallback */\n";
-out += `  --font-sans: "Pretendard", "Inter", system-ui, sans-serif;\n\n`;
+out += `  --font-sans: "Pretendard", "Inter", system-ui, sans-serif;\n`;
+// Tailwind v4 preflight의 body font-family는 --default-font-family를 읽음.
+// 명시 안 하면 system stack fallback → site.css의 body { font-family: var(--font-sans); }을 override해 Pretendard 미적용.
+out += `  --default-font-family: var(--font-sans);\n\n`;
 
 out += "  /* Colors */\n";
 for (const [name, hex] of Object.entries(colors)) {

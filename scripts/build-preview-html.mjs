@@ -634,7 +634,7 @@ function renderHero(brand) {
         <p class="hero-tagline">${escape(brand.tagline)}</p>
         <div class="hero-actions">
           <button class="btn btn-on-accent">Browse</button>
-          <button class="btn btn-on-accent btn-outlined-on-dark">View tokens</button>
+          <button class="btn btn-on-accent btn-outline-on-dark">View tokens</button>
         </div>
       </div>
       <div class="hero-card-art">${renderHeroArt(brand.key)}</div>
@@ -787,7 +787,7 @@ export function renderButtonGallery(brand) {
   const states = ["default", "hover", "pressed", "focus", "disabled"];
   const variants = [
     { key: "primary", label: "primary" },
-    { key: "outlined", label: "outlined" },
+    { key: "outline", label: "outline" },
     { key: "ghost", label: "ghost" },
   ];
 
@@ -821,7 +821,7 @@ export function renderButtonGallery(brand) {
   <section class="section">
     <header class="section-head">
       <div class="section-eyebrow">03 — Button</div>
-      <h2 class="section-title">Primary · outlined · ghost</h2>
+      <h2 class="section-title">Primary · outline · ghost</h2>
       <p class="section-lede">${escape(lede)}</p>
     </header>
     <div class="btn-matrix">
@@ -832,7 +832,105 @@ export function renderButtonGallery(brand) {
   </section>`;
 }
 
-function renderVignettes(brand) {
+// checkbox helper — spec: specs/components/checkbox.md
+const CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+const DASH_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+
+export function cbox({ state = "default", size = "md", id = "" } = {}) {
+  const modifiers = [`checkbox--${size}`];
+  let icon = "";
+  let aria = "false";
+  if (state === "checked") { modifiers.push("checkbox--checked"); icon = CHECK_SVG; aria = "true"; }
+  else if (state === "indeterminate") { modifiers.push("checkbox--indeterminate"); icon = DASH_SVG; aria = "mixed"; }
+  else if (state === "focus") modifiers.push("checkbox--focus");
+  else if (state === "disabled") modifiers.push("checkbox--disabled");
+  else if (state === "error") modifiers.push("checkbox--error");
+  const isDisabled = state === "disabled";
+  return `<button type="button" role="checkbox" aria-checked="${aria}"${isDisabled ? " disabled" : ""}${state === "error" ? ` aria-invalid="true"` : ""}${id ? ` id="${id}"` : ""} class="checkbox ${modifiers.join(" ")}">${icon}</button>`;
+}
+
+export function renderCheckboxGallery(brand) {
+  const states = [
+    { key: "default", label: "DEFAULT", desc: "surface-default + border-strong" },
+    { key: "hover", label: "HOVERED", desc: "bg-surface-input (hover affordance)", state: "default", hover: true },
+    { key: "checked", label: "CHECKED", desc: "bg-primary + 흰 체크 (stroke 3)" },
+    { key: "indeterminate", label: "INDETERMINATE", desc: "bg-primary + 흰 dash (부모-자식 그룹)" },
+    { key: "focus", label: "FOCUSED", desc: "2px border-focus + 2px offset (다크는 light)" },
+    { key: "disabled", label: "DISABLED", desc: "opacity 0.5 + cursor not-allowed" },
+    { key: "error", label: "ERROR", desc: "border-error + ring 30% · aria-invalid" },
+  ];
+
+  const matrix = states.map(s => {
+    let cb;
+    if (s.hover) {
+      cb = `<span class="checkbox checkbox--md" style="background:var(--color-surface-input);"></span>`;
+    } else {
+      cb = cbox({ state: s.key });
+    }
+    return `
+    <div class="cb-matrix-label">${s.label}</div>
+    <div>${cb}</div>
+    <div class="cb-matrix-desc">${escape(s.desc)}</div>`;
+  }).join("");
+
+  const sizes = ["sm", "md", "lg"].map((sz, i) => {
+    const dim = sz === "sm" ? 16 : sz === "md" ? 18 : 20;
+    const note = sz === "md" ? " (default)" : "";
+    return `<div class="cb-size-cell">${cbox({ state: "checked", size: sz })}<span>${sz} · ${dim}${note}</span></div>`;
+  }).join("");
+
+  const sample = brand.key === "hr"
+    ? [
+        { label: "엔지니어링", state: "checked", id: "cb-hr-eng" },
+        { label: "디자인", state: "checked", id: "cb-hr-design" },
+        { label: "PM", state: "default", id: "cb-hr-pm" },
+        { label: "HR / 운영", state: "default", id: "cb-hr-ops" },
+      ]
+    : brand.key === "desk"
+      ? [
+          { label: "필수 약관", state: "checked", id: "cb-desk-1" },
+          { label: "마케팅 수신 (선택)", state: "default", id: "cb-desk-2" },
+          { label: "개인정보 수집 동의", state: "checked", id: "cb-desk-3" },
+        ]
+      : [
+          { label: "기본 토큰", state: "checked", id: "cb-sh-1" },
+          { label: "확장 토큰", state: "default", id: "cb-sh-2" },
+          { label: "Deprecated", state: "default", id: "cb-sh-3" },
+        ];
+
+  const groupTitle = brand.key === "hr" ? "필터링할 부서" : brand.key === "desk" ? "약관 동의" : "토큰 그룹";
+  const parentState = sample.every(s => s.state === "checked") ? "checked" : sample.some(s => s.state === "checked") ? "indeterminate" : "default";
+  const groupRows = sample.map(s => `
+    <div class="cb-row">${cbox({ state: s.state, id: s.id })}<label class="cb-row-label" for="${s.id}">${escape(s.label)}</label></div>`).join("");
+
+  const lede = "Spec: specs/components/checkbox.md — sm 16 / md 18 (default) / lg 20 · radius-sm · stroke 3 · 터치 타겟은 label 포함 row hit area로 확보.";
+
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">03b — Checkbox</div>
+      <h2 class="section-title">State · Size · Group</h2>
+      <p class="section-lede">${escape(lede)}</p>
+    </header>
+    <div class="cb-matrix">${matrix}</div>
+    <div class="cb-size-row" style="margin-top: var(--spacing-xl);">
+      <div class="btn-size-label">size</div>
+      ${sizes}
+    </div>
+    <div class="vignette-card" style="margin-top: var(--spacing-xl);">
+      <div class="vignette-head">
+        <div class="vignette-title">${escape(groupTitle)} — parent ${parentState}</div>
+        <div class="vignette-sub">label 클릭 시 row 전체 toggle (htmlFor)</div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:var(--spacing-sm);">
+        <div class="cb-row">${cbox({ state: parentState, id: "cb-parent" })}<label class="cb-row-label" for="cb-parent">전체 선택</label></div>
+        <div style="display:flex; flex-direction:column; gap:var(--spacing-sm); padding-left:24px;">${groupRows}</div>
+      </div>
+    </div>
+  </section>`;
+}
+
+export function renderVignettes(brand) {
   const tabs = `
     <div class="vignette-card">
       <div class="vignette-head">
@@ -871,7 +969,7 @@ function renderVignettes(brand) {
           <span class="badge badge-warning">${escape(r.status)}</span>
           <div class="approval-actions">
             <button class="btn btn-primary btn-size-sm">승인</button>
-            <button class="btn btn-outlined btn-size-sm">반려</button>
+            <button class="btn btn-outline btn-size-sm">반려</button>
           </div>
         </div>`).join("");
       return `
@@ -1032,7 +1130,7 @@ export function renderListingDetail(brand) {
         <div class="ld-rail-fields">${railFields}</div>
         <button class="btn btn-primary ld-rail-primary">${escape(ld.rail.primary)}</button>
         ${ld.rail.primaryNote ? `<div class="ld-rail-note">${escape(ld.rail.primaryNote)}</div>` : ""}
-        <button class="btn btn-outlined ld-rail-secondary">${escape(ld.rail.secondary)}</button>
+        <button class="btn btn-outline ld-rail-secondary">${escape(ld.rail.secondary)}</button>
       </aside>
     </div>
   </section>`;
@@ -1146,7 +1244,7 @@ export function renderEmptyState(brand) {
     <header class="section-head">
       <div class="section-eyebrow">09 — Empty state</div>
       <h2 class="section-title">${escape(e.title)}</h2>
-      <p class="section-lede">빈 상태 시각화 — 의미 + 다음 행동 가이드. surface-default 카드 + circular illustration + primary/outlined CTA.</p>
+      <p class="section-lede">빈 상태 시각화 — 의미 + 다음 행동 가이드. surface-default 카드 + circular illustration + primary/outline CTA.</p>
     </header>
     <div class="empty-card">
       <div class="empty-illustration" aria-hidden="true"></div>
@@ -1154,7 +1252,7 @@ export function renderEmptyState(brand) {
       <div class="empty-description">${escape(e.description)}</div>
       <div class="empty-actions">
         <button class="btn btn-primary">${escape(e.primary)}</button>
-        <button class="btn btn-outlined">${escape(e.secondary)}</button>
+        <button class="btn btn-outline">${escape(e.secondary)}</button>
       </div>
     </div>
   </section>`;
@@ -1182,7 +1280,7 @@ export function renderModal(brand) {
         <div class="modal-description">${escape(m.description)}</div>
         <div class="modal-fields">${fields}</div>
         <div class="modal-actions">
-          <button class="btn btn-outlined">${escape(m.secondary)}</button>
+          <button class="btn btn-outline">${escape(m.secondary)}</button>
           <button class="btn btn-primary">${escape(m.primary)}</button>
         </div>
       </div>
@@ -1193,10 +1291,21 @@ export function renderModal(brand) {
 export function renderToasts(brand) {
   const ts = brand.toasts || [];
   if (!ts.length) return "";
-  const iconChar = (k) => k === "success" ? "✓" : k === "error" ? "✕" : k === "warning" ? "!" : "i";
+  // sonner.md SoT — 20px stroke svg, kind별 stroke 색상. fill 채움 금지.
+  const iconSvg = (k) => {
+    const stroke = `var(--color-${k === "error" ? "error" : k === "warning" ? "warning" : k === "info" ? "info" : "success"})`;
+    const path = k === "success"
+      ? '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>'
+      : k === "error"
+        ? '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>'
+        : k === "warning"
+          ? '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>'
+          : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>';
+    return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${path}</svg>`;
+  };
   const items = ts.map(t => `
     <div class="toast toast-${t.kind}">
-      <div class="toast-icon" aria-hidden="true">${iconChar(t.kind)}</div>
+      ${iconSvg(t.kind)}
       <div class="toast-content">
         <div class="toast-title">${escape(t.title)}</div>
         <div class="toast-body">${escape(t.body)}</div>
@@ -1301,9 +1410,10 @@ export function renderForm(brand) {
     if (field.type === "input") {
       control = `<div class="form-input${field.readonly ? " form-input--readonly" : ""}">${escape(field.value)}</div>`;
     } else if (field.type === "select") {
+      // shadcn select.tsx와 동일 — lucide ChevronDown 16×16 SVG, text-tertiary.
       control = `<div class="form-select">
         <span>${escape(field.value)}</span>
-        <span class="form-select-caret" aria-hidden="true">▾</span>
+        <svg class="form-select-caret" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
       </div>`;
     } else if (field.type === "textarea") {
       const rows = field.rows || 4;
@@ -1332,7 +1442,7 @@ export function renderForm(brand) {
       <div class="form-grid">${fields}</div>
       <div class="form-actions">
         <button class="btn btn-primary">${escape(f.primary)}</button>
-        <button class="btn btn-outlined">${escape(f.secondary)}</button>
+        <button class="btn btn-outline">${escape(f.secondary)}</button>
       </div>
     </div>
   </section>`;
@@ -1354,7 +1464,7 @@ export function renderBatchV67(brand) {
   const pagination = isDesk
     ? `<div class="pg-block">
         <div class="pg-label">Load-more variant (Desk 모바일 우선)</div>
-        <button class="btn btn-outlined pg-loadmore" type="button">더 보기 (12 / 58)</button>
+        <button class="btn btn-outline pg-loadmore" type="button">더 보기 (12 / 58)</button>
        </div>`
     : `<div class="pg-block">
         <div class="pg-label">Numbered variant (${isHr ? "HR 데이터 그리드 footer" : "shared baseline"})</div>
@@ -1403,7 +1513,7 @@ export function renderBatchV67(brand) {
           </div>
           <div class="drw-actions">
             <button class="btn btn-primary" type="button">${isHr ? "권한 수정" : "편집"}</button>
-            <button class="btn btn-outlined" type="button">취소</button>
+            <button class="btn btn-outline" type="button">취소</button>
           </div>
         </div>
        </div>`;
@@ -1618,7 +1728,7 @@ export function renderShadcnInput(brand) {
           <div class="otp-cell otp-cell--filled">3</div>
           <div class="otp-cell otp-cell--filled">7</div>
           <div class="otp-cell otp-cell--filled">2</div>
-          <span class="otp-sep">-</span>
+          <span class="otp-sep" role="separator" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
           <div class="otp-cell otp-cell--focus">4</div>
           <div class="otp-cell"></div>
           <div class="otp-cell"></div>
@@ -1680,14 +1790,14 @@ export function renderShadcnDisclose(brand) {
         <div class="sc-note">right-click / long-press</div>
       </div>
       <div class="sc-card sc-card--full">
-        <div class="sc-head">Alert Dialog (destructive)</div>
-        <div class="ad">
-          <div class="ad-icon" aria-hidden="true">!</div>
-          <div class="ad-body">
-            <div class="ad-title">${brand.key === "hr" ? "정말 권한을 회수하시겠어요?" : brand.key === "desk" ? "메모를 영구 삭제할까요?" : "정말 삭제하시겠어요?"}</div>
-            <div class="ad-desc">${brand.key === "hr" ? "이 직원의 모든 권한이 회수돼요. 복구는 관리자 승인 필요." : brand.key === "desk" ? "30일 보관함을 거치지 않고 즉시 삭제됩니다." : "이 작업은 되돌릴 수 없어요."}</div>
-            <div class="ad-actions">
-              <button class="btn btn-outlined">취소</button>
+        <div class="sc-head">Alert Dialog (destructive) — spec: specs/components/alert-dialog.md · overlay click 무시, close button 없음, default focus = Cancel</div>
+        <div class="modal-stage" style="height:auto; padding:var(--spacing-xl); background:linear-gradient(135deg, var(--color-chart-blue), var(--color-chart-violet));">
+          <div class="modal-overlay"></div>
+          <div class="modal-dialog" role="alertdialog" aria-modal="true">
+            <div class="modal-title">${brand.key === "hr" ? "정말 권한을 회수하시겠어요?" : brand.key === "desk" ? "메모를 영구 삭제할까요?" : "정말 삭제하시겠어요?"}</div>
+            <div class="modal-description">${brand.key === "hr" ? "이 직원의 모든 권한이 회수됩니다. 복구는 관리자 승인 필요." : brand.key === "desk" ? "30일 보관함을 거치지 않고 즉시 삭제됩니다." : "이 작업은 되돌릴 수 없습니다."}</div>
+            <div class="modal-actions">
+              <button class="btn btn-outline" autofocus>취소</button>
               <button class="btn btn-destructive">${brand.key === "hr" ? "회수" : "삭제"}</button>
             </div>
           </div>
@@ -1712,11 +1822,11 @@ export function renderShadcnData(brand) {
         <div class="dt">
           <div class="dt-bulk">3개 선택됨 · <button class="dt-bulk-btn">${brand.key === "hr" ? "일괄 승인" : brand.key === "desk" ? "보관" : "Export"}</button> · <button class="dt-bulk-btn">삭제</button></div>
           <table class="dt-table">
-            <thead><tr><th><input type="checkbox" checked></th><th>${brand.key === "hr" ? "신청자" : brand.key === "desk" ? "제목" : "Token"} <span class="dt-sort">↑</span></th><th>${brand.key === "hr" ? "기간" : brand.key === "desk" ? "수정일" : "Value"}</th><th>${brand.key === "hr" ? "상태" : brand.key === "desk" ? "태그" : "Type"}</th></tr></thead>
+            <thead><tr><th>${cbox({ state: "indeterminate" })}</th><th>${brand.key === "hr" ? "신청자" : brand.key === "desk" ? "제목" : "Token"} <span class="dt-sort">↑</span></th><th>${brand.key === "hr" ? "기간" : brand.key === "desk" ? "수정일" : "Value"}</th><th>${brand.key === "hr" ? "상태" : brand.key === "desk" ? "태그" : "Type"}</th></tr></thead>
             <tbody>
-              <tr><td><input type="checkbox" checked></td><td>${brand.key === "hr" ? "김지원" : brand.key === "desk" ? "Porest 톤" : "primary"}</td><td>${brand.key === "hr" ? "5/12-14" : brand.key === "desk" ? "2시간 전" : "#357B5F"}</td><td><span class="dt-badge dt-badge--success">${brand.key === "hr" ? "승인" : brand.key === "desk" ? "공개" : "color"}</span></td></tr>
-              <tr><td><input type="checkbox" checked></td><td>${brand.key === "hr" ? "이도현" : brand.key === "desk" ? "5월 회고" : "primary-light"}</td><td>${brand.key === "hr" ? "5/15-16" : brand.key === "desk" ? "어제" : "#5DAD86"}</td><td><span class="dt-badge dt-badge--warning">${brand.key === "hr" ? "대기" : brand.key === "desk" ? "초안" : "color"}</span></td></tr>
-              <tr><td><input type="checkbox" checked></td><td>${brand.key === "hr" ? "최가람" : brand.key === "desk" ? "참고 자료" : "border-focus"}</td><td>${brand.key === "hr" ? "5/20" : brand.key === "desk" ? "3일 전" : "#357B5F"}</td><td><span class="dt-badge">${brand.key === "hr" ? "반려" : brand.key === "desk" ? "보관" : "color"}</span></td></tr>
+              <tr><td>${cbox({ state: "checked" })}</td><td>${brand.key === "hr" ? "김지원" : brand.key === "desk" ? "Porest 톤" : "primary"}</td><td>${brand.key === "hr" ? "5/12-14" : brand.key === "desk" ? "2시간 전" : "#357B5F"}</td><td><span class="dt-badge dt-badge--success">${brand.key === "hr" ? "승인" : brand.key === "desk" ? "공개" : "color"}</span></td></tr>
+              <tr><td>${cbox({ state: "checked" })}</td><td>${brand.key === "hr" ? "이도현" : brand.key === "desk" ? "5월 회고" : "primary-light"}</td><td>${brand.key === "hr" ? "5/15-16" : brand.key === "desk" ? "어제" : "#5DAD86"}</td><td><span class="dt-badge dt-badge--warning">${brand.key === "hr" ? "대기" : brand.key === "desk" ? "초안" : "color"}</span></td></tr>
+              <tr><td>${cbox({ state: "checked" })}</td><td>${brand.key === "hr" ? "최가람" : brand.key === "desk" ? "참고 자료" : "border-focus"}</td><td>${brand.key === "hr" ? "5/20" : brand.key === "desk" ? "3일 전" : "#357B5F"}</td><td><span class="dt-badge">${brand.key === "hr" ? "반려" : brand.key === "desk" ? "보관" : "color"}</span></td></tr>
             </tbody>
           </table>
         </div>
@@ -1760,9 +1870,18 @@ export function renderShadcnExtras(brand) {
       <div class="sc-card">
         <div class="sc-head">Sonner — toast stack</div>
         <div class="son">
-          <div class="son-toast son-toast--success"><span class="son-icon">✓</span><span>${brand.key === "hr" ? "결재 승인 완료" : brand.key === "desk" ? "메모 저장 완료" : "Build 통과"}</span></div>
-          <div class="son-toast son-toast--info"><span class="son-icon">i</span><span>${brand.key === "hr" ? "신규 평가 등록" : brand.key === "desk" ? "동기화 완료" : "Token 갱신"}</span></div>
-          <div class="son-toast son-toast--warning"><span class="son-icon">!</span><span>${brand.key === "hr" ? "기한 임박 D-3" : brand.key === "desk" ? "예산 80% 도달" : "warning 1건"}</span></div>
+          <div class="son-toast son-toast--success">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span>${brand.key === "hr" ? "결재 승인 완료" : brand.key === "desk" ? "메모 저장 완료" : "Build 통과"}</span>
+          </div>
+          <div class="son-toast son-toast--info">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-info)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <span>${brand.key === "hr" ? "신규 평가 등록" : brand.key === "desk" ? "동기화 완료" : "Token 갱신"}</span>
+          </div>
+          <div class="son-toast son-toast--warning">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-warning)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span>${brand.key === "hr" ? "기한 임박 D-3" : brand.key === "desk" ? "예산 80% 도달" : "warning 1건"}</span>
+          </div>
         </div>
       </div>
       <div class="sc-card">
@@ -1913,7 +2032,7 @@ export function renderBatchV73V78(brand) {
           <div class="anim-cell"><div class="anim-box anim-pulse" key="pulse">●</div><span class="sc-note">pulse (loop)</span></div>
           <div class="anim-cell"><div class="anim-box anim-shimmer" key="shimmer"></div><span class="sc-note">shimmer (skeleton)</span></div>
         </div>
-        <div class="anim-actions"><button class="btn btn--outlined anim-replay" type="button">▶ 다시 재생</button></div>
+        <div class="anim-actions"><button class="btn btn--outline anim-replay" type="button">▶ 다시 재생</button></div>
       </div>
 
       <!-- v75 Form validation states -->
@@ -1959,7 +2078,7 @@ export function renderBatchV73V78(brand) {
           </div>
           <div class="rtl-row">
             <span>방향: <code id="rtl-dir-label">ltr</code></span>
-            <button class="btn btn--outlined rtl-toggle" type="button">dir 토글 (ltr ↔ rtl)</button>
+            <button class="btn btn--outline rtl-toggle" type="button">dir 토글 (ltr ↔ rtl)</button>
           </div>
         </div>
         <div class="sc-note">CSS logical property(margin-inline / padding-inline / inset-inline) 기반 자동 mirror — extra CSS 0.</div>
@@ -2076,7 +2195,7 @@ export function pageCss() {
       font-family: ui-monospace, monospace;
     }
     .section-title {
-      font-size: var(--text-heading-xl);
+      font-size: var(--text-display-md);
       line-height: var(--text-heading-xl--line-height);
       font-weight: var(--text-heading-xl--font-weight);
       margin: 0 0 var(--spacing-sm);
@@ -2145,9 +2264,9 @@ export function pageCss() {
       margin: var(--spacing-md) 0 var(--spacing-xs);
       letter-spacing: -0.02em;
     }
-    .hero-kicker { font-size: var(--text-body); opacity: 0.85; margin-bottom: var(--spacing-lg); }
+    .hero-kicker { font-size: var(--text-body-md); opacity: 0.85; margin-bottom: var(--spacing-lg); }
     .hero-tagline {
-      font-size: var(--text-heading-md);
+      font-size: var(--text-title-md);
       line-height: var(--text-heading-md--line-height);
       margin: 0 0 var(--spacing-xl);
       max-width: 28em;
@@ -2158,7 +2277,7 @@ export function pageCss() {
       background: var(--color-surface-default);
       color: var(--color-text-primary);
     }
-    .btn-on-accent.btn-outlined-on-dark {
+    .btn-on-accent.btn-outline-on-dark {
       background: transparent;
       color: var(--color-text-on-accent, #fff);
       border: 1px solid rgba(255, 255, 255, 0.4);
@@ -2171,20 +2290,29 @@ export function pageCss() {
     }
     .hero-fact:last-of-type { border-bottom: none; }
     .hero-fact-label { color: var(--color-text-tertiary); font-size: var(--text-caption); }
-    .hero-fact-value { font-family: ui-monospace, monospace; font-size: var(--text-body-strong); font-weight: 600; }
+    .hero-fact-value { font-family: ui-monospace, monospace; font-size: var(--text-body-md); font-weight: 600; }
     .hero-meta { font-size: var(--text-caption); color: var(--color-text-tertiary); margin-top: var(--spacing-md); }
 
-    /* Buttons (공유) */
+    /* Buttons (공유) — md 기본 (height 40, padding spacing-sm spacing-md = 8/12, font body-md=15, line-height 1, box-sizing: border-box) */
     .btn {
-      font-family: inherit;
-      font-size: var(--text-body-strong);
-      font-weight: var(--text-body-strong--font-weight);
-      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-sm);
+      box-sizing: border-box;
+      height: 40px;
       padding: var(--spacing-sm) var(--spacing-md);
+      font-family: inherit;
+      font-size: var(--text-body-md);
+      /* 500 — DESIGN.md typography 가이드: weight 강조는 별도 토큰 대신 인라인 modifier.
+         이전 var(--text-body-strong--font-weight) 인용은 typography 15-token에 없는 deprecated 토큰 버그였음. */
+      font-weight: 500;
+      line-height: 1;
+      white-space: nowrap;
       border: none;
       border-radius: var(--radius-sm);
       cursor: pointer;
-      transition: box-shadow var(--motion-duration-fast, 150ms) var(--motion-ease-out, cubic-bezier(0.0, 0.0, 0.2, 1));
+      transition: box-shadow var(--motion-duration-fast) var(--motion-ease-out);
     }
     .btn-primary {
       background: var(--color-primary, var(--color-text-primary));
@@ -2194,13 +2322,13 @@ export function pageCss() {
     .btn-primary:hover { box-shadow: var(--shadow-md); filter: brightness(1.05); }
     .btn-primary:focus-visible { outline: 2px solid var(--color-border-focus, var(--color-primary)); outline-offset: 1px; }
     .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-    .btn-outlined {
+    .btn-outline {
       background: transparent;
       color: var(--color-text-primary);
       border: 1px solid var(--color-border-default);
     }
-    .btn-outlined:hover { background: var(--color-surface-input); }
-    .btn-outlined:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-outline:hover { background: var(--color-surface-input); }
+    .btn-outline:disabled { opacity: 0.5; cursor: not-allowed; }
     .btn-ghost {
       background: transparent;
       color: var(--color-primary, var(--color-text-primary));
@@ -2210,8 +2338,9 @@ export function pageCss() {
     .btn-state-hover { box-shadow: var(--shadow-md); filter: brightness(1.05); }
     .btn-state-pressed { transform: scale(0.98); box-shadow: none; filter: brightness(0.95); }
     .btn-state-focus { outline: 2px solid var(--color-border-focus, var(--color-primary)); outline-offset: 1px; }
-    .btn-size-sm { font-size: var(--text-caption); padding: var(--spacing-xs) var(--spacing-sm); }
-    .btn-size-lg { font-size: var(--text-heading-sm); padding: var(--spacing-md) var(--spacing-lg); border-radius: var(--radius-md); }
+    .btn-size-sm { height: 32px; padding: var(--spacing-xs) var(--spacing-sm); font-size: var(--text-caption); }
+    .btn-size-md { height: 40px; padding: var(--spacing-sm) var(--spacing-md); font-size: var(--text-body-md); }
+    .btn-size-lg { height: 48px; padding: var(--spacing-md) var(--spacing-lg); font-size: var(--text-title-sm); border-radius: var(--radius-md); }
 
     /* Color identity */
     .ci-grid { display: grid; gap: var(--spacing-xl); }
@@ -2222,7 +2351,7 @@ export function pageCss() {
       box-shadow: var(--shadow-sm);
     }
     .ci-group-head { display: flex; gap: var(--spacing-md); align-items: baseline; margin-bottom: var(--spacing-md); flex-wrap: wrap; }
-    .ci-group-title { font-weight: 600; font-size: var(--text-heading-sm); }
+    .ci-group-title { font-weight: 600; font-size: var(--text-title-sm); }
     .ci-group-hint { font-size: var(--text-caption); color: var(--color-text-tertiary); font-family: ui-monospace, monospace; }
     .ci-swatch-row { display: flex; gap: var(--spacing-md); flex-wrap: wrap; align-items: stretch; }
     .ci-swatch {
@@ -2317,7 +2446,7 @@ export function pageCss() {
       box-shadow: var(--shadow-sm);
     }
     .vignette-head { margin-bottom: var(--spacing-md); }
-    .vignette-title { font-weight: 600; font-size: var(--text-heading-sm); }
+    .vignette-title { font-weight: 600; font-size: var(--text-title-sm); }
     .vignette-sub { font-size: var(--text-caption); color: var(--color-text-tertiary); margin-top: 2px; }
 
     /* approval-row */
@@ -2331,7 +2460,7 @@ export function pageCss() {
       border-bottom: 1px solid var(--color-border-default);
     }
     .approval-row:last-child { border-bottom: none; }
-    .approval-name { font-weight: 600; font-size: var(--text-body); }
+    .approval-name { font-weight: 600; font-size: var(--text-body-md); }
     .approval-dept { font-size: var(--text-caption); color: var(--color-text-tertiary); margin-top: 2px; }
     .approval-days { font-size: var(--text-caption); color: var(--color-text-secondary); }
     .approval-actions { display: flex; gap: var(--spacing-xs); }
@@ -2355,8 +2484,55 @@ export function pageCss() {
     .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-md); }
     .kpi-cell { padding: var(--spacing-md); background: var(--color-surface-input); border-radius: var(--radius-md); }
     .kpi-label { font-size: var(--text-caption); color: var(--color-text-tertiary); margin-bottom: var(--spacing-xs); }
-    .kpi-value { font-size: var(--text-heading-lg); font-weight: 700; line-height: 1.2; }
+    .kpi-value { font-size: var(--text-display-sm); font-weight: 700; line-height: 1.2; }
     .kpi-delta { font-size: 11px; color: var(--color-text-secondary); margin-top: var(--spacing-xs); }
+
+    /* checkbox — spec: specs/components/checkbox.md (단일 SoT) */
+    .checkbox {
+      box-sizing: border-box;
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 18px; height: 18px;
+      border: 1px solid var(--color-border-strong);
+      border-radius: var(--radius-sm);
+      background: var(--color-surface-default);
+      color: var(--color-text-on-accent);
+      cursor: pointer;
+      padding: 0;
+      transition: background-color var(--motion-duration-fast) var(--motion-ease-out), border-color var(--motion-duration-fast) var(--motion-ease-out);
+    }
+    .checkbox:hover { background: var(--color-surface-input); }
+    .checkbox--sm { width: 16px; height: 16px; }
+    .checkbox--md { width: 18px; height: 18px; }
+    .checkbox--lg { width: 20px; height: 20px; }
+    .checkbox--checked,
+    .checkbox--indeterminate {
+      background: var(--color-primary, var(--color-text-primary));
+      border-color: var(--color-primary, var(--color-text-primary));
+    }
+    .checkbox--checked:hover,
+    .checkbox--indeterminate:hover {
+      background: var(--color-primary, var(--color-text-primary));
+    }
+    .checkbox--focus { outline: 2px solid var(--color-border-focus); outline-offset: 2px; }
+    .checkbox--disabled {
+      opacity: 0.5; cursor: not-allowed;
+      background: var(--color-surface-input);
+      border-color: var(--color-border-default);
+    }
+    .checkbox--error {
+      border-color: var(--color-error);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-error) 30%, transparent);
+    }
+    .checkbox svg { width: 12px; height: 12px; }
+    .checkbox--sm svg { width: 10px; height: 10px; }
+    .checkbox--lg svg { width: 14px; height: 14px; }
+    .cb-row { display: flex; align-items: center; gap: var(--spacing-sm); }
+    .cb-row-label { font-size: var(--text-label-md); font-weight: 500; color: var(--color-text-primary); cursor: pointer; line-height: 1.2; }
+    .cb-matrix { display: grid; grid-template-columns: 140px auto 1fr; gap: var(--spacing-sm) var(--spacing-md); align-items: center; }
+    .cb-matrix-label { font-size: var(--text-label-sm); font-weight: 500; color: var(--color-text-secondary); letter-spacing: 0.06em; white-space: nowrap; }
+    .cb-matrix-desc { font-size: var(--text-caption); color: var(--color-text-tertiary); }
+    .cb-size-row { display: flex; align-items: end; gap: var(--spacing-xl); }
+    .cb-size-cell { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-xs); font-family: ui-monospace, monospace; font-size: var(--text-caption); color: var(--color-text-tertiary); }
 
     /* todo-card */
     .todo-list { display: flex; flex-direction: column; gap: 2px; }
@@ -2367,21 +2543,26 @@ export function pageCss() {
     }
     .todo-row:hover { background: var(--color-surface-input); }
     .todo-check {
-      width: 22px; height: 22px;
-      border: 2px solid var(--color-border-strong);
-      border-radius: var(--radius-xs);
+      width: 18px; height: 18px;
+      box-sizing: border-box;
+      border: 1px solid var(--color-border-strong);
+      border-radius: var(--radius-sm);
+      background: var(--color-surface-default);
       display: inline-flex; align-items: center; justify-content: center;
-      font-size: 14px; font-weight: 700;
+      font-size: 12px; font-weight: 700; line-height: 1;
+      transition: background-color var(--motion-duration-fast) var(--motion-ease-out), border-color var(--motion-duration-fast) var(--motion-ease-out);
     }
-    .todo-check--on { background: var(--color-primary, var(--color-text-primary)); border-color: var(--color-primary, var(--color-text-primary)); color: var(--color-text-on-accent, #fff); }
-    .todo-text { font-size: var(--text-body); }
+    .todo-row:hover .todo-check { background: var(--color-surface-input); }
+    .todo-check--on,
+    .todo-row:hover .todo-check--on { background: var(--color-primary, var(--color-text-primary)); border-color: var(--color-primary, var(--color-text-primary)); color: var(--color-text-on-accent, #fff); }
+    .todo-text { font-size: var(--text-body-md); }
     .todo-row--done .todo-text { color: var(--color-text-tertiary); text-decoration: line-through; }
     .todo-due { font-size: var(--text-caption); color: var(--color-text-tertiary); }
 
     /* memo-card */
     .memo-grid { display: flex; flex-direction: column; gap: var(--spacing-md); }
     .memo-row { padding: var(--spacing-md); background: var(--color-surface-input); border-radius: var(--radius-md); }
-    .memo-title { font-weight: 600; font-size: var(--text-heading-sm); margin-bottom: var(--spacing-xs); }
+    .memo-title { font-weight: 600; font-size: var(--text-title-sm); margin-bottom: var(--spacing-xs); }
     .memo-excerpt { font-size: var(--text-caption); color: var(--color-text-secondary); margin-bottom: var(--spacing-sm); line-height: 1.5; }
     .memo-tags { display: flex; gap: var(--spacing-xs); flex-wrap: wrap; }
     .memo-tag { font-size: 11px; color: var(--color-primary, var(--color-text-secondary)); }
@@ -2403,7 +2584,7 @@ export function pageCss() {
       padding: var(--spacing-xs) var(--spacing-xs) var(--spacing-xs) var(--spacing-md);
     }
     .search-icon { font-size: 18px; color: var(--color-text-tertiary); }
-    .search-input { flex: 1; background: transparent; border: none; outline: none; font-size: var(--text-body); color: var(--color-text-primary); padding: var(--spacing-xs) 0; font-family: inherit; }
+    .search-input { flex: 1; background: transparent; border: none; outline: none; font-size: var(--text-body-md); color: var(--color-text-primary); padding: var(--spacing-xs) 0; font-family: inherit; }
     .search-input::placeholder { color: var(--color-text-tertiary); }
 
     /* === Listing detail === */
@@ -2431,7 +2612,7 @@ export function pageCss() {
     .ld-gallery-cell--hero {
       grid-row: 1 / 3;
       min-height: 240px;
-      font-size: var(--text-heading-md);
+      font-size: var(--text-title-md);
       letter-spacing: 0;
       text-transform: none;
     }
@@ -2449,7 +2630,7 @@ export function pageCss() {
       padding: var(--spacing-lg);
       box-shadow: var(--shadow-sm);
     }
-    .ld-section-title { font-weight: 600; font-size: var(--text-heading-sm); margin-bottom: var(--spacing-xs); }
+    .ld-section-title { font-weight: 600; font-size: var(--text-title-sm); margin-bottom: var(--spacing-xs); }
     .ld-section-body { color: var(--color-text-secondary); line-height: 1.6; }
     .ld-rating {
       background: var(--color-surface-default);
@@ -2497,7 +2678,7 @@ export function pageCss() {
       font-size: 18px;
       flex-shrink: 0;
     }
-    .ld-highlight-label { font-weight: 600; font-size: var(--text-body); }
+    .ld-highlight-label { font-weight: 600; font-size: var(--text-body-md); }
     .ld-highlight-note { font-size: var(--text-caption); color: var(--color-text-tertiary); }
     .ld-host {
       background: var(--color-surface-default);
@@ -2513,15 +2694,15 @@ export function pageCss() {
       background: var(--color-primary, var(--color-text-primary));
       color: var(--color-text-on-accent, #fff);
       display: flex; align-items: center; justify-content: center;
-      font-size: var(--text-heading-sm);
+      font-size: var(--text-title-sm);
       font-weight: 700;
       flex-shrink: 0;
     }
-    .ld-host-name { font-weight: 600; font-size: var(--text-body); margin-bottom: var(--spacing-xs); }
+    .ld-host-name { font-weight: 600; font-size: var(--text-body-md); margin-bottom: var(--spacing-xs); }
     .ld-host-role { color: var(--color-text-secondary); font-weight: 400; }
     .ld-host-bio { color: var(--color-text-secondary); line-height: 1.6; margin-bottom: var(--spacing-xs); }
     .ld-host-since { font-size: var(--text-caption); color: var(--color-text-tertiary); }
-    .ld-rail-title { font-weight: 600; font-size: var(--text-heading-sm); margin-bottom: var(--spacing-md); }
+    .ld-rail-title { font-weight: 600; font-size: var(--text-title-sm); margin-bottom: var(--spacing-md); }
     .ld-rail-subtitle { font-size: var(--text-caption); color: var(--color-text-tertiary); margin-top: calc(var(--spacing-md) * -1); margin-bottom: var(--spacing-md); }
     .ld-rail-fields { display: flex; flex-direction: column; gap: 0; margin-bottom: var(--spacing-md); }
     .ld-rail-row {
@@ -2560,7 +2741,7 @@ export function pageCss() {
       height: 40px;
       display: flex; align-items: center; justify-content: center;
       border-radius: var(--radius-full);
-      font-size: var(--text-body);
+      font-size: var(--text-body-md);
       color: var(--color-text-primary);
       position: relative;
       cursor: pointer;
@@ -2620,7 +2801,7 @@ export function pageCss() {
       box-shadow: var(--shadow-sm);
     }
     .review-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--spacing-sm); gap: var(--spacing-md); }
-    .review-name { font-weight: 600; font-size: var(--text-body); }
+    .review-name { font-weight: 600; font-size: var(--text-body-md); }
     .review-role { font-size: var(--text-caption); color: var(--color-text-tertiary); margin-top: 2px; }
     .review-rating {
       font-size: var(--text-caption);
@@ -2648,7 +2829,7 @@ export function pageCss() {
       flex-shrink: 0;
     }
     .amenity-meta { flex: 1; }
-    .amenity-label { font-weight: 600; font-size: var(--text-body); }
+    .amenity-label { font-weight: 600; font-size: var(--text-body-md); }
     .amenity-note { font-size: var(--text-caption); color: var(--color-text-tertiary); margin-top: 2px; }
 
     /* === Empty state === */
@@ -2665,7 +2846,7 @@ export function pageCss() {
       border-radius: var(--radius-full);
       background: linear-gradient(135deg, color-mix(in srgb, var(--color-primary, var(--color-text-tertiary)) 15%, transparent), var(--color-surface-input));
     }
-    .empty-title { font-size: var(--text-heading-md); font-weight: var(--text-heading-md--font-weight); line-height: var(--text-heading-md--line-height); }
+    .empty-title { font-size: var(--text-title-md); font-weight: var(--text-heading-md--font-weight); line-height: var(--text-heading-md--line-height); }
     .empty-description { color: var(--color-text-secondary); max-width: 40ch; line-height: 1.6; }
     .empty-actions { display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-sm); flex-wrap: wrap; justify-content: center; }
 
@@ -2692,8 +2873,8 @@ export function pageCss() {
       display: flex; flex-direction: column;
       gap: var(--spacing-md);
     }
-    .modal-title { font-size: var(--text-heading-lg); font-weight: var(--text-heading-lg--font-weight); line-height: var(--text-heading-lg--line-height); }
-    .modal-description { color: var(--color-text-secondary); line-height: 1.6; }
+    .modal-title { font-size: var(--text-display-sm); font-weight: 700; line-height: var(--text-heading-lg--line-height); color: var(--color-text-primary); letter-spacing: -0.01em; }
+    .modal-description { font-size: var(--text-body-md); color: var(--color-text-secondary); line-height: 1.6; }
     .modal-fields {
       display: flex; flex-direction: column; gap: var(--spacing-xs);
       background: var(--color-surface-input);
@@ -2705,38 +2886,24 @@ export function pageCss() {
     .modal-val { font-weight: 600; }
     .modal-actions { display: flex; gap: var(--spacing-sm); justify-content: flex-end; margin-top: var(--spacing-md); }
 
-    /* === Toast === */
+    /* === Toast === sonner.md SoT — surface-default + border-default(1px) + radius-md + shadow-lg + 20px stroke svg(kind별 색) */
     .toast-stack { display: flex; flex-direction: column; gap: var(--spacing-md); }
     .toast {
-      display: grid; grid-template-columns: auto 1fr auto; gap: var(--spacing-md); align-items: flex-start;
+      display: flex; align-items: flex-start; gap: var(--spacing-md);
       background: var(--color-surface-default);
+      border: 1px solid var(--color-border-default);
       border-radius: var(--radius-md);
       padding: var(--spacing-md) var(--spacing-lg);
-      box-shadow: var(--shadow-md);
-      border-left: 4px solid var(--color-text-tertiary);
+      box-shadow: var(--shadow-lg);
+      max-width: 360px;
     }
-    .toast-icon {
-      width: 24px; height: 24px;
-      border-radius: var(--radius-full);
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700;
-      color: var(--color-text-on-accent);
-      font-size: 14px;
-    }
-    .toast-success { border-left-color: var(--color-success); }
-    .toast-success .toast-icon { background: var(--color-success); }
-    .toast-error { border-left-color: var(--color-error); }
-    .toast-error .toast-icon { background: var(--color-error); }
-    .toast-warning { border-left-color: var(--color-warning); }
-    .toast-warning .toast-icon { background: var(--color-warning); }
-    .toast-info { border-left-color: var(--color-info); }
-    .toast-info .toast-icon { background: var(--color-info); }
-    .toast-title { font-weight: 600; font-size: var(--text-body); }
+    .toast > svg { flex-shrink: 0; margin-top: 2px; }
+    .toast-content { display: flex; flex-direction: column; gap: var(--spacing-xs); min-width: 0; flex: 1; }
+    .toast-title { font-weight: 600; font-size: var(--text-title-sm); line-height: var(--text-title-sm--line-height); color: var(--color-text-primary); }
     .toast-body {
       color: var(--color-text-secondary);
-      font-size: var(--text-caption);
-      margin-top: 2px;
-      line-height: 1.5;
+      font-size: var(--text-body-sm);
+      line-height: var(--text-body-sm--line-height);
     }
     .toast-close {
       width: 28px; height: 28px;
@@ -2746,6 +2913,7 @@ export function pageCss() {
       color: var(--color-text-tertiary);
       cursor: pointer;
       font-size: 18px;
+      flex-shrink: 0;
     }
     .toast-close:hover { background: var(--color-surface-input); }
 
@@ -2763,15 +2931,17 @@ export function pageCss() {
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg) var(--spacing-xl); }
     .form-group { display: flex; flex-direction: column; gap: var(--spacing-xs); }
     .form-group:has(.form-textarea) { grid-column: 1 / -1; }
+    /* Label 컴포넌트 spec(label-md 14/500 + text-primary)과 통일. */
     .form-label {
-      font-size: var(--text-caption);
-      font-weight: 600;
-      color: var(--color-text-secondary);
+      font-size: var(--text-label-md);
+      line-height: var(--text-label-md--line-height);
+      font-weight: 500;
+      color: var(--color-text-primary);
       display: flex;
       align-items: center;
       gap: var(--spacing-xs);
     }
-    .form-required { color: var(--color-error); font-weight: 700; }
+    .form-required { color: var(--color-error); font-weight: 500; }
     .form-input,
     .form-select,
     .form-textarea {
@@ -2780,7 +2950,7 @@ export function pageCss() {
       border: 1px solid var(--color-border-default);
       border-radius: var(--radius-sm);
       padding: var(--spacing-sm) var(--spacing-md);
-      font-size: var(--text-body);
+      font-size: var(--text-body-md);
       font-family: inherit;
       line-height: 1.6;
       min-height: 40px;
@@ -2789,7 +2959,7 @@ export function pageCss() {
     }
     .form-input--readonly { color: var(--color-text-secondary); cursor: not-allowed; }
     .form-select { justify-content: space-between; cursor: pointer; }
-    .form-select-caret { color: var(--color-text-tertiary); font-size: 14px; }
+    .form-select-caret { color: var(--color-text-tertiary); flex-shrink: 0; }
     .form-textarea {
       align-items: flex-start;
       white-space: pre-wrap;
@@ -2915,7 +3085,7 @@ export function pageCss() {
       border: none;
       background: transparent;
       color: var(--color-text-secondary);
-      font-size: var(--text-body);
+      font-size: var(--text-body-md);
       font-family: inherit;
       cursor: pointer;
       transition: background var(--motion-duration-fast, 150ms) var(--motion-ease-out, ease-out);
@@ -2966,7 +3136,7 @@ export function pageCss() {
       margin: -4px auto var(--spacing-sm);
     }
     .drw-header { display: flex; justify-content: space-between; align-items: center; }
-    .drw-title { font-weight: 600; font-size: var(--text-heading-sm); }
+    .drw-title { font-weight: 600; font-size: var(--text-title-sm); }
     .drw-close {
       width: 28px; height: 28px;
       border: none; background: transparent;
@@ -3004,7 +3174,7 @@ export function pageCss() {
     }
     .sp-spinner--sm { width: 16px; height: 16px; border-width: 2px; }
     .sp-spinner--lg { width: 32px; height: 32px; border-width: 3px; }
-    .sp-inline { display: flex; gap: var(--spacing-sm); align-items: center; font-size: var(--text-body); color: var(--color-text-secondary); }
+    .sp-inline { display: flex; gap: var(--spacing-sm); align-items: center; font-size: var(--text-body-md); color: var(--color-text-secondary); }
     .sp-progress {
       width: 100%;
       height: 4px;
@@ -3120,8 +3290,8 @@ export function pageCss() {
     .banner--info .banner-icon { background: var(--color-info); }
     .banner--warning .banner-icon { background: var(--color-warning); }
     .banner--error .banner-icon { background: var(--color-error); }
-    .banner-body { flex: 1; display: flex; flex-direction: column; gap: 2px; font-size: var(--text-body); }
-    .banner-body strong { font-size: var(--text-body-strong); }
+    .banner-body { flex: 1; display: flex; flex-direction: column; gap: 2px; font-size: var(--text-body-md); }
+    .banner-body strong { font-size: var(--text-body-md); }
     .banner-close { width: 28px; height: 28px; border: 0; background: transparent; cursor: pointer; border-radius: var(--radius-sm); color: var(--color-text-tertiary); }
 
     /* Tag / Chip */
@@ -3133,15 +3303,16 @@ export function pageCss() {
 
     /* Popover */
     .pop-anchor { position: relative; }
-    .pop-trigger { background: var(--color-surface-input); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); padding: 6px 10px; cursor: pointer; font-size: var(--text-caption); color: var(--color-text-primary); }
+    /* popover.md SoT — compact pill trigger + token padding */
+    .pop-trigger { background: var(--color-surface-input); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); padding: var(--spacing-xs) var(--spacing-sm); cursor: pointer; font-size: var(--text-caption); color: var(--color-text-primary); }
     .pop { position: relative; margin-top: var(--spacing-xs); background: var(--color-surface-default); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); padding: var(--spacing-md); box-shadow: var(--shadow-md); display: flex; flex-direction: column; gap: var(--spacing-sm); }
-    .pop textarea { width: 100%; padding: 6px 8px; border: 1px solid var(--color-border-default); border-radius: var(--radius-sm); background: var(--color-surface-input); font-family: inherit; font-size: var(--text-caption); color: var(--color-text-primary); resize: vertical; }
+    .pop textarea { width: 100%; padding: var(--spacing-xs) var(--spacing-sm); border: 1px solid var(--color-border-default); border-radius: var(--radius-sm); background: var(--color-surface-input); font-family: inherit; font-size: var(--text-caption); color: var(--color-text-primary); resize: vertical; }
     .pop-actions { display: flex; justify-content: flex-end; gap: var(--spacing-xs); }
 
     /* File Upload */
     .fu-zone { border: 2px dashed var(--color-border-default); border-radius: var(--radius-md); padding: var(--spacing-lg); display: flex; flex-direction: column; align-items: center; gap: 4px; background: var(--color-bg-page); }
     .fu-icon { font-size: 24px; color: var(--color-text-tertiary); }
-    .fu-label { font-size: var(--text-body-strong); color: var(--color-text-primary); }
+    .fu-label { font-size: var(--text-body-md); color: var(--color-text-primary); }
     .fu-list { display: flex; flex-direction: column; gap: var(--spacing-xs); margin-top: var(--spacing-xs); }
     .fu-item { display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-xs) var(--spacing-sm); background: var(--color-surface-input); border-radius: var(--radius-sm); }
     .fu-file-icon { font-size: 18px; }
@@ -3154,7 +3325,7 @@ export function pageCss() {
     /* Treeview */
     .tv, .tv ul { list-style: none; margin: 0; padding: 0; }
     .tv ul { padding-inline-start: var(--spacing-md); }
-    .tv-row { display: flex; align-items: center; gap: var(--spacing-xs); padding: 4px var(--spacing-sm); width: 100%; background: transparent; border: 0; cursor: pointer; text-align: start; font-size: var(--text-body); color: var(--color-text-primary); border-radius: var(--radius-sm); }
+    .tv-row { display: flex; align-items: center; gap: var(--spacing-xs); padding: 4px var(--spacing-sm); width: 100%; background: transparent; border: 0; cursor: pointer; text-align: start; font-size: var(--text-body-md); color: var(--color-text-primary); border-radius: var(--radius-sm); }
     .tv-row:hover { background: var(--color-surface-input); }
     .tv-row--selected { background: color-mix(in srgb, var(--color-primary) 10%, transparent); color: var(--color-primary); font-weight: 600; }
     .tv-chev { display: inline-block; width: 12px; font-size: 10px; color: var(--color-text-tertiary); }
@@ -3162,7 +3333,7 @@ export function pageCss() {
     /* Animation showcase (v74) */
     .anim-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--spacing-md); }
     .anim-cell { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-    .anim-box { width: 56px; height: 56px; background: var(--color-primary); color: var(--color-text-on-accent); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: var(--text-body-strong); }
+    .anim-box { width: 56px; height: 56px; background: var(--color-primary); color: var(--color-text-on-accent); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: var(--text-body-md); }
     .anim-fade-in { animation: fade-in var(--motion-duration-base) var(--motion-ease-out) both; }
     .anim-slide-in-up { animation: slide-in-up var(--motion-duration-slow) var(--motion-ease-out) both; }
     .anim-scale-in { animation: scale-in var(--motion-duration-base) var(--motion-ease-out) both; }
@@ -3181,7 +3352,7 @@ export function pageCss() {
     .fv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--spacing-md); }
     .fv-cell { display: flex; flex-direction: column; gap: 4px; }
     .fv-label { font-size: var(--text-caption); color: var(--color-text-secondary); }
-    .fv-input { padding: 8px 10px; border: 1px solid var(--color-border-default); border-radius: var(--radius-sm); background: var(--color-surface-input); font-family: inherit; font-size: var(--text-body); color: var(--color-text-primary); }
+    .fv-input { padding: var(--spacing-sm) var(--spacing-md); border: 1px solid var(--color-border-default); border-radius: var(--radius-sm); background: var(--color-surface-input); font-family: inherit; font-size: var(--text-body-md); color: var(--color-text-primary); }
     .fv-input:focus, .fv-input--focused { border-color: var(--color-border-focus); outline: 2px solid color-mix(in srgb, var(--color-border-focus) 30%, transparent); outline-offset: 0; }
     .fv-input--invalid { border-color: var(--color-error); }
     .fv-input--valid { border-color: var(--color-success); }
@@ -3207,13 +3378,13 @@ export function pageCss() {
     /* Sidebar */
     .sb { display: flex; flex-direction: column; gap: var(--spacing-xs); padding: var(--spacing-sm); background: var(--color-bg-page); border-radius: var(--radius-md); }
     .sb-group { font-size: var(--text-caption); color: var(--color-text-tertiary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; padding: var(--spacing-xs) var(--spacing-sm); }
-    .sb-item { padding: var(--spacing-sm) var(--spacing-md); border-radius: var(--radius-sm); color: var(--color-text-secondary); font-size: var(--text-body); cursor: pointer; }
+    .sb-item { padding: var(--spacing-sm) var(--spacing-md); border-radius: var(--radius-sm); color: var(--color-text-secondary); font-size: var(--text-body-md); cursor: pointer; }
     .sb-item:hover { background: var(--color-surface-input); color: var(--color-text-primary); }
     .sb-item--active { background: var(--color-surface-input); color: var(--color-text-primary); font-weight: 600; border-left: 3px solid var(--color-primary, var(--color-text-primary)); padding-left: calc(var(--spacing-md) - 3px); }
 
     /* Navigation Menu */
     .nm { display: flex; gap: var(--spacing-xs); flex-wrap: wrap; }
-    .nm-item { padding: var(--spacing-sm) var(--spacing-md); border: none; background: transparent; border-radius: var(--radius-md); color: var(--color-text-secondary); cursor: pointer; font-size: var(--text-body); font-family: inherit; }
+    .nm-item { padding: var(--spacing-sm) var(--spacing-md); border: none; background: transparent; border-radius: var(--radius-md); color: var(--color-text-secondary); cursor: pointer; font-size: var(--text-body-md); font-family: inherit; }
     .nm-item:hover { background: var(--color-surface-input); color: var(--color-text-primary); }
     .nm-item--active { color: var(--color-text-primary); font-weight: 600; }
 
@@ -3225,10 +3396,10 @@ export function pageCss() {
 
     /* Command (⌘K) */
     .cmd { background: var(--color-bg-page); border-radius: var(--radius-md); padding: var(--spacing-md); }
-    .cmd-input { width: 100%; padding: var(--spacing-sm) var(--spacing-md); background: var(--color-surface-default); border: 1px solid var(--color-border-default); border-radius: var(--radius-sm); color: var(--color-text-primary); font-family: inherit; font-size: var(--text-body); }
+    .cmd-input { width: 100%; padding: var(--spacing-sm) var(--spacing-md); background: var(--color-surface-default); border: 1px solid var(--color-border-default); border-radius: var(--radius-sm); color: var(--color-text-primary); font-family: inherit; font-size: var(--text-body-md); }
     .cmd-section { margin-top: var(--spacing-md); }
     .cmd-group { font-size: var(--text-caption); color: var(--color-text-tertiary); padding: var(--spacing-xs) var(--spacing-sm); margin-top: var(--spacing-sm); text-transform: uppercase; letter-spacing: 0.04em; }
-    .cmd-item { display: flex; justify-content: space-between; align-items: center; padding: var(--spacing-sm) var(--spacing-md); border-radius: var(--radius-sm); cursor: pointer; font-size: var(--text-body); }
+    .cmd-item { display: flex; justify-content: space-between; align-items: center; padding: var(--spacing-sm) var(--spacing-md); border-radius: var(--radius-sm); cursor: pointer; font-size: var(--text-body-md); }
     .cmd-item:hover { background: var(--color-surface-input); }
     .cmd-shortcut { font-family: ui-monospace, monospace; font-size: var(--text-caption); color: var(--color-text-tertiary); }
 
@@ -3237,10 +3408,12 @@ export function pageCss() {
     .cb-caret { color: var(--color-text-tertiary); }
 
     /* Slider */
+    /* Slider — spec: track 4px / thumb 16 / primary fill / thumb fill text-on-accent(#fff)
+       — 다크 모드에서도 흰색 유지(surface-default는 dark swap되어 어두워짐). */
     .sld { padding: var(--spacing-sm) 0; }
     .sld-track { position: relative; width: 100%; height: 4px; background: var(--color-surface-input); border-radius: var(--radius-full); }
-    .sld-fill { height: 100%; background: var(--color-primary, var(--color-text-primary)); border-radius: var(--radius-full); }
-    .sld-thumb { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 16px; height: 16px; background: var(--color-surface-default); border: 2px solid var(--color-primary, var(--color-text-primary)); border-radius: var(--radius-full); box-shadow: var(--shadow-sm); }
+    .sld-fill { height: 100%; background: var(--color-primary); border-radius: var(--radius-full); }
+    .sld-thumb { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 16px; height: 16px; background: var(--color-text-on-accent); border: 2px solid var(--color-primary); border-radius: var(--radius-full); box-shadow: var(--shadow-sm); }
     .sld-meta { display: flex; justify-content: space-between; font-size: var(--text-caption); color: var(--color-text-tertiary); margin-top: var(--spacing-md); }
 
     /* Toggle */
@@ -3257,31 +3430,33 @@ export function pageCss() {
     .tgg-item--active { background: var(--color-surface-input); color: var(--color-text-primary); font-weight: 600; }
 
     /* Input OTP */
+    /* OTP — spec: specs/components/input-otp.md (단일 SoT) */
     .otp { display: flex; gap: var(--spacing-xs); align-items: center; }
-    .otp-cell { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--color-surface-input); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); font-size: 18px; font-weight: 600; color: var(--color-text-primary); font-family: ui-monospace, monospace; }
+    .otp-cell { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--color-surface-input); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); font-size: var(--text-title-md); font-weight: 600; line-height: 1; color: var(--color-text-primary); font-family: ui-monospace, monospace; }
     .otp-cell--filled { background: var(--color-surface-default); }
-    .otp-cell--focus { outline: 2px solid var(--color-border-focus, var(--color-primary, var(--color-text-primary))); outline-offset: 1px; }
-    .otp-sep { color: var(--color-text-tertiary); padding: 0 var(--spacing-xs); }
+    .otp-cell--focus { outline: 2px solid var(--color-border-focus); outline-offset: 1px; }
+    .otp-sep { display: inline-flex; align-items: center; color: var(--color-text-tertiary); padding: 0 var(--spacing-xs); }
 
     /* Accordion / Collapsible */
     .acc { display: flex; flex-direction: column; border: 1px solid var(--color-border-default); border-radius: var(--radius-md); overflow: hidden; }
     .acc-item + .acc-item { border-top: 1px solid var(--color-border-default); }
-    .acc-trigger { display: flex; justify-content: space-between; padding: var(--spacing-sm) var(--spacing-md); cursor: pointer; font-weight: 600; font-size: var(--text-body); background: transparent; }
+    .acc-trigger { display: flex; justify-content: space-between; padding: var(--spacing-sm) var(--spacing-md); cursor: pointer; font-weight: 600; font-size: var(--text-body-md); background: transparent; }
     .acc-trigger:hover { background: var(--color-surface-input); }
     .acc-item--open .acc-trigger { background: var(--color-surface-input); }
     .acc-body { padding: var(--spacing-sm) var(--spacing-md); color: var(--color-text-secondary); font-size: var(--text-caption); border-top: 1px solid var(--color-border-default); }
-    .col-trigger { padding: var(--spacing-sm) var(--spacing-md); border: 1px solid var(--color-border-default); background: transparent; border-radius: var(--radius-md); cursor: pointer; font-family: inherit; font-size: var(--text-body); display: inline-flex; gap: var(--spacing-sm); }
+    .col-trigger { padding: var(--spacing-sm) var(--spacing-md); border: 1px solid var(--color-border-default); background: transparent; border-radius: var(--radius-md); cursor: pointer; font-family: inherit; font-size: var(--text-body-md); display: inline-flex; gap: var(--spacing-sm); }
     .col-trigger:hover { background: var(--color-surface-input); }
 
     /* Hover Card */
     .hc { display: flex; gap: var(--spacing-md); padding: var(--spacing-md); background: var(--color-bg-page); border-radius: var(--radius-md); align-items: flex-start; }
-    .hc-avatar { width: 40px; height: 40px; border-radius: var(--radius-full); background: var(--color-primary, var(--color-text-primary)); color: var(--color-text-on-accent, #fff); display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
-    .hc-name { font-weight: 600; font-size: var(--text-body); }
-    .hc-bio { color: var(--color-text-secondary); font-size: var(--text-caption); margin-top: 2px; }
+    /* avatar.md SoT — md 40px + text-title-sm + 600 (preview 화면샷 패턴) */
+    .hc-avatar { width: 40px; height: 40px; border-radius: var(--radius-full); background: var(--color-primary, var(--color-text-primary)); color: var(--color-text-on-accent, #fff); display: flex; align-items: center; justify-content: center; font-size: var(--text-title-sm); font-weight: 600; flex-shrink: 0; }
+    .hc-name { font-weight: 600; font-size: var(--text-body-md); color: var(--color-text-primary); }
+    .hc-bio { color: var(--color-text-secondary); font-size: var(--text-caption); margin-top: var(--spacing-xs); }
 
     /* Context Menu */
     .ctx { display: inline-flex; flex-direction: column; background: var(--color-surface-default); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); box-shadow: var(--shadow-md); padding: var(--spacing-xs); min-width: 160px; }
-    .ctx-item { padding: var(--spacing-sm) var(--spacing-md); border-radius: var(--radius-sm); cursor: pointer; font-size: var(--text-body); }
+    .ctx-item { padding: var(--spacing-sm) var(--spacing-md); border-radius: var(--radius-sm); cursor: pointer; font-size: var(--text-body-md); }
     .ctx-item:hover { background: var(--color-surface-input); }
     .ctx-item--destructive { color: var(--color-error); }
     .ctx-item--destructive:hover { background: color-mix(in srgb, var(--color-error) 12%, transparent); }
@@ -3291,7 +3466,7 @@ export function pageCss() {
     .ad { display: flex; gap: var(--spacing-md); padding: var(--spacing-lg); background: var(--color-bg-page); border-radius: var(--radius-md); align-items: flex-start; }
     .ad-icon { width: 32px; height: 32px; border-radius: var(--radius-full); background: var(--color-error); color: var(--color-text-on-accent, #fff); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; flex-shrink: 0; }
     .ad-body { flex: 1; }
-    .ad-title { font-weight: 700; font-size: var(--text-heading-sm); margin-bottom: var(--spacing-xs); }
+    .ad-title { font-weight: 700; font-size: var(--text-title-sm); margin-bottom: var(--spacing-xs); }
     .ad-desc { color: var(--color-text-secondary); margin-bottom: var(--spacing-md); }
     .ad-actions { display: flex; gap: var(--spacing-sm); justify-content: flex-end; }
     .btn-destructive { background: var(--color-error); color: var(--color-text-on-accent, #fff); padding: var(--spacing-sm) var(--spacing-lg); border: none; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; }
@@ -3324,11 +3499,9 @@ export function pageCss() {
 
     /* Sonner toast stack */
     .son { display: flex; flex-direction: column; gap: var(--spacing-sm); }
-    .son-toast { display: flex; gap: var(--spacing-sm); align-items: center; padding: var(--spacing-sm) var(--spacing-md); background: var(--color-surface-default); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); font-size: var(--text-caption); }
-    .son-icon { width: 20px; height: 20px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; color: var(--color-text-on-accent, #fff); font-weight: 700; font-size: 12px; flex-shrink: 0; }
-    .son-toast--success .son-icon { background: var(--color-success); }
-    .son-toast--info .son-icon { background: var(--color-info); }
-    .son-toast--warning .son-icon { background: var(--color-warning); }
+    /* sonner.md SoT — 20px stroke svg(kind별 색) + shadow-lg + border 1px */
+    .son-toast { display: flex; gap: var(--spacing-md); align-items: flex-start; padding: var(--spacing-md) var(--spacing-lg); background: var(--color-surface-default); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); font-size: var(--text-body-sm); line-height: var(--text-body-sm--line-height); color: var(--color-text-primary); }
+    .son-toast > svg { flex-shrink: 0; margin-top: 2px; }
 
     /* Aspect Ratio */
     .ar { background: var(--color-surface-input); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--color-text-tertiary); font-family: ui-monospace, monospace; font-size: var(--text-caption); }
@@ -3342,12 +3515,12 @@ export function pageCss() {
     .drp { display: flex; gap: var(--spacing-sm); align-items: center; padding: var(--spacing-sm) var(--spacing-md); background: var(--color-surface-input); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); font-family: ui-monospace, monospace; font-size: var(--text-caption); }
     .drp-arrow { color: var(--color-text-tertiary); }
     .drp-days { margin-left: auto; padding: 2px var(--spacing-sm); background: var(--color-primary, var(--color-text-primary)); color: var(--color-text-on-accent, #fff); border-radius: var(--radius-full); font-size: 11px; }
-    .tp { display: flex; gap: var(--spacing-xs); align-items: center; padding: var(--spacing-md) var(--spacing-lg); background: var(--color-surface-input); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); justify-content: center; font-size: var(--text-heading-md); font-weight: 600; font-family: ui-monospace, monospace; }
+    .tp { display: flex; gap: var(--spacing-xs); align-items: center; padding: var(--spacing-md) var(--spacing-lg); background: var(--color-surface-input); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); justify-content: center; font-size: var(--text-title-md); font-weight: 600; font-family: ui-monospace, monospace; }
     .tp-sep { color: var(--color-text-tertiary); }
 
     /* Token catalog (기존 — 압축 유지) */
     .catalog { margin-top: var(--spacing-3xl); padding-top: var(--spacing-2xl); border-top: 1px dashed var(--color-border-default); }
-    .catalog h3 { font-size: var(--text-heading-md); font-weight: 600; margin: var(--spacing-xl) 0 var(--spacing-md); }
+    .catalog h3 { font-size: var(--text-title-md); font-weight: 600; margin: var(--spacing-xl) 0 var(--spacing-md); }
     .swatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--spacing-md); margin-bottom: var(--spacing-lg); }
     .swatch { background: var(--color-surface-default); border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); }
     .swatch-color { height: 60px; }
@@ -3355,7 +3528,7 @@ export function pageCss() {
     .swatch-value { padding: 0 var(--spacing-md) var(--spacing-sm); font-family: ui-monospace, monospace; color: var(--color-text-tertiary); font-size: 11px; }
     .text-row { display: grid; grid-template-columns: 240px 1fr; gap: var(--spacing-lg); padding: var(--spacing-md) 0; border-bottom: 1px solid var(--color-border-default); }
     .text-meta { display: flex; flex-direction: column; }
-    .text-meta strong { font-size: var(--text-body); }
+    .text-meta strong { font-size: var(--text-body-md); }
     .text-meta span { color: var(--color-text-tertiary); font-family: ui-monospace, monospace; font-size: var(--text-caption); }
     .radius-row { display: flex; gap: var(--spacing-lg); flex-wrap: wrap; }
     .radius-item { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-sm); }
@@ -3496,8 +3669,8 @@ export function pageCss() {
     [data-theme="dark"] .kpi-cell,
     [data-theme="dark"] .memo-row,
     [data-theme="dark"] .search-pill { background: var(--color-surface-input-dark); }
-    [data-theme="dark"] .btn-outlined { border-color: var(--color-border-default-dark); color: var(--color-text-primary-dark); }
-    [data-theme="dark"] .btn-outlined:hover { background: var(--color-surface-input-dark); }
+    [data-theme="dark"] .btn-outline { border-color: var(--color-border-default-dark); color: var(--color-text-primary-dark); }
+    [data-theme="dark"] .btn-outline:hover { background: var(--color-surface-input-dark); }
     [data-theme="dark"] .btn-on-accent { background: var(--color-surface-default-dark); color: var(--color-text-primary-dark); }
 
     /* === Dark mode: brand primary → primary-light (어두운 표면 위 비채움 사용) === */
@@ -3530,7 +3703,7 @@ export function pageCss() {
     [data-theme="dark"] .empty-illustration {
       background: linear-gradient(135deg, color-mix(in srgb, var(--color-primary-light, var(--color-text-tertiary-dark)) 25%, transparent), var(--color-surface-input-dark));
     }
-    /* btn-outlined의 border/text는 다크 모드에서 brand 표현이 필요 없는 케이스(중성 outlined)라 primary-light 미적용 — 1503 line은 라이트 모드 텍스트가 primary, 다크 모드는 위 .btn-outlined 룰로 text-primary-dark로 이미 override 됨. */
+    /* btn-outline의 border/text는 다크 모드에서 brand 표현이 필요 없는 케이스(중성 outline)라 primary-light 미적용 — 1503 line은 라이트 모드 텍스트가 primary, 다크 모드는 위 .btn-outline 룰로 text-primary-dark로 이미 override 됨. */
 
     /* === Dark mode token aliases ===
        data-theme="dark" 시 light 페어 토큰을 dark 페어로 alias —
@@ -3650,6 +3823,7 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     ${renderColorIdentity(tokens)}
     ${renderTypographyMoment(brand, tokens)}
     ${renderButtonGallery(brand)}
+    ${renderCheckboxGallery(brand)}
     ${renderVignettes(brand)}
     ${renderListingDetail(brand)}
     ${renderCalendar(brand)}
