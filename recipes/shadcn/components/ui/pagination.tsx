@@ -10,10 +10,12 @@ import { ButtonProps, buttonVariants } from "@/components/ui/button";
 
 /*
  * Porest Pagination (shadcn 베이스 + Porest 디자인 토큰)
+ * spec: specs/components/pagination.md (단일 SoT)
  *
  * - <a> 또는 button 기반. asChild 미지원(shadcn 표준 패턴).
  * - composition: Pagination > PaginationContent > PaginationItem > PaginationLink + Previous/Next/Ellipsis
- * - 활성 페이지는 isActive prop으로 outline 스타일.
+ * - 모든 시각은 Button variant/size 인용 — buttonVariants() 호출로 자동 정합.
+ * - 활성 페이지는 isActive prop으로 outline + aria-current="page". 비활성은 ghost.
  */
 
 const Pagination = ({ className, ...props }: React.ComponentProps<"nav">) => (
@@ -32,7 +34,7 @@ const PaginationContent = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <ul
     ref={ref}
-    className={cn("flex flex-row items-center gap-1", className)}
+    className={cn("flex flex-row items-center gap-[var(--spacing-xs)]", className)}
     {...props}
   />
 ));
@@ -77,8 +79,8 @@ const PaginationPrevious = ({
 }: React.ComponentProps<typeof PaginationLink>) => (
   <PaginationLink
     aria-label="이전 페이지"
-    size="default"
-    className={cn("gap-1 pl-2.5", className)}
+    size="md"
+    className={cn("gap-[var(--spacing-xs)]", className)}
     {...props}
   >
     <ChevronLeft className="h-4 w-4" />
@@ -93,8 +95,8 @@ const PaginationNext = ({
 }: React.ComponentProps<typeof PaginationLink>) => (
   <PaginationLink
     aria-label="다음 페이지"
-    size="default"
-    className={cn("gap-1 pr-2.5", className)}
+    size="md"
+    className={cn("gap-[var(--spacing-xs)]", className)}
     {...props}
   >
     <span>다음</span>
@@ -109,7 +111,7 @@ const PaginationEllipsis = ({
 }: React.ComponentProps<"span">) => (
   <span
     aria-hidden
-    className={cn("flex h-9 w-9 items-center justify-center", className)}
+    className={cn("flex h-10 w-10 items-center justify-center", className)}
     {...props}
   >
     <MoreHorizontal className="h-4 w-4" />
