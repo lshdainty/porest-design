@@ -54,7 +54,7 @@ export const aspectRatioExamples = [
     <CardDescription>10인 · 회의용 · 화상 가능</CardDescription>
   </CardHeader>
 </Card>`,
-    render: () => `<div style="max-width:320px; border-radius:var(--radius-lg); border:1px solid var(--color-border-default); background:var(--color-surface-default); overflow:hidden; box-shadow:var(--shadow-sm);">
+    render: () => `<div style="max-width:320px; border-radius:var(--radius-lg); background:var(--color-surface-default); overflow:hidden; box-shadow:var(--shadow-sm);">
   ${ar({ ratio: "16/9", children: PLACEHOLDER })}
   <div style="display:flex; flex-direction:column; gap:6px; padding:24px;">
     <h3 style="margin:0; font-size:var(--text-title-md); line-height:var(--text-title-md--line-height); font-weight:var(--text-title-md--font-weight); color:var(--color-text-primary);">회의실 A</h3>
