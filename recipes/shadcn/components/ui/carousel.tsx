@@ -9,10 +9,13 @@ import { Button } from "@/components/ui/button";
 
 /*
  * Porest Carousel (shadcn 베이스 + Porest 디자인 토큰)
+ * spec: specs/components/carousel.md (단일 SoT)
  *
  * - embla-carousel-react 베이스. context로 API 공유.
  * - composition: Carousel > CarouselContent > CarouselItem (× n)
  *                          + CarouselPrevious / CarouselNext
+ * - spacing-lg(16) 토큰 직접 인용 — slide 간 gap.
+ * - 화살표는 Button outline + icon size override(32×32, 보조 navigation 톤).
  * - 사용: <Carousel><CarouselContent>{items.map(...)}</CarouselContent></Carousel>
  */
 
@@ -123,7 +126,7 @@ const CarouselContent = React.forwardRef<
         ref={ref}
         className={cn(
           "flex",
-          orientation === "horizontal" ? "-ml-4" : "-mt-4 flex-col",
+          orientation === "horizontal" ? "-ml-[var(--spacing-lg)]" : "-mt-[var(--spacing-lg)] flex-col",
           className,
         )}
         {...props}
@@ -145,7 +148,7 @@ const CarouselItem = React.forwardRef<
       aria-roledescription="slide"
       className={cn(
         "min-w-0 shrink-0 grow-0 basis-full",
-        orientation === "horizontal" ? "pl-4" : "pt-4",
+        orientation === "horizontal" ? "pl-[var(--spacing-lg)]" : "pt-[var(--spacing-lg)]",
         className,
       )}
       {...props}
