@@ -6,10 +6,12 @@ import { cn } from "@/lib/utils";
 
 /*
  * Porest Accordion (shadcn 베이스 + Porest 디자인 토큰)
+ * spec: specs/components/accordion.md (단일 SoT)
  *
  * - Radix Accordion 베이스. single / multiple 모드, 키보드 네비게이션.
  * - composition: Accordion > AccordionItem > AccordionTrigger / AccordionContent
- * - chevron 아이콘 자동 회전(open/closed 상태).
+ * - FAQ 스타일 — 외곽 wrapper 없이 item 사이 border-bottom으로만 분리.
+ * - chevron 16×16 + open(data-state=open) 시 180° 회전 + motion-duration-base.
  */
 
 const Accordion = AccordionPrimitive.Root;
@@ -34,13 +36,13 @@ const AccordionTrigger = React.forwardRef<
     <AccordionPrimitive.Trigger
       ref={ref}
       className={cn(
-        "flex flex-1 items-center justify-between py-4 text-title-sm font-medium text-text-primary transition-all hover:underline [&[data-state=open]>svg]:rotate-180",
+        "flex flex-1 items-center justify-between py-[var(--spacing-lg)] text-title-sm font-medium text-text-primary text-left transition-[color] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)] hover:text-text-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:rounded-xs [&[data-state=open]>svg]:rotate-180 disabled:cursor-not-allowed disabled:opacity-50",
         className,
       )}
       {...props}
     >
       {children}
-      <ChevronDown className="h-4 w-4 shrink-0 text-text-secondary transition-transform duration-200" />
+      <ChevronDown className="h-4 w-4 shrink-0 text-text-secondary transition-transform duration-[var(--motion-duration-base)] ease-[var(--motion-ease-out)]" />
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
 ));
@@ -55,7 +57,7 @@ const AccordionContent = React.forwardRef<
     className="overflow-hidden text-body-md text-text-secondary data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
     {...props}
   >
-    <div className={cn("pb-4 pt-0", className)}>{children}</div>
+    <div className={cn("pb-[var(--spacing-lg)] pt-0", className)}>{children}</div>
   </AccordionPrimitive.Content>
 ));
 AccordionContent.displayName = AccordionPrimitive.Content.displayName;
