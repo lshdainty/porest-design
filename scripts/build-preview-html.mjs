@@ -3282,7 +3282,9 @@ export function pageCss() {
     /* === v73-v78 batch === */
 
     /* Banner */
-    .banner { display: flex; align-items: flex-start; gap: var(--spacing-sm); padding: var(--spacing-md); margin-block: var(--spacing-sm); border-inline-start-width: 4px; border-inline-start-style: solid; border-radius: var(--radius-sm); }
+    /* Banner — alert.md SoT 정합 (brand vignette는 banner-icon 필드 사용,
+       site Alert은 stroke svg 사용). 시각 spec(border-l 4px + 8% bg + gap-md)은 동기. */
+    .banner { display: flex; align-items: flex-start; gap: var(--spacing-md); padding: var(--spacing-md); margin-block: var(--spacing-sm); border-inline-start-width: 4px; border-inline-start-style: solid; border-radius: var(--radius-sm); }
     .banner--info { background: color-mix(in srgb, var(--color-info) 8%, var(--color-surface-default)); border-inline-start-color: var(--color-info); }
     .banner--warning { background: color-mix(in srgb, var(--color-warning) 8%, var(--color-surface-default)); border-inline-start-color: var(--color-warning); }
     .banner--error { background: color-mix(in srgb, var(--color-error) 8%, var(--color-surface-default)); border-inline-start-color: var(--color-error); }
@@ -3291,8 +3293,8 @@ export function pageCss() {
     .banner--info .banner-icon { background: var(--color-info); }
     .banner--warning .banner-icon { background: var(--color-warning); }
     .banner--error .banner-icon { background: var(--color-error); }
-    .banner-body { flex: 1; display: flex; flex-direction: column; gap: 2px; font-size: var(--text-body-md); }
-    .banner-body strong { font-size: var(--text-body-md); }
+    .banner-body { flex: 1; display: flex; flex-direction: column; gap: var(--spacing-xs); font-size: var(--text-body-sm); line-height: 1.5; color: var(--color-text-secondary); }
+    .banner-body strong { font-size: var(--text-body-md); font-weight: 600; color: var(--color-text-primary); }
     .banner-close { width: 28px; height: 28px; border: 0; background: transparent; cursor: pointer; border-radius: var(--radius-sm); color: var(--color-text-tertiary); }
 
     /* Tag / Chip */
