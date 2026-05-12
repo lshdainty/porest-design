@@ -36,7 +36,7 @@ const AlertDialogOverlay = React.forwardRef<
 AlertDialogOverlay.displayName = AlertDialogPrimitive.Overlay.displayName;
 
 const alertDialogContentVariants = cva(
-  "fixed left-[50%] top-[50%] z-50 grid w-[min(90%,var(--dialog-max-w))] translate-x-[-50%] translate-y-[-50%] flex-col bg-surface-default shadow-xl gap-[var(--spacing-md)] duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+  "fixed left-[50%] top-[50%] z-50 grid w-[min(90%,var(--dialog-max-w))] translate-x-[-50%] translate-y-[-50%] flex-col bg-surface-default gap-[var(--spacing-md)] duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
   {
     variants: {
       size: {
@@ -56,12 +56,13 @@ export interface AlertDialogContentProps
 const AlertDialogContent = React.forwardRef<
   React.ElementRef<typeof AlertDialogPrimitive.Content>,
   AlertDialogContentProps
->(({ className, size, ...props }, ref) => (
+>(({ className, size, style, ...props }, ref) => (
   <AlertDialogPortal>
     <AlertDialogOverlay />
     <AlertDialogPrimitive.Content
       ref={ref}
       className={cn(alertDialogContentVariants({ size }), className)}
+      style={{ boxShadow: "var(--shadow-xl)", ...style }}
       {...props}
     />
   </AlertDialogPortal>

@@ -139,3 +139,4 @@ Popover는 **modal이 아님** — outside focus 가능, dim overlay 없음. 일
 - preview-html `.pop-trigger`의 padding `6px 10px` 하드코드 → spec은 `var(--spacing-xs) var(--spacing-sm)` 토큰. 차기 preview sync 시 정정 필요.
 - preview-html `.pop textarea`의 padding `6px 8px` 하드코드 + caption font → spec은 input.md SoT 톤(`surface-input` + `body-md` + token padding) 또는 caption variant(compact context) 명시.
 - 예제 컨테이너 `position:absolute` 사용 시 부모 height 미반영 — examples는 normal-flow(`position:relative` 없이) 사용해 카드 안에 정렬되도록 (이번 세션 정정 완료).
+- **box-shadow는 Tailwind utility(`shadow-md`) 대신 inline `style={{ boxShadow: "var(--shadow-md)" }}` 사용** — Tailwind v4 `--tw-shadow-*` 분해 처리가 다크 모드 CSS 변수 override를 우회하는 문제 fix. preview `.pop` SoT와 다크 모드 정합 보장. 상세는 [`dialog.md`](dialog.md) Migration notes 참조.

@@ -134,3 +134,4 @@ Bottom sheet (모바일 표준)
 - handle bar는 vaul 기본 패턴이나 shadcn은 `bg-muted` 사용 — preview SoT(`surface-input` + 40×4 + `radius-full` + `margin:-4px auto spacing-sm`)로 정정.
 - footer는 shadcn 기본 `mt-auto flex` — preview `.drw-actions` SoT(`gap-sm` + `padding-top sm` + `border-top` + `[&>*]:flex-1`)로 정정.
 - `padding:24px gap:8px` 같은 px 하드코드 → spacing 토큰 직접 인용.
+- **box-shadow는 Tailwind utility(`shadow-xl`) 대신 inline `style={{ boxShadow: "var(--shadow-xl)" }}` 사용** — Tailwind v4 `--tw-shadow-*` 분해 처리가 다크 모드 CSS 변수 override를 우회하는 문제 fix. preview `.drw-bottom` SoT와 다크 모드 정합 보장. 상세는 [`dialog.md`](dialog.md) Migration notes 참조.

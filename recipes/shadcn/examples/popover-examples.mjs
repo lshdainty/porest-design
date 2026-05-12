@@ -7,9 +7,12 @@
  *   Actions: flex justify-end gap-xs
  */
 
-// popover.tsx PopoverContent와 1:1 동기 (preview `.pop` SoT)
+// popover.tsx PopoverContent와 1:1 동기 (preview `.pop` SoT).
+// shadow는 Tailwind utility(`shadow-md`) 대신 inline style로 var(--shadow-md)
+// 직접 인용 — 다크 모드 CSS 변수 override 정합(POPOVER_SHADOW 상수).
 const POPOVER =
-  "z-50 w-72 flex flex-col gap-[var(--spacing-sm)] rounded-md border border-border-default bg-surface-default p-[var(--spacing-md)] text-text-primary shadow-md";
+  "z-50 w-72 flex flex-col gap-[var(--spacing-sm)] rounded-md border border-border-default bg-surface-default p-[var(--spacing-md)] text-text-primary";
+const POPOVER_SHADOW = "box-shadow:var(--shadow-md);";
 
 // preview `.pop-trigger` — compact pill trigger (caption font + surface-input fill)
 const POPOVER_TRIGGER =
@@ -58,7 +61,7 @@ export const popoverExamples = [
     <span>카테고리 빠른 변경</span>
     ${CHEVRON}
   </button>
-  <div class="${POPOVER}" style="width:340px;">
+  <div class="${POPOVER}" style="${POPOVER_SHADOW} width:340px;">
     <textarea class="${TEXTAREA_BASE}" rows="3" placeholder="의견을 입력하세요"></textarea>
     <div style="display:flex; justify-content:flex-end; gap:var(--spacing-xs);">
       <button class="${BTN_OUTLINE_SM}">취소</button>
@@ -82,7 +85,7 @@ export const popoverExamples = [
 </Popover>`,
     render: () => `<div style="display:inline-flex; flex-direction:column; align-items:flex-start; gap:var(--spacing-xs);">
   <button class="${BTN_OUTLINE}">설정 열기</button>
-  <div class="${POPOVER}">
+  <div class="${POPOVER}" style="${POPOVER_SHADOW}">
     <h4 style="margin:0; font-size:var(--text-title-sm); font-weight:600; color:var(--color-text-primary);">레이아웃 설정</h4>
     <p style="margin:0; font-size:var(--text-body-sm); line-height:var(--text-body-sm--line-height); color:var(--color-text-secondary);">너비를 조정하세요.</p>
   </div>
@@ -115,7 +118,7 @@ export const popoverExamples = [
 </Popover>`,
     render: () => `<div style="display:inline-flex; flex-direction:column; align-items:flex-start; gap:var(--spacing-xs);">
   <button class="${BTN_OUTLINE}">크기 조정</button>
-  <div class="${POPOVER}" style="width:320px;">
+  <div class="${POPOVER}" style="${POPOVER_SHADOW} width:320px;">
     <div style="display:flex; flex-direction:column; gap:var(--spacing-xs);">
       <h4 style="margin:0; font-size:var(--text-title-sm); font-weight:600; color:var(--color-text-primary);">Dimensions</h4>
       <p style="margin:0; font-size:var(--text-body-sm); line-height:var(--text-body-sm--line-height); color:var(--color-text-secondary);">컨테이너 크기를 픽셀로 입력.</p>
