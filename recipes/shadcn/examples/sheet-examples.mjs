@@ -6,7 +6,7 @@ const FRAME =
   "position:relative; width:100%; max-width:640px; height:360px; background:var(--color-surface-input); border:1px solid var(--color-border-default); border-radius:var(--radius-lg); overflow:hidden;";
 
 const SHEET_BASE =
-  "position:absolute; background:var(--color-surface-default); padding:24px; box-shadow:var(--shadow-lg); display:flex; flex-direction:column; gap:16px;";
+  "position:absolute; background:var(--color-surface-default); padding:var(--spacing-2xl); box-shadow:var(--shadow-xl); display:flex; flex-direction:column; gap:var(--spacing-md);";
 
 const X_ICON =
   '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
@@ -21,8 +21,8 @@ function sheet({ side = "right", title = "", description = "", body = "" } = {})
   return `<div style="${FRAME}">
   <div style="position:absolute; inset:0; background:var(--overlay-dim-light);"></div>
   <div style="${SHEET_BASE} ${sideStyle}">
-    <button type="button" style="position:absolute; right:16px; top:16px; opacity:0.7; background:transparent; border:0; cursor:pointer; color:var(--color-text-primary);">${X_ICON}</button>
-    ${title ? `<div style="display:flex; flex-direction:column; gap:6px;">
+    <button type="button" style="position:absolute; right:var(--spacing-md); top:var(--spacing-md); opacity:0.7; background:transparent; border:0; cursor:pointer; color:var(--color-text-primary);">${X_ICON}</button>
+    ${title ? `<div style="display:flex; flex-direction:column; gap:var(--spacing-xs);">
       <h2 style="margin:0; font-size:var(--text-title-md); line-height:var(--text-title-md--line-height); font-weight:var(--text-title-md--font-weight); color:var(--color-text-primary);">${title}</h2>
       ${description ? `<p style="margin:0; font-size:var(--text-body-sm); line-height:var(--text-body-sm--line-height); color:var(--color-text-secondary);">${description}</p>` : ""}
     </div>` : ""}
