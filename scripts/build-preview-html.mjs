@@ -2465,11 +2465,15 @@ export function pageCss() {
     .approval-days { font-size: var(--text-caption); color: var(--color-text-secondary); }
     .approval-actions { display: flex; gap: var(--spacing-xs); }
 
+    /* === Badge === badge.md SoT — text-badge(11/600/1.2) + pill + soft semantic 16% mix
+       brand vignette 라벨용 uppercase + letter-spacing은 dense 시각 톤(영문 약어 위주)이라 보존,
+       Badge tsx/examples는 base에서 uppercase 제거(한국어 라벨 친화). */
     .badge {
       display: inline-flex; align-items: center;
-      font-size: 11px;
-      font-weight: 600;
-      padding: 2px 8px;
+      font-size: var(--text-badge);
+      font-weight: var(--text-badge--font-weight, 600);
+      line-height: var(--text-badge--line-height, 1.2);
+      padding: 2px var(--spacing-sm);
       border-radius: var(--radius-full);
       text-transform: uppercase;
       letter-spacing: 0.04em;
