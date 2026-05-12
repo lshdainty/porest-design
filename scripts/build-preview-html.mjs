@@ -2567,12 +2567,13 @@ export function pageCss() {
     .memo-tags { display: flex; gap: var(--spacing-xs); flex-wrap: wrap; }
     .memo-tag { font-size: 11px; color: var(--color-primary, var(--color-text-secondary)); }
 
-    /* tabs */
+    /* tabs — tabs.md SoT 3 variants (container/underline/pills) */
     .tabs { display: flex; gap: var(--spacing-sm); border-bottom: 1px solid var(--color-border-default); margin-bottom: var(--spacing-md); }
     .tabs-pills { border-bottom: none; gap: var(--spacing-xs); }
-    .tab { padding: var(--spacing-sm) var(--spacing-md); font-size: var(--text-caption); color: var(--color-text-secondary); cursor: pointer; }
+    .tab { padding: var(--spacing-sm) var(--spacing-md); font-size: var(--text-label-md); font-weight: 500; color: var(--color-text-secondary); cursor: pointer; }
     .tabs-underline .tab--active { color: var(--color-primary, var(--color-text-primary)); border-bottom: 2px solid var(--color-primary, var(--color-text-primary)); margin-bottom: -1px; font-weight: 600; }
-    .tabs-pills .tab { border-radius: var(--radius-full); }
+    /* pills — radius-md soft rectangle(토스 톤) + primary fill */
+    .tabs-pills .tab { border-radius: var(--radius-md); }
     .tabs-pills .tab--active { background: var(--color-primary, var(--color-text-primary)); color: var(--color-text-on-accent, #fff); font-weight: 600; }
     .tabs-body { font-size: var(--text-caption); color: var(--color-text-tertiary); padding: var(--spacing-sm) 0 0; }
 
