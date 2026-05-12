@@ -2,15 +2,16 @@
  * shadcn Tooltip 예제 — tooltip.md SoT 정합.
  * 정적 HTML preview에서는 항상 열린 상태로 시각만 표현.
  *
- * inverted dark tooltip — bg/text/shadow 모두 inline style로 stable 색상 인용
- * (Tailwind utility는 다크 모드 CSS 변수 swap으로 invisible/contrast 문제 발생).
+ * surface-tone tooltip — surface-default + text-primary 자동 swap. border 1px로
+ * 페이지 배경과 분리, shadow-sm 가볍게. bg/text/shadow 모두 inline style로 토큰
+ * 직접 인용 (Tailwind utility는 다크 모드 CSS 변수 swap 처리에 quirks).
  */
 
 const TIP_CLASS =
-  "z-50 overflow-hidden rounded-xs px-[var(--spacing-md)] py-[var(--spacing-xs)] text-label-sm";
+  "z-50 overflow-hidden rounded-xs border border-border-default px-[var(--spacing-md)] py-[var(--spacing-xs)] text-label-sm";
 
 const TIP_STYLE =
-  "background-color:var(--color-bg-page-dark); color:var(--color-text-on-accent); box-shadow:var(--shadow-md);";
+  "background-color:var(--color-surface-default); color:var(--color-text-primary); box-shadow:var(--shadow-sm);";
 
 // button.md outline · md size 정합 — font-sans + token padding + motion transition
 const BTN =
