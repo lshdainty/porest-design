@@ -3291,6 +3291,7 @@ export function pageCss() {
     .banner--success { background: color-mix(in srgb, var(--color-success) 8%, var(--color-surface-default)); border-inline-start-color: var(--color-success); }
     .banner-icon { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 700; font-size: 13px; color: var(--color-text-on-accent); }
     .banner--info .banner-icon { background: var(--color-info); }
+    .banner--success .banner-icon { background: var(--color-success); }
     .banner--warning .banner-icon { background: var(--color-warning); }
     .banner--error .banner-icon { background: var(--color-error); }
     .banner-body { flex: 1; display: flex; flex-direction: column; gap: var(--spacing-xs); font-size: var(--text-body-sm); line-height: 1.5; color: var(--color-text-secondary); }
@@ -3470,8 +3471,8 @@ export function pageCss() {
     .ad { display: flex; gap: var(--spacing-md); padding: var(--spacing-lg); background: var(--color-bg-page); border-radius: var(--radius-md); align-items: flex-start; }
     .ad-icon { width: 32px; height: 32px; border-radius: var(--radius-full); background: var(--color-error); color: var(--color-text-on-accent, #fff); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; flex-shrink: 0; }
     .ad-body { flex: 1; }
-    .ad-title { font-weight: 700; font-size: var(--text-title-sm); margin-bottom: var(--spacing-xs); }
-    .ad-desc { color: var(--color-text-secondary); margin-bottom: var(--spacing-md); }
+    .ad-title { font-size: var(--text-display-sm); font-weight: 700; line-height: var(--text-heading-lg--line-height); color: var(--color-text-primary); letter-spacing: -0.01em; margin-bottom: var(--spacing-xs); }
+    .ad-desc { font-size: var(--text-body-md); color: var(--color-text-secondary); line-height: 1.6; margin-bottom: var(--spacing-md); }
     .ad-actions { display: flex; gap: var(--spacing-sm); justify-content: flex-end; }
     .btn-destructive { background: var(--color-error); color: var(--color-text-on-accent, #fff); padding: var(--spacing-sm) var(--spacing-lg); border: none; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; }
 
