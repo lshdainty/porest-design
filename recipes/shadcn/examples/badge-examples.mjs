@@ -105,11 +105,11 @@ export const badgeExamples = [
 
   {
     title: "In list (HR 시나리오)",
-    description: "list row 우측 끝 status — 직원명 + 결재 상태. 강조 강도 적절히 분기 (default/soft/destructive).",
+    description: "list row 우측 끝 status — 직원명 + 결재 상태. 한 카테고리(결재 상태)는 같은 style(soft semantic)로 통일, 의미는 색으로만 분기.",
     jsx: `<div className="flex flex-col gap-2 p-4 bg-surface-default border border-border-default rounded-md max-w-md">
   <div className="flex items-center justify-between">
     <span className="text-title-sm font-semibold">김지원</span>
-    <Badge>승인</Badge>
+    <Badge variant="info">승인</Badge>
   </div>
   <div className="flex items-center justify-between">
     <span className="text-title-sm font-semibold">이도현</span>
@@ -117,7 +117,7 @@ export const badgeExamples = [
   </div>
   <div className="flex items-center justify-between">
     <span className="text-title-sm font-semibold">최가람</span>
-    <Badge variant="destructive">반려</Badge>
+    <Badge variant="error">반려</Badge>
   </div>
   <div className="flex items-center justify-between">
     <span className="text-title-sm font-semibold">박서연</span>
@@ -127,7 +127,7 @@ export const badgeExamples = [
     render: () => `<div style="display:flex; flex-direction:column; gap:var(--spacing-sm); padding:var(--spacing-lg); background:var(--color-surface-default); border:1px solid var(--color-border-default); border-radius:var(--radius-md); max-width:448px;">
   <div style="display:flex; align-items:center; justify-content:space-between;">
     <span style="font-size:var(--text-title-sm); line-height:var(--text-title-sm--line-height); font-weight:var(--text-title-sm--font-weight); color:var(--color-text-primary);">김지원</span>
-    ${badge({ children: "승인" })}
+    ${badge({ variant: "info", children: "승인" })}
   </div>
   <div style="display:flex; align-items:center; justify-content:space-between;">
     <span style="font-size:var(--text-title-sm); line-height:var(--text-title-sm--line-height); font-weight:var(--text-title-sm--font-weight); color:var(--color-text-primary);">이도현</span>
@@ -135,7 +135,7 @@ export const badgeExamples = [
   </div>
   <div style="display:flex; align-items:center; justify-content:space-between;">
     <span style="font-size:var(--text-title-sm); line-height:var(--text-title-sm--line-height); font-weight:var(--text-title-sm--font-weight); color:var(--color-text-primary);">최가람</span>
-    ${badge({ variant: "destructive", children: "반려" })}
+    ${badge({ variant: "error", children: "반려" })}
   </div>
   <div style="display:flex; align-items:center; justify-content:space-between;">
     <span style="font-size:var(--text-title-sm); line-height:var(--text-title-sm--line-height); font-weight:var(--text-title-sm--font-weight); color:var(--color-text-primary);">박서연</span>
