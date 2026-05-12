@@ -4,8 +4,11 @@
 
 // card.tsx와 1:1 동기 — preview `.review-*` SoT 정합:
 //   rounded-lg + shadow-sm (border 없음) + p-[var(--spacing-xl)] + gap-[var(--spacing-xs)].
+// box-shadow는 inline style로 var(--shadow-sm) 직접 인용 (Tailwind utility는
+// 다크 모드 CSS 변수 override를 우회하는 문제 fix — card.tsx 동기).
 const CARD =
-  "rounded-lg bg-surface-default text-text-primary shadow-sm";
+  "rounded-lg bg-surface-default text-text-primary";
+const CARD_SHADOW = "box-shadow:var(--shadow-sm);";
 const HEADER = "flex flex-col gap-[var(--spacing-xs)] p-[var(--spacing-xl)]";
 const TITLE = "text-title-md leading-none tracking-tight text-text-primary";
 const DESC = "text-body-sm text-text-secondary";
@@ -35,7 +38,7 @@ export const cardExamples = [
     <Button>저장</Button>
   </CardFooter>
 </Card>`,
-    render: () => `<div class="${CARD}" style="max-width:448px;">
+    render: () => `<div class="${CARD}" style="${CARD_SHADOW} max-width:448px;">
   <div class="${HEADER}">
     <h3 class="${TITLE}">회의록 작성</h3>
     <p class="${DESC}">주간 회의 내용을 정리하세요.</p>
@@ -62,7 +65,7 @@ export const cardExamples = [
     <p className="text-label-sm text-success">전월 대비 +2.1%p</p>
   </CardContent>
 </Card>`,
-    render: () => `<div class="${CARD}" style="max-width:320px;">
+    render: () => `<div class="${CARD}" style="${CARD_SHADOW} max-width:320px;">
   <div class="${HEADER}">
     <p class="${DESC}">이번 달 출근율</p>
     <h3 style="margin:0; font-size:var(--text-display-md); line-height:var(--text-display-md--line-height); font-weight:var(--text-display-md--font-weight); letter-spacing:var(--text-display-md--letter-spacing); color:var(--color-text-primary);">87.3%</h3>
@@ -88,7 +91,7 @@ export const cardExamples = [
     </div>
   </CardContent>
 </Card>`,
-    render: () => `<div class="${CARD}" style="max-width:576px;">
+    render: () => `<div class="${CARD}" style="${CARD_SHADOW} max-width:576px;">
   <div style="display:flex; align-items:center; justify-content:space-between; padding:var(--spacing-xl);">
     <div style="display:flex; flex-direction:column; gap:var(--spacing-xs); min-width:0;">
       <span style="font-size:var(--text-title-sm); line-height:var(--text-title-sm--line-height); font-weight:var(--text-title-sm--font-weight); color:var(--color-text-primary);">5월 휴가 신청</span>
@@ -119,7 +122,7 @@ export const cardExamples = [
     </p>
   </CardContent>
 </Card>`,
-    render: () => `<div class="${CARD}" style="max-width:448px;">
+    render: () => `<div class="${CARD}" style="${CARD_SHADOW} max-width:448px;">
   <div class="${HEADER}">
     <div style="display:flex; align-items:center; justify-content:space-between;">
       <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-badge font-semibold border-border-default text-text-primary">회고</div>
