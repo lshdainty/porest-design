@@ -3369,12 +3369,13 @@ export function pageCss() {
     .rtl-icon { transition: transform var(--motion-duration-base) var(--motion-ease-out); }
     [dir="rtl"] .rtl-icon { transform: scaleX(-1); }
 
-    /* Breadcrumb */
-    .bc { display: flex; align-items: center; gap: var(--spacing-xs); font-size: var(--text-caption); flex-wrap: wrap; }
-    .bc-link { color: var(--color-text-secondary); cursor: pointer; }
+    /* Breadcrumb — breadcrumb.md SoT. brand vignette dense layout이라 caption(12)
+       유지하되 gap/weight는 spec과 동기 (gap-sm 통일, current weight 500). */
+    .bc { display: flex; align-items: center; gap: var(--spacing-sm); font-size: var(--text-caption); flex-wrap: wrap; }
+    .bc-link { color: var(--color-text-secondary); cursor: pointer; transition: color var(--motion-duration-fast) var(--motion-ease-out); }
     .bc-link:hover { color: var(--color-text-primary); }
-    .bc-sep { color: var(--color-text-tertiary); }
-    .bc-current { color: var(--color-text-primary); font-weight: 600; }
+    .bc-sep { color: var(--color-text-tertiary); user-select: none; }
+    .bc-current { color: var(--color-text-primary); font-weight: 500; }
 
     /* Sidebar */
     .sb { display: flex; flex-direction: column; gap: var(--spacing-xs); padding: var(--spacing-sm); background: var(--color-bg-page); border-radius: var(--radius-md); }
