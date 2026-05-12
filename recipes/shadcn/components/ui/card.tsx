@@ -11,18 +11,24 @@ import { cn } from "@/lib/utils";
  *                     > CardFooter
  * - 색상: surface-default 배경 + shadow-sm (border 없음 — preview .review-* SoT)
  * - radius: lg(12), padding: xl(24)
+ *
+ * box-shadow는 Tailwind utility(`shadow-sm`) 대신 inline style로 `var(--shadow-sm)`
+ * 직접 인용 — Tailwind v4 utility는 내부적으로 box-shadow를 분해(--tw-shadow-*)
+ * 처리해 다크 모드 CSS 변수 override(`--shadow-sm: var(--shadow-sm-dark)`)가
+ * 우회되는 문제 fix. preview `.review-*` SoT와 다크 모드 시각 정합 보장.
  */
 
 const Card = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
+>(({ className, style, ...props }, ref) => (
   <div
     ref={ref}
     className={cn(
-      "rounded-lg bg-surface-default text-text-primary shadow-sm",
+      "rounded-lg bg-surface-default text-text-primary",
       className,
     )}
+    style={{ boxShadow: "var(--shadow-sm)", ...style }}
     {...props}
   />
 ));

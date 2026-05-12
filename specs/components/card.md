@@ -112,3 +112,4 @@ Card는 **size variant 없음** — 사용처에서 `max-width` className으로 
 
 - 기존 `card.tsx`는 `rounded-md`(8) + `border border-border-default` 사용했으나 preview `.review-summary`/`.review-item` SoT에 맞춰 `rounded-lg`(12) + **border 제거**(shadow-only elevation)로 정정. shadow는 그대로 `shadow-sm`.
 - `p-6 gap-1.5` (Tailwind 기본 spacing 24/6) → `p-[var(--spacing-xl)] gap-[var(--spacing-xs)]` 디자인 토큰 직접 인용.
+- **box-shadow는 Tailwind utility(`shadow-sm`) 대신 inline `style={{ boxShadow: "var(--shadow-sm)" }}` 사용** — Tailwind v4 shadow utility는 내부적으로 box-shadow를 `--tw-shadow-*` 변수로 분해 처리하기 때문에, 다크 모드 CSS 변수 override(`[data-theme="dark"] { --shadow-sm: var(--shadow-sm-dark) }`)가 우회되어 다크 모드 inset top highlight + 강화된 검정 그림자가 적용되지 않는 문제 fix. preview `.review-*` SoT(`box-shadow: var(--shadow-sm)` 직접 인용)와 다크 모드 시각 정합 보장. 다른 컴포넌트(Dialog/Drawer/Popover 등)는 각자 spec에 따라 동일 패턴 적용 검토 필요.
