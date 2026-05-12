@@ -6,9 +6,12 @@ import { cn } from "@/lib/utils";
 
 /*
  * Porest Menubar (shadcn 베이스 + Porest 디자인 토큰)
+ * spec: specs/components/menubar.md (단일 SoT)
  *
  * - Radix Menubar 베이스. 데스크탑 앱 메뉴바 패턴.
  * - composition: Menubar > MenubarMenu > MenubarTrigger / MenubarContent > Item / Sub / Checkbox / RadioGroup / Label / Separator / Shortcut
+ * - Menu family 시각 통일 — Content/Item/Separator 모두 dropdown-menu.md / context-menu.md 인용.
+ *   Bar(가로 strip) + MenubarTrigger만 menubar 고유 시각(title-sm + medium + px-3 py-1.5).
  */
 
 const MenubarMenu = MenubarPrimitive.Menu;
@@ -28,7 +31,7 @@ const Menubar = React.forwardRef<
   <MenubarPrimitive.Root
     ref={ref}
     className={cn(
-      "flex h-10 items-center space-x-1 rounded-sm border border-border-default bg-surface-default p-1",
+      "flex h-10 items-center space-x-[var(--spacing-xs)] rounded-sm border border-border-default bg-surface-default p-[var(--spacing-xs)]",
       className,
     )}
     {...props}
@@ -43,7 +46,7 @@ const MenubarTrigger = React.forwardRef<
   <MenubarPrimitive.Trigger
     ref={ref}
     className={cn(
-      "flex cursor-default select-none items-center rounded-xs px-3 py-1.5 text-title-sm font-medium outline-none focus:bg-surface-input focus:text-text-primary data-[state=open]:bg-surface-input data-[state=open]:text-text-primary",
+      "flex cursor-default select-none items-center rounded-xs px-[var(--spacing-md)] py-[var(--spacing-sm)] text-title-sm font-medium text-text-primary outline-none transition-colors duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)] focus:bg-surface-input focus:text-text-primary data-[state=open]:bg-surface-input data-[state=open]:text-text-primary",
       className,
     )}
     {...props}
@@ -60,8 +63,8 @@ const MenubarSubTrigger = React.forwardRef<
   <MenubarPrimitive.SubTrigger
     ref={ref}
     className={cn(
-      "flex cursor-default select-none items-center rounded-xs px-2 py-1.5 text-title-sm outline-none focus:bg-surface-input focus:text-text-primary data-[state=open]:bg-surface-input data-[state=open]:text-text-primary",
-      inset && "pl-8",
+      "flex cursor-default select-none items-center rounded-sm px-[var(--spacing-md)] py-[var(--spacing-sm)] text-body-md text-text-primary outline-none transition-colors duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)] focus:bg-surface-input focus:text-text-primary data-[state=open]:bg-surface-input data-[state=open]:text-text-primary",
+      inset && "pl-[var(--spacing-2xl)]",
       className,
     )}
     {...props}
@@ -75,13 +78,14 @@ MenubarSubTrigger.displayName = MenubarPrimitive.SubTrigger.displayName;
 const MenubarSubContent = React.forwardRef<
   React.ElementRef<typeof MenubarPrimitive.SubContent>,
   React.ComponentPropsWithoutRef<typeof MenubarPrimitive.SubContent>
->(({ className, ...props }, ref) => (
+>(({ className, style, ...props }, ref) => (
   <MenubarPrimitive.SubContent
     ref={ref}
     className={cn(
-      "z-50 min-w-[8rem] overflow-hidden rounded-sm border border-border-default bg-surface-default p-1 text-text-primary shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+      "z-50 min-w-[8rem] overflow-hidden rounded-md border border-border-default bg-surface-default p-[var(--spacing-xs)] text-text-primary data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
       className,
     )}
+    style={{ boxShadow: "var(--shadow-md)", ...style }}
     {...props}
   />
 ));
@@ -92,7 +96,7 @@ const MenubarContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Content>
 >(
   (
-    { className, align = "start", alignOffset = -4, sideOffset = 8, ...props },
+    { className, align = "start", alignOffset = -4, sideOffset = 8, style, ...props },
     ref,
   ) => (
     <MenubarPrimitive.Portal>
@@ -102,9 +106,10 @@ const MenubarContent = React.forwardRef<
         alignOffset={alignOffset}
         sideOffset={sideOffset}
         className={cn(
-          "z-50 min-w-[12rem] overflow-hidden rounded-sm border border-border-default bg-surface-default p-1 text-text-primary shadow-md data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+          "z-50 min-w-[12rem] overflow-hidden rounded-md border border-border-default bg-surface-default p-[var(--spacing-xs)] text-text-primary data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
           className,
         )}
+        style={{ boxShadow: "var(--shadow-md)", ...style }}
         {...props}
       />
     </MenubarPrimitive.Portal>
@@ -121,8 +126,8 @@ const MenubarItem = React.forwardRef<
   <MenubarPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex cursor-default select-none items-center rounded-xs px-2 py-1.5 text-title-sm outline-none focus:bg-surface-input focus:text-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      inset && "pl-8",
+      "relative flex cursor-default select-none items-center rounded-sm px-[var(--spacing-md)] py-[var(--spacing-sm)] text-body-md text-text-primary outline-none transition-colors duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)] focus:bg-surface-input focus:text-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      inset && "pl-[var(--spacing-2xl)]",
       className,
     )}
     {...props}
@@ -137,13 +142,13 @@ const MenubarCheckboxItem = React.forwardRef<
   <MenubarPrimitive.CheckboxItem
     ref={ref}
     className={cn(
-      "relative flex cursor-default select-none items-center rounded-xs py-1.5 pl-8 pr-2 text-title-sm outline-none focus:bg-surface-input focus:text-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex cursor-default select-none items-center rounded-sm py-[var(--spacing-sm)] pl-[var(--spacing-2xl)] pr-[var(--spacing-md)] text-body-md text-text-primary outline-none transition-colors duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)] focus:bg-surface-input focus:text-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className,
     )}
     checked={checked}
     {...props}
   >
-    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+    <span className="absolute left-[var(--spacing-sm)] flex h-3.5 w-3.5 items-center justify-center">
       <MenubarPrimitive.ItemIndicator>
         <Check className="h-4 w-4" />
       </MenubarPrimitive.ItemIndicator>
@@ -160,12 +165,12 @@ const MenubarRadioItem = React.forwardRef<
   <MenubarPrimitive.RadioItem
     ref={ref}
     className={cn(
-      "relative flex cursor-default select-none items-center rounded-xs py-1.5 pl-8 pr-2 text-title-sm outline-none focus:bg-surface-input focus:text-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex cursor-default select-none items-center rounded-sm py-[var(--spacing-sm)] pl-[var(--spacing-2xl)] pr-[var(--spacing-md)] text-body-md text-text-primary outline-none transition-colors duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)] focus:bg-surface-input focus:text-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className,
     )}
     {...props}
   >
-    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+    <span className="absolute left-[var(--spacing-sm)] flex h-3.5 w-3.5 items-center justify-center">
       <MenubarPrimitive.ItemIndicator>
         <Circle className="h-2 w-2 fill-current" />
       </MenubarPrimitive.ItemIndicator>
@@ -184,8 +189,8 @@ const MenubarLabel = React.forwardRef<
   <MenubarPrimitive.Label
     ref={ref}
     className={cn(
-      "px-2 py-1.5 text-label-sm font-medium text-text-secondary",
-      inset && "pl-8",
+      "px-[var(--spacing-md)] py-[var(--spacing-sm)] text-label-sm font-medium text-text-secondary",
+      inset && "pl-[var(--spacing-2xl)]",
       className,
     )}
     {...props}
@@ -199,7 +204,7 @@ const MenubarSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <MenubarPrimitive.Separator
     ref={ref}
-    className={cn("-mx-1 my-1 h-px bg-border-default", className)}
+    className={cn("-mx-[var(--spacing-xs)] my-[var(--spacing-xs)] h-px bg-border-default", className)}
     {...props}
   />
 ));
