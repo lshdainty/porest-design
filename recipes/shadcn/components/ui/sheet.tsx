@@ -7,12 +7,14 @@ import { cn } from "@/lib/utils";
 
 /*
  * Porest Sheet (shadcn 베이스 + Porest 디자인 토큰)
+ * spec: specs/components/sheet.md (단일 SoT)
  *
- * - Radix Dialog 베이스 + side variant. 사이드 슬라이드 패널.
+ * - Radix Dialog 베이스 + side variant. 화면 가장자리 슬라이드 패널.
  * - composition: Sheet > SheetTrigger + SheetContent (side="top|bottom|left|right")
  *                                     > SheetHeader > SheetTitle / SheetDescription
  *                                     > {body}
  *                                     > SheetFooter
+ * - shadow는 inline style — Tailwind v4 --tw-shadow-* 분해가 다크 모드 토큰 override를 우회.
  */
 
 const Sheet = SheetPrimitive.Root;
@@ -36,7 +38,7 @@ const SheetOverlay = React.forwardRef<
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName;
 
 const sheetVariants = cva(
-  "fixed z-50 gap-4 bg-surface-default p-6 shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
+  "fixed z-50 gap-[var(--spacing-md)] bg-surface-default p-[var(--spacing-2xl)] transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
   {
     variants: {
       side: {
@@ -61,16 +63,17 @@ interface SheetContentProps
 const SheetContent = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Content>,
   SheetContentProps
->(({ side = "right", className, children, ...props }, ref) => (
+>(({ side = "right", className, children, style, ...props }, ref) => (
   <SheetPortal>
     <SheetOverlay />
     <SheetPrimitive.Content
       ref={ref}
       className={cn(sheetVariants({ side }), className)}
+      style={{ boxShadow: "var(--shadow-xl)", ...style }}
       {...props}
     >
       {children}
-      <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
+      <SheetPrimitive.Close className="absolute right-[var(--spacing-md)] top-[var(--spacing-md)] rounded-sm opacity-70 transition-opacity duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)] hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none">
         <X className="h-4 w-4" />
         <span className="sr-only">닫기</span>
       </SheetPrimitive.Close>
@@ -84,7 +87,7 @@ const SheetHeader = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn("flex flex-col gap-1.5 text-center sm:text-left", className)}
+    className={cn("flex flex-col gap-[var(--spacing-xs)] text-center sm:text-left", className)}
     {...props}
   />
 );
@@ -96,7 +99,7 @@ const SheetFooter = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
+      "flex flex-col-reverse gap-[var(--spacing-sm)] sm:flex-row sm:justify-end",
       className,
     )}
     {...props}
