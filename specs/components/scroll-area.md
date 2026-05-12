@@ -2,7 +2,7 @@
 
 > 고정 폭·고정 높이 컨테이너 안에서 콘텐츠가 넘칠 때 **커스텀 스크롤바**로 스크롤을 제공하는 wrapper. native scrollbar 톤 차이(Win vs macOS)를 통일하고 dark mode·brand 색에 맞춘 스크롤바 시각 제공. Radix `ScrollArea` 베이스 — viewport + scrollbar(track + thumb) 합성.
 
-Porest Scroll Area는 **2 orientations(vertical/horizontal) × 단일 시각 톤** 매트릭스로 정의됩니다. 스크롤바는 `2.5px` 폭의 얇은 thumb(`border-strong` 색) + transparent track — 콘텐츠 위에 살짝 떠 있는 톤. 외곽 wrapper(border/radius)는 사용처가 결정(spec 외 범위), Scroll Area 자체는 viewport + scrollbar만.
+Porest Scroll Area는 **2 orientations(vertical/horizontal) × 단일 시각 톤** 매트릭스로 정의됩니다. 스크롤바는 `6px` 폭의 얇은 thumb(`border-strong` 색) + transparent track — 콘텐츠 위에 살짝 떠 있는 톤(porest-desk-front 정합). site/preview-html 전역 native scrollbar에도 동일 톤이 글로벌로 적용되어 React `ScrollArea`와 native overflow 영역이 한 톤으로 통일됨. 외곽 wrapper(border/radius)는 사용처가 결정(spec 외 범위), Scroll Area 자체는 viewport + scrollbar만.
 
 ## Anatomy
 
@@ -14,7 +14,7 @@ Porest Scroll Area는 **2 orientations(vertical/horizontal) × 단일 시각 톤
 │ │ (overflow-hidden)       │ │  │
 │ │                         │ │  │
 │ └─────────────────────────┘ │  │
-│                          ▲▒ │  │  ← ⓓ vertical scrollbar (2.5px thumb)
+│                          ▲▒ │  │  ← ⓓ vertical scrollbar (6px thumb)
 └─────────────────────────────┘ ─┘
                             ▲
                             ⓔ thumb (border-strong)
@@ -23,7 +23,7 @@ Porest Scroll Area는 **2 orientations(vertical/horizontal) × 단일 시각 톤
 | ⓐ root | `<div>` (Radix `ScrollAreaPrimitive.Root`) — `relative overflow-hidden` + 사용처 `h-*`/`w-*` className. |
 | ⓑ viewport | Radix `ScrollAreaPrimitive.Viewport` — `h-full w-full rounded-[inherit]`. 실제 스크롤이 동작하는 영역. |
 | ⓒ children | 사용처가 결정 — list/grid/text 등. 내부 padding은 자식이 담당(`p-[var(--spacing-lg)]` 등). |
-| ⓓ scrollbar | Radix `ScrollAreaPrimitive.ScrollAreaScrollbar` — `flex touch-none select-none transition-colors duration-[var(--motion-duration-fast)]`. vertical: `h-full w-2.5 border-l border-l-transparent p-[1px]`. horizontal: `h-2.5 flex-col border-t border-t-transparent p-[1px]`. |
+| ⓓ scrollbar | Radix `ScrollAreaPrimitive.ScrollAreaScrollbar` — `flex touch-none select-none transition-colors duration-[var(--motion-duration-fast)]`. vertical: `h-full w-1.5 border-l border-l-transparent`. horizontal: `h-1.5 flex-col border-t border-t-transparent`. |
 | ⓔ thumb | Radix `ScrollAreaPrimitive.ScrollAreaThumb` — `relative flex-1 rounded-full bg-border-strong`. 콘텐츠 위치 따라 자동 크기·위치 계산. |
 | ⓕ corner | Radix `ScrollAreaPrimitive.Corner` — vertical + horizontal 둘 다 있을 때 우하단 만나는 모서리. transparent 기본. |
 
@@ -33,8 +33,10 @@ Porest Scroll Area는 **2 orientations(vertical/horizontal) × 단일 시각 톤
 - viewport `rounded-[inherit]`로 부모 라운드 상속 — 외곽 라운드 깨지지 않게.
 - thumb 색은 `border-strong` — `border-default`(1.4:1)보다 강한 시각 식별. 다크 모드에서도 충분한 대비.
 - thumb은 `rounded-full` pill — 부드러운 시각 톤. 사각형 thumb은 native 스크롤바 톤이라 회피.
-- scrollbar 폭은 `2.5px`(10px in spacing) — 콘텐츠 위에 살짝 떠 있는 얇은 톤. Toss/Apple 톤 절제.
+- scrollbar 폭은 `6px` (`w-1.5`/`h-1.5`) — 콘텐츠 위에 살짝 떠 있는 얇은 톤. Toss/porest-desk-front 정합.
 - 콘텐츠가 viewport보다 작으면 scrollbar 자동 hide — Radix 기본 동작.
+- **전역 native scrollbar 정합**: site/preview-html `@layer base`에 `::-webkit-scrollbar` 6px + `border-strong` pill + transparent track + Firefox `scrollbar-width: thin` + `scrollbar-color`가 모든 overflow 요소에 자동 적용. React `ScrollArea`와 native overflow 영역이 한 톤으로 시각 통일.
+- **scrollbar-hide utility**: `.scrollbar-hide` className으로 스크롤바 완전 숨김 opt-in — filter chip carousel, hero banner 등 시각 noise 회피.
 
 ## Variants (orientation)
 
@@ -50,13 +52,15 @@ Scroll Area는 **size variant 없음** — 사용처 className(`h-*`, `w-*`, `ma
 
 | 항목 | 값 | 토큰/규칙 |
 |---|---|---|
-| Scrollbar thickness | 10px (`2.5`) | `w-2.5` (vertical) / `h-2.5` (horizontal) |
-| Scrollbar padding | 1px | `p-[1px]` (thumb과 track 사이 미세 여백) |
+| Scrollbar thickness | 6px (`1.5`) | `w-1.5` (vertical) / `h-1.5` (horizontal) |
 | Scrollbar border (transparent) | 1px | `border-l border-l-transparent` (vertical) / `border-t border-t-transparent` (horizontal) — hover 시 색 부여 가능 |
 | Thumb color | `border-strong` | `bg-border-strong` |
 | Thumb radius | full pill | `rounded-full` |
 | Track | transparent | (Radix 기본 background 없음) |
 | Transition | colors | `transition-colors duration-[var(--motion-duration-fast)]` |
+| Firefox 표준 | `thin` + `border-strong` | `scrollbar-width: thin; scrollbar-color: var(--color-border-strong) transparent;` (전역) |
+| WebKit 글로벌 | 6px + pill thumb | `::-webkit-scrollbar { width: 6px; height: 6px }` + `::-webkit-scrollbar-thumb { background: var(--color-border-strong); border-radius: var(--radius-full); }` (전역) |
+| Scrollbar hide utility | `display: none` | `.scrollbar-hide` (opt-in, Firefox/IE 폴백 포함) |
 
 ## States
 
@@ -127,7 +131,10 @@ Scroll Area는 **size variant 없음** — 사용처 className(`h-*`, `w-*`, `ma
 
 ## Migration notes
 
-- 기존 `scroll-area.tsx`는 이미 토큰 정합 — `bg-border-strong` thumb + `border-l-transparent` track + `transition-colors`. 변경 없음.
-- preview-html에 별도 `.sa-*` CSS 없음 — site preview/component page에서 직접 렌더. preview-html 안 일부 카드(`.kpi-grid`, `.ld-*`)는 native overflow `auto`/`scroll` 사용 (간단 케이스), Scroll Area 커스텀 톤은 미사용.
+- `scroll-area.tsx` scrollbar 두께 정정: `w-2.5`/`h-2.5` (10px) → `w-1.5`/`h-1.5` (**6px**). porest-desk-front `index.css` (`@apply w-1.5 h-1.5`) 정합. 사용자 피드백 — "기본은 두꺼움".
+- `p-[1px]` 미세 padding 제거 — 6px 두께에선 시각 차이 거의 없고 thumb 영역 hit area도 충분.
+- transition 모션 토큰 직접 인용 추가 — `transition-colors duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]`.
 - shadcn 기본 `bg-border` → `bg-border-strong` 정합 — 콘텐츠 위 시각 식별 강화(border-default 1.4:1은 약함).
-- transition 추가 — `transition-colors duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]` 검토. 현재 `transition-colors`만 있음 — duration 토큰 직접 인용으로 강화하면 motion 시스템과 정합.
+- **전역 native scrollbar 톤 추가** — `scripts/build-site.mjs` siteCss() + `scripts/build-preview-html.mjs` `<style>` 둘 다 `@layer base`에 `::-webkit-scrollbar`(6px + border-strong pill + transparent track) + Firefox `scrollbar-width: thin` + `scrollbar-color` 부여. React `ScrollArea`와 native overflow 영역이 한 톤. WCAG/ARIA 영향 없음(semantic 유지, native 스크롤 동작 보존).
+- **`.scrollbar-hide` utility 신규** — `scrollbar-width: none; -ms-overflow-style: none; ::-webkit-scrollbar { display: none; }` 조합. filter chip carousel 등 시각 noise 회피용 opt-in. site/preview 둘 다 글로벌 등록.
+- preview-html에 별도 `.sa-*` CSS 없음 — preview-html 안 일부 카드(`.kpi-grid`, `.ld-*`)의 native overflow는 전역 thin scrollbar 자동 적용.

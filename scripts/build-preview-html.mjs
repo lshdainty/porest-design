@@ -2182,6 +2182,18 @@ export function pageCss() {
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
     }
+
+    /* === Thin scrollbar (porest-desk-front 톤 정합) ===
+       WebKit/Blink: 6px + border-strong pill thumb + transparent track
+       Firefox(W3C 표준): scrollbar-width: thin + scrollbar-color
+       .scrollbar-hide utility: 완전 숨김 opt-in */
+    * { scrollbar-width: thin; scrollbar-color: var(--color-border-strong) transparent; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--color-border-strong); border-radius: var(--radius-full); }
+    ::-webkit-scrollbar-thumb:hover { background: var(--color-border-strong); }
+    .scrollbar-hide { scrollbar-width: none; -ms-overflow-style: none; }
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
     main { max-width: 1180px; margin: 0 auto; padding: var(--spacing-2xl) var(--spacing-xl); }
     code { font-family: ui-monospace, SFMono-Regular, monospace; background: var(--color-surface-input); padding: 2px 6px; border-radius: var(--radius-xs); font-size: 13px; }
     .section { margin: var(--spacing-3xl) 0; }

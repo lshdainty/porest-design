@@ -426,6 +426,18 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* === Thin scrollbar (porest-desk-front 톤 정합) ===
+   - WebKit/Blink(::-webkit-scrollbar): 6px width + border-strong pill thumb + transparent track
+   - Firefox(W3C CSS Scrollbars Module L1): scrollbar-width: thin + scrollbar-color
+   - .scrollbar-hide utility: 스크롤바 완전 숨김 (filter chip carousel 등 opt-in) */
+* { scrollbar-width: thin; scrollbar-color: var(--color-border-strong) transparent; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-border-strong); border-radius: var(--radius-full); }
+::-webkit-scrollbar-thumb:hover { background: var(--color-border-strong); }
+.scrollbar-hide { scrollbar-width: none; -ms-overflow-style: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+
 /* === Layout === */
 .app { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
 .sidebar {
