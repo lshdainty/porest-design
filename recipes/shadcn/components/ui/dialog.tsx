@@ -39,7 +39,7 @@ const DialogOverlay = React.forwardRef<
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
 const dialogContentVariants = cva(
-  "fixed left-[50%] top-[50%] z-50 grid w-[min(90%,var(--dialog-max-w))] translate-x-[-50%] translate-y-[-50%] flex-col bg-surface-default shadow-xl gap-[var(--spacing-md)] duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+  "fixed left-[50%] top-[50%] z-50 grid w-[min(90%,var(--dialog-max-w))] translate-x-[-50%] translate-y-[-50%] flex-col bg-surface-default gap-[var(--spacing-md)] duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
   {
     variants: {
       size: {
@@ -61,12 +61,13 @@ export interface DialogContentProps
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   DialogContentProps
->(({ className, size, hideClose, children, ...props }, ref) => (
+>(({ className, size, hideClose, children, style, ...props }, ref) => (
   <DialogPortal>
     <DialogOverlay />
     <DialogPrimitive.Content
       ref={ref}
       className={cn(dialogContentVariants({ size }), className)}
+      style={{ boxShadow: "var(--shadow-xl)", ...style }}
       {...props}
     >
       {children}

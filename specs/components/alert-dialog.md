@@ -115,3 +115,4 @@ Default focus가 Cancel인 것이 핵심 — Enter를 무심코 눌렀을 때 de
 - 기존 `AlertDialogCancel`은 `outline` variant 그대로 — 변경 없음.
 - 기존 `AlertDialogAction`은 default(primary) — destructive 사용 시 `className={cn(buttonVariants({ variant: "destructive" }))}` 명시 패턴 유지. spec에선 destructive를 default action variant로 권장.
 - preview-html의 `renderShadcnDisclose` 안 `.ad-*`(icon-circle 변형)도 `.modal-*` 톤으로 정렬 — title-sm → display-sm으로 통일.
+- **box-shadow는 Tailwind utility(`shadow-xl`) 대신 inline `style={{ boxShadow: "var(--shadow-xl)" }}` 사용** — Dialog와 동일한 fix. Tailwind v4 `--tw-shadow-*` 분해 처리가 다크 모드 CSS 변수 override를 우회하는 문제. preview `.modal-dialog` SoT와 다크 모드 정합 보장. 상세는 [`dialog.md`](dialog.md) Migration notes 참조.

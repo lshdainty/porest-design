@@ -157,3 +157,4 @@ Dialog는 open/closed 2 state. Radix `data-state` attribute(`open`/`closed`)로 
 - size variant(`sm`/`md`/`lg`) 신규 도입 — 기존 단일 max-width 고정.
 - 기존 description `text-body-sm` → `text-body-md`로 보강 (한국어 가독성).
 - DESIGN.md `### Modal` prose 정의(`radius-lg` / padding `xl`)는 이번 spec(`radius-xl` / padding `2xl`)로 정정 — 시각 SoT는 preview, prose가 따라옴.
+- **box-shadow는 Tailwind utility(`shadow-xl`) 대신 inline `style={{ boxShadow: "var(--shadow-xl)" }}` 사용** — Tailwind v4 shadow utility는 내부적으로 box-shadow를 `--tw-shadow-*` 변수로 분해 처리하기 때문에, 다크 모드 CSS 변수 override(`[data-theme="dark"] { --shadow-xl: var(--shadow-xl-dark) }`)가 우회되어 다크 모드 inset top highlight + 강화된 검정 그림자가 적용되지 않는 문제 fix. preview `.modal-dialog` SoT(`box-shadow: var(--shadow-xl)` 직접 인용)와 다크 모드 시각 정합 보장. 동일 패턴: AlertDialog/Drawer(shadow-xl), Popover(shadow-md), Sonner(shadow-lg), Card(shadow-sm).

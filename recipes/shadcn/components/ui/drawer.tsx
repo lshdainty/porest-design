@@ -48,15 +48,16 @@ DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName;
 const DrawerContent = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>
->(({ className, children, ...props }, ref) => (
+>(({ className, children, style, ...props }, ref) => (
   <DrawerPortal>
     <DrawerOverlay />
     <DrawerPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[var(--radius-xl)] bg-surface-default shadow-xl p-[var(--spacing-lg)] gap-[var(--spacing-md)]",
+        "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[var(--radius-xl)] bg-surface-default p-[var(--spacing-lg)] gap-[var(--spacing-md)]",
         className,
       )}
+      style={{ boxShadow: "var(--shadow-xl)", ...style }}
       {...props}
     >
       {/* handle — preview `.drw-handle` SoT (40×4 + surface-input + margin -4px auto spacing-sm) */}

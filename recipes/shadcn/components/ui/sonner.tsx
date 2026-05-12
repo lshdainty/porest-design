@@ -31,9 +31,10 @@ const Toaster = ({ ...props }: ToasterProps) => {
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
       toastOptions={{
+        style: { boxShadow: "var(--shadow-lg)" },
         classNames: {
           toast:
-            "group toast group-[.toaster]:bg-surface-default group-[.toaster]:text-text-primary group-[.toaster]:border group-[.toaster]:border-border-default group-[.toaster]:rounded-md group-[.toaster]:shadow-lg",
+            "group toast group-[.toaster]:bg-surface-default group-[.toaster]:text-text-primary group-[.toaster]:border group-[.toaster]:border-border-default group-[.toaster]:rounded-md",
           title:
             "group-[.toast]:text-title-sm group-[.toast]:font-semibold group-[.toast]:text-text-primary",
           description: "group-[.toast]:text-body-sm group-[.toast]:text-text-secondary",
