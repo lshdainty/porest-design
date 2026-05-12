@@ -1,18 +1,24 @@
 /*
- * shadcn Accordion 예제 — 정적 HTML preview는 첫 항목 open.
+ * shadcn Accordion 예제 — accordion.md SoT 정합.
+ * FAQ 스타일 — 외곽 wrapper 없음, item 사이 border-bottom만.
+ * 모든 padding/transition 토큰 직접 인용.
  */
 
 const ITEM = "border-bottom:1px solid var(--color-border-default);";
-const TRIGGER = "display:flex; flex:1; align-items:center; justify-content:space-between; padding:16px 0; background:transparent; border:0; cursor:pointer; font-size:var(--text-title-sm); font-weight:500; color:var(--color-text-primary); text-align:left; width:100%;";
-const CONTENT = "padding:0 0 16px; font-size:var(--text-body-md); line-height:var(--text-body-md--line-height); color:var(--color-text-secondary);";
+
+const TRIGGER =
+  "display:flex; flex:1; align-items:center; justify-content:space-between; padding:var(--spacing-lg) 0; background:transparent; border:0; cursor:pointer; font-family:var(--font-sans); font-size:var(--text-title-sm); font-weight:500; color:var(--color-text-primary); text-align:left; width:100%; transition:color var(--motion-duration-fast) var(--motion-ease-out);";
+
+const CONTENT =
+  "padding:0 0 var(--spacing-lg); font-size:var(--text-body-md); line-height:var(--text-body-md--line-height); color:var(--color-text-secondary);";
 
 const CHEVRON = (rotated = false) =>
-  `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--color-text-secondary); transform:rotate(${rotated ? 180 : 0}deg); transition:transform 200ms;"><polyline points="6 9 12 15 18 9"/></svg>`;
+  `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--color-text-secondary); transform:rotate(${rotated ? 180 : 0}deg); transition:transform var(--motion-duration-base) var(--motion-ease-out); flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>`;
 
 export const accordionExamples = [
   {
     title: "Single",
-    description: "한 번에 하나만 열림. type='single' + collapsible.",
+    description: "한 번에 하나만 열림. type='single' + collapsible. FAQ / 가이드 패턴.",
     jsx: `<Accordion type="single" collapsible className="w-[480px]">
   <AccordionItem value="item-1">
     <AccordionTrigger>접근성에 대한 가이드는 어디에 있나요?</AccordionTrigger>
@@ -58,7 +64,7 @@ export const accordionExamples = [
 
   {
     title: "Multiple",
-    description: "여러 개 동시에 열기. type='multiple'.",
+    description: "여러 개 동시에 열기. type='multiple'. 비교 가능한 정보 / 긴 form section.",
     jsx: `<Accordion type="multiple" className="w-[480px]">
   <AccordionItem value="features">
     <AccordionTrigger>주요 기능</AccordionTrigger>

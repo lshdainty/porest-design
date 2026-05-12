@@ -3442,12 +3442,12 @@ export function pageCss() {
     .otp-sep { display: inline-flex; align-items: center; color: var(--color-text-tertiary); padding: 0 var(--spacing-xs); }
 
     /* Accordion / Collapsible */
-    .acc { display: flex; flex-direction: column; border: 1px solid var(--color-border-default); border-radius: var(--radius-md); overflow: hidden; }
-    .acc-item + .acc-item { border-top: 1px solid var(--color-border-default); }
-    .acc-trigger { display: flex; justify-content: space-between; padding: var(--spacing-sm) var(--spacing-md); cursor: pointer; font-weight: 600; font-size: var(--text-body-md); background: transparent; }
-    .acc-trigger:hover { background: var(--color-surface-input); }
-    .acc-item--open .acc-trigger { background: var(--color-surface-input); }
-    .acc-body { padding: var(--spacing-sm) var(--spacing-md); color: var(--color-text-secondary); font-size: var(--text-caption); border-top: 1px solid var(--color-border-default); }
+    /* Accordion — accordion.md SoT (FAQ 스타일, 외곽 wrapper 없음 + item 사이 border-bottom only) */
+    .acc { display: flex; flex-direction: column; }
+    .acc-item { border-bottom: 1px solid var(--color-border-default); }
+    .acc-trigger { display: flex; flex: 1; align-items: center; justify-content: space-between; width: 100%; padding: var(--spacing-lg) 0; cursor: pointer; font-weight: 500; font-size: var(--text-title-sm); color: var(--color-text-primary); background: transparent; border: 0; text-align: left; transition: color var(--motion-duration-fast) var(--motion-ease-out); }
+    .acc-trigger:hover { color: var(--color-text-secondary); }
+    .acc-body { padding: 0 0 var(--spacing-lg); color: var(--color-text-secondary); font-size: var(--text-body-md); line-height: var(--text-body-md--line-height); }
     .col-trigger { padding: var(--spacing-sm) var(--spacing-md); border: 1px solid var(--color-border-default); background: transparent; border-radius: var(--radius-md); cursor: pointer; font-family: inherit; font-size: var(--text-body-md); display: inline-flex; gap: var(--spacing-sm); }
     .col-trigger:hover { background: var(--color-surface-input); }
 
@@ -3603,7 +3603,6 @@ export function pageCss() {
     [data-theme="dark"] .ar,
     [data-theme="dark"] .car-dot { background: var(--color-surface-input-dark); }
     [data-theme="dark"] .otp-cell--filled { background: var(--color-surface-default-dark); }
-    [data-theme="dark"] .acc,
     [data-theme="dark"] .ctx,
     [data-theme="dark"] .col-trigger,
     [data-theme="dark"] .car-arrow,
@@ -3611,16 +3610,14 @@ export function pageCss() {
     [data-theme="dark"] .tg,
     [data-theme="dark"] .tgg,
     [data-theme="dark"] .tgg-item + .tgg-item,
-    [data-theme="dark"] .acc-item + .acc-item,
-    [data-theme="dark"] .acc-body { border-color: var(--color-border-default-dark); }
+    [data-theme="dark"] .acc-item { border-color: var(--color-border-default-dark); }
     [data-theme="dark"] .dt-table td { border-bottom-color: var(--color-border-default-dark); }
-    [data-theme="dark"] .acc-item--open .acc-trigger,
+    [data-theme="dark"] .acc-trigger:hover { color: var(--color-text-secondary-dark); }
     [data-theme="dark"] .sb-item--active,
     [data-theme="dark"] .tg--on,
     [data-theme="dark"] .tgg-item--active,
     [data-theme="dark"] .tg:hover,
     [data-theme="dark"] .tgg-item:hover,
-    [data-theme="dark"] .acc-trigger:hover,
     [data-theme="dark"] .col-trigger:hover,
     [data-theme="dark"] .nm-item:hover,
     [data-theme="dark"] .mb-item:hover,
