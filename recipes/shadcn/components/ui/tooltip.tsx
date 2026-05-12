@@ -9,16 +9,19 @@ import { cn } from "@/lib/utils";
  *
  * - Radix Tooltip 베이스. Provider로 delay 기본 설정.
  * - composition: TooltipProvider > Tooltip > TooltipTrigger + TooltipContent
- * - 일반 surface-tone tooltip — `surface-default`(light:white, dark:dark surface)
- *   + `text-primary` 자동 swap. border 1px로 페이지 배경과 분리. shadow-sm 가볍게.
+ * - True inverted tooltip — light 모드는 dark 배경, dark 모드는 light 배경.
+ *   페이지 surface와 항상 반대 톤이라 즉시 식별. (Toss/Apple inverted dark는
+ *   양 모드 stable dark였지만, 여기선 양방향 inverse — 다크 모드에서도 페이지와
+ *   대비 유지.)
  *
  * Style 결정:
- * - bg/text/shadow 모두 inline style — Tailwind utility는 다크 모드 CSS 변수 swap
- *   처리에 quirks 있음. `var(--color-surface-default)`는 swap 대상이라 light/dark
- *   모두 자동 적응.
+ * - bg: `var(--color-text-primary)` 사용 — light(#1A1F2E dark) / dark(#F5F6FA
+ *   light) 자동 swap이라 양방향 inverse 자연스럽게 성립.
+ * - text: `var(--color-surface-default)` 사용 — light(#FFFFFF) / dark(#242938)
+ *   자동 swap. bg와 정확히 반대로 swap되어 두 모드 모두 충분한 대비.
  * - box-shadow도 inline — Tailwind v4 `--tw-shadow-*` 분해 처리가 다크 모드 CSS
  *   변수 override를 우회하는 문제 fix (Card/Dialog/Drawer/Popover/Sonner와 동일).
- * - border 1px — surface-default(흰색)와 bg-page(거의 흰색) 구분 보강.
+ * - border 불필요 — 페이지와 강한 대비(16:1+)로 시각 식별 충분.
  */
 
 const TooltipProvider = TooltipPrimitive.Provider;
@@ -35,12 +38,12 @@ const TooltipContent = React.forwardRef<
     ref={ref}
     sideOffset={sideOffset}
     className={cn(
-      "z-50 overflow-hidden rounded-xs border border-border-default px-[var(--spacing-md)] py-[var(--spacing-xs)] text-label-sm animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+      "z-50 overflow-hidden rounded-xs px-[var(--spacing-md)] py-[var(--spacing-xs)] text-label-sm animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
       className,
     )}
     style={{
-      backgroundColor: "var(--color-surface-default)",
-      color: "var(--color-text-primary)",
+      backgroundColor: "var(--color-text-primary)",
+      color: "var(--color-surface-default)",
       boxShadow: "var(--shadow-sm)",
       ...style,
     }}
