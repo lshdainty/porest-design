@@ -135,6 +135,46 @@ Navigation Menu는 **size variant 없음** — Trigger height 고정 `h-10` (40p
 - 카테고리 hub: "제품 ▼" → Hero panel(gradient + Porest 소개) + 우측 sub-link grid (소개/설치/타이포그래피/...)
 - shadcn navigation-menu의 시그니처 패턴.
 
+## Responsive (반응형)
+
+NavigationMenu는 본질적으로 **데스크탑 패턴** — 모바일에선 trigger 폭 + viewport 폭이 부족. Tailwind responsive utility로 화면 폭별 시각 자동 분기:
+
+| Breakpoint | 화면 폭 | trigger 시각 |
+|---|---|---|
+| `lg+` | ≥ 1024px | **모든 trigger 시각 그대로** — text + chevron / text-only / icon-only / text+icon 자유 mix. |
+| `md` | 768 ~ 1023px | **text-only Link 일부 hidden** (`hidden lg:inline-flex`) 또는 단축 라벨. text+icon은 **icon-only로 fallback** — 텍스트만 `<span className="hidden lg:inline">` wrap. |
+| `sm` | < 768px | **NavigationMenu 자체 폐기** — [`Sheet`](sheet.md) `side="left"` 햄버거 nav로 전환. icon-only universal action(검색/알림/사용자)만 헤더 우측에 노출 가능. |
+
+**기본 패턴 (반응형 클래스)**:
+
+```tsx
+// text + icon → 좁아지면 icon-only로 fallback
+<NavigationMenuLink href="/download" className="inline-flex h-10 items-center gap-[var(--spacing-xs)] md:px-0 lg:px-[var(--spacing-md)] md:w-10 lg:w-auto rounded-sm bg-primary text-text-on-accent">
+  <Download className="h-4 w-4" />
+  <span className="hidden lg:inline">다운로드</span>
+  <span className="sr-only lg:hidden">다운로드</span>
+</NavigationMenuLink>
+
+// text-only Link → 모바일에선 hidden
+<NavigationMenuLink href="/pricing" className="hidden md:inline-flex ...">
+  가격
+</NavigationMenuLink>
+
+// 모바일 전체 fallback (NavigationMenu 자체 hide)
+<NavigationMenu className="hidden md:flex">{...}</NavigationMenu>
+<Sheet>
+  <SheetTrigger className="md:hidden">
+    <Menu />
+  </SheetTrigger>
+  <SheetContent side="left">
+    <nav>{/* mobile vertical nav */}</nav>
+  </SheetContent>
+</Sheet>
+```
+
+**Trigger 자체 보강 — `whitespace-nowrap`**:
+- `navigationMenuTriggerStyle`에 `whitespace-nowrap` 포함 — 좁은 폭에서도 글자가 세로로 분리되지 않음. 폭이 부족하면 trigger가 부모를 넘어 잘림(scroll) 또는 사용처에서 hidden 처리.
+
 ## Behavior
 
 | 인터랙션 | 동작 |

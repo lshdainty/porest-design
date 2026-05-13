@@ -9,7 +9,7 @@ const LIST = "display:flex; align-items:center; justify-content:center; gap:var(
 const NAV_WRAP = "display:flex; align-items:center; justify-content:space-between; gap:var(--spacing-xl); padding:var(--spacing-md) var(--spacing-lg); background:var(--color-surface-default); border:1px solid var(--color-border-default); border-radius:var(--radius-md); max-width:880px;";
 const LOGO = "font-size:var(--text-title-md); font-weight:600; color:var(--color-text-primary);";
 
-const TRIGGER_BASE = "display:inline-flex; height:40px; align-items:center; justify-content:center; border:0; background:var(--color-surface-default); font-family:inherit; font-size:var(--text-body-md); line-height:var(--text-body-md--line-height); font-weight:500; color:var(--color-text-primary); cursor:pointer; transition:background-color var(--motion-duration-fast) var(--motion-ease-out);";
+const TRIGGER_BASE = "display:inline-flex; height:40px; align-items:center; justify-content:center; white-space:nowrap; border:0; background:var(--color-surface-default); font-family:inherit; font-size:var(--text-body-md); line-height:var(--text-body-md--line-height); font-weight:500; color:var(--color-text-primary); cursor:pointer; transition:background-color var(--motion-duration-fast) var(--motion-ease-out);";
 
 const TRIGGER_TEXT = `${TRIGGER_BASE} padding:var(--spacing-sm) var(--spacing-lg); border-radius:var(--radius-sm); gap:var(--spacing-xs);`;
 const TRIGGER_TEXT_HOVER = `${TRIGGER_TEXT} background:var(--color-surface-input);`;
@@ -102,8 +102,8 @@ export const navigationMenuExamples = [
   },
 
   {
-    title: "Header — 3 trigger 패턴 mix (text + icon-only + text+icon)",
-    description: "Porest 헤더 — 좌측 카테고리(`text + chevron` × 2) + 직접 링크(`text-only` × 2) + 우측 universal action(`icon-only` × 2) + 강조(`text + icon` primary). 모든 trigger height `h-10` 통일, 패턴은 children으로만 분기.",
+    title: "Header — 3 trigger 패턴 mix (반응형, 데스크탑)",
+    description: "Porest 데스크탑 헤더(`lg+`) — 좌측 카테고리(`text + chevron` × 2) + 직접 링크(`text-only` × 2) + 우측 universal action(`icon-only` × 2) + 강조(`text + icon` primary). 모든 trigger height `h-10` 통일, `whitespace-nowrap`으로 글자 깨짐 방지. 좁은 화면(`md`/`sm`)은 아래 \"Responsive\" 예제 참조.",
     jsx: `<header className="flex items-center justify-between px-[var(--spacing-lg)] py-[var(--spacing-md)]">
   <div className="flex items-center gap-[var(--spacing-xl)]">
     <span className="text-title-md font-semibold">Porest</span>
@@ -239,6 +239,131 @@ export const navigationMenuExamples = [
   <li><a style="${TRIGGER_ICON}" href="#" aria-label="내 계정">${ICON_USER}<span style="${SR_ONLY}">내 계정</span></a></li>
   <li><a style="${TRIGGER_TEXTICON_PRIMARY}" href="#">${ICON_PLUS}빠른 추가</a></li>
 </ul>`,
+  },
+
+  {
+    title: "Responsive — 화면 폭별 시각 자동 분기 (lg / md / sm)",
+    description: "동일 nav를 3가지 폭으로 시각화 — **`lg+`** (≥1024) 전부 노출 / **`md`** (768~1023) text-only 일부 hidden + text+icon → icon-only / **`sm`** (<768) NavigationMenu 자체 hidden + 햄버거 [`Sheet`](sheet.md) fallback. `whitespace-nowrap`으로 trigger 글자 보호.",
+    jsx: `// 반응형 패턴 — Tailwind responsive utility로 자동 분기
+
+<NavigationMenu className="hidden md:flex">
+  <NavigationMenuList>
+    {/* 카테고리 (lg+) — 항상 노출 */}
+    <NavigationMenuItem>
+      <NavigationMenuTrigger>제품</NavigationMenuTrigger>
+    </NavigationMenuItem>
+    <NavigationMenuItem>
+      <NavigationMenuTrigger>회사</NavigationMenuTrigger>
+    </NavigationMenuItem>
+
+    {/* text-only — md 이상에서만 노출 */}
+    <NavigationMenuItem className="hidden lg:flex">
+      <NavigationMenuLink href="/pricing" className={navigationMenuTriggerStyle()}>
+        가격
+      </NavigationMenuLink>
+    </NavigationMenuItem>
+    <NavigationMenuItem className="hidden lg:flex">
+      <NavigationMenuLink href="/customers" className={navigationMenuTriggerStyle()}>
+        고객사
+      </NavigationMenuLink>
+    </NavigationMenuItem>
+
+    {/* icon-only universal — 모든 폭에서 노출 */}
+    <NavigationMenuItem>
+      <NavigationMenuLink href="/search" className="inline-flex h-10 w-10 items-center justify-center rounded-sm hover:bg-surface-input">
+        <Search size={18} />
+        <span className="sr-only">검색</span>
+      </NavigationMenuLink>
+    </NavigationMenuItem>
+
+    {/* text+icon → 좁은 화면(md)에선 icon-only로 fallback */}
+    <NavigationMenuItem>
+      <NavigationMenuLink
+        href="/download"
+        className="inline-flex h-10 items-center gap-[var(--spacing-xs)] rounded-sm bg-primary text-text-on-accent hover:brightness-105
+          w-10 justify-center px-0
+          lg:w-auto lg:px-[var(--spacing-md)]"
+      >
+        <Download className="h-4 w-4" />
+        <span className="hidden lg:inline">다운로드</span>
+        <span className="sr-only lg:hidden">다운로드</span>
+      </NavigationMenuLink>
+    </NavigationMenuItem>
+  </NavigationMenuList>
+</NavigationMenu>
+
+{/* sm — NavigationMenu 자체 hide + 햄버거 Sheet */}
+<Sheet>
+  <SheetTrigger className="md:hidden inline-flex h-10 w-10 items-center justify-center">
+    <Menu size={20} />
+    <span className="sr-only">메뉴 열기</span>
+  </SheetTrigger>
+  <SheetContent side="left">
+    <nav className="flex flex-col gap-[var(--spacing-sm)]">
+      <a className="py-[var(--spacing-sm)] text-body-md font-medium">제품</a>
+      <a className="py-[var(--spacing-sm)] text-body-md font-medium">회사</a>
+      <a className="py-[var(--spacing-sm)] text-body-md font-medium">가격</a>
+      <a className="py-[var(--spacing-sm)] text-body-md font-medium">고객사</a>
+    </nav>
+  </SheetContent>
+</Sheet>`,
+    render: () => {
+      // 3개 시각화 frame — 폭별로 강제 렌더
+      const frameLabel = (label) => `<div style="font-size:var(--text-caption); line-height:var(--text-caption--line-height); color:var(--color-text-tertiary); font-family:ui-monospace, monospace; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:var(--spacing-xs);">${label}</div>`;
+
+      const HEADER_FRAME = "display:flex; align-items:center; justify-content:space-between; gap:var(--spacing-md); padding:var(--spacing-md) var(--spacing-lg); background:var(--color-surface-default); border:1px solid var(--color-border-default); border-radius:var(--radius-md);";
+
+      // LG: 전부 노출
+      const lg = `<div style="${HEADER_FRAME} max-width:880px;">
+  <div style="display:flex; align-items:center; gap:var(--spacing-lg);">
+    <span style="${LOGO}">Porest</span>
+    <ul style="${LIST}">
+      <li><div style="${TRIGGER_TEXT}">제품${CHEVRON}</div></li>
+      <li><div style="${TRIGGER_TEXT}">회사${CHEVRON}</div></li>
+      <li><a style="${TRIGGER_LINK}" href="#">가격</a></li>
+      <li><a style="${TRIGGER_LINK}" href="#">고객사</a></li>
+    </ul>
+  </div>
+  <ul style="${LIST}">
+    <li><a style="${TRIGGER_ICON}" href="#" aria-label="검색">${ICON_SEARCH}<span style="${SR_ONLY}">검색</span></a></li>
+    <li><a style="${TRIGGER_TEXTICON_PRIMARY}" href="#">${ICON_DOWNLOAD}다운로드</a></li>
+  </ul>
+</div>`;
+
+      // MD: text-only 2개 hidden, text+icon → icon-only로
+      const md = `<div style="${HEADER_FRAME} max-width:560px;">
+  <div style="display:flex; align-items:center; gap:var(--spacing-md);">
+    <span style="${LOGO}">Porest</span>
+    <ul style="${LIST}">
+      <li><div style="${TRIGGER_TEXT}">제품${CHEVRON}</div></li>
+      <li><div style="${TRIGGER_TEXT}">회사${CHEVRON}</div></li>
+    </ul>
+  </div>
+  <ul style="${LIST}">
+    <li><a style="${TRIGGER_ICON}" href="#" aria-label="검색">${ICON_SEARCH}<span style="${SR_ONLY}">검색</span></a></li>
+    <li><a style="${TRIGGER_ICON} background:var(--color-primary, var(--color-text-primary)); color:var(--color-text-on-accent, #fff);" href="#" aria-label="다운로드">${ICON_DOWNLOAD}<span style="${SR_ONLY}">다운로드</span></a></li>
+  </ul>
+</div>`;
+
+      // SM: 햄버거 + icon-only 액션만
+      const ICON_MENU = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
+      const sm = `<div style="${HEADER_FRAME} max-width:360px;">
+  <div style="display:flex; align-items:center; gap:var(--spacing-sm);">
+    <button style="${TRIGGER_ICON}" aria-label="메뉴 열기">${ICON_MENU}<span style="${SR_ONLY}">메뉴 열기</span></button>
+    <span style="${LOGO}">Porest</span>
+  </div>
+  <ul style="${LIST}">
+    <li><a style="${TRIGGER_ICON}" href="#" aria-label="검색">${ICON_SEARCH}<span style="${SR_ONLY}">검색</span></a></li>
+    <li><a style="${TRIGGER_ICON} background:var(--color-primary, var(--color-text-primary)); color:var(--color-text-on-accent, #fff);" href="#" aria-label="다운로드">${ICON_DOWNLOAD}<span style="${SR_ONLY}">다운로드</span></a></li>
+  </ul>
+</div>`;
+
+      return `<div style="display:flex; flex-direction:column; gap:var(--spacing-lg);">
+  <div>${frameLabel("lg+ (≥ 1024px) — 전부 노출")}${lg}</div>
+  <div>${frameLabel("md (768 ~ 1023px) — text-only hidden, text+icon → icon-only")}${md}</div>
+  <div>${frameLabel("sm (< 768px) — 햄버거 Sheet + universal action만")}${sm}</div>
+</div>`;
+    },
   },
 
   {
