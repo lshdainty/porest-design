@@ -5,8 +5,9 @@
  */
 
 const TABLE = "width:100%; border-collapse:collapse; font-size:var(--text-body-md); line-height:var(--text-body-md--line-height); color:var(--color-text-primary);";
+const THEAD = "background:var(--color-bg-page);";
 const HEAD_ROW = "border-bottom:1px solid var(--color-border-default);";
-const HEAD = "height:40px; padding:var(--spacing-sm); text-align:left; vertical-align:middle; font-size:var(--text-body-md); line-height:var(--text-body-md--line-height); font-weight:500; color:var(--color-text-secondary);";
+const HEAD = "height:40px; padding:var(--spacing-sm); text-align:left; vertical-align:middle; font-size:var(--text-caption); line-height:var(--text-caption--line-height); font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:var(--color-text-tertiary);";
 const ROW = "border-bottom:1px solid var(--color-border-default); transition:background-color var(--motion-duration-fast) var(--motion-ease-out);";
 const CELL = "padding:var(--spacing-sm); vertical-align:middle;";
 const CAPTION = "margin-top:var(--spacing-md); font-size:var(--text-body-sm); line-height:var(--text-body-sm--line-height); color:var(--color-text-secondary); caption-side:bottom;";
@@ -62,7 +63,7 @@ export const tableExamples = [
   </TableFooter>
 </Table>`,
     render: () => `<table style="${TABLE}">
-  <thead><tr style="${HEAD_ROW}">
+  <thead style="${THEAD}"><tr style="${HEAD_ROW}">
     <th style="${HEAD} width:100px;">주문번호</th>
     <th style="${HEAD}">상태</th>
     <th style="${HEAD}">방법</th>
@@ -144,7 +145,7 @@ export const tableExamples = [
     <button style="${BULK_BTN}">삭제</button>
   </div>
   <table style="${TABLE}">
-    <thead><tr style="${HEAD_ROW}">
+    <thead style="${THEAD}"><tr style="${HEAD_ROW}">
       <th style="${HEAD} width:48px;"><span style="${CHECKBOX_CHECKED}">${INDETERMINATE_ICON}</span></th>
       <th style="${SORT_HEAD}">제목${SORT_ARROW}</th>
       <th style="${HEAD}">수정일</th>
@@ -198,7 +199,7 @@ export const tableExamples = [
   </TableBody>
 </Table>`,
     render: () => `<table style="${TABLE}">
-  <thead><tr style="${HEAD_ROW}">
+  <thead style="${THEAD}"><tr style="${HEAD_ROW}">
     <th style="${HEAD}">신청자</th>
     <th style="${HEAD}">부서</th>
     <th style="${HEAD}">신청일</th>
