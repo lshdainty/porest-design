@@ -15,10 +15,15 @@ import { Label } from "@/components/ui/label";
 
 /*
  * Porest Form (shadcn 베이스 + Porest 디자인 토큰)
+ * spec: specs/components/form.md (단일 SoT)
  *
- * - react-hook-form 베이스. Form / FormField / FormItem / FormLabel / FormControl / FormDescription / FormMessage 조립.
- * - aria-invalid 자동 처리 + error 시 FormMessage 표시.
- * - <Form {...form}> = FormProvider re-export.
+ * - react-hook-form composition helper. RHF + Zod 조합 가정.
+ * - 7 primitive: Form / FormField / FormItem / FormLabel / FormControl / FormDescription / FormMessage
+ * - aria-invalid / aria-describedby / htmlFor 자동 wire — useFormField hook + useId 기반.
+ * - FormItem `gap-xs` (4) — preview `.form-group` SoT 정합 (shadcn 기본 `space-y-2` 8 → 4 정정).
+ * - FormLabel = Label 컴포넌트 재사용 (text-label-md 14/500 + text-primary + leading-none).
+ * - FormDescription = text-body-sm + text-text-secondary
+ * - FormMessage = text-body-sm + font-medium + text-error (zod schema message 자동 표시).
  */
 
 const Form = FormProvider;
@@ -86,7 +91,11 @@ const FormItem = React.forwardRef<
 
   return (
     <FormItemContext.Provider value={{ id }}>
-      <div ref={ref} className={cn("space-y-2", className)} {...props} />
+      <div
+        ref={ref}
+        className={cn("flex flex-col gap-[var(--spacing-xs)]", className)}
+        {...props}
+      />
     </FormItemContext.Provider>
   );
 });
