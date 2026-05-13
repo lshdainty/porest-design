@@ -7,9 +7,12 @@ import { cn } from "@/lib/utils";
 
 /*
  * Porest NavigationMenu (shadcn 베이스 + Porest 디자인 토큰)
+ * spec: specs/components/navigation-menu.md (단일 SoT)
  *
  * - Radix NavigationMenu 베이스. 헤더 등 메인 네비게이션.
  * - composition: NavigationMenu > NavigationMenuList > NavigationMenuItem > NavigationMenuTrigger / NavigationMenuContent / NavigationMenuLink + Indicator + Viewport
+ * - Trigger 패턴 3종(text + chevron / text-only Link / icon-only Link / text + icon Link) — 사용처 children 합성.
+ * - Viewport box-shadow는 inline style — 다크 모드 토큰 fix 일관 패턴.
  */
 
 const NavigationMenu = React.forwardRef<
@@ -37,7 +40,7 @@ const NavigationMenuList = React.forwardRef<
   <NavigationMenuPrimitive.List
     ref={ref}
     className={cn(
-      "group flex flex-1 list-none items-center justify-center space-x-1",
+      "group flex flex-1 list-none items-center justify-center space-x-[var(--spacing-xs)]",
       className,
     )}
     {...props}
@@ -48,7 +51,7 @@ NavigationMenuList.displayName = NavigationMenuPrimitive.List.displayName;
 const NavigationMenuItem = NavigationMenuPrimitive.Item;
 
 const navigationMenuTriggerStyle = cva(
-  "group inline-flex h-10 w-max items-center justify-center rounded-sm bg-surface-default px-4 py-2 text-title-sm font-medium transition-colors hover:bg-surface-input hover:text-text-primary focus:bg-surface-input focus:text-text-primary focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-surface-input/50 data-[state=open]:bg-surface-input/50",
+  "group inline-flex h-10 w-max items-center justify-center rounded-sm bg-surface-default px-[var(--spacing-lg)] py-[var(--spacing-sm)] text-body-md font-medium text-text-primary transition-colors duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)] hover:bg-surface-input focus-visible:bg-surface-input focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-surface-input/50 data-[state=open]:bg-surface-input/50",
 );
 
 const NavigationMenuTrigger = React.forwardRef<
@@ -62,7 +65,7 @@ const NavigationMenuTrigger = React.forwardRef<
   >
     {children}{" "}
     <ChevronDown
-      className="relative top-[1px] ml-1 h-3 w-3 transition duration-200 group-data-[state=open]:rotate-180"
+      className="relative top-[1px] ml-[var(--spacing-xs)] h-3 w-3 transition-transform duration-[var(--motion-duration-base)] ease-[var(--motion-ease-out)] group-data-[state=open]:rotate-180"
       aria-hidden="true"
     />
   </NavigationMenuPrimitive.Trigger>
@@ -89,13 +92,14 @@ const NavigationMenuLink = NavigationMenuPrimitive.Link;
 const NavigationMenuViewport = React.forwardRef<
   React.ElementRef<typeof NavigationMenuPrimitive.Viewport>,
   React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Viewport>
->(({ className, ...props }, ref) => (
+>(({ className, style, ...props }, ref) => (
   <div className={cn("absolute left-0 top-full flex justify-center")}>
     <NavigationMenuPrimitive.Viewport
       className={cn(
-        "origin-top-center relative mt-1.5 h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden rounded-md border border-border-default bg-surface-default text-text-primary shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-90 md:w-[var(--radix-navigation-menu-viewport-width)]",
+        "origin-top-center relative mt-[var(--spacing-xs)] h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden rounded-md border border-border-default bg-surface-default text-text-primary data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-90 md:w-[var(--radix-navigation-menu-viewport-width)]",
         className,
       )}
+      style={{ boxShadow: "var(--shadow-lg)", ...style }}
       ref={ref}
       {...props}
     />
@@ -116,7 +120,7 @@ const NavigationMenuIndicator = React.forwardRef<
     )}
     {...props}
   >
-    <div className="relative top-[60%] h-2 w-2 rotate-45 rounded-tl-sm bg-border-default shadow-md" />
+    <div className="relative top-[60%] h-2 w-2 rotate-45 rounded-tl-sm bg-border-default" style={{ boxShadow: "var(--shadow-md)" }} />
   </NavigationMenuPrimitive.Indicator>
 ));
 NavigationMenuIndicator.displayName =
