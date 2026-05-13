@@ -151,9 +151,10 @@ const ChartTooltipContent = React.forwardRef<
       <div
         ref={ref}
         className={cn(
-          "grid min-w-[8rem] items-start gap-1.5 rounded-sm border border-border-default bg-surface-default px-2.5 py-1.5 text-label-sm shadow-md",
+          "grid min-w-[8rem] items-start gap-[var(--spacing-xs)] rounded-sm border border-border-default bg-surface-default px-[var(--spacing-md)] py-[var(--spacing-sm)] text-label-sm",
           className,
         )}
+        style={{ boxShadow: "var(--shadow-md)" }}
       >
         {tooltipLabel}
         <div className="grid gap-1.5">
