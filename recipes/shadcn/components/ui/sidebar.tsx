@@ -396,7 +396,7 @@ const SidebarGroupLabel = React.forwardRef<
       ref={ref}
       data-sidebar="group-label"
       className={cn(
-        "duration-200 flex h-8 shrink-0 items-center rounded-xs px-2 text-label-sm font-medium text-text-secondary outline-none ring-ring transition-[margin,opa] ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
+        "duration-200 flex h-8 shrink-0 items-center rounded-xs px-[var(--spacing-sm)] text-caption font-semibold uppercase tracking-wide text-text-tertiary outline-none ring-ring transition-[margin,opa] ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
         "group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0",
         className,
       )}
@@ -413,7 +413,7 @@ const SidebarGroupContent = React.forwardRef<
   <div
     ref={ref}
     data-sidebar="group-content"
-    className={cn("w-full text-title-sm", className)}
+    className={cn("w-full text-body-md", className)}
     {...props}
   />
 ));
@@ -424,7 +424,7 @@ const SidebarMenu = React.forwardRef<HTMLUListElement, React.ComponentProps<"ul"
     <ul
       ref={ref}
       data-sidebar="menu"
-      className={cn("flex w-full min-w-0 flex-col gap-1", className)}
+      className={cn("flex w-full min-w-0 flex-col gap-[var(--spacing-xs)]", className)}
       {...props}
     />
   ),
@@ -444,18 +444,18 @@ const SidebarMenuItem = React.forwardRef<HTMLLIElement, React.ComponentProps<"li
 SidebarMenuItem.displayName = "SidebarMenuItem";
 
 const sidebarMenuButtonVariants = cva(
-  "peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-xs p-2 text-left text-title-sm outline-none ring-ring transition-[width,height,padding] hover:bg-surface-input hover:text-text-primary focus-visible:ring-2 active:bg-surface-input active:text-text-primary disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-surface-input data-[active=true]:font-medium data-[active=true]:text-text-primary data-[state=open]:hover:bg-surface-input data-[state=open]:hover:text-text-primary group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!p-2 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
+  "peer/menu-button flex w-full items-center gap-[var(--spacing-sm)] overflow-hidden rounded-sm p-[var(--spacing-sm)] text-left text-body-md text-text-primary outline-none ring-ring transition-colors duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)] hover:bg-surface-input focus-visible:ring-2 active:bg-surface-input disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-surface-input data-[active=true]:font-medium data-[state=open]:hover:bg-surface-input group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!p-[var(--spacing-sm)] [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "hover:bg-surface-input hover:text-text-primary",
+        default: "hover:bg-surface-input",
         outline:
-          "bg-surface-default shadow-[0_0_0_1px_var(--color-border-default)] hover:bg-surface-input hover:text-text-primary",
+          "bg-surface-default shadow-[0_0_0_1px_var(--color-border-default)] hover:bg-surface-input",
       },
       size: {
-        default: "h-8 text-title-sm",
+        default: "h-8 text-body-md",
         sm: "h-7 text-label-sm",
-        lg: "h-12 text-title-sm group-data-[collapsible=icon]:!p-0",
+        lg: "h-12 text-body-md group-data-[collapsible=icon]:!p-0",
       },
     },
     defaultVariants: {
