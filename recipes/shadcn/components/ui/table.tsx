@@ -4,9 +4,11 @@ import { cn } from "@/lib/utils";
 
 /*
  * Porest Table (shadcn 베이스 + Porest 디자인 토큰)
+ * spec: specs/components/table.md (단일 SoT)
  *
- * - 일반 HTML <table> wrapper. 필요한 부분만 styled.
+ * - 일반 HTML <table> wrapper. semantic 그대로 + 시각 토큰.
  * - composition: Table > TableHeader / TableBody / TableFooter > TableRow > TableHead / TableCell + TableCaption
+ * - data table 패턴(sortable / selectable / bulk action)은 base Table + Checkbox/Button/Badge 합성.
  * - sticky header 등 고급 패턴은 사용처에서 className으로.
  */
 
@@ -17,7 +19,7 @@ const Table = React.forwardRef<
   <div className="relative w-full overflow-auto">
     <table
       ref={ref}
-      className={cn("w-full caption-bottom text-title-sm", className)}
+      className={cn("w-full caption-bottom text-body-md", className)}
       {...props}
     />
   </div>
@@ -66,7 +68,7 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      "border-b border-border-default transition-colors hover:bg-surface-input/50 data-[state=selected]:bg-surface-input",
+      "border-b border-border-default transition-colors duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)] hover:bg-surface-input/50 data-[state=selected]:bg-surface-input",
       className,
     )}
     {...props}
@@ -81,7 +83,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      "h-10 px-2 text-left align-middle font-medium text-text-secondary [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+      "h-10 px-[var(--spacing-sm)] text-left align-middle font-medium text-text-secondary [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
       className,
     )}
     {...props}
@@ -96,7 +98,7 @@ const TableCell = React.forwardRef<
   <td
     ref={ref}
     className={cn(
-      "p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+      "p-[var(--spacing-sm)] align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
       className,
     )}
     {...props}
@@ -110,7 +112,7 @@ const TableCaption = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <caption
     ref={ref}
-    className={cn("mt-4 text-body-sm text-text-secondary", className)}
+    className={cn("mt-[var(--spacing-md)] text-body-sm text-text-secondary", className)}
     {...props}
   />
 ));
