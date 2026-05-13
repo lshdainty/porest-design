@@ -98,7 +98,8 @@ Chart는 **size variant 없음** — ChartContainer는 `aspect-video` (16:9) 기
 - 2개: blue + orange (보색)
 - 3개: red + green + blue (의미 분기) 또는 blue + orange + indigo (보색 + 보조)
 - 5개: red → green → blue → violet → orange (hue 분산)
-- 10개: 정의 순서대로
+- 7개: red → orange → yellow → green → blue → indigo → violet (정의 순서)
+- **10개(전체)**: red → orange → yellow → green → blue → indigo → violet → pink → brown → gray. 가계부 카테고리 10개, 부서 10개 등 풍부한 분류 시각화 시 권장. examples `PieChart — Desk 가계부 카테고리별 지출` 참조.
 
 ## States
 

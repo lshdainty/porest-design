@@ -92,15 +92,18 @@ function donutChartHR() {
 }
 
 function pieChartDesk() {
-  // 가계부 카테고리 7종
+  // 가계부 카테고리 10종 — 10색 palette 전체 활용
   const data = [
-    { label: "식비", value: 38, color: "chart-red" },
-    { label: "주거", value: 22, color: "chart-orange" },
+    { label: "식비", value: 28, color: "chart-red" },
+    { label: "주거", value: 18, color: "chart-orange" },
     { label: "교통", value: 12, color: "chart-yellow" },
-    { label: "문화", value: 10, color: "chart-green" },
+    { label: "문화", value: 9, color: "chart-green" },
     { label: "의료", value: 8, color: "chart-blue" },
-    { label: "저축", value: 6, color: "chart-indigo" },
-    { label: "기타", value: 4, color: "chart-gray" },
+    { label: "저축", value: 7, color: "chart-indigo" },
+    { label: "통신", value: 6, color: "chart-violet" },
+    { label: "쇼핑", value: 5, color: "chart-pink" },
+    { label: "교육", value: 4, color: "chart-brown" },
+    { label: "기타", value: 3, color: "chart-gray" },
   ];
   const cx = 100, cy = 100, r = 90;
   let acc = 0;
@@ -247,16 +250,19 @@ const chartConfig = {
   },
 
   {
-    title: "PieChart — Desk 가계부 카테고리별 지출",
-    description: "categorical 7색 분배(`chart-red`→`gray` 사용 — 식비/주거/교통/문화/의료/저축/기타). 각 슬라이스 stroke `surface-default` 2px로 구분.",
+    title: "PieChart — Desk 가계부 카테고리별 지출 (10색 palette 전체)",
+    description: "categorical **10색 분배** — chart palette 전체(red/orange/yellow/green/blue/indigo/violet/pink/brown/gray) 활용. 10개 카테고리 비율 시각화. 각 슬라이스 stroke `surface-default` 2px로 구분 + legend는 색 dot + 라벨 + 비율 페어(WCAG 1.4.1).",
     jsx: `const chartData = [
-  { category: "식비", value: 38, fill: "var(--color-chart-red)" },
-  { category: "주거", value: 22, fill: "var(--color-chart-orange)" },
+  { category: "식비", value: 28, fill: "var(--color-chart-red)" },
+  { category: "주거", value: 18, fill: "var(--color-chart-orange)" },
   { category: "교통", value: 12, fill: "var(--color-chart-yellow)" },
-  { category: "문화", value: 10, fill: "var(--color-chart-green)" },
+  { category: "문화", value: 9, fill: "var(--color-chart-green)" },
   { category: "의료", value: 8, fill: "var(--color-chart-blue)" },
-  { category: "저축", value: 6, fill: "var(--color-chart-indigo)" },
-  { category: "기타", value: 4, fill: "var(--color-chart-gray)" },
+  { category: "저축", value: 7, fill: "var(--color-chart-indigo)" },
+  { category: "통신", value: 6, fill: "var(--color-chart-violet)" },
+  { category: "쇼핑", value: 5, fill: "var(--color-chart-pink)" },
+  { category: "교육", value: 4, fill: "var(--color-chart-brown)" },
+  { category: "기타", value: 3, fill: "var(--color-chart-gray)" },
 ]
 
 <ChartContainer>
