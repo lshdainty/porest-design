@@ -51,7 +51,7 @@ NavigationMenuList.displayName = NavigationMenuPrimitive.List.displayName;
 const NavigationMenuItem = NavigationMenuPrimitive.Item;
 
 const navigationMenuTriggerStyle = cva(
-  "group inline-flex h-10 w-max items-center justify-center rounded-sm bg-surface-default px-[var(--spacing-lg)] py-[var(--spacing-sm)] text-body-md font-medium text-text-primary transition-colors duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)] hover:bg-surface-input focus-visible:bg-surface-input focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-surface-input/50 data-[state=open]:bg-surface-input/50",
+  "group inline-flex h-10 w-max items-center justify-center whitespace-nowrap rounded-sm bg-surface-default px-[var(--spacing-lg)] py-[var(--spacing-sm)] text-body-md font-medium text-text-primary transition-colors duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)] hover:bg-surface-input focus-visible:bg-surface-input focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-surface-input/50 data-[state=open]:bg-surface-input/50",
 );
 
 const NavigationMenuTrigger = React.forwardRef<
