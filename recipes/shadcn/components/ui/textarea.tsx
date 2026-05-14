@@ -7,20 +7,21 @@ import { cn } from "@/lib/utils";
  *
  * - min-height 80px — 3줄 이상 본문 입력
  * - body-md typography (15/400/1.6) 한국어 본문 가독성
- * - resize: none 권장 (사이즈 고정), 필요 시 className으로 resize-y 추가
+ * - resize: vertical (resize-y) 기본 — 사용자가 본문 길이에 맞춰 늘릴 수 있음.
+ *   layout 안정성 필요한 곳만 className 으로 resize-none opt-out. resize-x 는 금지.
  */
 
 export type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement>;
 
 // Input spec과 통일 — bg-surface-input(회색 채움), 토큰 직접 인용, font-sans, motion transition.
-// textarea는 자연스럽게 가변 높이(min-h-20) + body-md(긴 본문 가독성) + resize-none.
+// textarea는 자연스럽게 가변 높이(min-h-20) + body-md(긴 본문 가독성) + resize-y(사용자 늘리기 허용).
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className, ...props }, ref) => {
     return (
       <textarea
         ref={ref}
         className={cn(
-          "flex min-h-20 w-full rounded-sm border border-border-default bg-surface-input px-[var(--spacing-md)] py-[var(--spacing-sm)] font-sans text-body-md text-text-primary placeholder:text-text-tertiary focus-visible:outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 aria-invalid:border-error aria-invalid:ring-2 aria-invalid:ring-error/30 disabled:cursor-not-allowed disabled:opacity-50 transition-[color,box-shadow,border-color] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)] resize-none",
+          "flex min-h-20 w-full rounded-sm border border-border-default bg-surface-input px-[var(--spacing-md)] py-[var(--spacing-sm)] font-sans text-body-md text-text-primary placeholder:text-text-tertiary focus-visible:outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 aria-invalid:border-error aria-invalid:ring-2 aria-invalid:ring-error/30 disabled:cursor-not-allowed disabled:opacity-50 transition-[color,box-shadow,border-color] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)] resize-y",
           className,
         )}
         {...props}
