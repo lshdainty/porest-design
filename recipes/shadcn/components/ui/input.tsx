@@ -13,6 +13,10 @@ import { cn } from "@/lib/utils";
  * - focus: border-focus + ring-2 ring-ring/30 (다크 시 border-focus-light 자동 swap)
  * - aria-invalid: border-error + ring-error/30
  * - disabled: opacity-50 + cursor-not-allowed
+ * - layout: min-w-0 — flex item 안에서 contents-width 로 줄어들지 않고 부모 너비를 따라가도록.
+ *   (flex 안 input 이 글자 폭 만큼만 차지하면 form 정렬 깨짐)
+ * - file picker: file:* 유틸 — `<input type="file">` 의 native button 톤(border-0 + bg-transparent +
+ *   text-sm + text-text-primary). 폼 보편 패턴이라 base 에 포함.
  * - 사이즈 예외 필요 시 사용처 className으로 (예: `className="h-12 text-title-md"`)
  */
 
@@ -28,7 +32,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         type={type}
         ref={ref}
         className={cn(
-          "flex h-10 w-full rounded-sm border border-border-default bg-surface-input px-[var(--spacing-md)] py-[var(--spacing-sm)] font-sans text-body-lg text-text-primary placeholder:text-text-tertiary focus-visible:outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 aria-invalid:border-error aria-invalid:ring-2 aria-invalid:ring-error/30 disabled:cursor-not-allowed disabled:opacity-50 transition-[color,box-shadow,border-color] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]",
+          "flex h-10 w-full min-w-0 rounded-sm border border-border-default bg-surface-input px-[var(--spacing-md)] py-[var(--spacing-sm)] font-sans text-body-lg text-text-primary placeholder:text-text-tertiary",
+          "file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-text-primary",
+          "transition-[color,box-shadow,border-color] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]",
+          "focus-visible:outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30",
+          "aria-invalid:border-error aria-invalid:ring-2 aria-invalid:ring-error/30",
+          "disabled:cursor-not-allowed disabled:opacity-50",
           className,
         )}
         {...props}
