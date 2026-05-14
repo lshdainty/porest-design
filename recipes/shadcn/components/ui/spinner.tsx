@@ -9,13 +9,24 @@ import { cn } from "@/lib/utils";
  * spec: specs/components/spinner.md (단일 SoT)
  *
  * - circular indeterminate. 360deg 회전, arc 270deg(3/4)
- * - 색: border-top primary (라이트) / primary-light (다크 — cascade 자동 swap)
+ * - 색: border-default 트랙 + border-top primary (라이트) / primary-light (다크 — cascade 자동 swap)
  * - sizes: sm 16/2 · md 24/2 · lg 32/3 · xl 48/4
  * - animation: motion-duration-loop (1500ms) motion-ease-linear infinite
  * - prefers-reduced-motion: animation 정지
  *
  * 사용 예: <Spinner /> (md 기본) / <Spinner size="sm" /> (inline) / <Spinner size="xl" /> (full-page)
  * inline 라벨: <div className="inline-flex items-center gap-2"><Spinner size="sm" /> 저장 중…</div>
+ *
+ * Color override (filled 배경 안 — 예: bg-primary Button):
+ *   <Spinner
+ *     size="sm"
+ *     style={{
+ *       borderColor: 'color-mix(in srgb, currentColor 30%, transparent)',
+ *       borderTopColor: 'currentColor',
+ *     }}
+ *   />
+ *   → 부모 text-color 상속. Button 컴포넌트는 loading prop 시 자동 적용.
+ *   spec: Color override 섹션 참조.
  */
 
 const spinnerVariants = cva(

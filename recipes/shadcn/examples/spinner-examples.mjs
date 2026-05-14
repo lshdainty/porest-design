@@ -82,9 +82,8 @@ export const spinnerExamples = [
 
   {
     title: "Inside button (form 제출 중)",
-    description: "Button leading icon 위치에 sm spinner — disabled + label 변경.",
-    jsx: `<Button disabled>
-  <Spinner size="sm" />
+    description: "Button leading icon 위치에 sm spinner — disabled + label 변경. 컴포넌트는 loading prop 으로 처리.",
+    jsx: `<Button loading>
   저장 중…
 </Button>`,
     render: () => `${KEYFRAMES}
@@ -92,5 +91,52 @@ export const spinnerExamples = [
   <span style="display:inline-block; width:16px; height:16px; border:2px solid color-mix(in srgb, var(--color-text-on-accent) 30%, transparent); border-top-color:var(--color-text-on-accent); border-radius:9999px; animation:sp-spin var(--motion-duration-loop, 1500ms) var(--motion-ease-linear, linear) infinite;"></span>
   저장 중…
 </button>`,
+  },
+
+  {
+    title: "Color override — filled vs outline 비교",
+    description: "filled 배경(bg-primary)에서는 spec 기본 arc(primary)가 배경과 같아 묻혀 보이므로 currentColor 상속 패턴으로 override 필요. outline/ghost(흰 배경)는 spec 기본 색 그대로 정상.",
+    jsx: `{/* ❌ filled 배경 + spec 기본: arc(primary) 가 bg-primary 에 묻혀 안 보임 */}
+<button style={{ background: 'var(--color-primary)', color: 'var(--color-text-on-accent)' }}>
+  <Spinner size="sm" /> 저장 중…
+</button>
+
+{/* ✅ filled + currentColor override: white spinner 가시 */}
+<Button loading>저장 중…</Button>
+{/* 또는 직접 override: */}
+<Spinner
+  size="sm"
+  style={{
+    borderColor: 'color-mix(in srgb, currentColor 30%, transparent)',
+    borderTopColor: 'currentColor',
+  }}
+/>
+
+{/* ✅ outline/ghost: spec 기본 그대로 정상 */}
+<Button variant="outline" loading>저장 중…</Button>`,
+    render: () => `${KEYFRAMES}
+<div style="display:flex; flex-direction:column; gap:14px;">
+  <div style="display:flex; flex-direction:column; gap:6px;">
+    <span style="font-size:var(--text-caption); color:var(--color-text-tertiary); font-family:ui-monospace, monospace;">❌ filled bg-primary + spec 기본 (arc 안 보임)</span>
+    <button disabled style="display:inline-flex; align-items:center; justify-content:center; gap:8px; align-self:flex-start; height:40px; padding:8px 12px; font-size:var(--text-body-md); font-weight:500; line-height:1; border-radius:var(--radius-sm); background:var(--color-primary); color:var(--color-text-on-accent); border:0; opacity:0.85; cursor:not-allowed;">
+      <span style="display:inline-block; width:16px; height:16px; border:2px solid var(--color-border-default); border-top-color:var(--color-primary); border-radius:9999px; animation:sp-spin var(--motion-duration-loop, 1500ms) var(--motion-ease-linear, linear) infinite;"></span>
+      저장 중…
+    </button>
+  </div>
+  <div style="display:flex; flex-direction:column; gap:6px;">
+    <span style="font-size:var(--text-caption); color:var(--color-text-tertiary); font-family:ui-monospace, monospace;">✅ filled + currentColor override (white spinner)</span>
+    <button disabled style="display:inline-flex; align-items:center; justify-content:center; gap:8px; align-self:flex-start; height:40px; padding:8px 12px; font-size:var(--text-body-md); font-weight:500; line-height:1; border-radius:var(--radius-sm); background:var(--color-primary); color:var(--color-text-on-accent); border:0; opacity:0.85; cursor:not-allowed;">
+      <span style="display:inline-block; width:16px; height:16px; border:2px solid color-mix(in srgb, currentColor 30%, transparent); border-top-color:currentColor; border-radius:9999px; animation:sp-spin var(--motion-duration-loop, 1500ms) var(--motion-ease-linear, linear) infinite;"></span>
+      저장 중…
+    </button>
+  </div>
+  <div style="display:flex; flex-direction:column; gap:6px;">
+    <span style="font-size:var(--text-caption); color:var(--color-text-tertiary); font-family:ui-monospace, monospace;">✅ outline 흰 배경: spec 기본 그대로 (primary arc 정상)</span>
+    <button disabled style="display:inline-flex; align-items:center; justify-content:center; gap:8px; align-self:flex-start; height:40px; padding:8px 12px; font-size:var(--text-body-md); font-weight:500; line-height:1; border-radius:var(--radius-sm); background:transparent; color:var(--color-text-primary); border:1px solid var(--color-border-default); opacity:0.85; cursor:not-allowed;">
+      <span style="display:inline-block; width:16px; height:16px; border:2px solid var(--color-border-default); border-top-color:var(--color-primary); border-radius:9999px; animation:sp-spin var(--motion-duration-loop, 1500ms) var(--motion-ease-linear, linear) infinite;"></span>
+      저장 중…
+    </button>
+  </div>
+</div>`,
   },
 ];
