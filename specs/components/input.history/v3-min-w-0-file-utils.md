@@ -153,5 +153,3 @@ Input은 **variant 없음** — form 안에서 단일 시각 통일이 가독성
 - `aria-invalid` 처리는 input.tsx에 이미 정의됐으나 examples.mjs의 BASE 상수에서 누락 → 동기.
 - size variant는 도입 안 함 — input은 form 안 통일이 우선. 예외는 사용처 className으로 처리.
 - **토큰 직접 인용으로 정정**: `px-3 py-2`(Tailwind 기본 spacing 8/12) → `px-[var(--spacing-md)] py-[var(--spacing-sm)]`, `transition-[color,box-shadow,border-color]`(Tailwind 기본 ease/duration) → `transition-[color,box-shadow,border-color] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]`. `<input>` UA가 body font를 자동 inherit 안 해서 `font-sans` 추가(Pretendard 강제). preview-html `.fv-input`은 `padding: 8px 10px` 픽셀 하드코딩 버그였으나 같이 정정해 `padding: var(--spacing-sm) var(--spacing-md)` (8/12, spec 정합).
-- **v3: `min-w-0` + `file:*` 유틸 추가** — desk-front 실제 사용에서 spec 반영 (역방향 sync).
-  `min-w-0` 은 flex item 으로 Input 이 들어갈 때 contents-width 로 줄어들지 않고 부모 너비를 따라가게 함 (form 안 정렬 보호). `file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-text-primary` 는 `<input type="file">` 의 native button 톤을 spec 토큰으로 정합 (border-0 + transparent bg + text-sm + text-primary).
