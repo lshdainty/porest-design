@@ -19,7 +19,7 @@ Porest Tooltip은 **단일 spec × 4 sides(top/right/bottom/left)** 매트릭스
        caption / label-sm
 ```
 
-| ⓐ content | `z-[210] overflow-hidden rounded-xs px-[var(--spacing-md)] py-[var(--spacing-xs)] text-label-sm` + `style={{ backgroundColor: "var(--color-text-primary)", color: "var(--color-surface-default)", boxShadow: "var(--shadow-sm)" }}`. z-index 정책은 [`z-index.md`](../z-index.md) L4 modal-aware tooltip(210) — popover(L3=200) 위로 살짝 떠야 함. |
+| ⓐ content | `z-50 overflow-hidden rounded-xs px-[var(--spacing-md)] py-[var(--spacing-xs)] text-label-sm` + `style={{ backgroundColor: "var(--color-text-primary)", color: "var(--color-surface-default)", boxShadow: "var(--shadow-sm)" }}` |
 | ⓑ animation | `data-[state=open]:animate-in fade-in-0 zoom-in-95` + `data-[side=*]:slide-in-from-*-2` |
 | ⓒ side offset | 4px (Radix 기본) — trigger와 content 사이 간격 |
 

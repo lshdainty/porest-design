@@ -21,7 +21,7 @@ Porest Hover Card는 **단일 spec × 4 sides(top/right/bottom/left)** 매트릭
 └─────────────────────────────────────┘
 ```
 
-| ⓐ content | `z-[200] w-64 rounded-md border border-border-default bg-surface-default p-[var(--spacing-md)] text-text-primary` + `style={{ boxShadow: "var(--shadow-md)" }}`. z-index 정책은 [`z-index.md`](../z-index.md) L3 modal-aware floating(200) — [`Popover`](popover.md)/[`Dropdown Menu`](dropdown-menu.md)와 동일 layer. |
+| ⓐ content | `z-50 w-64 rounded-md border border-border-default bg-surface-default p-[var(--spacing-md)] text-text-primary` + `style={{ boxShadow: "var(--shadow-md)" }}` |
 | ⓑ avatar (선택) | [`Avatar`](avatar.md) md 40×40 + 필요 시 primary fill (`@mention`처럼 person identity 강조). |
 | ⓒ heading | `text-title-sm` (16/600). 이름 또는 용어. |
 | ⓓ description | `text-body-sm` (14/400) `text-secondary`. 역할/짧은 설명 1–2줄. |

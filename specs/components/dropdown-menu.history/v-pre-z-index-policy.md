@@ -60,7 +60,6 @@ Dropdown Menu 자체는 **variant 없음** — [`Context Menu`](context-menu.md)
 | Separator margin (Y) | 4px | `var(--spacing-xs)` |
 | Shortcut font | label-sm (13) | `var(--text-label-sm)` |
 | Side offset (trigger ↔ content) | 4px | (Radix 기본) |
-| Content z-index | `z-[200]` (L3 modal-aware floating) | [`z-index.md`](../z-index.md) |
 
 ## States
 
@@ -103,19 +102,6 @@ Dropdown Menu 자체는 **variant 없음** — [`Context Menu`](context-menu.md)
 | `Home` / `End` | 첫/마지막 item focus. |
 | 알파벳 키 | 해당 글자로 시작하는 item으로 jump (Radix typeahead). |
 | `Arrow Right` (SubTrigger) | 서브메뉴 열기. `Arrow Left` 닫기. |
-
-### Known issue — dropdown item → dialog 연쇄
-
-Radix DropdownMenu의 `onSelect` 콜백에서 직접 dialog/sheet/alert-dialog를 열면 `body { pointer-events: none }` 잠금 해제 순서가 꼬여 dialog 내부 클릭이 안 먹는 버그가 있다([`z-index.md`](../z-index.md) Known issues 참조). 해결:
-
-```tsx
-<DropdownMenuItem onSelect={(e) => {
-  e.preventDefault();              // 자동 close 차단
-  setTimeout(() => setOpen(true)); // 한 프레임 후 dialog open
-}}>
-```
-
-또는 dropdown 외부 trigger로 dialog 열고 dropdown은 단순 navigation만 담당.
 
 ## Context Menu vs Dropdown Menu
 

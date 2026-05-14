@@ -22,7 +22,7 @@ Porest Popover는 **단일 spec × 2 trigger styles(compact pill / outline butto
 ```
 
 | ⓐ trigger | preview `.pop-trigger` 또는 `Button outline`. 2 style 중 선택. compact pill은 `surface-input` + border + `radius-md` + caption + xs/sm padding(`spacing-xs`/`spacing-sm`); outline button은 일반 Button `variant="outline"` `size="md"`. |
-| ⓑ content | preview `.pop` 그대로 — `background:var(--color-surface-default); border:1px solid var(--color-border-default); border-radius:var(--radius-md); padding:var(--spacing-md); box-shadow:var(--shadow-md); display:flex; flex-direction:column; gap:var(--spacing-sm); z-index:200;` 기본 폭 `w-72`(288), 콘텐츠 따라 className으로 조정. z-index 정책은 [`z-index.md`](../z-index.md) L3 modal-aware floating(200) 참조. |
+| ⓑ content | preview `.pop` 그대로 — `background:var(--color-surface-default); border:1px solid var(--color-border-default); border-radius:var(--radius-md); padding:var(--spacing-md); box-shadow:var(--shadow-md); display:flex; flex-direction:column; gap:var(--spacing-sm); z-index:50;` 기본 폭 `w-72`(288), 콘텐츠 따라 className으로 조정. |
 | ⓒ actions | `display:flex; justify-content:flex-end; gap:var(--spacing-xs);` cancel/submit 같은 짧은 액션 쌍. button은 SM size 권장. |
 
 **규칙**
@@ -51,7 +51,7 @@ Popover는 **content size variant 없음** — 사용처에서 className으로 �
 | Content radius | 8px | `var(--radius-md)` |
 | Content shadow | shadow-md | `var(--shadow-md)` |
 | Content border | 1px solid | `var(--color-border-default)` |
-| Content z-index | `z-[200]` (L3 modal-aware floating) | [`z-index.md`](../z-index.md) |
+| Content z-index | 50 | (literal) |
 | Side offset (trigger ↔ content) | 4px | (Radix 기본) |
 | Default width | 288px (`w-72`) | (literal) |
 | Compact trigger padding | xs · sm | `var(--spacing-xs)` · `var(--spacing-sm)` |
