@@ -27,13 +27,13 @@ Porest Card는 **단일 spec**으로 정의됩니다. 외곽선 없이 `shadow-s
 | ⓑ header | `display:flex; flex-direction:column; gap:var(--spacing-xs); padding:var(--spacing-xl);` 헤더 영역. |
 | ⓒ title | `text-title-md` (18/600/1.4). `leading-none tracking-tight`. |
 | ⓓ description | `text-body-sm` (14/400/1.5). `var(--color-text-secondary)`. 선택. |
-| ⓔ content | 기본 `p-xl` 전 방향. CardHeader 다음(`:not(:first-child)`)일 때만 `pt-0` 으로 헤더와 자연 연결. standalone CardContent (Card 의 첫 자식, header 없음) 일 땐 모든 방향 padding 유지 (review-summary 단독 카드 톤). 자유 콘텐츠. |
-| ⓕ footer | content 와 동일 — 기본 `p-xl`, `:not(:first-child)` 일 때만 `pt-0`. 일반적으로 `justify-end` + button 그룹. |
+| ⓔ content | header와 같은 좌우 padding, top padding은 0(헤더와 자연 연결). 자유 콘텐츠. |
+| ⓕ footer | content와 같은 좌우 padding, top padding 0. 일반적으로 `justify-end` + button 그룹. |
 
 **규칙**
 
 - 카드 내부 모든 영역은 좌우 `var(--spacing-xl)`(24) padding으로 통일된 시각 그리드 유지.
-- Header/Content/Footer 사이는 padding-top 0 (`[&:not(:first-child)]:pt-0` 셀렉터로 first-child 가 아닐 때만) + 자연스러운 콘텐츠 흐름으로 분리(불필요한 줄/구분선 회피).
+- Header/Content/Footer 사이는 padding-top 0 + 자연스러운 콘텐츠 흐름으로 분리(불필요한 줄/구분선 회피).
 - Card 자체가 button/link로 동작 시 hover 표현은 `hover:shadow-md` 또는 `hover:translate-y-[-1px]` 등으로 명확히.
 
 ## Sizes
@@ -113,4 +113,3 @@ Card는 **size variant 없음** — 사용처에서 `max-width` className으로 
 - 기존 `card.tsx`는 `rounded-md`(8) + `border border-border-default` 사용했으나 preview `.review-summary`/`.review-item` SoT에 맞춰 `rounded-lg`(12) + **border 제거**(shadow-only elevation)로 정정. shadow는 그대로 `shadow-sm`.
 - `p-6 gap-1.5` (Tailwind 기본 spacing 24/6) → `p-[var(--spacing-xl)] gap-[var(--spacing-xs)]` 디자인 토큰 직접 인용.
 - **box-shadow는 Tailwind utility(`shadow-sm`) 대신 inline `style={{ boxShadow: "var(--shadow-sm)" }}` 사용** — Tailwind v4 shadow utility는 내부적으로 box-shadow를 `--tw-shadow-*` 변수로 분해 처리하기 때문에, 다크 모드 CSS 변수 override(`[data-theme="dark"] { --shadow-sm: var(--shadow-sm-dark) }`)가 우회되어 다크 모드 inset top highlight + 강화된 검정 그림자가 적용되지 않는 문제 fix. preview `.review-*` SoT(`box-shadow: var(--shadow-sm)` 직접 인용)와 다크 모드 시각 정합 보장. 다른 컴포넌트(Dialog/Drawer/Popover 등)는 각자 spec에 따라 동일 패턴 적용 검토 필요.
-- **v3: CardContent / CardFooter 의 padding 처리 정정** — 기존 spec 은 `p-xl pt-0` 으로 모든 경우 pt-0 강제했으나, standalone Card (CardHeader 없이 CardContent 만, 예: `.review-summary` 톤 단독 카드) 일 때 top padding 이 빠져 시각 깨지는 문제 발견. desk-front 실제 사용 패턴 → spec 반영 (역방향 sync). 새 정의: base 는 `p-xl` 전 방향, `[&:not(:first-child)]:pt-0` 셀렉터로 CardHeader / CardContent 다음에 올 때만 pt-0 적용. first-child (standalone) 일 땐 모든 방향 padding 유지.
