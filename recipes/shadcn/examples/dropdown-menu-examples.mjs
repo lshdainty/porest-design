@@ -8,7 +8,7 @@
  */
 
 const CONTENT_CLASS =
-  "z-50 inline-flex flex-col overflow-hidden rounded-md border border-border-default bg-surface-default p-[var(--spacing-xs)] text-text-primary";
+  "z-[200] inline-flex flex-col overflow-hidden rounded-md border border-border-default bg-surface-default p-[var(--spacing-xs)] text-text-primary";
 const CONTENT_SHADOW = "box-shadow:var(--shadow-md);";
 
 const ITEM =

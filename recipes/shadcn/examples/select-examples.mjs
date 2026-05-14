@@ -3,11 +3,13 @@
  */
 
 // select.tsx의 SelectTrigger className과 1:1 동기 — preview-html `.form-select` SoT.
+// placeholder 시각: Radix SelectValue는 빈 값일 때 trigger에 `data-placeholder` attr를 노출 —
+// `data-[placeholder]:text-text-tertiary`로 native placeholder와 동일 톤 강제.
 const TRIGGER =
-  "flex h-10 items-center justify-between rounded-sm border border-border-default bg-surface-input px-[var(--spacing-md)] py-[var(--spacing-sm)] font-sans text-body-md text-text-primary transition-[color,background-color,border-color,box-shadow] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]";
+  "flex h-10 items-center justify-between rounded-sm border border-border-default bg-surface-input px-[var(--spacing-md)] py-[var(--spacing-sm)] font-sans text-body-md text-text-primary placeholder:text-text-tertiary data-[placeholder]:text-text-tertiary transition-[color,background-color,border-color,box-shadow] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]";
 
 const CONTENT =
-  "z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-sm border border-border-default bg-surface-default shadow-md p-1";
+  "z-[200] max-h-96 min-w-[8rem] overflow-hidden rounded-sm border border-border-default bg-surface-default shadow-md p-1";
 
 const ITEM_BASE =
   "relative flex w-full items-center rounded-xs py-[var(--spacing-xs)] pl-8 pr-[var(--spacing-sm)] text-body-md text-text-primary";

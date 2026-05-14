@@ -8,7 +8,7 @@
  */
 
 const TIP_CLASS =
-  "z-50 overflow-hidden rounded-xs px-[var(--spacing-md)] py-[var(--spacing-xs)] text-label-sm";
+  "z-[210] overflow-hidden rounded-xs px-[var(--spacing-md)] py-[var(--spacing-xs)] text-label-sm";
 
 const TIP_STYLE =
   "background-color:var(--color-text-primary); color:var(--color-surface-default); box-shadow:var(--shadow-sm);";

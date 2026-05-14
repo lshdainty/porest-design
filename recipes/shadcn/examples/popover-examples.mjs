@@ -11,7 +11,7 @@
 // shadow는 Tailwind utility(`shadow-md`) 대신 inline style로 var(--shadow-md)
 // 직접 인용 — 다크 모드 CSS 변수 override 정합(POPOVER_SHADOW 상수).
 const POPOVER =
-  "z-50 w-72 flex flex-col gap-[var(--spacing-sm)] rounded-md border border-border-default bg-surface-default p-[var(--spacing-md)] text-text-primary";
+  "z-[200] w-72 flex flex-col gap-[var(--spacing-sm)] rounded-md border border-border-default bg-surface-default p-[var(--spacing-md)] text-text-primary";
 const POPOVER_SHADOW = "box-shadow:var(--shadow-md);";
 
 // preview `.pop-trigger` — compact pill trigger (caption font + surface-input fill)

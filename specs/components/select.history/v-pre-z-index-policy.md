@@ -25,9 +25,9 @@ Porest Select는 **단일 trigger spec × 5 item kinds(default/with-indicator/gr
 └──────────────────────────────────┘
 ```
 
-| ⓐ trigger | preview `.form-select` 그대로 — `flex h-10 w-full items-center justify-between rounded-sm border border-border-default bg-surface-input px-[var(--spacing-md)] py-[var(--spacing-sm)] font-sans text-body-md text-text-primary placeholder:text-text-tertiary data-[placeholder]:text-text-tertiary` + focus-visible ring + transition motion 토큰. Radix SelectValue는 빈 값일 때 trigger에 `data-placeholder` attr를 노출 — `placeholder:` pseudo만으로는 안 잡히므로 `data-[placeholder]:` 동시 명시 필수. |
+| ⓐ trigger | preview `.form-select` 그대로 — `flex h-10 w-full items-center justify-between rounded-sm border border-border-default bg-surface-input px-[var(--spacing-md)] py-[var(--spacing-sm)] font-sans text-body-md text-text-primary` + focus-visible ring + transition motion 토큰. |
 | ⓒ chevron | `ChevronDown` 4×4 (16px) + `text-text-tertiary`. open 시 회전 없음(Radix 기본). |
-| ⓓ content | `relative z-[200] max-h-96 min-w-[8rem] rounded-sm border border-border-default bg-surface-default shadow-md` + animate-in/out. width는 `min-w-[var(--radix-select-trigger-width)]`로 trigger 폭 일치. z-index 정책은 [`z-index.md`](../z-index.md) L3 modal-aware floating(200) — page/modal 안 어디서든 동일 값. |
+| ⓓ content | `relative z-50 max-h-96 min-w-[8rem] rounded-sm border border-border-default bg-surface-default shadow-md` + animate-in/out. width는 `min-w-[var(--radix-select-trigger-width)]`로 trigger 폭 일치. |
 | ⓔ label (그룹) | `py-[var(--spacing-xs)] pl-8 pr-[var(--spacing-sm)] text-label-sm font-medium text-text-secondary` — 그룹 헤더. |
 | ⓕ item | `flex items-center rounded-xs py-[var(--spacing-xs)] pl-8 pr-[var(--spacing-sm)] text-body-md outline-none focus:bg-surface-input` + 선택 시 좌측 indicator(✓ Check 4×4). |
 | ⓖ separator | `my-[var(--spacing-xs)] h-px bg-border-default` — 그룹 분리. |

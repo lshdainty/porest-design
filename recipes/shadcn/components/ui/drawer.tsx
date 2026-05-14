@@ -37,7 +37,7 @@ const DrawerOverlay = React.forwardRef<
   <DrawerPrimitive.Overlay
     ref={ref}
     className={cn(
-      "fixed inset-0 z-50 bg-[var(--overlay-dim-light)] dark:bg-[var(--overlay-dim-dark)]",
+      "fixed inset-0 z-[100] bg-[var(--overlay-dim-light)] dark:bg-[var(--overlay-dim-dark)]",
       className,
     )}
     {...props}
@@ -54,7 +54,7 @@ const DrawerContent = React.forwardRef<
     <DrawerPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[var(--radius-xl)] bg-surface-default p-[var(--spacing-lg)] gap-[var(--spacing-md)]",
+        "fixed inset-x-0 bottom-0 z-[101] mt-24 flex h-auto flex-col rounded-t-[var(--radius-xl)] bg-surface-default p-[var(--spacing-lg)] gap-[var(--spacing-md)]",
         className,
       )}
       style={{ boxShadow: "var(--shadow-xl)", ...style }}

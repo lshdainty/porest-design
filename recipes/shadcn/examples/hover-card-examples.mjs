@@ -8,7 +8,7 @@
  */
 
 const HC =
-  "z-50 w-64 rounded-md border border-border-default bg-surface-default p-[var(--spacing-md)] text-text-primary";
+  "z-[200] w-64 rounded-md border border-border-default bg-surface-default p-[var(--spacing-md)] text-text-primary";
 const HC_SHADOW = "box-shadow:var(--shadow-md);";
 
 const LINK = "color:var(--color-primary); text-decoration:underline; text-underline-offset:4px; cursor:pointer; font-family:var(--font-sans);";

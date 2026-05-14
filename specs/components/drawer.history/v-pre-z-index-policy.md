@@ -58,8 +58,6 @@ Bottom sheet (모바일 표준)
 | Handle margin | `-4px auto var(--spacing-sm)` | — | `var(--spacing-sm)` |
 | Shadow | xl | xl | `var(--shadow-xl)` |
 | Border | none | none | (없음) |
-| z-index (overlay) | `z-[100]` | `z-[100]` | [`z-index.md`](../z-index.md) L2 modal overlay |
-| z-index (content) | `z-[101]` | `z-[101]` | [`z-index.md`](../z-index.md) L2 modal content |
 
 ## States
 

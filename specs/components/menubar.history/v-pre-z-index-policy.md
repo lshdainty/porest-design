@@ -24,7 +24,7 @@ bar (h-10):
 
 | ⓐ Bar root | `<div>` (Radix `Menubar.Root`) — `flex h-10 items-center space-x-[var(--spacing-xs)] rounded-sm border border-border-default bg-surface-default p-[var(--spacing-xs)]`. 가로 strip + 좌우 trigger 정렬. |
 | ⓑ MenubarTrigger | `<button>` (Radix `Menubar.Trigger`) — `flex cursor-default select-none items-center rounded-xs px-[var(--spacing-md)] py-[var(--spacing-sm)] text-title-sm font-medium text-text-primary outline-none transition-colors duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)] focus:bg-surface-input focus:text-text-primary data-[state=open]:bg-surface-input data-[state=open]:text-text-primary`. |
-| ⓒ MenubarContent | Radix Portal + Content — `z-[200] min-w-[12rem] overflow-hidden rounded-md border border-border-default bg-surface-default p-[var(--spacing-xs)] text-text-primary shadow-md` + animation. [`Dropdown Menu`](dropdown-menu.md) spec 정합. z-index는 [`z-index.md`](../z-index.md) L3 modal-aware floating(200). |
+| ⓒ MenubarContent | Radix Portal + Content — `z-50 min-w-[12rem] overflow-hidden rounded-md border border-border-default bg-surface-default p-[var(--spacing-xs)] text-text-primary shadow-md` + animation. [`Dropdown Menu`](dropdown-menu.md) spec 정합. |
 | ⓓ MenubarSubContent | 동일 시각 — sub menu open 시 우측 슬라이드. |
 | ⓔ MenubarItem | `flex cursor-default select-none items-center rounded-sm px-[var(--spacing-md)] py-[var(--spacing-sm)] text-body-md text-text-primary outline-none transition-colors duration-[var(--motion-duration-fast)] focus:bg-surface-input focus:text-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50` — dropdown-menu item 정합. |
 | ⓕ MenubarCheckboxItem | `pl-[var(--spacing-2xl)] pr-[var(--spacing-md)]` + 좌측 `Check` 16 indicator. |
