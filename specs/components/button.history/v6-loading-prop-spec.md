@@ -109,16 +109,13 @@ Tailwind utility 매핑 (button.tsx cva):
 | `ghost` | `bg-surface-input` | `bg-border-default` + scale(0.98) |
 | `link` | `underline` | brightness 90 |
 
-### Loading state
+### Loading state (선택)
 
-긴 비동기 작업이 일어나는 버튼은 `loading` prop 으로 처리. Button 컴포넌트가 자체 prop 으로 명세 (recipe button.tsx 에 구현). 동작:
+긴 비동기 작업이 일어나는 버튼은 별도 `loading` 표현이 필요합니다. shadcn 표준엔 없지만 권장 패턴:
 
-- `loading={true}` → 좌측에 [`Spinner`](spinner.md) `size="sm"` 노출
-- `disabled` 자동 적용 (loading 중 중복 클릭 방지)
-- `aria-busy="true"` 자동 적용
-- Spinner border 가 `currentColor` 상속하도록 inline style (`borderColor: color-mix(in srgb, currentColor 30%, transparent), borderTopColor: currentColor`) — default/destructive(filled bg)에선 white spinner, outline/ghost/secondary(transparent/회색 bg)에선 primary spinner 자동 적응
-- label 텍스트는 그대로 두거나 "저장 중…" 같이 진행형으로 교체 (호출처 결정)
-- `asChild` 와 함께 사용 금지 — Slot 은 단일 child 만 받는데 loading 시 Spinner + children 2개 노출되어 오류
+- `disabled={true}` + leading icon을 spinner(`animation: spin var(--motion-duration-loop)`)로 교체
+- `aria-busy="true"`
+- label을 "저장 중…" 같이 진행형으로 교체 (또는 그대로 유지 + spinner만 추가)
 
 ## Layout
 
@@ -191,4 +188,3 @@ Tailwind utility 매핑 (button.tsx cva):
 
 - 옛 prose-token `button-primary` / `button-outline-on-dark` (DESIGN.md v55, v93에서 `outlined` → `outline` 명명 통일)은 이 spec의 `default` / `outline` variant로 1:1 매핑.
 - 옛 height (`h-9` / `h-11`)는 v83 Toss 매핑에서 `h-8` / `h-12`로 정정 (4px 그리드 정합).
-- **v6: `loading` prop 정식 spec 도입** — desk-front 실제 사용 패턴 → porest-design spec 반영 (역방향 sync). 기존 spec 의 "Loading state (선택)" 권장 패턴 prose 만 있었고 prop / 구현 명세는 없었음. 이제 ButtonProps 에 `loading?: boolean` 정식 추가 + Spinner currentColor 상속 패턴(border `color-mix(currentColor 30%)` + border-top `currentColor`) 으로 variant 자동 적응. recipe button.tsx 에 구현 동기.

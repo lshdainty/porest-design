@@ -211,20 +211,17 @@ export const buttonExamples = [
 
   {
     title: "Loading state",
-    description: "disabled prop + 로딩 spinner — 비동기 작업 중 표시. opacity-50 + pointer-events-none 자동 적용.",
-    jsx: `import { Loader2 } from "lucide-react"
-
-<div className="flex gap-3">
-  <Button disabled>
-    <Loader2 className="animate-spin" />
-    저장 중...
-  </Button>
-  <Button variant="outline" disabled>취소</Button>
+    description: "loading prop — 비동기 작업 중 좌측 Spinner(size=sm) 노출 + disabled + aria-busy 자동 적용. Spinner border 가 currentColor 상속해 filled bg(default/destructive)에선 white, transparent bg(outline/ghost)에선 primary 자동.",
+    jsx: `<div className="flex gap-3">
+  <Button loading>저장 중...</Button>
+  <Button variant="destructive" loading>삭제 중...</Button>
+  <Button variant="outline" loading>불러오는 중...</Button>
 </div>`,
     render: () => `<style>@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }</style>
 <div style="display:flex; gap:var(--spacing-md);">
   ${btn({ disabled: true, children: ICONS.loader + "저장 중..." })}
-  ${btn({ variant: "outline", disabled: true, children: "취소" })}
+  ${btn({ variant: "destructive", disabled: true, children: ICONS.loader + "삭제 중..." })}
+  ${btn({ variant: "outline", disabled: true, children: ICONS.loader + "불러오는 중..." })}
 </div>`,
   },
 

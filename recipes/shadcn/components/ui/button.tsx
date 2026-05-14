@@ -3,6 +3,7 @@ import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
+import { Spinner } from "@/components/ui/spinner";
 
 /*
  * Porest Button (shadcn 베이스 + Porest 디자인 토큰)
@@ -26,6 +27,12 @@ import { cn } from "@/lib/utils";
  *   md    h-10 px-4 / text-title-sm  — default
  *   lg    h-12 px-6 / text-title-md  — hero CTA, primary form action
  *   icon  h-10 w-10                   — icon-only
+ *
+ * Loading
+ *   loading prop — 비동기 액션 중에 좌측에 Spinner(size=sm) 노출 + disabled + aria-busy.
+ *   Spinner border 가 currentColor 상속하도록 inline style 강제 → default/destructive
+ *   (filled bg) 에선 white, outline/ghost/secondary (transparent/회색 bg) 에선 primary 자동.
+ *   asChild 와는 함께 쓰지 말 것 (Slot 단일 child 제약).
  */
 
 // gap·transition·font-family는 preview-html `.btn` SoT 그대로 — 디자인 토큰 직접 인용.
@@ -70,17 +77,57 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
+  /** true면 좌측에 Spinner 노출 + disabled + aria-busy. asChild와 함께 쓰지 말 것 (Slot 단일 child). */
+  loading?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button";
+  (
+    {
+      className,
+      variant,
+      size,
+      asChild = false,
+      loading = false,
+      disabled,
+      children,
+      ...props
+    },
+    ref,
+  ) => {
+    if (asChild) {
+      return (
+        <Slot
+          ref={ref}
+          className={cn(buttonVariants({ variant, size, className }))}
+          {...props}
+        >
+          {children}
+        </Slot>
+      );
+    }
     return (
-      <Comp
+      <button
         ref={ref}
         className={cn(buttonVariants({ variant, size, className }))}
+        disabled={disabled || loading}
+        aria-busy={loading || undefined}
         {...props}
-      />
+      >
+        {loading && (
+          <Spinner
+            size="sm"
+            aria-hidden
+            // 버튼 내부 spinner는 버튼 텍스트 색(currentColor) 상속해 모든 variant 일관 시각.
+            // default/destructive(filled bg-primary/bg-error)에선 white, outline/ghost(흰 bg)에선 primary spinner.
+            style={{
+              borderColor: "color-mix(in srgb, currentColor 30%, transparent)",
+              borderTopColor: "currentColor",
+            }}
+          />
+        )}
+        {children}
+      </button>
     );
   },
 );
