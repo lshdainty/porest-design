@@ -16,6 +16,10 @@ import { cn } from "@/lib/utils";
  * 직접 인용 — Tailwind v4 utility는 내부적으로 box-shadow를 분해(--tw-shadow-*)
  * 처리해 다크 모드 CSS 변수 override(`--shadow-sm: var(--shadow-sm-dark)`)가
  * 우회되는 문제 fix. preview `.review-*` SoT와 다크 모드 시각 정합 보장.
+ *
+ * CardContent / CardFooter 의 padding 처리: base 는 `p-xl`, 단 `[&:not(:first-child)]:pt-0`
+ * 셀렉터로 CardHeader 다음에 올 때만 pt-0 (자연 연결). standalone CardContent (Card 의
+ * 첫 자식) 일 때는 모든 방향 padding 유지 (review-summary 톤 같은 단독 카드 패턴).
  */
 
 const Card = React.forwardRef<
@@ -80,9 +84,10 @@ const CardContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
+  // first-child일 땐 full p-xl(standalone 카드), CardHeader 다음일 땐 pt-0(헤더 자연 연결).
   <div
     ref={ref}
-    className={cn("p-[var(--spacing-xl)] pt-0", className)}
+    className={cn("p-[var(--spacing-xl)] [&:not(:first-child)]:pt-0", className)}
     {...props}
   />
 ));
@@ -92,10 +97,11 @@ const CardFooter = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
+  // first-child일 땐 full p-xl, content/header 다음일 땐 pt-0(자연 연결).
   <div
     ref={ref}
     className={cn(
-      "flex items-center p-[var(--spacing-xl)] pt-0",
+      "flex items-center p-[var(--spacing-xl)] [&:not(:first-child)]:pt-0",
       className,
     )}
     {...props}

@@ -12,8 +12,9 @@ const CARD_SHADOW = "box-shadow:var(--shadow-sm);";
 const HEADER = "flex flex-col gap-[var(--spacing-xs)] p-[var(--spacing-xl)]";
 const TITLE = "text-title-md leading-none tracking-tight text-text-primary";
 const DESC = "text-body-sm text-text-secondary";
-const CONTENT = "p-[var(--spacing-xl)] pt-0";
-const FOOTER = "flex items-center p-[var(--spacing-xl)] pt-0";
+// first-child(standalone Card)일 땐 full p-xl, CardHeader 다음일 땐 pt-0 으로 자연 연결.
+const CONTENT = "p-[var(--spacing-xl)] [&:not(:first-child)]:pt-0";
+const FOOTER = "flex items-center p-[var(--spacing-xl)] [&:not(:first-child)]:pt-0";
 
 // 최신 Button BASE와 일관 (font-sans + token padding + motion transition).
 const BTN_PRIMARY =
