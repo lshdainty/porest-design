@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
  */
 
 const spinnerVariants = cva(
-  "inline-block rounded-full border-surface-input border-t-primary motion-safe:animate-[spin_var(--motion-duration-loop)_var(--motion-ease-linear)_infinite]",
+  "inline-block rounded-full border-border-default border-t-primary motion-safe:animate-[spin_var(--motion-duration-loop)_var(--motion-ease-linear)_infinite]",
   {
     variants: {
       size: {

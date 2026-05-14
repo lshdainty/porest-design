@@ -2,7 +2,8 @@
  * Spinner 예제 — spinner.tsx의 cva 정의와 1:1 동기.
  * spec: specs/components/spinner.md (단일 SoT)
  *
- * 시각: border-top-color만 primary, 나머지는 surface-input → 회전 시 270deg arc
+ * 시각: border-top-color만 primary, 나머지는 border-default → 회전 시 270deg arc
+ * track border-default 사용으로 page bg 위 ring outline visible (1.4:1+ 대비)
  * animation: motion-duration-loop (1500ms) linear infinite
  */
 
@@ -12,7 +13,7 @@ const SIZE_STROKE = { sm: 2, md: 2, lg: 3, xl: 4 };
 function spinner({ size = "md" } = {}) {
   const d = SIZE_DIAMETER[size];
   const s = SIZE_STROKE[size];
-  return `<span role="status" aria-live="polite" style="display:inline-block; width:${d}px; height:${d}px; border:${s}px solid var(--color-surface-input); border-top-color:var(--color-primary); border-radius:9999px; animation:sp-spin var(--motion-duration-loop, 1500ms) var(--motion-ease-linear, linear) infinite;">
+  return `<span role="status" aria-live="polite" style="display:inline-block; width:${d}px; height:${d}px; border:${s}px solid var(--color-border-default); border-top-color:var(--color-primary); border-radius:9999px; animation:sp-spin var(--motion-duration-loop, 1500ms) var(--motion-ease-linear, linear) infinite;">
   <span style="position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;">로딩 중</span>
 </span>`;
 }

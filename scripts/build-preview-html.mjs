@@ -3184,7 +3184,7 @@ export function pageCss() {
     }
     .sp-spinner {
       width: 24px; height: 24px;
-      border: 2px solid var(--color-surface-input);
+      border: 2px solid var(--color-border-default);
       border-top-color: var(--color-primary, var(--color-text-primary));
       border-radius: var(--radius-full);
       animation: sp-spin var(--motion-duration-loop, 1500ms) var(--motion-ease-linear, linear) infinite;
@@ -3651,7 +3651,7 @@ export function pageCss() {
     [data-theme="dark"] .stp-connector { background: var(--color-border-default-dark); }
     [data-theme="dark"] .pg-btn:hover,
     [data-theme="dark"] .pg-arrow:hover { background: var(--color-surface-input-dark); }
-    [data-theme="dark"] .sp-spinner { border-color: var(--color-surface-input-dark); border-top-color: var(--color-primary-light, var(--color-text-primary-dark)); }
+    [data-theme="dark"] .sp-spinner { border-color: var(--color-border-default-dark); border-top-color: var(--color-primary-light, var(--color-text-primary-dark)); }
     [data-theme="dark"] .sp-progress-fill { background: var(--color-primary-light, var(--color-text-primary-dark)); }
     [data-theme="dark"] .sp-progress-sweep { background: linear-gradient(90deg, transparent, var(--color-primary-light, var(--color-text-primary-dark)), transparent); }
     [data-theme="dark"] .stp-item--current .stp-circle {
