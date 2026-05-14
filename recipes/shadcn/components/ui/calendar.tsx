@@ -126,8 +126,9 @@ function Calendar({
           "relative w-full h-full p-0 text-center [&:first-child[data-selected=true]_button]:rounded-l-full [&:last-child[data-selected=true]_button]:rounded-r-full group/day aspect-square select-none",
           defaultClassNames.day,
         ),
+        // range_start/end: 좌/우 절반만 middle 톤 그라데이션 — 셀 안 중앙 button 의 원형 primary fill 옆 자연 연결.
         range_start: cn(
-          "rounded-l-full bg-[color-mix(in_srgb,var(--color-primary)_12%,transparent)]",
+          "rounded-none bg-[linear-gradient(to_right,transparent_50%,color-mix(in_srgb,var(--color-primary)_12%,transparent)_50%)]",
           defaultClassNames.range_start,
         ),
         range_middle: cn(
@@ -135,7 +136,7 @@ function Calendar({
           defaultClassNames.range_middle,
         ),
         range_end: cn(
-          "rounded-r-full bg-[color-mix(in_srgb,var(--color-primary)_12%,transparent)]",
+          "rounded-none bg-[linear-gradient(to_left,transparent_50%,color-mix(in_srgb,var(--color-primary)_12%,transparent)_50%)]",
           defaultClassNames.range_end,
         ),
         today: cn(
@@ -226,20 +227,20 @@ function CalendarDayButton({
       data-range-end={modifiers.range_end}
       data-range-middle={modifiers.range_middle}
       className={cn(
-        // single selection: bg-primary fill (preview .cal-cell--selected SoT)
-        "data-[selected-single=true]:bg-primary data-[selected-single=true]:text-text-on-accent data-[selected-single=true]:rounded-full",
-        // range start/end: bg-primary fill (원형)
-        "data-[range-start=true]:bg-primary data-[range-start=true]:text-text-on-accent data-[range-start=true]:rounded-full",
-        "data-[range-end=true]:bg-primary data-[range-end=true]:text-text-on-accent data-[range-end=true]:rounded-full",
-        // range middle: primary 12% mix bg
-        "data-[range-middle=true]:bg-[color-mix(in_srgb,var(--color-primary)_12%,transparent)] data-[range-middle=true]:text-text-primary data-[range-middle=true]:rounded-none",
-        // focus ring
-        "group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-ring/50",
-        // base shape: rounded-full (preview .cal-cell SoT)
+        // base shape: rounded-full (preview .cal-cell SoT) — 일반 day cell 의 hover/default 모양
         "flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 leading-none font-normal rounded-full text-body-md text-text-primary",
         "transition-colors duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]",
+        "group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-ring/50",
         "group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:ring-[3px]",
         "[&>span]:text-xs [&>span]:opacity-70",
+        // data variants 는 base 보다 후순 — Tailwind cascade 에서 늦게 박힌 게 우선되어 base rounded-full 을 정확히 override.
+        // single selection: bg-primary fill (preview .cal-cell--selected SoT)
+        "data-[selected-single=true]:bg-primary data-[selected-single=true]:text-text-on-accent data-[selected-single=true]:rounded-full",
+        // range start/end: 셀 가운데 강한 primary 원 (셀 bg 는 td level 에서 좌/우 절반 그라데이션)
+        "data-[range-start=true]:bg-primary data-[range-start=true]:text-text-on-accent data-[range-start=true]:rounded-full",
+        "data-[range-end=true]:bg-primary data-[range-end=true]:text-text-on-accent data-[range-end=true]:rounded-full",
+        // range middle: button 은 transparent + 사각형. 시각은 td level 의 cell bg(color-mix primary 12%) 가 담당.
+        "data-[range-middle=true]:bg-transparent data-[range-middle=true]:text-text-primary data-[range-middle=true]:rounded-none",
         defaultClassNames.day,
         className,
       )}
