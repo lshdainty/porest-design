@@ -34,6 +34,7 @@ type RadioListItemProps = React.ComponentPropsWithoutRef<
 > & {
   size?: "sm" | "md" | "lg";
   pill?: React.ReactNode;
+  pillClassName?: string;
   label: React.ReactNode;
   subLabel?: React.ReactNode;
 };
@@ -47,7 +48,7 @@ const SIZE_STYLES = {
 const RadioListItem = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Item>,
   RadioListItemProps
->(({ className, size = "md", pill, label, subLabel, ...props }, ref) => {
+>(({ className, size = "md", pill, pillClassName, label, subLabel, ...props }, ref) => {
   const s = SIZE_STYLES[size];
   return (
     <RadioGroupPrimitive.Item
@@ -70,6 +71,7 @@ const RadioListItem = React.forwardRef<
             "rounded-[var(--radius-md)] bg-bg-page",
             "text-body-lg font-bold text-text-primary",
             s.pill,
+            pillClassName,
           )}
         >
           {pill}
