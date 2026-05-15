@@ -100,7 +100,7 @@ const SearchableList = React.forwardRef<HTMLDivElement, SearchableListProps>(
 );
 SearchableList.displayName = "SearchableList";
 
-type SearchableListItemProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+type SearchableListItemProps = Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "title"> & {
   active?: boolean;
   thumbnail?: React.ReactNode;
   title: React.ReactNode;
