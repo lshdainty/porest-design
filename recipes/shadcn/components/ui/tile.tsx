@@ -44,6 +44,7 @@ type TileItemProps = React.ComponentPropsWithoutRef<
 > & {
   size?: "sm" | "md" | "lg";
   swatch?: React.ReactNode;
+  swatchClassName?: string;
   label: React.ReactNode;
   description?: React.ReactNode;
 };
@@ -74,7 +75,7 @@ const TileItem = React.forwardRef<
   TileItemProps
 >(
   (
-    { className, size = "md", swatch, label, description, ...props },
+    { className, size = "md", swatch, swatchClassName, label, description, ...props },
     ref,
   ) => {
     const s = SIZE_STYLES[size];
@@ -99,9 +100,10 @@ const TileItem = React.forwardRef<
         {swatch ? (
           <span
             className={cn(
-              "inline-flex items-center justify-center flex-shrink-0",
+              "inline-flex items-center justify-center flex-shrink-0 overflow-hidden",
               "rounded-[var(--radius-tile)] border border-border-subtle",
               s.swatch,
+              swatchClassName,
             )}
           >
             {swatch}
