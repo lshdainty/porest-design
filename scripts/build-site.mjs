@@ -74,6 +74,12 @@ import { calendarExamples } from "../recipes/shadcn/examples/calendar-examples.m
 import { chartExamples } from "../recipes/shadcn/examples/chart-examples.mjs";
 // Display extras (shadcn 외 — Porest 자체 정의)
 import { spinnerExamples } from "../recipes/shadcn/examples/spinner-examples.mjs";
+// Porest 도메인 spec (shadcn 외) — 2026-05-15 추가
+import { colorSwatchExamples } from "../recipes/shadcn/examples/color-swatch-examples.mjs";
+import { iconPickerExamples } from "../recipes/shadcn/examples/icon-picker-examples.mjs";
+import { tileExamples } from "../recipes/shadcn/examples/tile-examples.mjs";
+import { radioListExamples } from "../recipes/shadcn/examples/radio-list-examples.mjs";
+import { searchableListExamples } from "../recipes/shadcn/examples/searchable-list-examples.mjs";
 
 import {
   brandProfile,
@@ -157,6 +163,12 @@ const SHADCN_EXAMPLES = {
   chart: chartExamples,
   // Display extras
   spinner: spinnerExamples,
+  // Porest 도메인 spec (shadcn 카탈로그 외) — 2026-05-15
+  "color-swatch": colorSwatchExamples,
+  "icon-picker": iconPickerExamples,
+  tile: tileExamples,
+  "radio-list": radioListExamples,
+  "searchable-list": searchableListExamples,
 };
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -1971,13 +1983,20 @@ const SHADCN_CATALOG = [
   { slug: "chart", name: "Chart", category: "Data", description: "데이터 시각화 — Recharts 베이스." },
   { slug: "data-table", name: "Data Table", category: "Data", description: "정렬·필터·페이징 테이블 — TanStack Table 베이스." },
   { slug: "table", name: "Table", category: "Data", description: "기본 HTML 테이블 스타일." },
+
+  // Porest 도메인 spec (5) — shadcn 카탈로그 외, desk-front SoT 역방향 정합
+  { slug: "color-swatch", name: "Color Swatch", category: "Domain", description: "카테고리·라벨·태그 색 single-select 정사각형 grid (Porest 도메인 spec)." },
+  { slug: "icon-picker", name: "Icon Picker", category: "Domain", description: "Lucide 2000+ 아이콘 popover + 8-col grid 단일 선택 (Porest 도메인 spec)." },
+  { slug: "tile", name: "Tile", category: "Domain", description: "swatch + label + desc 의 큰 카드 single-select — 테마·표시 단위 (Porest 도메인 spec)." },
+  { slug: "radio-list", name: "Radio List", category: "Domain", description: "full-width row stack + divide-y single-select — 통화·언어·국가 (Porest 도메인 spec)." },
+  { slug: "searchable-list", name: "Searchable List", category: "Domain", description: "search input + 카드 list — 카드·은행·증권사 카탈로그 (Porest 도메인 spec)." },
 ];
 
 const COMPONENT_CATEGORIES = Object.fromEntries(
   SHADCN_CATALOG.map((c, i) => [c.slug, { category: c.category, sort: i }])
 );
 
-const CATEGORY_ORDER = ["Form", "Display", "Overlay", "Navigation", "Disclosure", "Data"];
+const CATEGORY_ORDER = ["Form", "Display", "Overlay", "Navigation", "Disclosure", "Data", "Domain"];
 
 // 컴포넌트 slug → preview.html render 함수 매핑
 // 각 함수는 brand 객체 받아 <section> HTML 반환 (custom CSS 사용 — pageCss로 스타일링)
