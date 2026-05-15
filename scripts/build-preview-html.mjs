@@ -2087,6 +2087,174 @@ export function renderBatchV73V78(brand) {
   </section>`;
 }
 
+export function renderBatchSpecs5(brand) {
+  // 5 신규 spec (2026-05-15) — color-swatch / icon-picker / tile / radio-list / searchable-list
+  // 도메인 시나리오: 카테고리 색/아이콘, 테마, 기본 통화, 카드 카탈로그.
+  const isHr = brand.key === "hr";
+  const isDesk = brand.key === "desk";
+
+  // ColorSwatch palette (10색)
+  const palette = [
+    { v: "rose", bg: "#FFE7EB", fg: "#C53052" },
+    { v: "coral", bg: "#FFE2D5", fg: "#C04E20" },
+    { v: "amber", bg: "#FFF1C7", fg: "#9F6907" },
+    { v: "lime", bg: "#E2F5C7", fg: "#4E7A14" },
+    { v: "forest", bg: "#D4EBD9", fg: "#1E7D4C" },
+    { v: "teal", bg: "#CFEFEC", fg: "#107069" },
+    { v: "sky", bg: "#D6E9FB", fg: "#1E68B3" },
+    { v: "indigo", bg: "#DDDCFB", fg: "#3A36AD" },
+    { v: "violet", bg: "#EAD9FA", fg: "#7237AF" },
+    { v: "slate", bg: "#E5E8EE", fg: "#3F4960" },
+  ];
+  const CHECK14 = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  const CHECK16 = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  const activeColorIdx = isHr ? 4 : isDesk ? 6 : 4; // HR=forest, Desk=sky, base=forest
+  const swatchCells = palette.map((c, i) =>
+    `<button type="button" class="csw-cell${i === activeColorIdx ? " csw-cell--active" : ""}" style="background:${c.bg}; color:${c.fg};" aria-label="${c.v}" aria-checked="${i === activeColorIdx}">${i === activeColorIdx ? CHECK14 : ""}</button>`
+  ).join("");
+
+  // IconPicker — 도메인별 활성 아이콘 인덱스
+  const SEARCH_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
+  const STAR = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
+  const HEART = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+  const COFFEE = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 0 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>';
+  const HOME = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>';
+  const BOOK = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>';
+  const CAR = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.63A6 6 0 0 0 2 12.42V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg>';
+  const GIFT = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>';
+  const MUSIC = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>';
+  const CAMERA = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>';
+  const SETTING = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>';
+
+  const iconSet = [STAR, HEART, COFFEE, HOME, BOOK, CAR, GIFT, MUSIC, CAMERA, SETTING, STAR, HEART, COFFEE, HOME, BOOK, CAR, GIFT, MUSIC, CAMERA, SETTING, STAR, HEART, COFFEE, HOME];
+  const activeIconIdx = isHr ? 7 : isDesk ? 2 : 0; // HR=music(이벤트), Desk=coffee, base=star
+  const iconCells = iconSet.map((svg, i) =>
+    `<button type="button" class="ipk-cell${i === activeIconIdx ? " ipk-cell--active" : ""}" aria-label="icon-${i}" aria-pressed="${i === activeIconIdx}">${svg}</button>`
+  ).join("");
+
+  // Tile (테마)
+  const SUN = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+  const MOON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+  const MONITOR = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>';
+
+  const themeActive = isDesk ? "dark" : "light"; // Desk=다크, HR/base=라이트
+  function tile(k, swatchBg, swatchColor, icon, label, desc) {
+    const active = k === themeActive;
+    return `<button type="button" role="radio" aria-checked="${active}" class="tile${active ? " tile--active" : ""}">
+      <span class="tile-swatch" style="background:${swatchBg}; color:${swatchColor};">${icon}</span>
+      <span class="tile-body"><span class="tile-label">${label}</span><span class="tile-desc">${desc}</span></span>
+      ${active ? `<span class="tile-check">${CHECK16}</span>` : ""}
+    </button>`;
+  }
+  const tileGrid = `${tile("light", "#ffffff", "var(--color-text-primary)", SUN, "라이트", "밝은 배경")}
+    ${tile("dark", "oklch(0.205 0.022 110)", "#fff", MOON, "다크", "어두운 배경")}
+    ${tile("system", "linear-gradient(135deg, #fff 50%, oklch(0.205 0.022 110) 50%)", "var(--color-text-primary)", MONITOR, "시스템", "OS 설정 따라가기")}`;
+
+  // RadioList (통화)
+  const currencyActive = isDesk ? "USD" : "KRW";
+  const currencies = [
+    { k: "KRW", pill: "₩", label: "대한민국 원", sub: "KRW" },
+    { k: "USD", pill: "$", label: "미국 달러", sub: "USD" },
+    { k: "EUR", pill: "€", label: "유로", sub: "EUR" },
+    { k: "JPY", pill: "¥", label: "일본 엔", sub: "JPY" },
+  ];
+  const rlRows = currencies.map((c) => {
+    const active = c.k === currencyActive;
+    return `<button type="button" role="radio" aria-checked="${active}" class="rl-row">
+      <span class="rl-pill">${c.pill}</span>
+      <span class="rl-body"><span class="rl-label">${c.label}</span><span class="rl-sub">${c.sub}</span></span>
+      ${active ? `<span class="rl-check">${CHECK16}</span>` : ""}
+    </button>`;
+  }).join("");
+
+  // SearchableList (카드 카탈로그)
+  const cards = [
+    { name: "신한 SOL 트래블 카드", company: "신한카드", type: "체크", fee: 0, color: "#0046FF", discontinued: false, initial: "신" },
+    { name: "현대카드 The Red", company: "현대카드", type: "신용", fee: 500000, color: "#000000", discontinued: false, initial: "현" },
+    { name: "삼성카드 taptap O", company: "삼성카드", type: "신용", fee: 10000, color: "#0F4ABE", discontinued: false, initial: "삼" },
+    { name: "KB국민 노리체크", company: "KB국민카드", type: "체크", fee: 0, color: "#FFB81C", discontinued: false, initial: "K" },
+    { name: "롯데카드 라이킷", company: "롯데카드", type: "신용", fee: 12000, color: "#ED1C24", discontinued: true, initial: "롯" },
+  ];
+  const slRows = cards.map((c, i) => {
+    const active = i === 0;
+    const dim = c.discontinued && !active ? "opacity:0.7;" : "";
+    return `<button type="button" class="sl-row${active ? " sl-row--active" : ""}" style="${dim}" aria-pressed="${active}">
+      <span class="sl-thumb" style="background:${c.color};">${c.initial}</span>
+      <span class="sl-body">
+        <span class="sl-title"><span class="sl-title-text">${c.name}</span>${c.discontinued ? `<span class="sl-badge">단종</span>` : ""}</span>
+        <span class="sl-sub">${c.company} · ${c.type}${c.fee > 0 ? ` · 연회비 ${c.fee.toLocaleString("ko-KR")}원` : ""}</span>
+      </span>
+    </button>`;
+  }).join("");
+
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">21 — Domain selectors (2026-05-15 5 신규 spec)</div>
+      <h2 class="section-title">ColorSwatch · IconPicker · Tile · RadioList · SearchableList</h2>
+      <p class="section-lede">desk-front 도메인에서 spec으로 끌어올린 5개 단일-선택 패턴 — 카테고리 색/아이콘, 테마 선택, 기본 통화, 카드 카탈로그.</p>
+    </header>
+
+    <div class="sc-grid">
+      <!-- ColorSwatch -->
+      <div class="sc-card">
+        <div class="sc-head">ColorSwatch — 카테고리/라벨 색 (10색 grid)</div>
+        <div class="csw" role="radiogroup" style="grid-template-columns: repeat(5, minmax(0, 1fr)); max-width: 260px;">
+          ${swatchCells}
+        </div>
+        <div class="sc-note">aspect-ratio 1 + radius-tile. active swatch는 자기 색의 currentColor border 2px + ✓. hover scale(1.05).</div>
+      </div>
+
+      <!-- IconPicker -->
+      <div class="sc-card">
+        <div class="sc-head">IconPicker — 카테고리 아이콘 (popover + grid 8-col)</div>
+        <div style="display:flex; align-items:flex-start; gap: var(--spacing-md);">
+          <button type="button" class="ipk-trigger" aria-haspopup="dialog" aria-expanded="true">${iconSet[activeIconIdx]}</button>
+          <div class="ipk-content">
+            <div class="ipk-search">
+              <span class="ipk-search-icon">${SEARCH_SVG}</span>
+              <input placeholder="아이콘 검색..." value="" />
+            </div>
+            <div class="ipk-grid">${iconCells}</div>
+          </div>
+        </div>
+        <div class="sc-note">2000+ Lucide 아이콘 중 매칭 상위 100건 limit. trigger 40×40 (input height 정합).</div>
+      </div>
+
+      <!-- Tile -->
+      <div class="sc-card sc-card--full">
+        <div class="sc-head">Tile — 테마 선택 (swatch + label + desc, single-select 큰 카드)</div>
+        <div class="tile-grid" role="radiogroup" style="grid-template-columns: repeat(3, minmax(0, 1fr));">
+          ${tileGrid}
+        </div>
+        <div class="sc-note">grid 3-col + radius-lg. active 시 border-primary 1.5px + bg 8% tint + ✓. mobile은 columns=1 stack 권장.</div>
+      </div>
+
+      <!-- RadioList -->
+      <div class="sc-card">
+        <div class="sc-head">RadioList — 기본 통화 (full-width row + pill + check)</div>
+        <div class="rl" role="radiogroup">${rlRows}</div>
+        <div class="sc-note">목록형 (통화/언어/국가/지역). row bg 변화 없음 — check 단서만으로 active 식별.</div>
+      </div>
+
+      <!-- SearchableList -->
+      <div class="sc-card">
+        <div class="sc-head">SearchableList — 카드 카탈로그 (search + thumbnail list)</div>
+        <div class="sl-head">
+          <span class="sl-head-label">카드</span>
+          <span class="sl-head-count">총 142개</span>
+        </div>
+        <div class="sl-search">
+          <span class="sl-search-icon">${SEARCH_SVG}</span>
+          <input placeholder="카드명 또는 발급사 검색" value="" />
+        </div>
+        <div class="sl" style="max-height: 240px;">${slRows}</div>
+        <div class="sc-note">대량 옵션 + 검색 필요 — 카드/은행/증권사/종목/도시. active row는 bg-brand-subtle + 주제목 primary-strong semi.</div>
+      </div>
+    </div>
+  </section>`;
+}
+
 function renderTokenCatalog(tokens) {
   const colorGrid = tokens.colors.map(t => `
     <div class="swatch">
@@ -3539,6 +3707,71 @@ export function pageCss() {
     .tp { display: flex; gap: var(--spacing-xs); align-items: center; padding: var(--spacing-md) var(--spacing-lg); background: var(--color-surface-input); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); justify-content: center; font-size: var(--text-title-md); font-weight: 600; font-family: ui-monospace, monospace; }
     .tp-sep { color: var(--color-text-tertiary); }
 
+    /* ColorSwatch — color-swatch.md SoT (palette grid single-select) */
+    .csw { display: grid; gap: var(--spacing-sm); }
+    .csw-cell { position: relative; aspect-ratio: 1; border: 2px solid transparent; border-radius: var(--radius-tile); cursor: pointer; transition: transform var(--motion-duration-fast) var(--motion-ease-out); display: inline-flex; align-items: center; justify-content: center; padding: 0; font: inherit; }
+    .csw-cell:hover { transform: scale(1.05); }
+    .csw-cell--active { border-color: currentColor; }
+
+    /* IconPicker — icon-picker.md SoT (popover trigger + grid 8-col) */
+    .ipk-trigger { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 1px solid var(--color-border-default); background: var(--color-surface-default); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); cursor: pointer; color: var(--color-text-primary); font: inherit; }
+    .ipk-trigger:hover { background: var(--color-surface-input); }
+    .ipk-content { width: 320px; padding: var(--spacing-md); border: 1px solid var(--color-border-default); background: var(--color-surface-default); border-radius: var(--radius-md); box-shadow: var(--shadow-md); }
+    .ipk-search { position: relative; margin-bottom: var(--spacing-sm); }
+    .ipk-search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--color-text-tertiary); pointer-events: none; }
+    .ipk-search input { width: 100%; height: 36px; padding: 0 12px 0 36px; border: 1px solid var(--color-border-default); border-radius: var(--radius-md); background: var(--color-surface-default); color: var(--color-text-primary); font: inherit; font-size: var(--text-body-md); }
+    .ipk-search input::placeholder { color: var(--color-text-tertiary); }
+    .ipk-grid { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px; max-height: 240px; overflow-y: auto; }
+    .ipk-cell { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--radius-sm); background: transparent; border: none; color: var(--color-text-secondary); cursor: pointer; transition: background-color var(--motion-duration-fast) var(--motion-ease-out), color var(--motion-duration-fast) var(--motion-ease-out); }
+    .ipk-cell:hover { background: var(--color-surface-input); color: var(--color-text-primary); }
+    .ipk-cell--active { background: var(--color-primary, var(--color-text-primary)); color: var(--color-text-on-accent, #fff); }
+    .ipk-footer { margin-top: var(--spacing-sm); padding-top: var(--spacing-sm); border-top: 1px solid var(--color-border-subtle, var(--color-border-default)); font-size: 11px; color: var(--color-text-tertiary); text-align: center; }
+
+    /* Tile — tile.md SoT (큰 카드 single-select with swatch + label + desc) */
+    .tile-grid { display: grid; gap: var(--spacing-sm); }
+    .tile { display: flex; align-items: center; gap: var(--spacing-md); padding: 16px 14px; border: 1px solid var(--color-border-subtle, var(--color-border-default)); background: var(--color-surface-default); border-radius: var(--radius-lg); cursor: pointer; transition: border-color var(--motion-duration-fast) var(--motion-ease-out), background-color var(--motion-duration-fast) var(--motion-ease-out); text-align: left; font: inherit; color: inherit; }
+    .tile:hover { border-color: var(--color-border-default); }
+    .tile--active { border-width: 1.5px; border-color: var(--color-primary, var(--color-text-primary)); background: color-mix(in oklch, var(--color-primary, var(--color-text-primary)) 8%, transparent); }
+    .tile-swatch { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 1px solid var(--color-border-subtle, var(--color-border-default)); border-radius: var(--radius-tile); flex-shrink: 0; }
+    .tile-body { flex: 1; min-width: 0; }
+    .tile-label { display: block; font-size: var(--text-body-md); font-weight: 600; color: var(--color-text-primary); }
+    .tile-desc { display: block; margin-top: 2px; font-size: var(--text-caption); color: var(--color-text-tertiary); }
+    .tile-check { flex-shrink: 0; color: var(--color-primary, var(--color-text-primary)); }
+
+    /* RadioList — radio-list.md SoT (full-width row stack + divide-y single-select) */
+    .rl { border: 1px solid var(--color-border-subtle, var(--color-border-default)); background: var(--color-surface-default); border-radius: var(--radius-lg); overflow: hidden; }
+    .rl-row { width: 100%; display: flex; align-items: center; gap: var(--spacing-md); padding: 14px 16px; background: transparent; border: none; cursor: pointer; transition: background-color var(--motion-duration-fast) var(--motion-ease-out); text-align: left; font: inherit; color: inherit; }
+    .rl-row + .rl-row { border-top: 1px solid var(--color-border-subtle, var(--color-border-default)); }
+    .rl-row:hover { background: var(--color-surface-input); }
+    .rl-pill { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--radius-md); background: var(--color-bg-page); font-size: var(--text-body-lg); font-weight: 700; color: var(--color-text-primary); flex-shrink: 0; }
+    .rl-body { flex: 1; min-width: 0; }
+    .rl-label { display: block; font-size: var(--text-body-md); font-weight: 600; color: var(--color-text-primary); }
+    .rl-sub { display: block; margin-top: 2px; font-size: var(--text-caption); color: var(--color-text-tertiary); }
+    .rl-check { flex-shrink: 0; color: var(--color-primary, var(--color-text-primary)); }
+
+    /* SearchableList — searchable-list.md SoT (search + thumbnail list single-select) */
+    .sl-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--spacing-sm); }
+    .sl-head-label { font-size: var(--text-caption); font-weight: 500; color: var(--color-text-secondary); }
+    .sl-head-count { font-size: 11px; color: var(--color-text-tertiary); }
+    .sl-search { position: relative; margin-bottom: var(--spacing-sm); }
+    .sl-search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--color-text-tertiary); pointer-events: none; }
+    .sl-search input { width: 100%; height: 36px; padding: 0 12px 0 36px; border: 1px solid var(--color-border-default); border-radius: var(--radius-md); background: var(--color-surface-default); color: var(--color-text-primary); font: inherit; font-size: var(--text-body-md); }
+    .sl-search input::placeholder { color: var(--color-text-tertiary); }
+    .sl { border: 1px solid var(--color-border-subtle, var(--color-border-default)); background: var(--color-surface-default); border-radius: var(--radius-md); overflow-y: auto; }
+    .sl-row { width: 100%; display: flex; align-items: center; gap: var(--spacing-md); padding: 10px 12px; background: transparent; border: none; cursor: pointer; transition: background-color var(--motion-duration-fast) var(--motion-ease-out); text-align: left; font: inherit; color: inherit; }
+    .sl-row + .sl-row { border-top: 1px solid var(--color-border-subtle, var(--color-border-default)); }
+    .sl-row:hover { background: var(--color-surface-input); }
+    .sl-row--active { background: var(--color-bg-brand-subtle, color-mix(in oklch, var(--color-primary, var(--color-text-primary)) 8%, transparent)); }
+    .sl-row--active:hover { background: var(--color-bg-brand-subtle, color-mix(in oklch, var(--color-primary, var(--color-text-primary)) 12%, transparent)); }
+    .sl-thumb { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 28px; border-radius: var(--radius-sm); color: #fff; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+    .sl-body { flex: 1; min-width: 0; }
+    .sl-title { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--color-text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sl-row--active .sl-title { color: var(--color-primary-strong, var(--color-primary, var(--color-text-primary))); font-weight: 600; }
+    .sl-title-text { overflow: hidden; text-overflow: ellipsis; }
+    .sl-sub { display: block; margin-top: 2px; font-size: 11.5px; color: var(--color-text-tertiary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sl-badge { display: inline-flex; align-items: center; padding: 1px 6px; border-radius: var(--radius-sm); font-size: 10px; font-weight: 600; letter-spacing: 0.04em; background: var(--color-surface-input); color: var(--color-text-tertiary); flex-shrink: 0; }
+    .sl-empty { padding: 24px 0; text-align: center; font-size: 12px; color: var(--color-text-tertiary); }
+
     /* Token catalog (기존 — 압축 유지) */
     .catalog { margin-top: var(--spacing-3xl); padding-top: var(--spacing-2xl); border-top: 1px dashed var(--color-border-default); }
     .catalog h3 { font-size: var(--text-title-md); font-weight: 600; margin: var(--spacing-xl) 0 var(--spacing-md); }
@@ -3602,7 +3835,29 @@ export function pageCss() {
     [data-theme="dark"] .ctx,
     [data-theme="dark"] .car-arrow,
     [data-theme="dark"] .son-toast,
+    [data-theme="dark"] .tile,
+    [data-theme="dark"] .rl,
+    [data-theme="dark"] .sl,
+    [data-theme="dark"] .ipk-content,
+    [data-theme="dark"] .ipk-trigger,
     [data-theme="dark"] .swatch { background: var(--color-surface-default-dark); }
+    [data-theme="dark"] .ipk-search input,
+    [data-theme="dark"] .sl-search input { background: var(--color-surface-default-dark); border-color: var(--color-border-default-dark); color: var(--color-text-primary-dark); }
+    [data-theme="dark"] .rl-pill { background: var(--color-bg-page-dark); color: var(--color-text-primary-dark); }
+    [data-theme="dark"] .tile,
+    [data-theme="dark"] .rl,
+    [data-theme="dark"] .sl,
+    [data-theme="dark"] .ipk-content,
+    [data-theme="dark"] .ipk-trigger { border-color: var(--color-border-default-dark); }
+    [data-theme="dark"] .rl-row + .rl-row,
+    [data-theme="dark"] .sl-row + .sl-row,
+    [data-theme="dark"] .ipk-footer { border-color: var(--color-border-default-dark); }
+    [data-theme="dark"] .tile-label,
+    [data-theme="dark"] .rl-label,
+    [data-theme="dark"] .sl-title { color: var(--color-text-primary-dark); }
+    [data-theme="dark"] .rl-row:hover,
+    [data-theme="dark"] .sl-row:hover,
+    [data-theme="dark"] .ipk-cell:hover { background: var(--color-surface-input-dark); }
     [data-theme="dark"] .sb,
     [data-theme="dark"] .mb,
     [data-theme="dark"] .cmd,
@@ -3859,6 +4114,7 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     ${renderShadcnData(brand)}
     ${renderShadcnExtras(brand)}
     ${renderBatchV73V78(brand)}
+    ${renderBatchSpecs5(brand)}
     ${renderTokenCatalog(tokens)}
     <p style="text-align:center;color:var(--color-text-tertiary);font-size:var(--text-caption);margin-top:var(--spacing-3xl);">
       source <code>${escape(sourceFile)}</code> · Porest Design System
