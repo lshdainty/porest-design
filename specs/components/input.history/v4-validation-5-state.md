@@ -112,23 +112,11 @@ Input은 **variant 없음** — form 안에서 단일 시각 통일이 가독성
 | Disabled | `pointer-events: none`. 클릭/keyboard 불가. focusable에서 제외. |
 | Readonly | focus·copy만 가능, 입력 불가. |
 
-**Form validation** — DESIGN.md `### Form validation (v75 추가)` SoT 인용.
+**Form validation**
 
-검증 흐름은 [`States`](#states) 의 visual state(렌더 시점에 자동 적용되는 6개 가상 selector)와 별개로, **사용자 입력 → 검증 → 결과 표시** flow 를 명시한 **5 state machine** 으로 정의. 동일 input element 가 입력 단계에 따라 5개 상태를 transition 함.
-
-| state | 의미 | 시각 | helper / message |
-|---|---|---|---|
-| `idle` (default) | 사용자 미접근 | `border-default` | helper text 노출 (예: "로그인 시 사용됩니다") |
-| `focused` | 포커스 상태, 입력 중 | `border-focus` + 2px ring | "입력 중..." 또는 helper 유지 |
-| `invalid` | 검증 실패 (`aria-invalid="true"`) | `border-error` + `ring-error/30` | `text-error` message (예: "올바른 이메일 주소를 입력해주세요") |
-| `valid` | 검증 통과 (선택적 표시) | `border-default` + 우측 success icon | `text-success` (예: "사용 가능 ✓"). **긴 form 한정** — 짧은 form 에선 noise |
-| `validating` (async) | server check 중 (`aria-busy="true"`) | `border-default` + spinner | "중복 확인 중..." |
-
-- 검증 시점: `onBlur` 권장 또는 `onSubmit`. `onChange` 는 사용자 입력 중 빨간색 깜빡임 유발 — 회피.
-- helper text 자리(아래)에 메시지 가변. 자리 자체는 layout shift 회피 위해 항상 reserve (`min-h-5`).
-- `validating` → `valid` 또는 `invalid` 로 transition 시 spinner 제거 + message 교체. `AbortController` 로 stale 응답 차단(DESIGN.md v75 Async validation 패턴 참조).
-- 한국어 message 템플릿 8 rule (required / min-max / email / pattern / match / async / custom) 은 DESIGN.md v75 표 인용 — spec 마다 재정의 금지.
-- 참고: examples mjs `Validation states (5-state machine)` + preview-html `Form validation (v75) — 5 state machine` 데모로 4 source 동기.
+- `aria-invalid="true"` 적용 시 자동으로 error 시각(border-error + ring-error/30) 활성.
+- helper text는 `<p id="email-error">올바른 이메일 형식이 아닙니다</p>` + `aria-describedby="email-error"`로 연결.
+- 검증 시점: `onBlur`(권장) 또는 `onSubmit`. `onChange`는 사용자 입력 중 빨간색 깜빡임 유발 — 회피.
 
 ## Accessibility
 
