@@ -1,4 +1,5 @@
 import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
@@ -9,7 +10,11 @@ import { cn } from "@/lib/utils";
  * - composition: Card > CardHeader > CardTitle / CardDescription
  *                     > CardContent
  *                     > CardFooter
- * - 색상: surface-default 배경 + shadow-sm (border 없음 — preview .review-* SoT)
+ * - 색상: surface-default 배경
+ * - variant (v5):
+ *   - `shadow` (default): border 없음 + shadow-sm. 일반 정보 카드 (preview .review-* SoT).
+ *   - `bordered`: 1px border-subtle + shadow 없음. dense info / inline summary
+ *     (선택 기간 hint, chart card 내 sub-card). app PCard.bordered 와 정합.
  * - radius: lg(12), padding: **mobile lg(16) / desktop md+ xl(24)** (v4 responsive)
  *
  * box-shadow는 Tailwind utility(`shadow-sm`) 대신 inline style로 `var(--shadow-sm)`
@@ -22,17 +27,35 @@ import { cn } from "@/lib/utils";
  * 첫 자식) 일 때는 모든 방향 padding 유지 (review-summary 톤 같은 단독 카드 패턴).
  */
 
+const cardVariants = cva(
+  "rounded-lg bg-surface-default text-text-primary transition-[background-color,box-shadow] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]",
+  {
+    variants: {
+      variant: {
+        // shadow 는 inline style 로 box-shadow 적용 — Card 컴포넌트에서 style prop 으로 처리.
+        shadow: "",
+        bordered: "border border-border-subtle",
+      },
+    },
+    defaultVariants: {
+      variant: "shadow",
+    },
+  },
+);
+
 const Card = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, style, ...props }, ref) => (
+  React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof cardVariants>
+>(({ className, style, variant, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn(
-      "rounded-lg bg-surface-default text-text-primary",
-      className,
-    )}
-    style={{ boxShadow: "var(--shadow-sm)", ...style }}
+    className={cn(cardVariants({ variant }), className)}
+    style={{
+      // shadow variant 만 inline shadow 적용 (Tailwind v4 다크 모드 override 우회 fix).
+      // bordered variant 는 border-only 라 shadow 없음.
+      boxShadow: variant === "bordered" ? undefined : "var(--shadow-sm)",
+      ...style,
+    }}
     {...props}
   />
 ));

@@ -137,4 +137,37 @@ export const cardExamples = [
   </div>
 </div>`,
   },
+
+  {
+    title: "Bordered variant (v5)",
+    description: "border-subtle + shadow 없음 — dense info 카드 (선택 기간 hint, chart 내 sub-card).",
+    jsx: `<Card variant="bordered" className="max-w-md">
+  <CardContent>
+    <div className="flex items-center gap-3">
+      <CalendarClock className="text-text-secondary" size={16} />
+      <div className="flex-1">
+        <div className="text-caption text-text-tertiary mb-0.5">선택 기간</div>
+        <div className="text-body-sm font-semibold text-text-primary">2025.06.01 ~ 2026.07.04 <span className="text-text-tertiary font-normal">(399일)</span></div>
+      </div>
+      <div className="flex items-center gap-1 text-text-secondary text-caption font-semibold">
+        <Pencil size={14} /> 변경
+      </div>
+    </div>
+  </CardContent>
+</Card>`,
+    render: () => `<div class="${CARD} border border-border-subtle" style="max-width:448px;">
+  <div class="${CONTENT}">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <span style="display:inline-flex; color:var(--color-text-secondary);">📅</span>
+      <div style="flex:1; min-width:0;">
+        <div style="font-size:var(--text-caption); color:var(--color-text-tertiary); margin-bottom:2px;">선택 기간</div>
+        <div style="font-size:var(--text-body-sm); font-weight:600; color:var(--color-text-primary);">2025.06.01 ~ 2026.07.04 <span style="color:var(--color-text-tertiary); font-weight:400;">(399일)</span></div>
+      </div>
+      <div style="display:flex; align-items:center; gap:4px; color:var(--color-text-secondary); font-size:var(--text-caption); font-weight:600;">
+        <span>✏️</span> 변경
+      </div>
+    </div>
+  </div>
+</div>`,
+  },
 ];
