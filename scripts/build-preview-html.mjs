@@ -4045,6 +4045,8 @@ export function pageCss() {
       .btn-row { grid-template-columns: 80px repeat(5, 1fr); }
       .approval-row { grid-template-columns: 1fr 1fr; }
       .ld-rail, .review-summary { position: static; }
+      /* Card spec v4: mobile lg(16) padding (desktop xl(24) 은 기본). */
+      .review-summary { padding: var(--spacing-lg); }
       .form-grid { grid-template-columns: 1fr; }
       .ld-gallery {
         grid-template-columns: 1fr 1fr;
