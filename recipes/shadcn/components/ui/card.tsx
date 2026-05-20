@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
  *                     > CardContent
  *                     > CardFooter
  * - 색상: surface-default 배경 + shadow-sm (border 없음 — preview .review-* SoT)
- * - radius: lg(12), padding: xl(24)
+ * - radius: lg(12), padding: **mobile lg(16) / desktop md+ xl(24)** (v4 responsive)
  *
  * box-shadow는 Tailwind utility(`shadow-sm`) 대신 inline style로 `var(--shadow-sm)`
  * 직접 인용 — Tailwind v4 utility는 내부적으로 box-shadow를 분해(--tw-shadow-*)
@@ -45,7 +45,7 @@ const CardHeader = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "flex flex-col gap-[var(--spacing-xs)] p-[var(--spacing-xl)]",
+      "flex flex-col gap-[var(--spacing-xs)] p-[var(--spacing-lg)] md:p-[var(--spacing-xl)]",
       className,
     )}
     {...props}
@@ -87,7 +87,7 @@ const CardContent = React.forwardRef<
   // first-child일 땐 full p-xl(standalone 카드), CardHeader 다음일 땐 pt-0(헤더 자연 연결).
   <div
     ref={ref}
-    className={cn("p-[var(--spacing-xl)] [&:not(:first-child)]:pt-0", className)}
+    className={cn("p-[var(--spacing-lg)] md:p-[var(--spacing-xl)] [&:not(:first-child)]:pt-0", className)}
     {...props}
   />
 ));
@@ -101,7 +101,7 @@ const CardFooter = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "flex items-center p-[var(--spacing-xl)] [&:not(:first-child)]:pt-0",
+      "flex items-center p-[var(--spacing-lg)] md:p-[var(--spacing-xl)] [&:not(:first-child)]:pt-0",
       className,
     )}
     {...props}

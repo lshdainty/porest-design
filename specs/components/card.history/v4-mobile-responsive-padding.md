@@ -24,15 +24,15 @@ Porest Card는 **단일 spec**으로 정의됩니다. 외곽선 없이 `shadow-s
 ```
 
 | ⓐ container | `background:var(--color-surface-default); border-radius:var(--radius-lg); box-shadow:var(--shadow-sm);` **border 없음** — shadow만으로 elevation. |
-| ⓑ header | `display:flex; flex-direction:column; gap:var(--spacing-xs); padding:var(--spacing-lg); @media(min-width:768px) padding:var(--spacing-xl);` 헤더 영역 (mobile lg(16) → desktop md+ xl(24)). |
+| ⓑ header | `display:flex; flex-direction:column; gap:var(--spacing-xs); padding:var(--spacing-xl);` 헤더 영역. |
 | ⓒ title | `text-title-md` (18/600/1.4). `leading-none tracking-tight`. |
 | ⓓ description | `text-body-sm` (14/400/1.5). `var(--color-text-secondary)`. 선택. |
-| ⓔ content | 기본 `p-lg md:p-xl` (mobile 16 / desktop md+ 24) 전 방향. CardHeader 다음(`:not(:first-child)`)일 때만 `pt-0` 으로 헤더와 자연 연결. standalone CardContent (Card 의 첫 자식, header 없음) 일 땐 모든 방향 padding 유지 (review-summary 단독 카드 톤). 자유 콘텐츠. |
-| ⓕ footer | content 와 동일 — 기본 `p-lg md:p-xl`, `:not(:first-child)` 일 때만 `pt-0`. 일반적으로 `justify-end` + button 그룹. |
+| ⓔ content | 기본 `p-xl` 전 방향. CardHeader 다음(`:not(:first-child)`)일 때만 `pt-0` 으로 헤더와 자연 연결. standalone CardContent (Card 의 첫 자식, header 없음) 일 땐 모든 방향 padding 유지 (review-summary 단독 카드 톤). 자유 콘텐츠. |
+| ⓕ footer | content 와 동일 — 기본 `p-xl`, `:not(:first-child)` 일 때만 `pt-0`. 일반적으로 `justify-end` + button 그룹. |
 
 **규칙**
 
-- 카드 내부 모든 영역은 좌우 padding으로 통일된 시각 그리드 유지 — **mobile `var(--spacing-lg)`(16) / desktop md+ `var(--spacing-xl)`(24)**. mobile small viewport 에서 카드 폭 대비 padding 비율 (Toss 톤 dense layout) 보장, desktop 에선 spec 의 24 breath.
+- 카드 내부 모든 영역은 좌우 `var(--spacing-xl)`(24) padding으로 통일된 시각 그리드 유지.
 - Header/Content/Footer 사이는 padding-top 0 (`[&:not(:first-child)]:pt-0` 셀렉터로 first-child 가 아닐 때만) + 자연스러운 콘텐츠 흐름으로 분리(불필요한 줄/구분선 회피).
 - Card 자체가 button/link로 동작 시 hover 표현은 `hover:shadow-md` 또는 `hover:translate-y-[-1px]` 등으로 명확히.
 
@@ -43,8 +43,7 @@ Card는 **size variant 없음** — 사용처에서 `max-width` className으로 
 | 항목 | 값 | 토큰 |
 |---|---|---|
 | Radius | 12px | `var(--radius-lg)` |
-| Padding (모든 영역, mobile < 768px) | 16px | `var(--spacing-lg)` |
-| Padding (모든 영역, desktop ≥ 768px) | 24px | `var(--spacing-xl)` |
+| Padding (모든 영역) | 24px | `var(--spacing-xl)` |
 | Section gap (header 내 title-description) | 4px | `var(--spacing-xs)` |
 | Background | `surface-default` (#FFFFFF / dark #242938) | `bg-surface-default` |
 | Shadow | `shadow-sm` | `var(--shadow-sm)` |
@@ -97,7 +96,7 @@ Card는 **size variant 없음** — 사용처에서 `max-width` className으로 
 
 ### ✅ Do
 
-- Card 안 모든 영역의 좌우 padding을 통일 — mobile `spacing-lg`(16) / desktop md+ `spacing-xl`(24). 시각 그리드 유지.
+- Card 안 모든 영역의 좌우 padding을 통일(`spacing-xl` 24) — 시각 그리드 유지.
 - 정보 카드는 정적(border 없음 + shadow-sm)으로 두고, 클릭 가능한 카드만 hover state 추가.
 - 큰 숫자(KPI)는 `display-md`/`display-lg` 토큰 사용 — title 토큰 대신.
 - 한 카드 안 액션은 우측 정렬(`flex justify-end gap-[var(--spacing-sm)]`).
@@ -106,13 +105,12 @@ Card는 **size variant 없음** — 사용처에서 `max-width` className으로 
 
 - Card 안에 또 다른 Card nested — 시각 위계 무너짐. 분리된 영역은 `Separator` 또는 spacing으로.
 - Card에 border + shadow + outline 동시 — elevation 표현 과잉. shadow-only가 Toss 톤.
-- 너무 다양한 padding 혼용 — `spacing-lg`/`spacing-xl` mobile/desktop 분기로 통일.
+- 너무 다양한 padding 혼용 — `spacing-xl` 통일.
 - Card 안에 너무 많은 정보 — 7±2 규칙. 넘으면 분리.
 
 ## Migration notes
 
 - 기존 `card.tsx`는 `rounded-md`(8) + `border border-border-default` 사용했으나 preview `.review-summary`/`.review-item` SoT에 맞춰 `rounded-lg`(12) + **border 제거**(shadow-only elevation)로 정정. shadow는 그대로 `shadow-sm`.
-- `p-6 gap-1.5` (Tailwind 기본 spacing 24/6) → `p-[var(--spacing-lg)] md:p-[var(--spacing-xl)] gap-[var(--spacing-xs)]` 디자인 토큰 직접 인용 + mobile/desktop 분기.
+- `p-6 gap-1.5` (Tailwind 기본 spacing 24/6) → `p-[var(--spacing-xl)] gap-[var(--spacing-xs)]` 디자인 토큰 직접 인용.
 - **box-shadow는 Tailwind utility(`shadow-sm`) 대신 inline `style={{ boxShadow: "var(--shadow-sm)" }}` 사용** — Tailwind v4 shadow utility는 내부적으로 box-shadow를 `--tw-shadow-*` 변수로 분해 처리하기 때문에, 다크 모드 CSS 변수 override(`[data-theme="dark"] { --shadow-sm: var(--shadow-sm-dark) }`)가 우회되어 다크 모드 inset top highlight + 강화된 검정 그림자가 적용되지 않는 문제 fix. preview `.review-*` SoT(`box-shadow: var(--shadow-sm)` 직접 인용)와 다크 모드 시각 정합 보장. 다른 컴포넌트(Dialog/Drawer/Popover 등)는 각자 spec에 따라 동일 패턴 적용 검토 필요.
 - **v3: CardContent / CardFooter 의 padding 처리 정정** — 기존 spec 은 `p-xl pt-0` 으로 모든 경우 pt-0 강제했으나, standalone Card (CardHeader 없이 CardContent 만, 예: `.review-summary` 톤 단독 카드) 일 때 top padding 이 빠져 시각 깨지는 문제 발견. desk-front 실제 사용 패턴 → spec 반영 (역방향 sync). 새 정의: base 는 `p-xl` 전 방향, `[&:not(:first-child)]:pt-0` 셀렉터로 CardHeader / CardContent 다음에 올 때만 pt-0 적용. first-child (standalone) 일 땐 모든 방향 padding 유지.
-- **v4: Card padding mobile/desktop 분기 도입** — 단일 `p-xl`(24) 모든 viewport 적용 시 mobile small viewport(~400px)에서 page-edge padding(20) + card padding(24) 합치면 좌우 ~22% 가 padding 으로 시각적으로 비좁음. Toss 톤 mobile-first 정합 위해 mobile `p-lg`(16) / desktop md+(≥768px) `p-xl`(24) 로 responsive 분기. Tailwind v4 `md:p-[var(--spacing-xl)]` syntax. App(Flutter) 은 mobile-only 환경이라 `PSpace.lg`(16) 일괄 적용. preview-html 의 `.review-summary` 도 `@media (max-width: 900px)` 분기에 `padding: var(--spacing-lg)` 추가. desk-front 실사용처 (`dashboard`/`asset`/`stats` page card) 시각 검증 후 결정.

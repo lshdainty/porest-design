@@ -3,18 +3,19 @@
  */
 
 // card.tsx와 1:1 동기 — preview `.review-*` SoT 정합:
-//   rounded-lg + shadow-sm (border 없음) + p-[var(--spacing-xl)] + gap-[var(--spacing-xs)].
+//   rounded-lg + shadow-sm (border 없음) + p-[lg→md:xl] (responsive) + gap-[var(--spacing-xs)].
 // box-shadow는 inline style로 var(--shadow-sm) 직접 인용 (Tailwind utility는
 // 다크 모드 CSS 변수 override를 우회하는 문제 fix — card.tsx 동기).
+// v4: padding mobile lg(16) / desktop md+ xl(24) — Toss 톤 mobile-first 정합.
 const CARD =
   "rounded-lg bg-surface-default text-text-primary";
 const CARD_SHADOW = "box-shadow:var(--shadow-sm);";
-const HEADER = "flex flex-col gap-[var(--spacing-xs)] p-[var(--spacing-xl)]";
+const HEADER = "flex flex-col gap-[var(--spacing-xs)] p-[var(--spacing-lg)] md:p-[var(--spacing-xl)]";
 const TITLE = "text-title-md leading-none tracking-tight text-text-primary";
 const DESC = "text-body-sm text-text-secondary";
-// first-child(standalone Card)일 땐 full p-xl, CardHeader 다음일 땐 pt-0 으로 자연 연결.
-const CONTENT = "p-[var(--spacing-xl)] [&:not(:first-child)]:pt-0";
-const FOOTER = "flex items-center p-[var(--spacing-xl)] [&:not(:first-child)]:pt-0";
+// first-child(standalone Card)일 땐 full padding, CardHeader 다음일 땐 pt-0 으로 자연 연결.
+const CONTENT = "p-[var(--spacing-lg)] md:p-[var(--spacing-xl)] [&:not(:first-child)]:pt-0";
+const FOOTER = "flex items-center p-[var(--spacing-lg)] md:p-[var(--spacing-xl)] [&:not(:first-child)]:pt-0";
 
 // 최신 Button BASE와 일관 (font-sans + token padding + motion transition).
 const BTN_PRIMARY =
