@@ -22,6 +22,8 @@ const VARIANT = {
   secondary:
     "bg-surface-input text-text-primary hover:bg-border-default active:scale-[0.98] active:brightness-95",
   ghost:
+    "text-text-primary hover:bg-surface-input active:bg-border-default active:scale-[0.98]",
+  accent:
     "text-primary hover:bg-surface-input active:bg-border-default active:scale-[0.98]",
   link:
     "text-primary underline-offset-4 hover:underline active:brightness-90",
@@ -31,11 +33,13 @@ const SIZE = {
   sm: "h-8 px-2 py-1 text-caption [&_svg]:size-3.5",
   md: "h-10 px-3 py-2 text-body-md [&_svg]:size-4",
   lg: "h-12 px-4 py-3 text-title-sm rounded-md [&_svg]:size-[18px]",
-  icon: "h-10 w-10 [&_svg]:size-4",
+  icon: "h-10 w-10 rounded-md [&_svg]:size-4",
 };
 
 function btn({ variant = "default", size = "md", disabled = false, children = "", extra = "" } = {}) {
-  const cls = [BASE, VARIANT[variant], SIZE[size], extra].filter(Boolean).join(" ");
+  // compound: ghost+icon = 아이콘 액션 보조톤 (button.tsx compoundVariants와 동일)
+  const compound = variant === "ghost" && size === "icon" ? "text-text-secondary" : "";
+  const cls = [BASE, VARIANT[variant], SIZE[size], compound, extra].filter(Boolean).join(" ");
   return `<button class="${cls}"${disabled ? " disabled" : ""}>${children}</button>`;
 }
 
@@ -45,6 +49,7 @@ const ICONS = {
   download: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
   loader: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>',
   arrow: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>',
+  pencil: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>',
 };
 
 const PREVIEW_BASE = "display:flex; gap:var(--spacing-md); flex-wrap:wrap; align-items:center;";
@@ -73,7 +78,7 @@ function stateBtn({ variant = "default", state = "enabled", children = "승인" 
   const baseByVariant = {
     default: "background:var(--color-primary); color:var(--color-text-on-accent); box-shadow:var(--shadow-sm);",
     outline: "background:transparent; color:var(--color-text-primary); border:1px solid var(--color-border-default);",
-    ghost: "background:transparent; color:var(--color-primary);",
+    ghost: "background:transparent; color:var(--color-text-primary);",
   };
   const stateOverlay = {
     enabled: "",
@@ -206,6 +211,23 @@ export const buttonExamples = [
   ${btn({ children: ICONS.save + "저장" })}
   ${btn({ variant: "destructive", children: ICONS.trash + "삭제" })}
   ${btn({ variant: "outline", children: ICONS.download + "내보내기" })}
+</div>`,
+  },
+
+  {
+    title: "Icon action (리스트 행 액션)",
+    description: "ghost + size=\"icon\" = 아이콘 액션 버튼. 글씨색이 보조톤(--color-text-secondary)으로 약화되고 radius-md 둥근 박스 — 리스트 행/툴바의 quiet 액션(편집·삭제 등). 삭제는 --color-error로 override. icon-only는 aria-label 필수. gap-1(4px)로 촘촘히.",
+    jsx: `import { Pencil, Trash2 } from "lucide-react"
+
+// 카테고리/반복 거래 관리 행의 우측 액션
+<div className="flex gap-1">
+  <Button variant="ghost" size="icon" aria-label="편집"><Pencil /></Button>
+  <Button variant="ghost" size="icon" aria-label="삭제"
+    className="!text-[var(--color-error)]"><Trash2 /></Button>
+</div>`,
+    render: () => `<div style="display:flex; gap:var(--spacing-xs); align-items:center;">
+  ${btn({ variant: "ghost", size: "icon", children: ICONS.pencil })}
+  ${btn({ variant: "ghost", size: "icon", children: ICONS.trash, extra: "!text-[var(--color-error)]" })}
 </div>`,
   },
 

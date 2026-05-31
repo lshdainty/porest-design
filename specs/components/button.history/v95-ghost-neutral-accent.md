@@ -25,7 +25,7 @@ Porest Button은 **7 variants × 4 sizes × 5 states** 매트릭스로 정의되
 
 **규칙**
 
-- icon만 있을 땐 `size="icon"` (40×40 정사각, `radius-md` 둥근 박스). label 없으면 반드시 `aria-label` 또는 `Tooltip`. `ghost`와 함께 쓰면(리스트/툴바 아이콘 액션) 글씨색이 보조톤 `--color-text-secondary`로 약화.
+- icon만 있을 땐 `size="icon"` (40×40 정사각). label 없으면 반드시 `aria-label` 또는 `Tooltip`.
 - label은 1~3 단어 권장. "확인" / "저장" / "삭제하기" 같이 결과를 짐작할 수 있게.
 - "확인" 같은 모호한 동사 단독 지양. 가능하면 "주문 확인" / "변경 저장" 등 목적어 포함.
 
@@ -39,8 +39,8 @@ Porest Button은 **7 variants × 4 sizes × 5 states** 매트릭스로 정의되
 | `destructive` | 되돌릴 수 없는 위험 액션 | ●●●●● | 삭제 확정. 반드시 confirm dialog 안에서. |
 | `outline` | 보조 액션 (secondary) | ●●●○○ | primary 옆 cancel. 두 번째 우선순위. |
 | `secondary` | 동등 보조 액션 | ●●○○○ | toolbar 안 그룹 액션. 회색 채움. |
-| `ghost` | 약한 액션 / nav 자리 (중립색, 기본) | ●○○○○ | 메뉴 항목, icon 버튼, 리스트 행 액션, breadcrumb-like. 대부분의 quiet 액션. |
-| `accent` | 강조 quiet 액션 (brand색, 임팩트) | ●●○○○ | ghost와 동일하되 brand 글씨로 강조. 한 영역에 소수만. |
+| `ghost` | 약한 액션 / nav 자리 (brand 색) | ●○○○○ | 메뉴 항목, icon 버튼, breadcrumb-like. |
+| `text` | 약한 액션 (중립 색) | ●○○○○ | 단순 텍스트 버튼. 브랜드색이 부담스러운 quiet 액션 — 리스트 행 편집/삭제, tertiary. |
 | `link` | 인라인 텍스트 링크 | ●○○○○ | 본문 흐름 안의 약한 링크. |
 
 ### Color tokens
@@ -51,13 +51,11 @@ Porest Button은 **7 variants × 4 sizes × 5 states** 매트릭스로 정의되
 | `destructive` | `--color-error` | `--color-text-on-accent` | — | `--shadow-sm` |
 | `outline` | transparent | `--color-text-primary` | `--color-border-default` (1px) | — |
 | `secondary` | `--color-surface-input` | `--color-text-primary` | — | — |
-| `ghost` | transparent | `--color-text-primary` | — | — |
-| `accent` | transparent | `--color-primary` | — | — |
+| `ghost` | transparent | `--color-primary` | — | — |
+| `text` | transparent | `--color-text-primary` | — | — |
 | `link` | transparent | `--color-primary` | — | — |
 
-> **아이콘 액션 (`ghost` + `size="icon"`)**: 글씨색이 `--color-text-secondary`(보조톤)로 약화되고, hover 시 `--color-surface-input` 위 `radius-md` 둥근 정사각 박스로 또렷한 affordance. 리스트 행/툴바의 보조 아이콘 액션(편집·삭제·일시정지 등)에 사용. label 있는 `ghost`는 `--color-text-primary`(중립) 유지, `default`/`destructive` 등 채움 variant의 icon은 각 variant 색 유지.
-
-브랜드 분기: HR `--color-primary` = `#357B5F`, Desk `--color-primary` = `#0147AD`. `default`/`accent`/`link` variant이 brand 색(`--color-primary`) 영향, `ghost` 포함 나머지는 brand-neutral.
+브랜드 분기: HR `--color-primary` = `#357B5F`, Desk `--color-primary` = `#0147AD`. `default`/`ghost`/`link` variant이 brand 색(`--color-primary`) 영향, `text` 포함 나머지는 brand-neutral.
 
 ## Sizes
 
@@ -68,14 +66,13 @@ Porest Button은 **7 variants × 4 sizes × 5 states** 매트릭스로 정의되
 | `sm` | 32px | `spacing-xs` (4) · `spacing-sm` (8) | `text-caption` | 12px | 14px | `radius-sm` (4) | AA ✓ · AAA ⚠ |
 | `md` *(default)* | 40px | `spacing-sm` (8) · `spacing-md` (12) | `text-body-md` | 15px | 16px | `radius-sm` (4) | AA ✓ · AAA ⚠ |
 | `lg` | 48px | `spacing-md` (12) · `spacing-lg` (16) | `text-title-sm` | 16px | 18px | `radius-md` (8) | AA ✓ · AAA ✓ |
-| `icon` | 40×40px | 0 | — | — | 16px | `radius-md` (8) | AA ✓ · AAA ⚠ |
+| `icon` | 40×40px | 0 | — | — | 16px | `radius-sm` (4) | AA ✓ · AAA ⚠ |
 
 Tailwind utility 매핑 (button.tsx cva):
 - `sm`: `h-8 px-2 py-1 text-caption [&_svg]:size-3.5`
 - `md`: `h-10 px-3 py-2 text-body-md [&_svg]:size-4`
 - `lg`: `h-12 px-4 py-3 text-title-sm rounded-md [&_svg]:size-[18px]`
-- `icon`: `h-10 w-10 rounded-md [&_svg]:size-4`
-- compound `ghost`+`icon`: `text-text-secondary` (아이콘 액션 보조톤 — variant text를 덮어씀)
+- `icon`: `h-10 w-10 [&_svg]:size-4`
 
 공통(BASE):
 - `font-sans` (`var(--font-sans)` Pretendard) — `<button>` UA stylesheet가 body font를 inherit 안 해서 명시 필수. preview `.btn`은 `font-family: inherit`로 같은 효과.
@@ -87,7 +84,7 @@ Tailwind utility 매핑 (button.tsx cva):
 
 - `sm`은 dense list/toolbar 한정. 터치 우선 화면(모바일)에서는 `lg` 권장 (AAA 충족).
 - `lg`는 hero CTA 또는 폼 제출 버튼 + 모바일 sticky CTA. 한 페이지에 1~2개 이내.
-- `icon`은 정사각 + `radius-md`(8) — hover 시 아이콘을 감싸는 둥근 박스가 또렷한 affordance. 옆에 텍스트 버튼이 있을 때 시각 통일을 위해 `md`(h-10)와 같은 높이. `ghost`와 조합 시 글씨색 `--color-text-secondary`(보조톤).
+- `icon`은 정사각. 옆에 텍스트 버튼이 있을 때 시각 통일을 위해 `md`(h-10)와 같은 높이.
 - gap (icon ↔ label) = 8px 고정 (`gap-sm`, 모든 사이즈).
 
 ## States
@@ -112,7 +109,7 @@ Tailwind utility 매핑 (button.tsx cva):
 | `outline` | `bg-surface-input` + `border-strong` | `bg-border-default` + scale(0.98) (shadow 없음) |
 | `secondary` | `bg-border-default` | brightness 95 + scale(0.98) |
 | `ghost` | `bg-surface-input` | `bg-border-default` + scale(0.98) |
-| `accent` | `bg-surface-input` | `bg-border-default` + scale(0.98) (ghost와 동일, 글씨만 brand `--color-primary`) |
+| `text` | `bg-surface-input` | `bg-border-default` + scale(0.98) (ghost와 동일, text 색만 중립 `--color-text-primary`) |
 | `link` | `underline` | brightness 90 |
 
 ### Loading state
@@ -167,7 +164,7 @@ Tailwind utility 매핑 (button.tsx cva):
 | 기준 | 검증 |
 |---|---|
 | **WCAG 1.4.3** Color contrast (text ≥ 4.5:1) | `default` `--color-text-on-accent` × `--color-primary` = 4.5:1+ ✓ (`npm run lint:dark` 검증) |
-| **WCAG 1.4.3** Color contrast — `ghost` variant | `--color-text-primary` × `--color-bg-page` = 21:1 ✓ (중립 텍스트, 기본). `accent`는 `--color-primary` 글씨로 `default`와 동일 검증. |
+| **WCAG 1.4.3** Color contrast — `text` variant | `--color-text-primary` × `--color-bg-page` = 21:1 ✓ (중립 텍스트, 브랜드색 배제) |
 | **WCAG 1.4.11** Non-text contrast (UI ≥ 3:1) | focus ring `--color-border-focus` × `--color-bg-page` = 3:1+ ✓ |
 | **WCAG 2.5.8** Target Size — Minimum (AA — ≥ 24×24) | `sm` 32 ✅ / `md` 40 ✅ / `lg` 48 ✅ / `icon` 40 ✅ — 모든 사이즈 AA 통과 |
 | **WCAG 2.5.5** Target Size — Enhanced (AAA — ≥ 44×44) | `sm` 32 ⚠ 미달 / `md` 40 ⚠ 미달 / `lg` 48 ✅ / `icon` 40 ⚠ 미달 — `lg`만 AAA 충족. 모바일 터치 우선 화면은 `lg` 권장, `md`는 데스크톱/태블릿 큐이, `sm`은 dense list 한정. |
@@ -199,5 +196,4 @@ Tailwind utility 매핑 (button.tsx cva):
 - 옛 prose-token `button-primary` / `button-outline-on-dark` (DESIGN.md v55, v93에서 `outlined` → `outline` 명명 통일)은 이 spec의 `default` / `outline` variant로 1:1 매핑.
 - 옛 height (`h-9` / `h-11`)는 v83 Toss 매핑에서 `h-8` / `h-12`로 정정 (4px 그리드 정합).
 - **v6: `loading` prop 정식 spec 도입** — desk-front 실제 사용 패턴 → porest-design spec 반영 (역방향 sync). 기존 spec 의 "Loading state (선택)" 권장 패턴 prose 만 있었고 prop / 구현 명세는 없었음. 이제 ButtonProps 에 `loading?: boolean` 정식 추가 + Spinner currentColor 상속 패턴(border `color-mix(currentColor 30%)` + border-top `currentColor`) 으로 variant 자동 적응. recipe button.tsx 에 구현 동기.
-- **v95: `ghost` 중립화 + `accent`(brand 강조) 분리** — #243에서 ghost를 brand(`--color-primary`)로 바꾼 결과 모든 ghost가 brand색이 됨. 의도는 "기본 중립 + 일부 강조"이므로 `ghost`를 중립(`--color-text-primary`)으로 되돌리고(기존 ghost 사용처 자동 중립화), brand 강조 quiet 버튼은 `accent` variant로 분리(transparent + `--color-primary`, ghost와 hover/state 동일). (v94에서 잠깐 도입한 중립 `text` variant는 ghost가 중립이 되며 불필요 → 제거.) button.tsx cva + examples + preview `.btn-ghost`/`.btn-accent` 동기.
-- **v96: `ghost`+`icon` 아이콘 액션 표준 + `icon` radius-md** — 리스트 행/툴바의 아이콘 액션 버튼(반복·카테고리·자산·예산·프리셋 관리 등)이 일부는 raw `<button>` 커스텀(`--color-text-secondary` + 32×32 + radius-md), 일부는 `ghost size="sm"`(`--color-text-primary` + 가로 px-3 + radius-sm)으로 갈려 색·모양 불일치. 더 또렷한 커스텀 톤을 표준화 — `size="icon"` radius `sm`→`md`(둥근 박스), compound `ghost`+`icon` 글씨색 `--color-text-secondary`(보조톤). label 있는 `ghost`(중립 `--color-text-primary`)·채움 variant의 icon(각 variant 색)은 불변이므로 cva **compoundVariants**로 `ghost`+`icon`만 한정. button.tsx size icon `rounded-md` + compoundVariants 동기, preview `.btn-icon`/examples 반영. (desk-front 5개 매니저 raw/sm → `ghost`+`icon` 통일, desk-app `PButton.icon` 동기.)
+- **v94: `text` variant 추가** — `ghost`(brand `--color-primary`)와 동일 anatomy·size·state 이나 text 색만 중립 `--color-text-primary`. "단순 텍스트 / quiet 액션"(브랜드색이 부담스러운 리스트 행 편집·삭제, tertiary)용. `default`/`ghost`/`link`는 brand 색, `text`는 brand-neutral. button.tsx cva + examples `VARIANT` + preview `.btn-text` 4 source 동기.

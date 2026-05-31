@@ -19,14 +19,15 @@ import { Spinner } from "@/components/ui/spinner";
  *   destructive 위험 액션 (삭제/취소) — error 색상
  *   outline     surface 위 테두리만 — 보조 액션
  *   secondary   surface-input 채움 — 그룹 내 보조
- *   ghost       비채움 — nav/tab/icon 자리
+ *   ghost       비채움(중립 text-primary) — nav/tab/리스트 행, 대부분의 quiet 액션 (icon 조합 시 보조톤 text-secondary)
+ *   accent      비채움(brand) — ghost 강조판, 임팩트용 소수
  *   link        밑줄 텍스트 — 인라인 링크
  *
  * Sizes
  *   sm    h-8  px-3 / text-label-sm  — dense list, inline action
  *   md    h-10 px-4 / text-title-sm  — default
  *   lg    h-12 px-6 / text-title-md  — hero CTA, primary form action
- *   icon  h-10 w-10                   — icon-only
+ *   icon  h-10 w-10 rounded-md         — icon-only(둥근 박스). ghost 조합 시 글씨 보조톤(text-secondary)
  *
  * Loading
  *   loading prop — 비동기 액션 중에 좌측에 Spinner(size=sm) 노출 + disabled + aria-busy.
@@ -55,6 +56,8 @@ const buttonVariants = cva(
         secondary:
           "bg-surface-input text-text-primary hover:bg-border-default active:scale-[0.98] active:brightness-95",
         ghost:
+          "text-text-primary hover:bg-surface-input active:bg-border-default active:scale-[0.98]",
+        accent:
           "text-primary hover:bg-surface-input active:bg-border-default active:scale-[0.98]",
         link:
           "text-primary underline-offset-4 hover:underline active:brightness-90",
@@ -63,9 +66,14 @@ const buttonVariants = cva(
         sm: "h-8 px-2 py-1 text-caption [&_svg]:size-3.5",
         md: "h-10 px-3 py-2 text-body-md [&_svg]:size-4",
         lg: "h-12 px-4 py-3 text-title-sm rounded-md [&_svg]:size-[18px]",
-        icon: "h-10 w-10 [&_svg]:size-4",
+        icon: "h-10 w-10 rounded-md [&_svg]:size-4",
       },
     },
+    compoundVariants: [
+      // 아이콘 액션 버튼(ghost+icon): 글씨색을 보조톤(text-secondary)으로 약화 —
+      // 리스트 행/툴바의 quiet 아이콘 액션(편집·삭제·일시정지 등). label ghost(text-primary)·채움 variant icon은 불변.
+      { variant: "ghost", size: "icon", className: "text-text-secondary" },
+    ],
     defaultVariants: {
       variant: "default",
       size: "md",

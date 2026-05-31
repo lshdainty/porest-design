@@ -789,6 +789,7 @@ export function renderButtonGallery(brand) {
     { key: "primary", label: "primary" },
     { key: "outline", label: "outline" },
     { key: "ghost", label: "ghost" },
+    { key: "accent", label: "accent" },
   ];
 
   const head = `<div class="btn-row btn-row--head"><div></div>${
@@ -811,6 +812,16 @@ export function renderButtonGallery(brand) {
       <button class="btn btn-primary btn-size-lg">lg · 48</button>
     </div>`;
 
+  const PENCIL = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
+  const TRASH = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+  const iconRow = `
+    <div class="btn-size-row">
+      <div class="btn-size-label">icon action</div>
+      <button class="btn btn-ghost btn-icon" aria-label="편집" title="편집">${PENCIL}</button>
+      <button class="btn btn-ghost btn-icon btn-icon-danger" aria-label="삭제" title="삭제">${TRASH}</button>
+      <span style="font-size:var(--text-caption); color:var(--color-text-tertiary);">ghost + size=icon · 보조톤(text-secondary) · radius-md 둥근 박스 · 삭제는 error 색</span>
+    </div>`;
+
   const lede = brand.key === "hr"
     ? "B2B 데이터 밀도 톤 — sm/md 사이즈 위주, hover 미니멀."
     : brand.key === "desk"
@@ -821,7 +832,7 @@ export function renderButtonGallery(brand) {
   <section class="section">
     <header class="section-head">
       <div class="section-eyebrow">03 — Button</div>
-      <h2 class="section-title">Primary · outline · ghost</h2>
+      <h2 class="section-title">Primary · outline · ghost · accent</h2>
       <p class="section-lede">${escape(lede)}</p>
     </header>
     <div class="btn-matrix">
@@ -829,6 +840,7 @@ export function renderButtonGallery(brand) {
       ${variantRows}
     </div>
     ${sizeRow}
+    ${iconRow}
   </section>`;
 }
 
@@ -2511,16 +2523,27 @@ export function pageCss() {
     .btn-outline:disabled { opacity: 0.5; cursor: not-allowed; }
     .btn-ghost {
       background: transparent;
-      color: var(--color-primary, var(--color-text-primary));
+      color: var(--color-text-primary);
     }
     .btn-ghost:hover { background: var(--color-surface-input); }
     .btn-ghost:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-accent {
+      background: transparent;
+      color: var(--color-primary, var(--color-text-primary));
+    }
+    .btn-accent:hover { background: var(--color-surface-input); }
+    .btn-accent:disabled { opacity: 0.5; cursor: not-allowed; }
     .btn-state-hover { box-shadow: var(--shadow-md); filter: brightness(1.05); }
     .btn-state-pressed { transform: scale(0.98); box-shadow: none; filter: brightness(0.95); }
     .btn-state-focus { outline: 2px solid var(--color-border-focus, var(--color-primary)); outline-offset: 1px; }
     .btn-size-sm { height: 32px; padding: var(--spacing-xs) var(--spacing-sm); font-size: var(--text-caption); }
     .btn-size-md { height: 40px; padding: var(--spacing-sm) var(--spacing-md); font-size: var(--text-body-md); }
     .btn-size-lg { height: 48px; padding: var(--spacing-md) var(--spacing-lg); font-size: var(--text-title-sm); border-radius: var(--radius-md); }
+    /* icon action 버튼 — 정사각 + radius-md 둥근 박스. ghost 조합 시 보조톤(text-secondary). */
+    .btn-icon { width: 40px; height: 40px; padding: 0; border-radius: var(--radius-md); }
+    .btn-ghost.btn-icon { color: var(--color-text-secondary); }
+    .btn-icon.btn-icon-danger { color: var(--color-error); }
+    .btn-icon svg { width: 16px; height: 16px; }
 
     /* Color identity */
     .ci-grid { display: grid; gap: var(--spacing-xl); }
