@@ -64,7 +64,7 @@ Pills variant (토스 모바일 톤 — soft rectangle + primary fill)
 
 ## Sizes
 
-Tabs는 **container variant 한정 2 sizes(`default` / `sm`)** — underline/pills는 size variant 없음(`auto height`, 사용처가 폭만 조정). container `default` `h-10`(40) / `sm` `h-8`(32). 사용처에서 trigger 개수에 따라 폭만 조정(`w-full grid-cols-N` 등). 아래 첫 표는 **각 variant의 default 시각**, 이어지는 `### Container size variant` 표는 **container의 default/sm 분기**.
+Tabs는 **size variant 없음** — container `h-10` / underline `auto height` 단일 spec. 사용처에서 trigger 개수에 따라 폭만 조정(`w-full grid-cols-N` 등).
 
 | 항목 | container | underline | pills | 토큰 |
 |---|---|---|---|---|
@@ -83,33 +83,6 @@ Tabs는 **container variant 한정 2 sizes(`default` / `sm`)** — underline/pil
 | Active weight | 500 | 500 | 600 | `font-medium` / `font-semibold` |
 | Inactive text | `text-secondary` | `text-secondary` | `text-secondary` | `text-text-secondary` |
 | Content top margin | spacing-sm (8) | spacing-lg (16) | spacing-md (12) | `mt-[var(--spacing-sm/md)]` / `pt-[var(--spacing-lg)]` |
-
-### Container size variant (`default` / `sm`)
-
-`sm`은 정보 밀도 높은 **데스크 보조 컨트롤** 전용 — 정렬 선택·기간/빈도 토글·카드 내부 view 전환처럼 container 40px가 과한 시각 무게인 곳. [`Toggle`](toggle.md) `sm` 수치 체계(`min-h-7` 28 + token padding)를 container에 그대로 확장 — Toggle/ToggleGroup의 `sm`/`default`/`lg`(28/32/40)와 대칭. `sm`은 **container 전용**(underline/pills 미적용).
-
-| 항목 | container `default` | container `sm` | 토큰 |
-|---|---|---|---|
-| List height | 40px | 32px | `h-10` / `h-8` |
-| List padding | 4px | 2px | `p-[var(--spacing-xs)]` / `p-0.5` |
-| List radius | 4px | 4px | `rounded-sm` |
-| List background | `surface-input` | `surface-input` | `bg-surface-input` |
-| List gap | 0 | 0 | — |
-| Trigger min-height | 32px | 28px | `min-h-8` / `min-h-7` |
-| Trigger padding (Y · X) | 4 · 12 | 4 · 8 | `py-[var(--spacing-xs)]` · `px-[var(--spacing-md)]` / `px-[var(--spacing-sm)]` |
-| Trigger radius | 2px | 2px | `rounded-xs` |
-| Trigger font | 14 / 500 | 13 / 500 | `text-label-md` / `text-label-sm font-medium` |
-| Active bg | `surface-default` | `surface-default` | `bg-surface-default` |
-| Active shadow | `shadow-sm` | `shadow-sm` | `shadow-sm` |
-| Active text / weight | `text-primary` / 500 | `text-primary` / 500 | `text-text-primary` |
-| Inactive text | `text-secondary` | `text-secondary` | `text-text-secondary` |
-| Icon-only trigger | 32×32 | 28×28 | 아이콘 16px (`[&_svg]:size-4`) |
-
-- `sm`은 `default` 대비 **height·padding·font만 축소** — 색/radius/active 처리·states(hover/focus/disabled)는 default와 동일. **신규 색 토큰 없음**(다크 분기도 default와 동일).
-- List padding 2px = (List 32 − Trigger 28) ÷ 2 — pill이 32px list에 정확히 안착. spacing 토큰 스케일(4/8/12…)엔 없으나 Tailwind 하프스텝 `p-0.5`(2px, [`Badge`](badge.md) `py-0.5` 선례)로 표기. raw `p-[2px]` 금지.
-- Trigger padding-X는 `default` `spacing-md`(12) → `sm` `spacing-sm`(8) — [`Toggle`](toggle.md) `sm` 정합. 10px 같은 off-token 값 금지.
-- 사용처: `sm` = 폼/dialog 내 보조 토글(기간·빈도·우선순위·반복)·정렬 선택·카드 내부 view 전환·밀도 높은 데스크 탭 / `default`(40px) = 페이지 최상위 navigation 탭·모바일 주요 화면(터치 타깃).
-- 코드: `size` prop은 `TabsList`에서 받아 context로 `TabsTrigger`에 전파([`ToggleGroup`](toggle-group.md) 패턴) — trigger마다 size 재지정 불필요.
 
 ## States
 
@@ -175,8 +148,8 @@ active state 변화는 `transition-all duration-[var(--motion-duration-fast)] ea
 | **WCAG 1.4.11** Non-text contrast (underline `primary` border × bg-page) | HR 4.7:1+ ✓ / Desk 9.5:1 ✓ |
 | **WCAG 2.1.1** Keyboard | `Arrow`/`Home`/`End`/`Enter`/`Space` 모든 동작 키보드 가능 ✓ |
 | **WCAG 2.4.7** Focus Visible | trigger `focus-visible:ring-2 ring-ring ring-offset-2` ✓ |
-| **WCAG 2.5.5** Target Size (AAA, 44×44) | container `default` 40px / `sm` 28px / underline 36px(8+14+8+2+4) — 모두 미달(⚠). `sm`은 포인터 중심 데스크 UI 전용([`Toggle`](toggle.md) `sm`과 동일 ⚠). 모바일 주요 동선은 `default` + padding-Y `var(--spacing-md)`(12)로 늘려 44+ 권장. |
-| **WCAG 2.5.8** Target Size Minimum (AA, 24×24) | container `default` 40 / `sm` 28 / underline 36 — 모두 ✓ (sm 28 ≥ 24). |
+| **WCAG 2.5.5** Target Size (AAA, 44×44) | container 40px / underline 36px(8+14+8+2+4) — 모두 미달(⚠). 모바일은 padding-Y `var(--spacing-md)`(12)로 늘려 44+ 권장. |
+| **WCAG 2.5.8** Target Size Minimum (AA, 24×24) | ✓ |
 | **WCAG 1.3.1** Info and Relationships | Radix가 `role="tablist"` / `role="tab"` / `aria-selected` / `aria-controls` / `role="tabpanel"` / `aria-labelledby` 자동 wire. |
 | **ARIA** | manual activation(`activationMode="manual"`) 권장 — focus ≠ selection. screen reader 흐름 보존. |
 
@@ -209,6 +182,3 @@ active state 변화는 `transition-all duration-[var(--motion-duration-fast)] ea
 - tabs.tsx의 `transition-all` 유지하되 motion 토큰 명시 — `duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]`.
 - preview-html `.tabs-pills`는 `radius-full` 사용했으나(legacy) spec pills variant `radius-md` 정합으로 정정. 토스 모바일 톤 — 완전 둥근 pill보다 soft rectangle이 절제된 톤.
 - preview-html `.tab` base font `caption` → `label-md` 정정 — spec 3 variant 모두 14/500 통일.
-- **container `sm` size 신설** (porest-desk 앱 역싱크): Toggle `sm`(min-h-7 28 + token padding) 체계를 container에 확장. `default` trigger에 `min-h-8`(32) 명시 — pill이 list 32px 영역을 꽉 채워 Anatomy 정합(기존 ~28px → 32px, 4px 보강). `sm`은 container 전용 — underline/pills 미적용.
-- **온토큰 보정** — 앱 제안 원본의 off-token 값 2건 정정: trigger padding-X `10px` → `spacing-sm`(8, Toggle `sm` 정합) / List padding raw `p-[2px]` → Tailwind 하프스텝 `p-0.5`(Badge 선례). spacing 토큰 스케일(4/8/12…) 이탈값 금지 원칙.
-- preview-html(`.tab`)은 브랜드 톤(underline/pills) showcase 전용 — container `sm`은 4번째 source 비대상. 시각 검증은 site export(`tabs-examples.mjs` → `exports/site/components/tabs.html`)로.

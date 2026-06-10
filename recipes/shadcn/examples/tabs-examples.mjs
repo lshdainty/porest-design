@@ -13,9 +13,18 @@ const LIST_CONTAINER =
 const TRIGGER_BASE =
   "inline-flex items-center justify-center whitespace-nowrap font-sans text-label-md font-medium transition-all duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)] cursor-pointer";
 
-const TRIGGER_CONTAINER = `${TRIGGER_BASE} rounded-xs px-[var(--spacing-md)] py-[var(--spacing-xs)]`;
+const TRIGGER_CONTAINER = `${TRIGGER_BASE} rounded-xs px-[var(--spacing-md)] py-[var(--spacing-xs)] min-h-8`;
 const TRIGGER_CONTAINER_ACTIVE = `${TRIGGER_CONTAINER} bg-surface-default text-text-primary shadow-sm`;
 const TRIGGER_CONTAINER_INACTIVE = `${TRIGGER_CONTAINER} bg-transparent text-text-secondary`;
+
+// container sm — 데스크 보조 컨트롤 (정렬·기간/빈도 토글). Toggle sm 수치 정합 (h-8 list / min-h-7 / px-sm / label-sm).
+const LIST_CONTAINER_SM =
+  "inline-flex h-8 items-center justify-center rounded-sm bg-surface-input p-0.5 text-text-secondary";
+const TRIGGER_SM_BASE =
+  "inline-flex items-center justify-center whitespace-nowrap font-sans text-label-sm font-medium transition-all duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)] cursor-pointer";
+const TRIGGER_CONTAINER_SM = `${TRIGGER_SM_BASE} rounded-xs px-[var(--spacing-sm)] py-[var(--spacing-xs)] min-h-7`;
+const TRIGGER_CONTAINER_SM_ACTIVE = `${TRIGGER_CONTAINER_SM} bg-surface-default text-text-primary shadow-sm`;
+const TRIGGER_CONTAINER_SM_INACTIVE = `${TRIGGER_CONTAINER_SM} bg-transparent text-text-secondary`;
 
 // underline variant constants
 const TRIGGER_UNDERLINE_BASE = `${TRIGGER_BASE} rounded-none px-[var(--spacing-md)] py-[var(--spacing-sm)] bg-transparent`;
@@ -68,6 +77,28 @@ export const tabsExamples = [
     <label style="font-size:var(--text-label-md); font-weight:500; color:var(--color-text-primary); line-height:1;">이름</label>
     <input class="${INPUT_BASE}" value="김지원" />
   </div>
+</div>`,
+  },
+
+  {
+    title: "Container · sm (데스크 보조 컨트롤)",
+    description:
+      "container `size=\"sm\"` — h-8(32) list + min-h-7(28) trigger + `text-label-sm`(13). 정렬 선택·기간/빈도 토글처럼 정보 밀도 높은 데스크 보조 컨트롤. [Toggle](toggle.md) `sm` 수치 정합 — 색/active 처리는 default와 동일, height·padding·font만 축소. `sm`은 container 전용(underline/pills 미적용).",
+    jsx: `<Tabs defaultValue="latest" className="w-[320px]">
+  <TabsList size="sm" className="grid w-full grid-cols-3">
+    <TabsTrigger value="latest">최신순</TabsTrigger>
+    <TabsTrigger value="amount">금액순</TabsTrigger>
+    <TabsTrigger value="name">이름순</TabsTrigger>
+  </TabsList>
+  <TabsContent value="latest">최신순으로 정렬된 목록</TabsContent>
+</Tabs>`,
+    render: () => `<div style="width:320px;">
+  <div class="${LIST_CONTAINER_SM}" style="display:grid; grid-template-columns:1fr 1fr 1fr; width:100%;">
+    <button class="${TRIGGER_CONTAINER_SM_ACTIVE}">최신순</button>
+    <button class="${TRIGGER_CONTAINER_SM_INACTIVE}">금액순</button>
+    <button class="${TRIGGER_CONTAINER_SM_INACTIVE}">이름순</button>
+  </div>
+  <div style="margin-top:var(--spacing-sm); font-size:var(--text-body-sm); color:var(--color-text-secondary);">최신순으로 정렬된 목록</div>
 </div>`,
   },
 
