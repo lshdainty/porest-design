@@ -26,6 +26,7 @@ Porest Button은 **7 variants × 4 sizes × 5 states** 매트릭스로 정의되
 **규칙**
 
 - icon만 있을 땐 `size="icon"` (40×40 정사각, `radius-md` 둥근 박스). label 없으면 반드시 `aria-label` 또는 `Tooltip`. `ghost`와 함께 쓰면(리스트/툴바 아이콘 액션) 글씨색이 보조톤 `--color-text-secondary`로 약화.
+- 모바일 크롬 헤더(m-header)의 컨텍스트 아이콘(알림/검색)은 `size="iconLg"` (36×36 원형 `radius-full`, glyph 20px). `ghost`와 조합해도 보조톤 약화 없이 중립 `--color-text-primary` 유지 — 페이지당 1개뿐인 주 액션이라 약화 불필요.
 - label은 1~3 단어 권장. "확인" / "저장" / "삭제하기" 같이 결과를 짐작할 수 있게.
 - "확인" 같은 모호한 동사 단독 지양. 가능하면 "주문 확인" / "변경 저장" 등 목적어 포함.
 
@@ -55,7 +56,7 @@ Porest Button은 **7 variants × 4 sizes × 5 states** 매트릭스로 정의되
 | `accent` | transparent | `--color-primary` | — | — |
 | `link` | transparent | `--color-primary` | — | — |
 
-> **아이콘 액션 (`ghost` + `size="icon"`)**: 글씨색이 `--color-text-secondary`(보조톤)로 약화되고, hover 시 `--color-surface-input` 위 `radius-md` 둥근 정사각 박스로 또렷한 affordance. 리스트 행/툴바의 보조 아이콘 액션(편집·삭제·일시정지 등)에 사용. label 있는 `ghost`는 `--color-text-primary`(중립) 유지, `default`/`destructive` 등 채움 variant의 icon은 각 variant 색 유지.
+> **아이콘 액션 (`ghost` + `size="icon"`)**: 글씨색이 `--color-text-secondary`(보조톤)로 약화되고, hover 시 `--color-surface-input` 위 `radius-md` 둥근 정사각 박스로 또렷한 affordance. 리스트 행/툴바의 보조 아이콘 액션(편집·삭제·일시정지 등)에 사용. label 있는 `ghost`는 `--color-text-primary`(중립) 유지, `default`/`destructive` 등 채움 variant의 icon은 각 variant 색 유지. `size="iconLg"`(모바일 크롬 헤더)는 `ghost`여도 보조톤 약화 없이 중립 유지.
 
 브랜드 분기: HR `--color-primary` = `#357B5F`, Desk `--color-primary` = `#0147AD`. `default`/`accent`/`link` variant이 brand 색(`--color-primary`) 영향, `ghost` 포함 나머지는 brand-neutral.
 
@@ -69,13 +70,15 @@ Porest Button은 **7 variants × 4 sizes × 5 states** 매트릭스로 정의되
 | `md` *(default)* | 40px | `spacing-sm` (8) · `spacing-md` (12) | `text-body-md` | 15px | 16px | `radius-sm` (4) | AA ✓ · AAA ⚠ |
 | `lg` | 48px | `spacing-md` (12) · `spacing-lg` (16) | `text-title-sm` | 16px | 18px | `radius-md` (8) | AA ✓ · AAA ✓ |
 | `icon` | 40×40px | 0 | — | — | 16px | `radius-md` (8) | AA ✓ · AAA ⚠ |
+| `iconLg` | 36×36px | 0 | — | — | 20px | `radius-full` | AA ✓ · AAA ⚠ |
 
 Tailwind utility 매핑 (button.tsx cva):
 - `sm`: `h-8 px-2 py-1 text-caption [&_svg]:size-3.5`
 - `md`: `h-10 px-3 py-2 text-body-md [&_svg]:size-4`
 - `lg`: `h-12 px-4 py-3 text-title-sm rounded-md [&_svg]:size-[18px]`
 - `icon`: `h-10 w-10 rounded-md [&_svg]:size-4`
-- compound `ghost`+`icon`: `text-text-secondary` (아이콘 액션 보조톤 — variant text를 덮어씀)
+- `iconLg`: `h-9 w-9 p-0 rounded-full [&_svg]:size-5`
+- compound `ghost`+`icon`: `text-text-secondary` (아이콘 액션 보조톤 — variant text를 덮어씀. `iconLg`엔 미적용 — 중립 유지)
 
 공통(BASE):
 - `font-sans` (`var(--font-sans)` Pretendard) — `<button>` UA stylesheet가 body font를 inherit 안 해서 명시 필수. preview `.btn`은 `font-family: inherit`로 같은 효과.
@@ -88,6 +91,7 @@ Tailwind utility 매핑 (button.tsx cva):
 - `sm`은 dense list/toolbar 한정. 터치 우선 화면(모바일)에서는 `lg` 권장 (AAA 충족).
 - `lg`는 hero CTA 또는 폼 제출 버튼 + 모바일 sticky CTA. 한 페이지에 1~2개 이내.
 - `icon`은 정사각 + `radius-md`(8) — hover 시 아이콘을 감싸는 둥근 박스가 또렷한 affordance. 옆에 텍스트 버튼이 있을 때 시각 통일을 위해 `md`(h-10)와 같은 높이. `ghost`와 조합 시 글씨색 `--color-text-secondary`(보조톤).
+- `iconLg`는 모바일 크롬 헤더(m-header) 전용 — 36×36 원형(`radius-full`) + glyph 20px (클로드 디자인 `.m-header .ico-btn` 미러). "Lg"는 glyph(20px > icon의 16px) 기준. 페이지당 1개의 컨텍스트 아이콘(홈=알림 벨, 그 외=검색)에 사용하고, `ghost`와 조합해도 중립 `--color-text-primary` 유지.
 - gap (icon ↔ label) = 8px 고정 (`gap-sm`, 모든 사이즈).
 
 ## States
@@ -169,8 +173,8 @@ Tailwind utility 매핑 (button.tsx cva):
 | **WCAG 1.4.3** Color contrast (text ≥ 4.5:1) | `default` `--color-text-on-accent` × `--color-primary` = 4.5:1+ ✓ (`npm run lint:dark` 검증) |
 | **WCAG 1.4.3** Color contrast — `ghost` variant | `--color-text-primary` × `--color-bg-page` = 21:1 ✓ (중립 텍스트, 기본). `accent`는 `--color-primary` 글씨로 `default`와 동일 검증. |
 | **WCAG 1.4.11** Non-text contrast (UI ≥ 3:1) | focus ring `--color-border-focus` × `--color-bg-page` = 3:1+ ✓ |
-| **WCAG 2.5.8** Target Size — Minimum (AA — ≥ 24×24) | `sm` 32 ✅ / `md` 40 ✅ / `lg` 48 ✅ / `icon` 40 ✅ — 모든 사이즈 AA 통과 |
-| **WCAG 2.5.5** Target Size — Enhanced (AAA — ≥ 44×44) | `sm` 32 ⚠ 미달 / `md` 40 ⚠ 미달 / `lg` 48 ✅ / `icon` 40 ⚠ 미달 — `lg`만 AAA 충족. 모바일 터치 우선 화면은 `lg` 권장, `md`는 데스크톱/태블릿 큐이, `sm`은 dense list 한정. |
+| **WCAG 2.5.8** Target Size — Minimum (AA — ≥ 24×24) | `sm` 32 ✅ / `md` 40 ✅ / `lg` 48 ✅ / `icon` 40 ✅ / `iconLg` 36 ✅ — 모든 사이즈 AA 통과 |
+| **WCAG 2.5.5** Target Size — Enhanced (AAA — ≥ 44×44) | `sm` 32 ⚠ 미달 / `md` 40 ⚠ 미달 / `lg` 48 ✅ / `icon` 40 ⚠ 미달 / `iconLg` 36 ⚠ 미달 — `lg`만 AAA 충족. 모바일 터치 우선 화면은 `lg` 권장, `md`는 데스크톱/태블릿 큐이, `sm`은 dense list 한정. |
 | **WCAG 2.4.7** Focus visible | `focus-visible:ring-2 ring-ring/30` (keyboard focus 시만 표시, 마우스 click 시 안 뜸) |
 | **ARIA** | `<button>` element 자동. `asChild`로 `<a>` 사용 시 `role="button"` 명시적으로 추가하지 말 것 (이중 role 충돌). `aria-label` icon-only일 때 필수. |
 | **Reduced motion** | hover transition은 `motion-duration-fast` (150ms). `prefers-reduced-motion: reduce` 시 globally 0.01ms로 단축 (DESIGN.md `keyframes` 가이드). |
@@ -201,3 +205,4 @@ Tailwind utility 매핑 (button.tsx cva):
 - **v6: `loading` prop 정식 spec 도입** — desk-front 실제 사용 패턴 → porest-design spec 반영 (역방향 sync). 기존 spec 의 "Loading state (선택)" 권장 패턴 prose 만 있었고 prop / 구현 명세는 없었음. 이제 ButtonProps 에 `loading?: boolean` 정식 추가 + Spinner currentColor 상속 패턴(border `color-mix(currentColor 30%)` + border-top `currentColor`) 으로 variant 자동 적응. recipe button.tsx 에 구현 동기.
 - **v95: `ghost` 중립화 + `accent`(brand 강조) 분리** — #243에서 ghost를 brand(`--color-primary`)로 바꾼 결과 모든 ghost가 brand색이 됨. 의도는 "기본 중립 + 일부 강조"이므로 `ghost`를 중립(`--color-text-primary`)으로 되돌리고(기존 ghost 사용처 자동 중립화), brand 강조 quiet 버튼은 `accent` variant로 분리(transparent + `--color-primary`, ghost와 hover/state 동일). (v94에서 잠깐 도입한 중립 `text` variant는 ghost가 중립이 되며 불필요 → 제거.) button.tsx cva + examples + preview `.btn-ghost`/`.btn-accent` 동기.
 - **v96: `ghost`+`icon` 아이콘 액션 표준 + `icon` radius-md** — 리스트 행/툴바의 아이콘 액션 버튼(반복·카테고리·자산·예산·프리셋 관리 등)이 일부는 raw `<button>` 커스텀(`--color-text-secondary` + 32×32 + radius-md), 일부는 `ghost size="sm"`(`--color-text-primary` + 가로 px-3 + radius-sm)으로 갈려 색·모양 불일치. 더 또렷한 커스텀 톤을 표준화 — `size="icon"` radius `sm`→`md`(둥근 박스), compound `ghost`+`icon` 글씨색 `--color-text-secondary`(보조톤). label 있는 `ghost`(중립 `--color-text-primary`)·채움 variant의 icon(각 variant 색)은 불변이므로 cva **compoundVariants**로 `ghost`+`icon`만 한정. button.tsx size icon `rounded-md` + compoundVariants 동기, preview `.btn-icon`/examples 반영. (desk-front 5개 매니저 raw/sm → `ghost`+`icon` 통일, desk-app `PButton.icon` 동기.)
+- **v97: `iconLg` 사이즈 추가 — 모바일 크롬 헤더 컨텍스트 아이콘** — 모바일 헤더(m-header)의 페이지당 1개 아이콘(홈=알림 벨, 그 외=검색)이 desk-front에서 `ghost`+`icon`으로 구현돼 `[&_svg]:size-4`가 glyph를 16px로 강제 → 클로드 디자인 `.m-header .ico-btn`(36×36 원형, glyph 20px, `--color-text-primary`)·desk-app(20px)과 불일치(웹만 작게 보임). raw `<button>` + 커스텀 CSS 대신 정규 경로로 spec에 `iconLg` 추가: 36×36 · `radius-full` · glyph 20px, `ghost` 조합에서도 보조톤 약화 없이 중립 유지(페이지당 1개뿐인 주 액션). desk-front button.tsx `iconLg: h-9 w-9 p-0 rounded-full [&_svg]:size-5` + MobileHeader 적용, desk-app `PButtonSize.iconLg` + mobile_header 동기.
