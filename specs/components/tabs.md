@@ -64,7 +64,7 @@ Pills variant (토스 모바일 톤 — soft rectangle + primary fill)
 
 ## Sizes
 
-Tabs는 **container variant 한정 2 sizes(`default` / `sm`)** — underline/pills는 size variant 없음(`auto height`, 사용처가 폭만 조정). container `default` `h-10`(40) / `sm` `h-8`(32). 사용처에서 trigger 개수에 따라 폭만 조정(`w-full grid-cols-N` 등). 아래 첫 표는 **각 variant의 default 시각**, 이어지는 `### Container size variant` 표는 **container의 default/sm 분기**.
+Tabs는 **container · pills 2 sizes(`default` / `sm`)** — underline은 size variant 없음(`auto height`, 사용처가 폭만 조정). container `default` `h-10`(40) / `sm` `h-8`(32), pills `sm`은 모바일 카테고리 필터용 얇은 pill. 사용처에서 trigger 개수에 따라 폭만 조정(`w-full grid-cols-N` 등). 아래 첫 표는 **각 variant의 default 시각**, 이어지는 `### Container size variant` / `### Pills size variant` 표는 size 분기.
 
 | 항목 | container | underline | pills | 토큰 |
 |---|---|---|---|---|
@@ -86,7 +86,7 @@ Tabs는 **container variant 한정 2 sizes(`default` / `sm`)** — underline/pil
 
 ### Container size variant (`default` / `sm`)
 
-`sm`은 정보 밀도 높은 **데스크 보조 컨트롤** 전용 — 정렬 선택·기간/빈도 토글·카드 내부 view 전환처럼 container 40px가 과한 시각 무게인 곳. [`Toggle`](toggle.md) `sm` 수치 체계(`min-h-7` 28 + token padding)를 container에 그대로 확장 — Toggle/ToggleGroup의 `sm`/`default`/`lg`(28/32/40)와 대칭. `sm`은 **container 전용**(underline/pills 미적용).
+`sm`은 정보 밀도 높은 **데스크 보조 컨트롤** 전용 — 정렬 선택·기간/빈도 토글·카드 내부 view 전환처럼 container 40px가 과한 시각 무게인 곳. [`Toggle`](toggle.md) `sm` 수치 체계(`min-h-7` 28 + token padding)를 container에 그대로 확장 — Toggle/ToggleGroup의 `sm`/`default`/`lg`(28/32/40)와 대칭. 이 표는 **container**의 sm — pills도 `sm`이 있음(아래 `### Pills size variant`), underline만 size 없음.
 
 | 항목 | container `default` | container `sm` | 토큰 |
 |---|---|---|---|
@@ -110,6 +110,22 @@ Tabs는 **container variant 한정 2 sizes(`default` / `sm`)** — underline/pil
 - Trigger padding-X는 `default` `spacing-md`(12) → `sm` `spacing-sm`(8) — [`Toggle`](toggle.md) `sm` 정합. 10px 같은 off-token 값 금지.
 - 사용처: `sm` = 폼/dialog 내 보조 토글(기간·빈도·우선순위·반복)·정렬 선택·카드 내부 view 전환·밀도 높은 데스크 탭 / `default`(40px) = 페이지 최상위 navigation 탭·모바일 주요 화면(터치 타깃).
 - 코드: `size` prop은 `TabsList`에서 받아 context로 `TabsTrigger`에 전파([`ToggleGroup`](toggle-group.md) 패턴) — trigger마다 size 재지정 불필요.
+
+### Pills size variant (`default` / `sm`)
+
+pills `sm`은 **모바일 카테고리 필터·거래 종류** 등에서 `default`(py 8 / label-md)가 과한 높이일 때 — [`Toggle`](toggle.md) single 톤의 얇은 pill. radius-md·active 처리·간격은 동일, **height·padding·font만 축소**.
+
+| 항목 | pills `default` | pills `sm` | 토큰 |
+|---|---|---|---|
+| Trigger padding (Y · X) | 8 · 12 | 4 · 8 | `py-[var(--spacing-sm)]`·`px-[var(--spacing-md)]` / `py-[var(--spacing-xs)]`·`px-[var(--spacing-sm)]` |
+| Trigger min-height | ≈36 (내용) | 28px | `min-h-7` (sm) |
+| Trigger font | 14 / 500 | 13 / 500 | `text-label-md` / `text-label-sm` |
+| Trigger radius | 8px | 8px | `rounded-md` |
+| Active | `primary` fill + `text-on-accent` + 600 | (동일) | `bg-primary` / `text-text-on-accent` |
+| List gap | 4px | 4px | `gap-[var(--spacing-xs)]` |
+
+- **active fill은 `primary` — 다크 모드에서 `primary-light` swap**(웹 `--fg-brand` / 앱 `t.bgBrand` = light=cobalt500 / dark=cobalt400). `text-on-accent` 흰 글씨와 함께 다크/라이트 자연스럽게. (raw `--bg-brand`/`bgBrandSolid` 같은 고정 cobalt 금지 — 다크에서 안 밝아짐)
+- `sm`은 underline에는 없음(underline은 size 미적용). 사용처: 모바일 가계부 필터(전체/지출/수입)·거래 종류 등 밀도 높은 모바일 navigation.
 
 ## States
 
