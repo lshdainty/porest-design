@@ -28,6 +28,7 @@ import { Spinner } from "@/components/ui/spinner";
  *   md    h-10 px-4 / text-title-sm  — default
  *   lg    h-12 px-6 / text-title-md  — hero CTA, primary form action
  *   icon  h-10 w-10 rounded-md         — icon-only(둥근 박스). ghost 조합 시 글씨 보조톤(text-secondary)
+ *   iconLg h-9 w-9 rounded-full        — 모바일 크롬 헤더(m-header) 컨텍스트 아이콘, glyph 20px. ghost여도 중립 유지
  *
  * Loading
  *   loading prop — 비동기 액션 중에 좌측에 Spinner(size=sm) 노출 + disabled + aria-busy.
@@ -67,11 +68,13 @@ const buttonVariants = cva(
         md: "h-10 px-3 py-2 text-body-md [&_svg]:size-4",
         lg: "h-12 px-4 py-3 text-title-sm rounded-md [&_svg]:size-[18px]",
         icon: "h-10 w-10 rounded-md [&_svg]:size-4",
+        iconLg: "h-9 w-9 p-0 rounded-full [&_svg]:size-5",
       },
     },
     compoundVariants: [
       // 아이콘 액션 버튼(ghost+icon): 글씨색을 보조톤(text-secondary)으로 약화 —
       // 리스트 행/툴바의 quiet 아이콘 액션(편집·삭제·일시정지 등). label ghost(text-primary)·채움 variant icon은 불변.
+      // (iconLg는 모바일 크롬 헤더의 페이지당 1개 주 액션 — 약화 없이 중립 유지. v97)
       { variant: "ghost", size: "icon", className: "text-text-secondary" },
     ],
     defaultVariants: {

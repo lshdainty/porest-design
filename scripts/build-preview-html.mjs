@@ -814,12 +814,20 @@ export function renderButtonGallery(brand) {
 
   const PENCIL = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
   const TRASH = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+  const BELL = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>';
+  const SEARCH = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
   const iconRow = `
     <div class="btn-size-row">
       <div class="btn-size-label">icon action</div>
       <button class="btn btn-ghost btn-icon" aria-label="편집" title="편집">${PENCIL}</button>
       <button class="btn btn-ghost btn-icon btn-icon-danger" aria-label="삭제" title="삭제">${TRASH}</button>
       <span style="font-size:var(--text-caption); color:var(--color-text-tertiary);">ghost + size=icon · 보조톤(text-secondary) · radius-md 둥근 박스 · 삭제는 error 색</span>
+    </div>
+    <div class="btn-size-row">
+      <div class="btn-size-label">iconLg (m-header)</div>
+      <button class="btn btn-ghost btn-icon-lg" aria-label="알림" title="알림">${BELL}</button>
+      <button class="btn btn-ghost btn-icon-lg" aria-label="검색" title="검색">${SEARCH}</button>
+      <span style="font-size:var(--text-caption); color:var(--color-text-tertiary);">ghost + size=iconLg · 모바일 크롬 헤더 · 36×36 원형(radius-full) · glyph 20px · 중립색 유지</span>
     </div>`;
 
   const lede = brand.key === "hr"
@@ -2544,6 +2552,10 @@ export function pageCss() {
     .btn-ghost.btn-icon { color: var(--color-text-secondary); }
     .btn-icon.btn-icon-danger { color: var(--color-error); }
     .btn-icon svg { width: 16px; height: 16px; }
+    /* iconLg — 모바일 크롬 헤더(m-header) 컨텍스트 아이콘. 36×36 원형 + glyph 20px.
+       ghost여도 보조톤 약화 없음(중립 text-primary 유지) — button.md v97. */
+    .btn-icon-lg { width: 36px; height: 36px; padding: 0; border-radius: var(--radius-full); }
+    .btn-icon-lg svg { width: 20px; height: 20px; }
 
     /* Color identity */
     .ci-grid { display: grid; gap: var(--spacing-xl); }
