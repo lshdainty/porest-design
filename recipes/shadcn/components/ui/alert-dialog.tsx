@@ -10,7 +10,7 @@ import { buttonVariants } from "@/components/ui/button";
  * spec: specs/components/alert-dialog.md (단일 SoT)
  *
  * - Radix AlertDialog 베이스 — 비가역 액션 확정용.
- * - 시각은 Dialog와 동일 (radius-xl / p-10 / shadow-xl / display-sm title)
+ * - 시각은 Dialog와 동일 (radius-xl / p-10 / shadow-xl / title-md title)
  * - 동작 차이: overlay click 무시 / close button(X) 없음 / default focus = Cancel
  * - composition: AlertDialog > Trigger + Content > Header > Title / Description
  *                                                         + Footer > Cancel / Action
@@ -107,7 +107,7 @@ const AlertDialogTitle = React.forwardRef<
   <AlertDialogPrimitive.Title
     ref={ref}
     className={cn(
-      "text-display-sm font-bold leading-[var(--text-heading-lg--line-height)] text-text-primary tracking-[-0.01em]",
+      "text-title-md font-semibold leading-[var(--text-title-md--line-height)] text-text-primary tracking-[-0.01em]",
       className,
     )}
     {...props}

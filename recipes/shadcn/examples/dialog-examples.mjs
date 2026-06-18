@@ -3,7 +3,7 @@
  * spec: specs/components/dialog.md (단일 SoT)
  *
  * 정적 HTML preview에서는 항상 열린 상태로 시각만 표현.
- * 시각 톤은 preview-html의 .modal-* 패턴 정합 — radius-xl, p-10, shadow-xl, title=display-sm.
+ * 시각 톤은 preview-html의 .modal-* 패턴 정합 — radius-xl, p-10, shadow-xl, title=title-md.
  */
 
 const OVERLAY =
@@ -17,7 +17,7 @@ function content(size = "md") {
 }
 
 const TITLE =
-  "margin:0; font-size:var(--text-display-sm); line-height:var(--text-heading-lg--line-height); font-weight:700; color:var(--color-text-primary); letter-spacing:-0.01em;";
+  "margin:0; font-size:var(--text-title-md); line-height:var(--text-title-md--line-height); font-weight:600; color:var(--color-text-primary); letter-spacing:-0.01em;";
 const DESC =
   "margin:0; font-size:var(--text-body-md); line-height:1.6; color:var(--color-text-secondary);";
 
@@ -62,7 +62,7 @@ export const dialogExamples = [
   {
     title: "Default (md — 480 / p-10 / radius-xl)",
     description:
-      "preview .modal-dialog 톤과 동일 — display-sm title + body-md description + shadow-xl. 우상단 X close button.",
+      "preview .modal-dialog 톤과 동일 — title-md title + body-md description + shadow-xl. 우상단 X close button.",
     jsx: `<Dialog>
   <DialogTrigger asChild>
     <Button variant="outline">대화상자 열기</Button>
