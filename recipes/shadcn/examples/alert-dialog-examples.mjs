@@ -17,7 +17,7 @@ function content(size = "md") {
 }
 
 const TITLE =
-  "margin:0; font-size:var(--text-display-sm); line-height:var(--text-heading-lg--line-height); font-weight:700; color:var(--color-text-primary); letter-spacing:-0.01em;";
+  "margin:0; font-size:var(--text-title-md); line-height:var(--text-title-md--line-height); font-weight:600; color:var(--color-text-primary); letter-spacing:-0.01em;";
 const DESC =
   "margin:0; font-size:var(--text-body-md); line-height:1.6; color:var(--color-text-secondary);";
 
