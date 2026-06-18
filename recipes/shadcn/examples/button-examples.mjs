@@ -106,6 +106,25 @@ function stateBtn({ variant = "default", state = "enabled", children = "승인" 
 
 export const buttonExamples = [
   {
+    title: "Edge flush (광학 정렬)",
+    description: "ghost 버튼이 컨테이너 edge(footer 등)에 놓일 때 flush='left'/'right'로 해당 방향 padding 을 제거해 글자를 edge 에 맞춤. box·hover 위치·크기는 그대로(overhang 없음). filled 는 fill 이 edge 까지 닿아 불필요 → ghost 전용.",
+    jsx: `// footer 좌측 ghost 삭제 버튼 — flush 없으면 글자가 padding 만큼 안쪽으로 들어가
+// 우측 filled 버튼(fill 이 edge 까지 닿음)과 광학적으로 어긋남.
+<div className="flex items-center">
+  <Button variant="ghost" flush="left" style={{ marginRight: 'auto' }}>삭제</Button>
+  <Button>확인</Button>
+</div>`,
+    render: () => {
+      const box = `display:flex; align-items:center; padding:var(--spacing-md) var(--spacing-lg); border:1px dashed var(--color-border-default); border-radius:var(--radius-lg); max-width:340px;`;
+      const ghost = `${BASE} ${VARIANT.ghost} ${SIZE.md} pl-0`;
+      const filled = `${BASE} ${VARIANT.default} ${SIZE.md}`;
+      return `<div style="${box}">
+        <button class="${ghost}" style="color:var(--color-error); margin-right:auto;">삭제</button>
+        <button class="${filled}">확인</button>
+      </div>`;
+    },
+  },
+  {
     title: "State matrix",
     description: "variant × state 시각화 — 디자인 시스템에 정의된 hover / pressed / focus / disabled 상태가 각 variant에서 어떻게 적용되는지. 정적 preview라 인터랙션 없이 강제로 시각만 합성.",
     jsx: `// button.tsx의 cva 정의가 자동으로 :hover / :active / :focus-visible / :disabled 처리.
