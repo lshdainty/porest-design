@@ -70,6 +70,12 @@ const buttonVariants = cva(
         icon: "h-10 w-10 rounded-md [&_svg]:size-4",
         iconLg: "h-9 w-9 p-0 rounded-full [&_svg]:size-5",
       },
+      // flush — 컨테이너 edge 광학 정렬용. 해당 방향 가로 padding 만 제거해 ghost 버튼
+      // 글자/아이콘이 edge 에 flush(box·hover 위치는 그대로). footer 좌측 삭제 버튼 등.
+      flush: {
+        left: "pl-0",
+        right: "pr-0",
+      },
     },
     compoundVariants: [
       // 아이콘 액션 버튼(ghost+icon): 글씨색을 보조톤(text-secondary)으로 약화 —

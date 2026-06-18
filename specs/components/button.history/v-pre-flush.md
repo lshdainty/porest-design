@@ -150,14 +150,6 @@ Tailwind utility 매핑 (button.tsx cva):
 - 폭 좁은 화면에서 `flex-col gap-2` + 각 버튼 `w-full`.
 - 순서: primary 위, secondary 아래.
 
-**Edge flush (광학 정렬)** — `flush` prop
-
-- `flush="left" | "right"` — 해당 방향 가로 padding 을 0 으로 제거(`pl-0` / `pr-0`).
-- 목적: `ghost`(투명) 버튼이 컨테이너 edge(예: dialog/sheet footer 의 좌측 삭제 버튼)에 놓일 때, box(=hover 영역)는 edge 에 붙어도 내부 좌/우 padding 만큼 글자가 안쪽으로 들어가 **채워진 버튼(fill 이 edge 까지 닿음)과 광학적으로 어긋나** 보이는 문제 해결.
-- box·hover 영역 위치·크기는 그대로 — content(글자·아이콘)만 edge 로 당겨짐(overhang 없음). 반대쪽 padding 은 유지.
-- **`ghost` 전용 권장.** filled(default/secondary/outline)은 fill 이 이미 edge 까지 닿아 불필요. icon-only(`icon`/`iconLg`)는 padding 이 없어 무관.
-- 사용처: footer 의 leftmost ghost 삭제/해제/초기화 버튼, 하단 액션 바의 좌측 ghost 액션 → `flush="left"`.
-
 ## Behavior
 
 | 인터랙션 | 동작 |
@@ -214,4 +206,3 @@ Tailwind utility 매핑 (button.tsx cva):
 - **v95: `ghost` 중립화 + `accent`(brand 강조) 분리** — #243에서 ghost를 brand(`--color-primary`)로 바꾼 결과 모든 ghost가 brand색이 됨. 의도는 "기본 중립 + 일부 강조"이므로 `ghost`를 중립(`--color-text-primary`)으로 되돌리고(기존 ghost 사용처 자동 중립화), brand 강조 quiet 버튼은 `accent` variant로 분리(transparent + `--color-primary`, ghost와 hover/state 동일). (v94에서 잠깐 도입한 중립 `text` variant는 ghost가 중립이 되며 불필요 → 제거.) button.tsx cva + examples + preview `.btn-ghost`/`.btn-accent` 동기.
 - **v96: `ghost`+`icon` 아이콘 액션 표준 + `icon` radius-md** — 리스트 행/툴바의 아이콘 액션 버튼(반복·카테고리·자산·예산·프리셋 관리 등)이 일부는 raw `<button>` 커스텀(`--color-text-secondary` + 32×32 + radius-md), 일부는 `ghost size="sm"`(`--color-text-primary` + 가로 px-3 + radius-sm)으로 갈려 색·모양 불일치. 더 또렷한 커스텀 톤을 표준화 — `size="icon"` radius `sm`→`md`(둥근 박스), compound `ghost`+`icon` 글씨색 `--color-text-secondary`(보조톤). label 있는 `ghost`(중립 `--color-text-primary`)·채움 variant의 icon(각 variant 색)은 불변이므로 cva **compoundVariants**로 `ghost`+`icon`만 한정. button.tsx size icon `rounded-md` + compoundVariants 동기, preview `.btn-icon`/examples 반영. (desk-front 5개 매니저 raw/sm → `ghost`+`icon` 통일, desk-app `PButton.icon` 동기.)
 - **v97: `iconLg` 사이즈 추가 — 모바일 크롬 헤더 컨텍스트 아이콘** — 모바일 헤더(m-header)의 페이지당 1개 아이콘(홈=알림 벨, 그 외=검색)이 desk-front에서 `ghost`+`icon`으로 구현돼 `[&_svg]:size-4`가 glyph를 16px로 강제 → 클로드 디자인 `.m-header .ico-btn`(36×36 원형, glyph 20px, `--color-text-primary`)·desk-app(20px)과 불일치(웹만 작게 보임). raw `<button>` + 커스텀 CSS 대신 정규 경로로 spec에 `iconLg` 추가: 36×36 · `radius-full` · glyph 20px, `ghost` 조합에서도 보조톤 약화 없이 중립 유지(페이지당 1개뿐인 주 액션). desk-front button.tsx `iconLg: h-9 w-9 p-0 rounded-full [&_svg]:size-5` + MobileHeader 적용, desk-app `PButtonSize.iconLg` + mobile_header 동기.
-- **v98: `flush` prop 추가 — edge 광학 정렬** — dialog/sheet footer 의 좌측 `ghost` 삭제 버튼이 투명 배경 + 내부 좌측 padding 때문에, box(hover)는 edge 에 붙어도 글자가 안쪽으로 들어가 채워진 우측 버튼(fill 이 edge 까지 닿음)과 광학적으로 어긋나 보임(desk-front/desk-app 양쪽 다수 dialog). cva `flush` variant 도입: `left: pl-0` / `right: pr-0` — 해당 방향 padding 만 0(box·hover 위치 불변, content 만 edge 로). `ghost` 전용 권장(filled 불필요). recipe button.tsx cva 동기, desk-front `<Button flush>` / desk-app `PButtonFlush{left,right}` 구현 동기(footer 좌측 ghost 삭제/해제/초기화·하단 액션 바 좌측 ghost 일괄 적용).
