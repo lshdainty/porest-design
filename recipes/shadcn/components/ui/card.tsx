@@ -10,11 +10,16 @@ import { cn } from "@/lib/utils";
  * - composition: Card > CardHeader > CardTitle / CardDescription
  *                     > CardContent
  *                     > CardFooter
- * - 색상: surface-default 배경
- * - variant (v5):
- *   - `shadow` (default): border 없음 + shadow-sm. 일반 정보 카드 (preview .review-* SoT).
- *   - `bordered`: 1px border-subtle + shadow 없음. dense info / inline summary
+ * - 색상: variant 별 background (surface-default / bg-muted / bg-brand-subtle)
+ * - variant (v5/v6):
+ *   - `shadow` (default): surface-default + border 없음 + shadow-sm. 일반 정보 카드 (preview .review-* SoT).
+ *   - `bordered`: surface-default + 1px border-subtle + shadow 없음. dense info / inline summary
  *     (선택 기간 hint, chart card 내 sub-card). app PCard.bordered 와 정합.
+ *   - `muted` (v6): bg-muted fill + border·shadow 없음. 다이얼로그/시트 위 sunken 톤
+ *     info 박스 (구독 스포트라이트, day-detail 합계). app PCard.muted 정합.
+ *   - `brand` (v6): bg-brand-subtle + 1px border-brand + shadow 없음. 브랜드 틴트 강조
+ *     ('현재 플랜' 배너, selected/active). app PCard.brand 정합. 보더는 사용처에서
+ *     border-brand-soft 로 override 가능(은은한 강조).
  * - radius: lg(12), padding: **mobile lg(16) / desktop md+ xl(24)** (v4 responsive)
  *
  * box-shadow는 Tailwind utility(`shadow-sm`) 대신 inline style로 `var(--shadow-sm)`
@@ -28,13 +33,15 @@ import { cn } from "@/lib/utils";
  */
 
 const cardVariants = cva(
-  "rounded-lg bg-surface-default text-text-primary transition-[background-color,box-shadow] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]",
+  "rounded-lg text-text-primary transition-[background-color,box-shadow] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]",
   {
     variants: {
       variant: {
         // shadow 는 inline style 로 box-shadow 적용 — Card 컴포넌트에서 style prop 으로 처리.
-        shadow: "",
-        bordered: "border border-border-subtle",
+        shadow: "bg-surface-default",
+        bordered: "bg-surface-default border border-border-subtle",
+        muted: "bg-[var(--bg-muted)]",
+        brand: "bg-[var(--bg-brand-subtle)] border border-[var(--border-brand)]",
       },
     },
     defaultVariants: {
@@ -51,9 +58,9 @@ const Card = React.forwardRef<
     ref={ref}
     className={cn(cardVariants({ variant }), className)}
     style={{
-      // shadow variant 만 inline shadow 적용 (Tailwind v4 다크 모드 override 우회 fix).
-      // bordered variant 는 border-only 라 shadow 없음.
-      boxShadow: variant === "bordered" ? undefined : "var(--shadow-sm)",
+      // shadow variant(또는 미지정=default)만 inline shadow 적용 (Tailwind v4 다크 모드
+      // override 우회 fix). bordered/muted/brand 는 border·fill-only 라 shadow 없음.
+      boxShadow: variant && variant !== "shadow" ? undefined : "var(--shadow-sm)",
       ...style,
     }}
     {...props}
