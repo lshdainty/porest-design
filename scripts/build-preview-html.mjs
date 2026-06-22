@@ -1742,6 +1742,14 @@ export function renderShadcnInput(brand) {
           <button class="tgg-item">${brand.key === "hr" ? "우선순위" : "card"}</button>
         </div>
       </div>
+      <div class="sc-card">
+        <div class="sc-head">Toggle Group (solid)</div>
+        <div class="tgg tgg--solid" role="radiogroup">
+          <button class="tgg-item">주간</button>
+          <button class="tgg-item tgg-item--active" aria-checked="true">월간</button>
+          <button class="tgg-item">연간</button>
+        </div>
+      </div>
       <div class="sc-card sc-card--full">
         <div class="sc-head">Input OTP — 6자리</div>
         <div class="otp">
@@ -3652,6 +3660,8 @@ export function pageCss() {
     .tgg-item + .tgg-item { border-left: 1px solid var(--color-border-default); }
     .tgg-item:hover { background: var(--color-surface-input); }
     .tgg-item--active { background: var(--color-surface-input); color: var(--color-text-primary); font-weight: 600; }
+    /* solid visual (v3) — active 채움 primary + 흰글씨 + 600, shadow 없음 (subtle 과 차이 = 채움 색). */
+    .tgg--solid .tgg-item--active { background: var(--color-primary); color: var(--color-text-on-accent, #fff); }
 
     /* Input OTP */
     /* OTP — spec: specs/components/input-otp.md (단일 SoT) */
@@ -3932,6 +3942,8 @@ export function pageCss() {
     [data-theme="dark"] .car-arrow:hover,
     [data-theme="dark"] .ctx-item:hover,
     [data-theme="dark"] .sb-item:hover { background: var(--color-surface-input-dark); }
+    /* solid segmented active 는 다크에서도 primary 유지(subtle dark override 보다 specificity 우선). */
+    [data-theme="dark"] .tgg--solid .tgg-item--active { background: var(--color-primary); color: var(--color-text-on-accent, #fff); }
     [data-theme="dark"] .cmd-input { background: var(--color-surface-default-dark); border-color: var(--color-border-default-dark); color: var(--color-text-primary-dark); }
     [data-theme="dark"] .drw-frame { background: var(--color-bg-page-dark); }
     [data-theme="dark"] .drw-handle { background: var(--color-surface-input-dark); }

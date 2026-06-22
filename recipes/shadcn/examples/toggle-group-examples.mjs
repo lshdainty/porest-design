@@ -11,6 +11,8 @@ const ITEM_BASE =
 const SIZE_DEFAULT = "px-[var(--spacing-md)] py-[var(--spacing-xs)] min-h-8";
 
 const STATE_ON = "bg-surface-input text-text-primary";
+// solid visual (v3) — active 채움 primary + 흰글씨 + 600, shadow 없음.
+const STATE_ON_SOLID = "bg-primary text-text-on-accent";
 
 const GROUP_ROOT =
   "inline-flex items-center border border-border-default rounded-md overflow-hidden divide-x divide-border-default";
@@ -58,6 +60,22 @@ export const toggleGroupExamples = [
   <button class="${ITEM_BASE} ${SIZE_DEFAULT}" aria-label="왼쪽 정렬">${ALIGN_LEFT}</button>
   <button class="${ITEM_BASE} ${SIZE_DEFAULT} ${STATE_ON}" aria-label="가운데 정렬" data-state="on">${ALIGN_CENTER}</button>
   <button class="${ITEM_BASE} ${SIZE_DEFAULT}" aria-label="오른쪽 정렬">${ALIGN_RIGHT}</button>
+</div>`,
+  },
+
+  {
+    title: "Solid visual (v3)",
+    description:
+      "visual='solid' — active 를 `primary` 채움 + 흰글씨 + 600(shadow 없음)으로 강조. ‟현재 선택‟ 을 명확히 부각해야 할 때(form type/모드 전환). subtle 과 차이는 채움 색뿐.",
+    jsx: `<ToggleGroup type="single" visual="solid" defaultValue="month">
+  <ToggleGroupItem value="week">주간</ToggleGroupItem>
+  <ToggleGroupItem value="month">월간</ToggleGroupItem>
+  <ToggleGroupItem value="year">연간</ToggleGroupItem>
+</ToggleGroup>`,
+    render: () => `<div class="${GROUP_ROOT}">
+  <button class="${ITEM_BASE} ${SIZE_DEFAULT}" aria-pressed="false">주간</button>
+  <button class="${ITEM_BASE} ${SIZE_DEFAULT} ${STATE_ON_SOLID}" aria-pressed="true" data-state="on">월간</button>
+  <button class="${ITEM_BASE} ${SIZE_DEFAULT}" aria-pressed="false">연간</button>
 </div>`,
   },
 
