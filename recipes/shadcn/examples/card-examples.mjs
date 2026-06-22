@@ -170,4 +170,54 @@ export const cardExamples = [
   </div>
 </div>`,
   },
+
+  {
+    title: "Muted variant (v6)",
+    description: "bg-muted fill + border·shadow 없음 — 다이얼로그/시트 위 sunken 톤 info 박스 (구독 스포트라이트, day-detail 합계).",
+    jsx: `<Card variant="muted" className="max-w-md">
+  <CardContent>
+    <div className="flex items-center justify-between">
+      <span className="text-body-sm text-text-secondary">이번 달 합계</span>
+      <span className="text-title-sm font-bold text-text-primary">₩1,284,000</span>
+    </div>
+  </CardContent>
+</Card>`,
+    render: () => `<div class="${CARD}" style="background:var(--color-surface-input); max-width:448px;">
+  <div class="${CONTENT}">
+    <div style="display:flex; align-items:center; justify-content:space-between;">
+      <span style="font-size:var(--text-body-sm); color:var(--color-text-secondary);">이번 달 합계</span>
+      <span style="font-size:var(--text-title-sm); font-weight:700; color:var(--color-text-primary);">₩1,284,000</span>
+    </div>
+  </div>
+</div>`,
+  },
+
+  {
+    title: "Brand variant (v6)",
+    description: "bg-brand-subtle + 1px border-brand + shadow 없음 — 브랜드 틴트 강조 ('현재 플랜' 배너, selected/active). 보더는 사용처에서 border-brand-soft 로 은은하게 override 가능.",
+    jsx: `<Card variant="brand" className="max-w-md">
+  <CardContent>
+    <div className="flex items-center gap-3">
+      <span className="inline-flex size-11 items-center justify-center rounded-md bg-[var(--bg-brand)] text-[var(--fg-on-brand)]">
+        <Sparkles size={20} />
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="text-body-md font-bold text-text-primary">Porest Pro 이용 중</div>
+        <div className="text-caption text-text-secondary mt-0.5">다음 결제 2026-07-04 · 9,900원</div>
+      </div>
+    </div>
+  </CardContent>
+</Card>`,
+    render: () => `<div class="${CARD}" style="background:color-mix(in srgb, var(--color-primary) 8%, var(--color-surface-default)); border:1px solid var(--color-primary); max-width:448px;">
+  <div class="${CONTENT}">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <span style="display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:var(--radius-md); background:var(--color-primary); color:var(--color-text-on-accent);">✨</span>
+      <div style="flex:1; min-width:0;">
+        <div style="font-size:var(--text-body-md); font-weight:700; color:var(--color-text-primary);">Porest Pro 이용 중</div>
+        <div style="font-size:var(--text-caption); color:var(--color-text-secondary); margin-top:2px;">다음 결제 2026-07-04 · 9,900원</div>
+      </div>
+    </div>
+  </div>
+</div>`,
+  },
 ];
