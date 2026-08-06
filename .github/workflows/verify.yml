@@ -8,6 +8,9 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  # 손으로 돌릴 수 있게 열어 둔다. 머지했는데 실행이 안 잡히는 일이 실제로 있었다
+  # (2026-08-07 Actions 장애 — push 이벤트가 통째로 유실됐다).
+  workflow_dispatch:
 
 jobs:
   verify:
