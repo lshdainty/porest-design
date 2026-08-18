@@ -45,6 +45,7 @@ import { hoverCardExamples } from "../recipes/shadcn/examples/hover-card-example
 import { sheetExamples } from "../recipes/shadcn/examples/sheet-examples.mjs";
 import { drawerExamples } from "../recipes/shadcn/examples/drawer-examples.mjs";
 import { sonnerExamples } from "../recipes/shadcn/examples/sonner-examples.mjs";
+import { swipeActionsExamples } from "../recipes/shadcn/examples/swipe-actions-examples.mjs";
 // Phase 4 Navigation
 import { tabsExamples } from "../recipes/shadcn/examples/tabs-examples.mjs";
 import { breadcrumbExamples } from "../recipes/shadcn/examples/breadcrumb-examples.mjs";
@@ -134,6 +135,7 @@ const SHADCN_EXAMPLES = {
   sheet: sheetExamples,
   drawer: drawerExamples,
   sonner: sonnerExamples,
+  "swipe-actions": swipeActionsExamples,
   // Phase 4 Navigation
   tabs: tabsExamples,
   breadcrumb: breadcrumbExamples,
@@ -1961,6 +1963,7 @@ const SHADCN_CATALOG = [
   { slug: "popover", name: "Popover", category: "Overlay", description: "트리거 클릭 시 떠오르는 패널." },
   { slug: "sheet", name: "Sheet", category: "Overlay", description: "사이드 슬라이드 패널." },
   { slug: "sonner", name: "Sonner", category: "Overlay", description: "토스트 알림 (shadcn 권장)." },
+  { slug: "swipe-actions", name: "Swipe Actions", category: "Data Display", description: "리스트 행을 밀어 편집·삭제에 바로 닿는 모바일 패턴." },
   { slug: "tooltip", name: "Tooltip", category: "Overlay", description: "호버 시 짧은 설명." },
 
   // Navigation (9)

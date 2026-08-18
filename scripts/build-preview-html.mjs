@@ -3508,6 +3508,18 @@ export function pageCss() {
 
     /* === v73-v78 batch === */
 
+    /* Swipe Actions — swipe-actions.md SoT 정합.
+       정적 preview 라 제스처가 없다. 열린 상태를 그려 트레이 시각만 보인다.
+       방향은 논리 속성(inset-inline-end)으로 둬 RTL 에서 저절로 뒤집힌다. */
+    .swipe { position: relative; overflow: hidden; border: 1px solid var(--color-border-default); border-radius: var(--radius-md); background: var(--color-surface-default); }
+    .swipe-tray { position: absolute; inset-block: 0; inset-inline-end: 0; display: flex; }
+    .swipe-action { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; flex-shrink: 0; inline-size: 72px; min-block-size: 56px; align-self: stretch; padding: var(--spacing-sm); border: 0; font-size: 12px; font-weight: 600; line-height: 1.3; cursor: pointer; }
+    .swipe-action--neutral { background: var(--color-bg-page); color: var(--color-text-primary); }
+    .swipe-action--primary { background: var(--color-primary); color: var(--color-text-on-accent); }
+    .swipe-action--destructive { background: var(--color-error); color: var(--color-text-on-accent); }
+    .swipe-row { position: relative; display: flex; align-items: center; gap: var(--spacing-md); padding: var(--spacing-md); background: var(--color-surface-default); transition: transform var(--motion-duration-fast) var(--motion-ease-out); }
+    @media (prefers-reduced-motion: reduce) { .swipe-row { transition: none; } }
+    
     /* Banner */
     /* Banner — alert.md SoT 정합 (brand vignette는 banner-icon 필드 사용,
        site Alert은 stroke svg 사용). 시각 spec(border-l 4px + 8% bg + gap-md)은 동기. */
