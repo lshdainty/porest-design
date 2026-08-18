@@ -32,7 +32,8 @@ Bottom sheet (모바일 표준)
 
 - title 없는 drawer는 `aria-label` 필수 (스크린리더 대응).
 - handle은 bottom drawer에만 — side drawer에선 시각적으로 의미 없음(생략).
-- footer의 button은 항상 `flex:1` — 모바일에서 한 손 조작 가능한 너비 확보.
+- footer의 button은 항상 `flex:1` — 모바일에서 한 손 조작 가능한 너비 확보. 모바일에선 `size="lg"`(48).
+- footer 의 **취소는 `ghost`**(테두리 없이 글씨만) — 전체 폭 버튼 둘이 테두리·채움으로 나란히 서면 위계가 흐려진다.
 - bottom drawer는 `radius-xl` top corners만, side drawer(right)는 `radius-xl` left corners만 — slide 방향의 반대편 둥글기.
 
 ## Variants (side)
@@ -127,7 +128,7 @@ Bottom sheet (모바일 표준)
 
 - drawer 안 form input이 너무 많을 때 키보드가 콘텐츠를 가림 — 긴 form은 별도 페이지 또는 dialog로.
 - bottom drawer에 handle 생략 — 드래그 가능 affordance 사라짐.
-- footer button 3개+ 평등 분배 — 결정 피로. 보조 액션은 ghost + outline로 위계 분리.
+- footer button 3개+ 평등 분배 — 결정 피로. 액션은 2개까지로 줄이고, 삭제 같은 파괴적 보조는 footer 최좌측 `ghost` + `flush="left"` 로 분리(균등 분배에서 제외).
 - side drawer에 handle 추가 — 시각적 의미 없음.
 
 ## Migration notes

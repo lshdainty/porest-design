@@ -38,9 +38,9 @@ Porest Button은 **7 variants × 4 sizes × 5 states** 매트릭스로 정의되
 |---|---|---|---|
 | `default` | 가장 강한 주 액션 (primary) | ●●●●● | 페이지/모달당 1개 권장. 폼 제출, 핵심 CTA. |
 | `destructive` | 되돌릴 수 없는 위험 액션 | ●●●●● | 삭제 확정. 반드시 confirm dialog 안에서. |
-| `outline` | 보조 액션 (secondary) | ●●●○○ | primary 옆 cancel. 두 번째 우선순위. |
+| `outline` | 보조 액션 (secondary) | ●●●○○ | 툴바·인라인의 두 번째 우선순위 액션. **모달 footer 의 취소는 `ghost`** (아래 참조). |
 | `secondary` | 동등 보조 액션 | ●●○○○ | toolbar 안 그룹 액션. 회색 채움. |
-| `ghost` | 약한 액션 / nav 자리 (중립색, 기본) | ●○○○○ | 메뉴 항목, icon 버튼, 리스트 행 액션, breadcrumb-like. 대부분의 quiet 액션. |
+| `ghost` | 약한 액션 / nav 자리 (중립색, 기본) | ●○○○○ | 메뉴 항목, icon 버튼, 리스트 행 액션, breadcrumb-like. **모달 footer 의 취소/나중에**. 대부분의 quiet 액션. |
 | `accent` | 강조 quiet 액션 (brand색, 임팩트) | ●●○○○ | ghost와 동일하되 brand 글씨로 강조. 한 영역에 소수만. |
 | `link` | 인라인 텍스트 링크 | ●○○○○ | 본문 흐름 안의 약한 링크. |
 
@@ -191,7 +191,8 @@ Tailwind utility 매핑 (button.tsx cva):
 
 ### ✅ Do
 
-- 페이지/모달당 `default` 1개. 보조는 `outline`.
+- 페이지/모달당 `default` 1개. 보조는 `outline` — 단 **모달 footer 의 취소는 `ghost`**(테두리 없이 글씨만).
+- 모바일 모달 footer 는 `lg`(48) + 가로 균등 분배 — 한 손 조작 폭 확보. [`dialog`](dialog.md)·[`drawer`](drawer.md) 참조.
 - destructive는 항상 confirm dialog 안에서. label은 "삭제" / "탈퇴" 같이 결과 명시.
 - icon-only는 `size="icon"` + 반드시 `aria-label` 또는 인접 `Tooltip`.
 - 모바일에서 sticky bottom CTA는 `lg` + `w-full` + 안전 영역 (`pb-safe`).
@@ -201,12 +202,19 @@ Tailwind utility 매핑 (button.tsx cva):
 
 - 한 화면에 `default`(primary) 여러 개 — 위계 무너짐. 1개만.
 - 4개 이상의 버튼을 한 줄에 — DropdownMenu로 분리.
-- `ghost`를 primary 액션으로 — affordance 부족.
+- `ghost`를 primary 액션으로 — affordance 부족. (모달 footer 의 **취소**는 primary 가 아니므로 `ghost` 가 정답이다.)
+- 모달 footer 취소에 `outline` — 전체 폭 버튼 둘이 나란히 테두리·채움으로 서면 위계가 흐려지고, 취소가 주 액션만큼 눈에 띈다.
 - `sm` size를 모바일 터치 타겟으로 — AA 미달.
 - destructive를 좌측에 두고 cancel을 우측에 — 사용자가 destructive를 잘못 누를 위험.
 - `disabled` 버튼에 hover/click 가짜 피드백 — 혼란 유발. 정말 disable일 땐 그대로 표시.
 
 ## Migration notes
+
+### 2026-08 — 모달 footer 취소를 `ghost` 로
+
+모바일 모달 footer 가 전체 폭 버튼 2개로 바뀌면서(아래 dialog/drawer 참조) 취소에 테두리를 두면
+주 액션과 시각 무게가 비슷해져 위계가 무너진다. 모달 footer 의 취소·나중에는 `ghost`(테두리 없이 글씨만)로 통일한다.
+**모달 footer 밖의 `outline` 용법은 그대로다** — 툴바·인라인 보조 액션은 계속 `outline`.
 
 - 옛 prose-token `button-primary` / `button-outline-on-dark` (DESIGN.md v55, v93에서 `outlined` → `outline` 명명 통일)은 이 spec의 `default` / `outline` variant로 1:1 매핑.
 - 옛 height (`h-9` / `h-11`)는 v83 Toss 매핑에서 `h-8` / `h-12`로 정정 (4px 그리드 정합).

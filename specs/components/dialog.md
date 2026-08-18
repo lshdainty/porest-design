@@ -111,8 +111,11 @@ Dialog는 open/closed 2 state. Radix `data-state` attribute(`open`/`closed`)로 
 **footer**
 
 - body와 `mt-md` (12px) 또는 `gap-md` (flex 안일 경우 자동).
-- `flex justify-end gap-sm`. primary 우측, cancel 좌측.
-- 모바일 좁은 화면은 `flex-col-reverse w-full` + 각 button `w-full` (shadcn 기본).
+- 데스크탑(**≥ 640px**, `--breakpoint-sm`): `flex justify-end gap-sm`. primary 우측, cancel 좌측.
+- 모바일(**< 640px**): `flex gap-sm` + 각 button `flex-1`(가로 균등 분배) + `size="lg"`(48).
+  한 손 조작 폭을 확보한다 — [`drawer`](drawer.md) footer 와 같은 규칙.
+- 모달 footer 의 **취소는 `ghost`**(테두리 없이 글씨만). 전체 폭 버튼 둘이 나란히 테두리·채움으로
+  서면 위계가 흐려진다. [`button`](button.md) Migration notes 참조.
 
 ## Behavior
 
@@ -151,7 +154,7 @@ DropdownMenu의 `onSelect` 콜백에서 직접 dialog를 열면 `body { pointer-
 - description은 결과·영향을 명시 ("삭제 후 30일 보관함에 보관됩니다") — 사용자 결정에 필요한 정보.
 - footer button은 우측 정렬, primary 우측 끝. cancel은 좌측. **destructive primary는 `AlertDialog` 사용**.
 - 정보 확인용은 `.dialog-fields` 패턴(gray 채움 + key-val) — 한눈에 비교 가능.
-- 모바일 좁은 화면에서 button 그룹은 `flex-col-reverse w-full`(shadcn 기본) — primary가 위.
+- 모바일(< 640px)에서 footer button 은 `flex-1` 균등 분배 + `lg`(48) — primary 우측, 취소 좌측(`ghost`).
 
 ### ❌ Don't
 
