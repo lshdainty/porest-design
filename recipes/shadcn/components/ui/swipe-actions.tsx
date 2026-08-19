@@ -19,18 +19,38 @@ import { cn } from "@/lib/utils";
  * 미끄러져 지워지는 것보다 한 번 더 누르게 하는 편이 낫다.
  */
 
-/** 액션 하나의 폭(px). 한글 두 글자 + 20px 아이콘이 겹치지 않는 최소치. */
-export const SWIPE_ACTION_WIDTH = 72;
+/** 원형 배지 지름(px). 행 높이 안에 배지 + 라벨이 함께 들어가는 최대치. */
+export const SWIPE_BADGE_SIZE = 36;
+
+/** 행 내용과 첫 액션 사이. 바짝 붙으면 배지가 행에 얹힌 것처럼 보인다. */
+export const SWIPE_GAP_LEAD = 20;
+
+/** 액션끼리 사이. 배지 둘이 붙으면 하나의 알약처럼 뭉쳐 보인다. */
+export const SWIPE_GAP_BETWEEN = 12;
+
+/**
+ * 액션 하나가 차지하는 폭 — 배지 + 그 **앞** 간격.
+ *
+ * 간격을 앞에만 둔다. 뒤에도 두면 마지막 배지와 화면 끝이 벌어져 덜 열린 것처럼 보인다.
+ */
+export const swipeSlotWidth = (index: number) =>
+  SWIPE_BADGE_SIZE + (index === 0 ? SWIPE_GAP_LEAD : SWIPE_GAP_BETWEEN);
 
 /** 이 비율 이상 밀면 열린 채로 스냅한다. */
 const OPEN_THRESHOLD = 0.4;
 
+/**
+ * 액션 = 원형 배지(아이콘) + 그 아래 라벨.
+ *
+ * 색은 배지만 갖는다 — 트레이에 색을 깔면 행 옆에 박스가 하나 더 생긴 것처럼 보이고,
+ * 색 덩어리가 화면을 반 갈라 행보다 먼저 눈에 들어온다.
+ *
+ * transform 은 쓰지 않는다(밀어 둔 트레이와 이중으로 움직여 어지럽다).
+ */
 const swipeActionVariants = cva(
-  // Radius 는 0 — 트레이는 행에 붙어 잘려 나오는 면이라 굴리면 행과 어긋나 보인다.
-  // transform 은 쓰지 않는다(밀어 둔 트레이와 이중으로 움직여 어지럽다).
-  "flex flex-col items-center justify-center gap-[2px] shrink-0 " +
-    "w-[72px] min-h-[56px] self-stretch px-[var(--spacing-sm)] py-[var(--spacing-sm)] " +
-    "text-caption font-semibold [&>svg]:size-5 " +
+  "group flex flex-col items-center justify-center gap-[2px] shrink-0 " +
+    "min-h-[56px] self-stretch bg-transparent " +
+    "text-caption font-semibold " +
     "transition-[filter] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)] " +
     "hover:brightness-92 active:brightness-88 " +
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-border-focus " +
@@ -38,9 +58,9 @@ const swipeActionVariants = cva(
   {
     variants: {
       kind: {
-        neutral: "bg-bg-page text-text-primary",
-        primary: "bg-primary text-text-on-accent",
-        destructive: "bg-error text-text-on-accent",
+        neutral: "text-text-secondary [&_.badge]:bg-bg-muted [&_.badge]:text-text-primary",
+        primary: "text-text-secondary [&_.badge]:bg-info [&_.badge]:text-text-on-accent",
+        destructive: "text-error [&_.badge]:bg-error [&_.badge]:text-text-on-accent",
       },
     },
     defaultVariants: { kind: "neutral" },
@@ -73,7 +93,8 @@ const SwipeActions = React.forwardRef<HTMLDivElement, SwipeActionsProps>(
     const startX = React.useRef<number | null>(null);
     const dragging = React.useRef(false);
 
-    const trayWidth = actions.length * SWIPE_ACTION_WIDTH;
+    // 액션마다 슬롯 폭이 다르다 — 첫 액션만 행에서 더 떨어뜨린다.
+    const trayWidth = actions.reduce((w, _, i) => w + swipeSlotWidth(i), 0);
     const open = offset >= trayWidth * OPEN_THRESHOLD;
 
     if (!enabled || actions.length === 0) return <>{children}</>;
@@ -110,16 +131,28 @@ const SwipeActions = React.forwardRef<HTMLDivElement, SwipeActionsProps>(
           className="absolute inset-y-0 right-0 flex"
           aria-hidden={!open}
         >
-          {actions.map((a) => (
+          {/* 역순으로 그린다 — 조금만 밀면 바깥쪽부터 드러나므로, 순서대로 두면
+              파괴적 액션이 제일 먼저 손에 닿는다. 호출처는 의미 순서 그대로 넘긴다. */}
+          {[...actions].reverse().map((a, i) => (
             <button
               key={a.label}
               type="button"
               disabled={a.disabled}
               tabIndex={open ? 0 : -1}
               className={swipeActionVariants({ kind: a.kind })}
+              // 간격을 배지 앞에만 둬 마지막 액션이 화면 끝에 딱 붙는다.
+              style={{
+                width: swipeSlotWidth(i),
+                paddingLeft: i === 0 ? SWIPE_GAP_LEAD : SWIPE_GAP_BETWEEN,
+              }}
               onClick={a.onSelect}
             >
-              {a.icon}
+              <span
+                className="badge flex items-center justify-center rounded-full [&>svg]:size-[18px]"
+                style={{ width: SWIPE_BADGE_SIZE, height: SWIPE_BADGE_SIZE }}
+              >
+                {a.icon}
+              </span>
               {a.label}
             </button>
           ))}

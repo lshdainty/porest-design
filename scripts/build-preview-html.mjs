@@ -3513,10 +3513,17 @@ export function pageCss() {
        방향은 논리 속성(inset-inline-end)으로 둬 RTL 에서 저절로 뒤집힌다. */
     .swipe { position: relative; overflow: hidden; border: 1px solid var(--color-border-default); border-radius: var(--radius-md); background: var(--color-surface-default); }
     .swipe-tray { position: absolute; inset-block: 0; inset-inline-end: 0; display: flex; }
-    .swipe-action { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; flex-shrink: 0; inline-size: 72px; min-block-size: 56px; align-self: stretch; padding: var(--spacing-sm); border: 0; font-size: 12px; font-weight: 600; line-height: 1.3; cursor: pointer; }
-    .swipe-action--neutral { background: var(--color-bg-page); color: var(--color-text-primary); }
-    .swipe-action--primary { background: var(--color-primary); color: var(--color-text-on-accent); }
-    .swipe-action--destructive { background: var(--color-error); color: var(--color-text-on-accent); }
+    /* 트레이에 배경을 두지 않는다 — 색은 원형 배지만 갖는다. 간격은 배지 앞에만 둬
+       마지막 액션이 화면 끝에 딱 붙는다(뒤에도 두면 덜 열린 것처럼 보인다). */
+    .swipe-action { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; flex-shrink: 0; min-block-size: 56px; align-self: stretch; background: transparent; border: 0; font-size: 12px; font-weight: 600; line-height: 1.3; cursor: pointer; inline-size: 48px; padding-inline-start: 12px; }
+    .swipe-action:first-child { inline-size: 56px; padding-inline-start: 20px; }
+    .swipe-badge { display: flex; align-items: center; justify-content: center; inline-size: 36px; block-size: 36px; border-radius: 50%; }
+    .swipe-action--neutral { color: var(--color-text-secondary); }
+    .swipe-action--neutral .swipe-badge { background: var(--color-bg-muted); color: var(--color-text-primary); }
+    .swipe-action--primary { color: var(--color-text-secondary); }
+    .swipe-action--primary .swipe-badge { background: var(--color-info); color: var(--color-text-on-accent); }
+    .swipe-action--destructive { color: var(--color-error); }
+    .swipe-action--destructive .swipe-badge { background: var(--color-error); color: var(--color-text-on-accent); }
     .swipe-row { position: relative; display: flex; align-items: center; gap: var(--spacing-md); padding: var(--spacing-md); background: var(--color-surface-default); transition: transform var(--motion-duration-fast) var(--motion-ease-out); }
     @media (prefers-reduced-motion: reduce) { .swipe-row { transition: none; } }
     
