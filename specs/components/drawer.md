@@ -21,7 +21,7 @@ Bottom sheet (모바일 표준)
             ⓐ container (surface-default + shadow-xl + radius-xl top)
 ```
 
-| ⓐ container | preview `.drw-bottom` 그대로 — `background:var(--color-surface-default); border-radius:var(--radius-xl) var(--radius-xl) 0 0; box-shadow:var(--shadow-xl); display:flex; flex-direction:column; gap:var(--spacing-md);` **border 없음** — shadow만으로 elevation. **좌우 여백은 20px** — header·body·footer 가 같은 값을 쓴다(아래 참조). |
+| ⓐ container | preview `.drw-bottom` 그대로 — `background:var(--color-surface-default); border-radius:var(--radius-xl) var(--radius-xl) 0 0; box-shadow:var(--shadow-xl); display:flex; flex-direction:column; gap:var(--spacing-md);` **border 없음** — shadow만으로 elevation. **좌우 여백은 `--spacing-xl`(24)** — header·body·footer 가 같은 값을 쓴다(아래 참조). |
 | ⓑ handle | preview `.drw-handle` 그대로 — `width:40px; height:4px; background:var(--color-surface-input); border-radius:var(--radius-full); margin:-4px auto var(--spacing-sm);` bottom drawer에만. side drawer는 생략. |
 | ⓒ header | preview `.drw-header` — `display:flex; justify-content:space-between; align-items:center;` title 좌, close 우. |
 | ⓓ close | preview `.drw-close` — 28×28 ghost icon button. `aria-label="닫기"`. focus-visible 시 ring. |
@@ -95,20 +95,19 @@ Bottom sheet (모바일 표준)
 
 ## 좌우 여백
 
-**header · body · footer 가 모두 좌우 20px.** 한 곳만 달라도 제목·내용·버튼의 세로선이
-어긋나 시트가 좁아 보인다.
+**header · body · footer 가 모두 좌우 `--spacing-xl`(24).** 한 곳만 달라도 제목·내용·버튼의
+세로선이 어긋나 시트가 좁아 보인다.
 
 | 영역 | 좌 | 우 | 세로 |
 |---|---|---|---|
-| header(제목 + 닫기) | 20 | **8** | `pt-2 pb-4` |
-| body | 20 | 20 | — (스크롤) |
-| footer | 20 | 20 | `py-3` |
+| header(제목 + 닫기) | `--spacing-xl` | **`--spacing-sm`** | `pt-2 pb-4` |
+| body | `--spacing-xl` | `--spacing-xl` | — (스크롤) |
+| footer | `--spacing-xl` | `--spacing-xl` | `py-3` |
 
-header 우측만 8인 것은 닫기 아이콘 버튼이 자체 padding 을 갖기 때문 — 아이콘의 광학
-중심은 20 선에 선다. 버튼을 빼고 텍스트만 두면 20 이다.
+header 우측만 `--spacing-sm`(8)인 것은 닫기 아이콘 버튼이 자체 padding 을 갖기 때문 —
+아이콘의 광학 중심은 24 선에 선다. 버튼을 빼고 텍스트만 두면 24 다.
 
-> 웹은 `px-5`, 앱은 `PSpace.x20` — 같은 20px 이다. spacing 토큰에는 20 이 없어 두
-> 플랫폼 모두 스케일 밖의 값을 직접 쓴다.
+> 웹 `px-xl`, 앱 `PSpace.xl` — 둘 다 토큰이다. 픽셀값을 직접 쓰지 않는다.
 
 ## 액션 구성
 
@@ -200,7 +199,8 @@ footer 액션은 **최대 2개**. 셋이 나란히 서면 무엇이 주 액션�
 - handle bar는 vaul 기본 패턴이나 shadcn은 `bg-muted` 사용 — preview SoT(`surface-input` + 40×4 + `radius-full` + `margin:-4px auto spacing-sm`)로 정정.
 - footer는 shadcn 기본 `mt-auto flex` — preview `.drw-actions` SoT(`gap-sm` + `padding-top sm` + `border-top` + `[&>*]:flex-1`)로 정정.
 - `padding:24px gap:8px` 같은 px 하드코드 → spacing 토큰 직접 인용.
-- **2026-08 좌우 여백을 20 으로 통일** — spec 은 `padding-lg`(16) 였는데 웹 구현은 이미 `px-5`(20)
-  였고, 앱은 header·body 16 / footer 20 으로 섞여 있었다. 셋이 다르면 세로선이 어긋나 시트가
-  좁아 보인다. 실제로 쓰이던 20 을 기준으로 맞췄다(앱 시트 27곳 정정).
+- **2026-08 좌우 여백을 `--spacing-xl`(24)로 통일** — spec 은 `padding-lg`(16) 였는데 웹 구현은
+  `px-5`(20), 앱은 header·body 16 / footer 20 으로 셋이 다 달랐다. 세로선이 어긋나 시트가 좁아
+  보인다. **20 은 spacing 스케일에 없는 값**이라 24(`xl`)로 올려 토큰으로 맞췄다 —
+  웹 `px-5`→`px-xl`, 앱 `PSpace.x16/x20`→`PSpace.xl`(시트 45곳).
 - **box-shadow는 Tailwind utility(`shadow-xl`) 대신 inline `style={{ boxShadow: "var(--shadow-xl)" }}` 사용** — Tailwind v4 `--tw-shadow-*` 분해 처리가 다크 모드 CSS 변수 override를 우회하는 문제 fix. preview `.drw-bottom` SoT와 다크 모드 정합 보장. 상세는 [`dialog.md`](dialog.md) Migration notes 참조.
