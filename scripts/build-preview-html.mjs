@@ -3519,10 +3519,11 @@ export function pageCss() {
     .swipe-action:first-child { inline-size: 56px; padding-inline-start: 20px; }
     .swipe-badge { display: flex; align-items: center; justify-content: center; inline-size: 36px; block-size: 36px; border-radius: 50%; }
     .swipe-action--neutral { color: var(--color-text-secondary); }
-    .swipe-action--neutral .swipe-badge { background: var(--color-bg-muted); color: var(--color-text-primary); }
+    .swipe-action--neutral .swipe-badge { background: var(--color-surface-input); color: var(--color-text-primary); }
     .swipe-action--primary { color: var(--color-text-secondary); }
     .swipe-action--primary .swipe-badge { background: var(--color-info); color: var(--color-text-on-accent); }
     .swipe-action--destructive { color: var(--color-error); }
+    [data-theme="dark"] .swipe-action--destructive { color: var(--color-error-light); }
     .swipe-action--destructive .swipe-badge { background: var(--color-error); color: var(--color-text-on-accent); }
     .swipe-row { position: relative; display: flex; align-items: center; gap: var(--spacing-md); padding: var(--spacing-md); background: var(--color-surface-default); transition: transform var(--motion-duration-fast) var(--motion-ease-out); }
     @media (prefers-reduced-motion: reduce) { .swipe-row { transition: none; } }
