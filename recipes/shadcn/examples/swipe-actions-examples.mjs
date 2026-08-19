@@ -12,7 +12,7 @@
 const CONTAINER =
   "position:relative; overflow:hidden; max-width:420px; border:1px solid var(--color-border-default); border-radius:var(--radius-md); background:var(--color-surface-default); font-family:var(--font-sans);";
 
-const TRAY = "position:absolute; inset-block:0; right:0; display:flex;";
+const TRAY = "position:absolute; inset-block:0; inset-inline-end:0; display:flex;";
 
 const BADGE = 36;
 const GAP_LEAD = 20;
@@ -29,7 +29,7 @@ const BADGE_BASE =
 const KIND_STYLE = {
   neutral: {
     label: "color:var(--color-text-secondary);",
-    badge: "background:var(--color-bg-muted); color:var(--color-text-primary);",
+    badge: "background:var(--color-surface-input); color:var(--color-text-primary);",
   },
   primary: {
     label: "color:var(--color-text-secondary);",
