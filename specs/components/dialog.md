@@ -114,8 +114,10 @@ Dialog는 open/closed 2 state. Radix `data-state` attribute(`open`/`closed`)로 
 - 데스크탑(**≥ 640px**, `--breakpoint-sm`): `flex justify-end gap-sm`. primary 우측, cancel 좌측.
 - 모바일(**< 640px**): `flex gap-sm` + 각 button `flex-1`(가로 균등 분배) + `size="lg"`(48).
   한 손 조작 폭을 확보한다 — [`drawer`](drawer.md) footer 와 같은 규칙.
-- 모달 footer 의 **취소는 `ghost`**(테두리 없이 글씨만). 전체 폭 버튼 둘이 나란히 테두리·채움으로
-  서면 위계가 흐려진다. [`button`](button.md) Migration notes 참조.
+- 모달 footer 의 **취소는 `secondary`**(테두리 없는 회색 채움), **삭제는 `dangerSoft`**(옅은 빨강
+  채움). 주 액션만 `default`(info 채움)로 두고 보조는 옅게 채워 무게 차이를 준다 —
+  `ghost` 는 배경이 없어 전체 폭 배치에서 버튼으로 보이지 않는다.
+  [`button`](button.md) Migration notes 참조.
 - **액션은 최대 2개** — 상세는 `삭제`·`편집`, 편집 폼은 `취소`·`저장`. 우상단 X 가 이미 닫기이므로
   footer 에 `확인`·`닫기` 를 두지 않는다. 줄이는 순서와 예외는 [`drawer`](drawer.md#액션-구성) SoT.
 
@@ -157,7 +159,7 @@ DropdownMenu의 `onSelect` 콜백에서 직접 dialog를 열면 `body { pointer-
 - footer button은 우측 정렬, primary 우측 끝. cancel은 좌측. **destructive primary는 `AlertDialog` 사용**.
 - 액션 2개까지 — 3번째가 필요해 보이면 `확인`·`닫기` 부터 뺀다(우상단 X 와 중복).
 - 정보 확인용은 `.dialog-fields` 패턴(gray 채움 + key-val) — 한눈에 비교 가능.
-- 모바일(< 640px)에서 footer button 은 `flex-1` 균등 분배 + `lg`(48) — primary 우측, 취소 좌측(`ghost`).
+- 모바일(< 640px)에서 footer button 은 `flex-1` 균등 분배 + `lg`(48) — 주 액션 우측(`default`), 보조 좌측(`secondary`/`dangerSoft`).
 
 ### ❌ Don't
 

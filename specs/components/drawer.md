@@ -33,7 +33,9 @@ Bottom sheet (모바일 표준)
 - title 없는 drawer는 `aria-label` 필수 (스크린리더 대응).
 - handle은 bottom drawer에만 — side drawer에선 시각적으로 의미 없음(생략).
 - footer의 button은 항상 `flex:1` — 모바일에서 한 손 조작 가능한 너비 확보. 모바일에선 `size="lg"`(48).
-- footer 의 **취소는 `ghost`**(테두리 없이 글씨만) — 전체 폭 버튼 둘이 테두리·채움으로 나란히 서면 위계가 흐려진다.
+- footer 의 **취소는 `secondary`**(테두리 없는 회색 채움), **삭제는 `dangerSoft`**(옅은 빨강 채움).
+  전체 폭 버튼 둘이 나란히 설 때 `ghost` 는 배경이 없어 한쪽이 빈자리처럼 보인다 —
+  주 액션은 `default`(info 채움), 보조는 옅게 채워 무게 차이만 준다.
 - bottom drawer는 `radius-xl` top corners만, side drawer(right)는 `radius-xl` left corners만 — slide 방향의 반대편 둥글기.
 
 ## Variants (side)
@@ -127,7 +129,8 @@ footer 액션은 **최대 2개**. 셋이 나란히 서면 무엇이 주 액션�
 | 자산 상세 | `금액 가리기` · `편집` |
 | 내역 분할 | `분할 해제` · `저장` |
 
-`삭제` 와 파괴적 보조는 균등 분배에서 빠져 최좌측에 붙는다(`ghost` + `flush="left"`).
+액션이 2개면 **둘 다 균등 분배**한다 — 좌측이 옅은 채움이라 무게 차이는 색으로 충분하다.
+3개가 남는 데스크탑 배치에서만 `삭제`·파괴적 보조를 최좌측에 붙인다(`ghost` + `flush="left"`).
 
 > [`AlertDialog`](alert-dialog.md) 는 예외 — X 가 없으므로 `취소` 를 반드시 남긴다.
 

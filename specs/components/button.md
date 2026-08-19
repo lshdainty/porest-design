@@ -38,8 +38,9 @@ Porest Button은 **7 variants × 4 sizes × 5 states** 매트릭스로 정의되
 |---|---|---|---|
 | `default` | 가장 강한 주 액션 (primary) | ●●●●● | 페이지/모달당 1개 권장. 폼 제출, 핵심 CTA. |
 | `destructive` | 되돌릴 수 없는 위험 액션 | ●●●●● | 삭제 확정. 반드시 confirm dialog 안에서. |
-| `outline` | 보조 액션 (secondary) | ●●●○○ | 툴바·인라인의 두 번째 우선순위 액션. **모달 footer 의 취소는 `ghost`** (아래 참조). |
-| `secondary` | 동등 보조 액션 | ●●○○○ | toolbar 안 그룹 액션. 회색 채움. |
+| `outline` | 보조 액션 (secondary) | ●●●○○ | 툴바·인라인의 두 번째 우선순위 액션. **모달 footer 의 취소는 `secondary`** (아래 참조). |
+| `secondary` | 동등 보조 액션 | ●●○○○ | toolbar 안 그룹 액션, **모달 footer 의 취소**. 테두리 없는 회색 채움. |
+| `dangerSoft` | 파괴적 보조 액션 | ●●○○○ | 모달 footer 의 **삭제**. 테두리 없는 옅은 빨강 채움 + 빨강 글씨. 확정이 아니라 confirm 을 여는 버튼. |
 | `ghost` | 약한 액션 / nav 자리 (중립색, 기본) | ●○○○○ | 메뉴 항목, icon 버튼, 리스트 행 액션, breadcrumb-like. **모달 footer 의 취소/나중에**. 대부분의 quiet 액션. |
 | `accent` | 강조 quiet 액션 (brand색, 임팩트) | ●●○○○ | ghost와 동일하되 brand 글씨로 강조. 한 영역에 소수만. |
 | `link` | 인라인 텍스트 링크 | ●○○○○ | 본문 흐름 안의 약한 링크. |
@@ -48,10 +49,11 @@ Porest Button은 **7 variants × 4 sizes × 5 states** 매트릭스로 정의되
 
 | Variant | bg (enabled) | text | border | shadow |
 |---|---|---|---|---|
-| `default` | `--color-primary` | `--color-text-on-accent` | — | `--shadow-sm` |
+| `default` | `--color-info` | `--color-text-on-accent` | — | `--shadow-sm` |
 | `destructive` | `--color-error` | `--color-text-on-accent` | — | `--shadow-sm` |
 | `outline` | transparent | `--color-text-primary` | `--color-border-default` (1px) | — |
 | `secondary` | `--color-surface-input` | `--color-text-primary` | — | — |
+| `dangerSoft` | `--status-danger-subtle` (error 12%) | `--status-danger-fg` | — | — |
 | `ghost` | transparent | `--color-text-primary` | — | — |
 | `accent` | transparent | `--color-primary` | — | — |
 | `link` | transparent | `--color-primary` | — | — |
@@ -102,11 +104,11 @@ Tailwind utility 매핑 (button.tsx cva):
 
 | State | Background | Brightness | Shadow | Transform | Ring | Cursor |
 |---|---|---|---|---|---|---|
-| `enabled` | `--color-primary` | 100% | `--shadow-sm` | none | none | `pointer` |
-| `hovered` | `--color-primary` | 105% | **`--shadow-md`** | none | none | `pointer` |
-| `focused` (visible) | `--color-primary` | 100% | `--shadow-sm` | none | 2px `--color-border-focus` + 2px offset (`ring-2 ring-ring ring-offset-2`). 다크 모드에서는 `--color-border-focus-light`로 자동 alias (어두운 표면에서 시인성 확보 — WCAG 1.4.11). | `pointer` |
-| `pressed` (active) | `--color-primary` | 95% | **none** | **`scale(0.98)`** | none | `pointer` |
-| `disabled` | `--color-primary` | 100% (opacity 0.5) | `--shadow-sm` | none | none | `not-allowed` |
+| `enabled` | `--color-info` | 100% | `--shadow-sm` | none | none | `pointer` |
+| `hovered` | `--color-info` | 105% | **`--shadow-md`** | none | none | `pointer` |
+| `focused` (visible) | `--color-info` | 100% | `--shadow-sm` | none | 2px `--color-border-focus` + 2px offset (`ring-2 ring-ring ring-offset-2`). 다크 모드에서는 `--color-border-focus-light`로 자동 alias (어두운 표면에서 시인성 확보 — WCAG 1.4.11). | `pointer` |
+| `pressed` (active) | `--color-info` | 95% | **none** | **`scale(0.98)`** | none | `pointer` |
+| `disabled` | `--color-info` | 100% (opacity 0.5) | `--shadow-sm` | none | none | `not-allowed` |
 
 ### 다른 variant의 state 차이
 
@@ -115,6 +117,7 @@ Tailwind utility 매핑 (button.tsx cva):
 | `destructive` | brightness 105 + `shadow-md` | brightness 95 + scale(0.98) + shadow none (default와 동일 패턴, base color만 `--color-error`) |
 | `outline` | `bg-surface-input` + `border-strong` | `bg-border-default` + scale(0.98) (shadow 없음) |
 | `secondary` | `bg-border-default` | brightness 95 + scale(0.98) |
+| `dangerSoft` | error 18% | brightness 95 + scale(0.98) |
 | `ghost` | `bg-surface-input` | `bg-border-default` + scale(0.98) |
 | `accent` | `bg-surface-input` | `bg-border-default` + scale(0.98) (ghost와 동일, 글씨만 brand `--color-primary`) |
 | `link` | `underline` | brightness 90 |
@@ -191,7 +194,7 @@ Tailwind utility 매핑 (button.tsx cva):
 
 ### ✅ Do
 
-- 페이지/모달당 `default` 1개. 보조는 `outline` — 단 **모달 footer 의 취소는 `ghost`**(테두리 없이 글씨만).
+- 페이지/모달당 `default` 1개. 보조는 `outline` — 단 **모달 footer 는 `secondary`**(취소)·`dangerSoft`(삭제).
 - 모바일 모달 footer 는 `lg`(48) + 가로 균등 분배 — 한 손 조작 폭 확보. [`dialog`](dialog.md)·[`drawer`](drawer.md) 참조.
 - destructive는 항상 confirm dialog 안에서. label은 "삭제" / "탈퇴" 같이 결과 명시.
 - icon-only는 `size="icon"` + 반드시 `aria-label` 또는 인접 `Tooltip`.
@@ -202,7 +205,8 @@ Tailwind utility 매핑 (button.tsx cva):
 
 - 한 화면에 `default`(primary) 여러 개 — 위계 무너짐. 1개만.
 - 4개 이상의 버튼을 한 줄에 — DropdownMenu로 분리.
-- `ghost`를 primary 액션으로 — affordance 부족. (모달 footer 의 **취소**는 primary 가 아니므로 `ghost` 가 정답이다.)
+- `ghost`를 primary 액션으로 — affordance 부족.
+- **모달 footer 의 좌측 버튼을 `ghost` 로** — 전체 폭 두 버튼이 나란히 설 때 배경 없는 쪽은 버튼으로 안 보인다. `secondary`/`dangerSoft` 로 옅게 채운다.
 - 모달 footer 취소에 `outline` — 전체 폭 버튼 둘이 나란히 테두리·채움으로 서면 위계가 흐려지고, 취소가 주 액션만큼 눈에 띈다.
 - `sm` size를 모바일 터치 타겟으로 — AA 미달.
 - destructive를 좌측에 두고 cancel을 우측에 — 사용자가 destructive를 잘못 누를 위험.
@@ -210,16 +214,27 @@ Tailwind utility 매핑 (button.tsx cva):
 
 ## Migration notes
 
-### 2026-08 — 모달 footer 취소를 `ghost` 로
+### 2026-08 — 모달 footer 취소를 `ghost` 로 (→ 아래 항목에서 `secondary` 로 정정)
 
-모바일 모달 footer 가 전체 폭 버튼 2개로 바뀌면서(아래 dialog/drawer 참조) 취소에 테두리를 두면
-주 액션과 시각 무게가 비슷해져 위계가 무너진다. 모달 footer 의 취소·나중에는 `ghost`(테두리 없이 글씨만)로 통일한다.
-**모달 footer 밖의 `outline` 용법은 그대로다** — 툴바·인라인 보조 액션은 계속 `outline`.
+전체 폭 버튼 둘이 테두리·채움으로 나란히 서면 위계가 흐려진다고 보고 취소를 `ghost` 로 통일했다.
+**실제로는 배경이 아예 없어 버튼으로 보이지 않는 게 더 큰 문제였다** — 아래 항목에서 다시 고쳤다.
 
-- 옛 prose-token `button-primary` / `button-outline-on-dark` (DESIGN.md v55, v93에서 `outlined` → `outline` 명명 통일)은 이 spec의 `default` / `outline` variant로 1:1 매핑.
-- 옛 height (`h-9` / `h-11`)는 v83 Toss 매핑에서 `h-8` / `h-12`로 정정 (4px 그리드 정합).
-- **v6: `loading` prop 정식 spec 도입** — desk-front 실제 사용 패턴 → porest-design spec 반영 (역방향 sync). 기존 spec 의 "Loading state (선택)" 권장 패턴 prose 만 있었고 prop / 구현 명세는 없었음. 이제 ButtonProps 에 `loading?: boolean` 정식 추가 + Spinner currentColor 상속 패턴(border `color-mix(currentColor 30%)` + border-top `currentColor`) 으로 variant 자동 적응. recipe button.tsx 에 구현 동기.
-- **v95: `ghost` 중립화 + `accent`(brand 강조) 분리** — #243에서 ghost를 brand(`--color-primary`)로 바꾼 결과 모든 ghost가 brand색이 됨. 의도는 "기본 중립 + 일부 강조"이므로 `ghost`를 중립(`--color-text-primary`)으로 되돌리고(기존 ghost 사용처 자동 중립화), brand 강조 quiet 버튼은 `accent` variant로 분리(transparent + `--color-primary`, ghost와 hover/state 동일). (v94에서 잠깐 도입한 중립 `text` variant는 ghost가 중립이 되며 불필요 → 제거.) button.tsx cva + examples + preview `.btn-ghost`/`.btn-accent` 동기.
-- **v96: `ghost`+`icon` 아이콘 액션 표준 + `icon` radius-md** — 리스트 행/툴바의 아이콘 액션 버튼(반복·카테고리·자산·예산·프리셋 관리 등)이 일부는 raw `<button>` 커스텀(`--color-text-secondary` + 32×32 + radius-md), 일부는 `ghost size="sm"`(`--color-text-primary` + 가로 px-3 + radius-sm)으로 갈려 색·모양 불일치. 더 또렷한 커스텀 톤을 표준화 — `size="icon"` radius `sm`→`md`(둥근 박스), compound `ghost`+`icon` 글씨색 `--color-text-secondary`(보조톤). label 있는 `ghost`(중립 `--color-text-primary`)·채움 variant의 icon(각 variant 색)은 불변이므로 cva **compoundVariants**로 `ghost`+`icon`만 한정. button.tsx size icon `rounded-md` + compoundVariants 동기, preview `.btn-icon`/examples 반영. (desk-front 5개 매니저 raw/sm → `ghost`+`icon` 통일, desk-app `PButton.icon` 동기.)
-- **v97: `iconLg` 사이즈 추가 — 모바일 크롬 헤더 컨텍스트 아이콘** — 모바일 헤더(m-header)의 페이지당 1개 아이콘(홈=알림 벨, 그 외=검색)이 desk-front에서 `ghost`+`icon`으로 구현돼 `[&_svg]:size-4`가 glyph를 16px로 강제 → 클로드 디자인 `.m-header .ico-btn`(36×36 원형, glyph 20px, `--color-text-primary`)·desk-app(20px)과 불일치(웹만 작게 보임). raw `<button>` + 커스텀 CSS 대신 정규 경로로 spec에 `iconLg` 추가: 36×36 · `radius-full` · glyph 20px, `ghost` 조합에서도 보조톤 약화 없이 중립 유지(페이지당 1개뿐인 주 액션). desk-front button.tsx `iconLg: h-9 w-9 p-0 rounded-full [&_svg]:size-5` + MobileHeader 적용, desk-app `PButtonSize.iconLg` + mobile_header 동기.
-- **v98: `flush` prop 추가 — edge 광학 정렬** — dialog/sheet footer 의 좌측 `ghost` 삭제 버튼이 투명 배경 + 내부 좌측 padding 때문에, box(hover)는 edge 에 붙어도 글자가 안쪽으로 들어가 채워진 우측 버튼(fill 이 edge 까지 닿음)과 광학적으로 어긋나 보임(desk-front/desk-app 양쪽 다수 dialog). cva `flush` variant 도입: `left: pl-0` / `right: pr-0` — 해당 방향 padding 만 0(box·hover 위치 불변, content 만 edge 로). `ghost` 전용 권장(filled 불필요). recipe button.tsx cva 동기, desk-front `<Button flush>` / desk-app `PButtonFlush{left,right}` 구현 동기(footer 좌측 ghost 삭제/해제/초기화·하단 액션 바 좌측 ghost 일괄 적용).
+### 2026-08 — 채움 버튼을 `info` 로, 모달 footer 좌측을 옅은 채움으로
+
+세 가지를 한 번에 정리했다.
+
+**1. `default` 채움색 `--color-primary`(#0147AD) → `--color-info`(#1D6FCB).**
+브랜드 primary 는 남색에 가까워 버튼 채움으로 쓰면 무겁다. 토스를 비롯한 국내 앱도 버튼에는
+로고색이 아니라 한 단계 밝은 파랑을 쓴다. **버튼 채움에 한정** — 탭 선택·토글·배지 등
+brand 채움을 쓰는 다른 자리는 그대로 `--bg-brand`(primary) 다.
+
+**2. 모달 footer 의 취소는 `secondary`**(테두리 없는 회색 채움). `ghost` 는 배경이 없어
+전체 폭 두 버튼 중 한쪽이 빈자리처럼 보였다.
+
+**3. 모달 footer 의 삭제는 `dangerSoft`**(옅은 빨강 채움 + 빨강 글씨). 같은 이유이고,
+파괴적 액션이라 중립 회색 대신 error 계열로 둔다. 삭제 **확정**은 여전히
+[`AlertDialog`](alert-dialog.md) 의 `destructive`(솔리드 빨강)다.
+
+`secondary` 는 원래 spec 상 테두리가 없는데(Color tokens 표) 웹·앱 구현에만 1px border 가
+들어가 있었다 — 이번에 구현을 spec 에 맞춰 제거했다.
+
