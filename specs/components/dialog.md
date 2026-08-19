@@ -116,6 +116,8 @@ Dialog는 open/closed 2 state. Radix `data-state` attribute(`open`/`closed`)로 
   한 손 조작 폭을 확보한다 — [`drawer`](drawer.md) footer 와 같은 규칙.
 - 모달 footer 의 **취소는 `ghost`**(테두리 없이 글씨만). 전체 폭 버튼 둘이 나란히 테두리·채움으로
   서면 위계가 흐려진다. [`button`](button.md) Migration notes 참조.
+- **액션은 최대 2개** — 상세는 `삭제`·`편집`, 편집 폼은 `취소`·`저장`. 우상단 X 가 이미 닫기이므로
+  footer 에 `확인`·`닫기` 를 두지 않는다. 줄이는 순서와 예외는 [`drawer`](drawer.md#액션-구성) SoT.
 
 ## Behavior
 
@@ -153,6 +155,7 @@ DropdownMenu의 `onSelect` 콜백에서 직접 dialog를 열면 `body { pointer-
 - title은 사용자 행위를 직접 표현 ("프로필 편집", "메모 삭제 확인") — 시스템 톤 회피.
 - description은 결과·영향을 명시 ("삭제 후 30일 보관함에 보관됩니다") — 사용자 결정에 필요한 정보.
 - footer button은 우측 정렬, primary 우측 끝. cancel은 좌측. **destructive primary는 `AlertDialog` 사용**.
+- 액션 2개까지 — 3번째가 필요해 보이면 `확인`·`닫기` 부터 뺀다(우상단 X 와 중복).
 - 정보 확인용은 `.dialog-fields` 패턴(gray 채움 + key-val) — 한눈에 비교 가능.
 - 모바일(< 640px)에서 footer button 은 `flex-1` 균등 분배 + `lg`(48) — primary 우측, 취소 좌측(`ghost`).
 
@@ -163,6 +166,8 @@ DropdownMenu의 `onSelect` 콜백에서 직접 dialog를 열면 `body { pointer-
 - form 안에 dialog 안에 form 안에 dialog … — 한 단계만.
 - destructive 액션 (비가역 삭제 등)을 Dialog로 처리 — overlay click으로 실수 닫힘 위험. **AlertDialog 사용**.
 - close button을 footer로 옮김 — 사용자 학습 비용 (관습은 우상단 X).
+- 상세 dialog footer 에 `확인` — X 와 같은 동작. 상세는 `삭제`·`편집` 만 둔다.
+- 편집 폼 footer 에 `삭제` — 삭제는 상세에서. [`drawer`](drawer.md#액션-구성) 참조.
 
 ## Migration notes
 
