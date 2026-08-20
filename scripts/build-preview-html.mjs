@@ -326,7 +326,7 @@ export function brandProfile(brandName, tokens) {
             { k: "마지막 수정", v: "2026-05-09" },
             { k: "단어 수", v: "342" },
           ],
-          primary: "편집",
+          primary: "수정",
           primaryNote: "Markdown 지원",
           secondary: "보관함으로",
         },
@@ -819,7 +819,7 @@ export function renderButtonGallery(brand) {
   const iconRow = `
     <div class="btn-size-row">
       <div class="btn-size-label">icon action</div>
-      <button class="btn btn-ghost btn-icon" aria-label="편집" title="편집">${PENCIL}</button>
+      <button class="btn btn-ghost btn-icon" aria-label="수정" title="수정">${PENCIL}</button>
       <button class="btn btn-ghost btn-icon btn-icon-danger" aria-label="삭제" title="삭제">${TRASH}</button>
       <span style="font-size:var(--text-caption); color:var(--color-text-tertiary);">ghost + size=icon · 보조톤(text-secondary) · radius-md 둥근 박스 · 삭제는 error 색</span>
     </div>
@@ -1532,7 +1532,7 @@ export function renderBatchV67(brand) {
             <div class="drw-row"><span class="drw-key">근속</span><span class="drw-val">2년차</span></div>
           </div>
           <div class="drw-actions">
-            <button class="btn btn-primary" type="button">${isHr ? "권한 수정" : "편집"}</button>
+            <button class="btn btn-primary" type="button">${isHr ? "권한 수정" : "수정"}</button>
             <button class="btn btn-outline" type="button">취소</button>
           </div>
         </div>
