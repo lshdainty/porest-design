@@ -106,10 +106,6 @@ Default focus가 Cancel인 것이 핵심 — Enter를 무심코 눌렀을 때 de
 ### ✅ Do
 
 - title은 결정 질문형 ("정말 삭제하시겠어요?", "지금 발행할까요?").
-  단 **트리거가 이미 라벨을 갖는 경우는 그 라벨을 제목으로 쓴다** — 스와이프 트레이의
-  `삭제` 를 눌러 뜬 다이얼로그는 제목도 `삭제` 이고, 질문은 description 이 맡는다.
-  트리거가 리스트 위에 떠 있어 제목이 대상을 다시 말할 필요가 없는 경우다
-  ([`swipe-actions`](swipe-actions.md) Behavior).
 - description은 결과 명시 ("이 작업은 되돌릴 수 없습니다", "발행 후 즉시 공개됩니다").
 - destructive action label은 행위 직접 표현 ("영구 삭제", "권한 회수").
 - Cancel을 default focus로 — Enter 사고 방지.
