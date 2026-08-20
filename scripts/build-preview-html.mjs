@@ -378,7 +378,7 @@ export function brandProfile(brandName, tokens) {
       },
       modal: {
         title: "메모 삭제 확인",
-        description: "이 메모를 삭제하면 30일 후 영구 삭제됩니다. 보관함에 그대로 둘까요?",
+        description: "\"Porest 브랜드 톤\" 메모를 삭제하면 30일 후 영구 삭제됩니다. 보관함에 그대로 둘까요?",
         primary: "삭제",
         secondary: "보관함으로",
         fields: [
@@ -1823,7 +1823,7 @@ export function renderShadcnDisclose(brand) {
           <div class="modal-overlay"></div>
           <div class="modal-dialog" role="alertdialog" aria-modal="true">
             <div class="modal-title">${brand.key === "hr" ? "권한 회수" : brand.key === "desk" ? "메모 영구 삭제" : "항목 삭제"}</div>
-            <div class="modal-description">${brand.key === "hr" ? "이 직원의 모든 권한이 회수됩니다. 복구는 관리자 승인 필요." : brand.key === "desk" ? "30일 보관함을 거치지 않고 즉시 삭제됩니다." : "이 작업은 되돌릴 수 없습니다."}</div>
+            <div class="modal-description">${brand.key === "hr" ? "\"김서연\" 님의 모든 권한이 회수됩니다. 복구는 관리자 승인이 필요합니다." : brand.key === "desk" ? "\"Porest 브랜드 톤\" 을 30일 보관함을 거치지 않고 즉시 삭제합니다." : "\"2026 예산안\" 을 삭제합니다. 이 작업은 되돌릴 수 없습니다."}</div>
             <div class="modal-actions">
               <button class="btn btn-outline" autofocus>취소</button>
               <button class="btn btn-destructive">${brand.key === "hr" ? "회수" : "삭제"}</button>
