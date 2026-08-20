@@ -132,9 +132,9 @@ Alert 자체는 자동 dismiss 없음 — 사용자 액션(close button) 또는 
 | 항목 | Alert (이 spec) | Sonner | AlertDialog |
 |---|---|---|---|
 | 위치 | 페이지 inline 고정 | 화면 모서리 floating | 화면 중앙 modal |
-| 트리거 | 페이지 상태/컨텍스트 | 사용자 액션 결과 | 위험 액션 확정 |
+| 트리거 | 페이지 상태/컨텍스트 | 사용자 액션 결과 | 위험 액션 확정 · 차단 통지 |
 | 시간 | persistent (또는 dismiss) | auto-dismiss 4s | 사용자 결정까지 |
-| 인터랙션 | dismissable close (옵션) | swipe / action button | confirm/cancel 필수 |
+| 인터랙션 | dismissable close (옵션) | swipe / action button | confirm/cancel 필수 (acknowledge 는 `확인` 1개) |
 | Stack | 3개까지 | 3개 stack (sonner 기본) | 1개만 (modal) |
 | 시각 | border-l 4px + 8% bg | border 1px + shadow-lg | shadow-xl + overlay-dim |
 
