@@ -34,7 +34,7 @@ Porest AlertDialog는 시각적으로는 `Dialog`와 **완전히 동일** (같�
 | ⓐ overlay | dialog와 동일하나 **click 무시**. |
 | ⓑ container | dialog와 동일 — preview `.modal-dialog` 그대로 (`background:var(--color-surface-default); border-radius:var(--radius-xl); padding:var(--spacing-2xl); box-shadow:var(--shadow-xl); width:min(90%, <max-w>); display:flex; flex-direction:column; gap:var(--spacing-md);`). close button(X) **없음**. |
 | ⓒ title | preview `.modal-title` 그대로 — `font-size:var(--text-title-md); font-weight:600; line-height:var(--text-title-md--line-height); color:var(--color-text-primary); letter-spacing:-0.01em;`. **결정 또는 결과**를 짧은 명사구로. 질문형 아님 — 질문은 ⓓ 가 맡는다. |
-| ⓓ description | preview `.modal-description` 그대로 — `font-size:var(--text-body-md); color:var(--color-text-secondary); line-height:1.6;`. **상세 내역** — 무엇이 어떻게 되는지(결과·영향)와 확인 질문. |
+| ⓓ description | preview `.modal-description` 그대로 — `font-size:var(--text-body-md); color:var(--color-text-secondary); line-height:1.6;`. **상세 내역** — 무엇이 어떻게 되는지(결과·영향)와 확인 질문. 파괴적 액션이면 **대상을 이름으로** 짚는다. |
 | ⓔ footer (모바일 < 640px) | 각 button `flex-1` 균등 분배 + `size="lg"`(48). 취소는 `secondary`(테두리 없는 회색 채움). [`dialog`](dialog.md) footer 규칙과 동일. |
 | ⓔ footer | preview `.modal-actions` 그대로 — `display:flex; gap:var(--spacing-sm); justify-content:flex-end; margin-top:var(--spacing-md);`. Cancel(좌) + Action(우, destructive). focus default = Cancel. |
 
@@ -42,6 +42,8 @@ Porest AlertDialog는 시각적으로는 `Dialog`와 **완전히 동일** (같�
 
 - close button (X) 두지 말 것 — 사용자가 결정을 회피하지 못하게 함.
 - description은 **결과** 명시 필수 ("되돌릴 수 없음", "영구 삭제", "권한 회수") — 질문만 두지 않는다.
+- 파괴적 액션의 description 은 **대상을 이름으로** 짚는다 — "이 계좌를" 이 아니라 `"급여통장"을(를)`.
+- 같은 동작이면 **어디서 불렀든 제목·설명이 같다** — 진입 경로도, 플랫폼도.
 - Action label은 결정 행위를 직접 표현 ("삭제", "회수", "결제") — 모호한 "확인" 금지. 단 결정이 없는 acknowledge 는 예외(`확인` 하나).
 
 ## Variants
@@ -114,10 +116,16 @@ Default focus가 Cancel인 것이 핵심 — Enter를 무심코 눌렀을 때 de
 ### ✅ Do
 
 - title은 **결정 또는 결과**를 짧은 명사구로 ("거래 삭제", "그룹 삭제", "해지 불가").
-  한눈에 무슨 일이 벌어지는지가 읽혀야 한다. 트리거가 이미 라벨을 갖는 경우
-  (스와이프 트레이의 `삭제`)는 그 라벨이 곧 결정이므로 그대로 제목이 된다.
+  한눈에 무슨 일이 벌어지는지가 읽혀야 한다.
+- **같은 동작이면 어디서 불렀든 제목·설명이 같다.** 상세에서 눌렀든 스와이프 트레이에서
+  눌렀든 같은 삭제라면 같은 문구다. 플랫폼도 마찬가지다 — 앱 · 모바일 웹 · 데스크톱 웹이
+  같은 제목, 같은 설명을 쓴다. 경로·플랫폼에 따라 달라도 되는 것은 footer 버튼의
+  **배치와 크기**뿐이다.
 - description은 **상세 내역** — 무엇이 어떻게 되는지와 확인 질문을 여기서 말한다
   ("연결된 자산 잔액이 함께 조정됩니다. 삭제하시겠어요?"). 결과를 빼고 질문만 두지 않는다.
+- **파괴적 액션은 description 에서 대상을 이름으로 짚는다** — "이 계좌를 삭제할까요?" 가
+  아니라 `"급여통장"을(를) 삭제할까요?`. 확인창은 사용자가 **무엇을** 지우려 했는지 되짚는
+  마지막 자리다. 리스트에서 잘못된 행을 눌렀다면 여기 말고는 알아챌 곳이 없다.
 - destructive action label은 행위 직접 표현 ("영구 삭제", "권한 회수").
 - Cancel을 default focus로 — Enter 사고 방지.
 - 위험 액션(삭제/회수/탈퇴/결제 확정)에 사용 — 일반 form 입력은 `Dialog`.
@@ -130,6 +138,8 @@ Default focus가 Cancel인 것이 핵심 — Enter를 무심코 눌렀을 때 de
 - 모호한 label ("확인", "OK", "Yes") — 결정 행위를 명시. 결정 자체가 없는 acknowledge 의 `확인` 은 제외.
 - AlertDialog 안에 form 입력 — 결정만 받음. 입력은 `Dialog`.
 - 페이지에 AlertDialog 여러 개 겹침 — 사용자 혼란.
+- 파괴적 확인에서 대상을 지시대명사로만 부르기 ("이 항목", "이 계좌") — 어느 행을 눌렀는지 확인할 길이 사라진다.
+- 같은 동작인데 진입 경로·플랫폼마다 다른 제목 — 같은 결과를 다른 일로 읽게 만든다.
 
 ## Migration notes
 
@@ -154,3 +164,10 @@ Default focus가 Cancel인 것이 핵심 — Enter를 무심코 눌렀을 때 de
   `해지 불가` 같은 **결과** 제목이 정식이 됐는데, Variants 는 여전히 `취소`+액션 2개만 상정하고
   있었다. 그 틈에서 카테고리 삭제 차단 화면이 제목은 `카테고리 삭제`, 버튼은 눌러도 아무 일 없는
   빨간 `삭제` 인 채로 굴러갔다(앱·웹 양쪽). 결정이 없는 통지에는 고를 것을 내밀지 않는다.
+- **"같은 동작이면 같은 문구" 와 "대상을 이름으로" 를 규칙으로 올렸다(2026-08).** 같은 계좌를
+  지우는데 데스크톱 웹은 제목 `계좌 삭제` · 설명 `"급여통장"을(를) 목록에서 제거합니다`, 앱은
+  제목 `삭제` · 설명 `이 계좌를 삭제하시겠습니까?` 로 떴다 — 제목도 설명도 플랫폼과 경로마다
+  달랐다. 앞선 개정이 제목의 **형식**(명사구)만 정하고 **동일성**은 말하지 않아, 형식만 지키면
+  무엇을 쓰든 통과했다. 설명 쪽은 더 나빠서, 지시대명사("이 계좌를")로 부르면 리스트에서 잘못된
+  행을 눌렀을 때 알아챌 자리가 아예 없다. 확인창의 존재 이유가 그 되짚음인데 그걸 못 했다.
+  [`swipe-actions`](swipe-actions.md) 의 "제목은 트레이 라벨 그대로" 규칙도 이 개정으로 뒤집혔다.
