@@ -33,15 +33,15 @@ Porest AlertDialog는 시각적으로는 `Dialog`와 **완전히 동일** (같�
 
 | ⓐ overlay | dialog와 동일하나 **click 무시**. |
 | ⓑ container | dialog와 동일 — preview `.modal-dialog` 그대로 (`background:var(--color-surface-default); border-radius:var(--radius-xl); padding:var(--spacing-2xl); box-shadow:var(--shadow-xl); width:min(90%, <max-w>); display:flex; flex-direction:column; gap:var(--spacing-md);`). close button(X) **없음**. |
-| ⓒ title | preview `.modal-title` 그대로 — `font-size:var(--text-title-md); font-weight:600; line-height:var(--text-title-md--line-height); color:var(--color-text-primary); letter-spacing:-0.01em;`. **결정 또는 결과**를 짧은 명사구로. 질문형 아님 — 질문은 ⓓ 가 맡는다. |
-| ⓓ description | preview `.modal-description` 그대로 — `font-size:var(--text-body-md); color:var(--color-text-secondary); line-height:1.6;`. **상세 내역** — 무엇이 어떻게 되는지(결과·영향)와 확인 질문. |
+| ⓒ title | preview `.modal-title` 그대로 — `font-size:var(--text-title-md); font-weight:600; line-height:var(--text-title-md--line-height); color:var(--color-text-primary); letter-spacing:-0.01em;`. 결정 질문형 또는 결과 명시. |
+| ⓓ description | preview `.modal-description` 그대로 — `font-size:var(--text-body-md); color:var(--color-text-secondary); line-height:1.6;`. **결과·영향**을 명시. |
 | ⓔ footer (모바일 < 640px) | 각 button `flex-1` 균등 분배 + `size="lg"`(48). 취소는 `secondary`(테두리 없는 회색 채움). [`dialog`](dialog.md) footer 규칙과 동일. |
 | ⓔ footer | preview `.modal-actions` 그대로 — `display:flex; gap:var(--spacing-sm); justify-content:flex-end; margin-top:var(--spacing-md);`. Cancel(좌) + Action(우, destructive). focus default = Cancel. |
 
 **규칙**
 
 - close button (X) 두지 말 것 — 사용자가 결정을 회피하지 못하게 함.
-- description은 **결과** 명시 필수 ("되돌릴 수 없음", "영구 삭제", "권한 회수") — 질문만 두지 않는다.
+- description은 **결과** 명시 필수 ("되돌릴 수 없음", "영구 삭제", "권한 회수").
 - Action label은 결정 행위를 직접 표현 ("삭제", "회수", "결제") — 모호한 "확인" 금지.
 
 ## Variants
@@ -105,11 +105,12 @@ Default focus가 Cancel인 것이 핵심 — Enter를 무심코 눌렀을 때 de
 
 ### ✅ Do
 
-- title은 **결정 또는 결과**를 짧은 명사구로 ("거래 삭제", "그룹 삭제", "해지 불가").
-  한눈에 무슨 일이 벌어지는지가 읽혀야 한다. 트리거가 이미 라벨을 갖는 경우
-  (스와이프 트레이의 `삭제`)는 그 라벨이 곧 결정이므로 그대로 제목이 된다.
-- description은 **상세 내역** — 무엇이 어떻게 되는지와 확인 질문을 여기서 말한다
-  ("연결된 자산 잔액이 함께 조정됩니다. 삭제하시겠어요?"). 결과를 빼고 질문만 두지 않는다.
+- title은 결정 질문형 ("정말 삭제하시겠어요?", "지금 발행할까요?").
+  단 **트리거가 이미 라벨을 갖는 경우는 그 라벨을 제목으로 쓴다** — 스와이프 트레이의
+  `삭제` 를 눌러 뜬 다이얼로그는 제목도 `삭제` 이고, 질문은 description 이 맡는다.
+  트리거가 리스트 위에 떠 있어 제목이 대상을 다시 말할 필요가 없는 경우다
+  ([`swipe-actions`](swipe-actions.md) Behavior).
+- description은 결과 명시 ("이 작업은 되돌릴 수 없습니다", "발행 후 즉시 공개됩니다").
 - destructive action label은 행위 직접 표현 ("영구 삭제", "권한 회수").
 - Cancel을 default focus로 — Enter 사고 방지.
 - 위험 액션(삭제/회수/탈퇴/결제 확정)에 사용 — 일반 form 입력은 `Dialog`.
@@ -132,13 +133,3 @@ Default focus가 Cancel인 것이 핵심 — Enter를 무심코 눌렀을 때 de
 - 기존 `AlertDialogAction`은 default(primary) — destructive 사용 시 `className={cn(buttonVariants({ variant: "destructive" }))}` 명시 패턴 유지. spec에선 destructive를 default action variant로 권장.
 - preview-html의 `renderShadcnDisclose` 안 `.ad-*`(icon-circle 변형)도 `.modal-*` 톤으로 정렬 — title-sm → display-sm으로 통일.
 - **box-shadow는 Tailwind utility(`shadow-xl`) 대신 inline `style={{ boxShadow: "var(--shadow-xl)" }}` 사용** — Dialog와 동일한 fix. Tailwind v4 `--tw-shadow-*` 분해 처리가 다크 모드 CSS 변수 override를 우회하는 문제. preview `.modal-dialog` SoT와 다크 모드 정합 보장. 상세는 [`dialog.md`](dialog.md) Migration notes 참조.
-- **title 규칙을 "결정 질문형" 에서 "결정 또는 결과(명사구)" 로 개정했다(2026-08).** 원래 Do 는
-  질문형을 예시로 못박고 있었는데, 앱·웹의 삭제 확인이 처음부터 전부 명사구였다 —
-  `memo_detail_dialog.dart:84`(메모 삭제) · `todo_detail_dialog.dart:85`(할 일 삭제) ·
-  `tx_detail_dialog.dart:121`(거래 삭제) · `asset_detail_dialog.dart:101`. 질문은 전부
-  description 에 있었다. 어느 한 화면이 어긴 게 아니라 **규칙 쪽이 실태와 어긋나 있었고**,
-  그대로 두면 모든 확인창이 위반으로 읽힌다. 제목은 한눈에 무슨 일이 벌어지는지 알리고,
-  질문과 결과는 description 이 함께 진다.
-- 위 개정으로 [`swipe-actions`](swipe-actions.md) 를 위해 두었던 "트리거 라벨 예외" 절이
-  필요 없어져 걷어냈다 — 스와이프 트레이의 `삭제` 는 그 자체가 결정 명사구라 일반 규칙으로
-  통과한다. 예외로 남겨 두면 규칙이 둘로 보인다.
