@@ -42,7 +42,7 @@ Porest AlertDialog는 시각적으로는 `Dialog`와 **완전히 동일** (같�
 
 - close button (X) 두지 말 것 — 사용자가 결정을 회피하지 못하게 함.
 - description은 **결과** 명시 필수 ("되돌릴 수 없음", "영구 삭제", "권한 회수") — 질문만 두지 않는다.
-- Action label은 결정 행위를 직접 표현 ("삭제", "회수", "결제") — 모호한 "확인" 금지. 단 결정이 없는 acknowledge 는 예외(`확인` 하나).
+- Action label은 결정 행위를 직접 표현 ("삭제", "회수", "결제") — 모호한 "확인" 금지.
 
 ## Variants
 
@@ -52,14 +52,6 @@ Porest AlertDialog는 시각적으로는 `Dialog`와 **완전히 동일** (같�
 |---|---|---|
 | `destructive` (default) | `button.destructive` (error 색 채움) | 삭제, 회수, 영구 비활성 등 비가역 위험 액션. |
 | `primary` | `button.default` (primary 색 채움) | 발행, 결제 같이 비가역이지만 위험은 아닌 액션. |
-
-### acknowledge (단일 액션)
-
-결정이 없는 **결과 통지** — 전제 조건이 안 맞아 액션이 아예 차단된 경우("하위 카테고리가 남아 있어 삭제할 수 없음"). 사용자가 고를 것이 없으므로 footer 는 `확인` 하나(`button.default`)만 두고 **취소를 두지 않는다**. title 은 결과 명사구(`삭제 불가` · `해지 불가`), description 은 이유와 다음 행동.
-
-취소를 나란히 두면 두 버튼이 같은 일(닫기)을 한다 — 무엇을 고르는 자리인지 없는데 고르라고 내미는 꼴이다. 파괴적 액션을 그대로 두면 더 나쁘다: 눌러도 아무 일이 없는 빨간 버튼이 남는다.
-
-이 변형에서는 spec 곳곳의 "Cancel button" 자리(Default focus · Behavior · WCAG 2.1.2 탈출 경로)를 그 `확인` 버튼이 대신한다 — 실행될 destructive action 이 없어 Enter 사고가 성립하지 않는다. **액션이 둘 이상이면 acknowledge 가 아니다**(취소 필수).
 
 ## Sizes
 
@@ -127,7 +119,7 @@ Default focus가 Cancel인 것이 핵심 — Enter를 무심코 눌렀을 때 de
 - close button (X) 두기 — 사용자가 결정을 회피하지 못하게 함.
 - overlay click으로 닫히게 — 실수 닫힘으로 결정 미루기 안 됨.
 - Action button을 default focus로 — Enter 사고 직결.
-- 모호한 label ("확인", "OK", "Yes") — 결정 행위를 명시. 결정 자체가 없는 acknowledge 의 `확인` 은 제외.
+- 모호한 label ("확인", "OK", "Yes") — 결정 행위를 명시.
 - AlertDialog 안에 form 입력 — 결정만 받음. 입력은 `Dialog`.
 - 페이지에 AlertDialog 여러 개 겹침 — 사용자 혼란.
 
@@ -150,7 +142,3 @@ Default focus가 Cancel인 것이 핵심 — Enter를 무심코 눌렀을 때 de
 - 위 개정으로 [`swipe-actions`](swipe-actions.md) 를 위해 두었던 "트리거 라벨 예외" 절이
   필요 없어져 걷어냈다 — 스와이프 트레이의 `삭제` 는 그 자체가 결정 명사구라 일반 규칙으로
   통과한다. 예외로 남겨 두면 규칙이 둘로 보인다.
-- **acknowledge(단일 액션) 변형을 넣었다(2026-08).** title 규칙이 "결정 또는 결과" 로 개정되면서
-  `해지 불가` 같은 **결과** 제목이 정식이 됐는데, Variants 는 여전히 `취소`+액션 2개만 상정하고
-  있었다. 그 틈에서 카테고리 삭제 차단 화면이 제목은 `카테고리 삭제`, 버튼은 눌러도 아무 일 없는
-  빨간 `삭제` 인 채로 굴러갔다(앱·웹 양쪽). 결정이 없는 통지에는 고를 것을 내밀지 않는다.
