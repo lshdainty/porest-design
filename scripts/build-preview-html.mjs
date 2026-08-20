@@ -1822,7 +1822,7 @@ export function renderShadcnDisclose(brand) {
         <div class="modal-stage" style="height:auto; padding:var(--spacing-xl); background:linear-gradient(135deg, var(--color-chart-blue), var(--color-chart-violet));">
           <div class="modal-overlay"></div>
           <div class="modal-dialog" role="alertdialog" aria-modal="true">
-            <div class="modal-title">${brand.key === "hr" ? "정말 권한을 회수하시겠어요?" : brand.key === "desk" ? "메모를 영구 삭제할까요?" : "정말 삭제하시겠어요?"}</div>
+            <div class="modal-title">${brand.key === "hr" ? "권한 회수" : brand.key === "desk" ? "메모 영구 삭제" : "항목 삭제"}</div>
             <div class="modal-description">${brand.key === "hr" ? "이 직원의 모든 권한이 회수됩니다. 복구는 관리자 승인 필요." : brand.key === "desk" ? "30일 보관함을 거치지 않고 즉시 삭제됩니다." : "이 작업은 되돌릴 수 없습니다."}</div>
             <div class="modal-actions">
               <button class="btn btn-outline" autofocus>취소</button>
