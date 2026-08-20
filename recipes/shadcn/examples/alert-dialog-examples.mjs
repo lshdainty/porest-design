@@ -63,7 +63,7 @@ export const alertDialogExamples = [
   </AlertDialogTrigger>
   <AlertDialogContent>
     <AlertDialogHeader>
-      <AlertDialogTitle>정말 삭제하시겠어요?</AlertDialogTitle>
+      <AlertDialogTitle>계정 삭제</AlertDialogTitle>
       <AlertDialogDescription>
         이 작업은 되돌릴 수 없습니다. 모든 데이터(메모, 가계부, 할일)가 영구 삭제됩니다.
       </AlertDialogDescription>
@@ -76,7 +76,7 @@ export const alertDialogExamples = [
 </AlertDialog>`,
     render: () =>
       alertDialog({
-        title: "정말 삭제하시겠어요?",
+        title: "계정 삭제",
         description:
           "이 작업은 되돌릴 수 없습니다. 모든 데이터(메모, 가계부, 할일)가 영구 삭제됩니다.",
         actionLabel: "영구 삭제",
@@ -95,7 +95,7 @@ export const alertDialogExamples = [
   </AlertDialogTrigger>
   <AlertDialogContent>
     <AlertDialogHeader>
-      <AlertDialogTitle>지금 발행할까요?</AlertDialogTitle>
+      <AlertDialogTitle>글 발행</AlertDialogTitle>
       <AlertDialogDescription>
         발행 후에는 글이 즉시 공개됩니다. 수정은 가능하지만 검색 엔진에 캐시될 수 있습니다.
       </AlertDialogDescription>
@@ -108,7 +108,7 @@ export const alertDialogExamples = [
 </AlertDialog>`,
     render: () =>
       alertDialog({
-        title: "지금 발행할까요?",
+        title: "글 발행",
         description:
           "발행 후에는 글이 즉시 공개됩니다. 수정은 가능하지만 검색 엔진에 캐시될 수 있습니다.",
         actionLabel: "발행",
@@ -119,9 +119,9 @@ export const alertDialogExamples = [
 
   {
     title: "권한 회수 (HR 시나리오)",
-    description: "관리자 결정 — title 질문형 + description에 결과 명시 + action label로 행위 직접 표현.",
+    description: "관리자 결정 — title 은 결정 명사구 + description 에 결과 명시 + action label 로 행위 직접 표현.",
     jsx: `<AlertDialogContent>
-  <AlertDialogTitle>정말 권한을 회수하시겠어요?</AlertDialogTitle>
+  <AlertDialogTitle>권한 회수</AlertDialogTitle>
   <AlertDialogDescription>
     이 직원의 모든 권한이 회수됩니다. 복구는 관리자 승인 필요.
   </AlertDialogDescription>
@@ -132,7 +132,7 @@ export const alertDialogExamples = [
 </AlertDialogContent>`,
     render: () =>
       alertDialog({
-        title: "정말 권한을 회수하시겠어요?",
+        title: "권한 회수",
         description:
           "이 직원의 모든 권한이 회수됩니다. 복구는 관리자 승인 필요.",
         actionLabel: "회수",
@@ -148,7 +148,7 @@ export const alertDialogExamples = [
     render: () =>
       alertDialog({
         size: "sm",
-        title: "보관함을 비울까요?",
+        title: "보관함 비우기",
         description: "보관함에 있는 항목이 모두 영구 삭제됩니다.",
         actionLabel: "비우기",
         actionVariant: "destructive",
