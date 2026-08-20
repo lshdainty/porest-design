@@ -45,8 +45,8 @@ function alertDialog({
     <h2 style="${TITLE}">${title}</h2>
     <p style="${DESC}">${description}</p>
     <div style="display:flex; gap:var(--spacing-sm); justify-content:flex-end; margin-top:var(--spacing-md);">
-      <button class="${BTN_OUTLINE}" autofocus>${cancelLabel}</button>
-      <button class="${action}">${actionLabel}</button>
+      ${cancelLabel ? `<button class="${BTN_OUTLINE}" autofocus>${cancelLabel}</button>` : ""}
+      <button class="${action}"${cancelLabel ? "" : " autofocus"}>${actionLabel}</button>
     </div>
   </div>
 </div>`;
@@ -153,6 +153,31 @@ export const alertDialogExamples = [
         actionLabel: "비우기",
         actionVariant: "destructive",
         cancelLabel: "취소",
+      }),
+  },
+
+  {
+    title: "acknowledge (단일 액션 — 차단 통지)",
+    description:
+      "결정이 없는 결과 통지. 고를 것이 없으므로 취소를 두지 않는다 — 두 버튼이 같은 일(닫기)을 하게 된다. title 은 결과 명사구, description 은 이유와 다음 행동.",
+    jsx: `<AlertDialogContent size="sm">
+  <AlertDialogTitle>삭제 불가</AlertDialogTitle>
+  <AlertDialogDescription>
+    "생활비" 카테고리에 하위 카테고리가 있어 삭제할 수 없어요. 먼저 하위 카테고리를 정리해 주세요.
+  </AlertDialogDescription>
+  <AlertDialogFooter>
+    <AlertDialogAction>확인</AlertDialogAction>
+  </AlertDialogFooter>
+</AlertDialogContent>`,
+    render: () =>
+      alertDialog({
+        size: "sm",
+        title: "삭제 불가",
+        description:
+          '"생활비" 카테고리에 하위 카테고리가 있어 삭제할 수 없어요. 먼저 하위 카테고리를 정리해 주세요.',
+        actionLabel: "확인",
+        actionVariant: "primary",
+        cancelLabel: null,
       }),
   },
 ];
