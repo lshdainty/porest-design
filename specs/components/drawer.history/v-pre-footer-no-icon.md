@@ -150,26 +150,6 @@ footer 액션은 **최대 2개**. 셋이 나란히 서면 무엇이 주 액션�
 
 > [`AlertDialog`](alert-dialog.md) 는 예외 — X 가 없으므로 **명시적 종료 버튼을 반드시 남긴다**. 결정형은 `취소`, acknowledge(단일 액션) 형은 `확인` 하나가 그 자리를 맡는다.
 
-### footer 버튼은 라벨만 — 아이콘을 붙이지 않는다
-
-`삭제` 앞에 휴지통을, `수정` 앞에 연필을 두지 않는다. 텍스트만 쓴다.
-
-footer 에는 액션이 둘뿐이고 **둘 다 라벨을 갖고 있다** — 아이콘이 더 알려 줄 게 없다.
-리스트 행이나 툴바에서는 아이콘이 폭을 아끼고 훑어보기를 돕지만, footer 는 화면 폭을
-반씩 나눠 갖는 자리라 아낄 폭이 없다. 얻는 것 없이 치르는 값은 있다 — 아이콘이 라벨을
-가운데에서 밀어내 두 버튼의 글자가 서로 다른 자리에 서고, 채움 위에서 글리프가 한 번 더
-시선을 끈다. 무엇을 누를지 정하는 데 쓰여야 할 시선이다.
-
-적용 범위는 **모달 footer**([`drawer`](drawer.md) · [`dialog`](dialog.md) ·
-[`alert-dialog`](alert-dialog.md))다. 아래는 해당하지 않는다:
-
-| | 왜 |
-|---|---|
-| 우상단 `X` 등 **라벨 없는 아이콘 버튼** | 아이콘이 유일한 단서다 |
-| 리스트 행·툴바의 아이콘 액션 | 폭이 좁아 아이콘이 실제로 값을 한다 |
-| [`swipe-actions`](swipe-actions.md) 트레이 배지 | footer 가 아니다. 배지는 그 스펙이 따로 정한다 |
-| 본문 안의 버튼 | footer 규칙이 아니다 |
-
 ## Behavior
 
 | 인터랙션 | 동작 |
@@ -224,9 +204,3 @@ footer 에는 액션이 둘뿐이고 **둘 다 라벨을 갖고 있다** — 아
   보인다. **20 은 spacing 스케일에 없는 값**이라 24(`xl`)로 올려 토큰으로 맞췄다 —
   웹 `px-5`→`px-xl`, 앱 `PSpace.x16/x20`→`PSpace.xl`(시트 45곳).
 - **box-shadow는 Tailwind utility(`shadow-xl`) 대신 inline `style={{ boxShadow: "var(--shadow-xl)" }}` 사용** — Tailwind v4 `--tw-shadow-*` 분해 처리가 다크 모드 CSS 변수 override를 우회하는 문제 fix. preview `.drw-bottom` SoT와 다크 모드 정합 보장. 상세는 [`dialog.md`](dialog.md) Migration notes 참조.
-- **footer 버튼에서 아이콘을 걷어냈다(2026-08).** `삭제`·`수정` 앞에 휴지통·연필이
-  붙어 있었다(앱 `PSheetFooter`·`PViewFooter`, 웹 `ModalFooter`·`ModalViewFooter` 가
-  공용으로 넣고 있었다). 스펙에 아이콘을 말하는 줄이 없어 아무 데서도 걸리지 않았다 —
-  [`button`](button.md) 은 leading icon 을 "선택적" 으로만 두고 맥락을 정하지 않는다.
-  footer 는 라벨이 이미 다 말하는 자리라 아이콘이 보태는 것 없이 글자 위치만 흔든다.
-
