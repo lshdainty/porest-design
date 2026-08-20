@@ -243,7 +243,7 @@ const SwipeActions = React.forwardRef<HTMLDivElement, SwipeActionsProps>(
         {...props}
       >
         {/* 트레이는 행 뒤에 늘 있다. 접혀 있을 땐 스크린리더에서 감춘다 —
-            안 그러면 행마다 "편집 삭제" 를 읽는다. */}
+            안 그러면 행마다 "수정 삭제" 를 읽는다. */}
         <div
           className="absolute inset-y-0 end-0 flex"
           aria-hidden={!open}

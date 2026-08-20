@@ -73,12 +73,12 @@ const swipeRow = ({ actions, title, meta, offset }) => {
 
 export const swipeActionsExamples = [
   {
-    title: "편집 + 삭제 (기본)",
+    title: "수정 + 삭제 (기본)",
     description:
       "가장 흔한 조합. destructive 는 가장 안쪽 — 조금만 밀면 바깥쪽부터 드러나므로, 파괴적인 것은 끝까지 밀어야 닿게 둔다.",
     jsx: `<SwipeActions
   actions={[
-    { kind: "primary", label: "편집", onSelect: openEdit },
+    { kind: "primary", label: "수정", onSelect: openEdit },
     { kind: "destructive", label: "삭제", onSelect: confirmDelete },
   ]}
 >
@@ -87,7 +87,7 @@ export const swipeActionsExamples = [
     render: () =>
       swipeRow({
         actions: [
-          { kind: "primary", label: "편집" },
+          { kind: "primary", label: "수정" },
           { kind: "destructive", label: "삭제" },
         ],
         title: "스타벅스 아메리카노",
@@ -98,7 +98,7 @@ export const swipeActionsExamples = [
   {
     title: "삭제만",
     description:
-      "편집이 성립하지 않는 목록(문자함처럼 받은 것을 보관만 하는 리스트). 액션이 조립형이어야 하는 이유.",
+      "수정이 성립하지 않는 목록(문자함처럼 받은 것을 보관만 하는 리스트). 액션이 조립형이어야 하는 이유.",
     jsx: `<SwipeActions
   actions={[{ kind: "destructive", label: "삭제", onSelect: confirmDelete }]}
 >
@@ -113,13 +113,13 @@ export const swipeActionsExamples = [
   },
 
   {
-    title: "3개 — 고정 + 편집 + 삭제",
+    title: "3개 — 고정 + 수정 + 삭제",
     description:
       "상한. 4개 이상이면 트레이가 행 폭을 먹어 무엇을 미는지 안 보인다.",
     jsx: `<SwipeActions
   actions={[
     { kind: "neutral", label: "고정", onSelect: togglePin },
-    { kind: "primary", label: "편집", onSelect: openEdit },
+    { kind: "primary", label: "수정", onSelect: openEdit },
     { kind: "destructive", label: "삭제", onSelect: confirmDelete },
   ]}
 >
@@ -129,7 +129,7 @@ export const swipeActionsExamples = [
       swipeRow({
         actions: [
           { kind: "neutral", label: "고정" },
-          { kind: "primary", label: "편집" },
+          { kind: "primary", label: "수정" },
           { kind: "destructive", label: "삭제" },
         ],
         title: "회의록 — 8월 스프린트",
@@ -145,7 +145,7 @@ export const swipeActionsExamples = [
     render: () =>
       swipeRow({
         actions: [
-          { kind: "primary", label: "편집" },
+          { kind: "primary", label: "수정" },
           { kind: "destructive", label: "삭제" },
         ],
         title: "점심 — 김밥천국",

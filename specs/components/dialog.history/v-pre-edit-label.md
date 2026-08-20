@@ -118,7 +118,7 @@ Dialog는 open/closed 2 state. Radix `data-state` attribute(`open`/`closed`)로 
   채움). 주 액션만 `default`(info 채움)로 두고 보조는 옅게 채워 무게 차이를 준다 —
   `ghost` 는 배경이 없어 전체 폭 배치에서 버튼으로 보이지 않는다.
   [`button`](button.md) Migration notes 참조.
-- **액션은 최대 2개** — 상세는 `삭제`·`수정`, 편집 폼은 `취소`·`저장`. 우상단 X 가 이미 닫기이므로
+- **액션은 최대 2개** — 상세는 `삭제`·`편집`, 편집 폼은 `취소`·`저장`. 우상단 X 가 이미 닫기이므로
   footer 에 `확인`·`닫기` 를 두지 않는다. 줄이는 순서와 예외는 [`drawer`](drawer.md#액션-구성) SoT.
 
 ## Behavior
@@ -168,7 +168,7 @@ DropdownMenu의 `onSelect` 콜백에서 직접 dialog를 열면 `body { pointer-
 - form 안에 dialog 안에 form 안에 dialog … — 한 단계만.
 - destructive 액션 (비가역 삭제 등)을 Dialog로 처리 — overlay click으로 실수 닫힘 위험. **AlertDialog 사용**.
 - close button을 footer로 옮김 — 사용자 학습 비용 (관습은 우상단 X).
-- 상세 dialog footer 에 `확인` — X 와 같은 동작. 상세는 `삭제`·`수정` 만 둔다.
+- 상세 dialog footer 에 `확인` — X 와 같은 동작. 상세는 `삭제`·`편집` 만 둔다.
 - 편집 폼 footer 에 `삭제` — 삭제는 상세에서. [`drawer`](drawer.md#액션-구성) 참조.
 
 ## Migration notes

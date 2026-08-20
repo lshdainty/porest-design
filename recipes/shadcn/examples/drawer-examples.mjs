@@ -146,7 +146,7 @@ export const drawerExamples = [
       <DrawerTitle>옵션 선택</DrawerTitle>
     </DrawerHeader>
     <div className="flex flex-col gap-[var(--spacing-xs)]">
-      <Button variant="ghost" className="justify-start">편집</Button>
+      <Button variant="ghost" className="justify-start">수정</Button>
       <Button variant="ghost" className="justify-start">복사</Button>
       <Button variant="ghost" className="justify-start text-error">삭제</Button>
     </div>
@@ -162,7 +162,7 @@ export const drawerExamples = [
       <h2 style="${TITLE}">옵션 선택</h2>
     </div>
     <div style="display:flex; flex-direction:column; gap:var(--spacing-xs);">
-      ${item("편집")}
+      ${item("수정")}
       ${item("복사")}
       ${item("삭제", "var(--color-error)")}
     </div>
