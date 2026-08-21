@@ -1143,8 +1143,8 @@ HR(B2B 데이터 밀도) — `sm`/`md` 사이즈 위주, 인라인 그리드 편
 | Size | height | padding (V/H) | text | radius |
 |---|---|---|---|---|
 | sm | 32px | `xs` / `sm` | `caption` (12/400) | `sm` |
-| **md** (default) | 40px | `sm` / `md` | `body-lg` (15/400) | `sm` |
-| lg | 48px | `md` / `lg` | `body-lg` (15/400) | `md` |
+| **md** (default) | 40px | `sm` / `md` | `body-lg` (16/400) | `sm` |
+| lg | 48px | `md` / `lg` | `body-lg` (16/400) | `md` |
 
 #### Layout
 - label `caption` (12/400) + `xs` 간격, error/helper도 동일

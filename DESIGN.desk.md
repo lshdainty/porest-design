@@ -1158,8 +1158,8 @@ Desk(B2C 모바일 우선) — `md`/`lg` 위주, `sm`은 inline action 한정. f
 | Size | height | padding (V/H) | text | radius |
 |---|---|---|---|---|
 | sm | 32px | `xs` / `sm` | `caption` (12/400) | `sm` |
-| **md** (default) | 40px | `sm` / `md` | `body-lg` (15/400) | `md` |
-| lg | 48px | `md` / `lg` | `body-lg` (15/400) | `md` |
+| **md** (default) | 40px | `sm` / `md` | `body-lg` (16/400) | `md` |
+| lg | 48px | `md` / `lg` | `body-lg` (16/400) | `md` |
 
 Desk는 친근감 톤이라 `md` radius default(8px). 모바일 입력 사용 사례(가계부 입금/지출 입력 등) 많아 `lg` 권장 — touch hit area 48px.
 
