@@ -1223,8 +1223,8 @@ Desk(B2C) — `bg-page` 위 본문은 메모/할일 list, 가계부 월간 뷰 �
 - `page-text-dark`: `bg-page-dark #1A1F2E` × `text-primary-dark #F5F6FA` = **15.04:1** ✅ AAA
 
 #### Typography
-- 본문 `body-lg` (15/400/1.6), 강조 `body-lg` (15/600)
-- 헤딩 위계: page title `title-md` (32/700, hero/onboarding) 또는 `display-sm` (24/700, 일반 page), section `title-sm` (18/600), 메모 inline `title-sm` (16/600)
+- 본문 `body-md` (15/400/1.6), 강조 `body-md` (15/600)
+- 헤딩 위계: page title `display-md` (32/700, hero/onboarding) 또는 `display-sm` (24/700, 일반 page), section `title-md` (18/600), 메모 inline `title-sm` (16/600)
 
 #### Layout
 - 본문 max-width: 720px (모바일 viewport 자체가 320~480px이므로 max-width는 desktop 시점)
@@ -1277,8 +1277,8 @@ Desk — 메모 저장 완료, 할일 추가/완료 안내, 가계부 입력 검
 
 #### Typography
 - form helper(필드 아래): `caption` (12/400) + `xs` 간격
-- 일반 alert 본문: `body-lg` (15/400) — 모바일 가독성 우선
-- alert 제목: `body-lg` (15/600)
+- 일반 alert 본문: `body-md` (15/400) — 모바일 가독성 우선
+- alert 제목: `body-md` (15/600)
 
 #### Layout
 - icon + text 페어: icon `xs` 간격, size 16~20px
@@ -1617,7 +1617,7 @@ Desk(B2C) — 가계부 거래일·할일 due date·메모 캡처일 등 일상 
 Desk(B2C) — 메모 본문, 할일 상세 설명, 가계부 거래 메모 등 일상 multi-line 입력. 모바일 우선이라 stacked layout + auto-grow 적극 활용.
 
 #### Desk 사용 패턴
-- **메모 본문**: textarea auto-grow + min 4 line max viewport 60%. 본문 영역은 `body-lg` (16/400/1.5 영문) 또는 `body-lg` (15/400/1.6 한국어) — 메모 톤에 맞춤.
+- **메모 본문**: textarea auto-grow + min 4 line max viewport 60%. 본문 영역은 `body-lg` (16/400/1.5 영문) 또는 `body-md` (15/400/1.6 한국어) — 메모 톤에 맞춤.
 - **할일 상세 설명**: 할일 카드 펼침 시 inline textarea. min 2 line + counter `120 / 500`. 80% 도달 시 `warning` tint.
 - **가계부 거래 메모**: 단일 line Input이 default, optional textarea (메모/영수증 설명) — bottom sheet 펼침 시 노출.
 - **프로필·설정**: stacked layout (모바일 풀스크린 form) — label 위, control 아래, primary action 하단 sticky.

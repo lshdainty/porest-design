@@ -1210,8 +1210,8 @@ HR(B2B) — `bg-page` 위 본문은 dashboard layout, sidebar nav 텍스트 등.
 - `page-text-dark`: `bg-page-dark #1A1F2E` × `text-primary-dark #F5F6FA` = **15.04:1** ✅ AAA
 
 #### Typography
-- 본문 `body-lg` (15/400/1.6), 강조 `body-lg` (15/600), 데이터 라벨 `caption` (12/400) + `text-secondary`
-- 헤딩 위계: dashboard title `display-sm` (24/700), section `title-sm` (18/600), widget title `title-sm` (16/600)
+- 본문 `body-md` (15/400/1.6), 강조 `body-md` (15/600), 데이터 라벨 `caption` (12/400) + `text-secondary`
+- 헤딩 위계: dashboard title `display-sm` (24/700), section `title-md` (18/600), widget title `title-sm` (16/600)
 
 #### Layout
 - 본문 max-width: 640px (한국어 1줄 35~40자, 데이터 화면 본문은 짧게)
@@ -1264,8 +1264,8 @@ HR — form validation(직원 정보 입력 에러), 결재 상태 변경 안내
 
 #### Typography
 - form helper(필드 아래): `caption` (12/400) + `xs` (4px) 간격
-- 일반 alert 본문: `body-lg` (15/400)
-- alert 제목: `body-lg` (15/600)
+- 일반 alert 본문: `body-md` (15/400)
+- alert 제목: `body-md` (15/600)
 
 #### Layout
 - icon + text 페어: icon `xs` 간격, size 16px (caption 높이에 맞춤)
@@ -1414,7 +1414,7 @@ HR — 직원 선택, 부서 선택, 결재 액션 메뉴(승인/반려/위임),
 
 #### Structure (신규 토큰 없음)
 - panel: `surface-default` + `outline-strong-light` 1px + `shadow-md` + `radius-md`
-- item: height 36px, padding `sm`/`md`, text `body-lg` (15/400)
+- item: height 36px, padding `sm`/`md`, text `body-md` (15/400)
 - hover `surface-input`, selected primary 좌측 stroke 또는 ✓ (`#357B5F`)
 
 #### Variant
@@ -1461,7 +1461,7 @@ HR — 결재 처리 완료, 직원 정보 저장, 시스템 알림 등 짧은 �
 #### Structure (신규 토큰 없음)
 - 표면: `surface-default` + `shadow-md` + `radius-md`
 - semantic 4종 좌측 4px stroke + icon (`success`/`error`/`warning`/`info`)
-- text: `body-lg` (15/400) + (선택) `body-lg` 제목
+- text: `body-md` (15/400) + (선택) `body-lg` 제목
 
 #### Position
 - desktop default: top-right (24px 여백)
@@ -1547,7 +1547,7 @@ HR(B2B) — 직원 카드, 조직도, 결재 큐 author, 평가 reviewer 등 모
 - **데이터 그리드 inline**: `sm` 24px 사각형 (`radius-md`) — 정보 밀도 우선.
 - **직원 list**: `md` 32px 원형 default.
 - **직원 detail panel**: `lg` 40px or `xl` 56px 원형.
-- **조직도 트리**: `sm` 24px 원형 + 이름 우측 `body-lg` (15/400).
+- **조직도 트리**: `sm` 24px 원형 + 이름 우측 `body-md` (15/400).
 
 #### Color
 - chart palette 10색 hash(이름) 분배 또는 부서별 매핑(예: 디자인본부 `chart-violet`, 운영본부 `chart-blue`) 컴포넌트 레벨 결정.
