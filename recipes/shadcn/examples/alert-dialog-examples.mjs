@@ -12,7 +12,8 @@ const OVERLAY =
 function content(size = "md") {
   const maxW = size === "sm" ? "384px" : size === "lg" ? "640px" : "480px";
   const pad = size === "sm" ? "var(--spacing-xl)" : "var(--spacing-2xl)";
-  const radius = size === "sm" ? "var(--radius-lg)" : "var(--radius-xl)";
+  // 세 사이즈 모두 radius-lg(12) — dialog.md 2026-08-21.
+  const radius = "var(--radius-lg)";
   return `position:relative; background:var(--color-surface-default); border-radius:${radius}; padding:${pad}; box-shadow:var(--shadow-xl); width:min(90%, ${maxW}); display:flex; flex-direction:column; gap:var(--spacing-md);`;
 }
 
