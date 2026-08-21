@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
  *                                       > DialogHeader > DialogTitle / DialogDescription
  *                                       > {body}
  *                                       > DialogFooter > {actions}
- * - sizes: sm 384 / md 480 (default, p-10 rounded-xl) / lg 640
+ * - sizes: sm 384 / md 480 (default, p-10 rounded-lg) / lg 640
  * - shadow-xl + overlay-dim-light(다크는 -dark 자동 alias)
  */
 
@@ -44,8 +44,8 @@ const dialogContentVariants = cva(
     variants: {
       size: {
         sm: "[--dialog-max-w:384px] p-[var(--spacing-xl)] rounded-lg",
-        md: "[--dialog-max-w:480px] p-[var(--spacing-2xl)] rounded-xl",
-        lg: "[--dialog-max-w:640px] p-[var(--spacing-2xl)] rounded-xl",
+        md: "[--dialog-max-w:480px] p-[var(--spacing-2xl)] rounded-lg",
+        lg: "[--dialog-max-w:640px] p-[var(--spacing-2xl)] rounded-lg",
       },
     },
     defaultVariants: { size: "md" },

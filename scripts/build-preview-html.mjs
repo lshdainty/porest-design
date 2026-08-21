@@ -3094,7 +3094,7 @@ export function pageCss() {
     .modal-dialog {
       position: relative;
       background: var(--color-surface-default);
-      border-radius: var(--radius-xl);
+      border-radius: var(--radius-lg);
       padding: var(--spacing-2xl);
       box-shadow: var(--shadow-xl);
       width: min(90%, 480px);

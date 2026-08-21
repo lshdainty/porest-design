@@ -1851,7 +1851,7 @@ red → orange → yellow → green → blue → indigo → violet → pink → 
 > 상세 spec(Anatomy / Sizes / States / Motion / Accessibility / Do-Don't)은 [`specs/components/dialog.md`](specs/components/dialog.md) (일반 modal) · [`specs/components/alert-dialog.md`](specs/components/alert-dialog.md) (비가역 결정 확정)가 단일 SoT. 코드(`recipes/shadcn/components/ui/dialog.tsx`, `alert-dialog.tsx`) · 예제 · preview-html `.modal-*` 4 source 동기.
 
 **시각 토큰 요약** — preview-html `.modal-*` 톤 정합:
-- container: `surface-default` + `radius-2xl` (20px) + `shadow-xl` + padding `spacing-2xl` (32px)
+- container: `surface-default` + `radius-lg` (12px) + `shadow-xl` + padding `spacing-2xl` (32px)
 - title: `display-sm` (24/700) · description: `body-md` + `text-secondary`
 - overlay: `overlay-dim-light` rgba(0,0,0,0.50) (다크는 `-dark` 자동 alias)
 - size: `sm` 384 / `md` 480 (default) / `lg` 640
