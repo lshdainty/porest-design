@@ -1144,7 +1144,9 @@ HR(B2B 데이터 밀도) — `sm`/`md` 사이즈 위주, 인라인 그리드 편
 |---|---|---|---|---|
 | sm | 32px | `xs` / `sm` | `caption` (12/400) | `sm` |
 | **md** (default) | 40px | `sm` / `md` | `body-lg` (16/400) | `sm` |
-| lg | 48px | `md` / `lg` | `body-lg` (16/400) | `md` |
+| lg | 48px | `md` / `lg` | `body-lg` (16/400) | `sm` |
+
+입력 container 는 사이즈와 무관하게 `sm` radius(4px) 고정 — `specs/components/input.md`.
 
 #### Layout
 - label `caption` (12/400) + `xs` 간격, error/helper도 동일
