@@ -58,10 +58,18 @@ Porest Sonner는 **단일 spec × 5 kinds(default/success/error/warning/info)** 
 
 ## Sizes
 
+> **2026-08-21 — `min-height: 52px` 추가.** 패딩(12)과 아이콘(20)만으로는 46px 이 나와
+> 모바일에서 눈에 안 들어온다. Material 스낵바 하한(48)보다 조금 넉넉하게 잡는다.
+> 내용이 길면 자연히 늘어난다 — 하한만 정한다.
+>
+> 함께: **패딩을 코드에서 명시**한다. 웹은 `toastOptions.style` 에 padding 이 없어
+> sonner 라이브러리 기본값을 쓰고 있었다 — 라이브러리가 바뀌면 조용히 따라 움직인다.
+
 Sonner는 **size variant 없음** — 단일 spec. 콘텐츠(title/description 길이)에 따라 `max-width:360px` 안에서 자연 wrap.
 
 | 항목 | 값 | 토큰 |
 |---|---|---|
+| Container min-height | **52px** | (literal) |
 | Container padding | 12 / 16 (Y · X) | `var(--spacing-md)` · `var(--spacing-lg)` |
 | Container radius | 8px | `var(--radius-md)` |
 | Container shadow | shadow-md | `var(--shadow-md)` |
