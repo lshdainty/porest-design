@@ -8,7 +8,7 @@
  */
 
 const TOAST =
-  "background:var(--bg-surface-raised); border-radius:var(--radius-md); padding:var(--spacing-md) var(--spacing-lg); box-shadow:var(--shadow-md); display:flex; align-items:flex-start; gap:var(--spacing-md); max-width:360px;";
+  "background:var(--bg-surface-raised); border-radius:var(--radius-md); min-height:52px; box-sizing:border-box; padding:var(--spacing-md) var(--spacing-lg); box-shadow:var(--shadow-md); display:flex; align-items:flex-start; gap:var(--spacing-md); max-width:360px;";
 
 const TITLE =
   "font-size:var(--text-title-sm); line-height:var(--text-title-sm--line-height); font-weight:600; color:var(--color-text-primary);";
