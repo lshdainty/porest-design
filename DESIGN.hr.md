@@ -1102,8 +1102,8 @@ contrast 검증:
 | Size | height | padding (V/H) | text | radius |
 |---|---|---|---|---|
 | sm | 32px | `xs` / `sm` | `caption` (12/400) | `sm` (4px) |
-| **md** (default) | 40px | `sm` / `md` | `body-lg` (15/600) | `sm` |
-| lg | 48px | `md` / `lg` | `title-sm` (16/600) | `md` (8px) |
+| **md** (default) | 40px | `sm` / `md` | `body-md` (15/500) | `sm` |
+| lg | 48px | `md` / `lg` | `title-sm` (16/500) | `md` (8px) |
 
 HR은 데이터 밀도 화면이 많으므로 `sm`/`md` 위주, `lg`는 onboarding·empty state 등 강조 시.
 

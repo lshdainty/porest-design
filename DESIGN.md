@@ -1369,8 +1369,8 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 | Size | height | padding | text token | 라운드 |
 |---|---|---|---|---|
 | sm | 32px | `xs` 4px / `sm` 8px (수직/수평) | `caption` (12px) | `radius-sm` (4px) |
-| md | 40px | `sm` 8px / `md` 12px | `body-lg` (15/600) | `radius-sm` |
-| lg | 48px | `md` 12px / `lg` 16px | `title-sm` (16/600) | `radius-md` (8px) |
+| md | 40px | `sm` 8px / `md` 12px | `body-md` (15/500) | `radius-sm` |
+| lg | 48px | `md` 12px / `lg` 16px | `title-sm` (16/500) | `radius-md` (8px) |
 
 `md`가 default. WCAG 2.5.5 (target size 44×44px AAA): `md`는 40px로 AAA 미달이지만 horizontal hit area + spacing 8px 이상 확보 시 AA 인정 (2.5.8 minimum 24×24px 충족). `lg`(48px)는 AAA 충족 — 모바일 우선 화면 권장.
 
