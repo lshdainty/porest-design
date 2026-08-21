@@ -32,7 +32,7 @@ Porest AlertDialog는 시각적으로는 `Dialog`와 **완전히 동일** (같�
 ```
 
 | ⓐ overlay | dialog와 동일하나 **click 무시**. |
-| ⓑ container | dialog와 동일 — preview `.modal-dialog` 그대로 (`background:var(--color-surface-default); border-radius:var(--radius-xl); padding:var(--spacing-2xl); box-shadow:var(--shadow-xl); width:min(90%, <max-w>); display:flex; flex-direction:column; gap:var(--spacing-md);`). close button(X) **없음**. |
+| ⓑ container | dialog와 동일 — preview `.modal-dialog` 그대로 (`background:var(--color-surface-default); border-radius:var(--radius-2xl); padding:var(--spacing-2xl); box-shadow:var(--shadow-xl); width:min(90%, <max-w>); display:flex; flex-direction:column; gap:var(--spacing-md);`). close button(X) **없음**. |
 | ⓒ title | preview `.modal-title` 그대로 — `font-size:var(--text-title-md); font-weight:600; line-height:var(--text-title-md--line-height); color:var(--color-text-primary); letter-spacing:-0.01em;`. **결정 또는 결과**를 짧은 명사구로. 질문형 아님 — 질문은 ⓓ 가 맡는다. |
 | ⓓ description | preview `.modal-description` 그대로 — `font-size:var(--text-body-md); color:var(--color-text-secondary); line-height:1.6;`. **상세 내역** — 무엇이 어떻게 되는지(결과·영향)와 확인 질문. 파괴적 액션이면 **대상을 이름으로** 짚는다. |
 | ⓔ footer (모바일 < 640px) | 각 button `flex-1` 균등 분배 + `size="lg"`(48). 취소는 `secondary`(테두리 없는 회색 채움). [`dialog`](dialog.md) footer 규칙과 동일. |

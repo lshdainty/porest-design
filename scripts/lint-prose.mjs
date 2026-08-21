@@ -6,12 +6,14 @@
 // (shadow/motion/overlay)에 정의된 토큰과 비교. 정의되지 않은 reference는
 // typo 또는 outdated를 의심.
 //
-// 추가로 타이포 주석(`body-lg` (15/400) 형태)의 px 가 frontmatter typography
-// 블록의 fontSize 와 맞는지 검사한다. 토큰 값이 바뀌어도 본문 괄호는 안 따라와
+// 추가로 타이포/radius/spacing 주석(`body-lg` (15/400) · `radius-xl` (20px)
+// 형태)의 px 가 frontmatter typography·rounded·spacing 블록의 값과 맞는지 검사한다. 토큰 값이 바뀌어도 본문 괄호는 안 따라와
 // 사본이 낡는다 — 실제로 body-lg 가 15→16 으로 바뀐 뒤 27군데가 15로 남아
 // 그 표를 근거로 앱·웹 버튼을 잘못 고친 적이 있다(2026-08-21).
 // weight 는 검사하지 않는다 — "weight 강조는 인라인 modifier" 가 규약이라
 // 버튼(font-medium 500)처럼 토큰 weight 와 다른 게 정상이다.
+// radius-full 도 검사하지 않는다 — `radius-full` (40px 원형) 처럼 괄호가 radius 가
+// 아니라 요소 지름을 가리키는 표기가 정상이다.
 //
 // 사용법:
 //   node scripts/lint-prose.mjs              # 모든 파일 검사
@@ -191,6 +193,20 @@ function extractDefinedHex(content) {
   return out;
 }
 
+// === rounded / spacing 정의 추출 ===
+// prose 는 `radius-xl` · `spacing-lg` 로 쓰는데 yaml 키는 xl · lg 라 접두사를 붙여 담는다.
+function extractScale(content, blockKey, prefix) {
+  const lines = content.split("\n");
+  const out = new Map();
+  const block = findBlockLines(lines, blockKey);
+  if (!block) return out;
+  for (let i = block.start + 1; i < block.end; i++) {
+    const m = /^\s+([a-z0-9][a-z0-9-]*):\s*"?(\d+(?:\.\d+)?)px/.exec(lines[i]);
+    if (m) out.set(`${prefix}-${m[1]}`, Number(m[2]));
+  }
+  return out;
+}
+
 // === typography 정의(fontSize) 추출 ===
 function extractTypographySizes(content) {
   const lines = content.split("\n");
@@ -210,6 +226,9 @@ function extractTypographySizes(content) {
 // === 타이포 주석 추출 ===
 // `body-lg` (15/400) · `caption` (12px) · `body-lg` (15/400/1.6) 형태에서
 // 토큰명과 괄호 첫 숫자(px)를 뽑는다.
+// radius-full 은 괄호가 지름을 가리키는 표기가 정상이라 검사 대상에서 뺀다.
+const ANNOT_SKIP = new Set(["radius-full"]);
+
 function extractTypoAnnotations(content, sizes) {
   const re = /`([a-z][a-z0-9-]*)`\s*\((\d+(?:\.\d+)?)(?:px)?(?=[\s/)])/g;
   const out = [];
@@ -219,7 +238,7 @@ function extractTypoAnnotations(content, sizes) {
     re.lastIndex = 0;
     while ((m = re.exec(text)) !== null) {
       const [, token, px] = m;
-      if (!sizes.has(token)) continue;
+      if (ANNOT_SKIP.has(token) || !sizes.has(token)) continue;
       out.push({
         token,
         px: Number(px),
@@ -312,8 +331,12 @@ for (const target of TARGETS) {
   const definedHex = extractDefinedHex(content);
   const refs = extractProseReferences(content);
   const cites = extractProseHexCitations(content);
-  const typoSizes = extractTypographySizes(content);
-  const annots = extractTypoAnnotations(content, typoSizes);
+  const scale = new Map([
+    ...extractTypographySizes(content),
+    ...extractScale(content, "rounded", "radius"),
+    ...extractScale(content, "spacing", "spacing"),
+  ]);
+  const annots = extractTypoAnnotations(content, scale);
 
   console.log(`  정의 토큰 ${defined.size} (hex 페어 ${definedHex.size}), prose reference ${refs.size}, hex 인용 ${cites.length}`);
 
@@ -354,14 +377,14 @@ for (const target of TARGETS) {
     totalMismatch += mismatches.length;
   }
 
-  // 3) 타이포 주석 px mismatch (`body-lg` (15/400) ↔ typography.fontSize)
+  // 3) 토큰 주석 px mismatch (`body-lg` (15/400) ↔ typography.fontSize)
   const badPx = annots.filter(a => a.px !== a.expected);
   if (badPx.length === 0) {
-    console.log(`  ✓ 타이포 주석 px 일관성 통과 (검사 ${annots.length}건)`);
+    console.log(`  ✓ 토큰 주석 px 일관성 통과 (검사 ${annots.length}건)`);
   } else {
-    console.log(`  ⚠ 타이포 주석 px mismatch ${badPx.length}건:`);
+    console.log(`  ⚠ 토큰 주석 px mismatch ${badPx.length}건:`);
     for (const a of badPx.slice(0, 30)) {
-      console.log(`    - ${target}:${a.line}  \`${a.token}\` 주석=${a.px}px ↔ typography=${a.expected}px`);
+      console.log(`    - ${target}:${a.line}  \`${a.token}\` 주석=${a.px}px ↔ 정의=${a.expected}px`);
       console.log(`         | ${a.snippet}`);
     }
     if (badPx.length > 30) console.log(`    ... (${badPx.length - 30}건 추가)`);
@@ -372,11 +395,11 @@ for (const target of TARGETS) {
 console.log("");
 const totalIssues = totalUndefined + totalMismatch + totalTypoPx;
 if (strict && totalIssues > 0) {
-  console.error(`strict 모드 — 총 ${totalIssues}건 발견 (dangling ${totalUndefined} + hex mismatch ${totalMismatch} + 타이포 px ${totalTypoPx}). exit 1`);
+  console.error(`strict 모드 — 총 ${totalIssues}건 발견 (dangling ${totalUndefined} + hex mismatch ${totalMismatch} + 토큰 px ${totalTypoPx}). exit 1`);
   exit(1);
 }
 if (totalIssues === 0) {
   console.log("완료. 이슈 없음.");
 } else {
-  console.log(`완료. dangling ${totalUndefined} + hex mismatch ${totalMismatch} + 타이포 px ${totalTypoPx}건 점검 권장 (false positive 가능 — heuristic).`);
+  console.log(`완료. dangling ${totalUndefined} + hex mismatch ${totalMismatch} + 토큰 px ${totalTypoPx}건 점검 권장 (false positive 가능 — heuristic).`);
 }

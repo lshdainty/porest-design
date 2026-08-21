@@ -134,7 +134,7 @@ motion: `transition ease-in-out` + Radix `data-state` driven.
 |---|---|---|---|
 | 위치 | 화면 가장자리 (4 sides) | 화면 중앙 | 화면 하단 또는 side |
 | 폭 | side: w-3/4 sm:max-w-sm / top·bottom: full | 480 (md) / 384 (sm) | bottom: full / side: w-3/4 |
-| 시각 elevation | shadow-xl + 1px border (반대 모서리만) | shadow-xl + radius-xl | shadow-xl + radius-xl (반대 모서리만) + handle bar (bottom) |
+| 시각 elevation | shadow-xl + 1px border (반대 모서리만) | shadow-xl + radius-2xl | shadow-xl + radius-2xl (반대 모서리만) + handle bar (bottom) |
 | 인터랙션 | click + Escape (drag 없음) | click + Escape | drag-to-close + swipe + Escape |
 | 사용처 | 데스크탑 필터/상세 패널 / 모바일 nav · action sheet | 데스크탑 form/확인 | 모바일 친화 시트 (drag 자연) |
 | Animation | slide-in-from-{side} 500/300ms | zoom-in-95 + fade-in 200/180ms | translate-y-full → 0 |

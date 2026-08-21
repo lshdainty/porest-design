@@ -2,7 +2,7 @@
 
 > 화면 가장자리에서 슬라이드 인하는 floating 패널. 콘텐츠 편집/거래 입력/공유 옵션처럼 일시 차단이 필요한 흐름을 모달보다 자연스럽게 처리. 모바일에선 bottom sheet 형태가 표준 (`vaul` 라이브러리 베이스).
 
-Porest Drawer는 **2 sides(bottom/side) × 1 정렬 톤** 매트릭스로 정의됩니다. preview `.drw-bottom` / `.drw-side` SoT 정합 — `surface-default` + `shadow-xl` + `radius-xl` 모서리 라운드(slide 방향 반대 모서리만) + **border 없음** + handle bar(40×4, bottom only) + `padding-lg` + `gap-md`. drag-to-close + swipe + Escape 모두 지원.
+Porest Drawer는 **2 sides(bottom/side) × 1 정렬 톤** 매트릭스로 정의됩니다. preview `.drw-bottom` / `.drw-side` SoT 정합 — `surface-default` + `shadow-xl` + `radius-2xl` 모서리 라운드(slide 방향 반대 모서리만) + **border 없음** + handle bar(40×4, bottom only) + `padding-lg` + `gap-md`. drag-to-close + swipe + Escape 모두 지원.
 
 ## Anatomy
 
@@ -18,10 +18,10 @@ Bottom sheet (모바일 표준)
 │                                                │
 │ ⓕ footer     [   취소   ] [   완료   ]          │   ← flex:1 평등 분배
 └────────────────────────────────────────────────┘
-            ⓐ container (surface-default + shadow-xl + radius-xl top)
+            ⓐ container (surface-default + shadow-xl + radius-2xl top)
 ```
 
-| ⓐ container | preview `.drw-bottom` 그대로 — `background:var(--color-surface-default); border-radius:var(--radius-xl) var(--radius-xl) 0 0; box-shadow:var(--shadow-xl); display:flex; flex-direction:column; gap:var(--spacing-md);` **border 없음** — shadow만으로 elevation. **좌우 여백은 `--spacing-xl`(24)** — header·body·footer 가 같은 값을 쓴다(아래 참조). |
+| ⓐ container | preview `.drw-bottom` 그대로 — `background:var(--color-surface-default); border-radius:var(--radius-2xl) var(--radius-2xl) 0 0; box-shadow:var(--shadow-xl); display:flex; flex-direction:column; gap:var(--spacing-md);` **border 없음** — shadow만으로 elevation. **좌우 여백은 `--spacing-xl`(24)** — header·body·footer 가 같은 값을 쓴다(아래 참조). |
 | ⓑ handle | preview `.drw-handle` 그대로 — `width:40px; height:4px; background:var(--color-surface-input); border-radius:var(--radius-full); margin:-4px auto var(--spacing-sm);` bottom drawer에만. side drawer는 생략. |
 | ⓒ header | preview `.drw-header` — `display:flex; justify-content:space-between; align-items:center;` title 좌, close 우. |
 | ⓓ close | preview `.drw-close` — 28×28 ghost icon button. `aria-label="닫기"`. focus-visible 시 ring. |
@@ -36,14 +36,14 @@ Bottom sheet (모바일 표준)
 - footer 의 **취소는 `secondary`**(테두리 없는 회색 채움), **삭제는 `dangerSoft`**(옅은 빨강 채움).
   전체 폭 버튼 둘이 나란히 설 때 `ghost` 는 배경이 없어 한쪽이 빈자리처럼 보인다 —
   주 액션은 `default`(info 채움), 보조는 옅게 채워 무게 차이만 준다.
-- bottom drawer는 `radius-xl` top corners만, side drawer(right)는 `radius-xl` left corners만 — slide 방향의 반대편 둥글기.
+- bottom drawer는 `radius-2xl` top corners만, side drawer(right)는 `radius-2xl` left corners만 — slide 방향의 반대편 둥글기.
 
 ## Variants (side)
 
 | Side | Radius | Width 정책 | 사용처 |
 |---|---|---|---|
-| `bottom` *(default)* | `radius-xl radius-xl 0 0` (top 양쪽) | `width:100%` (full width) | 모바일 표준 — 거래 입력, 공유, action sheet. handle bar 노출. |
-| `right` | `radius-xl 0 0 radius-xl` (left 양쪽) | `width:280–360` | 데스크탑 보조 패널 — 필터, 세부 정보 보기. handle 생략. |
+| `bottom` *(default)* | `radius-2xl radius-2xl 0 0` (top 양쪽) | `width:100%` (full width) | 모바일 표준 — 거래 입력, 공유, action sheet. handle bar 노출. |
+| `right` | `radius-2xl 0 0 radius-2xl` (left 양쪽) | `width:280–360` | 데스크탑 보조 패널 — 필터, 세부 정보 보기. handle 생략. |
 
 `left` / `top` 사이드는 Porest spec 아님 — 일반적인 사용 사례가 없고 모바일/데스크탑 손목 접근성에 불리.
 
@@ -57,7 +57,7 @@ Bottom sheet (모바일 표준)
 | Height | auto (content) | 100% (stretch) | (literal) |
 | Padding | 16px | 16px | `var(--spacing-lg)` |
 | Gap (자식 간) | 12px | 12px | `var(--spacing-md)` |
-| Radius | xl (20) top corners | xl (20) left corners | `var(--radius-xl)` |
+| Radius | 2xl (20) top corners | 2xl (20) left corners | `var(--radius-2xl)` |
 | Handle margin | `-4px auto var(--spacing-sm)` | — | `var(--spacing-sm)` |
 | Shadow | xl | xl | `var(--shadow-xl)` |
 | Border | none | none | (없음) |
