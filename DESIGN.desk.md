@@ -1116,8 +1116,8 @@ contrast 검증:
 | Size | height | padding (V/H) | text | radius |
 |---|---|---|---|---|
 | sm | 32px | `xs` / `sm` | `caption` (12/400) | `sm` (4px) |
-| **md** (default) | 40px | `sm` / `md` | `body-lg` (15/600) | `md` (8px) |
-| lg | 48px | `md` / `lg` | `title-sm` (16/600) | `md` |
+| **md** (default) | 40px | `sm` / `md` | `body-md` (15/500) | `sm` (4px) |
+| lg | 48px | `md` / `lg` | `title-sm` (16/500) | `md` |
 
 Desk는 모바일 우선 사용 사례(개인 메모/가계부)가 많으므로 `md`/`lg` 위주, `sm`은 inline action 한정. `md` 라운드는 `sm`(4px)보다 부드러운 8px — Desk 친근감 톤.
 
