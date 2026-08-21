@@ -59,8 +59,8 @@ Dialog 자체는 **variant 없음** — 시각 통일이 일관성에 유리. �
 
 Tailwind utility 매핑 (dialog.tsx cva — `--spacing-*`/`--dialog-max-w` 토큰 그대로 인용):
 - `sm`: `[--dialog-max-w:384px] p-[var(--spacing-xl)] rounded-lg`
-- `md`: `[--dialog-max-w:480px] p-[var(--spacing-2xl)] rounded-xl`
-- `lg`: `[--dialog-max-w:640px] p-[var(--spacing-2xl)] rounded-xl`
+- `md`: `[--dialog-max-w:480px] p-[var(--spacing-2xl)] rounded-lg`
+- `lg`: `[--dialog-max-w:640px] p-[var(--spacing-2xl)] rounded-lg`
 - 공통: `w-[min(90%,var(--dialog-max-w))] gap-[var(--spacing-md)]`
 
 **z-index**
