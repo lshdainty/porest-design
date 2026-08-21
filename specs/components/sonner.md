@@ -2,8 +2,13 @@
 
 > 사용자 액션 결과나 시스템 이벤트를 화면 흐름을 끊지 않고 일시적으로 알리는 floating 알림. `sonner` 라이브러리 기반(shadcn 권장)이며 화면 모서리에서 슬라이드 인 → 자동 dismiss → swipe로 직접 닫기 가능한 패턴.
 
-Porest Sonner는 **단일 spec × 5 kinds(default/success/error/warning/info)** 매트릭스로 정의됩니다. site preview SoT 톤을 픽스 — `surface-raised` + `radius-md` + `shadow-lg` + 좌측 semantic 컬러 아이콘(20px) + 우측 action button(SM primary). **테두리 없음** — 면과 그림자만으로 페이지 위에 뜬 시각 단위임을 표현한다.
+Porest Sonner는 **단일 spec × 5 kinds(default/success/error/warning/info)** 매트릭스로 정의됩니다. site preview SoT 톤을 픽스 — `surface-raised` + `radius-md` + `shadow-md` + 좌측 semantic 컬러 아이콘(20px) + 우측 action button(SM primary). **테두리 없음** — 면과 그림자만으로 페이지 위에 뜬 시각 단위임을 표현한다.
 
+> **2026-08-21 — 그림자를 `shadow-lg` → `shadow-md` 로.** 다크에서 `lg`·`xl` 은
+> 부드러운 번짐이 아니라 **한 겹 더 어두운 띠**로 읽힌다. 그림자 색이 50~60% 검정인데
+> 배경이 이미 거의 검정이라 경계가 뭉개지지 않아서다. `md` 는 띠가 안 생기고,
+> 분리는 `surface-raised` 면 차이가 이미 해 준다. 네 토큰을 전부 다크에서 렌더해 골랐다.
+>
 > **2026-08-21 — 테두리를 걷었다.** 면과 그림자만으로 충분히 뜬다. 라이트는 흰 면 +
 > 그림자로 이미 또렷하고, 다크는 아래 `surface-raised` 변경으로 면 차이가 생겼다.
 > 1px 선이 하나 더 있으면 오히려 카드처럼 무거워 보인다.
@@ -19,7 +24,7 @@ Porest Sonner는 **단일 spec × 5 kinds(default/success/error/warning/info)** 
 
 ```
 ┌────────────────────────────────────────────────────────┐
-│ ⓐ container (surface-raised + shadow-lg, 테두리 없음)  │
+│ ⓐ container (surface-raised + shadow-md, 테두리 없음)  │
 │  ┌────┐  ┌──────────────────────────────┐  ┌────────┐  │
 │  │ ⓑ  │  │ ⓒ title  (title-sm, 600)     │  │   ⓔ    │  │
 │  │ico │  │ ⓓ desc   (body-sm, secondary)│  │ action │  │
@@ -27,7 +32,7 @@ Porest Sonner는 **단일 spec × 5 kinds(default/success/error/warning/info)** 
 └────────────────────────────────────────────────────────┘
 ```
 
-| ⓐ container | `background:var(--bg-surface-raised); border-radius:var(--radius-md); padding:var(--spacing-md) var(--spacing-lg); box-shadow:var(--shadow-lg); display:flex; align-items:flex-start; gap:var(--spacing-md); max-width:360px;` |
+| ⓐ container | `background:var(--bg-surface-raised); border-radius:var(--radius-md); padding:var(--spacing-md) var(--spacing-lg); box-shadow:var(--shadow-md); display:flex; align-items:flex-start; gap:var(--spacing-md); max-width:360px;` |
 | ⓑ icon | 20×20 stroke svg. 좌측, `flex-shrink:0`, `margin-top: 2px`(title baseline 정렬). kind별 stroke 색상(아래 Kinds 표). `default` kind는 icon 생략. |
 | ⓒ title | `text-title-sm` (16/600/1.4). `var(--color-text-primary)`. 한 줄 권장(2줄까지 허용). |
 | ⓓ description | `text-body-sm` (14/400/1.5). `var(--color-text-secondary)`. 선택. title과 `var(--spacing-xs)`(4) gap. |
@@ -59,7 +64,7 @@ Sonner는 **size variant 없음** — 단일 spec. 콘텐츠(title/description �
 |---|---|---|
 | Container padding | 12 / 16 (Y · X) | `var(--spacing-md)` · `var(--spacing-lg)` |
 | Container radius | 8px | `var(--radius-md)` |
-| Container shadow | shadow-lg | `var(--shadow-lg)` |
+| Container shadow | shadow-md | `var(--shadow-md)` |
 | Container border | 없음 | — (면 + 그림자로 분리) |
 | Container max-width | 360px | (literal — sonner 라이브러리 기본) |
 | Gap (icon · content · action) | 12px | `var(--spacing-md)` |
@@ -136,4 +141,4 @@ Sonner는 **size variant 없음** — 단일 spec. 콘텐츠(title/description �
 - 기존 `sonner.tsx` `actionButton` className은 `bg-primary text-text-on-accent`만 — 풀 button SM spec(높이/패딩/font/shadow/transition) 추가.
 - preview-html `.toast`의 `border-left: 4px solid semantic` 강조선 톤은 **legacy** — site preview의 plain card 톤(테두리 없음 + icon 좌측)이 SoT.
 - 하드 코딩 px(`padding:12px 16px`, `gap:12px`, `font-size:14px`) → spacing/font 토큰 직접 인용.
-- **box-shadow는 Tailwind utility(`shadow-lg`) 대신 `toastOptions.style: { boxShadow: "var(--shadow-lg)" }` inline style 사용** — sonner 라이브러리는 `Toaster`의 `toastOptions`로 모든 toast에 inline style 전파. Tailwind v4 `--tw-shadow-*` 분해 처리가 다크 모드 CSS 변수 override를 우회하는 문제 fix. preview `.toast` SoT와 다크 모드 정합 보장. 상세는 [`dialog.md`](dialog.md) Migration notes 참조.
+- **box-shadow는 Tailwind utility(`shadow-md`) 대신 `toastOptions.style: { boxShadow: "var(--shadow-md)" }` inline style 사용** — sonner 라이브러리는 `Toaster`의 `toastOptions`로 모든 toast에 inline style 전파. Tailwind v4 `--tw-shadow-*` 분해 처리가 다크 모드 CSS 변수 override를 우회하는 문제 fix. preview `.toast` SoT와 다크 모드 정합 보장. 상세는 [`dialog.md`](dialog.md) Migration notes 참조.
