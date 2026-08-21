@@ -1505,8 +1505,8 @@ contrast 확인:
 - dark: `#F5F6FA` × `#1A1F2E` = **15.04:1** ✅ AAA
 
 #### Typography 적용
-- 본문: `body-lg` (15/400/1.6)
-- 강조: `body-lg` (15/600/1.6)
+- 본문: `body-md` (15/400/1.6)
+- 강조: `body-md` (15/600/1.6)
 - 보조 본문: `caption` (12/400/1.5) — `text-secondary` 또는 `text-tertiary` 색상 권장
 - 헤딩 위계: `title-sm`(16) → `title-sm`(18) → `display-sm`(24) → `title-md`(32)
 
@@ -1612,9 +1612,9 @@ surface 위 inline 상태 텍스트 — form validation error, status notificati
 모두 본문 4.5:1 통과 — 1.4.3 통과.
 
 #### Typography
-- 본문 길이 alert: `body-lg` (15/400/1.6)
+- 본문 길이 alert: `body-md` (15/400/1.6)
 - inline form helper: `caption` (12/400/1.5)
-- alert 제목 (있을 시): `body-lg` (15/600)
+- alert 제목 (있을 시): `body-md` (15/600)
 
 #### Layout
 - icon + text 페어: icon `xs` (4px) 간격, icon size 16~20px (text height에 맞춤)
@@ -1852,7 +1852,7 @@ red → orange → yellow → green → blue → indigo → violet → pink → 
 
 **시각 토큰 요약** — preview-html `.modal-*` 톤 정합:
 - container: `surface-default` + `radius-xl` (20px) + `shadow-xl` + padding `spacing-2xl` (40px)
-- title: `display-sm` (29/700) · description: `body-md` + `text-secondary`
+- title: `display-sm` (24/700) · description: `body-md` + `text-secondary`
 - overlay: `overlay-dim-light` rgba(0,0,0,0.50) (다크는 `-dark` 자동 alias)
 - size: `sm` 384 / `md` 480 (default) / `lg` 640
 - motion: overlay fade-in `motion-duration-base` + container scale 0.96→1 + fade-in `motion-duration-slow`
@@ -1868,7 +1868,7 @@ red → orange → yellow → green → blue → indigo → violet → pink → 
 #### Structure (기존 토큰 조합 — 신규 토큰 불필요)
 - 표면: `surface-default` + `shadow-md` + `radius-md` (기본 카드 구조)
 - semantic accent: 좌측 4px stroke 또는 icon으로 `success`/`error`/`warning`/`info` 표현
-- 텍스트: `body-lg` (15/400) + (선택) `body-lg` 제목
+- 텍스트: `body-md` (15/400) + (선택) `body-lg` 제목
 - close button: optional, 우측 상단 small icon button
 
 #### Variant (semantic 4)
@@ -1969,7 +1969,7 @@ trigger 클릭/키보드로 펼쳐지는 옵션 list — context menu, action me
 - item:
   - height: 36px (touch 권장 44px → `lg` size variant 옵션)
   - padding: `sm` 8px / `md` 12px (V/H)
-  - text: `body-lg` (15/400)
+  - text: `body-md` (15/400)
   - hover: `surface-input` 배경
   - selected: `primary` 좌측 stroke 또는 우측 ✓ icon (brand 파일 참조)
   - disabled: `text-disabled` + cursor:not-allowed (1.4.3 incidental)
@@ -2022,7 +2022,7 @@ trigger 클릭/키보드로 펼쳐지는 옵션 list — context menu, action me
   - active: `text-primary` + bottom border 2px (또는 fill, variant 별)
   - hover: `text-primary` + 미세 배경(`surface-input`)
   - disabled: `text-disabled` + cursor:not-allowed
-- tab panel: 하단 콘텐츠 영역, `surface-default` 위 `body-lg` (15/400)
+- tab panel: 하단 콘텐츠 영역, `surface-default` 위 `body-md` (15/400)
 
 #### Variant
 | Variant | Active 표현 | 사용 |
@@ -2036,8 +2036,8 @@ trigger 클릭/키보드로 펼쳐지는 옵션 list — context menu, action me
 | Size | height | text | padding (V/H) |
 |---|---|---|---|
 | sm | 36px | `caption` (12/400) | `xs` / `md` |
-| **md** (default) | 44px | `body-lg` (15/600) | `sm` / `lg` |
-| lg | 52px | `body-lg` (15/600) | `md` / `lg` |
+| **md** (default) | 44px | `body-md` (15/600) | `sm` / `lg` |
+| lg | 52px | `body-md` (15/600) | `md` / `lg` |
 
 #### Layout
 - tab trigger 간격: `xs` (4px) gap
@@ -2303,7 +2303,7 @@ horizontal 모드는 viewport `breakpoint-md` (736px) 이상에서만 사용 —
 
 #### Fieldset (관련 control 그룹화)
 - 시각적 그룹: `<fieldset>` + `<legend>` 또는 group label + 1px `border-default` divider 위.
-- group label: `body-lg` (15/600) — section title보다 작고, control label보다 큼.
+- group label: `body-md` (15/600) — section title보다 작고, control label보다 큼.
 
 #### Accessibility (a11y 흐름)
 - [ ] **HTML 사용**: `<form>` + `<fieldset>` + `<label for="">` + native control. ARIA는 보충용.
@@ -2683,7 +2683,7 @@ spec brand-neutral. brand 파일 — HR(결재 단계 horizontal, sequential), D
 #### Layout
 - nav item height: `touch-min` 44 (모바일), 40 (데스크탑 dense)
 - padding: `sm` (8px) V / `md` (12px) H
-- icon: 20×20, label `body-lg` (15/400)
+- icon: 20×20, label `body-md` (15/400)
 - group title: `caption` (12/600) `text-tertiary` uppercase
 
 #### Accessibility
@@ -3097,7 +3097,7 @@ spec brand-neutral. brand 파일 — HR(Accordion 결재 detail 그룹 / Hover C
 #### Anatomy
 - table: `surface-default` 배경, `border-default` 1px 외곽 (또는 분리 row)
 - thead: `caption` (12/600) `text-tertiary` uppercase, `surface-input` 약한 배경
-- tbody row: `body-lg` (15/400) `text-primary`, hover `surface-input`
+- tbody row: `body-md` (15/400) `text-primary`, hover `surface-input`
 - cell padding: `sm` (8px) V / `md` (12px) H
 - divider: row 간 1px `border-default`
 
@@ -3623,7 +3623,7 @@ drag-drop area + click 업로드 button. **새 토큰 0** — surface + border +
 #### Layout
 - root level: indent 0
 - depth × 16-20px (compact) 또는 24-28px (loose)
-- icon 16-20×16-20, label `body-lg` (15/400)
+- icon 16-20×16-20, label `body-md` (15/400)
 
 #### Use cases
 - HR 조직도 (회사 → 본부 → 팀 → 직원)
