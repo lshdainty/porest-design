@@ -1,14 +1,14 @@
 /*
  * shadcn Sonner 예제 — site preview SoT 그대로 + sonner.md spec 1:1 동기.
  * Container: surface-raised (테두리 없음) + radius-md + spacing-md/lg padding +
- *            shadow-lg + max-width 360 + gap-md.
+ *            shadow-md + max-width 360 + gap-md.
  * Action button: button.md Size `sm` spec 그대로(`h-8` · `text-caption` ·
  *                `radius-sm` · `font-sans` · `bg-primary` · `shadow-sm` ·
  *                `hover:brightness-105` · `transition-[box-shadow]`).
  */
 
 const TOAST =
-  "background:var(--bg-surface-raised); border-radius:var(--radius-md); padding:var(--spacing-md) var(--spacing-lg); box-shadow:var(--shadow-lg); display:flex; align-items:flex-start; gap:var(--spacing-md); max-width:360px;";
+  "background:var(--bg-surface-raised); border-radius:var(--radius-md); padding:var(--spacing-md) var(--spacing-lg); box-shadow:var(--shadow-md); display:flex; align-items:flex-start; gap:var(--spacing-md); max-width:360px;";
 
 const TITLE =
   "font-size:var(--text-title-sm); line-height:var(--text-title-sm--line-height); font-weight:600; color:var(--color-text-primary);";

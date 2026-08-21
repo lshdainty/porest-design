@@ -7,7 +7,7 @@ import { Toaster as Sonner } from "sonner";
  * Porest Sonner (shadcn 베이스 + Porest 디자인 토큰)
  *
  * site preview SoT 정합 (sonner.md):
- *   toast: surface-raised + radius-md + shadow-lg (테두리 없음)
+ *   toast: surface-raised + radius-md + shadow-md (테두리 없음)
  *   title: text-title-sm 600
  *   description: text-body-sm + text-secondary
  *   actionButton: button.md Size `sm` 그대로 — h-8 + text-caption + radius-sm +
@@ -31,7 +31,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
       toastOptions={{
-        style: { boxShadow: "var(--shadow-lg)" },
+        style: { boxShadow: "var(--shadow-md)" },
         classNames: {
           toast:
             "group toast group-[.toaster]:bg-surface-default group-[.toaster]:text-text-primary group-[.toaster]:border group-[.toaster]:border-border-default group-[.toaster]:rounded-md",
