@@ -3754,7 +3754,7 @@ export function pageCss() {
     /* Sonner toast stack */
     .son { display: flex; flex-direction: column; gap: var(--spacing-sm); }
     /* sonner.md SoT — 20px stroke svg(kind별 색) + shadow-lg + border 1px */
-    .son-toast { display: flex; gap: var(--spacing-md); align-items: flex-start; padding: var(--spacing-md) var(--spacing-lg); background: var(--color-surface-default); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); font-size: var(--text-body-sm); line-height: var(--text-body-sm--line-height); color: var(--color-text-primary); }
+    .son-toast { display: flex; gap: var(--spacing-md); align-items: flex-start; padding: var(--spacing-md) var(--spacing-lg); background: var(--bg-surface-raised); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); font-size: var(--text-body-sm); line-height: var(--text-body-sm--line-height); color: var(--color-text-primary); }
     .son-toast > svg { flex-shrink: 0; margin-top: 2px; }
 
     /* Aspect Ratio */

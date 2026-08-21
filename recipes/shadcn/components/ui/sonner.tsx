@@ -7,7 +7,7 @@ import { Toaster as Sonner } from "sonner";
  * Porest Sonner (shadcn 베이스 + Porest 디자인 토큰)
  *
  * site preview SoT 정합 (sonner.md):
- *   toast: surface-default + border-default(1px) + radius-md + shadow-lg
+ *   toast: surface-raised + border-default(1px) + radius-md + shadow-lg
  *   title: text-title-sm 600
  *   description: text-body-sm + text-secondary
  *   actionButton: button.md Size `sm` 그대로 — h-8 + text-caption + radius-sm +

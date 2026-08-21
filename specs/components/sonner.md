@@ -2,7 +2,12 @@
 
 > 사용자 액션 결과나 시스템 이벤트를 화면 흐름을 끊지 않고 일시적으로 알리는 floating 알림. `sonner` 라이브러리 기반(shadcn 권장)이며 화면 모서리에서 슬라이드 인 → 자동 dismiss → swipe로 직접 닫기 가능한 패턴.
 
-Porest Sonner는 **단일 spec × 5 kinds(default/success/error/warning/info)** 매트릭스로 정의됩니다. site preview SoT 톤을 픽스 — `surface-default` + `border-default`(1px) + `radius-md` + `shadow-lg` + 좌측 semantic 컬러 아이콘(20px) + 우측 action button(SM primary). border + shadow 함께 사용하는 유일한 컴포넌트 — 페이지 위 분리된 시각 단위임을 강조.
+Porest Sonner는 **단일 spec × 5 kinds(default/success/error/warning/info)** 매트릭스로 정의됩니다. site preview SoT 톤을 픽스 — `surface-raised` + `border-default`(1px) + `radius-md` + `shadow-lg` + 좌측 semantic 컬러 아이콘(20px) + 우측 action button(SM primary). border + shadow 함께 사용하는 유일한 컴포넌트 — 페이지 위 분리된 시각 단위임을 강조.
+
+> **2026-08-21 — 면을 `surface-default` → `surface-raised` 로.** 다크에서 토스트가 배경에
+> 묻혀 안 보였다. 검은 그림자를 아무리 키워도 검은 배경 위에서는 분리가 안 생긴다.
+> 면을 한 단계 올리는 쪽이 실제로 뜬다. 라이트에서는 `surface-raised` 가 `surface-default`
+> 와 같은 값이라 **변화가 없다** — 다크에서만 효과가 나는 변경이다.
 
 > 별도 `border-left: 4px solid semantic` 강조선이 있는 preview-html `.toast`는 **legacy 톤** — 현재 SoT는 site `sonner-examples.mjs` 그대로의 깔끔한 카드 형태.
 
@@ -18,7 +23,7 @@ Porest Sonner는 **단일 spec × 5 kinds(default/success/error/warning/info)** 
 └────────────────────────────────────────────────────────┘
 ```
 
-| ⓐ container | `background:var(--color-surface-default); border:1px solid var(--color-border-default); border-radius:var(--radius-md); padding:var(--spacing-md) var(--spacing-lg); box-shadow:var(--shadow-lg); display:flex; align-items:flex-start; gap:var(--spacing-md); max-width:360px;` |
+| ⓐ container | `background:var(--bg-surface-raised); border:1px solid var(--color-border-default); border-radius:var(--radius-md); padding:var(--spacing-md) var(--spacing-lg); box-shadow:var(--shadow-lg); display:flex; align-items:flex-start; gap:var(--spacing-md); max-width:360px;` |
 | ⓑ icon | 20×20 stroke svg. 좌측, `flex-shrink:0`, `margin-top: 2px`(title baseline 정렬). kind별 stroke 색상(아래 Kinds 표). `default` kind는 icon 생략. |
 | ⓒ title | `text-title-sm` (16/600/1.4). `var(--color-text-primary)`. 한 줄 권장(2줄까지 허용). |
 | ⓓ description | `text-body-sm` (14/400/1.5). `var(--color-text-secondary)`. 선택. title과 `var(--spacing-xs)`(4) gap. |

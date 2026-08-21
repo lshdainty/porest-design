@@ -1,6 +1,6 @@
 /*
  * shadcn Sonner 예제 — site preview SoT 그대로 + sonner.md spec 1:1 동기.
- * Container: surface-default + border 1px + radius-md + spacing-md/lg padding +
+ * Container: surface-raised + border 1px + radius-md + spacing-md/lg padding +
  *            shadow-lg + max-width 360 + gap-md.
  * Action button: button.md Size `sm` spec 그대로(`h-8` · `text-caption` ·
  *                `radius-sm` · `font-sans` · `bg-primary` · `shadow-sm` ·
@@ -8,7 +8,7 @@
  */
 
 const TOAST =
-  "background:var(--color-surface-default); border:1px solid var(--color-border-default); border-radius:var(--radius-md); padding:var(--spacing-md) var(--spacing-lg); box-shadow:var(--shadow-lg); display:flex; align-items:flex-start; gap:var(--spacing-md); max-width:360px;";
+  "background:var(--bg-surface-raised); border:1px solid var(--color-border-default); border-radius:var(--radius-md); padding:var(--spacing-md) var(--spacing-lg); box-shadow:var(--shadow-lg); display:flex; align-items:flex-start; gap:var(--spacing-md); max-width:360px;";
 
 const TITLE =
   "font-size:var(--text-title-sm); line-height:var(--text-title-sm--line-height); font-weight:600; color:var(--color-text-primary);";
