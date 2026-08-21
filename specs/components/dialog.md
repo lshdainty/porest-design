@@ -2,7 +2,7 @@
 
 > 페이지 위에 떠 있는 floating modal — 사용자 결정·form 입력·콘텐츠 편집이 필요한 흐름을 일시 차단. 위험한 비가역 액션 확정은 별도 [`alert-dialog.md`](alert-dialog.md) 사용.
 
-Porest Dialog는 **3 sizes × 1 정렬 톤** 매트릭스로 정의됩니다. Toss 톤(절제 · 신뢰감)을 따라 `radius-xl`(20px) + `spacing-2xl`(40px) padding + `shadow-xl` + `title-md` title — 넓은 여백으로 화면 흐름이 끊겼음을 명확히 표시합니다. 한국어 본문 가독성을 위해 description은 `body-md` + `text-secondary`.
+Porest Dialog는 **3 sizes × 1 정렬 톤** 매트릭스로 정의됩니다. Toss 톤(절제 · 신뢰감)을 따라 `radius-2xl`(20px) + `spacing-2xl`(32px) padding + `shadow-xl` + `title-md` title — 넓은 여백으로 화면 흐름이 끊겼음을 명확히 표시합니다. 한국어 본문 가독성을 위해 description은 `body-md` + `text-secondary`.
 
 ## Anatomy
 
@@ -28,7 +28,7 @@ Porest Dialog는 **3 sizes × 1 정렬 톤** 매트릭스로 정의됩니다. To
 ```
 
 | ⓐ overlay | 페이지 dim. light `--overlay-dim-light` rgba(0,0,0,0.50), dark `--overlay-dim-dark` rgba(0,0,0,0.65). click 시 닫힘. |
-| ⓑ container | preview `.modal-dialog` 그대로 — `background:var(--color-surface-default); border-radius:var(--radius-xl); padding:var(--spacing-2xl); box-shadow:var(--shadow-xl); width:min(90%, <max-w>); display:flex; flex-direction:column; gap:var(--spacing-md);` |
+| ⓑ container | preview `.modal-dialog` 그대로 — `background:var(--color-surface-default); border-radius:var(--radius-2xl); padding:var(--spacing-2xl); box-shadow:var(--shadow-xl); width:min(90%, <max-w>); display:flex; flex-direction:column; gap:var(--spacing-md);` |
 | ⓒ close button | 우상단 icon button (X 16px). `aria-label="닫기"`. focus-visible 시 ring. |
 | ⓓ title | preview `.modal-title` 그대로 — `font-size:var(--text-title-md); font-weight:600; line-height:var(--text-title-md--line-height); color:var(--color-text-primary); letter-spacing:-0.01em;` |
 | ⓔ description | preview `.modal-description` 그대로 — `font-size:var(--text-body-md); color:var(--color-text-secondary); line-height:1.6;` 선택 요소. |
@@ -52,8 +52,8 @@ Dialog 자체는 **variant 없음** — 시각 통일이 일관성에 유리. �
 | Size | max-width | Padding | Gap | Radius | 사용처 |
 |---|---|---|---|---|---|
 | `sm` | 384px | `--spacing-xl` (24) | `--spacing-md` (12) | `--radius-lg` (12) | 짧은 확인 (1–2줄 description, button 2개) — preview의 mini dialog 톤. |
-| `md` *(default)* | 480px | `--spacing-2xl` (32) | `--spacing-md` (12) | `--radius-xl` (20) | 일반 form, 정보 확인 — preview `renderModal` 톤. |
-| `lg` | 640px | `--spacing-2xl` (32) | `--spacing-md` (12) | `--radius-xl` (20) | 다단계 form, 복잡한 콘텐츠 편집 (메모/가계부 detail 등). |
+| `md` *(default)* | 480px | `--spacing-2xl` (32) | `--spacing-md` (12) | `--radius-2xl` (20) | 일반 form, 정보 확인 — preview `renderModal` 톤. |
+| `lg` | 640px | `--spacing-2xl` (32) | `--spacing-md` (12) | `--radius-2xl` (20) | 다단계 form, 복잡한 콘텐츠 편집 (메모/가계부 detail 등). |
 
 너비는 `width: min(90%, <max-width>)` — 좁은 viewport에서 90% width로 자동 축소.
 
@@ -178,5 +178,5 @@ DropdownMenu의 `onSelect` 콜백에서 직접 dialog를 열면 `body { pointer-
 - **DialogTitle 하단 border 제거**: Radix `DialogPrimitive.Title`은 WAI-ARIA 패턴에 따라 `<h2>`를 렌더 — 이전에 `build-site.mjs`의 `.content h2` selector가 `main.content` 안의 모든 h2(spec markdown ##, example-preview 안 DialogTitle)에 무차별 적용되어, inline style이 override 못 한 `padding-bottom: 12px` + `border-bottom: 1px solid`이 DialogTitle 아래에 박혔음. site의 selector를 `.content > h2`(직접 자식만)로 격리하여 spec-section 안의 H2와 example-preview 안의 DialogTitle 모두에서 docs 섹션 구분선이 자동 분리됨. DialogTitle 시각 스펙(preview `.modal-title` 그대로)은 변경 없음 — border는 원래부터 spec에 없었음.
 - size variant(`sm`/`md`/`lg`) 신규 도입 — 기존 단일 max-width 고정.
 - 기존 description `text-body-sm` → `text-body-md`로 보강 (한국어 가독성).
-- DESIGN.md `### Modal` prose 정의(`radius-lg` / padding `xl`)는 이번 spec(`radius-xl` / padding `2xl`)로 정정 — 시각 SoT는 preview, prose가 따라옴.
+- DESIGN.md `### Modal` prose 정의(`radius-lg` / padding `xl`)는 이번 spec(`radius-2xl` / padding `2xl`)로 정정 — 시각 SoT는 preview, prose가 따라옴.
 - **box-shadow는 Tailwind utility(`shadow-xl`) 대신 inline `style={{ boxShadow: "var(--shadow-xl)" }}` 사용** — Tailwind v4 shadow utility는 내부적으로 box-shadow를 `--tw-shadow-*` 변수로 분해 처리하기 때문에, 다크 모드 CSS 변수 override(`[data-theme="dark"] { --shadow-xl: var(--shadow-xl-dark) }`)가 우회되어 다크 모드 inset top highlight + 강화된 검정 그림자가 적용되지 않는 문제 fix. preview `.modal-dialog` SoT(`box-shadow: var(--shadow-xl)` 직접 인용)와 다크 모드 시각 정합 보장. 동일 패턴: AlertDialog/Drawer(shadow-xl), Popover(shadow-md), Sonner(shadow-lg), Card(shadow-sm).

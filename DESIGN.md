@@ -1851,7 +1851,7 @@ red → orange → yellow → green → blue → indigo → violet → pink → 
 > 상세 spec(Anatomy / Sizes / States / Motion / Accessibility / Do-Don't)은 [`specs/components/dialog.md`](specs/components/dialog.md) (일반 modal) · [`specs/components/alert-dialog.md`](specs/components/alert-dialog.md) (비가역 결정 확정)가 단일 SoT. 코드(`recipes/shadcn/components/ui/dialog.tsx`, `alert-dialog.tsx`) · 예제 · preview-html `.modal-*` 4 source 동기.
 
 **시각 토큰 요약** — preview-html `.modal-*` 톤 정합:
-- container: `surface-default` + `radius-xl` (20px) + `shadow-xl` + padding `spacing-2xl` (40px)
+- container: `surface-default` + `radius-2xl` (20px) + `shadow-xl` + padding `spacing-2xl` (32px)
 - title: `display-sm` (24/700) · description: `body-md` + `text-secondary`
 - overlay: `overlay-dim-light` rgba(0,0,0,0.50) (다크는 `-dark` 자동 alias)
 - size: `sm` 384 / `md` 480 (default) / `lg` 640
@@ -2541,7 +2541,7 @@ spec brand-neutral. brand 파일에서 사용 패턴 차이 — HR(numbered 데�
 
 #### Layout
 - 너비/높이: side는 `min(80vw, 480px)`, bottom은 `max-height: 75vh`
-- radius: side는 좌/우 외곽만 `radius-xl` (20px), bottom은 상단만 `radius-xl`
+- radius: side는 좌/우 외곽만 `radius-2xl` (20px), bottom은 상단만 `radius-2xl`
 - padding: `xl` (24px) 4면, header/footer는 `lg` (16px)
 - background: `surface-default`, shadow: `shadow-xl`
 - 함께: overlay-dim (`overlay-dim-light` 또는 prose-token 동일 alpha)
