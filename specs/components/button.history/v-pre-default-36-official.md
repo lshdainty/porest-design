@@ -69,14 +69,12 @@ Porest Button은 **7 variants × 4 sizes × 5 states** 매트릭스로 정의되
 | Size | Height | Padding (Y · X) | Font (token) | Font (px) | Icon | Radius | Touch (AA · AAA) |
 |---|---|---|---|---|---|---|---|
 | `sm` | 32px | `spacing-xs` (4) · `spacing-sm` (8) | `text-caption` | 12px | 14px | `radius-sm` (4) | AA ✓ · AAA ⚠ |
-| `default` *(cva 기본)* | 36px | 9 · `spacing-lg` (16) | `text-body-sm` | 14px | 16px | `radius-sm` (4) | AA ✓ · AAA ⚠ |
-| `md` | 40px | `spacing-sm` (8) · `spacing-md` (12) | `text-body-md` | 15px | 16px | `radius-sm` (4) | AA ✓ · AAA ⚠ |
+| `md` *(default)* | 40px | `spacing-sm` (8) · `spacing-md` (12) | `text-body-md` | 15px | 16px | `radius-sm` (4) | AA ✓ · AAA ⚠ |
 | `lg` | 48px | `spacing-md` (12) · `spacing-lg` (16) | `text-title-sm` | 16px | 18px | `radius-md` (8) | AA ✓ · AAA ✓ |
 | `icon` | 40×40px | 0 | — | — | 16px | `radius-md` (8) | AA ✓ · AAA ⚠ |
 | `iconLg` | 36×36px | 0 | — | — | 20px | `radius-full` | AA ✓ · AAA ⚠ |
 
 Tailwind utility 매핑 (button.tsx cva):
-- `default`: `h-9 px-4 py-[9px] text-sm [&_svg]:size-4` — 좌우 padding 이 **양쪽 다 16**
 - `sm`: `h-8 px-2 py-1 text-caption [&_svg]:size-3.5`
 - `md`: `h-10 px-3 py-2 text-body-md [&_svg]:size-4`
 - `lg`: `h-12 px-4 py-3 text-title-sm rounded-md [&_svg]:size-[18px]`
@@ -186,8 +184,8 @@ Tailwind utility 매핑 (button.tsx cva):
 | **WCAG 1.4.3** Color contrast (text ≥ 4.5:1) | `default` `--color-text-on-accent` × `--color-primary` = 4.5:1+ ✓ (`npm run lint:dark` 검증) |
 | **WCAG 1.4.3** Color contrast — `ghost` variant | `--color-text-primary` × `--color-bg-page` = 21:1 ✓ (중립 텍스트, 기본). `accent`는 `--color-primary` 글씨로 `default`와 동일 검증. |
 | **WCAG 1.4.11** Non-text contrast (UI ≥ 3:1) | focus ring `--color-border-focus` × `--color-bg-page` = 3:1+ ✓ |
-| **WCAG 2.5.8** Target Size — Minimum (AA — ≥ 24×24) | `sm` 32 ✅ / `default` 36 ✅ / `md` 40 ✅ / `lg` 48 ✅ / `icon` 40 ✅ / `iconLg` 36 ✅ — 모든 사이즈 AA 통과 |
-| **WCAG 2.5.5** Target Size — Enhanced (AAA — ≥ 44×44) | `sm` 32 ⚠ 미달 / `default` 36 ⚠ 미달 / `md` 40 ⚠ 미달 / `lg` 48 ✅ / `icon` 40 ⚠ 미달 / `iconLg` 36 ⚠ 미달 — `lg`만 AAA 충족. 모바일 터치 우선 화면은 `lg` 권장, `md`는 데스크톱/태블릿 큐이, `sm`은 dense list 한정. |
+| **WCAG 2.5.8** Target Size — Minimum (AA — ≥ 24×24) | `sm` 32 ✅ / `md` 40 ✅ / `lg` 48 ✅ / `icon` 40 ✅ / `iconLg` 36 ✅ — 모든 사이즈 AA 통과 |
+| **WCAG 2.5.5** Target Size — Enhanced (AAA — ≥ 44×44) | `sm` 32 ⚠ 미달 / `md` 40 ⚠ 미달 / `lg` 48 ✅ / `icon` 40 ⚠ 미달 / `iconLg` 36 ⚠ 미달 — `lg`만 AAA 충족. 모바일 터치 우선 화면은 `lg` 권장, `md`는 데스크톱/태블릿 큐이, `sm`은 dense list 한정. |
 | **WCAG 2.4.7** Focus visible | `focus-visible:ring-2 ring-ring/30` (keyboard focus 시만 표시, 마우스 click 시 안 뜸) |
 | **ARIA** | `<button>` element 자동. `asChild`로 `<a>` 사용 시 `role="button"` 명시적으로 추가하지 말 것 (이중 role 충돌). `aria-label` icon-only일 때 필수. |
 | **Reduced motion** | hover transition은 `motion-duration-fast` (150ms). `prefers-reduced-motion: reduce` 시 globally 0.01ms로 단축 (DESIGN.md `keyframes` 가이드). |
@@ -240,19 +238,18 @@ brand 채움을 쓰는 다른 자리는 그대로 `--bg-brand`(primary) 다.
 `secondary` 는 원래 spec 상 테두리가 없는데(Color tokens 표) 웹·앱 구현에만 1px border 가
 들어가 있었다 — 이번에 구현을 spec 에 맞춰 제거했다.
 
-### 2026-09-16 — `default`(36) 를 정식 사이즈로 올리고 모달 footer 를 그걸로
+### 2026-09 — 구현에만 있는 `size="default"`(36) 는 이 spec 에 없다
 
-Sizes 표는 원래 `sm` 32 · `md` 40 · `lg` 48 셋이었는데, desk 웹 구현에는 shadcn 이름을 그대로
-둔 `default`(높이 36 · **좌우 양쪽 16** · 14px)가 하나 더 있었고 그게 cva 기본값이다. 표에
-없으니 "`size` 를 안 적으면 규격 밖 값이 나온다" 가 되고, 실제로 모달 footer 20종 실측에서
-표준 footer 40 과 손수 footer 36 이 섞여 있었다.
+Sizes 표는 `sm` 32 · **`md` 40(기본)** · `lg` 48 셋이다. 그런데 desk 웹 구현에는 shadcn
+잔재로 `default`(높이 36 · 좌우 16 · 14px)가 남아 있고 그게 cva 기본값이라, **`size` 를 안
+적으면 표에 없는 36 이 나온다.**
 
-하루 동안 두 방향을 다 시도했다. 먼저 **footer 를 `md`(40)로 통일**했는데, 화면으로 보니
-버튼이 대화상자에 비해 굵어 보였다. 사용자가 36 쪽을 골랐다 — **`default` 을 표에 올리고
-모달 footer 는 이 사이즈 하나로 간다**(모바일만 `lg` 48).
+모달 footer 20종 실측(2026-09-16)에서 이게 그대로 드러났다 — 표준 footer 는 `md`(40·12·15)
+인데 손으로 만든 footer 는 전부 36(·16·14)이라 같은 대화상자 안에서 "어떤 건 글씨 양옆이
+넓고 어떤 건 좁다" 가 됐다.
 
-- 이름은 `default` 그대로 둔다. 코드에 이미 그 이름으로 박혀 있고, 바꾸면 호출처 전부가 움직인다.
-- 좌우 padding 은 **양쪽 다 16** 이다(`px-4`). 한쪽만 다른 값이 아니다.
-- recipe 에도 같은 사이즈를 넣되 cva 기본값은 `md` 그대로다 — HR 쪽 기준을 흔들지 않는다.
-  크기는 **이름이 아니라 표의 높이로** 고른다.
+- **모달 footer 에서는 `size` 를 비우지 않는다** — `md`(모바일은 `lg`). [`dialog`](dialog.md) footer.
+- 새 코드에서 `default` 를 고르지 않는다. 표에 없는 값이라 근거가 없다.
+- recipe(`recipes/shadcn/components/ui/button.tsx`)에는 애초에 `default` 사이즈가 없고
+  `md` 가 기본이다 — desk 웹만 갈라져 있다.
 

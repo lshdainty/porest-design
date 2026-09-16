@@ -65,6 +65,9 @@ const buttonVariants = cva(
       },
       size: {
         sm: "h-8 px-2 py-1 text-caption [&_svg]:size-3.5",
+        // 36 — 모달 footer 의 크기(button.md Sizes). 좌우 padding 은 양쪽 다 16.
+        // 이름은 shadcn 을 그대로 뒀다. 이 recipe 의 cva 기본값은 md 다.
+        default: "h-9 px-4 py-[9px] text-sm [&_svg]:size-4",
         md: "h-10 px-3 py-2 text-body-md [&_svg]:size-4",
         lg: "h-12 px-4 py-3 text-title-sm rounded-md [&_svg]:size-[18px]",
         icon: "h-10 w-10 rounded-md [&_svg]:size-4",

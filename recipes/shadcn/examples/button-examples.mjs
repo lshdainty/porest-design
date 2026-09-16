@@ -31,6 +31,7 @@ const VARIANT = {
 
 const SIZE = {
   sm: "h-8 px-2 py-1 text-caption [&_svg]:size-3.5",
+  default: "h-9 px-4 py-[9px] text-sm [&_svg]:size-4",
   md: "h-10 px-3 py-2 text-body-md [&_svg]:size-4",
   lg: "h-12 px-4 py-3 text-title-sm rounded-md [&_svg]:size-[18px]",
   icon: "h-10 w-10 rounded-md [&_svg]:size-4",
@@ -198,14 +199,16 @@ export const buttonExamples = [
 
   {
     title: "Sizes",
-    description: "sm 32px / md 40px (default) / lg 48px. typography는 각각 label-sm / title-sm / title-md.",
+    description: "sm 32px / default 36px(모달 footer) / md 40px / lg 48px. 글자는 caption / body-sm / body-md / title-sm.",
     jsx: `<div className="flex gap-3 items-center">
   <Button size="sm">작게</Button>
+  <Button size="default">모달</Button>
   <Button size="md">기본</Button>
   <Button size="lg">크게</Button>
 </div>`,
     render: () => `<div style="display:flex; gap:var(--spacing-md); align-items:center;">
   ${btn({ size: "sm", children: "작게" })}
+  ${btn({ size: "default", children: "모달" })}
   ${btn({ size: "md", children: "기본" })}
   ${btn({ size: "lg", children: "크게" })}
 </div>`,
