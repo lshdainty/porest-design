@@ -130,12 +130,8 @@ Dialog는 open/closed 2 state. Radix `data-state` attribute(`open`/`closed`)로 
 - **footer 버튼 크기는 `default` 하나** — 높이 36 · 좌우 양쪽 16 · 14px([`button`](button.md)
   Sizes). 한 footer 안에 두 크기가 섞이면 "어떤 건 글씨 양옆이 넓고 어떤 건 좁다" 가 된다
   (desk 2026-09-16 실측). footer 안에 `<Button>` 을 손으로 놓지 말고 표준 footer 를 쓴다.
-- **삭제 버튼에 `flush` 를 쓰지 않는다** — 삭제는 `dangerSoft` **채움**이라 fill 이 이미
-  edge 까지 닿는다. 좌우 padding 16 을 그대로 두고 좌측 정렬은 `margin-right:auto` 로만 한다.
-- footer 왼쪽의 **`leftSlot`**(자산 상세 '금액 가리기' 처럼 ghost + 아이콘)은 반대로
-  **`flush="left"` 를 쓴다** — 아이콘을 본문 콘텐츠 열에 맞춘다. 그 버튼은 텍스트 버튼이라
-  hover 에 배경 없이 글자색으로만 반응한다([`button`](button.md) Edge flush).
-  글자만 있는 leftSlot(요약 문구 등)에는 쓰지 않는다.
+- **삭제 버튼에 `flush` 를 쓰지 않는다** — 좌우 padding 16 을 그대로 두고 좌측 정렬은
+  `margin-right:auto` 로만 한다. padding 0 은 글자가 footer 여백선에 붙어 정사각처럼 보인다.
 - 모달 footer 의 **취소는 `secondary`**(테두리 없는 회색 채움), **삭제는 `dangerSoft`**(옅은 빨강
   채움). 주 액션만 `default`(info 채움)로 두고 보조는 옅게 채워 무게 차이를 준다 —
   `ghost` 는 배경이 없어 전체 폭 배치에서 버튼으로 보이지 않는다.
