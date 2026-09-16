@@ -10,7 +10,7 @@ const OVERLAY =
   "position:relative; padding:var(--spacing-2xl) var(--spacing-xl); border-radius:var(--radius-md); background:var(--overlay-dim-light); display:flex; align-items:center; justify-content:center;";
 
 function content(size = "md") {
-  const maxW = size === "sm" ? "384px" : size === "lg" ? "640px" : "480px";
+  const maxW = size === "sm" ? "420px" : size === "lg" ? "720px" : "520px";
   const pad = size === "sm" ? "var(--spacing-xl)" : "var(--spacing-2xl)";
   // 세 사이즈 모두 radius-lg(12) — dialog.md 2026-08-21.
   const radius = "var(--radius-lg)";
@@ -143,7 +143,7 @@ export const alertDialogExamples = [
   },
 
   {
-    title: "Size: sm (384 — 압축 확인)",
+    title: "Size: sm (420 — 압축 확인)",
     description: "본문이 1줄로 충분할 때. sm size로 화면 점유 최소화.",
     jsx: `<AlertDialogContent size="sm">...</AlertDialogContent>`,
     render: () =>

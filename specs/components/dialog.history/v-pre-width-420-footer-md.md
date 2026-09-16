@@ -32,7 +32,7 @@ Porest Dialog는 **3 sizes × 1 정렬 톤** 매트릭스로 정의됩니다. To
 | ⓒ close button | 우상단 icon button (X 16px). `aria-label="닫기"`. focus-visible 시 ring. |
 | ⓓ title | preview `.modal-title` 그대로 — `font-size:var(--text-title-md); font-weight:600; line-height:var(--text-title-md--line-height); color:var(--color-text-primary); letter-spacing:-0.01em;` |
 | ⓔ description | preview `.modal-description` 그대로 — `font-size:var(--text-body-md); color:var(--color-text-secondary); line-height:1.6;` 선택 요소. |
-| ⓕ body | 자유 영역. **header·body·footer 는 제 padding 을 들지 않는다** — 여백은 ⓑ container 한 곳에서 주고 구역 사이는 `gap` 12. 구역마다 padding 을 두면 위아래가 갈린다(desk 2026-09-16: 헤더 위 18 vs footer 아래 14). 정보 표시는 `.dialog-fields`(gray 채움 + key-val rows) 패턴, form은 `gap-md` flex column. |
+| ⓕ body | 자유 영역. 정보 표시는 `.dialog-fields`(gray 채움 + key-val rows) 패턴, form은 `gap-md` flex column. |
 | ⓖ footer | preview `.modal-actions` 그대로 — `display:flex; gap:var(--spacing-sm); justify-content:flex-end; margin-top:var(--spacing-md);` primary는 우측 끝, cancel은 좌측. |
 
 **규칙**
@@ -51,16 +51,16 @@ Dialog 자체는 **variant 없음** — 시각 통일이 일관성에 유리. �
 
 | Size | max-width | Padding | Gap | Radius | 사용처 |
 |---|---|---|---|---|---|
-| `sm` | 420px | `--spacing-xl` (24) | `--spacing-md` (12) | `--radius-lg` (12) | 짧은 확인 (1–2줄 description, button 2개) — preview의 mini dialog 톤. |
-| `md` *(default)* | 520px | `--spacing-2xl` (32) | `--spacing-md` (12) | `--radius-lg` (12) | 일반 form, 정보 확인 — preview `renderModal` 톤. |
-| `lg` | 720px | `--spacing-2xl` (32) | `--spacing-md` (12) | `--radius-lg` (12) | 다단계 form, 복잡한 콘텐츠 편집 (메모/가계부 detail 등). |
+| `sm` | 384px | `--spacing-xl` (24) | `--spacing-md` (12) | `--radius-lg` (12) | 짧은 확인 (1–2줄 description, button 2개) — preview의 mini dialog 톤. |
+| `md` *(default)* | 480px | `--spacing-2xl` (32) | `--spacing-md` (12) | `--radius-lg` (12) | 일반 form, 정보 확인 — preview `renderModal` 톤. |
+| `lg` | 640px | `--spacing-2xl` (32) | `--spacing-md` (12) | `--radius-lg` (12) | 다단계 form, 복잡한 콘텐츠 편집 (메모/가계부 detail 등). |
 
 너비는 `width: min(90%, <max-width>)` — 좁은 viewport에서 90% width로 자동 축소.
 
 Tailwind utility 매핑 (dialog.tsx cva — `--spacing-*`/`--dialog-max-w` 토큰 그대로 인용):
-- `sm`: `[--dialog-max-w:420px] p-[var(--spacing-xl)] rounded-lg`
-- `md`: `[--dialog-max-w:520px] p-[var(--spacing-2xl)] rounded-lg`
-- `lg`: `[--dialog-max-w:720px] p-[var(--spacing-2xl)] rounded-lg`
+- `sm`: `[--dialog-max-w:384px] p-[var(--spacing-xl)] rounded-lg`
+- `md`: `[--dialog-max-w:480px] p-[var(--spacing-2xl)] rounded-lg`
+- `lg`: `[--dialog-max-w:640px] p-[var(--spacing-2xl)] rounded-lg`
 - 공통: `w-[min(90%,var(--dialog-max-w))] gap-[var(--spacing-md)]`
 
 **z-index**
@@ -114,12 +114,6 @@ Dialog는 open/closed 2 state. Radix `data-state` attribute(`open`/`closed`)로 
 - 데스크탑(**≥ 640px**, `--breakpoint-sm`): `flex justify-end gap-sm`. primary 우측, cancel 좌측.
 - 모바일(**< 640px**): `flex gap-sm` + 각 button `flex-1`(가로 균등 분배) + `size="lg"`(48).
   한 손 조작 폭을 확보한다 — [`drawer`](drawer.md) footer 와 같은 규칙.
-- **footer 버튼 크기는 `md` 하나** — 높이 40 · 좌우 12 · 15px([`button`](button.md) Sizes).
-  `size` 를 안 적어 나오는 36(구현의 레거시 `default`)은 이 spec 에 없다. footer 안에서
-  `<Button>` 을 손으로 놓지 말고 표준 footer 를 쓴다 — 같은 footer 에 40 과 36 이 섞여
-  "어떤 건 글씨 양옆이 넓고 어떤 건 좁다" 가 됐다(desk 2026-09-16 실측).
-- **삭제 버튼에 `flush` 를 쓰지 않는다** — 좌우 padding 12 를 그대로 두고 좌측 정렬은
-  `margin-right:auto` 로만 한다. padding 0 은 글자가 컨테이너 여백선에 붙어 정사각처럼 보인다.
 - 모달 footer 의 **취소는 `secondary`**(테두리 없는 회색 채움), **삭제는 `dangerSoft`**(옅은 빨강
   채움). 주 액션만 `default`(info 채움)로 두고 보조는 옅게 채워 무게 차이를 준다 —
   `ghost` 는 배경이 없어 전체 폭 배치에서 버튼으로 보이지 않는다.

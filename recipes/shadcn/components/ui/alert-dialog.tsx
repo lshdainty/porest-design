@@ -40,9 +40,9 @@ const alertDialogContentVariants = cva(
   {
     variants: {
       size: {
-        sm: "[--dialog-max-w:384px] p-[var(--spacing-xl)] rounded-lg",
-        md: "[--dialog-max-w:480px] p-[var(--spacing-2xl)] rounded-lg",
-        lg: "[--dialog-max-w:640px] p-[var(--spacing-2xl)] rounded-lg",
+        sm: "[--dialog-max-w:420px] p-[var(--spacing-xl)] rounded-lg",
+        md: "[--dialog-max-w:520px] p-[var(--spacing-2xl)] rounded-lg",
+        lg: "[--dialog-max-w:720px] p-[var(--spacing-2xl)] rounded-lg",
       },
     },
     defaultVariants: { size: "md" },
@@ -92,7 +92,8 @@ const AlertDialogFooter = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      "flex flex-col-reverse gap-[var(--spacing-sm)] sm:flex-row sm:justify-end mt-[var(--spacing-md)]",
+      // 본문과의 거리는 container 의 gap(12)이 준다 — 여기서 margin-top 을 또 들면 24 가 된다.
+      "flex flex-col-reverse gap-[var(--spacing-sm)] sm:flex-row sm:justify-end",
       className,
     )}
     {...props}
@@ -145,7 +146,8 @@ const AlertDialogCancel = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <AlertDialogPrimitive.Cancel
     ref={ref}
-    className={cn(buttonVariants({ variant: "outline" }), className)}
+    // 모달 footer 의 취소는 secondary — dialog.md footer 규칙.
+    className={cn(buttonVariants({ variant: "secondary" }), className)}
     {...props}
   />
 ));

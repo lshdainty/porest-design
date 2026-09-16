@@ -3097,7 +3097,7 @@ export function pageCss() {
       border-radius: var(--radius-lg);
       padding: var(--spacing-2xl);
       box-shadow: var(--shadow-xl);
-      width: min(90%, 480px);
+      width: min(90%, 520px);
       display: flex; flex-direction: column;
       gap: var(--spacing-md);
     }
@@ -3112,7 +3112,8 @@ export function pageCss() {
     .modal-row { display: flex; justify-content: space-between; font-size: var(--text-caption); }
     .modal-key { color: var(--color-text-tertiary); }
     .modal-val { font-weight: 600; }
-    .modal-actions { display: flex; gap: var(--spacing-sm); justify-content: flex-end; margin-top: var(--spacing-md); }
+    /* 본문과의 거리는 .modal-dialog 의 gap(12)이 준다 — margin-top 을 또 두면 24 가 된다. */
+    .modal-actions { display: flex; gap: var(--spacing-sm); justify-content: flex-end; }
 
     /* === Toast === sonner.md SoT — surface-default + border-default(1px) + radius-md + shadow-lg + 20px stroke svg(kind별 색) */
     .toast-stack { display: flex; flex-direction: column; gap: var(--spacing-md); }

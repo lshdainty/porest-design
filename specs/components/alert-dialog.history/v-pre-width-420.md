@@ -36,7 +36,7 @@ Porest AlertDialog는 시각적으로는 `Dialog`와 **완전히 동일** (같�
 | ⓒ title | preview `.modal-title` 그대로 — `font-size:var(--text-title-md); font-weight:600; line-height:var(--text-title-md--line-height); color:var(--color-text-primary); letter-spacing:-0.01em;`. **결정 또는 결과**를 짧은 명사구로. 질문형 아님 — 질문은 ⓓ 가 맡는다. |
 | ⓓ description | preview `.modal-description` 그대로 — `font-size:var(--text-body-md); color:var(--color-text-secondary); line-height:1.6;`. **상세 내역** — 무엇이 어떻게 되는지(결과·영향)와 확인 질문. 파괴적 액션이면 **대상을 이름으로** 짚는다. |
 | ⓔ footer (모바일 < 640px) | 각 button `flex-1` 균등 분배 + `size="lg"`(48). 취소는 `secondary`(테두리 없는 회색 채움). [`dialog`](dialog.md) footer 규칙과 동일. |
-| ⓔ footer | preview `.modal-actions` 그대로 — `display:flex; gap:var(--spacing-sm); justify-content:flex-end;`. 본문과의 거리는 ⓑ container 의 `gap` 12 가 준다(footer 가 `margin-top` 을 또 들면 24 가 돼 [`dialog`](dialog.md)와 어긋난다). 버튼은 `md`(40 · 좌우 12 · 15px), 모바일만 `lg`(48). Cancel(좌) + Action(우, destructive). focus default = Cancel. |
+| ⓔ footer | preview `.modal-actions` 그대로 — `display:flex; gap:var(--spacing-sm); justify-content:flex-end; margin-top:var(--spacing-md);`. Cancel(좌) + Action(우, destructive). focus default = Cancel. |
 
 **규칙**
 
@@ -65,7 +65,7 @@ Porest AlertDialog는 시각적으로는 `Dialog`와 **완전히 동일** (같�
 
 ## Sizes
 
-`Dialog`와 동일 — `sm` 420 / `md` 520(default) / `lg` 720. 본문이 짧으면 `sm` 권장 (확정 dialog는 정보 압축).
+`Dialog`와 동일 — `sm` 384 / `md` 480(default) / `lg` 640. 본문이 짧으면 `sm` 권장 (확정 dialog는 정보 압축).
 
 **z-index** — [`z-index.md`](../z-index.md) L5 alert-dialog. **Dialog(L2=100/101) 위로 명시** — dialog 안에서 삭제 확인 같은 alert를 띄우는 케이스를 보존하기 위해 분리된 layer.
 
