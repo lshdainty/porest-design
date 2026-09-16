@@ -10,7 +10,7 @@ const OVERLAY =
   "position:relative; padding:var(--spacing-2xl) var(--spacing-xl); border-radius:var(--radius-md); background:var(--overlay-dim-light); display:flex; align-items:center; justify-content:center;";
 
 function content(size = "md") {
-  const maxW = size === "sm" ? "384px" : size === "lg" ? "640px" : "480px";
+  const maxW = size === "sm" ? "420px" : size === "lg" ? "720px" : "520px";
   const pad = size === "sm" ? "var(--spacing-xl)" : "var(--spacing-2xl)";
   const radius = size === "sm" ? "var(--radius-lg)" : "var(--radius-xl)";
   return `position:relative; background:var(--color-surface-default); border-radius:${radius}; padding:${pad}; box-shadow:var(--shadow-xl); width:min(90%, ${maxW}); display:flex; flex-direction:column; gap:var(--spacing-md);`;
@@ -60,7 +60,7 @@ function fieldsBlock(rows) {
 
 export const dialogExamples = [
   {
-    title: "Default (md — 480 / p-10 / radius-xl)",
+    title: "Default (md — 520 / p-10 / radius-xl)",
     description:
       "preview .modal-dialog 톤과 동일 — title-md title + body-md description + shadow-xl. 우상단 X close button.",
     jsx: `<Dialog>
@@ -149,7 +149,7 @@ export const dialogExamples = [
   },
 
   {
-    title: "Confirm dialog (sm — 384 / p-6 / radius-lg)",
+    title: "Confirm dialog (sm — 420 / p-6 / radius-lg)",
     description: "짧은 확인 — sm size. AlertDialog 사용 권장(비가역 액션). Dialog로 처리는 회피 가능한 결정에 한정.",
     jsx: `<Dialog>
   <DialogTrigger asChild>
@@ -178,8 +178,8 @@ export const dialogExamples = [
   },
 
   {
-    title: "Size: lg (640 — 다단계 form)",
-    description: "복잡한 콘텐츠 편집 / 다단계 form. p-10 / radius-xl 그대로, max-width만 640.",
+    title: "Size: lg (720 — 다단계 form)",
+    description: "복잡한 콘텐츠 편집 / 다단계 form. p-10 / radius-xl 그대로, max-width만 720.",
     jsx: `<DialogContent size="lg">...</DialogContent>`,
     render: () =>
       dialog({

@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
  *                                       > DialogHeader > DialogTitle / DialogDescription
  *                                       > {body}
  *                                       > DialogFooter > {actions}
- * - sizes: sm 384 / md 480 (default, p-10 rounded-lg) / lg 640
+ * - sizes: sm 420 / md 520 (default, p-10 rounded-lg) / lg 720
  * - shadow-xl + overlay-dim-light(다크는 -dark 자동 alias)
  */
 
@@ -43,9 +43,9 @@ const dialogContentVariants = cva(
   {
     variants: {
       size: {
-        sm: "[--dialog-max-w:384px] p-[var(--spacing-xl)] rounded-lg",
-        md: "[--dialog-max-w:480px] p-[var(--spacing-2xl)] rounded-lg",
-        lg: "[--dialog-max-w:640px] p-[var(--spacing-2xl)] rounded-lg",
+        sm: "[--dialog-max-w:420px] p-[var(--spacing-xl)] rounded-lg",
+        md: "[--dialog-max-w:520px] p-[var(--spacing-2xl)] rounded-lg",
+        lg: "[--dialog-max-w:720px] p-[var(--spacing-2xl)] rounded-lg",
       },
     },
     defaultVariants: { size: "md" },
@@ -105,7 +105,8 @@ const DialogFooter = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      "flex flex-col-reverse gap-[var(--spacing-sm)] sm:flex-row sm:justify-end mt-[var(--spacing-md)]",
+      // 본문과의 거리는 container 의 gap(12)이 준다 — 여기서 margin-top 을 또 들면 24 가 된다.
+      "flex flex-col-reverse gap-[var(--spacing-sm)] sm:flex-row sm:justify-end",
       className,
     )}
     {...props}
