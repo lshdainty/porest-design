@@ -238,18 +238,3 @@ brand 채움을 쓰는 다른 자리는 그대로 `--bg-brand`(primary) 다.
 `secondary` 는 원래 spec 상 테두리가 없는데(Color tokens 표) 웹·앱 구현에만 1px border 가
 들어가 있었다 — 이번에 구현을 spec 에 맞춰 제거했다.
 
-### 2026-09 — 구현에만 있는 `size="default"`(36) 는 이 spec 에 없다
-
-Sizes 표는 `sm` 32 · **`md` 40(기본)** · `lg` 48 셋이다. 그런데 desk 웹 구현에는 shadcn
-잔재로 `default`(높이 36 · 좌우 16 · 14px)가 남아 있고 그게 cva 기본값이라, **`size` 를 안
-적으면 표에 없는 36 이 나온다.**
-
-모달 footer 20종 실측(2026-09-16)에서 이게 그대로 드러났다 — 표준 footer 는 `md`(40·12·15)
-인데 손으로 만든 footer 는 전부 36(·16·14)이라 같은 대화상자 안에서 "어떤 건 글씨 양옆이
-넓고 어떤 건 좁다" 가 됐다.
-
-- **모달 footer 에서는 `size` 를 비우지 않는다** — `md`(모바일은 `lg`). [`dialog`](dialog.md) footer.
-- 새 코드에서 `default` 를 고르지 않는다. 표에 없는 값이라 근거가 없다.
-- recipe(`recipes/shadcn/components/ui/button.tsx`)에는 애초에 `default` 사이즈가 없고
-  `md` 가 기본이다 — desk 웹만 갈라져 있다.
-
