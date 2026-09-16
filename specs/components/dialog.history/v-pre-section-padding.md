@@ -2,7 +2,7 @@
 
 > 페이지 위에 떠 있는 floating modal — 사용자 결정·form 입력·콘텐츠 편집이 필요한 흐름을 일시 차단. 위험한 비가역 액션 확정은 별도 [`alert-dialog.md`](alert-dialog.md) 사용.
 
-Porest Dialog는 **3 sizes × 1 정렬 톤** 매트릭스로 정의됩니다. Toss 톤(절제 · 신뢰감)을 따라 `radius-lg`(12px) + `shadow-xl` + `title-md` title — 여백은 container 가 아니라 header·body·footer 가 각자 갖습니다(header `18 22` · body `22` · footer `18 22`). 한국어 본문 가독성을 위해 description은 `body-md` + `text-secondary`.
+Porest Dialog는 **3 sizes × 1 정렬 톤** 매트릭스로 정의됩니다. Toss 톤(절제 · 신뢰감)을 따라 `radius-lg`(12px) + `spacing-2xl`(32px) padding + `shadow-xl` + `title-md` title — 넓은 여백으로 화면 흐름이 끊겼음을 명확히 표시합니다. 한국어 본문 가독성을 위해 description은 `body-md` + `text-secondary`.
 
 ## Anatomy
 
@@ -28,12 +28,12 @@ Porest Dialog는 **3 sizes × 1 정렬 톤** 매트릭스로 정의됩니다. To
 ```
 
 | ⓐ overlay | 페이지 dim. light `--overlay-dim-light` rgba(0,0,0,0.50), dark `--overlay-dim-dark` rgba(0,0,0,0.65). click 시 닫힘. |
-| ⓑ container | preview `.modal-dialog` 그대로 — `background:var(--color-surface-default); border-radius:var(--radius-lg); box-shadow:var(--shadow-xl); width:min(90%, <max-w>); max-height:86vh; display:flex; flex-direction:column; overflow:hidden;` — **padding 0 · gap 0**. 여백은 header·body·footer 가 각자 갖는다(아래 Layout). |
+| ⓑ container | preview `.modal-dialog` 그대로 — `background:var(--color-surface-default); border-radius:var(--radius-lg); padding:var(--spacing-2xl); box-shadow:var(--shadow-xl); width:min(90%, <max-w>); display:flex; flex-direction:column; gap:var(--spacing-md);` |
 | ⓒ close button | 우상단 icon button (X 16px). `aria-label="닫기"`. focus-visible 시 ring. |
 | ⓓ title | preview `.modal-title` 그대로 — `font-size:var(--text-title-md); font-weight:600; line-height:var(--text-title-md--line-height); color:var(--color-text-primary); letter-spacing:-0.01em;` |
 | ⓔ description | preview `.modal-description` 그대로 — `font-size:var(--text-body-md); color:var(--color-text-secondary); line-height:1.6;` 선택 요소. |
-| ⓕ body | 자유 영역. 스크롤은 여기서만 인다(`flex:1; min-height:0; overflow-y:auto`). 정보 표시는 `.dialog-fields`(gray 채움 + key-val rows) 패턴, form은 `gap-md` flex column. |
-| ⓖ footer | preview `.modal-actions` 그대로 — `display:flex; gap:var(--spacing-sm); justify-content:flex-end; padding:18px 22px; flex-shrink:0;` primary는 우측 끝, cancel은 좌측. |
+| ⓕ body | 자유 영역. **header·body·footer 는 제 padding 을 들지 않는다** — 여백은 ⓑ container 한 곳에서 주고 구역 사이는 `gap` 12. 구역마다 padding 을 두면 위아래가 갈린다(desk 2026-09-16: 헤더 위 18 vs footer 아래 14). 정보 표시는 `.dialog-fields`(gray 채움 + key-val rows) 패턴, form은 `gap-md` flex column. |
+| ⓖ footer | preview `.modal-actions` 그대로 — `display:flex; gap:var(--spacing-sm); justify-content:flex-end; margin-top:var(--spacing-md);` primary는 우측 끝, cancel은 좌측. |
 
 **규칙**
 
@@ -49,22 +49,19 @@ Dialog 자체는 **variant 없음** — 시각 통일이 일관성에 유리. �
 
 `box-sizing: border-box` 기준 max-width. 모바일에선 `width: min(90%, max-width)`로 좁은 화면 대응.
 
-사이즈로 갈리는 건 **폭 하나뿐**이다 — 여백은 세 사이즈가 같고 구역이 갖는다(아래 Layout).
-
 | Size | max-width | Padding | Gap | Radius | 사용처 |
 |---|---|---|---|---|---|
-| `sm` | 420px | 0 (구역별) | 0 | `--radius-lg` (12) | 짧은 확인 (1–2줄 description, button 2개) — preview의 mini dialog 톤. |
-| `md` *(default)* | 520px | 0 (구역별) | 0 | `--radius-lg` (12) | 일반 form, 정보 확인 — preview `renderModal` 톤. |
-| `lg` | 720px | 0 (구역별) | 0 | `--radius-lg` (12) | 다단계 form, 복잡한 콘텐츠 편집 (메모/가계부 detail 등). |
+| `sm` | 420px | `--spacing-xl` (24) | `--spacing-md` (12) | `--radius-lg` (12) | 짧은 확인 (1–2줄 description, button 2개) — preview의 mini dialog 톤. |
+| `md` *(default)* | 520px | `--spacing-2xl` (32) | `--spacing-md` (12) | `--radius-lg` (12) | 일반 form, 정보 확인 — preview `renderModal` 톤. |
+| `lg` | 720px | `--spacing-2xl` (32) | `--spacing-md` (12) | `--radius-lg` (12) | 다단계 form, 복잡한 콘텐츠 편집 (메모/가계부 detail 등). |
 
 너비는 `width: min(90%, <max-width>)` — 좁은 viewport에서 90% width로 자동 축소.
 
 Tailwind utility 매핑 (dialog.tsx cva — `--spacing-*`/`--dialog-max-w` 토큰 그대로 인용):
-- `sm`: `[--dialog-max-w:420px] rounded-lg`
-- `md`: `[--dialog-max-w:520px] rounded-lg`
-- `lg`: `[--dialog-max-w:720px] rounded-lg`
-- 공통: `w-[min(90%,var(--dialog-max-w))] max-h-[86vh] flex flex-col overflow-hidden`
-- 구역: header `px-[22px] py-[18px]` · body `p-[22px]` · footer `px-[22px] py-[18px]`
+- `sm`: `[--dialog-max-w:420px] p-[var(--spacing-xl)] rounded-lg`
+- `md`: `[--dialog-max-w:520px] p-[var(--spacing-2xl)] rounded-lg`
+- `lg`: `[--dialog-max-w:720px] p-[var(--spacing-2xl)] rounded-lg`
+- 공통: `w-[min(90%,var(--dialog-max-w))] gap-[var(--spacing-md)]`
 
 **z-index**
 
@@ -100,18 +97,6 @@ Dialog는 open/closed 2 state. Radix `data-state` attribute(`open`/`closed`)로 
 
 ## Layout
 
-**여백은 구역이 갖는다.** container 는 padding 0 이고 header·body·footer 가 각자 들고 있다 —
-셋의 배경·테두리·스크롤이 달라 한 덩어리로 묶이지 않기 때문이다(본문만 스크롤한다).
-
-| 구역 | padding | 비고 |
-|---|---|---|
-| header | `18px 22px` | title + 우상단 close. `flex items-center gap-3`, `flex-shrink:0` |
-| body | `22px` | `flex:1; min-height:0; overflow-y:auto` — 스크롤은 여기서만 |
-| footer | `18px 22px` | `flex items-center gap-2`, `flex-shrink:0` |
-
-**header 위와 footer 아래는 같은 값이다**(18). 예전에 footer 만 14 라 위아래가 4px 어긋나
-보였다(desk 2026-09-16 실측).
-
 **header**
 
 - title + description 묶음 `flex flex-col gap-1.5` (6px).
@@ -119,19 +104,22 @@ Dialog는 open/closed 2 state. Radix `data-state` attribute(`open`/`closed`)로 
 
 **body**
 
+- title block과 `gap-md` (12px) 또는 `gap-lg` (16px).
 - 정보 확인용은 `.dialog-fields` 패턴(`bg-surface-input` + `radius-md` + `gap-xs` 사이).
 - form은 group 간 `gap-md`.
 
 **footer**
 
+- body와 `mt-md` (12px) 또는 `gap-md` (flex 안일 경우 자동).
 - 데스크탑(**≥ 640px**, `--breakpoint-sm`): `flex justify-end gap-sm`. primary 우측, cancel 좌측.
 - 모바일(**< 640px**): `flex gap-sm` + 각 button `flex-1`(가로 균등 분배) + `size="lg"`(48).
   한 손 조작 폭을 확보한다 — [`drawer`](drawer.md) footer 와 같은 규칙.
-- **footer 버튼 크기는 `default` 하나** — 높이 36 · 좌우 양쪽 16 · 14px([`button`](button.md)
-  Sizes). 한 footer 안에 두 크기가 섞이면 "어떤 건 글씨 양옆이 넓고 어떤 건 좁다" 가 된다
-  (desk 2026-09-16 실측). footer 안에 `<Button>` 을 손으로 놓지 말고 표준 footer 를 쓴다.
-- **삭제 버튼에 `flush` 를 쓰지 않는다** — 좌우 padding 16 을 그대로 두고 좌측 정렬은
-  `margin-right:auto` 로만 한다. padding 0 은 글자가 footer 여백선에 붙어 정사각처럼 보인다.
+- **footer 버튼 크기는 `md` 하나** — 높이 40 · 좌우 12 · 15px([`button`](button.md) Sizes).
+  `size` 를 안 적어 나오는 36(구현의 레거시 `default`)은 이 spec 에 없다. footer 안에서
+  `<Button>` 을 손으로 놓지 말고 표준 footer 를 쓴다 — 같은 footer 에 40 과 36 이 섞여
+  "어떤 건 글씨 양옆이 넓고 어떤 건 좁다" 가 됐다(desk 2026-09-16 실측).
+- **삭제 버튼에 `flush` 를 쓰지 않는다** — 좌우 padding 12 를 그대로 두고 좌측 정렬은
+  `margin-right:auto` 로만 한다. padding 0 은 글자가 컨테이너 여백선에 붙어 정사각처럼 보인다.
 - 모달 footer 의 **취소는 `secondary`**(테두리 없는 회색 채움), **삭제는 `dangerSoft`**(옅은 빨강
   채움). 주 액션만 `default`(info 채움)로 두고 보조는 옅게 채워 무게 차이를 준다 —
   `ghost` 는 배경이 없어 전체 폭 배치에서 버튼으로 보이지 않는다.
@@ -192,7 +180,7 @@ DropdownMenu의 `onSelect` 콜백에서 직접 dialog를 열면 `body { pointer-
 ## Migration notes
 
 - **title `display-sm`(24/700) → `title-md`(18/600)**: 실사용(데스크톱 모달) 검수 결과 24px 는 컨텍스트 모달/폼 다이얼로그에 과도하게 큼. 모든 모달·시트 타이틀(sheet `title-md`, drawer/ModalShell 18)과 통일해 18/600(semibold)로 정합. `display-sm` 토큰 자체(H2·아바타·차트 등)는 유지하고 dialog 타이틀 매핑만 하향. alert-dialog 타이틀도 동일하게 정합(공유 `.modal-title`).
-- 기존 `dialog.tsx`는 `max-w-lg`(512) / `p-6`(24) / `gap-4` / `rounded-md` / `shadow-lg` / title `text-title-lg`였으나 이번 동기에서 preview의 `.modal-*` 스타일로 정렬: `w-[min(90%,480px)]` / `p-[var(--spacing-2xl)]`(32) / `gap-[var(--spacing-md)]`(12) / `rounded-xl` / `shadow-xl` / title `text-display-sm`. 픽셀 하드코딩(`p-10` 등) 대신 디자인 토큰 직접 인용으로 spec과 1:1 동기. *(폭·여백은 2026-09-16 에 다시 정해졌다 — 위 Sizes·Layout 이 현재 값이다.)*
+- 기존 `dialog.tsx`는 `max-w-lg`(512) / `p-6`(24) / `gap-4` / `rounded-md` / `shadow-lg` / title `text-title-lg`였으나 이번 동기에서 preview의 `.modal-*` 스타일로 정렬: `w-[min(90%,480px)]` / `p-[var(--spacing-2xl)]`(32) / `gap-[var(--spacing-md)]`(12) / `rounded-xl` / `shadow-xl` / title `text-display-sm`. 픽셀 하드코딩(`p-10` 등) 대신 디자인 토큰 직접 인용으로 spec과 1:1 동기.
 - **DialogTitle 하단 border 제거**: Radix `DialogPrimitive.Title`은 WAI-ARIA 패턴에 따라 `<h2>`를 렌더 — 이전에 `build-site.mjs`의 `.content h2` selector가 `main.content` 안의 모든 h2(spec markdown ##, example-preview 안 DialogTitle)에 무차별 적용되어, inline style이 override 못 한 `padding-bottom: 12px` + `border-bottom: 1px solid`이 DialogTitle 아래에 박혔음. site의 selector를 `.content > h2`(직접 자식만)로 격리하여 spec-section 안의 H2와 example-preview 안의 DialogTitle 모두에서 docs 섹션 구분선이 자동 분리됨. DialogTitle 시각 스펙(preview `.modal-title` 그대로)은 변경 없음 — border는 원래부터 spec에 없었음.
 - size variant(`sm`/`md`/`lg`) 신규 도입 — 기존 단일 max-width 고정.
 - 기존 description `text-body-sm` → `text-body-md`로 보강 (한국어 가독성).

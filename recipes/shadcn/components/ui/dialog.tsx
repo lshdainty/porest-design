@@ -39,13 +39,15 @@ const DialogOverlay = React.forwardRef<
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
 const dialogContentVariants = cva(
-  "fixed left-[50%] top-[50%] z-[101] grid w-[min(90%,var(--dialog-max-w))] translate-x-[-50%] translate-y-[-50%] flex-col bg-surface-default gap-[var(--spacing-md)] duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+  // 여백은 container 가 아니라 header·body·footer 가 갖는다(dialog.md Layout) — 본문만
+  // 스크롤해야 해서 셋을 한 덩어리로 묶을 수 없다.
+  "fixed left-[50%] top-[50%] z-[101] flex w-[min(90%,var(--dialog-max-w))] translate-x-[-50%] translate-y-[-50%] flex-col overflow-hidden max-h-[86vh] bg-surface-default duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
   {
     variants: {
       size: {
-        sm: "[--dialog-max-w:420px] p-[var(--spacing-xl)] rounded-lg",
-        md: "[--dialog-max-w:520px] p-[var(--spacing-2xl)] rounded-lg",
-        lg: "[--dialog-max-w:720px] p-[var(--spacing-2xl)] rounded-lg",
+        sm: "[--dialog-max-w:420px] rounded-lg",
+        md: "[--dialog-max-w:520px] rounded-lg",
+        lg: "[--dialog-max-w:720px] rounded-lg",
       },
     },
     defaultVariants: { size: "md" },
@@ -91,7 +93,8 @@ const DialogHeader = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      "flex flex-col gap-[var(--spacing-md)] text-left",
+      // header 18 22 — footer 아래와 같은 값이다(dialog.md Layout).
+      "flex shrink-0 flex-col gap-[var(--spacing-md)] px-[22px] py-[18px] text-left",
       className,
     )}
     {...props}
@@ -99,14 +102,27 @@ const DialogHeader = ({
 );
 DialogHeader.displayName = "DialogHeader";
 
+/* 본문 — 여백 22 에 스크롤은 여기서만 인다(dialog.md Layout).
+   header·footer 는 flex-shrink:0 이라 길어져도 밀리지 않는다. */
+const DialogBody = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cn("min-h-0 flex-1 overflow-y-auto p-[22px]", className)}
+    {...props}
+  />
+);
+DialogBody.displayName = "DialogBody";
+
 const DialogFooter = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      // 본문과의 거리는 container 의 gap(12)이 준다 — 여기서 margin-top 을 또 들면 24 가 된다.
-      "flex flex-col-reverse gap-[var(--spacing-sm)] sm:flex-row sm:justify-end",
+      // footer 18 22 — header 위와 같은 값이다(dialog.md Layout).
+      "flex shrink-0 flex-col-reverse gap-[var(--spacing-sm)] px-[22px] py-[18px] sm:flex-row sm:justify-end",
       className,
     )}
     {...props}
@@ -149,6 +165,7 @@ export {
   DialogClose,
   DialogContent,
   DialogHeader,
+  DialogBody,
   DialogFooter,
   DialogTitle,
   DialogDescription,

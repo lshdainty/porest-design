@@ -1296,9 +1296,13 @@ export function renderModal(brand) {
     <div class="modal-stage">
       <div class="modal-overlay"></div>
       <div class="modal-dialog">
-        <div class="modal-title">${escape(m.title)}</div>
-        <div class="modal-description">${escape(m.description)}</div>
-        <div class="modal-fields">${fields}</div>
+        <div class="modal-head">
+          <div class="modal-title">${escape(m.title)}</div>
+        </div>
+        <div class="modal-body">
+          <div class="modal-description">${escape(m.description)}</div>
+          <div class="modal-fields">${fields}</div>
+        </div>
         <div class="modal-actions">
           <button class="btn btn-outline">${escape(m.secondary)}</button>
           <button class="btn btn-primary">${escape(m.primary)}</button>
@@ -1822,8 +1826,12 @@ export function renderShadcnDisclose(brand) {
         <div class="modal-stage" style="height:auto; padding:var(--spacing-xl); background:linear-gradient(135deg, var(--color-chart-blue), var(--color-chart-violet));">
           <div class="modal-overlay"></div>
           <div class="modal-dialog" role="alertdialog" aria-modal="true">
-            <div class="modal-title">${brand.key === "hr" ? "권한 회수" : brand.key === "desk" ? "메모 영구 삭제" : "항목 삭제"}</div>
-            <div class="modal-description">${brand.key === "hr" ? "\"김서연\" 님의 모든 권한이 회수됩니다. 복구는 관리자 승인이 필요합니다." : brand.key === "desk" ? "\"Porest 브랜드 톤\" 을 30일 보관함을 거치지 않고 즉시 삭제합니다." : "\"2026 예산안\" 을 삭제합니다. 이 작업은 되돌릴 수 없습니다."}</div>
+            <div class="modal-head">
+              <div class="modal-title">${brand.key === "hr" ? "권한 회수" : brand.key === "desk" ? "메모 영구 삭제" : "항목 삭제"}</div>
+            </div>
+            <div class="modal-body">
+              <div class="modal-description">${brand.key === "hr" ? "\"김서연\" 님의 모든 권한이 회수됩니다. 복구는 관리자 승인이 필요합니다." : brand.key === "desk" ? "\"Porest 브랜드 톤\" 을 30일 보관함을 거치지 않고 즉시 삭제합니다." : "\"2026 예산안\" 을 삭제합니다. 이 작업은 되돌릴 수 없습니다."}</div>
+            </div>
             <div class="modal-actions">
               <button class="btn btn-outline" autofocus>취소</button>
               <button class="btn btn-destructive">${brand.key === "hr" ? "회수" : "삭제"}</button>
@@ -3091,16 +3099,20 @@ export function pageCss() {
       position: absolute; inset: 0;
       background: var(--overlay-dim-light, rgba(0, 0, 0, 0.4));
     }
+    /* 여백은 container 가 아니라 head/body/foot 이 갖는다 — dialog.md Layout.
+       본문만 스크롤해야 해서 셋을 한 덩어리로 묶을 수 없다. */
     .modal-dialog {
       position: relative;
       background: var(--color-surface-default);
       border-radius: var(--radius-lg);
-      padding: var(--spacing-2xl);
       box-shadow: var(--shadow-xl);
       width: min(90%, 520px);
+      max-height: 86vh;
+      overflow: hidden;
       display: flex; flex-direction: column;
-      gap: var(--spacing-md);
     }
+    .modal-head { flex-shrink: 0; padding: 18px 22px; display: flex; flex-direction: column; gap: var(--spacing-md); }
+    .modal-body { flex: 1; min-height: 0; overflow-y: auto; padding: 22px; display: flex; flex-direction: column; gap: var(--spacing-md); }
     .modal-title { font-size: var(--text-title-md); font-weight: 600; line-height: var(--text-title-md--line-height); color: var(--color-text-primary); letter-spacing: -0.01em; }
     .modal-description { font-size: var(--text-body-md); color: var(--color-text-secondary); line-height: 1.6; }
     .modal-fields {
@@ -3112,8 +3124,9 @@ export function pageCss() {
     .modal-row { display: flex; justify-content: space-between; font-size: var(--text-caption); }
     .modal-key { color: var(--color-text-tertiary); }
     .modal-val { font-weight: 600; }
-    /* 본문과의 거리는 .modal-dialog 의 gap(12)이 준다 — margin-top 을 또 두면 24 가 된다. */
-    .modal-actions { display: flex; gap: var(--spacing-sm); justify-content: flex-end; }
+    /* footer 18 22 — head 위와 같은 값이다(dialog.md Layout). 버튼은 default(36·좌우 16·14px). */
+    .modal-actions { flex-shrink: 0; padding: 18px 22px; display: flex; gap: var(--spacing-sm); justify-content: flex-end; }
+    .modal-actions .btn { height: 36px; padding: 9px var(--spacing-lg); font-size: var(--text-body-sm); }
 
     /* === Toast === sonner.md SoT — surface-default + border-default(1px) + radius-md + shadow-lg + 20px stroke svg(kind별 색) */
     .toast-stack { display: flex; flex-direction: column; gap: var(--spacing-md); }

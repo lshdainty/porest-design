@@ -32,11 +32,11 @@ Porest AlertDialog는 시각적으로는 `Dialog`와 **완전히 동일** (같�
 ```
 
 | ⓐ overlay | dialog와 동일하나 **click 무시**. |
-| ⓑ container | dialog와 동일 — preview `.modal-dialog` 그대로 (`background:var(--color-surface-default); border-radius:var(--radius-lg); box-shadow:var(--shadow-xl); width:min(90%, <max-w>); max-height:86vh; display:flex; flex-direction:column; overflow:hidden;`). **padding 0** — 여백은 header·body·footer 가 갖는다([`dialog`](dialog.md) Layout). close button(X) **없음**. |
+| ⓑ container | dialog와 동일 — preview `.modal-dialog` 그대로 (`background:var(--color-surface-default); border-radius:var(--radius-lg); padding:var(--spacing-2xl); box-shadow:var(--shadow-xl); width:min(90%, <max-w>); display:flex; flex-direction:column; gap:var(--spacing-md);`). close button(X) **없음**. |
 | ⓒ title | preview `.modal-title` 그대로 — `font-size:var(--text-title-md); font-weight:600; line-height:var(--text-title-md--line-height); color:var(--color-text-primary); letter-spacing:-0.01em;`. **결정 또는 결과**를 짧은 명사구로. 질문형 아님 — 질문은 ⓓ 가 맡는다. |
 | ⓓ description | preview `.modal-description` 그대로 — `font-size:var(--text-body-md); color:var(--color-text-secondary); line-height:1.6;`. **상세 내역** — 무엇이 어떻게 되는지(결과·영향)와 확인 질문. 파괴적 액션이면 **대상을 이름으로** 짚는다. |
 | ⓔ footer (모바일 < 640px) | 각 button `flex-1` 균등 분배 + `size="lg"`(48). 취소는 `secondary`(테두리 없는 회색 채움). [`dialog`](dialog.md) footer 규칙과 동일. |
-| ⓔ footer | preview `.modal-actions` 그대로 — `display:flex; gap:var(--spacing-sm); justify-content:flex-end; padding:18px 22px;`. 여백·버튼 모두 [`dialog`](dialog.md) Layout 과 **같은 값**이다 — container 는 padding 0 이고 header `18 22` · body `22` · footer `18 22`, 버튼은 `default`(36 · 좌우 양쪽 16 · 14px), 모바일만 `lg`(48). Cancel(좌) + Action(우, destructive). focus default = Cancel. |
+| ⓔ footer | preview `.modal-actions` 그대로 — `display:flex; gap:var(--spacing-sm); justify-content:flex-end;`. 본문과의 거리는 ⓑ container 의 `gap` 12 가 준다(footer 가 `margin-top` 을 또 들면 24 가 돼 [`dialog`](dialog.md)와 어긋난다). 버튼은 `md`(40 · 좌우 12 · 15px), 모바일만 `lg`(48). Cancel(좌) + Action(우, destructive). focus default = Cancel. |
 
 **규칙**
 
@@ -65,7 +65,7 @@ Porest AlertDialog는 시각적으로는 `Dialog`와 **완전히 동일** (같�
 
 ## Sizes
 
-`Dialog`와 동일 — `sm` 420 / `md` 520(default) / `lg` 720. 여백도 Dialog 와 같다(container 0, 구역별). 본문이 짧으면 `sm` 권장 (확정 dialog는 정보 압축).
+`Dialog`와 동일 — `sm` 420 / `md` 520(default) / `lg` 720. 본문이 짧으면 `sm` 권장 (확정 dialog는 정보 압축).
 
 **z-index** — [`z-index.md`](../z-index.md) L5 alert-dialog. **Dialog(L2=100/101) 위로 명시** — dialog 안에서 삭제 확인 같은 alert를 띄우는 케이스를 보존하기 위해 분리된 layer.
 
@@ -144,7 +144,7 @@ Default focus가 Cancel인 것이 핵심 — Enter를 무심코 눌렀을 때 de
 ## Migration notes
 
 - **title `display-sm`(24/700) → `title-md`(18/600)**: Dialog 와 동일 정합. 24px 가 컨텍스트 모달에 과해 모든 모달·시트 타이틀과 통일(18/600 semibold). 공유 `.modal-title` 시각이므로 Dialog 와 함께 이동. 상세는 [`dialog.md`](dialog.md) Migration notes 참조.
-- 기존 `alert-dialog.tsx`는 `dialog.tsx`와 동일한 토큰 부재(`p-6`, `rounded-md`, `shadow-lg`, title `text-title-lg`) 사용 — 이번 동기에서 `Dialog`와 함께 preview `.modal-*` 톤으로 정렬, 픽셀 하드코딩 대신 `--spacing-2xl`/`--spacing-md` 토큰 직접 인용. *(폭·여백은 2026-09-16 에 다시 정해졌다 — 위 Sizes 와 [`dialog`](dialog.md) Layout 이 현재 값이다.)*
+- 기존 `alert-dialog.tsx`는 `dialog.tsx`와 동일한 토큰 부재(`p-6`, `rounded-md`, `shadow-lg`, title `text-title-lg`) 사용 — 이번 동기에서 `Dialog`와 함께 preview `.modal-*` 톤으로 정렬, 픽셀 하드코딩 대신 `--spacing-2xl`/`--spacing-md` 토큰 직접 인용.
 - **AlertDialogTitle 하단 border 제거**: Radix `AlertDialogPrimitive.Title`도 `<h2>`를 렌더해 Dialog와 동일한 충돌이 있었음. `build-site.mjs`의 `.content h2` → `.content > h2` selector 격리로 자동 해소(상세는 [`dialog.md`](dialog.md) Migration notes 참조).
 - `AlertDialogCancel` 은 `secondary`(테두리 없는 회색 채움) — 모달 footer 취소 통일 규칙(2026-08, [`button`](button.md) Migration notes).
 - 기존 `AlertDialogAction`은 default(primary) — destructive 사용 시 `className={cn(buttonVariants({ variant: "destructive" }))}` 명시 패턴 유지. spec에선 destructive를 default action variant로 권장.
