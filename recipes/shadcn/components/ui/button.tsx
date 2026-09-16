@@ -85,6 +85,14 @@ const buttonVariants = cva(
       // 리스트 행/툴바의 quiet 아이콘 액션(편집·삭제·일시정지 등). label ghost(text-primary)·채움 variant icon은 불변.
       // (iconLg는 모바일 크롬 헤더의 페이지당 1개 주 액션 — 약화 없이 중립 유지. v97)
       { variant: "ghost", size: "icon", className: "text-text-secondary" },
+      // flush ghost 는 텍스트 버튼 — hover 배경 없이 글자색으로만 반응한다(button.md
+      // Edge flush). padding 이 한쪽만 0 이라 hover 채움 상자가 좌우 비대칭으로 보인다.
+      {
+        variant: "ghost",
+        flush: ["left", "right"],
+        className:
+          "text-text-secondary hover:bg-transparent hover:text-text-primary active:bg-transparent focus-visible:text-text-primary",
+      },
     ],
     defaultVariants: {
       variant: "default",

@@ -51,6 +51,7 @@ const ICONS = {
   download: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
   loader: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>',
   arrow: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>',
+  eyeOff: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>',
   pencil: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>',
   // iconLg(glyph 20px)용 — 모바일 크롬 헤더 컨텍스트 아이콘.
   search: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
@@ -108,20 +109,23 @@ function stateBtn({ variant = "default", state = "enabled", children = "승인" 
 export const buttonExamples = [
   {
     title: "Edge flush (광학 정렬)",
-    description: "ghost 버튼이 컨테이너 edge(footer 등)에 놓일 때 flush='left'/'right'로 해당 방향 padding 을 제거해 글자를 edge 에 맞춤. box·hover 위치·크기는 그대로(overhang 없음). filled 는 fill 이 edge 까지 닿아 불필요 → ghost 전용.",
-    jsx: `// footer 좌측 ghost 삭제 버튼 — flush 없으면 글자가 padding 만큼 안쪽으로 들어가
-// 우측 filled 버튼(fill 이 edge 까지 닿음)과 광학적으로 어긋남.
+    description: "ghost + leading icon 이 컨테이너 edge 에 놓일 때 flush='left'/'right' 로 해당 방향 padding 을 제거해 아이콘을 본문 콘텐츠 열에 맞춤. flush ghost 는 텍스트 버튼이라 hover 에 배경을 깔지 않고 글자색(보조톤 → 본문색)으로만 반응한다 — 한쪽 padding 만 0 이라 채움 상자가 좌우 비대칭으로 보이기 때문. 글자만 있는 ghost·filled 에는 쓰지 않는다.",
+    jsx: `// dialog footer 의 leftSlot — flush 없으면 아이콘이 padding 만큼 안쪽으로 들어가
+// 본문 콘텐츠 열과 광학적으로 어긋남.
 <div className="flex items-center">
-  <Button variant="ghost" flush="left" style={{ marginRight: 'auto' }}>삭제</Button>
-  <Button>확인</Button>
+  <Button variant="ghost" flush="left" style={{ marginRight: 'auto' }}>
+    <EyeOff />
+    금액 가리기
+  </Button>
+  <Button>수정</Button>
 </div>`,
     render: () => {
       const box = `display:flex; align-items:center; padding:var(--spacing-md) var(--spacing-lg); border:1px dashed var(--color-border-default); border-radius:var(--radius-lg); max-width:340px;`;
-      const ghost = `${BASE} ${VARIANT.ghost} ${SIZE.md} pl-0`;
-      const filled = `${BASE} ${VARIANT.default} ${SIZE.md}`;
+      const ghost = `${BASE} ${VARIANT.ghost} ${SIZE.default} pl-0 text-text-secondary`;
+      const filled = `${BASE} ${VARIANT.default} ${SIZE.default}`;
       return `<div style="${box}">
-        <button class="${ghost}" style="color:var(--color-error); margin-right:auto;">삭제</button>
-        <button class="${filled}">확인</button>
+        <button class="${ghost}" style="margin-right:auto;">${ICONS.eyeOff} 금액 가리기</button>
+        <button class="${filled}">수정</button>
       </div>`;
     },
   },
