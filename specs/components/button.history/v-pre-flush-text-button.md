@@ -158,24 +158,10 @@ Tailwind utility 매핑 (button.tsx cva):
 **Edge flush (광학 정렬)** — `flush` prop
 
 - `flush="left" | "right"` — 해당 방향 가로 padding 을 0 으로 제거(`pl-0` / `pr-0`).
-- **대상: `ghost` + leading icon 이 컨테이너 content edge 의 첫/끝 요소일 때.**
-  글자만 있는 ghost 에는 쓰지 않는다 — edge 에 맞출 광학 기준(아이콘)이 없다.
-- 목적: 투명 버튼이 컨테이너 edge 에 놓일 때 내부 padding 만큼 content 가 안쪽으로 들어가
-  **본문 콘텐츠 열과 광학적으로 어긋나** 보이는 문제 해결. content(글자·아이콘)만 edge 로
-  당겨진다(overhang 없음). 반대쪽 padding 은 유지.
-- **flush ghost 는 텍스트 버튼이다** — hover 에 배경을 깔지 않고 **글자색으로만** 반응한다.
-  기본 `--color-text-secondary`, hover·focus 에 `--color-text-primary`, hover·active 배경은
-  둘 다 투명. 아이콘은 `currentColor` 라 글자와 같이 진해진다. `active` 의 `scale(0.98)` 과
-  keyboard focus ring 은 다른 variant 와 같다.
-
-  한쪽 padding 만 0 이라 **hover 채움 상자가 좌우 비대칭**으로 보였다(desk 2026-09-16 실측).
-  상자를 없애면 그 문제가 같이 사라지고, 위계도 맞다 — 옆의 채움 버튼보다 한 단계 약한 액션이다.
-- filled(default/secondary/outline)은 fill 이 이미 edge 까지 닿아 불필요.
-  icon-only(`icon`/`iconLg`)는 padding 이 없어 무관.
-- 사용처: dialog footer 의 `leftSlot` ghost+아이콘(자산 상세 '금액 가리기'), 섹션 상단 '뒤로' 링크.
-  **footer 의 삭제는 `dangerSoft` 채움이라 flush 대상이 아니다**([`dialog`](dialog.md) footer).
-- `flush` 를 안 붙인 ghost(툴바·리스트 행·우측 정렬 헤더 액션)는 지금 규칙 그대로 —
-  hover 에 `--color-surface-input` 채움.
+- 목적: `ghost`(투명) 버튼이 컨테이너 edge(예: dialog/sheet footer 의 좌측 삭제 버튼)에 놓일 때, box(=hover 영역)는 edge 에 붙어도 내부 좌/우 padding 만큼 글자가 안쪽으로 들어가 **채워진 버튼(fill 이 edge 까지 닿음)과 광학적으로 어긋나** 보이는 문제 해결.
+- box·hover 영역 위치·크기는 그대로 — content(글자·아이콘)만 edge 로 당겨짐(overhang 없음). 반대쪽 padding 은 유지.
+- **`ghost` 전용 권장.** filled(default/secondary/outline)은 fill 이 이미 edge 까지 닿아 불필요. icon-only(`icon`/`iconLg`)는 padding 이 없어 무관.
+- 사용처: footer 의 leftmost ghost 삭제/해제/초기화 버튼, 하단 액션 바의 좌측 ghost 액션 → `flush="left"`.
 
 ## Behavior
 

@@ -2550,6 +2550,11 @@ export function pageCss() {
       color: var(--color-text-primary);
     }
     .btn-ghost:hover { background: var(--color-surface-input); }
+    /* flush ghost 는 텍스트 버튼 — hover 배경 없이 글자색으로만(button.md Edge flush). */
+    .btn-ghost.btn-flush-left, .btn-ghost.btn-flush-right { color: var(--color-text-secondary); }
+    .btn-ghost.btn-flush-left { padding-left: 0; }
+    .btn-ghost.btn-flush-right { padding-right: 0; }
+    .btn-ghost.btn-flush-left:hover, .btn-ghost.btn-flush-right:hover { background: transparent; color: var(--color-text-primary); }
     .btn-ghost:disabled { opacity: 0.5; cursor: not-allowed; }
     .btn-accent {
       background: transparent;
