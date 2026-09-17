@@ -133,23 +133,27 @@ export const buttonExamples = [
   },
   {
     title: "Split bar (반반 액션)",
-    description: "무게가 같은 액션 둘을 한 묶음으로 — 본문 폭을 꽉 채운 얇은 네모 바(sm 32)를 반으로 갈라 각 칸에 ghost 버튼 하나씩. 트랙은 canvas 톤, 칸 사이는 1px 구분선. pill 은 쓰지 않는다 — segmented(선택)와 헷갈린다. 눌린 상태가 없다는 게 선택 컨트롤과 갈리는 지점이다.",
+    description: "무게가 같은 액션 둘을 한 묶음으로 — 본문 폭을 꽉 채운 얇은 네모 바(sm 32)를 반으로 갈라 각 칸에 ghost 버튼 하나씩. 트랙은 canvas 톤, 칸 사이 구분선은 글자 높이만큼만(끝까지 그으면 답답해 보인다). pill 은 쓰지 않는다 — segmented(선택)와 헷갈린다. 눌린 상태가 없다는 게 선택 컨트롤과 갈리는 지점이다.",
     jsx: `<SplitActions>
   <Button variant="ghost" size="sm" onClick={addRow}><Plus />항목 추가</Button>
   <Button variant="ghost" size="sm" onClick={splitEvenly}><Scissors />균등 분할</Button>
 </SplitActions>
 
 // SplitActions 껍데기
-<div className="flex w-full overflow-hidden rounded-[var(--radius-md)]
+<div className="flex w-full items-center overflow-hidden rounded-[var(--radius-md)]
                 border border-border-default bg-[var(--bg-canvas)]
-                [&>button]:flex-1 [&>button]:rounded-none
-                [&>button+button]:border-l [&>button+button]:border-border-default" />`,
+                [&>button]:flex-1 [&>button]:rounded-none">
+  {left}
+  <Separator orientation="vertical" className="h-[var(--text-caption)]" />
+  {right}
+</div>`,
     render: () => {
-      const bar = `display:flex; width:100%; max-width:420px; background:var(--color-bg-canvas); border:1px solid var(--color-border-default); border-radius:var(--radius-md); overflow:hidden;`;
+      const bar = `display:flex; align-items:center; width:100%; max-width:420px; background:var(--color-bg-canvas); border:1px solid var(--color-border-default); border-radius:var(--radius-md); overflow:hidden;`;
       const cell = `${BASE} ${VARIANT.ghost} ${SIZE.sm} flex-1 rounded-none`;
       return `<div style="${bar}">
         <button class="${cell}">${ICONS.plus} 항목 추가</button>
-        <button class="${cell}" style="border-left:1px solid var(--color-border-default);">${ICONS.scissors} 균등 분할</button>
+        <span style="flex:none; width:1px; height:var(--text-caption); background:var(--color-border-default);"></span>
+        <button class="${cell}">${ICONS.scissors} 균등 분할</button>
       </div>`;
     },
   },

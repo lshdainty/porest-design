@@ -158,10 +158,8 @@ Tailwind utility 매핑 (button.tsx cva):
 - 컨테이너: `display:flex; width:100%; background:var(--color-bg-canvas);
   border:1px solid var(--color-border-default); border-radius:var(--radius-md);
   overflow:hidden`. 트랙 톤은 [`toggle-group`](toggle-group.md) 의 segmented 와 같다.
-- 각 칸: `flex:1` 의 `ghost` 버튼, 모서리 없음(컨테이너가 깎는다).
-- 칸 사이는 1px `--color-border-default` 구분선 — **글자 높이만큼만 그린다**
-  (`height: var(--text-caption)`, 세로 가운데). 바 위아래 끝까지 그으면 두 칸이 벽으로
-  막힌 것처럼 답답해 보인다. 여백을 남겨 한 바 안의 두 칸으로 읽히게 한다.
+- 각 칸: `flex:1` 의 `ghost` 버튼, 모서리 없음(컨테이너가 깎는다). 칸 사이는 1px
+  `--color-border-default` 구분선.
 - **얇게 둔다 — `sm`(32).** 목록에 줄을 더하는 성격의 액션이라 본문 행보다 무거우면 안 된다.
   이 자리는 화면의 주 액션이 아니다(주 액션은 footer 에 있다).
 - **모서리는 각지게** — pill(`radius-full`)은 쓰지 않는다. [`toggle-group`](toggle-group.md)
