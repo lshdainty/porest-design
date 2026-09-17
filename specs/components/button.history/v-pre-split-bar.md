@@ -150,25 +150,6 @@ Tailwind utility 매핑 (button.tsx cva):
   - 삭제/취소 → 우측 정렬. 삭제가 우(반대 의견 있음 — Material은 좌측 destructive). Porest는 **destructive를 우측에 두고 destructive 색으로 명확히 구분**.
 - 4개 이상의 버튼을 한 줄에 두지 말 것. 결정 피로 → DropdownMenu로 분리.
 
-**Split bar (반반 액션)**
-
-액션 **둘**이 무게가 같고 한 묶음으로 읽힐 때 — 본문 폭을 꽉 채운 네모 바를 반으로 갈라
-각 칸에 하나씩 둔다. 예: 내역 분할의 `항목 추가` · `균등 분할`.
-
-- 컨테이너: `display:flex; width:100%; background:var(--color-bg-canvas);
-  border:1px solid var(--color-border-default); border-radius:var(--radius-md);
-  overflow:hidden`. 트랙 톤은 [`toggle-group`](toggle-group.md) 의 segmented 와 같다.
-- 각 칸: `flex:1` 의 `ghost` 버튼, 모서리 없음(컨테이너가 깎는다). 칸 사이는 1px
-  `--color-border-default` 구분선.
-- **얇게 둔다 — `sm`(32).** 목록에 줄을 더하는 성격의 액션이라 본문 행보다 무거우면 안 된다.
-  이 자리는 화면의 주 액션이 아니다(주 액션은 footer 에 있다).
-- **모서리는 각지게** — pill(`radius-full`)은 쓰지 않는다. [`toggle-group`](toggle-group.md)
-  의 `segmented` 와 헷갈린다.
-- **선택이 아니라 실행이다.** 눌린 상태(`data-state=on`)가 없다. 상태를 고르는 자리는
-  `segmented` 를 쓴다 — 생김새가 비슷해 이 구분이 유일한 단서다.
-- 셋 이상으로 나누지 않는다. 그 이상은 위의 Button group(`gap-2`) 또는 DropdownMenu.
-- **flush 대상이 아니다** — 칸이 컨테이너를 꽉 채워 content edge 가 어긋날 일이 없다.
-
 **Vertical stack (모바일)**
 
 - 폭 좁은 화면에서 `flex-col gap-2` + 각 버튼 `w-full`.
