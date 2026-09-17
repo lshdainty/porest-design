@@ -51,6 +51,8 @@ const ICONS = {
   download: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
   loader: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>',
   arrow: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>',
+  plus: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+  scissors: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>',
   eyeOff: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>',
   pencil: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>',
   // iconLg(glyph 20px)용 — 모바일 크롬 헤더 컨텍스트 아이콘.
@@ -129,6 +131,29 @@ export const buttonExamples = [
       </div>`;
     },
   },
+  {
+    title: "Split bar (반반 액션)",
+    description: "무게가 같은 액션 둘을 한 묶음으로 — 본문 폭을 꽉 채운 얇은 네모 바(sm 32)를 반으로 갈라 각 칸에 ghost 버튼 하나씩. 트랙은 canvas 톤, 칸 사이는 1px 구분선. pill 은 쓰지 않는다 — segmented(선택)와 헷갈린다. 눌린 상태가 없다는 게 선택 컨트롤과 갈리는 지점이다.",
+    jsx: `<SplitActions>
+  <Button variant="ghost" size="sm" onClick={addRow}><Plus />항목 추가</Button>
+  <Button variant="ghost" size="sm" onClick={splitEvenly}><Scissors />균등 분할</Button>
+</SplitActions>
+
+// SplitActions 껍데기
+<div className="flex w-full overflow-hidden rounded-[var(--radius-md)]
+                border border-border-default bg-[var(--bg-canvas)]
+                [&>button]:flex-1 [&>button]:rounded-none
+                [&>button+button]:border-l [&>button+button]:border-border-default" />`,
+    render: () => {
+      const bar = `display:flex; width:100%; max-width:420px; background:var(--color-bg-canvas); border:1px solid var(--color-border-default); border-radius:var(--radius-md); overflow:hidden;`;
+      const cell = `${BASE} ${VARIANT.ghost} ${SIZE.sm} flex-1 rounded-none`;
+      return `<div style="${bar}">
+        <button class="${cell}">${ICONS.plus} 항목 추가</button>
+        <button class="${cell}" style="border-left:1px solid var(--color-border-default);">${ICONS.scissors} 균등 분할</button>
+      </div>`;
+    },
+  },
+
   {
     title: "State matrix",
     description: "variant × state 시각화 — 디자인 시스템에 정의된 hover / pressed / focus / disabled 상태가 각 variant에서 어떻게 적용되는지. 정적 preview라 인터랙션 없이 강제로 시각만 합성.",
