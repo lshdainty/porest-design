@@ -2,19 +2,7 @@
 
 > 사용자 액션 결과나 시스템 이벤트를 화면 흐름을 끊지 않고 일시적으로 알리는 floating 알림. `sonner` 라이브러리 기반(shadcn 권장)이며 화면 모서리에서 슬라이드 인 → 자동 dismiss → swipe로 직접 닫기 가능한 패턴.
 
-Porest Sonner는 **단일 spec × 5 kinds(default/success/error/warning/info)** 매트릭스로 정의됩니다. site preview SoT 톤을 픽스 — `surface-raised` + `radius-md` + `shadow-md` + 좌측 semantic 컬러 아이콘(20px) + action button(SM primary, 글 아래 줄 오른쪽). **테두리 없음** — 면과 그림자만으로 페이지 위에 뜬 시각 단위임을 표현한다.
-
-> **2026-09-22 — 버튼을 글 옆에서 글 아래 줄로 내렸다.** 360px 토스트에서 SM 버튼(약 71px)을
-> 글 옆에 두면 글 폭이 210px 안팎으로 줄어, 16px 제목 한 줄에 한글 13자 남짓만 들어간다.
-> 두 문장짜리 안내("이미 결제가 끝난 회차예요. 기록만 바뀌고 계좌 잔액은 그대로예요.")가
-> 폰(360·390)에서 **3줄**이 돼 ⓒ 의 "2줄까지" 를 넘었다. 문구를 줄여 맞추면 다음 문구가
-> 길어질 때 같은 일이 난다 — 글이 쓰는 폭을 바꾼다. 버튼이 있으면 글은 토스트 폭 전체를
-> 쓰고(아이콘 옆 약 296px), 버튼은 그 아래 줄 오른쪽 끝에 선다. 같은 안내가 360·390·412
-> 모두 2줄이 된다. 버튼이 없는 토스트는 그대로다.
->
-> 함께: **아이콘은 제목 첫 줄에 붙는다**(ⓑ `margin-top:2px` 그대로). 줄이 둘로 나뉘어도
-> 아이콘이 두 줄 사이·버튼 줄 쪽으로 내려가지 않는다. 최소 높이 52 안에서 한 줄짜리가
-> 위로 쏠리지 않게 줄 묶음은 세로 가운데(`align-content:center`)에 둔다.
+Porest Sonner는 **단일 spec × 5 kinds(default/success/error/warning/info)** 매트릭스로 정의됩니다. site preview SoT 톤을 픽스 — `surface-raised` + `radius-md` + `shadow-md` + 좌측 semantic 컬러 아이콘(20px) + 우측 action button(SM primary). **테두리 없음** — 면과 그림자만으로 페이지 위에 뜬 시각 단위임을 표현한다.
 
 > **2026-08-21 — 그림자를 `shadow-lg` → `shadow-md` 로.** 다크에서 `lg`·`xl` 은
 > 부드러운 번짐이 아니라 **한 겹 더 어두운 띠**로 읽힌다. 그림자 색이 50~60% 검정인데
@@ -37,29 +25,23 @@ Porest Sonner는 **단일 spec × 5 kinds(default/success/error/warning/info)** 
 ```
 ┌────────────────────────────────────────────────────────┐
 │ ⓐ container (surface-raised + shadow-md, 테두리 없음)  │
-│  ┌────┐  ┌──────────────────────────────────────────┐  │
-│  │ ⓑ  │  │ ⓒ title  (title-sm, 600)                 │  │
-│  │ico │  │ ⓓ desc   (body-sm, secondary)            │  │
-│  └────┘  └──────────────────────────────────────────┘  │
-│                                          ┌────────┐    │
-│                                          │   ⓔ    │    │  ← 버튼이 있을 때만 이 줄
-│                                          │ action │    │
-│                                          └────────┘    │
+│  ┌────┐  ┌──────────────────────────────┐  ┌────────┐  │
+│  │ ⓑ  │  │ ⓒ title  (title-sm, 600)     │  │   ⓔ    │  │
+│  │ico │  │ ⓓ desc   (body-sm, secondary)│  │ action │  │
+│  └────┘  └──────────────────────────────┘  └────────┘  │
 └────────────────────────────────────────────────────────┘
 ```
 
-| ⓐ container | `background:var(--bg-surface-raised); border-radius:var(--radius-md); padding:var(--spacing-md) var(--spacing-lg); box-shadow:var(--shadow-md); display:flex; flex-wrap:wrap; align-items:flex-start; align-content:center; gap:var(--spacing-md); max-width:360px;` — `flex-wrap` 으로 ⓔ 가 다음 줄로 내려간다. 가로·세로 gap 이 같다. |
+| ⓐ container | `background:var(--bg-surface-raised); border-radius:var(--radius-md); padding:var(--spacing-md) var(--spacing-lg); box-shadow:var(--shadow-md); display:flex; align-items:flex-start; gap:var(--spacing-md); max-width:360px;` |
 | ⓑ icon | 20×20 stroke svg. 좌측, `flex-shrink:0`, `margin-top: 2px`(title baseline 정렬). kind별 stroke 색상(아래 Kinds 표). `default` kind는 icon 생략. |
-| ⓒ title | `text-title-sm` (16/600/1.4). `var(--color-text-primary)`. 자간 없음(`letter-spacing` 을 주지 않는다). 한 줄 권장(2줄까지 허용). |
+| ⓒ title | `text-title-sm` (16/600/1.4). `var(--color-text-primary)`. 한 줄 권장(2줄까지 허용). |
 | ⓓ description | `text-body-sm` (14/400/1.5). `var(--color-text-secondary)`. 선택. title과 `var(--spacing-xs)`(4) gap. |
-| content (ⓒ·ⓓ 묶음) | `display:flex; flex-direction:column; gap:var(--spacing-xs); min-width:0; flex:1 1 calc(100% - 20px - var(--spacing-md));` — 아이콘을 뺀 **한 줄 전체**를 차지한다. 그래서 ⓔ 가 옆에 설 자리가 없어 아래 줄로 간다. `default` kind(아이콘 없음)도 같은 값이다 — `flex-grow` 가 남는 폭을 채운다. |
-| ⓔ action button | SM primary button — spec은 [`button.md`](button.md) Size `sm` 그대로(`h-8`, `text-caption`, `font-sans`, `radius-sm`, `bg-primary`, `shadow-sm`). **글 아래 줄 오른쪽 끝**(`margin-left:auto`). `flex-shrink:0`. 선택. |
+| ⓔ action button | SM primary button — spec은 [`button.md`](button.md) Size `sm` 그대로(`h-8`, `text-caption`, `font-sans`, `radius-sm`, `bg-primary`, `shadow-sm`). `flex-shrink:0`로 줄바꿈 방지. 선택. |
 
 **규칙**
 
 - icon은 stroke svg만 사용 — fill 채움 금지(시각 무게 과잉, semantic 색 톤 깨짐).
 - action button은 **한 토스트당 최대 1개** — 결정 피로 회피. 두 개 이상 액션 필요하면 dialog로 승격.
-- action button은 **글 옆에 두지 않는다** — 글 아래 줄 오른쪽 끝. 옆에 두면 버튼 폭만큼 글 폭이 줄어 같은 문구가 한 줄 더 접힌다(2026-09-22).
 - close button(×)은 sonner 라이브러리 자체 dismiss UI(우상단 hover 시 노출)에 위임 — 정적 HTML 추가 금지.
 
 ## Kinds
@@ -94,8 +76,6 @@ Sonner는 **size variant 없음** — 단일 spec. 콘텐츠(title/description �
 | Container border | 없음 | — (면 + 그림자로 분리) |
 | Container max-width | 360px | (literal — sonner 라이브러리 기본) |
 | Gap (icon · content · action) | 12px | `var(--spacing-md)` |
-| Gap (글 줄 · 버튼 줄) | 12px | `var(--spacing-md)` — 가로 gap 과 같은 값(한 `gap`) |
-| 버튼 자리 | 글 아래 줄 오른쪽 끝 | `margin-left:auto` |
 | Gap (title · description) | 4px | `var(--spacing-xs)` |
 | Icon size | 20×20 | (svg width/height) |
 | Stack gap (multi-toast) | 12px | `var(--spacing-md)` |
@@ -169,9 +149,4 @@ Sonner는 **size variant 없음** — 단일 spec. 콘텐츠(title/description �
 - 기존 `sonner.tsx` `actionButton` className은 `bg-primary text-text-on-accent`만 — 풀 button SM spec(높이/패딩/font/shadow/transition) 추가.
 - preview-html `.toast`의 `border-left: 4px solid semantic` 강조선 톤은 **legacy** — site preview의 plain card 톤(테두리 없음 + icon 좌측)이 SoT.
 - 하드 코딩 px(`padding:12px 16px`, `gap:12px`, `font-size:14px`) → spacing/font 토큰 직접 인용.
-- **2026-09-22 버튼 아래 줄** — sonner 라이브러리 기본값 중 이 spec 과 다른 것을 코드에서 덮는다.
-  - `[data-sonner-toast]` `gap:6px` → `var(--spacing-md)`, `align-items:center` → `flex-start` + `flex-wrap:wrap` + `align-content:center`
-  - `[data-icon]` 상자 16×16 → 20×20(아이콘이 20px 인데 상자가 16px 이라 글과의 간격이 spec 보다 좁았다)
-  - `[data-content]` → `flex:1 1 calc(100% - 20px - var(--spacing-md))`, `[data-button]` → `margin-left:auto`
-- **2026-09-22 Flutter(desk-app) 미러** — `SnackBar.action` 을 쓰지 않는다. SnackBar 는 action 을 content 바깥(카드 옆 투명한 자리)에 둔다. 버튼은 content 안에서 그린다. SnackBar 기본 `clipBehavior: Clip.hardEdge` 는 카드 밖 `shadow-md` 를 잘라 버리므로 `Clip.none`. 제목은 `letterSpacing: 0` 을 명시한다 — 안 주면 Material SnackBar 의 content 글꼴(bodyMedium, 자간 0.25)을 물려받아 같은 문구가 더 넓게 접힌다.
 - **box-shadow는 Tailwind utility(`shadow-md`) 대신 `toastOptions.style: { boxShadow: "var(--shadow-md)" }` inline style 사용** — sonner 라이브러리는 `Toaster`의 `toastOptions`로 모든 toast에 inline style 전파. Tailwind v4 `--tw-shadow-*` 분해 처리가 다크 모드 CSS 변수 override를 우회하는 문제 fix. preview `.toast` SoT와 다크 모드 정합 보장. 상세는 [`dialog.md`](dialog.md) Migration notes 참조.
