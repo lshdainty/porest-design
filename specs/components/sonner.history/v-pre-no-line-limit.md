@@ -4,14 +4,6 @@
 
 Porest Sonner는 **단일 spec × 5 kinds(default/success/error/warning/info)** 매트릭스로 정의됩니다. site preview SoT 톤을 픽스 — `surface-raised` + `radius-md` + `shadow-md` + 좌측 semantic 컬러 아이콘(20px) + action button(SM primary, 글 아래 줄 오른쪽). **테두리 없음** — 면과 그림자만으로 페이지 위에 뜬 시각 단위임을 표현한다.
 
-> **2026-09-22 — "2줄까지" 제한을 걷었다. 글은 자르지 않는다(사용자 결정).** 토스트는
-> 사용자가 한 일이 어떻게 됐는지 알리는 자리다. 화면 사정으로 뒷부분을 `…` 로 지우면
-> 알림이 제 일을 못 한다. 그래서 줄 수는 **화면이 자르는 기준이 아니라 문구를 쓰는
-> 기준**이다 — 최대한 2줄 안에서 끝내도록 쓰고, 그래도 길면 줄을 늘려 다 보여 준다.
-> `line-clamp`·`maxLines`·말줄임은 쓰지 않는다. 기준 폭은 360(가장 좁은 폰)이다.
-> 실측(Pretendard 16/600, 아이콘 옆 글 폭 266px)으로 한 줄에 띄어쓰기 포함 24자 안팎,
-> 두 줄에 45자 안팎이 들고 50자를 넘으면 3줄이 된다.
-
 > **2026-09-22 — 버튼을 글 옆에서 글 아래 줄로 내렸다.** 360px 토스트에서 SM 버튼(약 71px)을
 > 글 옆에 두면 글 폭이 210px 안팎으로 줄어, 16px 제목 한 줄에 한글 13자 남짓만 들어간다.
 > 두 문장짜리 안내("이미 결제가 끝난 회차예요. 기록만 바뀌고 계좌 잔액은 그대로예요.")가
@@ -58,7 +50,7 @@ Porest Sonner는 **단일 spec × 5 kinds(default/success/error/warning/info)** 
 
 | ⓐ container | `background:var(--bg-surface-raised); border-radius:var(--radius-md); padding:var(--spacing-md) var(--spacing-lg); box-shadow:var(--shadow-md); display:flex; flex-wrap:wrap; align-items:flex-start; align-content:center; gap:var(--spacing-md); max-width:360px;` — `flex-wrap` 으로 ⓔ 가 다음 줄로 내려간다. 가로·세로 gap 이 같다. |
 | ⓑ icon | 20×20 stroke svg. 좌측, `flex-shrink:0`, `margin-top: 2px`(title baseline 정렬). kind별 stroke 색상(아래 Kinds 표). `default` kind는 icon 생략. |
-| ⓒ title | `text-title-sm` (16/600/1.4). `var(--color-text-primary)`. 자간 없음(`letter-spacing` 을 주지 않는다). **자르지 않는다** — 줄 수 제한 없음, 길면 줄바꿈으로 다 보인다. 문구는 최대한 2줄(360 폭에서 띄어쓰기 포함 45자 안팎) 안에서 끝낸다. |
+| ⓒ title | `text-title-sm` (16/600/1.4). `var(--color-text-primary)`. 자간 없음(`letter-spacing` 을 주지 않는다). 한 줄 권장(2줄까지 허용). |
 | ⓓ description | `text-body-sm` (14/400/1.5). `var(--color-text-secondary)`. 선택. title과 `var(--spacing-xs)`(4) gap. |
 | content (ⓒ·ⓓ 묶음) | `display:flex; flex-direction:column; gap:var(--spacing-xs); min-width:0; flex:1 1 calc(100% - 20px - var(--spacing-md));` — 아이콘을 뺀 **한 줄 전체**를 차지한다. 그래서 ⓔ 가 옆에 설 자리가 없어 아래 줄로 간다. `default` kind(아이콘 없음)도 같은 값이다 — `flex-grow` 가 남는 폭을 채운다. |
 | ⓔ action button | SM primary button — spec은 [`button.md`](button.md) Size `sm` 그대로(`h-8`, `text-caption`, `font-sans`, `radius-sm`, `bg-primary`, `shadow-sm`). **글 아래 줄 오른쪽 끝**(`margin-left:auto`). `flex-shrink:0`. 선택. |
@@ -68,7 +60,6 @@ Porest Sonner는 **단일 spec × 5 kinds(default/success/error/warning/info)** 
 - icon은 stroke svg만 사용 — fill 채움 금지(시각 무게 과잉, semantic 색 톤 깨짐).
 - action button은 **한 토스트당 최대 1개** — 결정 피로 회피. 두 개 이상 액션 필요하면 dialog로 승격.
 - action button은 **글 옆에 두지 않는다** — 글 아래 줄 오른쪽 끝. 옆에 두면 버튼 폭만큼 글 폭이 줄어 같은 문구가 한 줄 더 접힌다(2026-09-22).
-- title·description 은 **자르지 않는다** — `line-clamp`·`maxLines`·`text-overflow: ellipsis`·말줄임(…) 금지. 결과를 알리는 글이 잘리면 알림이 아니다. 길이는 문구를 쓰는 쪽이 줄인다(2026-09-22).
 - close button(×)은 sonner 라이브러리 자체 dismiss UI(우상단 hover 시 노출)에 위임 — 정적 HTML 추가 금지.
 
 ## Kinds
@@ -164,7 +155,6 @@ Sonner는 **size variant 없음** — 단일 spec. 콘텐츠(title/description �
 - action은 "되돌리기"처럼 즉시 반대 행동만 — 복잡한 후속 결정은 dialog로.
 - error/warning은 자동 dismiss를 6000ms+ 또는 끔으로 — 읽을 시간 확보.
 - description은 1줄로 끝나게 — toast는 읽고 사라지는 매체.
-- 문구는 최대한 2줄 안에서 끝낸다 — 360 폭 기준 띄어쓰기 포함 45자 안팎. 넘으면 **문구를 다듬는다**(화면이 자르지 않는다). 한 번에 할 말이 많으면 toast 가 아니라 dialog·화면이다.
 
 ### ❌ Don't
 
@@ -172,7 +162,6 @@ Sonner는 **size variant 없음** — 단일 spec. 콘텐츠(title/description �
 - 동일 메시지 연속 호출 — sonner 라이브러리 `id` 옵션으로 중복 방지(`toast.success("저장됨", { id: "save" })`).
 - 페이지 위에 toast 4개 이상 동시 표시 — 시각 노이즈. sonner 기본 stack(3개) 그대로.
 - 치명적 confirm(삭제 확정 등)을 toast action으로 — 되돌릴 수 없는 액션은 [`AlertDialog`](alert-dialog.md).
-- title·description 을 줄 수로 자르기(`line-clamp`·`maxLines`·말줄임) — 무엇을 했는지가 잘려 나간다. 길면 줄바꿈으로 다 보여 주고 문구를 줄인다.
 
 ## Migration notes
 
