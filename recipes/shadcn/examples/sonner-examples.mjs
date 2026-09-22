@@ -5,10 +5,11 @@
  * Action button: button.md Size `sm` spec 그대로(`h-8` · `text-caption` ·
  *                `radius-sm` · `font-sans` · `bg-primary` · `shadow-sm` ·
  *                `hover:brightness-105` · `transition-[box-shadow]`).
+ *                글 아래 줄 오른쪽 끝 — container flex-wrap + content 한 줄 전체(2026-09-22).
  */
 
 const TOAST =
-  "background:var(--bg-surface-raised); border-radius:var(--radius-md); min-height:52px; box-sizing:border-box; padding:var(--spacing-md) var(--spacing-lg); box-shadow:var(--shadow-md); display:flex; align-items:flex-start; gap:var(--spacing-md); max-width:360px;";
+  "background:var(--bg-surface-raised); border-radius:var(--radius-md); min-height:52px; box-sizing:border-box; padding:var(--spacing-md) var(--spacing-lg); box-shadow:var(--shadow-md); display:flex; flex-wrap:wrap; align-items:flex-start; align-content:center; gap:var(--spacing-md); max-width:360px;";
 
 const TITLE =
   "font-size:var(--text-title-sm); line-height:var(--text-title-sm--line-height); font-weight:600; color:var(--color-text-primary);";
@@ -17,7 +18,7 @@ const DESC =
   "font-size:var(--text-body-sm); line-height:var(--text-body-sm--line-height); color:var(--color-text-secondary);";
 
 const CONTENT =
-  "display:flex; flex-direction:column; gap:var(--spacing-xs); min-width:0; flex:1;";
+  "display:flex; flex-direction:column; gap:var(--spacing-xs); min-width:0; flex:1 1 calc(100% - 20px - var(--spacing-md));";
 
 // button.md Size `sm` BASE — primary 채움
 const BTN_PRIMARY_SM =
@@ -78,18 +79,27 @@ toast.warning("저장 공간이 부족합니다")`,
 
   {
     title: "With action",
-    description: "토스트 안 액션 버튼 — 실수로 한 작업 즉시 되돌리기. button SM spec 그대로.",
+    description: "토스트 안 액션 버튼 — 실수로 한 작업 즉시 되돌리기. button SM spec 그대로, 글 아래 줄 오른쪽 끝. 글이 두 줄이어도 버튼 폭만큼 좁아지지 않는다.",
     jsx: `toast("이메일이 보관함으로 이동되었습니다", {
   action: {
     label: "되돌리기",
     onClick: () => undoMove(),
   },
 })`,
-    render: () => `<div style="${TOAST}">
-  <div style="${CONTENT}">
-    <div style="${TITLE}">이메일이 보관함으로 이동되었습니다</div>
+    render: () => `<div style="display:flex; flex-direction:column; gap:var(--spacing-md);">
+  <div style="${TOAST}">
+    <div style="${CONTENT}">
+      <div style="${TITLE}">이메일이 보관함으로 이동되었습니다</div>
+    </div>
+    <button class="${BTN_PRIMARY_SM}" style="flex-shrink:0; margin-left:auto;">되돌리기</button>
   </div>
-  <button class="${BTN_PRIMARY_SM}" style="flex-shrink:0;">되돌리기</button>
+  <div style="${TOAST}">
+    ${ICONS.info}
+    <div style="${CONTENT}">
+      <div style="${TITLE}">이미 결제가 끝난 회차예요. 기록만 바뀌고 계좌 잔액은 그대로예요.</div>
+    </div>
+    <button class="${BTN_PRIMARY_SM}" style="flex-shrink:0; margin-left:auto;">잔액 고치기</button>
+  </div>
 </div>`,
   },
 ];

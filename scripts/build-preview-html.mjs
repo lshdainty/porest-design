@@ -1334,7 +1334,6 @@ export function renderToasts(brand) {
         <div class="toast-title">${escape(t.title)}</div>
         <div class="toast-body">${escape(t.body)}</div>
       </div>
-      <button class="toast-close" aria-label="닫기">×</button>
     </div>`).join("");
   return `
   <section class="section">
@@ -3133,36 +3132,28 @@ export function pageCss() {
     .modal-actions { flex-shrink: 0; padding: 18px 22px; display: flex; gap: var(--spacing-sm); justify-content: flex-end; }
     .modal-actions .btn { height: 36px; padding: 9px var(--spacing-lg); font-size: var(--text-body-sm); }
 
-    /* === Toast === sonner.md SoT — surface-default + border-default(1px) + radius-md + shadow-lg + 20px stroke svg(kind별 색) */
+    /* === Toast === sonner.md SoT — surface-raised + 테두리 없음 + radius-md + shadow-md + 20px stroke svg(kind별 색).
+       flex-wrap + content 한 줄 전체 — 버튼이 있으면 글 아래 줄로 간다(2026-09-22). */
     .toast-stack { display: flex; flex-direction: column; gap: var(--spacing-md); }
     .toast {
-      display: flex; align-items: flex-start; gap: var(--spacing-md);
-      background: var(--color-surface-default);
-      border: 1px solid var(--color-border-default);
+      display: flex; flex-wrap: wrap; align-items: flex-start; align-content: center; gap: var(--spacing-md);
+      background: var(--bg-surface-raised);
       border-radius: var(--radius-md);
       padding: var(--spacing-md) var(--spacing-lg);
-      box-shadow: var(--shadow-lg);
+      box-shadow: var(--shadow-md);
+      min-height: 52px; box-sizing: border-box;
       max-width: 360px;
     }
     .toast > svg { flex-shrink: 0; margin-top: 2px; }
-    .toast-content { display: flex; flex-direction: column; gap: var(--spacing-xs); min-width: 0; flex: 1; }
+    .toast-content { display: flex; flex-direction: column; gap: var(--spacing-xs); min-width: 0; flex: 1 1 calc(100% - 20px - var(--spacing-md)); }
     .toast-title { font-weight: 600; font-size: var(--text-title-sm); line-height: var(--text-title-sm--line-height); color: var(--color-text-primary); }
     .toast-body {
       color: var(--color-text-secondary);
       font-size: var(--text-body-sm);
       line-height: var(--text-body-sm--line-height);
     }
-    .toast-close {
-      width: 28px; height: 28px;
-      border-radius: var(--radius-full);
-      border: none;
-      background: transparent;
-      color: var(--color-text-tertiary);
-      cursor: pointer;
-      font-size: 18px;
-      flex-shrink: 0;
-    }
-    .toast-close:hover { background: var(--color-surface-input); }
+    /* 닫기(×)는 정적 HTML 로 두지 않는다 — sonner 자체 dismiss UI 에 위임(sonner.md 규칙).
+       flex-wrap 에서 × 가 content 옆 자리를 못 얻어 다음 줄로 떨어지기도 한다. */
 
     /* === Form layout === */
     .form-card {
@@ -4013,7 +4004,6 @@ export function pageCss() {
     [data-theme="dark"] .form-input--readonly { color: var(--color-text-secondary-dark); }
     [data-theme="dark"] .form-actions { border-color: var(--color-border-default-dark); }
     [data-theme="dark"] .modal-fields { background: var(--color-surface-input-dark); }
-    [data-theme="dark"] .toast-close:hover { background: var(--color-surface-input-dark); }
     [data-theme="dark"] .ld-rail-row,
     [data-theme="dark"] .cal-legend { border-color: var(--color-border-default-dark); }
     [data-theme="dark"] .hero-fact,
