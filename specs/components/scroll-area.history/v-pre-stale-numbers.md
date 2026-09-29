@@ -95,7 +95,7 @@ Scroll Area는 **size variant 없음** — 사용처 className(`h-*`, `w-*`, `ma
 | **WCAG 1.4.11** Non-text contrast (thumb × bg) | `border-strong` 2.5:1+ ✓ (light) / 다크 모드도 `border-strong-dark` 자동 swap. |
 | **WCAG 2.1.1** Keyboard | native 스크롤은 키보드 `ArrowUp/Down` (focusable child 포함 시) ✓ — Radix가 native 키보드 동작 보존. |
 | **WCAG 2.4.7** Focus Visible | ScrollArea 자체는 focus 대상 아님. 내부 자식이 focusable이면 자식 focus ring. |
-| **WCAG 2.5.8** Target Size Minimum (AA, 24×24) | thumb 6px — 미달(⚠). 모바일 친화 환경이면 native 스크롤(wheel/swipe)이 primary, thumb drag은 보조. |
+| **WCAG 2.5.8** Target Size Minimum (AA, 24×24) | thumb 10px — 미달(⚠). 모바일 친화 환경이면 native 스크롤(wheel/swipe)이 primary, thumb drag은 보조. |
 | **ARIA** | Radix가 `role`/`aria-orientation`/`aria-controls` 자동. 시각 스크롤이지만 native 스크롤 동작 보존이라 screen reader 호환. |
 
 ## Do / Don't
