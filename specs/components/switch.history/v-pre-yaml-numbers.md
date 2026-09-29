@@ -34,15 +34,30 @@ Switch는 **variant 없음** — binary 토글은 시각 통일이 인지 비용
 
 Switch는 **size variant 없음** — iOS 표준 44×24 단일 spec. 사용처에서 `className`으로 변경 시 thumb translation 거리도 함께 조정 필요(권장 안 함).
 
-[표: 크기와 모양](switch.yaml#base.enabled)
-
-[표: 켬 · 끔에 따라 바뀌는 값](switch.yaml#grid.checked)
+| 항목 | 값 | 토큰 |
+|---|---|---|
+| Track width | 44px | `w-11` |
+| Track height | 24px | `h-6` |
+| Track radius | full | `rounded-full` |
+| Track border | 2px transparent (focus inset) | `border-2 border-transparent` |
+| Track bg (unchecked) | `border-strong` | `bg-border-strong` |
+| Track bg (checked) | `primary` | `bg-primary` |
+| Thumb size | 20×20 | `h-5 w-5` |
+| Thumb radius | full | `rounded-full` |
+| Thumb bg | `text-on-accent` (#FFFFFF 고정) | `bg-text-on-accent` |
+| Thumb shadow | shadow-md | `var(--shadow-md)` |
+| Thumb translate (checked) | 20px | `translate-x-5` |
+| Transition | bg-color / transform | `duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]` |
 
 ## States
 
-[표: 켬 · 끔](switch.yaml#checked)
-
-[표: 상태](switch.yaml#matrix)
+| State | Track bg | Thumb position | Thumb bg | Cursor |
+|---|---|---|---|---|
+| `unchecked` | `border-strong` | `translate-x-0` (좌측) | `text-on-accent` | pointer |
+| `checked` | `primary` | `translate-x-5` (우측) | `text-on-accent` | pointer |
+| `hover` | (동일) | (동일) | (변화 없음) | pointer |
+| `focus-visible` | (동일) | (동일) | — | + `ring-2 ring-ring ring-offset-2` |
+| `disabled` | (동일) opacity 0.5 | (동일) | (동일) | `not-allowed` |
 
 Transition: 상태 변경 시 `bg-color` + `transform` 모두 `motion-duration-fast` (180ms) — 동시 변화로 자연스러운 슬라이드.
 
