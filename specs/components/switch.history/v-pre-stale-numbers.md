@@ -44,7 +44,7 @@ Switch는 **size variant 없음** — iOS 표준 44×24 단일 spec. 사용처�
 
 [표: 상태](switch.yaml#matrix)
 
-Transition: 상태 변경 시 `bg-color` + `transform` 모두 `motion-duration-fast` (150ms) — 동시 변화로 자연스러운 슬라이드.
+Transition: 상태 변경 시 `bg-color` + `transform` 모두 `motion-duration-fast` (180ms) — 동시 변화로 자연스러운 슬라이드.
 
 ## Layout
 
@@ -75,7 +75,7 @@ Transition: 상태 변경 시 `bg-color` + `transform` 모두 `motion-duration-f
 |---|---|
 | **WCAG 1.4.3** Color contrast (track 상태 분리) | unchecked `border-strong` × bg-page = 2.5:1 / checked `primary` × bg-page = 4.5:1+ — 상태 분리는 시각 위치(thumb 좌/우)도 함께 전달, 색만으로 의존 안 함. |
 | **WCAG 1.4.11** Non-text contrast (thumb × track) | `text-on-accent` × `primary` = 4.7:1+ ✓ / `text-on-accent` × `border-strong` = 4:1+ ✓ |
-| **WCAG 1.4.11** Non-text contrast (focus ring × bg-page) | `ring`(= `border-focus`) HR `#357B5F` 4.69:1 · Desk `#0147AD` 7.76:1 × `bg-page` `#F5F6FA` — 3:1 ✓ |
+| **WCAG 1.4.11** Non-text contrast (focus ring × bg-page) | `ring` `#0049CC` × `#F7F8FA` = 4.5:1+ ✓ |
 | **WCAG 2.1.1** Keyboard | `Space`로 토글 가능 ✓ |
 | **WCAG 2.4.7** Focus Visible | `focus-visible:ring-2 ring-ring ring-offset-2` ✓ |
 | **WCAG 2.5.5** Target Size (AAA, 44×44) | 44×24 — width 44 ✓ / height 24 미달(⚠). row 전체를 클릭 가능하게 wrap하면 row height로 hit area 확장(권장). |
