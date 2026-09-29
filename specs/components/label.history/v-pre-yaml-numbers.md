@@ -49,7 +49,14 @@ Label은 **variant 없음** — form 안 시각 통일. context 분기(form vs i
 
 Label은 **size variant 없음** — `text-label-md` (14/500) 단일 spec. form 안 시각 일관성 우선.
 
-[표: 크기와 색](label.yaml#base.default)
+| 항목 | 값 | 토큰 |
+|---|---|---|
+| Font | 14px / 500 / 1.4 | `text-label-md` |
+| line-height (override) | none (1.0) | `leading-none` |
+| Color | `text-primary` | `text-text-primary` |
+| Required marker | `text-error` + 500 | `text-error font-medium` |
+| peer-disabled opacity | 0.7 | `peer-disabled:opacity-70` |
+| peer-disabled cursor | not-allowed | `peer-disabled:cursor-not-allowed` |
 
 dense 상황(예: table header label)에서는 `text-caption` (12/400) override 가능 — className으로 직접 변경.
 
@@ -57,7 +64,11 @@ dense 상황(예: table header label)에서는 `text-caption` (12/400) override 
 
 Label 자체는 인터랙티브가 아님 — 상태는 페어 컨트롤이 결정.
 
-[표: 상태](label.yaml#matrix)
+| State | Cursor | Opacity | 비고 |
+|---|---|---|---|
+| `default` | pointer (htmlFor가 click target 위임) | 1.0 | — |
+| `peer-disabled` | `not-allowed` | 0.7 | Tailwind `peer` 패턴 — 같은 부모 안 `peer` className 컨트롤이 disabled 시 자동 적용. |
+| `peer-invalid` | (동일) | 1.0 | (Label 자체는 변화 없음 — error 시각은 helper text가 담당.) |
 
 ## Layout
 
