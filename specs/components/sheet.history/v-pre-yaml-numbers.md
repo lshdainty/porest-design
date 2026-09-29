@@ -54,15 +54,32 @@ right side example:
 
 Sheet은 **size variant 없음** — 단일 spec. 사용처 className으로 폭(`sm:max-w-md`/`sm:max-w-lg` 등) 조정.
 
-[표: 크기와 모양](sheet.yaml#base.closed)
-
-[표: right/left 패널 너비](sheet.yaml#viewport)
-
-[표: 여닫는 시간](sheet.yaml#motion)
+| 항목 | 값 | 토큰 |
+|---|---|---|
+| Padding | 24px | `p-[var(--spacing-2xl)]` |
+| Gap (header/body/footer 사이) | 12px | `gap-[var(--spacing-md)]` |
+| Gap (title ↔ description) | 4px | `gap-[var(--spacing-xs)]` |
+| Gap (footer button 사이) | 8px | `gap-[var(--spacing-sm)]` |
+| Title font | 18 / 600 | `text-title-md font-semibold` |
+| Description font | 14 / 400 / 1.5 | `text-body-sm` |
+| Border (방향별) | 1px | `border-{l/r/t/b} border-border-default` |
+| Background | `surface-default` | `bg-surface-default` |
+| Shadow | shadow-xl | inline `var(--shadow-xl)` |
+| Width (right/left, mobile) | 75% | `w-3/4` |
+| Width (right/left, desktop) | ≤384px | `sm:max-w-sm` |
+| Height (top/bottom) | content auto | (자동) |
+| Close button | 28×28 (icon 16×16) | (literal) + `h-4 w-4` |
+| z-index | 50 | (literal) |
+| Animation duration (open) | 500ms | `data-[state=open]:duration-500` |
+| Animation duration (close) | 300ms | `data-[state=closed]:duration-300` |
 
 ## States
 
-[표: 상태](sheet.yaml#matrix)
+| State | Background | Animation | 시각 |
+|---|---|---|---|
+| `closed` (default) | unmounted | — | — |
+| `open` | mounted | `slide-in-from-{side}` + `fade-in-0` (overlay) | full Sheet 표시 |
+| `closing` (in transition) | unmounting | `slide-out-to-{side}` + `fade-out-0` | 슬라이드 + dim fade out |
 
 motion: `transition ease-in-out` + Radix `data-state` driven.
 
