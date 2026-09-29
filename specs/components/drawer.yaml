@@ -48,8 +48,7 @@ rules:
         paddingY: py-3
     enter:
       root:
-        # 옮기기 전 표는 250ms 라 적었다. 토큰은 200ms — 값은 고치지 않았다.
-        transitionDuration: { value: $motion-duration-base, note: "옮기기 전 표기 250ms — 토큰 값과 다르다" }
+        transitionDuration: $motion-duration-base
         transitionEasing: $motion-ease-out
     dragging:
       root:
