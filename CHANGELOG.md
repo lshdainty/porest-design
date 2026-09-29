@@ -68,6 +68,9 @@
 **v102 — SEED 역할 색 (2026-09-29)**
 - v102: 색에 당근 SEED 역할 이름(속성 · 역할 · 변형 · 상태 — fg · bg · stroke)을 들였다. 공유 역할 47(글자 16 · 배경 22 · 선 7 + `static-white` 등)은 `colors-3` 동기 영역에, 브랜드 역할 9(`fg-brand` · `bg-brand-solid` · `stroke-focus-ring` …)는 HR · Desk 파일에 라이트 · 다크로. 값은 porest 색 — 기존 값 36, Desk 가 투명하게 섞던 약한 배경 8 을 같은 비율의 불투명 값으로, 없던 눌림 · contrast 글자 13 을 새로(WCAG AA). 의미 색 AA 보정: success #16803F → #167F3F · error #DC2626 → #D72323 · warning #C84D0E → #BE490D · info #1D6FCB → #1D6EC9(흰 바탕 · 페이지 · 입력칸 모두 4.5:1). 다크 모드 의미 색 선은 밝은 변형(-light). 옛 이름은 같은 값의 별칭. 역할 짝마다 `role-*` 컴포넌트를 두어 lint 가 대비를 잰다. SEED 값(APCA)과 당근 주황은 가져오지 않았다. 사용자 결정(2026-09-29).
 
+**v103 — SEED 레이아웃 보완 (2026-09-29)**
+- v103: 기초 페이지를 SEED 문서와 절 단위로 맞대 본 뒤 사용자가 넷을 정했다. 콘텐츠 레이아웃을 들였다 — 소개 페이지(porest-home 등)용 12칸, `breakpoint-lg` 이상 가운데, `layout-max-content` 1040 · `layout-max-content-wide` 1280. 768 미만 칸 사이 `layout-gutter-narrow` 16. 칸 수는 밀도로만(low 8 · medium 12, 768 미만은 한 줄 — SEED 와 같다). high 밀도는 최소 폭을 두지 않는다(SEED 최소 1040 — 태블릿 세로에서 가로 스크롤이 생겨서). 밀도 표에 정렬 · 칸 사이 · 여백 칸, 중단점 절에 구간별 칸 · 칸 사이 · 여백 표를 SEED 칸대로 더했다.
+
 ### Components
 
 **v33~v48 — Component spec batch (16 components, sparse 매핑 자동 검증 활성)**
