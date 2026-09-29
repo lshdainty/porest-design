@@ -170,14 +170,25 @@ typography:
     letterSpacing: 0.8px
 
 rounded:
+  # v99 — SEED radius 스케일(2px ~ 24px 10단계 + full). 이름도 SEED 와 같다(r1 = 4px).
+  r0_5: 2px
+  r1: 4px
+  r1_5: 6px
+  r2: 8px
+  r2_5: 10px
+  r3: 12px
+  r3_5: 14px
+  r4: 16px
+  r5: 20px
+  r6: 24px
+  full: 9999px
+  # 옛 이름 — 옮기는 동안의 별칭(값은 위 SEED 이름과 같다). 스펙 · 제품이 다 옮기면 걷는다.
   xs: 2px
   sm: 4px
   md: 8px
   lg: 12px
   xl: 16px
   2xl: 20px
-  full: 9999px
-  # (v28: xs(2px)·2xl(20px) 추가. xs는 미세 라운드(tag/chip/tooltip), 2xl은 large modal·hero card)
 
 spacing:
   # v98 — SEED dimension 스케일(2px 단위 19단계). 이름도 SEED 와 같다(x1 = 4px).
@@ -1110,7 +1121,29 @@ DESIGN.md baseline 정의 참고 — 14 keyframes (단발 10 + loop 4). 모바�
 
 ## Shapes
 
-### v6 추가 — 5단계 라운드 스케일
+### v99 — SEED 모서리 스케일 (2026-09-29)
+
+당근 SEED 의 radius 스케일을 그대로 들인다 — 2px ~ 24px 10단계와 `full`, 이름도 SEED 와 같다(`r1` = 4px). 지금까지의 7단계(`xs` 2 · `sm` 4 · `md` 8 · `lg` 12 · `xl` 16 · `2xl` 20 · `full`)는 모두 이 눈금 위라 값이 바뀌지 않고, 옮기는 동안 같은 값의 별칭으로 남는다. 새로 생긴 값은 6 · 10 · 14 · 24px 이다.
+
+| 토큰 | 값 | 옛 이름(별칭) |
+|---|---|---|
+| `radius-r0_5` | 2px | `radius-xs` |
+| `radius-r1` | 4px | `radius-sm` |
+| `radius-r1_5` | 6px | — |
+| `radius-r2` | 8px | `radius-md` |
+| `radius-r2_5` | 10px | — |
+| `radius-r3` | 12px | `radius-lg` |
+| `radius-r3_5` | 14px | — |
+| `radius-r4` | 16px | `radius-xl` |
+| `radius-r5` | 20px | `radius-2xl` |
+| `radius-r6` | 24px | — |
+| `radius-full` | 9999px | `radius-full`(같은 이름) |
+
+- 이번에는 **토큰만** 넓힌다. 컴포넌트마다 어느 모서리를 쓸지는 2단계에서 SEED 의 해당 컴포넌트와 하나씩 비교해 정한다 — SEED 는 porest 보다 둥글다(버튼 · 입력칸 8 ↔ porest 4, 대화상자 20 ↔ 12, 말풍선 12 ↔ 2). 그때까지 아래 v83 매핑(토스 톤)이 지금 값이다.
+- 새로 쓰는 모서리는 SEED 이름으로 적는다. 옛 이름은 컴포넌트 스펙 · 제품이 다 옮기면 걷는다.
+- 사용자 결정(2026-09-29 — 모서리 A: 토큰만 넓히고 컴포넌트는 하나씩). 이름 방식은 v98 간격과 같은 원칙이다 — 6 · 10 · 14 · 24 를 크기 이름(xs · sm …) 사이에 끼울 이름이 없다.
+
+### v6 추가 — 5단계 라운드 스케일 (v99 에서 SEED 스케일로 바뀜 — 아래는 기록)
 
 `sm/md/lg/xl`는 spacing 베이스(4px)와 정렬된 4px 배수, `full`은 완전 라운드(알약·원형) 관용값입니다.
 
