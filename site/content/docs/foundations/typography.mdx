@@ -1,0 +1,47 @@
+---
+title: Typography
+description: 글자 크기 · 줄 높이 · 굵기와 텍스트 스타일
+source: DESIGN.md
+---
+
+import { LegacyTypeTable, SemanticStyleTable, TypePreviewFigure, TypeScaleTable, WeightFigure } from '@/components/foundations/typography';
+
+글자는 콘텐츠를 또렷하고 빠르게 읽히게 하는 요소다. 크기 · 줄 높이 · 굵기를 토큰으로 두고, 그 조합으로 제목 · 본문 같은 위계를 만든다.
+
+<TypePreviewFigure />
+
+## 개요
+
+porest 글자 체계는 당근 SEED 와 같은 두 가지 스타일로 이뤄진다.
+
+- **스케일 스타일** — `text-t1` ~ `text-t14`. 크기와 줄 높이의 짝이다. 굵기는 400 이고, 강조는 `font-medium`(500) · `font-bold`(700)로 준다 — SEED 의 t5Medium · t5Bold 와 같다.
+- **역할 스타일** — `text-screen-title` · `text-article-body` · `text-article-note`. 화면 제목 · 긴 글처럼 자리가 정해진 글자다.
+
+## 글꼴
+
+Pretendard 가 기본이고, 영문 대체는 Inter 다. 한국어 본문 가독성을 먼저 본다.
+
+## 스케일
+
+<TypeScaleTable />
+
+- t1 ~ t5 는 본문 · 장식 글자, t6 ~ t10 은 제목 · 주요 글자, t11 ~ t14 는 큰 화면 제목이다(`sm` 중단점 이상).
+- 단위는 지금 px 다. SEED 는 rem 으로 적어 사용자의 글자 크기 설정을 따른다 — porest 의 rem 전환은 따로 정한다.
+
+## 굵기
+
+<WeightFigure />
+
+600 은 쓰지 않는다. 옛 스타일에서 600 을 쓰던 자리는 옮길 때 500 이나 700 으로 고른다.
+
+## 역할 스타일
+
+<SemanticStyleTable />
+
+UI 글자는 줄 높이 ×1.35 안팎, 긴 글은 ×1.5 안팎이다 — 한국어 본문은 줄 사이가 넉넉해야 읽힌다.
+
+## 옛 이름
+
+컴포넌트는 아직 옛 15단계 이름을 쓴다. 값은 그대로이고, 컴포넌트마다 SEED 와 비교할 때 아래 새 이름으로 옮긴다.
+
+<LegacyTypeTable />
