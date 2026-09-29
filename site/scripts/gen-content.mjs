@@ -8,6 +8,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse as parseYaml, stringify as stringifyYaml } from 'yaml';
+import { fillSpecTables, loadTokens } from './spec-tables.mjs';
 
 const SITE = join(dirname(fileURLToPath(import.meta.url)), '..');
 const REPO = join(SITE, '..');
@@ -249,11 +250,14 @@ for (const { file, slug } of FOUNDATION_SPECS) {
 }
 
 const specDir = join(REPO, 'specs/components');
+const tokens = loadTokens(REPO);
 for (const name of readdirSync(specDir).filter((n) => n.endsWith('.md')).sort()) {
   const source = `specs/components/${name}`;
   const spec = splitSpec(read(source));
+  // 수치 표 자리(`[표: …](<이름>.yaml#…)`)는 YAML 로 그린 표로 바꾼다.
+  const withTables = fillSpecTables(addMissingTableHeaders(spec.body), { specDir, tokens, source });
   // 스펙 폴더 밖의 기초 스펙은 사이트에선 foundations 아래에 있다.
-  const body = addMissingTableHeaders(spec.body).replace(/\]\(\.\.\/z-index\.md/g, '](../foundations/z-index.md');
+  const body = withTables.replace(/\]\(\.\.\/z-index\.md/g, '](../foundations/z-index.md');
   write(`components/${name}`, { ...spec, source }, body);
 }
 
