@@ -45,15 +45,33 @@ Dropdown Menu 자체는 **variant 없음** — [`Context Menu`](context-menu.md)
 
 단일 size — `var(--spacing-xs)` 4px padding container + 32px item height. 메뉴는 콘텐츠에 따라 자연 확장.
 
-[표: 크기와 간격](dropdown-menu.yaml#base.enabled)
+| 항목 | 값 | 토큰 |
+|---|---|---|
+| Container padding | 4px | `var(--spacing-xs)` |
+| Container radius | 8px | `var(--radius-md)` |
+| Container shadow | shadow-md | `var(--shadow-md)` (inline) |
+| Container border | 1px solid | `var(--color-border-default)` |
+| Container min-width | 160px | (literal) |
+| Item padding (Y · X) | 8 / 12 | `var(--spacing-sm)` · `var(--spacing-md)` |
+| Item radius | 4px | `var(--radius-sm)` |
+| Item font | body-md (15) | `var(--text-body-md)` |
+| Item gap (icon-text) | 8px | `var(--spacing-sm)` |
+| Item inset padding-left | 24px | `var(--spacing-xl)` (checkbox/radio indicator 영역) |
+| Separator margin (Y) | 4px | `var(--spacing-xs)` |
+| Shortcut font | label-sm (13) | `var(--text-label-sm)` |
+| Side offset (trigger ↔ content) | 4px | (Radix 기본) |
+| Content z-index | `z-[200]` (L3 modal-aware floating) | [`z-index.md`](../z-index.md) |
 
 ## States
 
-[표: 종류별 바탕 — enabled](dropdown-menu.yaml#grid.kind)
-
-enabled 에서 바뀌는 값:
-
-[표: 상태별로 바뀌는 값](dropdown-menu.yaml#states.kind)
+| State | Background | Text | 추가 |
+|---|---|---|---|
+| `enabled` | transparent | `text-primary` | — |
+| `hover / focus` | `surface-input` | `text-primary` | (focus-visible는 hover와 동일 시각) |
+| `pressed` | `surface-input` (즉시 dismiss) | `text-primary` | — |
+| `disabled` | transparent | `text-primary` opacity 0.5 | `pointer-events: none` |
+| `destructive enabled` | transparent | `text-error` | — |
+| `destructive hover` | `error 12% mix` | `text-error` | — |
 
 ## Layout
 
