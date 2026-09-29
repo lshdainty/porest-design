@@ -57,13 +57,43 @@ Porest Calendar는 **3 modes(single/multiple/range) × 원형 day cell** 매트�
 
 Calendar는 **size variant 없음** — day cell 40×40 고정. 사용처 className으로 외곽 padding/wrap 조정.
 
-[표: 크기와 모양](calendar.yaml#base.default)
-
-[표: 전환](calendar.yaml#motion)
+| 항목 | 값 | 토큰 |
+|---|---|---|
+| Root padding | 12px | `p-[var(--spacing-md)]` |
+| Day cell size | 40×40 | `h-10 w-10` |
+| Day cell radius | full pill | `rounded-full` |
+| Day cell font | 15 / 400 / primary | `text-body-md` |
+| Day cell hover | `surface-input` | `hover:bg-surface-input` |
+| Selected fill | `primary` | `bg-primary text-text-on-accent` |
+| Today outline | 2px primary | `outline outline-2 outline-primary outline-offset-[-2px]` |
+| Today weight | 600 | `font-semibold` |
+| Range middle bg (cell) | `color-mix(primary,12%)` | `bg-[color-mix(in_srgb,var(--color-primary)_12%,transparent)]` |
+| Range start/end bg (cell) | 좌/우 절반 그라데이션 | `linear-gradient(to_right|left, transparent 50%, color-mix(primary,12%) 50%)` |
+| Outside day color | `text-tertiary` | `text-text-tertiary` |
+| Disabled day | `text-tertiary` + opacity 0.5 | `text-text-tertiary opacity-50` |
+| Weekday header font | 12 / 600 / tertiary + uppercase | `text-caption font-semibold uppercase tracking-wide text-text-tertiary` |
+| Weekday header size | 40 × 32 | `w-10 h-8` |
+| Row gap | 4px | `mt-[var(--spacing-xs)]` |
+| Caption font | 16 / 500 | `text-title-sm font-medium` |
+| Nav button size | 28×28 | [`Button`](button.md) `variant="outline"` `h-7 w-7` |
+| Nav icon size | 16×16 | `h-4 w-4` (`ChevronLeft`/`Right`) |
+| Transition | colors | `transition-colors duration-[var(--motion-duration-fast)]` |
 
 ## States (day)
 
-[표: 날짜 상태](calendar.yaml#matrix)
+| State | Background | Text | Outline |
+|---|---|---|---|
+| `default` | transparent | `text-primary` | — |
+| `hover` | `surface-input` | `text-primary` | — |
+| `focus-visible` | (변화 없음) | (변화 없음) | `ring-2 ring-ring ring-offset-2` |
+| `today` (선택 안 됨) | transparent | `text-primary` + 600 | `outline-2 outline-primary outline-offset-[-2px]` |
+| `selected` | `bg-primary` | `text-on-accent` + 600 | — |
+| `today + selected` | `bg-primary` | `text-on-accent` + 600 | — (selected 우선) |
+| `range-start` / `range-end` | button `bg-primary` (원형) · cell 좌/우 절반 `color-mix(primary,12%)` 그라데이션 | `text-on-accent` + 600 | — |
+| `range-middle` | cell 전체 `color-mix(primary,12%)` (사각형) · button transparent | `text-primary` | — (rounded 없음) |
+| `outside` (이전/다음 달) | transparent | `text-tertiary` | — |
+| `disabled` (휴일 등) | transparent | `text-tertiary` opacity 0.5 | `cursor-not-allowed` |
+| `weekend` (선택 사항) | transparent | `text-tertiary` | — |
 
 ## Layout (한국 도메인 패턴)
 
