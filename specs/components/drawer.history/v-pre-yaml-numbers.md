@@ -40,7 +40,10 @@ Bottom sheet (모바일 표준)
 
 ## Variants (side)
 
-[표: side](drawer.yaml#side)
+| Side | Radius | Width 정책 | 사용처 |
+|---|---|---|---|
+| `bottom` *(default)* | `radius-2xl radius-2xl 0 0` (top 양쪽) | `width:100%` (full width) | 모바일 표준 — 거래 입력, 공유, action sheet. handle bar 노출. |
+| `right` | `radius-2xl 0 0 radius-2xl` (left 양쪽) | `width:280–360` | 데스크탑 보조 패널 — 필터, 세부 정보 보기. handle 생략. |
 
 `left` / `top` 사이드는 Porest spec 아님 — 일반적인 사용 사례가 없고 모바일/데스크탑 손목 접근성에 불리.
 
@@ -48,11 +51,27 @@ Bottom sheet (모바일 표준)
 
 `box-sizing: border-box` 기준. bottom은 full-width, side는 고정 폭.
 
-[표: 크기](drawer.yaml#grid.side)
+| 항목 | bottom | side (right) | 토큰 |
+|---|---|---|---|
+| Width | 100% | 280–360px | (literal) |
+| Height | auto (content) | 100% (stretch) | (literal) |
+| Padding | 16px | 16px | `var(--spacing-lg)` |
+| Gap (자식 간) | 12px | 12px | `var(--spacing-md)` |
+| Radius | 2xl (20) top corners | 2xl (20) left corners | `var(--radius-2xl)` |
+| Handle margin | `-4px auto var(--spacing-sm)` | — | `var(--spacing-sm)` |
+| Shadow | xl | xl | `var(--shadow-xl)` |
+| Border | none | none | (없음) |
+| z-index (overlay) | `z-[100]` | `z-[100]` | [`z-index.md`](../z-index.md) L2 modal overlay |
+| z-index (content) | `z-[101]` | `z-[101]` | [`z-index.md`](../z-index.md) L2 modal content |
 
 ## States
 
-[표: 상태](drawer.yaml#matrix)
+| State | 동작 | 시각 |
+|---|---|---|
+| `enter` | bottom: 아래에서 위로 / side: 우측에서 좌측으로 슬라이드 | `motion-duration-base` (250ms) · `motion-ease-out` |
+| `open` | 표시 상태, overlay dim 적용 | spec 그대로, overlay: `--overlay-dim-light` rgba(0,0,0,0.50) |
+| `dragging` (bottom) | 사용자가 handle 또는 body 영역을 잡고 드래그 중 | transform: translateY(drag offset) |
+| `exit` | drag 거리 30%+ 또는 swipe / close click / overlay click / Escape 시 | `motion-duration-base` · `motion-ease-in` |
 
 `vaul` 라이브러리가 drag-to-close + spring animation 자동 처리. `shouldScaleBackground={true}` 옵션으로 배경 페이지 약간 축소(iOS 표준 톤).
 
@@ -79,7 +98,11 @@ Bottom sheet (모바일 표준)
 **header · body · footer 가 모두 좌우 `--spacing-xl`(24).** 한 곳만 달라도 제목·내용·버튼의
 세로선이 어긋나 시트가 좁아 보인다.
 
-[표: 영역별 여백](drawer.yaml#base.open)
+| 영역 | 좌 | 우 | 세로 |
+|---|---|---|---|
+| header(제목 + 닫기) | `--spacing-xl` | **`--spacing-sm`** | `pt-2 pb-4` |
+| body | `--spacing-xl` | `--spacing-xl` | — (스크롤) |
+| footer | `--spacing-xl` | `--spacing-xl` | `py-3` |
 
 header 우측만 `--spacing-sm`(8)인 것은 닫기 아이콘 버튼이 자체 padding 을 갖기 때문 —
 아이콘의 광학 중심은 24 선에 선다. 버튼을 빼고 텍스트만 두면 24 다.
