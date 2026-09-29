@@ -80,6 +80,9 @@
 **v106 — SEED 상태 · 아이콘 · 포용적 디자인 · 국제화 · 목소리 · 글쓰기 (2026-09-30)**
 - v106: 사용자가 비교 페이지(https://claude.ai/artifact/11DmriLqavjqcSs1zFrjeZ)에서 정한 대로 `##` 절 여섯을 더했다. State — SEED 이름 + 웹 `hovered` · `focused`, 비활성은 전용 색(불투명도 걷음), 호버 = 누름 색, 포커스 링 2px · 띄움 2px + 입력칸 테두리 2px, 선택 = 반전. Iconography — lucide 유지, UI 16 · 20 · 24(12 는 바닥, 큰 그림은 비율대로), 켜짐 · 선택은 색 + 선 2.5 · 꺼짐은 `-off`, 아이콘 버튼 보이는 크기 40(누르는 영역 44). Inclusive Design — SEED 규칙, 대비는 WCAG 2, 터치 44 필수. International Design — 날짜 표준 · 줄임 · 점, 오전 · 오후 12시간, 지난 시간은 Desk 방식(방금 전), 구간 한국어 `~` · 영어 `–`. Voice and Tone — SEED 원칙 + 차분하고 친절한 톤. Writing — 해요체, 존칭 줄임, 문장이면 마침표, 이름은 붙이고 문장은 띄움, 보조 용언 붙임, 줄임표 `…`, 오류는 무엇이 · 왜 · 어떻게. Components 의 Focus ring(띄움 1 → 2px) · Disabled label(불투명도 → 전용 색)을 맞췄다. 토큰 추가 없음.
 
+**v107 — 지난 시간 표를 제품 계산대로 (2026-09-30)**
+- v107: v106 International Design 의 지난 시간 표가 "어제" 를 달력의 어제 날짜로 적었는데, 사용자가 고른 "지금 porest 방식"(Desk 웹 · 앱 `relativeTime`)은 흐른 시간 24 ~ 47시간을 어제로 센다. 표를 그 계산대로 고치고, 흐른 시간으로 센다는 줄을 더했다.
+
 ### Components
 
 **v33~v48 — Component spec batch (16 components, sparse 매핑 자동 검증 활성)**
