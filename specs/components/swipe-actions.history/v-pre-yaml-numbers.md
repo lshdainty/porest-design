@@ -31,7 +31,11 @@
 
 색은 **원형 배지**가 갖는다(트레이 배경 아님). 라벨은 배지 밖이라 본문 색을 쓴다.
 
-[표: 종류별 색](swipe-actions.yaml#kind)
+| Kind | 배지 채움 | 배지 안 아이콘 | 라벨 | 의미 | 사용처 |
+|---|---|---|---|---|---|
+| `neutral` | `--color-surface-input` | `--color-text-primary` | `--color-text-secondary` | 부수 동작 | 고정, 보관, 공유 |
+| `primary` | `--color-info` | `--color-text-on-accent` | `--color-text-secondary` | 주 동작 | 수정 |
+| `destructive` | `--color-error` | `--color-text-on-accent` | `--color-error` (다크 `--color-error-light`) | 되돌리기 어려움 | 삭제 |
 
 `primary` 가 `--color-primary` 가 아니라 `--color-info` 인 것은 버튼 채움과 같은 기조다.
 
@@ -44,7 +48,9 @@
 
 액션 버튼은 단일 사이즈다. 행 높이를 따라가므로 Height 는 컨테이너가 정한다.
 
-[표: 크기](swipe-actions.yaml#size)
+| Size | Slot width | Badge | Height | Padding (Y · X) | Font (token) | Font (px) | Icon | Radius | Touch (AA · AAA) |
+|---|---|---|---|---|---|---|---|---|---|
+| `default` | 배지 + 앞 간격 (첫 액션 56, 이후 48) | 36 원형 | 행 높이 (min 56) | `0` · 앞 간격만 | `text-caption` | 12 / 600 / 1.3 | 18 | 원형(`--radius-full`) | ✅ · ✅ |
 
 - **배지 36** — 행 높이 안에 원형과 라벨이 함께 들어가는 최대치. 40 은 라벨과 합쳐 넘친다(실측).
 - **간격은 배지 앞에만** 둔다 — 첫 액션 앞 20, 액션끼리 12. 뒤에도 두면 마지막 배지와 화면 끝이
@@ -60,9 +66,13 @@
 
 배경은 배지에만 있다 — 아래 Background 는 배지 채움을 가리킨다.
 
-[표: 상태](swipe-actions.yaml#matrix)
-
-[표: 공통](swipe-actions.yaml#base.enabled)
+| State | Background | Brightness | Shadow | Transform | Ring | Cursor |
+|---|---|---|---|---|---|---|
+| `enabled` | kind 색 | 100% | none | `translateX(0)` | none | `pointer` |
+| `hovered` | kind 색 | 92% | none | `translateX(0)` | none | `pointer` |
+| `focused (visible)` | kind 색 | 100% | none | `translateX(0)` | `2px var(--color-border-focus)` (inset) | `pointer` |
+| `pressed (active)` | kind 색 | 88% | none | `translateX(0)` | none | `pointer` |
+| `disabled` | kind 색 | 100% (opacity .4) | none | `translateX(0)` | none | `not-allowed` |
 
 - focus ring 은 **inset** 이다 — 트레이 바깥으로 나가면 행 경계를 넘어 잘린다.
 - `transform` 을 쓰지 않는다. 버튼이 눌릴 때 움직이면 이미 손가락으로 밀어 둔 트레이와 이중으로 움직여 어지럽다.
