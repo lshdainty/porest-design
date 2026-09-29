@@ -69,7 +69,10 @@ Porest AlertDialog는 시각적으로는 `Dialog`와 **완전히 동일** (같�
 
 **z-index** — [`z-index.md`](../z-index.md) L5 alert-dialog. **Dialog(L2=100/101) 위로 명시** — dialog 안에서 삭제 확인 같은 alert를 띄우는 케이스를 보존하기 위해 분리된 layer.
 
-[표: z-index](alert-dialog.yaml#base)
+| Layer | Class |
+|---|---|
+| Overlay | `z-[300]` |
+| Content | `z-[301]` |
 
 ## States
 
