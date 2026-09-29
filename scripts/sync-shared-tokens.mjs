@@ -8,7 +8,7 @@
 //   2. colors SHARED 영역 (P1-E v50 마커 도입 후 자동 sync) —
 //      `# @sync:shared-start (colors-N)` ... `# @sync:shared-end (colors-N)`
 //      brand 영역(`# @sync:brand-start (colors-N)` ... `brand-end`)은 보존.
-//      현재 영역: colors-1 (Neutral), colors-2 (Semantic + Chart).
+//      현재 영역: colors-1 (Neutral), colors-2 (Semantic + Chart), colors-3 (v102 SEED 역할 색).
 //
 // drift detection (sync 후 잔여 검출):
 //   colors의 마커 외부 영역 또는 mismatch — 일반적으로 0건이어야 함
@@ -28,7 +28,7 @@ const TARGETS = [resolve(ROOT, "DESIGN.hr.md"), resolve(ROOT, "DESIGN.desk.md")]
 const FULL_SYNC_BLOCKS = ["typography", "rounded", "spacing"];
 
 // 자동 검출되는 마커 영역. 향후 components 추가 시 이 list 확장.
-const MARKER_REGIONS = ["colors-1", "colors-2"];
+const MARKER_REGIONS = ["colors-1", "colors-2", "colors-3"];
 
 const SHARED_COLORS = new Set([
   "bg-page", "bg-page-dark",
@@ -48,6 +48,31 @@ const SHARED_COLORS = new Set([
   "chart-indigo", "chart-violet", "chart-pink", "chart-brown", "chart-gray",
   "chart-red-light", "chart-orange-light", "chart-yellow-light", "chart-green-light", "chart-blue-light",
   "chart-indigo-light", "chart-violet-light", "chart-pink-light", "chart-brown-light", "chart-gray-light",
+  // v102 — SEED 역할 색 (colors-3)
+  "fg-neutral", "fg-neutral-dark", "fg-neutral-muted", "fg-neutral-muted-dark", "fg-neutral-subtle",
+  "fg-neutral-subtle-dark", "fg-neutral-inverted", "fg-neutral-inverted-dark", "fg-placeholder",
+  "fg-placeholder-dark", "fg-disabled", "fg-disabled-dark", "static-white", "fg-critical",
+  "fg-critical-dark", "fg-positive", "fg-positive-dark", "fg-warning", "fg-warning-dark", "fg-informative",
+  "fg-informative-dark", "fg-critical-contrast", "fg-critical-contrast-dark", "fg-positive-contrast",
+  "fg-positive-contrast-dark", "fg-warning-contrast", "fg-warning-contrast-dark", "fg-informative-contrast",
+  "fg-informative-contrast-dark", "bg-layer-basement", "bg-layer-basement-dark", "bg-layer-default",
+  "bg-layer-default-dark", "bg-layer-default-pressed", "bg-layer-default-pressed-dark", "bg-layer-floating",
+  "bg-layer-floating-dark", "bg-layer-floating-pressed", "bg-layer-floating-pressed-dark", "bg-neutral-weak",
+  "bg-neutral-weak-dark", "bg-neutral-weak-pressed", "bg-neutral-weak-pressed-dark", "bg-neutral-inverted",
+  "bg-neutral-inverted-dark", "bg-disabled", "bg-disabled-dark", "bg-critical-solid",
+  "bg-critical-solid-dark", "bg-critical-solid-pressed", "bg-critical-solid-pressed-dark",
+  "bg-critical-weak", "bg-critical-weak-dark", "bg-critical-weak-pressed", "bg-critical-weak-pressed-dark",
+  "bg-positive-solid", "bg-positive-solid-dark", "bg-positive-solid-pressed",
+  "bg-positive-solid-pressed-dark", "bg-positive-weak", "bg-positive-weak-dark", "bg-positive-weak-pressed",
+  "bg-positive-weak-pressed-dark", "bg-warning-solid", "bg-warning-solid-dark", "bg-warning-solid-pressed",
+  "bg-warning-solid-pressed-dark", "bg-warning-weak", "bg-warning-weak-dark", "bg-warning-weak-pressed",
+  "bg-warning-weak-pressed-dark", "bg-informative-solid", "bg-informative-solid-dark",
+  "bg-informative-solid-pressed", "bg-informative-solid-pressed-dark", "bg-informative-weak",
+  "bg-informative-weak-dark", "bg-informative-weak-pressed", "bg-informative-weak-pressed-dark",
+  "stroke-neutral-subtle", "stroke-neutral-subtle-dark", "stroke-neutral-weak", "stroke-neutral-weak-dark",
+  "stroke-neutral-solid", "stroke-neutral-solid-dark", "stroke-critical-solid", "stroke-critical-solid-dark",
+  "stroke-positive-solid", "stroke-positive-solid-dark", "stroke-warning-solid", "stroke-warning-solid-dark",
+  "stroke-informative-solid", "stroke-informative-solid-dark",
 ]);
 
 function findBlockLines(lines, key) {

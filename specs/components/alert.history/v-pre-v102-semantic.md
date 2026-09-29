@@ -84,7 +84,7 @@ Alert 자체는 자동 dismiss 없음 — 사용자 액션(close button) 또는 
 |---|---|
 | **WCAG 1.4.3** Color contrast (title `text-primary` × bg mix) | semantic 8% mix는 충분히 light 톤이라 14:1+ ✓ |
 | **WCAG 1.4.3** Color contrast (description `text-secondary` × bg mix) | 9.2:1 ✓ |
-| **WCAG 1.4.11** Non-text contrast (border-l semantic × bg-page) | info `#1D6EC9` 4.71:1 / success `#167F3F` 4.70:1 / warning `#BE490D` 4.69:1 / error `#D72323` 4.68:1 — 모두 3:1 ✓ |
+| **WCAG 1.4.11** Non-text contrast (border-l semantic × bg-page) | info `#1D6FCB` 4.64:1 / success `#16803F` 4.64:1 / warning `#C84D0E` 4.30:1 / error `#DC2626` 4.47:1 — 모두 3:1 ✓ |
 | **WCAG 2.4.7** Focus Visible | close button `focus-visible:ring-2 ring-ring ring-offset-2`. |
 | **WCAG 2.5.5** Target Size (AAA, 44×44) | close 28×28 — 미달(⚠). 모바일 우선 화면이면 close `h-11 w-11`로 확장 권장. |
 | **WCAG 2.5.8** Target Size Minimum (AA, 24×24) | close 28 ✓ |

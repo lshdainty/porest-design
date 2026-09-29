@@ -93,7 +93,7 @@ Label은 클릭 가능한 **hit area 확장 도구** — 시각 컨트롤(체크
 | 기준 | 검증 |
 |---|---|
 | **WCAG 1.4.3** Color contrast (text-primary × bg-page) | `text-primary` × `bg-page` = 14:1+ ✓ |
-| **WCAG 1.4.3** Color contrast (required `*` red × bg-page) | `text-error` `#D72323` × `bg-page` `#F5F6FA` = 4.68:1 ✓ (v102 에서 error 를 AA 로 보정) |
+| **WCAG 1.4.3** Color contrast (required `*` red × bg-page) | `text-error` `#DC2626` × `bg-page` `#F5F6FA` = 4.47:1 — **AA 4.5 미달(⚠)** |
 | **WCAG 1.3.1** Info and Relationships | `<label htmlFor>` 또는 `aria-labelledby` 필수 — semantic 관계 명시. |
 | **WCAG 2.5.5** Target Size (AAA, 44×44) | Label 자체는 시각 단위가 아니라 hit area 확장 도구 — 페어 컨트롤 + Label row 전체 hit area로 모바일 44+ 보강. |
 | **WCAG 3.3.2** Labels or Instructions | placeholder 단독 사용 금지. Label은 form 컨트롤마다 필수. |
