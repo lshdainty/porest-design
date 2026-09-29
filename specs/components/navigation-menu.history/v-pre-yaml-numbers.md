@@ -57,21 +57,55 @@ header bar:
 
 Navigation Menu는 **size variant 없음** — Trigger height 고정 `h-10` (40px). 큰 화면 권장(데스크탑 친화), 모바일은 [`Sheet`](sheet.md) `side="left"` 햄버거 nav로 fallback.
 
-[표: 공통](navigation-menu.yaml#base)
-
-[표: Trigger 패턴별](navigation-menu.yaml#pattern)
-
-[표: 전환](navigation-menu.yaml#motion)
+| 항목 | 값 | 토큰 |
+|---|---|---|
+| Trigger height | 40px | `h-10` |
+| Trigger padding (text) | 8 × 16 | `px-[var(--spacing-lg)] py-[var(--spacing-sm)]` |
+| Trigger padding (icon-only) | 40×40 정사각 | `h-10 w-10` (Button icon size 정합) |
+| Trigger padding (text + icon) | 16 가변 | `px-[var(--spacing-md)] gap-[var(--spacing-xs)]` |
+| Trigger font | 15 / 500 | `text-body-md font-medium` |
+| Trigger radius | 4px | `rounded-sm` |
+| Trigger color | `text-primary` | `text-text-primary` |
+| List gap | 4px | `space-x-[var(--spacing-xs)]` (또는 flex gap) |
+| Chevron size | 12×12 | `h-3 w-3` |
+| Chevron rotation (open) | 180° | `data-[state=open]:rotate-180` |
+| Icon size (icon-only) | 18×18 | `h-[18px] w-[18px]` 또는 lucide `size={18}` |
+| Icon size (text + icon) | 16×16 | `h-4 w-4` |
+| Viewport margin-top | 4px | `mt-[var(--spacing-xs)]` |
+| Viewport radius | 8px | `rounded-md` |
+| Viewport border | 1px | `border border-border-default` |
+| Viewport bg | `surface-default` | `bg-surface-default` |
+| Viewport shadow | shadow-lg (inline) | `style={{ boxShadow: "var(--shadow-lg)" }}` |
+| Viewport padding | 16px (사용처) | `p-[var(--spacing-lg)]` 또는 사용처 결정 |
+| Viewport min-width | 사용처 결정 | `md:w-[400px]` 등 |
+| Card link padding | 12px | `p-[var(--spacing-md)]` |
+| Card link gap (title↔desc) | 4px | `gap-[var(--spacing-xs)]` |
+| Card title font | 16 / 500 | `text-title-sm font-medium` |
+| Card desc font | 14 / 400 / secondary | `text-body-sm text-text-secondary` |
+| Indicator size | 8×8 (rotate 45) | `h-2 w-2 rotate-45 rounded-tl-sm bg-border-default` |
+| Transition | colors | `transition-colors duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]` |
+| Chevron transition | transform | `duration-[var(--motion-duration-base)]` |
 
 ## States
 
 ### Trigger / Link
 
-[표: Trigger / Link 상태](navigation-menu.yaml#matrix.part.trigger)
+| State | Background | Text |
+|---|---|---|
+| `default` | `surface-default` (또는 transparent) | `text-primary` |
+| `hover` | `surface-input` | `text-primary` |
+| `focus-visible` | `surface-input` + `ring-2 ring-ring ring-offset-2` | `text-primary` |
+| `data-state=open` (Trigger) | `surface-input/50` | `text-primary` |
+| `data-active` (현재 페이지) | `surface-input/50` | `text-primary` |
+| `disabled` | transparent | `text-primary` opacity 0.5 + `cursor-not-allowed` |
 
 ### Card link (Viewport 내)
 
-[표: 상태별로 바뀌는 값 — Trigger / Link · Card link](navigation-menu.yaml#states.part)
+| State | Background | 시각 |
+|---|---|---|
+| `default` | transparent | title primary + desc secondary |
+| `hover` | `surface-input` | (변화 없음) |
+| `focus-visible` | `surface-input` + `ring-2 ring-ring` | — |
 
 ## Layout (한국 도메인 패턴)
 
