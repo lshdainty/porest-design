@@ -50,17 +50,46 @@ SearchableList는 **variant 없음** — 단일 시각 spec. 의미 분기는 �
 
 ## Sizes
 
-[표: 크기](searchable-list.yaml#size)
+| Size | Row padding | Thumbnail | Gap | List max-h |
+|---|---|---|---|---|
+| `sm` | `8 12` | 32×20 | 10 | 200 |
+| `md` *(default)* | `10 12` | 44×28 | 12 | 260 |
+| `lg` | `14 16` | 56×36 | 14 | 320 |
 
-[표: 항목별 값](searchable-list.yaml#base.enabled)
+| 항목 | 값 (md) | 토큰 |
+|---|---|---|
+| Search input | input-md 톤 | (input spec) |
+| Search icon size | 14 | (literal) |
+| Search icon color | `var(--color-text-tertiary)` | (semantic) |
+| Search input left padding | 36 | `pl-9` |
+| Container border | 1px `border-subtle` | `var(--color-border-subtle)` |
+| Container radius | 6 | `var(--radius-md)` |
+| Container bg | `var(--bg-surface)` | (semantic) |
+| Container max-h | 260 | (literal) |
+| Row padding (Y · X) | 10 · 12 | (literal) |
+| Row divider | 1px `border-subtle` | (semantic) |
+| Row bg (inactive) | transparent | (literal) |
+| Row bg (active) | `var(--bg-brand-subtle)` | (semantic) |
+| Thumbnail (card) | 44×28 | (literal) |
+| Thumbnail radius | 4 | `var(--radius-sm)` |
+| Gap (thumb ↔ text) | 12 | `var(--spacing-md)` |
+| 주제목 font | 13 / medium | (literal) |
+| 주제목 color (inactive) | `var(--color-text-primary)` | (semantic) |
+| 주제목 color (active) | `var(--color-primary-strong)` | (semantic) — 또는 `var(--color-primary)` 환경에 맞춰 |
+| 부제목 font | 11.5 / regular | (literal) |
+| 부제목 color | `var(--color-text-tertiary)` | (semantic) |
+| Empty state padding | 24 (`py-6`) | (literal) |
+| Empty state font | 12 / `text-tertiary` | (literal) |
 
 ## States
 
-[표: 상태](searchable-list.yaml#matrix)
-
-선택 여부에 따라 바뀌는 값 — 위 표는 `inactive` 기준:
-
-[표: 선택 여부별](searchable-list.yaml#grid.selected)
+| State | Row bg | 주제목 color/weight | Cursor |
+|---|---|---|---|
+| `enabled` (inactive) | transparent | `text-primary` / medium | pointer |
+| `enabled` (active) | `bg-brand-subtle` | `primary-strong` / semi | pointer |
+| `hover` (inactive) | `bg-surface-input` (subtle) | (변화 없음) | pointer |
+| `focus-visible` | (변화 없음) | (변화 없음) | + `ring-2 ring-ring ring-offset-2` |
+| `disabled` (단종/비활성) | (변화 없음) | (변화 없음) | `opacity 0.7` + badge 표시 |
 
 ## Layout
 
