@@ -46,19 +46,32 @@ Select는 **trigger variant 없음** — Input과 동일하게 시각 통일. �
 
 `box-sizing: border-box` 기준. Input과 동일 `md` 단일 size — form 정렬을 위한 의도된 통일.
 
-[표: 크기](select.yaml#size)
+| Size | Height | Padding (Y · X) | Font (token) | Chevron | Radius |
+|---|---|---|---|---|---|
+| `md` *(only)* | 40px | `spacing-sm` (8) · `spacing-md` (12) | `text-body-md` | 16px | `radius-sm` (4) |
 
 추가 size variant가 필요하면 Input과 함께 정의 — Select 단독으로 분기 금지(form 정렬 깨짐).
 
 ## States
 
-[표: 트리거 상태](select.yaml#base)
+| State | Background | Border | Text |
+|---|---|---|---|
+| `enabled` | `surface-input` | `border-default` | `text-primary` (값) / `text-tertiary` (placeholder) |
+| `hover` | `surface-input` | `border-default` | (변화 없음 — 클릭 affordance는 chevron으로) |
+| `focus-visible` | `surface-input` | `border-ring` | `text-primary` + `ring-2 ring-ring/30` |
+| `open` (Radix `data-state=open`) | `surface-input` | `border-ring` | `text-primary` |
+| `disabled` | `surface-input` opacity 0.5 | `border-default` | `text-primary` opacity 0.5 + `cursor-not-allowed` |
+| `error` | `surface-input` | `border-error` | `text-primary` + helper 텍스트 `text-error` |
 
 ### Item state
 
-[표: 옵션 — 선택 여부별](select.yaml#grid.selected.part.item)
-
-[표: 옵션 — 상태별로 바뀌는 값](select.yaml#states.part.selected)
+| State | Background | Text | Indicator |
+|---|---|---|---|
+| `enabled` | transparent | `text-primary` | hidden |
+| `focus / hover` | `surface-input` | `text-primary` | hidden |
+| `selected` (data-state=checked) | transparent | `text-primary` | ✓ visible |
+| `selected + focus` | `surface-input` | `text-primary` | ✓ visible |
+| `disabled` | transparent | `text-primary` opacity 0.5 | hidden, `pointer-events: none` |
 
 ## Layout
 
