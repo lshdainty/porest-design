@@ -35,7 +35,10 @@ Porest Breadcrumb은 **단일 size × 2 separator variants(chevron/slash) × ell
 
 ## Variants (separator)
 
-[표: separator](breadcrumb.yaml#separator)
+| Variant | Separator | 사용처 |
+|---|---|---|
+| `chevron` *(default)* | `>` (`ChevronRight` svg 14×14) | 일반 페이지 navigation. 시각적으로 방향성 명확(좌→우 위계 흐름). |
+| `slash` | `/` (텍스트) | URL-like 또는 dense 레이아웃. preview brand vignette `.bc` SoT. |
 
 separator 자체는 디자인 취향 차이 — 두 variant 모두 spec 정합. 사용처(페이지/사이드바)에서 선택.
 
@@ -43,15 +46,31 @@ separator 자체는 디자인 취향 차이 — 두 variant 모두 spec 정합. 
 
 Breadcrumb은 **size variant 없음** — 단일 spec. dense 레이아웃에선 className으로 `text-caption` (12) override 가능(예: preview brand vignette).
 
-[표: 크기와 색](breadcrumb.yaml#base.enabled)
-
-[표: 전환](breadcrumb.yaml#motion)
+| 항목 | 값 | 토큰 |
+|---|---|---|
+| Font | 14 / 400 / 1.5 | `text-body-sm` |
+| List gap (item ↔ separator ↔ item) | 8px | `gap-[var(--spacing-sm)]` |
+| Item internal gap (link ↔ chevron) | 8px | `gap-[var(--spacing-sm)]` |
+| Link color (default) | `text-secondary` | `text-text-secondary` |
+| Link color (hover/focus) | `text-primary` | `text-text-primary` |
+| Page color (current) | `text-primary` | `text-text-primary` |
+| Page weight | 500 | `font-medium` |
+| Separator color | `text-tertiary` | `text-text-tertiary` |
+| Separator icon | 14×14 | `h-3.5 w-3.5` |
+| Ellipsis hit area | 36×36 | `h-9 w-9` |
+| Ellipsis icon | 16×16 | `h-4 w-4` |
+| Transition | color | `duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]` |
 
 ## States
 
 ### Link
 
-[표: Link 상태](breadcrumb.yaml#matrix)
+| State | Color | 추가 |
+|---|---|---|
+| `enabled` | `text-secondary` | — |
+| `hover` | `text-primary` | `transition-[color]` |
+| `focus-visible` | `text-primary` | + `ring-2 ring-ring ring-offset-2 rounded-xs` |
+| `pressed` | `text-primary` (전환 중) | — |
 
 ### Page (current, non-clickable)
 
