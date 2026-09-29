@@ -57,7 +57,7 @@ Popover는 **content size variant 없음** — 사용처에서 className으로 �
 | `outside click` | — | dismiss (default 동작) |
 | `Escape` | — | dismiss, focus는 trigger로 복귀 |
 
-motion: `motion-duration-fast` (150ms) · `motion-ease-out` (Radix 기본).
+motion: `motion-duration-fast` (180ms) · `motion-ease-out` (Radix 기본).
 
 ## Layout
 
