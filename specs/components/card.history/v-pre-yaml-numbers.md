@@ -40,7 +40,12 @@ Porest Card는 elevation/강조 표현 방식에 따라 **4 variant**(`shadow` d
 
 Card 는 elevation/강조 표현 방식에 따라 **4 variant** — size variant 는 없음.
 
-[표: 변형별 배경·테두리·그림자](card.yaml#variant)
+| Variant | Background | Border | Shadow | 사용처 톤 |
+|---|---|---|---|---|
+| **shadow** (default) | `surface-default` | none | `shadow-sm` | 정보 카드 (dashboard widget, list item, detail panel). spec 기본 — Toss 절제 톤. |
+| **bordered** | `surface-default` | 1px `border-subtle` | none | dense info / secondary 강조 (선택 기간 카드, hint box, inline summary). shadow 없이 1px line 으로 식별 — 카드 안 카드 (nested) 시각 위계 회피 + chart dense card 가독성. |
+| **muted** | `bg-muted` | none | none | sunken 톤 info 박스 (다이얼로그/시트 위 inline summary, day-detail 합계, 스포트라이트). bordered 가 surface 와 묻혀 안 보이는 어두운/시트 배경에서 fill 로 식별. App `PCard.muted` 정합. |
+| **brand** | `bg-brand-subtle` | 1px `border-brand` | none | 브랜드 틴트 강조 카드 (selected/active, '현재 플랜' 배너, 추천 플랜). 브랜드색 8~12% 틴트 + brand 보더로 시각 강조. App `PCard.brand` 정합. |
 
 interactive(hover/focus) 동작은 4 variant 공통. state matrix 의 background 는 variant 의 base background(`surface-default` / `bg-muted` / `bg-brand-subtle`)를 따른다 — opacity/ring 등 state 표현은 동일.
 
@@ -48,13 +53,28 @@ interactive(hover/focus) 동작은 4 variant 공통. state matrix 의 background
 
 Card 는 **size variant 없음** — 사용처에서 `max-width` className 으로 폭만 조정. padding/radius/typography 는 단일 spec.
 
-[표: 공통 크기](card.yaml#base.default)
-
-[표: 화면 폭별 여백](card.yaml#viewport)
+| 항목 | 값 | 토큰 |
+|---|---|---|
+| Radius | 12px | `var(--radius-lg)` |
+| Padding (모든 영역, mobile < 768px) | 16px | `var(--spacing-lg)` |
+| Padding (모든 영역, desktop ≥ 768px) | 24px | `var(--spacing-xl)` |
+| Section gap (header 내 title-description) | 4px | `var(--spacing-xs)` |
+| Background (shadow·bordered) | `surface-default` (#FFFFFF / dark #242938) | `bg-surface-default` |
+| Background (muted) | `bg-muted` (#F0F2F7 / dark #2D3346) | `bg-[var(--bg-muted)]` |
+| Background (brand) | `bg-brand-subtle` (primary 8% / dark 12%) | `bg-[var(--bg-brand-subtle)]` |
+| Shadow (variant=shadow) | `shadow-sm` | `var(--shadow-sm)` |
+| Border (variant=bordered) | 1px `border-subtle` | `border-border-subtle` |
+| Border (variant=brand) | 1px `border-brand` | `border-[var(--border-brand)]` |
+| Hover (선택, shadow variant) | `shadow-md` | `hover:shadow-md` |
 
 ## States
 
-[표: 상태 — shadow 변형](card.yaml#matrix.variant.shadow)
+| State | Background | Shadow |
+|---|---|---|
+| default | `surface-default` | `shadow-sm` |
+| hover (interactive Card만) | `surface-default` | `shadow-md` |
+| disabled (interactive Card만) | `surface-default` (opacity 0.5) | `shadow-sm` |
+| focus-visible (interactive Card만) | 위 상태 유지 | + `ring-2 ring-ring ring-offset-2` |
 
 > `Background`/`Shadow` 열은 **shadow variant 기준**. `bordered` = border-only(shadow 없음), `muted` = `bg-muted`(border·shadow 없음), `brand` = `bg-brand-subtle` + `border-brand`(shadow 없음). hover/disabled/focus 전이 규칙은 각 variant 의 base background 위에 동일 적용.
 
