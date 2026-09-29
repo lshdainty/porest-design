@@ -1,0 +1,55 @@
+# Command 의 수치 원본 — 형식은 button.yaml 머리 주석, 규칙은 specs/CLAUDE.md.
+#
+# 여기에는 Sizes 표(부위별 크기 · 여백 · 글자)만 있다. Input · Item 상태 표는 두 부품의 상태 집합이
+# 서로 달라(Input: empty/filled · focus-visible · disabled, Item: selected · disabled) 한 states 목록으로
+# 그리면 한 표에 섞이므로 command.md 에 표로 남아 있다.
+
+name: Command
+
+slots:
+  input: CommandInput — wrapper(border-b) + input
+  searchIcon: Input 좌측 Search 아이콘
+  list: CommandList — 스크롤 영역
+  group: CommandGroup — list 내부 여백 컨테이너
+  groupHeading: CommandGroup heading
+  item: CommandItem
+  separator: CommandSeparator
+  empty: CommandEmpty — 결과 없음 안내
+  shortcut: CommandShortcut
+
+variants: {}
+
+states: [enabled]
+
+rules:
+  - when: {}
+    enabled:
+      input:
+        height: { value: 40px, note: "Input md spec 정합" }
+        paddingX: { value: $spacing-md, note: "wrapper" }
+        paddingY: $spacing-sm
+        typography: $text-body-md
+      searchIcon:
+        size: 16px
+      list:
+        maxHeight: 300px
+        padding: $spacing-xs
+      group:
+        paddingX: { value: $spacing-xs, note: "group 내부 컨테이너" }
+      groupHeading:
+        paddingY: $spacing-sm
+        paddingX: $spacing-md
+        typography: $text-label-sm
+        fontWeight: { value: 500, note: "`font-medium`" }
+      item:
+        paddingY: $spacing-sm
+        paddingX: $spacing-md
+        radius: $radius-sm
+        typography: $text-body-md
+        gap: { value: $spacing-sm, note: "icon-text" }
+      separator:
+        marginY: $spacing-xs
+      empty:
+        paddingY: $spacing-xl
+      shortcut:
+        fontSize: $text-label-sm
