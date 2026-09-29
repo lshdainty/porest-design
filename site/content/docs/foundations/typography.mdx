@@ -19,11 +19,21 @@ porest 글자 체계는 당근 SEED 와 같은 두 가지 스타일로 이뤄진
 
 ## 글꼴
 
-Pretendard 가 기본이고, 영문 대체는 Inter 다. 한국어 본문 가독성을 먼저 본다.
+porest 는 Pretendard 를 제품에 함께 실어 어느 플랫폼에서나 같은 글꼴로 그린다. SEED 는 iOS · Android · macOS 에서 시스템 글꼴을, Windows 에서만 Pretendard 를 쓴다 — porest 는 두 서비스의 인상을 플랫폼마다 같게 두려고 전부 Pretendard 다. 영문 대체는 Inter 다.
+
+| 자리 | 글꼴 | 비고 |
+|---|---|---|
+| Desk 앱 | Pretendard Variable | 앱에 함께 싣는다. 숫자 · 코드의 고정폭은 JetBrains Mono |
+| Desk 웹 | Pretendard Variable | 웹폰트(동적 서브셋)로 불러온다. 못 불러오면 시스템 글꼴 |
+| HR 웹 | 시스템 글꼴 | 지금은 Pretendard 가 아니다 — 앱 적용 단계에서 옮긴다 |
+
+2026-09-29 코드 기준이다.
 
 ## 스케일
 
 <TypeScaleTable />
+
+porest 는 크기와 줄 높이를 한 토큰으로 묶는다 — `text-t5` 가 16px 과 22px 을 함께 준다. Tailwind 로 내보내면 `--text-t5` · `--text-t5--line-height` 로 갈린다. SEED 는 둘을 따로 토큰(`$font-size.t5` · `$line-height.t5`)으로 두고 같은 순서끼리 짝지어 쓴다.
 
 - t1 ~ t5 는 본문 · 장식 글자, t6 ~ t10 은 제목 · 주요 글자, t11 ~ t14 는 큰 화면 제목이다(`sm` 중단점 이상).
 - 단위는 지금 px 다. SEED 는 rem 으로 적어 사용자의 글자 크기 설정을 따른다 — porest 의 rem 전환은 따로 정한다.
@@ -32,7 +42,18 @@ Pretendard 가 기본이고, 영문 대체는 Inter 다. 한국어 본문 가독
 
 <WeightFigure />
 
-600 은 쓰지 않는다. 옛 스타일에서 600 을 쓰던 자리는 옮길 때 500 이나 700 으로 고른다.
+- 600 은 쓰지 않는다. 옛 스타일에서 600 을 쓰던 자리는 옮길 때 500 이나 700 으로 고른다.
+- SEED 는 시스템 글꼴을 써서 medium(500)이 플랫폼마다 조금 달라 보인다. porest 는 Pretendard 를 함께 실어 Desk 앱 · 웹에서 같게 보인다 — 시스템 글꼴을 쓰는 지금의 HR 웹만 다를 수 있다.
+
+### 스케일 스타일 이름
+
+SEED 는 크기와 굵기를 묶어 `t5Medium` 처럼 부른다. porest 는 크기 토큰에 굵기를 더한다.
+
+| SEED | porest |
+|---|---|
+| `t5Regular` | `text-t5` |
+| `t5Medium` | `text-t5 font-medium` |
+| `t5Bold` | `text-t5 font-bold` |
 
 ## 역할 스타일
 
@@ -40,8 +61,19 @@ Pretendard 가 기본이고, 영문 대체는 Inter 다. 한국어 본문 가독
 
 UI 글자는 줄 높이 ×1.35 안팎, 긴 글은 ×1.5 안팎이다 — 한국어 본문은 줄 사이가 넉넉해야 읽힌다.
 
+## 사용 가이드라인
+
+- **일관성** — 정해 둔 토큰과 스타일만 쓴다. 자리마다 새 크기를 만들지 않는다.
+- **분명한 위계** — 제목과 본문을 또렷이 나눠, 정보가 빨리 읽히게 한다.
+- **단위** — 지금은 px 다. 사용자의 글자 크기 설정을 따르는 rem 전환은 따로 정한다.
+- **역할 먼저** — 화면 제목 · 긴 글처럼 자리가 정해져 있으면 역할 스타일을 쓴다. 뜻이 코드에 남는다.
+
 ## 옛 이름
 
 컴포넌트는 아직 옛 15단계 이름을 쓴다. 값은 그대로이고, 컴포넌트마다 SEED 와 비교할 때 아래 새 이름으로 옮긴다.
 
 <LegacyTypeTable />
+
+---
+
+<p className="text-sm text-fd-muted-foreground">구성과 일부 설명은 당근 [SEED Design](https://seed-design.io) 의 Foundations 문서(Apache-2.0)를 바탕으로 했다. 값과 그림은 porest 것이다.</p>

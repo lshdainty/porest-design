@@ -295,3 +295,33 @@ export function ContrastNote({ fg, bg, brand = 'desk' }: { fg: string; bg: strin
     </span>
   );
 }
+
+// 팔레트 표 — SEED Palette 의 토큰 표처럼 라이트 · 다크를 한 줄에
+export function PaletteTable({ group }: { group: 'brand' | 'neutral' | 'semantic' | 'chart' }) {
+  const c = design('shared').front.colors;
+  let rows: { name: string; light: string; dark?: string }[] = [];
+  if (group === 'brand') {
+    for (const b of ['desk', 'hr'] as Brand[]) {
+      const bc = design(b).front.colors;
+      rows.push({ name: `primary (${b === 'desk' ? 'Desk' : 'HR'})`, light: bc.primary, dark: bc['primary-light'] });
+    }
+  } else if (group === 'neutral') {
+    rows = ['bg-page', 'surface-default', 'surface-input', 'border-default', 'border-strong', 'text-disabled', 'text-tertiary', 'text-secondary', 'text-primary']
+      .filter((n) => c[n]).map((n) => ({ name: n, light: c[n], dark: c[`${n}-dark`] }));
+  } else if (group === 'semantic') {
+    rows = ['success', 'error', 'warning', 'info'].map((n) => ({ name: n, light: c[n], dark: c[`${n}-light`] }));
+  } else {
+    rows = Object.keys(c).filter((k) => /^chart-[a-z]+$/.test(k)).map((k) => ({ name: k, light: c[k], dark: c[`${k}-light`] }));
+  }
+  return (
+    <Table head={['토큰', '라이트', '다크']} minWidth={480}>
+      {rows.map((r) => (
+        <tr key={r.name}>
+          <td><Token>{r.name}</Token></td>
+          <td><Swatch hex={r.light} /></td>
+          <td><Swatch hex={r.dark} /></td>
+        </tr>
+      ))}
+    </Table>
+  );
+}
