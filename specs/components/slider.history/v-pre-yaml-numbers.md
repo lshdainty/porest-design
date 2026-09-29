@@ -41,11 +41,27 @@ Mode는 Radix `value`/`defaultValue`가 배열 길이로 자동 결정 — `[50]
 
 Slider는 **size variant 없음** — 단일 spec(track 4px / thumb 16px). 사용처에서 `className`으로 폭 조정.
 
-[표: 크기와 색](slider.yaml#base.enabled)
+| 항목 | 값 | 토큰 |
+|---|---|---|
+| Track height | 4px | `h-1` |
+| Track radius | full | `var(--radius-full)` |
+| Track background | `surface-input` | `bg-surface-input` |
+| Fill background | `primary` | `bg-primary` |
+| Thumb size | 16×16 | `h-4 w-4` |
+| Thumb background | `text-on-accent` (#FFFFFF 고정) | `bg-text-on-accent` |
+| Thumb border | 2px solid `primary` | `border-2 border-primary` |
+| Thumb shadow | shadow-sm | `var(--shadow-sm)` |
+| Padding (touch area) | `spacing-sm` Y | `py-[var(--spacing-sm)]` |
 
 ## States
 
-[표: 상태](slider.yaml#matrix)
+| State | Track | Fill | Thumb | Ring |
+|---|---|---|---|---|
+| `enabled` | `surface-input` | `primary` | `text-on-accent` + 2px `primary` | — |
+| `hover` (thumb) | — | — | (cursor: grab) | — |
+| `focus-visible` (thumb) | — | — | — | `ring-2 ring-ring ring-offset-2` |
+| `active / dragging` | — | — | (cursor: grabbing) | — |
+| `disabled` | `surface-input` opacity 0.5 | `primary` opacity 0.5 | opacity 0.5 + `pointer-events-none` | — |
 
 Transition: `transition-[box-shadow,border-color] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]` — hover/focus 시 부드럽게.
 
