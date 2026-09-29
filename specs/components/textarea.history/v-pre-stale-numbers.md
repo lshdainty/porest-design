@@ -118,5 +118,5 @@ Input과 동일 6 state. Tailwind v4 utility 자동 적용.
 - transition은 `transition-colors` → `transition-[color,box-shadow,border-color] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]` 토큰 직접 인용.
 - v2: `resize-y` 기본 → `resize-none` 기본으로 정정 — form layout 안정성. resize 필요 시 className opt-in.
 - v3: `resize-none` 기본 → `resize-y` 기본으로 회귀 — 사용자가 본문 길이에 맞춰 늘릴 수 있도록 통제 강화 (Toss tone). `resize-x` 는 form layout 보호 위해 여전히 금지. layout 안정성 필요 시 `resize-none` opt-out.
-- preview `.form-textarea` `line-height: 1.6` 명시 — 한국어 본문 가독성. `body-md` 토큰의 line-height 가 1.6 이라 tsx 에 `leading-[1.6]` 를 따로 줄 필요는 없다.
+- preview `.form-textarea` `line-height: 1.6` 명시 — 한국어 본문 가독성. tsx에는 `body-md` 토큰의 line-height(1.5)와 별개로 명시 필요 시 `leading-[1.6]` 추가.
 - popover 안 textarea는 caption 변형 — 다른 컨텍스트로 분리(spec Layout 섹션 참조).
