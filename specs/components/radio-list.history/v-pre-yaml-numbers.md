@@ -42,19 +42,40 @@ RadioList는 **variant 없음** — 단일 시각 spec. 의미 분기는 호출�
 
 ## Sizes
 
-[표: 크기](radio-list.yaml#size)
+| Size | Row padding | Pill | Gap | Check |
+|---|---|---|---|---|
+| `sm` | `10 12` | 28×28 | 10 | 14 |
+| `md` *(default)* | `14 16` | 32×32 | 12 | 16 |
+| `lg` | `16 20` | 40×40 | 14 | 18 |
 
-[표: 공통](radio-list.yaml#base.enabled)
+| 항목 | 값 (md) | 토큰 |
+|---|---|---|
+| Container border | 1px `border-subtle` | `var(--color-border-subtle)` |
+| Container radius | 12 | `var(--radius-lg)` |
+| Container bg | `var(--bg-surface)` | (semantic) |
+| Row padding (Y · X) | 14 · 16 | (literal) |
+| Row divider | 1px `border-subtle` (row 간만) | `var(--color-border-subtle)` |
+| Row bg | transparent | (literal) |
+| Pill size | 32×32 | (literal) |
+| Pill radius | 6 | `var(--radius-md)` |
+| Pill bg | `var(--bg-canvas)` | (semantic) |
+| Pill text size | body-lg / bold | `var(--fs-body-lg)` + `var(--fw-bold)` |
+| Gap (pill ↔ text) | 12 | `var(--spacing-md)` |
+| Label font | 14 / semi | `var(--fs-body)` + `var(--fw-semi)` |
+| Sub-label font | 11 / regular | `var(--fs-caption)` |
+| Sub-label color | `var(--color-text-tertiary)` | (semantic) |
+| Check size | 16 | (literal) |
+| Check color | `var(--color-primary)` | (semantic) |
 
 ## States
 
-`inactive`:
-
-[표: inactive](radio-list.yaml#matrix.selected.inactive)
-
-`active`:
-
-[표: active](radio-list.yaml#matrix.selected.active)
+| State | Row bg | Label | Check |
+|---|---|---|---|
+| `enabled` (inactive) | transparent | `fg-primary` | — |
+| `enabled` (active) | transparent (또는 호출처 결정) | `fg-primary` | ✓ |
+| `hover` (inactive) | `bg-surface-hover` (옵션) | `fg-primary` | — |
+| `focus-visible` | (변화 없음) | (변화 없음) | + `ring-2 ring-ring ring-offset-2` |
+| `disabled` | (변화 없음) | (변화 없음) | `opacity 0.5 cursor-not-allowed` |
 
 RadioList는 **active row bg 변화 없음**이 기본 — check 단서로 충분하고, list 안에서 row가 강조되면 다른 row와 비교 어려움. (필요시 호출처가 옵션으로 `bg-brand-subtle` 추가 가능)
 
