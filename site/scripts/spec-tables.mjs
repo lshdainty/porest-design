@@ -438,9 +438,15 @@ function stateDeltaTable(spec, tokens, axes, pick) {
 }
 
 // matrix[.<축>.<값>…] — 한 조합의 상태 매트릭스. 공통 규칙 + 그 조합에 걸리는 규칙을 상태마다 누적한다.
-// 칸은 상태에 따라 바뀌는 속성과, 상태를 정의한 조건부 규칙(변형 색 등)이 정한 속성만 — 크기처럼
-// 상태와 무관한 값은 다른 표에 있다. 부위를 고르면 그 부위가 바뀌는 상태만 줄로 둔다.
-function stateMatrix(spec, tokens, combo, pick) {
+// 칸은 상태에 따라 바뀌는 속성, 상태를 정의한 조건부 규칙이 정한 속성, 그리고 구역에 직접 적은 축
+// (matrix.pressed.on 의 pressed)을 거는 규칙이 정한 속성 — defaults 로만 따라온 크기 규칙처럼
+// 상태와 무관한 값은 빼고, 그 표가 보여 주려는 조건(켜짐 · 체크)의 값은 늘 보인다.
+// 공통 규칙의 시각 속성(배경 · 글자 · 테두리 · 그림자)은 바뀌지 않아도 칸으로 둔다 — 스펙의 상태 표는
+// 늘 이 칸을 보였다(textarea 의 배경 surface-input 처럼 모든 상태에서 같아도).
+// 부위를 고르면 그 부위가 바뀌는 상태만 줄로 둔다.
+const VISUAL_PROPS = ['background', 'foreground', 'borderColor', 'borderWidth', 'shadow', 'outlineColor'];
+
+function stateMatrix(spec, tokens, combo, pick, explicit = []) {
   const rules = spec.rules.filter(appliesTo(combo));
   const base = {};
   for (const rule of rules) Object.assign(base, flatten(rule[baseState(spec)]));
@@ -451,14 +457,24 @@ function stateMatrix(spec, tokens, combo, pick) {
     return row;
   });
   const hasStates = (rule) => states.some((st) => st !== baseState(spec) && rule[st]);
+  const asked = (rule) => whenKeys(rule).some((k) => explicit.includes(k));
   const own = new Set();
-  for (const rule of rules.filter((r) => !isBase(r) && hasStates(r))) {
+  for (const rule of rules.filter((r) => !isBase(r) && (hasStates(r) || asked(r)))) {
     for (const state of states) for (const k of Object.keys(flatten(rule[state]))) own.add(k);
   }
   const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  const changes = (c) => rows.some((r) => !same(r[c], rows[0][c]));
+  // 상태에 따라 바뀌는 부위만 — breadcrumb 의 Link 표에 page · separator 글자색이 끼지 않게.
+  const inPlay = new Set([...unionKeys(rows).filter(changes), ...own].map((k) => k.split('.')[0]));
+  for (const rule of rules.filter(isBase)) {
+    for (const k of Object.keys(flatten(rule[baseState(spec)]))) {
+      const [slot, prop] = k.split('.');
+      if (inPlay.has(slot) && VISUAL_PROPS.includes(prop)) own.add(k);
+    }
+  }
   const cols = orderKeys(spec, unionKeys(rows))
     .filter(inSlot(pick))
-    .filter((c) => own.has(c) || rows.some((r) => !same(r[c], rows[0][c])));
+    .filter((c) => own.has(c) || changes(c));
   const keep = rows.map((row, i) => i === 0 || !pick || cols.some((c) => !same(row[c], rows[0][c])));
   return table(
     ['상태', ...cols.map((c) => label(spec, c))],
@@ -531,9 +547,10 @@ export function renderSection(spec, tokens, section) {
     return gridTable(spec, tokens, axis, fixed, pick);
   }
   if (head === 'matrix') {
-    const combo = { ...spec.defaults, ...pairs(rest, section) };
+    const asked = pairs(rest, section);
+    const combo = { ...spec.defaults, ...asked };
     checkCombo(spec, combo);
-    return stateMatrix(spec, tokens, combo, pick);
+    return stateMatrix(spec, tokens, combo, pick, Object.keys(asked));
   }
   if (rest.length === 0 && spec.variants[head]) return axisTable(spec, tokens, head, pick);
   throw new SpecError(`없는 구역 #${section}`);
