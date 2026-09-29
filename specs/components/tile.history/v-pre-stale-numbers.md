@@ -52,7 +52,7 @@ Tile은 **variant 없음** — 단일 시각 spec. 의미 분기는 호출처가
 
 **Form / setting section**
 
-- `<SectionLabel>` "테마"/"기본 단위"/"시작 화면" 등 + 아래 Tile grid. label과 grid 사이 gap `var(--spacing-sm)` (8).
+- `<SectionLabel>` "테마"/"기본 단위"/"시작 화면" 등 + 아래 Tile grid. label과 grid 사이 gap `var(--spacing-sm)` (10).
 - mobile 좁은 viewport에선 grid `1fr` (1열 stack), desktop은 `repeat(3, 1fr)` 등 호출처 결정.
 
 **선택 옵션 수**
