@@ -35,7 +35,14 @@ Aspect Ratio는 **variant 없음** — `ratio` prop 값으로만 분기.
 
 ### 권장 ratio
 
-[표: 권장 비율](aspect-ratio.yaml#ratio)
+| 비율 | 값 (number) | 사용처 |
+|---|---|---|
+| 16:9 | `16 / 9` (≈1.78) | 동영상, 와이드 미디어, hero banner. |
+| 4:3 | `4 / 3` (≈1.33) | 전통적 사진, 데스크탑 모니터 비율. |
+| 1:1 | `1` | 정사각형 — 프로필, 썸네일, square art. |
+| 3:4 | `3 / 4` (0.75) | 세로 포트레이트, 모바일 image. |
+| 21:9 | `21 / 9` (≈2.33) | 시네마틱 와이드, dashboard 그래프. |
+| 2:1 | `2` | banner, hero (덜 와이드). |
 
 비표준 비율(예: `1.618` 황금비)도 자유 사용 — `ratio` prop은 number 허용.
 
@@ -43,7 +50,13 @@ Aspect Ratio는 **variant 없음** — `ratio` prop 값으로만 분기.
 
 Aspect Ratio는 **size variant 없음** — 폭은 부모 컨테이너가 결정. 사용처에서 `max-w-*` 또는 명시적 width로 폭 조정.
 
-[표: 크기와 자식](aspect-ratio.yaml#base)
+| 항목 | 값 | 토큰/규칙 |
+|---|---|---|
+| Width | 부모 100% | (자동 — 부모에서 `max-w-*` 결정) |
+| Height | `width / ratio` | (자동 계산) |
+| Background (placeholder) | `surface-input` | `bg-surface-input` (자식이 결정) |
+| Radius (사용처) | `radius-md` 또는 `radius-lg` | (자식 또는 wrapper에서) |
+| `object-fit` (img) | `cover` (잘림) / `contain` (여백) | `object-cover` / `object-contain` |
 
 ## States
 
