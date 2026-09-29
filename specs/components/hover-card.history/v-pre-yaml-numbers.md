@@ -43,7 +43,16 @@ Hover Card는 **variant 없음** — 모든 hover card 동일 시각. 콘텐츠 
 
 **단일 size — `w-64` (256px) 기본**. 짧은 부가 정보 위주라 popover(`w-72` 288)보다 약간 좁게. 콘텐츠가 길면 사용처에서 `className="w-80"` 등으로 확장.
 
-[표: 크기와 모양](hover-card.yaml#base.open)
+| 항목 | 값 | 토큰 |
+|---|---|---|
+| Width | 256px | `w-64` |
+| Padding | 12px | `p-[var(--spacing-md)]` |
+| Radius | 8px | `rounded-md` |
+| Border | 1px solid | `border border-border-default` |
+| Background | `surface-default` | `bg-surface-default` |
+| Shadow | shadow-md | `var(--shadow-md)` (inline) |
+| Side offset | 4px | (Radix 기본) |
+| z-index | 50 | (literal) |
 
 ## States
 
