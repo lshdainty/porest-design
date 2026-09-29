@@ -51,7 +51,11 @@ Dialog 자체는 **variant 없음** — 시각 통일이 일관성에 유리. �
 
 사이즈로 갈리는 건 **폭 하나뿐**이다 — 여백은 세 사이즈가 같고 구역이 갖는다(아래 Layout).
 
-[표: 크기](dialog.yaml#size)
+| Size | max-width | Padding | Gap | Radius | 사용처 |
+|---|---|---|---|---|---|
+| `sm` | 420px | 0 (구역별) | 0 | `--radius-lg` (12) | 짧은 확인 (1–2줄 description, button 2개) — preview의 mini dialog 톤. |
+| `md` *(default)* | 520px | 0 (구역별) | 0 | `--radius-lg` (12) | 일반 form, 정보 확인 — preview `renderModal` 톤. |
+| `lg` | 720px | 0 (구역별) | 0 | `--radius-lg` (12) | 다단계 form, 복잡한 콘텐츠 편집 (메모/가계부 detail 등). |
 
 너비는 `width: min(90%, <max-width>)` — 좁은 viewport에서 90% width로 자동 축소.
 
@@ -85,7 +89,12 @@ Dialog는 open/closed 2 state. Radix `data-state` attribute(`open`/`closed`)로 
 
 ### Motion
 
-[표: 모션](dialog.yaml#motion)
+| 전환 | duration | easing | 속성 |
+|---|---|---|---|
+| open: overlay | `--motion-duration-base` (200ms) | `--motion-ease-out` | opacity 0 → 1 |
+| open: container | `--motion-duration-slow` (300ms) | `--motion-ease-out` | scale 0.96 → 1 + opacity 0 → 1 |
+| close: container | `--motion-duration-base` (200ms) | `--motion-ease-out` | scale 1 → 0.96 + opacity 1 → 0 |
+| close: overlay | `--motion-duration-base` (200ms) | `--motion-ease-out` | opacity 1 → 0 |
 
 `prefers-reduced-motion: reduce` 시 즉시 표시 (globally 0.01ms로 단축).
 
@@ -94,7 +103,11 @@ Dialog는 open/closed 2 state. Radix `data-state` attribute(`open`/`closed`)로 
 **여백은 구역이 갖는다.** container 는 padding 0 이고 header·body·footer 가 각자 들고 있다 —
 셋의 배경·테두리·스크롤이 달라 한 덩어리로 묶이지 않기 때문이다(본문만 스크롤한다).
 
-[표: 구역별 여백](dialog.yaml#base.open)
+| 구역 | padding | 비고 |
+|---|---|---|
+| header | `18px 22px` | title + 우상단 close. `flex items-center gap-3`, `flex-shrink:0` |
+| body | `22px` | `flex:1; min-height:0; overflow-y:auto` — 스크롤은 여기서만 |
+| footer | `18px 22px` | `flex items-center gap-2`, `flex-shrink:0` |
 
 **header 위와 footer 아래는 같은 값이다**(18). 예전에 footer 만 14 라 위아래가 4px 어긋나
 보였다(desk 2026-09-16 실측).
