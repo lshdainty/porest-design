@@ -15,8 +15,9 @@ const REPO = join(SITE, '..');
 const DOCS = join(SITE, 'content/docs');
 
 // DESIGN.md 의 `## ` 절 → 기초 페이지. 절 이름이 바뀌면 여기서 멈춘다(조용히 빠지지 않게).
-// Color · Typography · Spacing · Radius · Layout 은 SEED 문서 모양으로 손으로 쓴 .mdx 다(content/docs/foundations).
-// 그 페이지의 숫자는 components/foundations 가 빌드 때 DESIGN.md 에서 읽는다 — 여기서는 만들지 않는다.
+// Color · Gradient · Typography · Spacing · Radius · Layout · Elevation · Motion · Feedback 은 SEED 문서 모양으로
+// 손으로 쓴 .mdx 다(content/docs/foundations). 그 페이지의 숫자는 components/foundations 가 빌드 때 DESIGN.md 에서
+// 읽는다 — 여기서는 만들지 않는다. Elevation · Motion 은 아래 목록에 남겨 절 이름이 바뀌면 멈추게 한다(.mdx 가 이긴다).
 const FOUNDATION_SECTIONS = [
   { heading: 'Overview', slug: 'overview', title: 'Overview', description: '공유 baseline 과 브랜드 파일의 관계' },
   { heading: 'Elevation & Depth', slug: 'elevation', title: 'Elevation & Depth', description: '그림자와 오버레이 딤' },

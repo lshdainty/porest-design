@@ -115,3 +115,22 @@ export function LegacyTypeTable() {
     </>
   );
 }
+
+// 단위 — 웹은 rem(÷16)과 -static(px) 두 벌. 내보내기(build-tailwind-v4)와 같은 계산
+const REM_BASE = 16; // 브라우저 기본 글자 크기
+const rem = (v: string) => `${Number((parseFloat(v) / REM_BASE).toFixed(4))}rem`;
+export function UnitTable() {
+  const { scale } = typeScale();
+  return (
+    <Table head={['토큰', '웹 (rem)', '고정 (-static)', '줄 높이 (rem / px)']} minWidth={620}>
+      {scale.map((t) => (
+        <tr key={t.name}>
+          <td><Token>text-{t.name}</Token> <span className="text-fd-muted-foreground">·</span> <Token>text-{t.name}-static</Token></td>
+          <td className="tabular-nums">{rem(t.fontSize)}</td>
+          <td className="tabular-nums">{t.fontSize}</td>
+          <td className="tabular-nums text-fd-muted-foreground">{t.lineHeight ? `${rem(t.lineHeight)} / ${t.lineHeight}` : '—'}</td>
+        </tr>
+      ))}
+    </Table>
+  );
+}

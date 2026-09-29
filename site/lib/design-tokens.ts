@@ -121,6 +121,102 @@ export function sectionTable(headingStartsWith: string, n = 0, brand: Brand = 's
   return t;
 }
 
+// 절 안의 첫 코드 블록 — 공식 · 키프레임 CSS 를 옮겨 적지 않으려고
+export function sectionCode(headingStartsWith: string, brand: Brand = 'shared') {
+  const lines = design(brand).body.split('\n');
+  const start = lines.findIndex((l) => /^#{2,5} /.test(l) && l.replace(/^#{2,5} /, '').startsWith(headingStartsWith));
+  if (start === -1) throw new Error(`DESIGN.md 에 "${headingStartsWith}" 제목이 없다`);
+  const level = lines[start].match(/^#+/)![0].length;
+  let body: string[] | null = null;
+  for (let i = start + 1; i < lines.length; i++) {
+    if (body === null && /^(#{2,6}) /.test(lines[i]) && lines[i].match(/^#+/)![0].length <= level) break;
+    if (/^\s*```/.test(lines[i])) {
+      if (body) return body.join('\n');
+      body = [];
+    } else if (body) body.push(lines[i]);
+  }
+  throw new Error(`"${headingStartsWith}" 절에 코드 블록이 없다`);
+}
+
+// prose 토큰 하나 — 내보내기(build-tailwind-v4)처럼 뒤에 나온 정의가 이긴다
+export function proseValue(name: string, brand: Brand = 'shared') {
+  const esc = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const all = [...design(brand).text.matchAll(new RegExp('^\\|\\s*`' + esc + '`\\s*\\|\\s*`([^`]+)`', 'gm'))];
+  if (!all.length) throw new Error(`prose 토큰 ${name} 이 ${FILE[brand]} 에 없다`);
+  return all[all.length - 1][1];
+}
+export const ms = (v: string) => parseFloat(v);
+
+// 이름이 같은 정의가 여러 번 나오면(옛 표 · 새 표) 뒤의 것 하나만
+export function proseTokenSet(prefix: string, keep: RegExp) {
+  const out = new Map<string, { name: string; value: string; note: string }>();
+  for (const t of proseTokens(prefix)) if (keep.test(t.name)) out.set(t.name, { ...t, value: proseValue(t.name) });
+  return [...out.values()];
+}
+
+// 눌림 축소 상수(DESIGN.md "눌림 피드백" 표) — 기준 길이 = max(높이, 폭 ÷ n, 최소)
+export function pressScale() {
+  const { rows } = sectionTable('눌림 피드백');
+  const cell = (k: string) => {
+    const r = rows.find((x) => x[0] === k);
+    if (!r) throw new Error(`"눌림 피드백" 표에 ${k} 줄이 없다`);
+    return r[1];
+  };
+  const distance = parseFloat(cell('축소량'));
+  const widthDivisor = Number(cell('폭 보정').match(/÷\s*(\d+)/)?.[1]);
+  const minBasis = parseFloat(cell('최소 기준 길이'));
+  if (![distance, widthDivisor, minBasis].every(Number.isFinite)) throw new Error('"눌림 피드백" 표의 값을 읽지 못했다');
+  const basis = (w: number, h: number) => Math.max(h, w / widthDivisor, minBasis);
+  const ratio = (w: number, h: number) => (basis(w, h) - distance) / basis(w, h);
+  return { distance, widthDivisor, minBasis, basis, ratio };
+}
+
+// 모션 줄이기 모드 표 — 큰 전환의 기준(200ms 초과)과 바꿔 쓰는 시간(150ms)
+export function reducedMotion() {
+  const { rows } = sectionTable('모션 줄이기 모드');
+  const macro = rows.find((r) => r[0].startsWith('매크로 모션'));
+  const over = Number(macro?.[0].match(/(\d+)ms/)?.[1]);
+  const fade = Number(macro?.[2].match(/(\d+)ms/)?.[1]);
+  if (!Number.isFinite(over) || !Number.isFinite(fade)) throw new Error('"모션 줄이기 모드" 표의 매크로 모션 줄을 읽지 못했다');
+  return { over, fade };
+}
+
+// 컴포넌트 YAML 의 크기 규칙(when: { size }) — 그림 속 예시를 실제 컴포넌트 크기로 그리려고
+export function specSize(component: string, size: string, state = 'enabled') {
+  const doc = parseYaml(readFileSync(join(REPO, 'specs/components', `${component}.yaml`), 'utf8')) as {
+    rules: { when?: Record<string, string>; [state: string]: unknown }[];
+  };
+  const rule = doc.rules.find((r) => r.when?.size === size && Object.keys(r.when).length === 1);
+  const root = (rule?.[state] as { root?: Record<string, unknown> } | undefined)?.root;
+  if (!root) throw new Error(`${component}.yaml 에 size ${size} 규칙이 없다`);
+  const num = (v: unknown) => (typeof v === 'string' && /^\d+(\.\d+)?px$/.test(v) ? parseFloat(v) : undefined);
+  const h = num(root.height) ?? num(root.size);
+  const w = num(root.width) ?? num(root.size);
+  if (h === undefined) throw new Error(`${component}.yaml size ${size} 에 높이가 없다`);
+  return { width: w, height: h };
+}
+
+// 컴포넌트 YAML 의 공통 규칙(when: {})에서 한 조각(예: switch 의 track)
+export function specSlot(component: string, slot: string, state = 'enabled') {
+  const doc = parseYaml(readFileSync(join(REPO, 'specs/components', `${component}.yaml`), 'utf8')) as {
+    rules: { when?: Record<string, string>; [state: string]: unknown }[];
+  };
+  const rule = doc.rules.find((r) => !r.when || Object.keys(r.when).length === 0);
+  const v = (rule?.[state] as Record<string, Record<string, unknown>> | undefined)?.[slot];
+  if (!v) throw new Error(`${component}.yaml 공통 규칙에 ${state}.${slot} 이 없다`);
+  return v;
+}
+
+// 컴포넌트 YAML 의 눌림 배율(지금 값) — "고정 배율" 예를 실제 값으로 들려고
+export function specPressedScale(component: string) {
+  const doc = parseYaml(readFileSync(join(REPO, 'specs/components', `${component}.yaml`), 'utf8')) as {
+    rules: { pressed?: { root?: { scale?: number | string } } }[];
+  };
+  const v = doc.rules.map((r) => r.pressed?.root?.scale).find((s) => s !== undefined);
+  if (v === undefined) throw new Error(`${component}.yaml 에 pressed scale 이 없다`);
+  return Number(v);
+}
+
 // WCAG 2 대비 — 페이지의 견본 옆 숫자
 function lum(hex: string) {
   const h = hex.replace('#', '');
