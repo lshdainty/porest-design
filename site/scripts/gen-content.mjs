@@ -19,7 +19,7 @@ const FOUNDATION_SECTIONS = [
   { heading: 'Overview', slug: 'overview', title: 'Overview', description: '공유 baseline 과 브랜드 파일의 관계' },
   { heading: 'Colors', slug: 'colors', title: 'Colors', description: '배경·표면·글자·테두리·의미·차트 색' },
   { heading: 'Typography', slug: 'typography', title: 'Typography', description: '타입 스케일과 한국어 본문 규칙' },
-  { heading: 'Layout', slug: 'layout', title: 'Layout', description: '간격·중단점·터치 영역·z-index·RTL' },
+  { heading: 'Layout', slug: 'layout', title: 'Layout', description: '간격·중단점·콘텐츠 폭·여백·사이드바·터치 영역·z-index·RTL' },
   { heading: 'Elevation & Depth', slug: 'elevation', title: 'Elevation & Depth', description: '그림자와 오버레이 딤' },
   { heading: 'Motion', slug: 'motion', title: 'Motion', description: '지속 시간·이징·반복·키프레임' },
   { heading: 'Shapes', slug: 'shapes', title: 'Shapes', description: '라운드 스케일과 컴포넌트별 매핑' },
@@ -179,7 +179,7 @@ function tokenReference() {
   return [
     '토큰 값은 `DESIGN.md`(공유)와 `DESIGN.hr.md` · `DESIGN.desk.md`(브랜드)의 YAML 머리말이 원본입니다. 이 표는 빌드할 때 그 머리말에서 그대로 뽑습니다.',
     '',
-    '그림자·모션·중단점·터치 영역·z-index 는 머리말이 아니라 각 기초 페이지의 표에 정의돼 있습니다.',
+    '그림자·모션·중단점·레이아웃(콘텐츠 폭·여백·사이드바)·터치 영역·z-index 는 머리말이 아니라 각 기초 페이지의 표에 정의돼 있습니다.',
     '',
     '## 공유 색',
     '',

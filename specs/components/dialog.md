@@ -111,8 +111,8 @@ Dialog는 open/closed 2 state. Radix `data-state` attribute(`open`/`closed`)로 
 
 **footer**
 
-- 데스크탑(**≥ 640px**, `--breakpoint-sm`): `flex justify-end gap-sm`. primary 우측, cancel 좌측.
-- 모바일(**< 640px**): `flex gap-sm` + 각 button `flex-1`(가로 균등 분배) + `size="lg"`(48).
+- 데스크탑(**≥ 480px**, `--breakpoint-sm`): `flex justify-end gap-sm`. primary 우측, cancel 좌측.
+- 모바일(**< 480px**): `flex gap-sm` + 각 button `flex-1`(가로 균등 분배) + `size="lg"`(48).
   한 손 조작 폭을 확보한다 — [`drawer`](drawer.md) footer 와 같은 규칙.
 - **footer 버튼 크기는 `default` 하나** — 높이 36 · 좌우 양쪽 16 · 14px([`button`](button.md)
   Sizes). 한 footer 안에 두 크기가 섞이면 "어떤 건 글씨 양옆이 넓고 어떤 건 좁다" 가 된다
@@ -168,7 +168,7 @@ DropdownMenu의 `onSelect` 콜백에서 직접 dialog를 열면 `body { pointer-
 - footer button은 우측 정렬, primary 우측 끝. cancel은 좌측. **destructive primary는 `AlertDialog` 사용**.
 - 액션 2개까지 — 3번째가 필요해 보이면 `확인`·`닫기` 부터 뺀다(우상단 X 와 중복).
 - 정보 확인용은 `.dialog-fields` 패턴(gray 채움 + key-val) — 한눈에 비교 가능.
-- 모바일(< 640px)에서 footer button 은 `flex-1` 균등 분배 + `lg`(48) — 주 액션 우측(`default`), 보조 좌측(`secondary`/`dangerSoft`).
+- 모바일(< 480px)에서 footer button 은 `flex-1` 균등 분배 + `lg`(48) — 주 액션 우측(`default`), 보조 좌측(`secondary`/`dangerSoft`).
 
 ### ❌ Don't
 

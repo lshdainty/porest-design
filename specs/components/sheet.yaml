@@ -19,8 +19,8 @@ slots:
 
 variants:
   viewport:
-    mobile: "< 640px (`sm` 미만)"
-    desktop: "≥ 640px (`sm:` — breakpoint-sm)"
+    mobile: "< 480px (`sm` 미만)"
+    desktop: "≥ 480px (`sm:` — breakpoint-sm)"
 
 states:
   closed: (default) — unmounted
