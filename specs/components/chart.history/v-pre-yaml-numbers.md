@@ -61,13 +61,36 @@ Chart는 **variant 없음** — Recharts chart 종류(`Bar`/`Line`/`Area`/`Pie`/
 
 Chart는 **size variant 없음** — ChartContainer는 `aspect-video` (16:9) 기본. 사용처 className으로 `aspect-square` / `h-*` override 가능.
 
-[표: 공통 크기와 색](chart.yaml#base.default)
-
-[표: tooltip indicator](chart.yaml#indicator)
+| 항목 | 값 | 토큰/규칙 |
+|---|---|---|
+| Container aspect | 16:9 | `aspect-video` (사용처 override 가능) |
+| Tick text color | `text-secondary` | (inline class override) |
+| Grid line | `border-default 50%` | (inline class override) |
+| Tooltip min-width | 128px | `min-w-[8rem]` |
+| Tooltip padding | 12 × 8 | `px-[var(--spacing-md)] py-[var(--spacing-sm)]` |
+| Tooltip border | 1px solid | `border border-border-default` |
+| Tooltip radius | 4px | `rounded-sm` |
+| Tooltip shadow | shadow-md (inline) | `style={{ boxShadow: "var(--shadow-md)" }}` |
+| Tooltip font | label-sm + tabular-nums | `text-label-sm` + `font-mono tabular-nums` (value) |
+| Indicator (dot) | 10×10 + radius 2 | `h-2.5 w-2.5 rounded-[2px]` |
+| Indicator (line) | 4×height | `w-1` |
+| Indicator (dashed) | border 1.5 dashed | `w-0 border-[1.5px] border-dashed bg-transparent` |
+| Legend gap | 8 | `gap-[var(--spacing-sm)]` (Recharts 기본) |
 
 ## Chart Palette (10색)
 
-[표: Chart Palette](chart.yaml#palette)
+| Token | Hex (light) | Hex (dark) | 권장 카테고리 |
+|---|---|---|---|
+| `chart-red` | `#C73838` | `#ECA0A0` | 위험·감소·error |
+| `chart-orange` | `#B36418` | `#E8B266` | 경고·임박 |
+| `chart-yellow` | `#8C7400` | `#D4B83A` | 주의·노란 카테고리 |
+| `chart-green` | `#2D8060` | `#6BCB86` | 성장·성공·growth |
+| `chart-blue` | `#2C70BF` | `#7BBBED` | 정보·neutral 기본 추세 |
+| `chart-indigo` | `#5E60C8` | `#ABB0F0` | 보조 추세·analytics |
+| `chart-violet` | `#8B4DBA` | `#D2A8EC` | premium·창의 |
+| `chart-pink` | `#B83B7A` | `#ECA0BC` | HR·social |
+| `chart-brown` | `#9A6536` | `#DCB088` | 안정·legacy |
+| `chart-gray` | `#6B7484` | `#B5BBC5` | 비활성·기타 |
 
 **대비비**: 모든 chart 색은 텍스트(`text-on-accent` white)와 WCAG AA 4.5:1+ 충족 (DESIGN.md `Chart palette` 검증). 다크 모드 `*-light` 변형은 `text-text-primary-dark` 또는 어두운 보색 텍스트와 페어.
 
