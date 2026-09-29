@@ -47,6 +47,13 @@
 - spec 작업 규칙(4 source 정합·작업 순서·금지 사항)은 `specs/CLAUDE.md` 참조 — `specs/components/*.md` 추가/수정 시 반드시 사전 확인.
 - 요약: `specs/components/<name>.md`가 단일 SoT, **4 source**(spec / .tsx / examples.mjs / preview-html `.btn` CSS) 동시 동기 필수, WCAG 기준은 2.5.5(AAA) / 2.5.8(AA) 분리 표기, 토픽 브랜치 `components/<name>`.
 
+## 문서 사이트 (`site/`)
+- 목표는 seed-design.io(당근 SEED) 급 문서다 — 기초·컴포넌트의 세부 수치를 빠짐없이 적어 웹·앱이 같은 값을 따르게 한다. 페이지를 새로 쓸 땐 SEED 의 해당 문서를 먼저 읽고, porest 현재 값 · SEED 값 · 정할 값을 나란히 보여 준 뒤 사용자가 정한 값만 적는다.
+- SEED 문서는 seed-docs MCP 로 읽는다. Foundations·컴포넌트 디자인 문서는 MCP 목록에 안 나오지만 `get_doc(section: "docs", path: "../foundations/<이름>")` · `"../components/<이름>"` 으로 열린다. 목록은 `https://seed-design.io/foundations/llms.txt` · `/components/llms.txt`.
+- SEED 는 Apache-2.0 — 구조·수치는 참고하되, 문장·그림을 옮기면 출처를 밝히고, 로고·캐릭터 같은 당근 브랜드 리소스는 쓰지 않는다.
+- 페이지 대부분은 `site/scripts/gen-content.mjs` 가 빌드 때 원본(`DESIGN*.md` · `specs/`)에서 만든다. 만든 `.md` 는 git 밖이다 — **고치려면 원본을 고친다.** 원본을 사이트용으로 새로 쓴 페이지는 같은 자리에 `.mdx` 로 두면 생성이 건너뛴다.
+- `DESIGN.md` 의 `##` 절을 추가·개명하면 `gen-content.mjs` 의 `FOUNDATION_SECTIONS` 도 고친다 — 안 고치면 빌드가 멈춘다(CI `site` 잡).
+
 ## Git 작업 규칙
 - 브랜치·커밋 메시지·머지 전 점검 규칙은 `GIT_CONVENTION.md` 참조 — git 레이어 작업 시 반드시 사전 확인.
 - 요약: 토픽 브랜치(`tokens/<카테고리>`, `components/<이름>`) 경유, Conventional Commits(`feat(tokens):`, `fix(tokens):`, `docs(rationale):`, `feat(spec):`, `fix(spec):`).

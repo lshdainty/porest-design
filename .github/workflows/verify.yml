@@ -41,3 +41,26 @@ jobs:
 
       - name: Verify DTCG export produced
         run: test -s exports/tokens.dtcg.json || (echo "tokens.dtcg.json missing or empty"; exit 1)
+
+  # 문서 사이트 — 원본(DESIGN*.md · specs)이 사이트로 옮겨지는지 본다.
+  # 원본의 `##` 절 이름이 바뀌거나 마크다운이 깨지면 여기서 멈춘다.
+  site:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: site/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site
+        run: npm run build
