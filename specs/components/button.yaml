@@ -2,17 +2,23 @@
 #
 # button.md 의 수치 표 자리에는 이 파일을 가리키는 줄(`[표: …](button.yaml#…)`)만 있고,
 # 사이트는 빌드 때 이 파일로 표를 그린다(site/scripts/spec-tables.mjs). 수치를 고치려면 여기를 고친다.
+# 다른 컴포넌트의 YAML 도 이 형식을 따른다.
 #
 # 값
-#   `$이름`   DESIGN.md 토큰 — CSS 변수 이름에서 `--` 를 뗀 것(`$spacing-lg` = `--spacing-lg`).
+#   `$이름`        DESIGN.md 토큰 — CSS 변수 이름에서 `--` 를 뗀 것(`$spacing-lg` = `--spacing-lg`).
 #   `$이름 / 12%`  그 색을 12% 불투명도로.
-#   그 밖     단위를 붙여 그대로(`9px`, `0.98`, `none`).
-#   `…Dark`   다크 모드 값. 없으면 토큰의 `-dark` 짝을 쓰고, 짝도 없으면 라이트 값 그대로다.
-# 상태
+#   그 밖          단위를 붙여 그대로(`9px`, `0.98`, `none`, `min(90%, 420px)`).
+#   { value, dark, note }  다크 모드 값이 따로 있거나 비고를 붙일 때. dark 가 없으면 토큰의
+#                  `-dark` 짝을 쓰고, 짝도 없으면 라이트 값 그대로다.
+# 축 · 상태
+#   목록([a, b]) 또는 설명을 단 맵({ a: 설명, b: 설명 }). 설명은 표의 '설명' 칸에 나온다.
 #   enabled 가 바탕이다. 다른 상태에는 enabled 에서 바뀌는 값만 적는다.
 # 규칙
 #   when 에 적은 변형이 모두 맞는 조합에 적용된다. when 이 비면 모든 조합.
 #   뒤에 나온 규칙이 앞의 같은 값을 덮는다.
+# 표 구역(md 의 `#…`)
+#   base · slots · <축> · grid.<축>[.<축>.<값>…] · states.<축> · matrix[.<축>.<값>…] · compound · motion
+#   — 설명은 site/scripts/spec-tables.mjs 의 renderSection.
 
 name: Button
 
@@ -53,8 +59,7 @@ rules:
       focusRing:
         width: 2px
         offset: 2px
-        color: $color-border-focus
-        colorDark: $color-border-focus-light
+        color: { value: $color-border-focus, dark: $color-border-focus-light }
     disabled:
       root:
         opacity: 0.5
@@ -97,10 +102,8 @@ rules:
   - when: { variant: dangerSoft }
     enabled:
       root:
-        background: $color-error / 12%
-        backgroundDark: $color-error / 18%
-        foreground: $color-error
-        foregroundDark: $color-error-light
+        background: { value: $color-error / 12%, dark: $color-error / 18%, note: "desk 별칭 --status-danger-subtle" }
+        foreground: { value: $color-error, dark: $color-error-light, note: "desk 별칭 --status-danger-fg" }
     hovered:
       root: { background: $color-error / 18% }
     pressed:

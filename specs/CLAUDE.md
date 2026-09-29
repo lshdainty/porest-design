@@ -27,6 +27,16 @@ scripts/build-preview-html.mjs `.<name>` CSS  ← preview.html 시각 (spec 시�
 - 구역: `base`(공통) · `<축>`(variant · size …) · `states.<축>` · `matrix.<축>.<값>` · `compound`(두 축 이상).
 - 없는 토큰·변형·상태·구역을 가리키면 사이트 빌드(CI `site` 잡)가 파일·줄과 함께 멈춘다.
 - 형식은 `button.yaml` 머리 주석. 아직 YAML 이 없는 컴포넌트는 지금처럼 md 표가 원본이다.
+- 값: `$토큰` · `$토큰 / 12%` · 단위를 붙인 값 · `{ value, dark, note }`(다크 값이 따로 있거나 비고를 붙일 때).
+- 축·상태: 목록 또는 `{ 값: 설명 }` 맵 — 설명은 표의 '설명' 칸에 나온다.
+- 오래 가는 상태(탭 active · 체크 checked · 선택 selected)는 **축**으로 둔다. `states` 는 hover · focus · pressed · disabled 처럼 잠깐 지나가는 것만.
+
+#### md 표를 YAML 로 옮길 때
+
+1. **옮길 표**: 수치의 원본인 표(크기 · 색 · 상태 · 모션 · 부위별 값). **남길 표**: Anatomy 범례, 의미·사용처만 있는 표, 동작·키보드, 접근성 검증, 다른 컴포넌트와의 비교.
+2. **값을 하나도 잃지 않는다.** 토큰은 `$이름` 으로, 구현 표기(Tailwind 클래스 · CSS 식)나 단서(`≈`, `(동일)`, `(변화 없음)`)는 `note` 로 옮긴다. 옮기다 스펙과 코드가 어긋난 걸 봐도 **값을 고치지 않는다** — 목록으로 모아 사용자에게 묻는다.
+3. 변경 전 md 를 `<name>.history/v-pre-yaml-numbers.md` 로 백업한다.
+4. 대조: `cd site && npm run gen && node scripts/check-spec-migration.mjs <name>` — **빠짐 0** 이어야 한다. `참고` 는 값을 되풀이하는 구현 표기인지 눈으로 확인한다(정보가 있으면 note 로).
 
 추가 동기 영역(영향이 있을 때만):
 - DESIGN.md / DESIGN.hr.md / DESIGN.desk.md prose의 컴포넌트 토큰 mention

@@ -1,25 +1,20 @@
 // 컴포넌트 수치 원본(specs/components/<이름>.yaml)으로 마크다운 표를 그린다.
 //
 // 스펙 md 의 `[표: 제목](<이름>.yaml#<구역>)` 한 줄이 표 하나로 바뀐다. GitHub 에서는 그 줄이
-// YAML 로 가는 링크로 보인다. 원본에 없는 토큰·변형·구역을 가리키면 빌드를 멈춘다 —
+// YAML 로 가는 링크로 보인다. 원본에 없는 토큰·변형·상태·부위·구역을 가리키면 빌드를 멈춘다 —
 // 조용히 빈 칸을 내보내면 그게 곧 어긋남이 된다.
+//
+// YAML 형식은 specs/components/button.yaml 머리 주석과 specs/CLAUDE.md 에 있다.
 
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { parse as parseYaml } from 'yaml';
 
-export const PLACEHOLDER = /^\[표: ([^\]]+)\]\(([a-z0-9-]+)\.yaml#([a-zA-Z.]+)\)\s*$/;
+export const PLACEHOLDER = /^\[표: ([^\]]+)\]\(([a-z0-9-]+)\.yaml#([a-zA-Z0-9.-]+)\)\s*$/;
 
-const STATE_LABEL = {
-  enabled: '기본',
-  hovered: '마우스 올림',
-  focused: '키보드 포커스',
-  pressed: '누름',
-  disabled: '비활성',
-};
-
-// 표 머리글. `부위.속성` 이 먼저, 없으면 속성 이름으로 찾는다.
+// 표 머리글. `부위.속성` 이 먼저, 없으면 속성 이름으로 찾고, 그것도 없으면 키를 그대로 쓴다.
+// 순서가 곧 표의 칸 순서다(크기 → 여백 → 모양 → 색 → 글자 → 효과).
 const PROP_LABEL = {
   'label.typography': '글자',
   'label.fontFamily': '글꼴',
@@ -30,27 +25,56 @@ const PROP_LABEL = {
   'focusRing.width': '링 두께',
   'focusRing.offset': '링 간격',
   'focusRing.color': '링 색',
+  height: '높이',
+  minHeight: '최소 높이',
+  maxHeight: '최대 높이',
+  width: '너비',
+  minWidth: '최소 너비',
+  maxWidth: '최대 너비',
+  size: '크기',
+  padding: '여백',
+  paddingY: '상하 여백',
+  paddingX: '좌우 여백',
+  paddingTop: '위 여백',
+  paddingBottom: '아래 여백',
+  paddingLeft: '왼쪽 여백',
+  paddingRight: '오른쪽 여백',
+  margin: '바깥 여백',
+  marginTop: '위 바깥 여백',
+  marginBottom: '아래 바깥 여백',
+  gap: '간격',
+  rowGap: '줄 간격',
+  columnGap: '칸 간격',
+  columns: '칸 수',
+  radius: '모서리',
   background: '배경',
   foreground: '글자·아이콘',
+  color: '색',
   borderColor: '테두리',
   borderWidth: '테두리 두께',
+  borderStyle: '테두리 모양',
+  outlineColor: '외곽선',
+  outlineWidth: '외곽선 두께',
   shadow: '그림자',
+  typography: '글자',
+  fontSize: '글자 크기',
+  fontWeight: '굵기',
+  lineHeight: '줄 높이',
+  letterSpacing: '자간',
+  fontFamily: '글꼴',
+  textDecoration: '밑줄',
   brightness: '밝기',
   scale: '배율',
   opacity: '불투명도',
   cursor: '커서',
-  height: '높이',
-  width: '너비',
-  paddingY: '상하 여백',
-  paddingX: '좌우 여백',
-  radius: '모서리',
-  gap: '간격',
+  zIndex: 'z-index',
   transitionProperty: '전환 대상',
   transitionDuration: '전환 시간',
   transitionEasing: '전환 곡선',
 };
+const PROP_ORDER = Object.keys(PROP_LABEL);
 
-const DARK_SUFFIX = 'Dark';
+class SpecError extends Error {}
 
 // ── 토큰 ────────────────────────────────────────────────────────
 
@@ -71,11 +95,13 @@ export function loadTokens(repo) {
 
 const hex = (v) => (/^#[0-9a-f]{3,8}$/i.test(v) ? v.toUpperCase() : v);
 
-class SpecError extends Error {}
-
 function parseRef(value) {
   const m = String(value).match(/^\$([a-z0-9-]+)(?:\s*\/\s*(\d+%))?$/);
   return m ? { name: m[1], alpha: m[2] } : null;
+}
+
+function hasToken(tokens, name) {
+  return tokens.shared.has(name) || tokens.hr.has(name) || tokens.desk.has(name);
 }
 
 // 토큰 하나를 "`이름` 값" 으로. 브랜드마다 다르면 둘 다, 다크 짝이 있으면 같이 적는다.
@@ -102,46 +128,102 @@ function formatToken(tokens, { name, alpha }, { withDark }) {
   throw new SpecError(`없는 토큰 $${name}`);
 }
 
-function formatValue(tokens, value, { withDark = true } = {}) {
+function formatScalar(tokens, value, { withDark = true } = {}) {
   const ref = parseRef(value);
   if (ref) return formatToken(tokens, ref, { withDark });
-  if (String(value).includes('$')) throw new SpecError(`토큰은 값 하나로만 쓴다: ${value}`);
+  if (/\$[a-z]/.test(String(value))) throw new SpecError(`토큰은 값 하나로만 쓴다: ${value}`);
   return `\`${value}\``;
 }
 
-// 속성 값 + (있으면) 다크 값을 한 칸에.
-function formatCell(tokens, props, key) {
-  if (!(key in props)) return '—';
-  const darkKey = key + DARK_SUFFIX;
-  if (darkKey in props) {
-    return `${formatValue(tokens, props[key], { withDark: false })} · 다크 ${formatValue(tokens, props[darkKey], { withDark: false })}`;
-  }
-  return formatValue(tokens, props[key]);
+// ── 값 ──────────────────────────────────────────────────────────
+// 속성 값은 스칼라이거나 { value, dark?, note? } 다.
+
+const isObj = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
+
+function unpack(pv) {
+  return isObj(pv) ? { value: pv.value, dark: pv.dark, note: pv.note } : { value: pv };
 }
+
+// 값 칸의 글자와 비고를 따로 돌려준다 — 목록 표는 비고를 칸으로, 나머지는 칸 안에 붙인다.
+function cell(tokens, pv) {
+  if (pv === undefined) return { text: '—', note: undefined };
+  const { value, dark, note } = unpack(pv);
+  const text =
+    dark === undefined
+      ? formatScalar(tokens, value)
+      : `${formatScalar(tokens, value, { withDark: false })} · 다크 ${formatScalar(tokens, dark, { withDark: false })}`;
+  return { text, note };
+}
+
+function inline(tokens, pv) {
+  const { text, note } = cell(tokens, pv);
+  return note ? `${text} — ${note}` : text;
+}
+
+const esc = (s) => String(s).replace(/\|/g, '\\|').replace(/\n+/g, ' ');
 
 // ── 스펙 해석 ───────────────────────────────────────────────────
 
-function validate(spec) {
-  const axes = spec.variants ?? {};
-  for (const [axis, v] of Object.entries(spec.defaults ?? {})) {
-    if (!axes[axis]?.includes(v)) throw new SpecError(`defaults.${axis} 에 없는 값 ${v}`);
+// 축·상태는 목록이거나 { 값: 설명 } 이다.
+const namesOf = (def) => (Array.isArray(def) ? def : Object.keys(def ?? {}));
+const descOf = (def, name) => (Array.isArray(def) ? undefined : def?.[name]);
+
+const axisValues = (spec, axis) => namesOf(spec.variants[axis]);
+const stateNames = (spec) => namesOf(spec.states);
+const whenKeys = (rule) => Object.keys(rule.when ?? {});
+const isBase = (rule) => whenKeys(rule).length === 0;
+
+function walkValues(spec, fn) {
+  for (const rule of spec.rules) {
+    for (const state of stateNames(spec)) {
+      for (const props of Object.values(rule[state] ?? {})) {
+        for (const pv of Object.values(props)) {
+          const { value, dark } = unpack(pv);
+          fn(value);
+          if (dark !== undefined) fn(dark);
+        }
+      }
+    }
   }
-  for (const rule of spec.rules ?? []) {
+  for (const m of Object.values(spec.motion ?? {})) for (const k of ['duration', 'easing']) if (m[k] !== undefined) fn(m[k]);
+}
+
+function validate(spec, tokens) {
+  for (const key of ['name', 'slots', 'variants', 'states', 'rules']) {
+    if (!spec?.[key]) throw new SpecError(`${key} 가 없다`);
+  }
+  const axes = spec.variants;
+  for (const [axis, def] of Object.entries(axes)) {
+    if (namesOf(def).length === 0) throw new SpecError(`변형 축 ${axis} 가 비었다`);
+  }
+  for (const [axis, v] of Object.entries(spec.defaults ?? {})) {
+    if (!axes[axis] || !namesOf(axes[axis]).includes(v)) throw new SpecError(`defaults.${axis} 에 없는 값 ${v}`);
+  }
+  const states = stateNames(spec);
+  for (const rule of spec.rules) {
     for (const [axis, v] of Object.entries(rule.when ?? {})) {
       if (!axes[axis]) throw new SpecError(`없는 변형 축 ${axis}`);
-      if (!axes[axis].includes(v)) throw new SpecError(`${axis} 에 없는 값 ${v}`);
+      if (!namesOf(axes[axis]).includes(v)) throw new SpecError(`${axis} 에 없는 값 ${v}`);
     }
     for (const key of Object.keys(rule)) {
       if (key === 'when') continue;
-      if (!spec.states.includes(key)) throw new SpecError(`없는 상태 ${key}`);
-      for (const slot of Object.keys(rule[key])) if (!spec.slots[slot]) throw new SpecError(`없는 부위 ${slot}`);
+      if (!states.includes(key)) throw new SpecError(`없는 상태 ${key}`);
+      for (const [slot, props] of Object.entries(rule[key])) {
+        if (!(slot in spec.slots)) throw new SpecError(`없는 부위 ${slot}`);
+        for (const [prop, pv] of Object.entries(props)) {
+          if (isObj(pv) && !('value' in pv)) throw new SpecError(`${slot}.${prop} 에 value 가 없다`);
+        }
+      }
     }
   }
+  // 표에 안 그려지는 규칙의 토큰도 미리 확인한다.
+  walkValues(spec, (value) => {
+    const ref = parseRef(value);
+    if (ref && !hasToken(tokens, ref.name)) throw new SpecError(`없는 토큰 $${ref.name}`);
+  });
 }
 
-const whenKeys = (rule) => Object.keys(rule.when ?? {});
-
-// "부위.속성" → 값. 다크 값(…Dark)은 같은 칸에 싣기 위해 따로 셈하지 않는다.
+// "부위.속성" → 값.
 function flatten(slots) {
   const out = {};
   for (const [slot, props] of Object.entries(slots ?? {})) {
@@ -150,39 +232,50 @@ function flatten(slots) {
   return out;
 }
 
-const isDarkKey = (key) => key.endsWith(DARK_SUFFIX);
-
-function label(key) {
-  const prop = key.slice(key.indexOf('.') + 1).replace(new RegExp(`${DARK_SUFFIX}$`), '');
-  const slot = key.slice(0, key.indexOf('.'));
-  return PROP_LABEL[`${slot}.${prop}`] ?? PROP_LABEL[prop] ?? key;
+// 첫 부위(보통 root)는 속성 이름만, 나머지 부위는 `부위 속성` 으로 적는다.
+function label(spec, key) {
+  const [slot, prop] = key.split('.');
+  const exact = PROP_LABEL[key];
+  if (exact) return exact;
+  const name = PROP_LABEL[prop] ?? prop;
+  return slot === Object.keys(spec.slots)[0] ? name : `${slot} ${name}`;
 }
 
-// 칸 순서: 부위는 YAML slots 순서, 부위 안에서는 PROP_LABEL 순서(높이 → 너비 → 여백 → 모서리 …).
-const PROP_ORDER = Object.keys(PROP_LABEL);
-
-function columnsOf(rows, spec) {
-  const cols = [];
-  for (const row of rows) for (const key of Object.keys(row)) if (!isDarkKey(key) && !cols.includes(key)) cols.push(key);
+// 칸 순서: 부위는 YAML slots 순서, 부위 안에서는 PROP_LABEL 순서, 모르는 속성은 뒤로.
+function orderKeys(spec, keys) {
   const slots = Object.keys(spec.slots);
   const rank = (key) => {
     const [slot, prop] = key.split('.');
     const exact = PROP_ORDER.indexOf(key);
-    return [slots.indexOf(slot), exact !== -1 ? exact : PROP_ORDER.indexOf(prop)];
+    const p = exact !== -1 ? exact : PROP_ORDER.indexOf(prop);
+    return [slots.indexOf(slot), p === -1 ? PROP_ORDER.length : p];
   };
-  return cols.sort((a, b) => {
+  return [...keys].sort((a, b) => {
     const [sa, pa] = rank(a);
     const [sb, pb] = rank(b);
     return sa - sb || pa - pb;
   });
 }
 
+function unionKeys(rows) {
+  const keys = [];
+  for (const row of rows) for (const key of Object.keys(row)) if (!keys.includes(key)) keys.push(key);
+  return keys;
+}
+
 function table(head, rows) {
-  const line = (cells) => `| ${cells.join(' | ')} |`;
+  const line = (cells) => `| ${cells.map(esc).join(' | ')} |`;
   return [line(head), line(head.map(() => '---')), ...rows.map(line)].join('\n');
 }
 
-const px = (tokens, value) => {
+const code = (v) => `\`${v}\``;
+
+function valueCell(spec, axis, v) {
+  return `${code(v)}${v === spec.defaults?.[axis] ? ' (기본)' : ''}`;
+}
+
+const px = (tokens, pv) => {
+  const { value } = unpack(pv);
   const ref = parseRef(value);
   const raw = ref ? tokens.shared.get(ref.name) : String(value);
   const m = raw?.match(/^(\d+(?:\.\d+)?)px$/);
@@ -190,20 +283,68 @@ const px = (tokens, value) => {
 };
 
 // WCAG 2.5.8(AA) 24 · 2.5.5(AAA) 44 — 짧은 변 기준.
-function touch(tokens, row) {
-  const h = px(tokens, row['root.height']);
+function touch(tokens, row, rootSlot) {
+  const h = px(tokens, row[`${rootSlot}.height`]);
   if (h === null) return '—';
-  const w = row['root.width'] !== undefined ? px(tokens, row['root.width']) : h;
+  const w = row[`${rootSlot}.width`] !== undefined ? px(tokens, row[`${rootSlot}.width`]) : h;
   const side = Math.min(h, w ?? h);
   return `${side >= 24 ? '✓' : '✗'} · ${side >= 44 ? '✓' : '⚠'}`;
 }
 
+// combo 에 걸리는 규칙(when ⊆ combo).
+const appliesTo = (combo) => (rule) => whenKeys(rule).every((k) => combo[k] === rule.when[k]);
+
+// "a.b.c.d" → { a: b, c: d }
+function pairs(parts, section) {
+  if (parts.length % 2) throw new SpecError(`구역 #${section} — 축과 값을 짝으로 적는다`);
+  const out = {};
+  for (let i = 0; i < parts.length; i += 2) out[parts[i]] = parts[i + 1];
+  return out;
+}
+
+function checkCombo(spec, combo) {
+  for (const [axis, v] of Object.entries(combo)) {
+    if (!spec.variants[axis]) throw new SpecError(`없는 변형 축 ${axis}`);
+    if (!axisValues(spec, axis).includes(v)) throw new SpecError(`${axis} 에 없는 값 ${v}`);
+  }
+}
+
 // ── 구역 ────────────────────────────────────────────────────────
 
-// 변형 축 하나(variant · size …)의 값마다 한 줄. 그 축만 조건으로 건 규칙의 기본 상태 값.
+// base — 조건 없는 규칙. 부위·상태·비고 칸은 필요할 때만 둔다.
+function baseTable(spec, tokens) {
+  const rows = [];
+  for (const rule of spec.rules.filter(isBase)) {
+    for (const state of stateNames(spec)) {
+      for (const [slot, props] of Object.entries(rule[state] ?? {})) {
+        for (const [prop, pv] of Object.entries(props)) rows.push({ slot, state, prop, ...cell(tokens, pv) });
+      }
+    }
+  }
+  if (rows.length === 0) throw new SpecError('조건 없는 규칙이 없다 — #base 를 쓸 수 없다');
+  const multiSlot = new Set(rows.map((r) => r.slot)).size > 1;
+  const multiState = new Set(rows.map((r) => r.state)).size > 1;
+  const anyNote = rows.some((r) => r.note);
+  return table(
+    [...(multiSlot ? ['부위'] : []), ...(multiState ? ['상태'] : []), '속성', '값', ...(anyNote ? ['비고'] : [])],
+    rows.map((r) => [
+      ...(multiSlot ? [code(r.slot)] : []),
+      ...(multiState ? [code(r.state)] : []),
+      PROP_LABEL[`${r.slot}.${r.prop}`] ?? PROP_LABEL[r.prop] ?? r.prop,
+      r.text,
+      ...(anyNote ? [r.note ?? ''] : []),
+    ]),
+  );
+}
+
+// slots — 부위와 설명.
+function slotsTable(spec) {
+  return table(['부위', '설명'], Object.entries(spec.slots).map(([k, d]) => [code(k), d ?? '']));
+}
+
+// <축> — 축 값마다 한 줄. 그 축만 조건으로 건 규칙의 기본 상태 값.
 function axisTable(spec, tokens, axis) {
-  const values = spec.variants[axis];
-  if (!values) throw new SpecError(`없는 변형 축 ${axis}`);
+  const values = axisValues(spec, axis);
   const rows = values.map((v) => {
     const merged = {};
     for (const rule of spec.rules) {
@@ -212,37 +353,42 @@ function axisTable(spec, tokens, axis) {
     }
     return merged;
   });
-  const cols = columnsOf(rows, spec);
-  const withTouch = cols.includes('root.height');
+  const cols = orderKeys(spec, unionKeys(rows));
+  const root = Object.keys(spec.slots)[0];
+  const withTouch = cols.includes(`${root}.height`);
+  const withDesc = values.some((v) => descOf(spec.variants[axis], v));
   return table(
-    [axis, ...cols.map(label), ...(withTouch ? ['터치 (AA · AAA)'] : [])],
+    [axis, ...cols.map((c) => label(spec, c)), ...(withTouch ? ['터치 (AA · AAA)'] : []), ...(withDesc ? ['설명'] : [])],
     rows.map((row, i) => [
-      `\`${values[i]}\`${values[i] === spec.defaults?.[axis] ? ' (기본)' : ''}`,
-      ...cols.map((c) => formatCell(tokens, row, c)),
-      ...(withTouch ? [touch(tokens, row)] : []),
+      valueCell(spec, axis, values[i]),
+      ...cols.map((c) => inline(tokens, row[c])),
+      ...(withTouch ? [touch(tokens, row, root)] : []),
+      ...(withDesc ? [descOf(spec.variants[axis], values[i]) ?? ''] : []),
     ]),
   );
 }
 
-// 조건 없는 규칙 — 모든 조합에 적용되는 값.
-function baseTable(spec, tokens) {
-  const rows = [];
-  for (const rule of spec.rules.filter((r) => whenKeys(r).length === 0)) {
-    for (const state of spec.states) {
-      const flat = flatten(rule[state]);
-      for (const key of Object.keys(flat).filter((k) => !isDarkKey(k))) {
-        rows.push([STATE_LABEL[state] ?? state, label(key), formatCell(tokens, flat, key)]);
-      }
-    }
-  }
-  return table(['상태', '속성', '값'], rows);
+// grid.<축>[.<축>.<값>…] — 속성마다 한 줄, 축 값마다 한 칸. 뒤의 짝은 고정 조건.
+// 조건 없는 규칙은 빼고, 그 조합에 걸리는 나머지 규칙을 모두 합친다.
+function gridTable(spec, tokens, axis, fixed) {
+  const values = axisValues(spec, axis);
+  const columns = values.map((v) => {
+    const combo = { ...fixed, [axis]: v };
+    const merged = {};
+    for (const rule of spec.rules.filter((r) => !isBase(r) && appliesTo(combo)(r))) Object.assign(merged, flatten(rule.enabled));
+    return merged;
+  });
+  const keys = orderKeys(spec, unionKeys(columns));
+  return table(
+    ['속성', ...values.map((v) => valueCell(spec, axis, v))],
+    keys.map((k) => [label(spec, k), ...columns.map((col) => inline(tokens, col[k]))]),
+  );
 }
 
-// 축 값마다, 기본 상태에서 바뀌는 값을 상태별로.
+// states.<축> — 축 값마다, 기본 상태에서 바뀌는 값을 상태별로.
 function stateDeltaTable(spec, tokens, axis) {
-  const values = spec.variants[axis];
-  if (!values) throw new SpecError(`없는 변형 축 ${axis}`);
-  const states = spec.states.filter((s) => s !== 'enabled');
+  const values = axisValues(spec, axis);
+  const states = stateNames(spec).filter((s) => s !== 'enabled');
   const cells = values.map((v) =>
     states.map((state) => {
       const merged = {};
@@ -250,78 +396,107 @@ function stateDeltaTable(spec, tokens, axis) {
         const keys = whenKeys(rule);
         if (keys.length === 1 && keys[0] === axis && rule.when[axis] === v) Object.assign(merged, flatten(rule[state]));
       }
-      const keys = Object.keys(merged).filter((k) => !isDarkKey(k));
-      return keys.length ? keys.map((k) => `${label(k)} ${formatCell(tokens, merged, k)}`).join(' · ') : '—';
+      const keys = orderKeys(spec, Object.keys(merged));
+      return keys.length ? keys.map((k) => `${label(spec, k)} ${inline(tokens, merged[k])}`).join(' · ') : '—';
     }),
   );
   const used = states.filter((_, i) => cells.some((row) => row[i] !== '—'));
   return table(
-    [axis, ...used.map((s) => STATE_LABEL[s] ?? s)],
-    values.map((v, r) => [`\`${v}\``, ...used.map((s) => cells[r][states.indexOf(s)])]),
+    [axis, ...used.map(code)],
+    values.map((v, r) => [code(v), ...used.map((s) => cells[r][states.indexOf(s)])]),
   );
 }
 
-// 한 조합의 상태 매트릭스 — 공통 규칙 + 그 조합에 걸리는 규칙을 상태마다 누적한다.
+// matrix[.<축>.<값>…] — 한 조합의 상태 매트릭스. 공통 규칙 + 그 조합에 걸리는 규칙을 상태마다 누적한다.
+// 칸은 상태에 따라 바뀌는 속성과, 그 조합이 따로 정한 속성만 — 크기처럼 모든 상태에서 같은 공통 값은 다른 표에 있다.
 function stateMatrix(spec, tokens, combo) {
-  const applies = (rule) => whenKeys(rule).every((k) => combo[k] === rule.when[k]);
-  const rules = spec.rules.filter(applies);
+  const rules = spec.rules.filter(appliesTo(combo));
   const base = {};
   for (const rule of rules) Object.assign(base, flatten(rule.enabled));
-  const rows = spec.states.map((state) => {
-    if (state === 'enabled') return { ...base };
+  const states = stateNames(spec);
+  const rows = states.map((state) => {
     const row = { ...base };
-    for (const rule of rules) Object.assign(row, flatten(rule[state]));
+    if (state !== 'enabled') for (const rule of rules) Object.assign(row, flatten(rule[state]));
     return row;
   });
-  // 한 번이라도 바뀌는 속성만 — 모든 상태에서 같은 값(크기 등)은 다른 표에 있다.
-  const changing = columnsOf(rows, spec).filter((c) => rows.some((r) => r[c] !== rows[0][c]));
+  const own = new Set();
+  for (const rule of rules.filter((r) => !isBase(r))) for (const state of states) for (const k of Object.keys(flatten(rule[state]))) own.add(k);
+  const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  const cols = orderKeys(spec, unionKeys(rows)).filter((c) => own.has(c) || rows.some((r) => !same(r[c], rows[0][c])));
   return table(
-    ['상태', ...changing.map(label)],
-    rows.map((row, i) => [STATE_LABEL[spec.states[i]] ?? spec.states[i], ...changing.map((c) => formatCell(tokens, row, c))]),
+    ['상태', ...cols.map((c) => label(spec, c))],
+    rows.map((row, i) => [code(states[i]), ...cols.map((c) => inline(tokens, row[c]))]),
   );
 }
 
-// 두 축 이상을 함께 건 규칙.
+// compound — 두 축 이상을 함께 건 규칙.
 function compoundTable(spec, tokens) {
   const rows = [];
   for (const rule of spec.rules.filter((r) => whenKeys(r).length > 1)) {
-    const combo = Object.entries(rule.when).map(([k, v]) => `${k}=\`${v}\``).join(' + ');
-    for (const state of spec.states) {
-      const flat = flatten(rule[state]);
-      for (const key of Object.keys(flat).filter((k) => !isDarkKey(k))) {
-        rows.push([combo, STATE_LABEL[state] ?? state, label(key), formatCell(tokens, flat, key)]);
-      }
+    const combo = Object.entries(rule.when).map(([k, v]) => `${k}=${code(v)}`).join(' + ');
+    for (const state of stateNames(spec)) {
+      for (const [key, pv] of Object.entries(flatten(rule[state]))) rows.push([combo, code(state), label(spec, key), inline(tokens, pv)]);
     }
   }
+  if (rows.length === 0) throw new SpecError('두 축 이상을 건 규칙이 없다 — #compound 를 쓸 수 없다');
   return table(['조합', '상태', '속성', '값'], rows);
 }
 
+// motion — 전환마다 시간 · 곡선 · 대상.
+function motionTable(spec, tokens) {
+  const entries = Object.entries(spec.motion ?? {});
+  if (entries.length === 0) throw new SpecError('motion 이 없다');
+  const anyNote = entries.some(([, m]) => m.note);
+  return table(
+    ['전환', '시간', '곡선', '대상', ...(anyNote ? ['비고'] : [])],
+    entries.map(([name, m]) => [
+      code(name),
+      m.duration === undefined ? '—' : formatScalar(tokens, m.duration),
+      m.easing === undefined ? '—' : formatScalar(tokens, m.easing),
+      m.properties ? [].concat(m.properties).map(code).join(', ') : '—',
+      ...(anyNote ? [m.note ?? ''] : []),
+    ]),
+  );
+}
+
 // 구역 이름 → 표.
-//   base              조건 없는 공통 값
-//   <축>              축 값마다 기본 상태 값          예: variant, size
-//   states.<축>       축 값마다 상태별로 바뀌는 값     예: states.variant
-//   matrix.<축>.<값>  그 값(나머지 축은 기본값)의 상태 매트릭스   예: matrix.variant.default
-//   compound          두 축 이상을 건 규칙
+//   base                    조건 없는 공통 값
+//   slots                   부위와 설명
+//   <축>                    축 값마다 기본 상태 값           예: size
+//   grid.<축>[.<축>.<값>…]  속성 × 축 값 격자(뒤 짝은 고정)   예: grid.variant, grid.variant.selected.active
+//   states.<축>             축 값마다 상태별로 바뀌는 값
+//   matrix[.<축>.<값>…]     그 조합(나머지는 defaults)의 상태 매트릭스
+//   compound                두 축 이상을 건 규칙
+//   motion                  전환 시간 · 곡선
 export function renderSection(spec, tokens, section) {
   const [head, ...rest] = section.split('.');
-  if (head === 'base') return baseTable(spec, tokens);
-  if (head === 'compound') return compoundTable(spec, tokens);
-  if (head === 'states' && rest.length === 1) return stateDeltaTable(spec, tokens, rest[0]);
-  if (head === 'matrix' && rest.length === 2) {
-    const [axis, value] = rest;
-    if (!spec.variants[axis]?.includes(value)) throw new SpecError(`${axis} 에 없는 값 ${value}`);
-    return stateMatrix(spec, tokens, { ...spec.defaults, [axis]: value });
+  if (head === 'base' && rest.length === 0) return baseTable(spec, tokens);
+  if (head === 'slots' && rest.length === 0) return slotsTable(spec);
+  if (head === 'compound' && rest.length === 0) return compoundTable(spec, tokens);
+  if (head === 'motion' && rest.length === 0) return motionTable(spec, tokens);
+  if (head === 'states' && rest.length === 1) {
+    if (!spec.variants[rest[0]]) throw new SpecError(`없는 변형 축 ${rest[0]}`);
+    return stateDeltaTable(spec, tokens, rest[0]);
+  }
+  if (head === 'grid' && rest.length >= 1) {
+    const [axis, ...fixedParts] = rest;
+    if (!spec.variants[axis]) throw new SpecError(`없는 변형 축 ${axis}`);
+    const fixed = pairs(fixedParts, section);
+    checkCombo(spec, fixed);
+    return gridTable(spec, tokens, axis, fixed);
+  }
+  if (head === 'matrix') {
+    const combo = { ...spec.defaults, ...pairs(rest, section) };
+    checkCombo(spec, combo);
+    return stateMatrix(spec, tokens, combo);
   }
   if (rest.length === 0 && spec.variants[head]) return axisTable(spec, tokens, head);
   throw new SpecError(`없는 구역 #${section}`);
 }
 
-export function loadSpec(file) {
+export function loadSpec(file, tokens) {
   const spec = parseYaml(readFileSync(file, 'utf8'));
-  for (const key of ['name', 'slots', 'variants', 'states', 'rules']) {
-    if (!spec?.[key]) throw new SpecError(`${key} 가 없다`);
-  }
-  validate(spec);
+  validate(spec, tokens);
   return spec;
 }
 
@@ -336,7 +511,7 @@ export function fillSpecTables(body, { specDir, tokens, source }) {
       const [, , name, section] = m;
       const file = join(specDir, `${name}.yaml`);
       try {
-        if (!cache.has(file)) cache.set(file, loadSpec(file));
+        if (!cache.has(file)) cache.set(file, loadSpec(file, tokens));
         return renderSection(cache.get(file), tokens, section);
       } catch (e) {
         if (e instanceof SpecError || e.code === 'ENOENT') {
