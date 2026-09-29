@@ -41,7 +41,15 @@ Input은 **variant 없음** — form 안에서 단일 시각 통일이 가독성
 
 **단일 size — `md` (h-10, 40px) 고정**. 사용처에서 dense list 등 예외가 필요하면 `className`으로 직접 조정 (예: `className="h-8 text-caption"`). variant 분리 안 함은 form 안에서 통일된 사이즈 권장 의도.
 
-[표: 크기와 모양](input.yaml#base.default)
+| 항목 | 값 | 토큰 |
+|---|---|---|
+| Height | 40px | `h-10` |
+| Padding (Y · X) | 8 · 12 | `py-[var(--spacing-sm)] px-[var(--spacing-md)]` (Tailwind 기본 spacing 스케일 `py-2 px-3` 대신 디자인 토큰 직접 인용) |
+| Font | 16px / 400 / 1.6 | `text-body-lg` |
+| Radius | 4px | `rounded-sm` |
+| Border | 1px | `border-border-default` |
+| Background | `surface-input` (#F0F2F7 / dark #2D3346) | `bg-surface-input` |
+| Touch target | 40 × N — AA ✓ / AAA ⚠ 미달 | (`Button` 동일 — 모바일 우선 화면은 size 키울 것) |
 
 다크 모드는 `surface-input-dark` (`#2D3346`)가 `surface-default-dark` (`#1B1F2A`)보다 **밝아** elevation 반전 — 어두운 카드 위 입력 필드가 elevated되어 시인성 확보(DESIGN.md `### Input` 정의).
 
@@ -49,7 +57,14 @@ Input은 **variant 없음** — form 안에서 단일 시각 통일이 가독성
 
 6개 visual state. Tailwind v4 utility는 `:focus-visible`, `[aria-invalid="true"]`, `[disabled]`, `[readonly]` 가상 selectors로 자동 적용.
 
-[표: 상태](input.yaml#matrix)
+| State | Background | Border | Text | Ring | Cursor |
+|---|---|---|---|---|---|
+| `default` | `surface-input` | `border-default` 1px | `text-primary` | none | `text` |
+| `focused` (visible) | `surface-input` | `border-focus` (라이트) / `border-focus-light` (다크) 1px | `text-primary` | 2px `border-focus` + 1px offset (`ring-2 ring-ring/30`) | `text` |
+| `filled` | `surface-input` | `border-default` 1px | `text-primary` | none — 입력값 자체로 구별 | `text` |
+| `error` (`aria-invalid="true"`) | `surface-input` | `error` 1px | `text-primary` | 2px `error/30` ring (`ring-2 ring-error/30`) | `text` |
+| `disabled` | `surface-input` (slightly muted) | `border-default` 1px | `text-disabled` (opacity 0.5) | none | `not-allowed` |
+| `readonly` | `surface-input` | none — 외곽선 제거 | `text-primary` | none | `text` (focus·copy만) |
 
 **Hover state는 명시적 변화 없음** — 입력 필드는 hover로 affordance 강조하지 않음(클릭/탭 시 즉시 focus). DESIGN.md `### Input` 의도와 일치.
 

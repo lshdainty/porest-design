@@ -24,12 +24,13 @@ scripts/build-preview-html.mjs `.<name>` CSS  ← preview.html 시각 (spec 시�
 `[표: 제목](<name>.yaml#<구역>)` 한 줄만 두고, 문서 사이트(`site/`)가 빌드 때 그 파일로 표를 그린다.
 
 - 수치를 바꿀 땐 YAML 을 고친다. md 에는 이유·규칙만 쓴다 — md 에 숫자를 다시 적으면 두 벌이 된다.
-- 구역: `base`(공통) · `<축>`(variant · size …) · `states.<축>` · `matrix.<축>.<값>` · `compound`(두 축 이상).
+- 구역: `base[.<상태>]`(공통 — 상태를 적으면 그 상태만, 부위별 목록 표) · `slots` · `<축>`(variant · size …) · `grid.<축>[.<축>.<값>…]` · `states.<축>` · `matrix[.<축>.<값>…]` · `compound`(두 축 이상) · `motion`.
 - 없는 토큰·변형·상태·구역을 가리키면 사이트 빌드(CI `site` 잡)가 파일·줄과 함께 멈춘다.
 - 형식은 `button.yaml` 머리 주석. 아직 YAML 이 없는 컴포넌트는 지금처럼 md 표가 원본이다.
 - 값: `$토큰` · `$토큰 / 12%` · 단위를 붙인 값 · `{ value, dark, note }`(다크 값이 따로 있거나 비고를 붙일 때).
 - 축·상태: 목록 또는 `{ 값: 설명 }` 맵 — 설명은 표의 '설명' 칸에 나온다.
-- 오래 가는 상태(탭 active · 체크 checked · 선택 selected)는 **축**으로 둔다. `states` 는 hover · focus · pressed · disabled 처럼 잠깐 지나가는 것만.
+- 상태 매트릭스의 한 줄이면 `states` 에 둔다(Input 의 `error` · `readonly` 처럼 오래 가는 것도). 다른 상태와 **곱해지는** 것 — 탭 active × hover, 체크 checked × disabled — 은 **축**으로 둔다.
+- 기본 상태는 `states` 의 첫째다(보통 `enabled`, Input 처럼 `default` 도 된다). 다른 상태에는 기본에서 바뀌는 값만 적는다.
 
 #### md 표를 YAML 로 옮길 때
 
