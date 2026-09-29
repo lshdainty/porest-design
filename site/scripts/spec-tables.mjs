@@ -32,6 +32,7 @@ const PROP_LABEL = {
   minWidth: '최소 너비',
   maxWidth: '최대 너비',
   size: '크기',
+  iconSize: '아이콘 크기',
   padding: '여백',
   paddingY: '상하 여백',
   paddingX: '좌우 여백',
@@ -53,6 +54,8 @@ const PROP_LABEL = {
   borderColor: '테두리',
   borderWidth: '테두리 두께',
   borderStyle: '테두리 모양',
+  borderBottomColor: '아래 테두리',
+  borderBottomWidth: '아래 테두리 두께',
   outlineColor: '외곽선',
   outlineWidth: '외곽선 두께',
   shadow: '그림자',
@@ -67,6 +70,7 @@ const PROP_LABEL = {
   scale: '배율',
   opacity: '불투명도',
   cursor: '커서',
+  pointerEvents: '포인터 이벤트',
   zIndex: 'z-index',
   touchTarget: '터치 영역',
   transitionProperty: '전환 대상',
@@ -235,13 +239,13 @@ function flatten(slots) {
   return out;
 }
 
-// 첫 부위(보통 root)는 속성 이름만, 나머지 부위는 `부위 속성` 으로 적는다.
+// root 부위는 속성 이름만, 나머지 부위는 `부위 속성` 으로 적는다(tabs 의 `list 높이`).
 function label(spec, key) {
   const [slot, prop] = key.split('.');
   const exact = PROP_LABEL[key];
   if (exact) return exact;
   const name = PROP_LABEL[prop] ?? prop;
-  return slot === Object.keys(spec.slots)[0] ? name : `${slot} ${name}`;
+  return slot === 'root' ? name : `${slot} ${name}`;
 }
 
 // 칸 순서: 부위는 YAML slots 순서, 부위 안에서는 PROP_LABEL 순서, 모르는 속성은 뒤로.
@@ -377,13 +381,17 @@ function axisTable(spec, tokens, axis) {
 }
 
 // grid.<축>[.<축>.<값>…] — 속성마다 한 줄, 축 값마다 한 칸. 뒤의 짝은 고정 조건.
-// 조건 없는 규칙은 빼고, 그 조합에 걸리는 나머지 규칙을 모두 합친다.
+// 그 조합에 걸리는 규칙 가운데 고정 조건의 축을 모두 적은 규칙만 합친다(조건 없는 규칙은 뺀다).
+// 그래서 grid.variant 는 변형별 바탕 값, grid.variant.selected.active 는 선택됐을 때 바뀌는 값만 보인다.
 function gridTable(spec, tokens, axis, fixed) {
   const values = axisValues(spec, axis);
+  const mentionsFixed = (rule) => Object.keys(fixed).every((k) => k in (rule.when ?? {}));
   const columns = values.map((v) => {
     const combo = { ...fixed, [axis]: v };
     const merged = {};
-    for (const rule of spec.rules.filter((r) => !isBase(r) && appliesTo(combo)(r))) Object.assign(merged, flatten(rule[baseState(spec)]));
+    for (const rule of spec.rules.filter((r) => !isBase(r) && appliesTo(combo)(r) && mentionsFixed(r))) {
+      Object.assign(merged, flatten(rule[baseState(spec)]));
+    }
     return merged;
   });
   const keys = orderKeys(spec, unionKeys(columns));
@@ -393,25 +401,24 @@ function gridTable(spec, tokens, axis, fixed) {
   );
 }
 
-// states.<축> — 축 값마다, 기본 상태에서 바뀌는 값을 상태별로.
-function stateDeltaTable(spec, tokens, axis) {
-  const values = axisValues(spec, axis);
+// states.<축>[.<축>…] — 축 값(여럿이면 곱한 조합)마다, 기본 상태에서 바뀌는 값을 상태별로.
+// 조건 없는 규칙(포커스 링처럼 모두 같은 것)은 빼고 그 조합에 걸리는 규칙만 — 공통은 #base 에 있다.
+function stateDeltaTable(spec, tokens, axes) {
+  let combos = [{}];
+  for (const axis of axes) combos = combos.flatMap((c) => axisValues(spec, axis).map((v) => ({ ...c, [axis]: v })));
   const states = stateNames(spec).filter((s) => s !== baseState(spec));
-  const cells = values.map((v) =>
+  const cells = combos.map((combo) =>
     states.map((state) => {
       const merged = {};
-      for (const rule of spec.rules) {
-        const keys = whenKeys(rule);
-        if (keys.length === 1 && keys[0] === axis && rule.when[axis] === v) Object.assign(merged, flatten(rule[state]));
-      }
+      for (const rule of spec.rules.filter((r) => !isBase(r) && appliesTo(combo)(r))) Object.assign(merged, flatten(rule[state]));
       const keys = orderKeys(spec, Object.keys(merged));
       return keys.length ? keys.map((k) => `${label(spec, k)} ${inline(tokens, merged[k])}`).join(' · ') : '—';
     }),
   );
   const used = states.filter((_, i) => cells.some((row) => row[i] !== '—'));
   return table(
-    [axis, ...used.map(code)],
-    values.map((v, r) => [code(v), ...used.map((s) => cells[r][states.indexOf(s)])]),
+    [...axes, ...used.map((s) => stateCell(spec, s))],
+    combos.map((combo, r) => [...axes.map((a) => code(combo[a])), ...used.map((s) => cells[r][states.indexOf(s)])]),
   );
 }
 
@@ -472,7 +479,7 @@ function motionTable(spec, tokens) {
 //   slots                   부위와 설명
 //   <축>                    축 값마다 기본 상태 값           예: size
 //   grid.<축>[.<축>.<값>…]  속성 × 축 값 격자(뒤 짝은 고정)   예: grid.variant, grid.variant.selected.active
-//   states.<축>             축 값마다 상태별로 바뀌는 값
+//   states.<축>[.<축>…]     축 값(여럿이면 곱한 조합)마다 상태별로 바뀌는 값
 //   matrix[.<축>.<값>…]     그 조합(나머지는 defaults)의 상태 매트릭스
 //   compound                두 축 이상을 건 규칙
 //   motion                  전환 시간 · 곡선
@@ -486,9 +493,9 @@ export function renderSection(spec, tokens, section) {
   if (head === 'slots' && rest.length === 0) return slotsTable(spec);
   if (head === 'compound' && rest.length === 0) return compoundTable(spec, tokens);
   if (head === 'motion' && rest.length === 0) return motionTable(spec, tokens);
-  if (head === 'states' && rest.length === 1) {
-    if (!spec.variants[rest[0]]) throw new SpecError(`없는 변형 축 ${rest[0]}`);
-    return stateDeltaTable(spec, tokens, rest[0]);
+  if (head === 'states' && rest.length >= 1) {
+    for (const axis of rest) if (!spec.variants[axis]) throw new SpecError(`없는 변형 축 ${axis}`);
+    return stateDeltaTable(spec, tokens, rest);
   }
   if (head === 'grid' && rest.length >= 1) {
     const [axis, ...fixedParts] = rest;

@@ -66,17 +66,44 @@ Pills variant (토스 모바일 톤 — soft rectangle + primary fill)
 
 Tabs는 **container · pills 2 sizes(`default` / `sm`)** — underline은 size variant 없음(`auto height`, 사용처가 폭만 조정). container `default` `h-10`(40) / `sm` `h-8`(32), pills `sm`은 모바일 카테고리 필터용 얇은 pill. 사용처에서 trigger 개수에 따라 폭만 조정(`w-full grid-cols-N` 등). 아래 첫 표는 **각 variant의 default 시각**, 이어지는 `### Container size variant` / `### Pills size variant` 표는 size 분기.
 
-[표: 변형별 크기와 모양](tabs.yaml#grid.variant)
-
-선택됐을 때(`data-state=active`) 바뀌는 값:
-
-[표: 선택됐을 때](tabs.yaml#grid.variant.selected.active)
+| 항목 | container | underline | pills | 토큰 |
+|---|---|---|---|---|
+| List height | 40px | auto | auto | `h-10` (container) |
+| List background | `surface-input` | transparent + `border-b border-default` | transparent | `bg-surface-input` (container) |
+| List padding | 4px | 0 | 0 | `p-[var(--spacing-xs)]` (container) |
+| List gap | 0 | 0 | 4px | `gap-[var(--spacing-xs)]` (pills) |
+| List radius | 4px | 0 | 0 | `rounded-sm` (container) |
+| Trigger padding (Y · X) | 4 · 12 | 8 · 12 | 8 · 12 | `var(--spacing-xs)` / `var(--spacing-sm)` · `var(--spacing-md)` |
+| Trigger radius | 2px | 0 | 8px | `rounded-xs` / `rounded-md` |
+| Trigger font | 14 / 500 | 14 / 500 | 14 / 500 (active 600) | `text-label-md font-medium` |
+| Active bg | `surface-default` | transparent | `primary` | `bg-surface-default` / `bg-primary` |
+| Active shadow | shadow-sm | none | none | `shadow-sm` |
+| Active border (underline) | — | 2px solid `primary` | — | `border-b-2 border-primary` |
+| Active text | `text-primary` | `text-primary` | `text-on-accent` | `text-text-primary` / `text-text-on-accent` |
+| Active weight | 500 | 500 | 600 | `font-medium` / `font-semibold` |
+| Inactive text | `text-secondary` | `text-secondary` | `text-secondary` | `text-text-secondary` |
+| Content top margin | spacing-sm (8) | spacing-lg (16) | spacing-md (12) | `mt-[var(--spacing-sm/md)]` / `pt-[var(--spacing-lg)]` |
 
 ### Container size variant (`default` / `sm`)
 
 `sm`은 정보 밀도 높은 **데스크 보조 컨트롤** 전용 — 정렬 선택·기간/빈도 토글·카드 내부 view 전환처럼 container 40px가 과한 시각 무게인 곳. [`Toggle`](toggle.md) `sm` 수치 체계(`min-h-7` 28 + token padding)를 container에 그대로 확장 — Toggle/ToggleGroup의 `sm`/`default`/`lg`(28/32/40)와 대칭. 이 표는 **container**의 sm — pills도 `sm`이 있음(아래 `### Pills size variant`), underline만 size 없음.
 
-[표: container 크기별](tabs.yaml#grid.size.variant.container)
+| 항목 | container `default` | container `sm` | 토큰 |
+|---|---|---|---|
+| List height | 40px | 32px | `h-10` / `h-8` |
+| List padding | 4px | 2px | `p-[var(--spacing-xs)]` / `p-0.5` |
+| List radius | 4px | 4px | `rounded-sm` |
+| List background | `surface-input` | `surface-input` | `bg-surface-input` |
+| List gap | 0 | 0 | — |
+| Trigger min-height | 32px | 28px | `min-h-8` / `min-h-7` |
+| Trigger padding (Y · X) | 4 · 12 | 4 · 8 | `py-[var(--spacing-xs)]` · `px-[var(--spacing-md)]` / `px-[var(--spacing-sm)]` |
+| Trigger radius | 2px | 2px | `rounded-xs` |
+| Trigger font | 14 / 500 | 13 / 500 | `text-label-md` / `text-label-sm font-medium` |
+| Active bg | `surface-default` | `surface-default` | `bg-surface-default` |
+| Active shadow | `shadow-sm` | `shadow-sm` | `shadow-sm` |
+| Active text / weight | `text-primary` / 500 | `text-primary` / 500 | `text-text-primary` |
+| Inactive text | `text-secondary` | `text-secondary` | `text-text-secondary` |
+| Icon-only trigger | 32×32 | 28×28 | 아이콘 16px (`[&_svg]:size-4`) |
 
 - `sm`은 `default` 대비 **height·padding·font만 축소** — 색/radius/active 처리·states(hover/focus/disabled)는 default와 동일. **신규 색 토큰 없음**(다크 분기도 default와 동일).
 - List padding 2px = (List 32 − Trigger 28) ÷ 2 — pill이 32px list에 정확히 안착. spacing 토큰 스케일(4/8/12…)엔 없으나 Tailwind 하프스텝 `p-0.5`(2px, [`Badge`](badge.md) `py-0.5` 선례)로 표기. raw `p-[2px]` 금지.
@@ -88,18 +115,26 @@ Tabs는 **container · pills 2 sizes(`default` / `sm`)** — underline은 size v
 
 pills `sm`은 **모바일 카테고리 필터·거래 종류** 등에서 `default`(py 8 / label-md)가 과한 높이일 때 — [`Toggle`](toggle.md) single 톤의 얇은 pill. radius-md·active 처리·간격은 동일, **height·padding·font만 축소**.
 
-[표: pills 크기별](tabs.yaml#grid.size.variant.pills)
+| 항목 | pills `default` | pills `sm` | 토큰 |
+|---|---|---|---|
+| Trigger padding (Y · X) | 8 · 12 | 4 · 8 | `py-[var(--spacing-sm)]`·`px-[var(--spacing-md)]` / `py-[var(--spacing-xs)]`·`px-[var(--spacing-sm)]` |
+| Trigger min-height | ≈36 (내용) | 28px | `min-h-7` (sm) |
+| Trigger font | 14 / 500 | 13 / 500 | `text-label-md` / `text-label-sm` |
+| Trigger radius | 8px | 8px | `rounded-md` |
+| Active | `primary` fill + `text-on-accent` + 600 | (동일) | `bg-primary` / `text-text-on-accent` |
+| List gap | 4px | 4px | `gap-[var(--spacing-xs)]` |
 
 - **active fill은 `primary` — 다크 모드에서 `primary-light` swap**(웹 `--fg-brand` / 앱 `t.bgBrand` = light=cobalt500 / dark=cobalt400). `text-on-accent` 흰 글씨와 함께 다크/라이트 자연스럽게. (raw `--bg-brand`/`bgBrandSolid` 같은 고정 cobalt 금지 — 다크에서 안 밝아짐)
 - `sm`은 underline에는 없음(underline은 size 미적용). 사용처: 모바일 가계부 필터(전체/지출/수입)·거래 종류 등 밀도 높은 모바일 navigation.
 
 ## States
 
-[표: 상태별로 바뀌는 값](tabs.yaml#states.variant.selected)
-
-모든 조합에 공통인 값:
-
-[표: 공통](tabs.yaml#base)
+| State | container active | container inactive | underline active | underline inactive | pills active | pills inactive |
+|---|---|---|---|---|---|---|
+| `enabled` | `bg-surface-default` + `text-primary` + `shadow-sm` | `text-secondary` | `border-b-2 border-primary` + `text-primary` | `border-b-2 border-transparent` + `text-secondary` | `bg-primary` + `text-on-accent` + 600 | transparent + `text-secondary` |
+| `hover` (inactive only) | (변화 없음) | `text-primary` | (변화 없음) | `text-primary` | (변화 없음) | `text-primary` + `bg-surface-input/50` |
+| `focus-visible` | + `ring-2 ring-ring ring-offset-2` | + `ring-2 ring-ring ring-offset-2` | + `ring-2 ring-ring ring-offset-2` | + `ring-2 ring-ring ring-offset-2` | + `ring-2 ring-ring ring-offset-2` | + `ring-2 ring-ring ring-offset-2` |
+| `disabled` | opacity 0.5 + `pointer-events-none` | opacity 0.5 + `pointer-events-none` | opacity 0.5 | opacity 0.5 | opacity 0.5 | opacity 0.5 |
 
 active state 변화는 `transition-all duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]` — color/bg/shadow 동시 부드러운 전환.
 
