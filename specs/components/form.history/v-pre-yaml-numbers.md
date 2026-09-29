@@ -92,11 +92,22 @@ const form = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema) });
 
 ### Card layout (form-card)
 
-[표: form-card](form.yaml#grid.layout)
+| 항목 | 값 | 토큰 |
+|---|---|---|
+| Background | surface-default | `bg-surface-default` |
+| Radius | lg (12px) | `rounded-lg` |
+| Padding | 2xl (32px) | `p-2xl` |
+| Shadow | sm | `shadow-sm` |
+| Max width | 640px | `max-w-[640px]` |
+| Inner direction | flex column | — |
+| Inner gap (group 사이) | xl (24px) | `gap-xl` |
 
 ### Grid (form-grid)
 
-[표: form-grid](form.yaml#viewport)
+| Breakpoint | Columns | gap (row · column) |
+|---|---|---|
+| ≥ md (768px) | 2 | `gap-[var(--spacing-lg)_var(--spacing-xl)]` (16 · 24) |
+| < md | 1 | `gap-lg` (16) |
 
 `textarea`를 포함한 group은 자동 full-row — `[&:has(.form-textarea)]:col-span-full`. 또는 className `col-span-full` 명시.
 
@@ -119,7 +130,13 @@ const form = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema) });
 
 FormItem 자체 상태 없음 — control(Input/Select 등)이 visual 상태 보유. FormLabel · FormMessage 색만 error 분기.
 
-[표: 상태](form.yaml#matrix)
+| State | FormLabel | FormControl border | FormMessage 노출 | aria-invalid |
+|---|---|---|---|---|
+| `default` | `text-primary` | `border-default` | hidden | `false` |
+| `focus` | `text-primary` | `border-focus` + ring 2px (control spec) | hidden | `false` |
+| `error` | `text-error` (`data-[error=true]:text-error`) | `border-error` (control spec) | visible | `true` |
+| `disabled` | `peer-disabled:opacity-70` | `opacity-50` | hidden | `false` |
+| `readonly` | `text-primary` | `text-secondary` + `cursor-not-allowed` | hidden | `false` |
 
 ## Behavior
 
