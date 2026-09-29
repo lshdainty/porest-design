@@ -53,6 +53,7 @@
 - SEED 는 Apache-2.0 — 구조·수치는 참고하되, 문장·그림을 옮기면 출처를 밝히고, 로고·캐릭터 같은 당근 브랜드 리소스는 쓰지 않는다.
 - 페이지 대부분은 `site/scripts/gen-content.mjs` 가 빌드 때 원본(`DESIGN*.md` · `specs/`)에서 만든다. 만든 `.md` 는 git 밖이다 — **고치려면 원본을 고친다.** 원본을 사이트용으로 새로 쓴 페이지는 같은 자리에 `.mdx` 로 두면 생성이 건너뛴다.
 - `DESIGN.md` 의 `##` 절을 추가·개명하면 `gen-content.mjs` 의 `FOUNDATION_SECTIONS` 도 고친다 — 안 고치면 빌드가 멈춘다(CI `site` 잡).
+- 기초 다섯 페이지(Color · Typography · Spacing · Radius · Layout)는 SEED 문서 모양으로 손으로 쓴 `.mdx` 다(`site/content/docs/foundations`). **숫자는 `.mdx` 에 적지 않는다** — 표 · 그림의 값은 `site/components/foundations` 가 빌드 때 `site/lib/design-tokens.ts` 로 DESIGN*.md 를 읽어 채운다. 그 컴포넌트는 DESIGN.md 의 절 · 표 제목(예: `v83 추가 — 컴포넌트 ↔ radius 매핑`, `콘텐츠 폭 — 밀도`)으로 찾으므로, 제목을 바꾸면 빌드가 멈춘다 — 같이 고친다. 그림은 porest 화면으로 새로 그린다(SEED 그림은 당근 화면이라 쓰지 않는다).
 - 컴포넌트 수치는 `specs/components/<이름>.yaml` 로 옮기는 중이다(Button 부터). YAML 이 있으면 수치의 원본은 YAML 이고, md 의 표 자리는 `[표: …](<이름>.yaml#구역)` 한 줄이다 — 규칙은 `specs/CLAUDE.md`.
 
 ## Git 작업 규칙

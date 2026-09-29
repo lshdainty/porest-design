@@ -1,0 +1,63 @@
+---
+title: Layout
+description: 중단점 · 콘텐츠 폭(밀도) · 여백 · 화면 영역
+source: DESIGN.md
+---
+
+import { BreakpointFigure, DensityFigure, GridAnatomyFigure, RegionsFigure, ResponsiveFigure } from '@/components/foundations/layout';
+import { Note, SourceTable } from '@/components/foundations/ui';
+
+레이아웃은 콘텐츠를 구조화하는 뼈대다. porest 는 당근 SEED 의 Dashboard 레이아웃을 따른다 — 두 웹(Desk · HR) 모두 기록 · 관리 도구라서다.
+
+<Note>
+  이 값들은 아직 두 웹 · 앱에 들어가지 않았다. 앱마다 PR 을 따로 내며, 그 전까지 제품 코드의 값(Desk 웹 중단점 736 · 좌우 여백 28 · 사이드바 256, HR 웹 Tailwind 기본 중단점 · 사이드바 288 등)이 이 페이지와 다른 게 정상이다.
+</Note>
+
+## 밀도
+
+화면이 담는 정보량으로 밀도를 하나 고르고, 밀도가 콘텐츠의 최대 폭을 정한다. 폭을 제한하면 가운데 정렬한다.
+
+<DensityFigure />
+
+<SourceTable heading="콘텐츠 폭 — 밀도" n={1} />
+
+<SourceTable heading="콘텐츠 폭 — 밀도" />
+
+768 미만은 밀도와 상관없이 화면 폭 전체를 쓴다. 어느 화면이 어느 밀도인지는 앱에 적용할 때 화면 목록을 만들어 정한다.
+
+## 그리드
+
+<GridAnatomyFigure />
+
+- **Columns** — 콘텐츠가 놓이는 칸이다. medium 은 12칸, low 는 8칸.
+- **Gutter** — 칸과 칸 사이. 카드 사이도 같은 값을 쓴다.
+- **Margin** — 콘텐츠와 화면 끝 사이. 768 미만의 화면 가장자리는 [`spacing-global-gutter`](/docs/foundations/spacing)(24px)다.
+
+<SourceTable heading="여백 · 칸 사이" />
+
+## 반응형 동작
+
+<ResponsiveFigure />
+
+한 화면에서 두 방식을 섞어 쓸 수 있다 — 예를 들어 표는 Fluid, 그 위 요약 카드 줄은 Fixed & Centered.
+
+## 중단점
+
+모바일 우선이다. 작은 화면에서 시작해 화면이 커지면 레이아웃이 넓어진다.
+
+<BreakpointFigure />
+
+<SourceTable heading="중단점" />
+
+화면 틀을 JS 로 바꾸는 기준도 같은 값이다 — 모바일 틀(하단 탭바) ↔ 사이드바 틀은 `breakpoint-md`. 스타일(`md:`)과 화면 틀이 다른 폭에서 바뀌면 그 사이에서 모바일 틀 안에 태블릿 스타일이 켜진다.
+
+## 영역
+
+<RegionsFigure />
+
+- **Header (GNB)** — 서비스 전체를 가로지르는 맨 위 탐색 영역.
+- **Side Navigation** — 서비스 안의 메뉴. `breakpoint-md` 이상에서 보이고, 그 아래에서는 머리의 메뉴로 들어간다(Desk 웹은 앱과 같은 하단 탭바).
+- **Main Content** — 사용자가 실제로 다루는 콘텐츠. 위의 밀도 · 그리드가 적용된다.
+- **Aside** — 오른쪽에 나타나는 보조 영역. 고른 항목의 상세 · 설정처럼 부가 작업에 쓴다.
+
+<SourceTable heading="사이드바 · 영역" />

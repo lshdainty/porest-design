@@ -15,14 +15,18 @@ const REPO = join(SITE, '..');
 const DOCS = join(SITE, 'content/docs');
 
 // DESIGN.md 의 `## ` 절 → 기초 페이지. 절 이름이 바뀌면 여기서 멈춘다(조용히 빠지지 않게).
+// Color · Typography · Spacing · Radius · Layout 은 SEED 문서 모양으로 손으로 쓴 .mdx 다(content/docs/foundations).
+// 그 페이지의 숫자는 components/foundations 가 빌드 때 DESIGN.md 에서 읽는다 — 여기서는 만들지 않는다.
 const FOUNDATION_SECTIONS = [
   { heading: 'Overview', slug: 'overview', title: 'Overview', description: '공유 baseline 과 브랜드 파일의 관계' },
-  { heading: 'Colors', slug: 'colors', title: 'Colors', description: '배경·표면·글자·테두리·의미·차트 색' },
-  { heading: 'Typography', slug: 'typography', title: 'Typography', description: '타입 스케일과 한국어 본문 규칙' },
-  { heading: 'Layout', slug: 'layout', title: 'Layout', description: '간격·중단점·콘텐츠 폭·여백·사이드바·터치 영역·z-index·RTL' },
   { heading: 'Elevation & Depth', slug: 'elevation', title: 'Elevation & Depth', description: '그림자와 오버레이 딤' },
   { heading: 'Motion', slug: 'motion', title: 'Motion', description: '지속 시간·이징·반복·키프레임' },
-  { heading: 'Shapes', slug: 'shapes', title: 'Shapes', description: '라운드 스케일과 컴포넌트별 매핑' },
+];
+
+// `##` 절 안의 `###` 하나를 따로 한 페이지로 — Layout 절에 있던 것 가운데 새 Layout 페이지가 다루지 않는 것
+const FOUNDATION_SUBSECTIONS = [
+  { parent: 'Layout', startsWith: 'Touch targets', slug: 'touch-targets', title: '터치 영역', description: '누를 수 있는 요소의 최소 크기' },
+  { parent: 'Layout', startsWith: 'RTL support', slug: 'rtl', title: 'RTL', description: '오른쪽에서 왼쪽으로 쓰는 언어 대응' },
 ];
 
 // 스펙 폴더 밖에 있는 기초 스펙. 컴포넌트 스펙이 `../z-index.md` 로 링크한다.
@@ -228,6 +232,19 @@ for (const f of FOUNDATION_SECTIONS) {
   const content = sections.get(f.heading);
   if (content === undefined) throw new Error(`DESIGN.md 에 "## ${f.heading}" 절이 없다 — FOUNDATION_SECTIONS 를 고쳐라`);
   write(`foundations/${f.slug}.md`, { ...f, source: 'DESIGN.md' }, promoteHeadings(content));
+}
+
+for (const f of FOUNDATION_SUBSECTIONS) {
+  const parent = sections.get(f.parent);
+  if (parent === undefined) throw new Error(`DESIGN.md 에 "## ${f.parent}" 절이 없다`);
+  const lines = [...linesWithFence(parent)];
+  const start = lines.findIndex(([l, inFence]) => !inFence && l.startsWith(`### ${f.startsWith}`));
+  if (start === -1) throw new Error(`DESIGN.md "## ${f.parent}" 에 "### ${f.startsWith}" 가 없다 — FOUNDATION_SUBSECTIONS 를 고쳐라`);
+  let end = lines.findIndex(([l, inFence], i) => i > start && !inFence && /^#{2,3} /.test(l));
+  if (end === -1) end = lines.length;
+  // ### 는 페이지 제목이 되므로 떼고, 그 아래 #### → ## 로 두 단계 올린다
+  const body = lines.slice(start + 1, end).map(([l, inFence]) => (inFence ? l : l.replace(/^##(#{2,4}) /, '$1 '))).join('\n').trim();
+  write(`foundations/${f.slug}.md`, { title: f.title, description: f.description, source: 'DESIGN.md' }, body);
 }
 
 const guides = sections.get('Components');
