@@ -52,15 +52,39 @@ Table은 **variant 없음** — 시각 단일. Section(TableHeader/Body/Footer/C
 
 Table은 **size variant 없음** — TableHead height만 고정(`h-10` 40px), TableCell padding은 `var(--spacing-sm)`(8) 기본. 사용처 className으로 조정 가능.
 
-[표: 크기와 모양](table.yaml#base)
+| 항목 | 값 | 토큰/규칙 |
+|---|---|---|
+| TableHead height | 40px | `h-10` |
+| TableHead padding-X | 8px | `px-[var(--spacing-sm)]` |
+| TableHead font | 12 / 600 / tertiary + uppercase + tracking | `text-caption font-semibold uppercase tracking-wide text-text-tertiary` |
+| TableHeader bg | `bg-page` | `bg-bg-page` (다크모드 자동 swap) |
+| TableCell padding | 8px | `p-[var(--spacing-sm)]` |
+| TableCell font | 15 / 400 / primary | `text-body-md text-text-primary` |
+| Row border | 1px bottom | `border-b border-border-default` |
+| Row hover | `surface-input 50%` | `hover:bg-surface-input/50` |
+| Row selected | `surface-input` | `data-[state=selected]:bg-surface-input` |
+| Footer bg | `surface-input 50%` | `bg-surface-input/50` |
+| Caption margin-top | 12px | `mt-[var(--spacing-md)]` |
+| Caption font | 14 / 400 / secondary | `text-body-sm text-text-secondary` |
+| Transition | colors | `transition-colors duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]` |
+| Selection column width | 48px | `w-12` |
+| Sortable icon size | 16×16 | `h-4 w-4` (lucide `ArrowUp`/`ArrowDown`/`ArrowUpDown`) |
+| Bulk action bar bg | `primary 10% mix` | `bg-[color-mix(in_srgb,var(--color-primary)_10%,transparent)]` |
+| Bulk action bar radius | 4px | `rounded-sm` |
+| Bulk action bar padding | 12 × 4 | `px-[var(--spacing-md)] py-[var(--spacing-xs)]` |
+| Numeric cell | `tabular-nums` + 우측 | `text-right font-mono tabular-nums` |
 
 ## States
 
-[표: 행](table.yaml#matrix)
-
-[표: 정렬 헤더](table.yaml#sort)
-
-[표: 일괄 작업 바](table.yaml#bulk)
+| State | Background | Text |
+|---|---|---|
+| `default` (row) | transparent | `text-primary` |
+| `hover` (row) | `bg-surface-input/50` | `text-primary` |
+| `selected` (`data-[state=selected]`) | `bg-surface-input` | `text-primary` |
+| sortable header `inactive` | transparent | `text-secondary` + ↑↓ hint on hover |
+| sortable header `active (asc/desc)` | transparent | `text-primary` + ↑ 또는 ↓ 노출 |
+| Bulk bar `hidden` (selection 0) | — | unmount |
+| Bulk bar `visible` (selection ≥ 1) | `primary 10% mix` | primary text |
 
 ## Layout (한국 도메인 패턴)
 
