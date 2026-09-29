@@ -2,7 +2,7 @@
 
 > 행/열 구조의 데이터 표시 wrapper. 일반 HTML `<table>` semantic + Porest 디자인 토큰. shadcn `Table` 베이스 — composition으로 `TableHeader` / `TableBody` / `TableFooter` / `TableRow` / `TableHead` / `TableCell` / `TableCaption` 분리. **data table 패턴**(sortable + selectable + bulk action + badge column)은 base Table + 기존 컴포넌트([`Checkbox`](checkbox.md) / [`Badge`](badge.md))로 합성.
 
-Porest Table은 **단일 spec × data table 패턴 가이드** 매트릭스로 정의됩니다. 기본 시각은 1px border-bottom으로 row 분리 + thead text-tertiary semibold + hover row bg-surface-input. data table은 좌측 selection column([`Checkbox`](checkbox.md)) + sortable indicator(`text-primary` + 화살표) + 우측 status badge column([`Badge`](badge.md) soft semantic). bulk action bar는 row 선택 시 표 상단에 노출(`primary 10% mix bg` + radius-sm). preview `.dt-*` SoT 정합.
+Porest Table은 **단일 spec × data table 패턴 가이드** 매트릭스로 정의됩니다. 기본 시각은 1px border-bottom으로 row 분리 + thead text-secondary medium + hover row bg-surface-input. data table은 좌측 selection column([`Checkbox`](checkbox.md)) + sortable indicator(`text-primary` + 화살표) + 우측 status badge column([`Badge`](badge.md) soft semantic). bulk action bar는 row 선택 시 표 상단에 노출(`primary 10% mix bg` + radius-sm). preview `.dt-*` SoT 정합.
 
 ## Anatomy
 
@@ -12,7 +12,7 @@ Porest Table은 **단일 spec × data table 패턴 가이드** 매트릭스로 �
 │ "3개 선택됨 · 보관 · 삭제"                                  │  ← primary 10% mix bg
 ├──────────────────────────────────────────────────────────┤
 │ ⓒ thead (border-b)                                        │
-│ [☐] ⓓ 제목 ↑   ⓓ 수정일   ⓓ 태그          ← sortable      │  ← text-tertiary semibold
+│ [☐] ⓓ 제목 ↑   ⓓ 수정일   ⓓ 태그          ← sortable      │  ← text-secondary medium
 ├───┼──────────────┼──────────────┼──────────┤
 │ ⓕ tbody row (border-b + hover)                            │
 │ [✓] Porest 톤    2시간 전        [공개]    ← Badge success │
@@ -104,7 +104,7 @@ Table은 **size variant 없음** — TableHead height만 고정(`h-10` 40px), Ta
 | 기준 | 검증 |
 |---|---|
 | **WCAG 1.4.3** Color contrast (TableCell text × bg) | `text-primary` 14:1+ ✓ |
-| **WCAG 1.4.3** Color contrast (TableHead text × bg) | `text-tertiary` `#62697A` × `bg-page` `#F5F6FA` = 5.09:1 ✓ |
+| **WCAG 1.4.3** Color contrast (TableHead text × bg) | `text-secondary` 9.2:1+ ✓ |
 | **WCAG 1.4.11** Non-text contrast (Row border × bg-page) | `border-default` 1.4:1 — 약함이나 hover/selected state로 시각 식별 보강. |
 | **WCAG 1.3.1** Info and Relationships | semantic `<table>`/`<thead>`/`<tbody>`/`<tr>`/`<th scope="col">`/`<td>` — screen reader 표 구조 자동 인식. |
 | **WCAG 2.1.1** Keyboard | row 안 focusable element(Checkbox/Button) `Tab`/`Enter`/`Space` ✓. sortable header도 keyboard 가능. |
