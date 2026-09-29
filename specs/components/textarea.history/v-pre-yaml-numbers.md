@@ -43,7 +43,16 @@ Textarea는 **variant 없음** — form 안에서 Input과 시각 통일이 일�
 
 **단일 size — `min-h-20` (80px) 기본 + `rows` 가변**. 사용처에서 dense edit 등 예외는 `className`으로 직접 조정.
 
-[표: 크기와 모양](textarea.yaml#base.enabled)
+| 항목 | 값 | 토큰 |
+|---|---|---|
+| min-height | 80px | `min-h-20` |
+| Padding (Y · X) | 8 · 12 | `py-[var(--spacing-sm)] px-[var(--spacing-md)]` |
+| Font | 15px / 400 / 1.6 | `text-body-md` (line-height 1.6는 preview/spec 명시) |
+| Radius | 4px | `rounded-sm` |
+| Border | 1px | `border-border-default` |
+| Background | `surface-input` | `bg-surface-input` |
+| Resize | vertical (기본) / none (opt-out) | `resize-y` / `resize-none` |
+| Width | 100% | `w-full` |
 
 **Input과 차이**: Input은 `body-lg` (16/400), Textarea는 `body-md` (15/400) — 긴 본문 밀도 확보 + 한 줄 짧은 입력값 vs 여러 줄 본문의 시각 위계 분리.
 
@@ -51,7 +60,14 @@ Textarea는 **variant 없음** — form 안에서 Input과 시각 통일이 일�
 
 Input과 동일 6 state. Tailwind v4 utility 자동 적용.
 
-[표: 상태](textarea.yaml#matrix)
+| State | Background | Border | Text | Ring | Cursor |
+|---|---|---|---|---|---|
+| `enabled` | `surface-input` | `border-default` | `text-primary` (value) / `text-tertiary` (placeholder) | — | text |
+| `hover` | `surface-input` | `border-default` | (변화 없음) | — | text |
+| `focus-visible` | `surface-input` | `border-ring` | `text-primary` | `ring-2 ring-ring/30` | text |
+| `error` (`aria-invalid="true"`) | `surface-input` | `border-error` | `text-primary` | `ring-2 ring-error/30` | text |
+| `disabled` | `surface-input` opacity 0.5 | `border-default` | `text-primary` opacity 0.5 | — | `not-allowed` |
+| `readonly` | `surface-input` | `border-default` | `text-secondary` | — | `not-allowed` (또는 `default`) |
 
 ## Layout
 
