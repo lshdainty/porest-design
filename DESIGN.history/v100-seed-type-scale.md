@@ -80,94 +80,6 @@ colors:
   # (border-focus 정의 완료 — v16)
 
 typography:
-  # v100 — SEED 타입 스케일(2026-09-29). 크기 t1~t14 와 줄 높이는 SEED 와 같은 px, 굵기는 400 —
-  # 강조는 500 · 700 인라인 modifier(SEED t5Medium · t5Bold). 긴 글은 article-body · article-note.
-  t1:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 11px
-    fontWeight: 400
-    lineHeight: 15px
-  t2:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 12px
-    fontWeight: 400
-    lineHeight: 16px
-  t3:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 13px
-    fontWeight: 400
-    lineHeight: 18px
-  t4:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 14px
-    fontWeight: 400
-    lineHeight: 19px
-  t5:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 16px
-    fontWeight: 400
-    lineHeight: 22px
-  t6:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 18px
-    fontWeight: 400
-    lineHeight: 24px
-  t7:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 20px
-    fontWeight: 400
-    lineHeight: 27px
-  t8:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 22px
-    fontWeight: 400
-    lineHeight: 30px
-  t9:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 24px
-    fontWeight: 400
-    lineHeight: 32px
-  t10:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 26px
-    fontWeight: 400
-    lineHeight: 35px
-  t11:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 28px
-    fontWeight: 400
-    lineHeight: 38px
-  t12:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 32px
-    fontWeight: 400
-    lineHeight: 42px
-  t13:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 40px
-    fontWeight: 400
-    lineHeight: 52px
-  t14:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 48px
-    fontWeight: 400
-    lineHeight: 60px
-  screen-title:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 26px
-    fontWeight: 700
-    lineHeight: 35px
-  article-body:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 16px
-    fontWeight: 400
-    lineHeight: 24px
-  article-note:
-    fontFamily: "Pretendard, Inter, sans-serif"
-    fontSize: 14px
-    fontWeight: 400
-    lineHeight: 22px
-  # 옛 15단계(v82) — 컴포넌트가 새 스케일로 옮기는 동안 값 그대로 둔다(본문 15px 은 자리마다 14 · 16 으로).
   # v82 — Airbnb 태그명(display/title/body/label/caption/badge/overline) 채택,
   # 사양은 한국어 본문 가독성 우선(Pretendard, lh 본문 1.5+). 21 → 15.
   display-xl:
@@ -851,43 +763,7 @@ v7 (brand light variants) · v14 (brand refresh + temporary bg-page fork) · v16
 
 한국어 본문 가독성 우선. Pretendard를 기본 패밀리, 영문 fallback Inter. v82에서 21 토큰을 15로 정리 — Airbnb 태그 명명 컨벤션(`display`/`title`/`body`/`label`/`caption`/`badge`/`overline`)을 채택, 사양은 한국어 본문 가독성을 기준으로 재정의.
 
-### v100 — SEED 타입 스케일 (2026-09-29)
-
-당근 SEED 의 타이포그래피 토큰을 그대로 들인다. 크기는 t1(11px) ~ t14(48px) 14단계이고, 줄 높이는 크기마다 SEED 와 같은 px 로 정해져 있다. 굵기는 400 · 500 · 700 셋만 쓴다.
-
-| 토큰 | 크기 | 줄 높이 | 배수 | 쓰는 곳(SEED 기준) |
-|---|---|---|---|---|
-| `text-t1` | 11px | 15px | ×1.36 | 본문 · 장식 글자 |
-| `text-t2` | 12px | 16px | ×1.33 | 본문 · 장식 글자 |
-| `text-t3` | 13px | 18px | ×1.38 | 본문 · 장식 글자 |
-| `text-t4` | 14px | 19px | ×1.36 | 본문 · 장식 글자 |
-| `text-t5` | 16px | 22px | ×1.38 | 본문 · 장식 글자 |
-| `text-t6` | 18px | 24px | ×1.33 | 제목 · 주요 글자 |
-| `text-t7` | 20px | 27px | ×1.35 | 제목 · 주요 글자 |
-| `text-t8` | 22px | 30px | ×1.36 | 제목 · 주요 글자 |
-| `text-t9` | 24px | 32px | ×1.33 | 제목 · 주요 글자 |
-| `text-t10` | 26px | 35px | ×1.35 | 제목 · 주요 글자 |
-| `text-t11` | 28px | 38px | ×1.36 | 큰 화면 제목 — `sm` 중단점 이상 |
-| `text-t12` | 32px | 42px | ×1.31 | 큰 화면 제목 — `sm` 중단점 이상 |
-| `text-t13` | 40px | 52px | ×1.30 | 큰 화면 제목 — `sm` 중단점 이상 |
-| `text-t14` | 48px | 60px | ×1.25 | 큰 화면 제목 — `sm` 중단점 이상 |
-
-역할 스타일:
-
-| 토큰 | 크기 / 굵기 / 줄 높이 | 쓰는 곳 |
-|---|---|---|
-| `text-screen-title` | 26px / 700 / 35px | 화면 제목 |
-| `text-article-body` | 16px / 400 / 24px | 긴 글 본문(×1.5) |
-| `text-article-note` | 14px / 400 / 22px | 긴 글 보조(×1.57) |
-
-- **굵기**: 토큰의 굵기는 400 이다. 강조는 `font-medium`(500) · `font-bold`(700) 인라인 modifier 로 준다 — SEED 의 t5Medium · t5Bold 와 같다. 600 은 쓰지 않는다. 옛 title-md · badge 가 쓰던 600 은 옮길 때 500 이나 700 으로 정한다.
-- **줄 높이**: UI 글자는 SEED 값(×1.35 안팎), 긴 글은 article-body · article-note(×1.5 안팎). v82 의 "한국어 본문 줄 높이 1.5+" 는 이제 긴 글에만 적용한다.
-- **옛 15단계**(아래 v82)는 값 그대로 둔다. 컴포넌트는 2단계에서 SEED 와 하나씩 비교할 때 옮긴다. 본문 body-md(15px)는 자리마다 다르게 옮긴다 — 긴 글은 16(article-body), UI 는 14(t4).
-- **옛 이름 → 가까운 새 이름**(옮길 때 참고): display-lg → t13 · display-md → t12 · display-sm → t9 · title-lg → t7 + bold · title-md → t6 + 500 또는 700 · title-sm → t5 + medium · body-lg → t5 또는 article-body · body-md → 자리마다 t4 · t5 · article-body · body-sm → t4 · label-md → t4 + medium · label-sm → t3 · caption → t2 · badge → t1 + 500 또는 700. display-xl(56px) · overline(10px)은 SEED 범위 밖이고 스펙에서 쓰는 곳이 없어 걷을 후보다.
-- **단위**: SEED 는 rem 으로 적어 사용자의 글자 크기 설정을 따른다. porest 는 지금 px 로 둔다 — rem 전환은 따로 정한다.
-- 사용자 결정(2026-09-29 — 글자 A: SEED 스케일 그대로, 본문 15px 은 자리마다). "한 번에 토큰 5개" 규칙의 예외다.
-
-### v82 — 15단계 타입 스케일 (v100 에서 SEED 스케일로 옮기는 중 — 값은 그대로)
+### v82 — 15단계 타입 스케일
 
 | 토큰 | size | weight | lh | letter-spacing | 주 용도 |
 |---|---|---|---|---|---|
