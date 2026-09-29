@@ -5,7 +5,7 @@ source: DESIGN.md
 ---
 
 import { COLOR_TABS, SectionTabs } from '@/components/foundations/ui';
-import { PaletteGrid } from '@/components/foundations/color';
+import { PaletteGrid, PaletteTable } from '@/components/foundations/color';
 
 <SectionTabs items={COLOR_TABS} active="Palette" />
 
@@ -17,11 +17,15 @@ Desk 는 파랑, HR 은 초록이다. `-light` 는 다크 모드에서 글자 ·
 
 <PaletteGrid group="brand" />
 
+<PaletteTable group="brand" />
+
 ## 회색
 
-토스 톤의 푸른 회색이다. 밝은 것부터 어두운 것 순서이고, 뒤의 셋은 다크 모드 표면이다.
+토스 톤의 푸른 회색이다. 밝은 것부터 어두운 것 순서이고, 뒤의 셋은 다크 모드 표면이다. 표의 다크 칸은 같은 자리의 다크 모드 값이다.
 
 <PaletteGrid group="neutral" />
+
+<PaletteTable group="neutral" />
 
 ## 의미 색
 
@@ -29,11 +33,19 @@ Desk 는 파랑, HR 은 초록이다. `-light` 는 다크 모드에서 글자 ·
 
 <PaletteGrid group="semantic" />
 
+<PaletteTable group="semantic" />
+
 ## 차트
 
 데이터 시각화용 10색이다. 색상을 고르게 나누고 명도를 맞춰, 어느 색도 데이터를 더 강조해 보이지 않게 했다.
 
 <PaletteGrid group="chart" />
 
+<PaletteTable group="chart" />
+
 - 막대 · 선 · 점 같은 채움에만 쓴다(UI 3:1). 차트 위 글자에는 쓰지 않는다 — 글자는 `fg-neutral` · `fg-neutral-muted`.
 - 두 브랜드가 같은 차트 색을 쓴다. 다크 표면에서는 `-light` 짝을 쓴다.
+
+---
+
+<p className="text-sm text-fd-muted-foreground">구성과 일부 설명은 당근 [SEED Design](https://seed-design.io) 의 Foundations 문서(Apache-2.0)를 바탕으로 했다. 값과 그림은 porest 것이다.</p>

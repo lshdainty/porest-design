@@ -1,7 +1,7 @@
 // Layout 페이지 — 치수는 DESIGN.md 의 layout-* · breakpoint-* 표에서만 온다
 import type { ReactNode } from 'react';
 import { color, proseTokens, px } from '@/lib/design-tokens';
-import { Figure, MARK, MARK_LINE } from './ui';
+import { Figure } from './ui';
 
 function lt(name: string) {
   const t = proseTokens('layout-').find((x) => x.name === name);
@@ -55,33 +55,130 @@ export function DensityFigure() {
   );
 }
 
+// 그리드 구조 — SEED 처럼 칸 · 칸 사이 · 여백을 화살표로 가리킨다
+const COL = '#D5E3F7', GUT = '#EDF3FB', ARROW = '#1D6FCB';
+function Arrow({ x, label, sub }: { x: number; label: string; sub: string }) {
+  return (
+    <div className="absolute top-0 flex -translate-x-1/2 flex-col items-center" style={{ left: x }}>
+      <span className="block h-0 w-0 border-x-[4px] border-b-[6px] border-x-transparent" style={{ borderBottomColor: ARROW }} />
+      <span className="block h-12 w-px" style={{ background: ARROW }} />
+      <span className="mt-1 whitespace-nowrap text-[13px] font-medium" style={{ color: ARROW }}>{label}</span>
+      <span className="whitespace-nowrap text-[11px] text-fd-muted-foreground">{sub}</span>
+    </div>
+  );
+}
+
 export function GridAnatomyFigure() {
-  const s = 0.5;
+  const s = 0.48;
   const margin = lt('layout-margin'), gutter = lt('layout-gutter'), max = lt('layout-max-medium');
   const cols = 12;
   const colW = (max - gutter * (cols - 1)) / cols;
   const W = (max + margin * 2) * s;
-  const colFill = 'rgba(29, 111, 203, 0.14)';
+  const colX = (i: number) => (margin + i * (colW + gutter)) * s;
   return (
-    <Figure caption={`Columns · Gutter ${gutter}px · Margin ${margin}px — medium 밀도(${max}px) 12칸`}>
-      <div className="flex flex-col items-center gap-3">
-        <div className="relative rounded-md border border-black/10 bg-white" style={{ width: W, height: 180 }}>
-          <div className="absolute inset-y-0 left-0" style={{ width: margin * s, background: MARK }} />
-          <div className="absolute inset-y-0 right-0" style={{ width: margin * s, background: MARK }} />
-          {Array.from({ length: cols }, (_, i) => (
-            <div key={i} className="absolute inset-y-3" style={{ left: (margin + i * (colW + gutter)) * s, width: colW * s, background: colFill }} />
-          ))}
-          {Array.from({ length: cols - 1 }, (_, i) => (
-            <div key={`g${i}`} className="absolute inset-y-3" style={{ left: (margin + colW + i * (colW + gutter)) * s, width: gutter * s, background: MARK }} />
-          ))}
-          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded bg-white/90 px-2 text-[12px] font-semibold text-[#1D6FCB]">Columns</span>
+    <Figure caption={`medium 밀도(${max}px) 12칸 — 칸 사이 ${gutter}px · 좌우 여백 ${margin}px`}>
+      <div className="relative" style={{ width: W, height: 260 }}>
+        <div className="absolute inset-x-0 top-0 h-[170px]" style={{ background: GUT }} />
+        {Array.from({ length: cols }, (_, i) => (
+          <div key={i} className="absolute top-0 h-[170px]" style={{ left: colX(i), width: colW * s, background: COL }} />
+        ))}
+        <div className="absolute inset-x-0" style={{ top: 172 }}>
+          <Arrow x={colX(2) + (colW * s) / 2} label="Columns" sub="콘텐츠가 놓이는 칸" />
+          <Arrow x={colX(5) + colW * s + (gutter * s) / 2} label="Gutters" sub={`칸 사이 ${gutter}px`} />
+          <Arrow x={W - (margin * s) / 2} label="Margins" sub={`좌우 여백 ${margin}px`} />
         </div>
-        <div className="relative text-[11px] font-semibold" style={{ width: W, height: 34 }}>
-          <span className="absolute top-0 border-l border-[#DB2777]" style={{ left: (margin * s) / 2, height: 10 }} />
-          <span className="absolute top-2.5 rounded px-1 text-white" style={{ left: 0, background: MARK_LINE }}>Margin {margin}</span>
-          <span className="absolute top-0 border-l border-[#DB2777]" style={{ left: (margin + 6 * colW + 5.5 * gutter) * s, height: 10 }} />
-          <span className="absolute top-2.5 -translate-x-1/2 rounded px-1 text-white" style={{ left: (margin + 6 * colW + 5.5 * gutter) * s, background: MARK_LINE }}>Gutter {gutter}</span>
+      </div>
+    </Figure>
+  );
+}
+
+// 레이아웃 두 유형 — 관리 화면(Dashboard)과 소개 페이지(Contents)
+export function LayoutTypesFigure() {
+  const rail = color('bg-neutral-weak'), line = color('stroke-neutral-weak'), fill = color('bg-brand-weak');
+  const box = 'absolute rounded-[3px]';
+  return (
+    <Figure caption="Dashboard Layout 은 두 웹(Desk · HR), Contents Layout 은 porest-home 같은 소개 페이지">
+      <div className="flex flex-wrap justify-center gap-8">
+        <div className="flex flex-col items-center gap-2">
+          <div className="relative h-[160px] w-[240px] overflow-hidden rounded-lg border border-black/10 bg-white">
+            <div className="absolute inset-y-0 left-0 w-[46px]" style={{ background: rail }} />
+            <div className="absolute left-[46px] right-0 top-0 h-[18px]" style={{ borderBottom: `1px solid ${line}` }} />
+            {[0, 1, 2].map((i) => <div key={i} className={box} style={{ left: 56 + i * 60, top: 28, width: 54, height: 36, background: fill }} />)}
+            {[0, 1, 2, 3, 4].map((i) => <div key={`r${i}`} className="absolute left-[56px] right-[10px] h-[10px] rounded-[2px]" style={{ top: 74 + i * 16, background: i ? rail : fill }} />)}
+          </div>
+          <b className="text-[13px] text-fd-foreground">Dashboard Layout</b>
+          <span className="text-[12px] text-fd-muted-foreground">데이터 · 관리 기능이 많은 화면</span>
         </div>
+        <div className="flex flex-col items-center gap-2">
+          <div className="relative h-[160px] w-[240px] overflow-hidden rounded-lg border border-black/10 bg-white">
+            <div className="absolute inset-x-0 top-0 h-[18px]" style={{ borderBottom: `1px solid ${line}` }} />
+            <div className={box} style={{ left: 60, width: 120, top: 32, height: 14, background: fill }} />
+            <div className={box} style={{ left: 45, width: 150, top: 54, height: 6, background: rail }} />
+            <div className={box} style={{ left: 60, width: 120, top: 64, height: 6, background: rail }} />
+            {[0, 1, 2].map((i) => <div key={i} className={box} style={{ left: 45 + i * 52, top: 84, width: 46, height: 56, background: rail }} />)}
+          </div>
+          <b className="text-[13px] text-fd-foreground">Contents Layout</b>
+          <span className="text-[12px] text-fd-muted-foreground">정보를 전하는 소개 · 안내 페이지</span>
+        </div>
+      </div>
+    </Figure>
+  );
+}
+
+// 콘텐츠 레이아웃 — 1440 화면에서 기본(1040)과 넓게(1280)
+export function ContentLayoutFigure() {
+  const s = 0.18;
+  const def = lt('layout-max-content'), wide = lt('layout-max-content-wide');
+  const fill = color('bg-brand-weak'), line = color('stroke-brand-solid');
+  const one = (w: number, label: string, sub: string) => (
+    <div className="flex flex-col items-center gap-2">
+      <div className="relative overflow-hidden rounded-lg border border-black/10 bg-white" style={{ width: 1440 * s, height: 900 * s }}>
+        <div className="absolute inset-x-0 top-0 h-[14px] border-b border-black/10" />
+        <div className="absolute bottom-3 top-6 flex -translate-x-1/2 gap-[2px]" style={{ left: '50%', width: w * s }}>
+          {Array.from({ length: 12 }, (_, i) => <span key={i} className="h-full flex-1 rounded-[1px]" style={{ background: fill }} />)}
+        </div>
+        <div className="absolute bottom-3 top-6 -translate-x-1/2 rounded-sm" style={{ left: '50%', width: w * s, border: `1px solid ${line}` }} />
+      </div>
+      <b className="text-[13px] text-fd-foreground">{label}</b>
+      <span className="text-[12px] text-fd-muted-foreground">{sub}</span>
+    </div>
+  );
+  return (
+    <Figure caption="콘텐츠 레이아웃 — 12칸, 1280 이상에서 가운데">
+      <div className="flex flex-wrap justify-center gap-8">
+        {one(def, `기본 ${def}px`, '읽기에 몰입하는 페이지')}
+        {one(wide, `넓게 ${wide}px`, '검색 결과처럼 넓게 훑는 페이지')}
+      </div>
+    </Figure>
+  );
+}
+
+// 칸 차지(span)와 띄우기(offset)
+export function ColumnSpanFigure() {
+  const gutter = lt('layout-gutter');
+  const W = 520, cols = 12, g = gutter * 0.45;
+  const colW = (W - g * (cols - 1)) / cols;
+  const x = (i: number) => i * (colW + g);
+  const w = (n: number) => n * colW + (n - 1) * g;
+  const fill = color('bg-brand-solid');
+  const rows: [number, number, string][][] = [
+    [[2, 8, 'span 8 · offset 2']],
+    [[0, 4, 'span 4'], [4, 8, 'span 8']],
+    [[0, 6, 'span 6'], [6, 6, 'span 6']],
+  ];
+  return (
+    <Figure caption="span 은 차지하는 칸 수, offset 은 앞에 비워 두는 칸 수">
+      <div className="relative" style={{ width: W, height: 3 * 52 + 8 }}>
+        {Array.from({ length: cols }, (_, i) => (
+          <div key={i} className="absolute inset-y-0 rounded-[2px]" style={{ left: x(i), width: colW, background: COL }} />
+        ))}
+        {rows.map((row, r) =>
+          row.map(([o, n, label]) => (
+            <div key={`${r}-${o}`} className="absolute flex items-center justify-center rounded-md text-[12px] font-semibold text-white" style={{ left: x(o), width: w(n), top: 8 + r * 52, height: 40, background: fill }}>
+              {label}
+            </div>
+          )),
+        )}
       </div>
     </Figure>
   );
@@ -139,7 +236,7 @@ export function RegionsFigure() {
   const side = lt('layout-sidebar'), collapsed = lt('layout-sidebar-collapsed');
   const s = 0.36, W = 1440 * s, H = 520;
   const rail = color('bg-neutral-weak'), fg = color('fg-neutral-muted');
-  const cell = 'absolute flex items-center justify-center text-[12px] font-semibold';
+  const cell = 'absolute flex items-center justify-center px-1 text-center text-[12px] font-semibold leading-tight';
   return (
     <Figure caption={`영역 넷 — 사이드 내비게이션 ${side}px(접으면 ${collapsed}px), 상단 바 높이는 앱마다 다르다`}>
       <div className="relative overflow-hidden rounded-lg border border-black/10 bg-white" style={{ width: W, height: H * s + 60, color: fg }}>
