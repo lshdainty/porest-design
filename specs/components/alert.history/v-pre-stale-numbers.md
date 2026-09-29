@@ -2,7 +2,7 @@
 
 > 페이지 안에 고정된 위치에서 정보·경고·에러를 표시하는 인라인 메시지. floating 토스트([`Sonner`](sonner.md))와 달리 **항상 visible**, 사용자 액션 결과가 아닌 **컨텍스트 메시지**(약관 변경 안내, 결제 실패, 시스템 점검 등). dismissable은 옵션. [`AlertDialog`](alert-dialog.md)와 별개 — modal 패턴 아님.
 
-Porest Alert은 **5 variants(default/info/success/warning/error) × dismissable 옵션** 매트릭스로 정의됩니다. preview `.banner-*` SoT 정합 — 4px border-left semantic accent + 8% color-mix 배경 + 20×20 stroke svg icon + body-md title. 시각 위계는 [`Sonner`](sonner.md) toast와 같은 5 kinds 구조 — 인라인 alert와 floating toast가 동일 semantic 색상 시스템을 공유.
+Porest Alert은 **5 variants(default/info/success/warning/error) × dismissable 옵션** 매트릭스로 정의됩니다. preview `.banner-*` SoT 정합 — 4px border-left semantic accent + 8% color-mix 배경 + 16×16 stroke svg icon + body-md title. 시각 위계는 [`Sonner`](sonner.md) toast와 같은 5 kinds 구조 — 인라인 alert와 floating toast가 동일 semantic 색상 시스템을 공유.
 
 ## Anatomy
 
@@ -84,7 +84,7 @@ Alert 자체는 자동 dismiss 없음 — 사용자 액션(close button) 또는 
 |---|---|
 | **WCAG 1.4.3** Color contrast (title `text-primary` × bg mix) | semantic 8% mix는 충분히 light 톤이라 14:1+ ✓ |
 | **WCAG 1.4.3** Color contrast (description `text-secondary` × bg mix) | 9.2:1 ✓ |
-| **WCAG 1.4.11** Non-text contrast (border-l semantic × bg-page) | info `#1D6FCB` 4.64:1 / success `#16803F` 4.64:1 / warning `#C84D0E` 4.30:1 / error `#DC2626` 4.47:1 — 모두 3:1 ✓ |
+| **WCAG 1.4.11** Non-text contrast (border-l semantic × bg-page) | info `#2271D1` 4.5:1+ / success `#1A7F47` 4.6:1+ / warning `#F59E0B` 3:1+ / error `#D32F2F` 5:1+ ✓ |
 | **WCAG 2.4.7** Focus Visible | close button `focus-visible:ring-2 ring-ring ring-offset-2`. |
 | **WCAG 2.5.5** Target Size (AAA, 44×44) | close 28×28 — 미달(⚠). 모바일 우선 화면이면 close `h-11 w-11`로 확장 권장. |
 | **WCAG 2.5.8** Target Size Minimum (AA, 24×24) | close 28 ✓ |
