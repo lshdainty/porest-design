@@ -36,21 +36,28 @@ RadioGroup은 **variant 없음** — form 안 단일 선택 시각 통일이 인
 
 RadioGroup은 **size variant 없음** — 18×18 단일 spec. 사용처에서 변경 시 indicator dot도 비례 조정 필요(권장 안 함).
 
-[표: 크기와 모양](radio-group.yaml#base.default)
-
-[표: unchecked · checked](radio-group.yaml#checked)
-
-[표: 전환](radio-group.yaml#motion)
+| 항목 | 값 | 토큰 |
+|---|---|---|
+| Item size | 18×18 | `h-[18px] w-[18px]` |
+| Item radius | full | `rounded-full` |
+| Item border (unchecked) | 1px `border-strong` | `border border-border-strong` |
+| Item border (checked) | 1px `primary` | `border-primary` |
+| Indicator dot size | 16×16 | `h-4 w-4` |
+| Indicator dot fill | `primary` | `fill-primary text-primary` |
+| Group gap | 8px (vertical) | `gap-[var(--spacing-sm)]` |
+| Row gap (item ↔ label) | 12px | `gap-[var(--spacing-md)]` (사용처에서 wrap 시) |
+| Transition | color · bg · border | `duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]` |
 
 ## States
 
-`unchecked`:
-
-[표: unchecked](radio-group.yaml#matrix.checked.unchecked)
-
-`checked`:
-
-[표: checked](radio-group.yaml#matrix.checked.checked)
+| State | Border | Indicator | Cursor |
+|---|---|---|---|
+| `unchecked` | `border-strong` 1px | hidden | pointer |
+| `unchecked + hover` | `border-strong` 1px | hidden | pointer |
+| `unchecked + focus-visible` | `border-strong` 1px | hidden | pointer + `ring-2 ring-ring ring-offset-2` |
+| `checked` | `border-primary` 1px | visible (dot 16×16 `primary`) | pointer |
+| `checked + focus-visible` | `border-primary` 1px | visible | + `ring-2 ring-ring ring-offset-2` |
+| `disabled` | (동일) opacity 0.5 | (동일) | `not-allowed` |
 
 Group `disabled` 시 모든 item 비활성. item 개별 `disabled`로 일부만 비활성 가능.
 
