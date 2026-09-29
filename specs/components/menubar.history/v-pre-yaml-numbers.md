@@ -51,19 +51,49 @@ Menubar는 **variant 없음** — 데스크탑 메뉴바 단일 패턴. Item 종
 
 Menubar는 **size variant 없음** — Bar는 `h-10` 고정, Content는 min-width 192 고정. 사용처 className으로 폭 override 가능.
 
-[표: Bar · Content · 부속](menubar.yaml#base)
-
-[표: Trigger · Item](menubar.yaml#part)
-
-[표: 전환](menubar.yaml#motion)
+| 항목 | 값 | 토큰 |
+|---|---|---|
+| Bar height | 40px | `h-10` |
+| Bar gap (trigger 사이) | 4px | `space-x-[var(--spacing-xs)]` |
+| Bar padding | 4px | `p-[var(--spacing-xs)]` |
+| Bar border | 1px solid | `border border-border-default` |
+| Bar radius | 4px | `rounded-sm` |
+| Trigger padding | 12 × 8 | `px-[var(--spacing-md)] py-[var(--spacing-sm)]` |
+| Trigger radius | 2px | `rounded-xs` |
+| Trigger font | 16 / 500 | `text-title-sm font-medium` |
+| Content min-width | 192px | `min-w-[12rem]` |
+| Content radius | 8px | `rounded-md` |
+| Content padding | 4px | `p-[var(--spacing-xs)]` |
+| Content shadow | shadow-md | `shadow-md` |
+| Item padding | 12 × 8 | `px-[var(--spacing-md)] py-[var(--spacing-sm)]` |
+| Item radius | 4px | `rounded-sm` |
+| Item font | 15 / 400 | `text-body-md` |
+| Checkbox/Radio left padding | 32px | `pl-[var(--spacing-2xl)]` |
+| Indicator size (Check) | 16×16 | `h-4 w-4` |
+| Indicator size (Circle) | 8×8 | `h-2 w-2` |
+| Separator | 1px line + margin -xs | `-mx-[var(--spacing-xs)] my-[var(--spacing-xs)] h-px bg-border-default` |
+| Shortcut font | 13 / 500 / wide | `text-label-sm tracking-widest text-text-tertiary` |
+| Label font | 13 / 500 | `text-label-sm font-medium text-text-secondary` |
+| Transition | colors | `transition-colors duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]` |
+| z-index | 50 | (literal) |
 
 ## States
 
 ### MenubarTrigger (Bar 안)
 
-[표: 상태별로 바뀌는 값 — Trigger · Item](menubar.yaml#states.part)
+| State | Background | Text |
+|---|---|---|
+| `default` | transparent | `text-primary` |
+| `hover` (focus) | `surface-input` | `text-primary` |
+| `data-state=open` | `surface-input` | `text-primary` |
 
 ### MenubarItem (Content 안)
+
+| State | Background | Text |
+|---|---|---|
+| `default` | transparent | `text-primary` |
+| `focus` (keyboard/mouse) | `surface-input` | `text-primary` |
+| `disabled` | transparent | `text-primary` opacity 0.5 + `cursor-not-allowed` |
 
 [`Dropdown Menu`](dropdown-menu.md) State matrix 그대로 인용.
 
