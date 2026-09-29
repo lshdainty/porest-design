@@ -33,7 +33,7 @@ const TOKEN_PREFIXES = [
   "placeholder-", "alert-text-", "caption-", "caption-tertiary-",
   "page-text-", "focus-ring-", "divider-", "outline-", "outline-strong-",
   "disabled-label-", "shadow-", "motion-duration-", "motion-ease-",
-  "overlay-dim-", "radius-", "spacing-", "breakpoint-", "layout-", "fg-", "stroke-", "static-",
+  "overlay-dim-", "radius-", "spacing-", "breakpoint-", "layout-", "fg-", "stroke-", "static-", "gradient-",
 ];
 
 // 토큰처럼 보이지만 실제로는 CSS 속성/HTML/일반 단어인 단어들 — 보고에서 제외
@@ -114,7 +114,7 @@ function extractDefinedTokens(content) {
   }
 
   // prose tokens (shadow / motion / overlay / breakpoint / layout tables)
-  const proseRe = /^\|\s*`((?:shadow|motion-(?:duration|ease)|overlay|breakpoint|layout)-[a-z0-9-]+)`\s*\|/gm;
+  const proseRe = /^\|\s*`((?:shadow|motion-(?:duration|ease)|overlay|breakpoint|layout|gradient)-[a-z0-9-]+)`\s*\|/gm;
   let m;
   while ((m = proseRe.exec(content)) !== null) defined.add(m[1]);
 
