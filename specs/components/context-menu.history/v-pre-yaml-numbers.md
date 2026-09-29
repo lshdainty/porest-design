@@ -48,13 +48,30 @@ Context Menu 자체는 **variant 없음** — 시각 통일이 일관성에 유�
 
 단일 size — preview `.ctx` 그대로. 메뉴는 콘텐츠(item 텍스트 길이/개수)에 따라 자연 확장.
 
-[표: 부위별 크기](context-menu.yaml#base)
+| 항목 | 값 | 토큰 |
+|---|---|---|
+| Container padding | 4px | `var(--spacing-xs)` |
+| Container radius | 8px | `var(--radius-md)` |
+| Container shadow | shadow-md | `var(--shadow-md)` |
+| Container border | 1px solid | `var(--color-border-default)` |
+| Container min-width | 160px | (literal) |
+| Item padding (Y · X) | 8 / 12 | `var(--spacing-sm)` · `var(--spacing-md)` |
+| Item radius | 4px | `var(--radius-sm)` |
+| Item font | body-md (15) | `var(--text-body-md)` |
+| Item inset padding-left | 24px | `var(--spacing-xl)` |
+| Separator margin (Y) | 4px | `var(--spacing-xs)` |
+| Shortcut font | label-sm (13) | `var(--text-label-sm)` |
 
 ## States
 
-[표: item 변형별 기본 색](context-menu.yaml#variant)
-
-[표: 상태별로 바뀌는 값](context-menu.yaml#states.variant)
+| State | Background | Text | 추가 |
+|---|---|---|---|
+| `enabled` | transparent | `text-primary` | — |
+| `hover / focus` | `surface-input` | `text-primary` | (focus-visible는 hover와 동일 시각 — outline 별도 없음, 메뉴 내 focus는 `aria-activedescendant`로 관리) |
+| `pressed` | `surface-input` (즉시 dismiss) | `text-primary` | — |
+| `disabled` | transparent | `text-primary` opacity 0.5 | `pointer-events: none` |
+| `destructive enabled` | transparent | `text-error` | — |
+| `destructive hover` | `error 12% mix` | `text-error` | — |
 
 ## Layout
 
