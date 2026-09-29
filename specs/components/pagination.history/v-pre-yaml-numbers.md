@@ -42,15 +42,27 @@ Pagination은 **variant 없음** — 모든 버튼이 [`Button`](button.md) spec
 
 Pagination은 자체 size 없음 — 사용처가 PaginationLink size 결정. 기본 [`Button`](button.md) icon size(40×40) 권장.
 
-[표: 링크별](pagination.yaml#link)
-
-[표: 공통](pagination.yaml#base)
+| 항목 | 값 | 토큰/규칙 |
+|---|---|---|
+| PaginationLink (icon) | 40×40 | [`Button`](button.md) `size="icon"` (`h-10 w-10`) |
+| Previous/Next | h-10 + 가변 px | [`Button`](button.md) `size="md"` (`h-10 px-3`) |
+| Gap (item 사이) | 4px | `gap-[var(--spacing-xs)]` |
+| Ellipsis | 40×40 | `h-10 w-10` (Button icon과 동일) |
+| Icon size | 16×16 | `h-4 w-4` (chevron, ellipsis) |
+| Active aria | `aria-current="page"` | (semantic) |
 
 ## States
 
 [`Button`](button.md) State matrix 그대로 인용 — variant별 hover/focus-visible/pressed/disabled 동일 톤.
 
-[표: 상태별로 바뀌는 값](pagination.yaml#states.link)
+| State | Active (`outline`) | Inactive (`ghost`) | Previous/Next (`ghost md`) |
+|---|---|---|---|
+| `default` | `bg-surface-default` + border + `text-primary` | transparent + `text-primary` | transparent + `text-primary` |
+| `hover` | hover bg-surface-input | `bg-surface-input` | `bg-surface-input` |
+| `focus-visible` | `ring-2 ring-ring ring-offset-2` | `ring-2 ring-ring ring-offset-2` | `ring-2 ring-ring ring-offset-2` |
+| `pressed (active)` | `brightness-95` (Button SoT) | `brightness-95` | `brightness-95` |
+| `disabled` (마지막 페이지에서 Next 등) | opacity 0.5 + `cursor-not-allowed` | opacity 0.5 | opacity 0.5 |
+| `aria-current="page"` | (시각 변화 없음, semantic만) | — | — |
 
 ## Layout
 
