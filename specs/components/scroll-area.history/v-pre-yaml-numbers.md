@@ -50,11 +50,26 @@ Porest Scroll Area는 **2 orientations(vertical/horizontal) × 단일 시각 톤
 
 Scroll Area는 **size variant 없음** — 사용처 className(`h-*`, `w-*`, `max-h-*`)으로 폭/높이 결정.
 
-[표: 스크롤바 수치](scroll-area.yaml#base.default)
+| 항목 | 값 | 토큰/규칙 |
+|---|---|---|
+| Scrollbar thickness | 6px (`1.5`) | `w-1.5` (vertical) / `h-1.5` (horizontal) |
+| Scrollbar border (transparent) | 1px | `border-l border-l-transparent` (vertical) / `border-t border-t-transparent` (horizontal) — hover 시 색 부여 가능 |
+| Thumb color | `border-strong` | `bg-border-strong` |
+| Thumb radius | full pill | `rounded-full` |
+| Track | transparent | (Radix 기본 background 없음) |
+| Transition | colors | `transition-colors duration-[var(--motion-duration-fast)]` |
+| Firefox 표준 | `thin` + `border-strong` | `scrollbar-width: thin; scrollbar-color: var(--color-border-strong) transparent;` (전역) |
+| WebKit 글로벌 | 6px + pill thumb | `::-webkit-scrollbar { width: 6px; height: 6px }` + `::-webkit-scrollbar-thumb { background: var(--color-border-strong); border-radius: var(--radius-full); }` (전역) |
+| Scrollbar hide utility | `display: none` | `.scrollbar-hide` (opt-in, Firefox/IE 폴백 포함) |
 
 ## States
 
-[표: 상태](scroll-area.yaml#matrix)
+| State | Background | Thumb | 추가 |
+|---|---|---|---|
+| `default` (스크롤 가능) | transparent track | `border-strong` thumb | — |
+| `hover` (scrollbar 영역 hover) | (변화 없음) | (변화 없음) | scrollbar 가시성 더 명확 |
+| `dragging` (thumb drag) | (변화 없음) | (변화 없음) | Radix `data-state` 자동 — 시각 효과 없음. |
+| `no overflow` (콘텐츠 fit) | — | — | scrollbar 자동 hide (Radix). |
 
 **규칙**: hover/active state 시각 효과는 minimal(절제) — 스크롤바는 보조 UI라 강조 회피.
 
