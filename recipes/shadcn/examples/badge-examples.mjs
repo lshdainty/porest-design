@@ -13,10 +13,10 @@ const VARIANT = {
   secondary: "border-color:transparent; background:var(--color-surface-input); color:var(--color-text-primary);",
   destructive: "border-color:transparent; background:var(--color-error); color:var(--color-text-on-accent);",
   // soft (semantic)
-  info: "border-color:transparent; background:color-mix(in srgb, var(--color-info) 16%, transparent); color:var(--color-info);",
-  success: "border-color:transparent; background:color-mix(in srgb, var(--color-success) 16%, transparent); color:var(--color-success);",
-  warning: "border-color:transparent; background:color-mix(in srgb, var(--color-warning) 16%, transparent); color:var(--color-warning);",
-  error: "border-color:transparent; background:color-mix(in srgb, var(--color-error) 16%, transparent); color:var(--color-error);",
+  info: "border-color:transparent; background:var(--color-bg-informative-weak); color:var(--color-fg-informative-contrast);",
+  success: "border-color:transparent; background:var(--color-bg-positive-weak); color:var(--color-fg-positive-contrast);",
+  warning: "border-color:transparent; background:var(--color-bg-warning-weak); color:var(--color-fg-warning-contrast);",
+  error: "border-color:transparent; background:var(--color-bg-critical-weak); color:var(--color-fg-critical-contrast);",
   // outline
   outline: "border-color:var(--color-border-default); color:var(--color-text-primary);",
   "outline-info": "border-color:var(--color-info); color:var(--color-info);",
@@ -47,7 +47,7 @@ export const badgeExamples = [
 
   {
     title: "Soft (semantic)",
-    description: "16% color-mix 배경 + semantic text — 중간 강조. 절제된 의미 분기 라벨.",
+    description: "약한 배경(bg-*-weak) + contrast 글자 — 중간 강조. 절제된 의미 분기 라벨.",
     jsx: `<div className="flex flex-wrap gap-2">
   <Badge variant="info">신규</Badge>
   <Badge variant="success">완료</Badge>

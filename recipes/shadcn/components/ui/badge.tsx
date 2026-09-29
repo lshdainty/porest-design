@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
  * - micro 라벨 — text-badge(11/600/1.2) + pill(rounded-full) + 토큰 padding
  * - 3 styles × neutral·semantic 매트릭스:
  *     solid:   default(primary) / secondary(surface-input) / destructive(error)
- *     soft:    info / success / warning / error  — color-mix 16% bg
+ *     soft:    info / success / warning / error  — v102 역할 색(bg-*-weak + fg-*-contrast)
  *     outline: outline(neutral) / outline-info / outline-success / outline-warning / outline-error
  * - uppercase는 base 미적용 — 한국어 라벨 친화. 영문 약어는 사용처에서 `uppercase tracking-wide`로 opt-in.
  */
@@ -27,15 +27,15 @@ const badgeVariants = cva(
           "border-transparent bg-surface-input text-text-primary hover:bg-border-default",
         destructive:
           "border-transparent bg-error text-text-on-accent hover:brightness-105",
-        // soft (semantic, 16% color-mix bg)
+        // soft (semantic) — v102 역할 색: 약한 배경 + contrast 글자, hover 는 약한 배경 눌림
         info:
-          "border-transparent bg-[color-mix(in_srgb,var(--color-info)_16%,transparent)] text-info hover:bg-[color-mix(in_srgb,var(--color-info)_24%,transparent)]",
+          "border-transparent bg-bg-informative-weak text-fg-informative-contrast hover:bg-bg-informative-weak-pressed dark:bg-bg-informative-weak-dark dark:text-fg-informative-contrast-dark dark:hover:bg-bg-informative-weak-pressed-dark",
         success:
-          "border-transparent bg-[color-mix(in_srgb,var(--color-success)_16%,transparent)] text-success hover:bg-[color-mix(in_srgb,var(--color-success)_24%,transparent)]",
+          "border-transparent bg-bg-positive-weak text-fg-positive-contrast hover:bg-bg-positive-weak-pressed dark:bg-bg-positive-weak-dark dark:text-fg-positive-contrast-dark dark:hover:bg-bg-positive-weak-pressed-dark",
         warning:
-          "border-transparent bg-[color-mix(in_srgb,var(--color-warning)_16%,transparent)] text-warning hover:bg-[color-mix(in_srgb,var(--color-warning)_24%,transparent)]",
+          "border-transparent bg-bg-warning-weak text-fg-warning-contrast hover:bg-bg-warning-weak-pressed dark:bg-bg-warning-weak-dark dark:text-fg-warning-contrast-dark dark:hover:bg-bg-warning-weak-pressed-dark",
         error:
-          "border-transparent bg-[color-mix(in_srgb,var(--color-error)_16%,transparent)] text-error hover:bg-[color-mix(in_srgb,var(--color-error)_24%,transparent)]",
+          "border-transparent bg-bg-critical-weak text-fg-critical-contrast hover:bg-bg-critical-weak-pressed dark:bg-bg-critical-weak-dark dark:text-fg-critical-contrast-dark dark:hover:bg-bg-critical-weak-pressed-dark",
         // outline (neutral + semantic)
         outline:
           "border-border-default text-text-primary hover:bg-surface-input",

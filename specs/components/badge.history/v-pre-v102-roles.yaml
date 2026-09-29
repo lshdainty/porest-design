@@ -71,7 +71,7 @@ rules:
   - when: { style: soft }
     hover:
       root:
-        background: { value: "bg-*-weak-pressed", note: "soft 색마다 — info → `$color-bg-informative-weak-pressed` 식(v102 역할 색)" }
+        background: 16% → 24% mix
 
   - when: { style: outline }
     hover:
@@ -95,26 +95,26 @@ rules:
   - when: { soft: info }
     default:
       root:
-        background: $color-bg-informative-weak
-        foreground: $color-fg-informative-contrast
+        background: { value: $color-info / 16%, note: "`color-mix(in srgb, var(--color-info) 16%, transparent)`" }
+        foreground: $color-info
 
   - when: { soft: success }
     default:
       root:
-        background: $color-bg-positive-weak
-        foreground: $color-fg-positive-contrast
+        background: { value: $color-success / 16%, note: "`color-mix(in srgb, var(--color-success) 16%, transparent)`" }
+        foreground: $color-success
 
   - when: { soft: warning }
     default:
       root:
-        background: $color-bg-warning-weak
-        foreground: $color-fg-warning-contrast
+        background: { value: $color-warning / 16%, note: "`color-mix(in srgb, var(--color-warning) 16%, transparent)`" }
+        foreground: $color-warning
 
   - when: { soft: error }
     default:
       root:
-        background: $color-bg-critical-weak
-        foreground: $color-fg-critical-contrast
+        background: { value: $color-error / 16%, note: "`color-mix(in srgb, var(--color-error) 16%, transparent)`" }
+        foreground: $color-error
 
   # ── outline ───────────────────────────────────────────
   - when: { outline: outline }

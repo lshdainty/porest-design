@@ -2714,10 +2714,14 @@ export function pageCss() {
       letter-spacing: 0.04em;
       white-space: nowrap;
     }
-    .badge-success { background: color-mix(in srgb, var(--color-success) 16%, transparent); color: var(--color-success); }
-    .badge-error { background: color-mix(in srgb, var(--color-error) 16%, transparent); color: var(--color-error); }
-    .badge-warning { background: color-mix(in srgb, var(--color-warning) 16%, transparent); color: var(--color-warning); }
-    .badge-info { background: color-mix(in srgb, var(--color-info) 16%, transparent); color: var(--color-info); }
+    .badge-success { background: var(--color-bg-positive-weak); color: var(--color-fg-positive-contrast); }
+    [data-theme="dark"] .badge-success { background: var(--color-bg-positive-weak-dark); color: var(--color-fg-positive-contrast-dark); }
+    .badge-error { background: var(--color-bg-critical-weak); color: var(--color-fg-critical-contrast); }
+    [data-theme="dark"] .badge-error { background: var(--color-bg-critical-weak-dark); color: var(--color-fg-critical-contrast-dark); }
+    .badge-warning { background: var(--color-bg-warning-weak); color: var(--color-fg-warning-contrast); }
+    [data-theme="dark"] .badge-warning { background: var(--color-bg-warning-weak-dark); color: var(--color-fg-warning-contrast-dark); }
+    .badge-info { background: var(--color-bg-informative-weak); color: var(--color-fg-informative-contrast); }
+    [data-theme="dark"] .badge-info { background: var(--color-bg-informative-weak-dark); color: var(--color-fg-informative-contrast-dark); }
 
     /* kpi-card */
     .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-md); }

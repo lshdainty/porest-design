@@ -93,7 +93,7 @@ Badge는 **size variant 없음** — 단일 spec. micro 라벨이라 사이즈 �
 |---|---|
 | **WCAG 1.4.1** Use of Color | 색 + 텍스트 둘 다 필수 — 색 단독 의미 금지. dot indicator도 텍스트 라벨 동반. |
 | **WCAG 1.4.3** Color contrast (solid text × bg) | `text-on-accent` × `primary` 7:1+ / `text-on-accent` × `error` 5:1+ / `text-primary` × `surface-input` 12:1+ ✓ |
-| **WCAG 1.4.3** Color contrast (soft text × bg) | 약한 배경(`bg-*-weak`) 위 contrast 글자(`fg-*-contrast`): informative `#1B65B9` 4.96:1 · positive `#14753A` 4.92:1 · warning `#AD420C` 4.97:1 · critical `#C11F1F` 5.00:1 — 모두 AA ✓. hover 의 `bg-*-weak-pressed` 위에서도 4.5:1 이상(4.51 ~ 4.55). v102 전에는 의미 색 16% 섞음 위 의미 색 글자라 3.73 ~ 4.03:1 로 미달이었다. micro 텍스트 11px 는 large text 기준(18px · 굵게 14px)에 들지 않는다. |
+| **WCAG 1.4.3** Color contrast (soft text × bg) | 16% mix(흰 바탕) 위 글자: `info` `#1D6FCB` 4.03:1 · `success` `#16803F` 4.03:1 · `warning` `#C84D0E` 3.73:1 · `error` `#DC2626` 3.76:1 — **모두 AA 4.5 미달(⚠)**. micro 텍스트 11px 는 large text 기준(18px · 굵게 14px)에 들지 않는다. |
 | **WCAG 1.4.11** Non-text contrast (outline border × bg-page) | `info` 4.5:1+ / `error` 5:1+ / `border-default` 1.4:1 — border-default outline은 약함이라 dot indicator + 텍스트로 시각 식별 보강. |
 | **WCAG 2.4.7** Focus Visible | interactive badge `focus-visible:ring-2 ring-ring ring-offset-2` ✓ |
 | **WCAG 2.5.5** Target Size (AAA, 44×44) | static badge — 미달(⚠). static 라벨은 touch target 아니라 무관. interactive badge는 wrapper로 padding 확장 권장. |
