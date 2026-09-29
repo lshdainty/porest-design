@@ -78,21 +78,46 @@ Porest Sidebar는 **2 sides × 3 variants × 3 collapsible modes × menu item �
 
 Sidebar는 자체 size 없음 — width는 CSS variable.
 
-[표: 크기와 모양](sidebar.yaml#base.default)
-
-[표: 메뉴 버튼 크기](sidebar.yaml#size)
-
-[표: 전환](sidebar.yaml#motion)
+| 항목 | 값 | 토큰/규칙 |
+|---|---|---|
+| Sidebar width (expanded) | 16rem (256px) | `--sidebar-width` |
+| Sidebar width (mobile Sheet) | 18rem (288px) | `--sidebar-width-mobile` |
+| Sidebar width (icon collapsed) | 3rem (48px) | `--sidebar-width-icon` |
+| SidebarHeader/Footer padding | 8px | `p-[var(--spacing-sm)]` |
+| SidebarGroup padding | 8px | `p-[var(--spacing-sm)]` |
+| SidebarGroupLabel font | 12 / 600 / tertiary + uppercase | `text-caption font-semibold uppercase tracking-wide text-text-tertiary` |
+| SidebarMenu gap | 4px | `gap-[var(--spacing-xs)]` |
+| SidebarMenuButton (default) | h-8 + p-sm + body-md | `h-8 p-[var(--spacing-sm)] text-body-md` |
+| SidebarMenuButton (sm) | h-7 + label-sm | `h-7 text-label-sm` |
+| SidebarMenuButton (lg) | h-12 + body-md (logo row) | `h-12 text-body-md` |
+| Menu item gap (icon ↔ label) | 8px | `gap-[var(--spacing-sm)]` |
+| Menu item radius | 4px | `rounded-sm` (menu family 정합) |
+| Icon size | 16×16 | `[&>svg]:size-4` |
+| Trigger (PanelLeft) | 28×28 | [`Button`](button.md) `variant="ghost" size="icon"` |
+| Transition | colors + width | `transition-colors duration-[var(--motion-duration-fast)]` + `transition-[width] duration-200 ease-linear` |
+| Keyboard shortcut | `Ctrl/⌘ + B` | (Provider 자동 binding) |
 
 ## States
 
 ### SidebarMenuButton
 
-[표: 메뉴 버튼 상태](sidebar.yaml#matrix.part.menuButton)
+| State | Background | Text |
+|---|---|---|
+| `default` | transparent | `text-primary` |
+| `hover` | `surface-input` | `text-primary` |
+| `focus-visible` | (변화 없음) | + `ring-2 ring-ring` |
+| `active` (`data-[active=true]`) | `surface-input` | `text-primary` + `font-medium` |
+| `disabled` (`aria-disabled` / `disabled`) | transparent | opacity 0.5 + `cursor-not-allowed` |
+| `data-state=open` (sub-menu) | `surface-input` | `text-primary` |
 
 ### Sidebar (collapsed/expanded)
 
-[표: 펼침 · 접힘 · 모바일](sidebar.yaml#sidebar)
+| State | 시각 |
+|---|---|
+| `expanded` (default) | full width (16rem), 라벨 가시 |
+| `collapsed` (offcanvas) | width 0, 화면 밖 |
+| `collapsed` (icon) | width 3rem, icon만 — tooltip으로 라벨 |
+| `mobile` (`isMobile`) | [`Sheet`](sheet.md) `side={side}` overlay |
 
 ## Layout (한국 도메인 패턴)
 
