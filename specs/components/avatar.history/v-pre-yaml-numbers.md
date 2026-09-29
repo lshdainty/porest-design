@@ -29,7 +29,10 @@ Porest Avatar는 **4 sizes(sm/md/lg/xl) × 2 fills(neutral/primary)** 매트릭�
 
 ## Variants (fill)
 
-[표: 변형별 색](avatar.yaml#variant)
+| Variant | Background | Text | 사용처 |
+|---|---|---|---|
+| `neutral` *(default)* | `--color-surface-input` | `--color-text-primary` | 동료/팀원 일반 표시 — 절제된 톤. |
+| `primary` | `--color-primary` | `--color-text-on-accent` | 본인/강조 사용자 — preview `.hc-avatar` SoT. brand-color identity. |
 
 브랜드 분기: `primary` variant에서만 HR `#357B5F` / Desk `#0147AD` 반영. `neutral`은 brand-agnostic.
 
@@ -37,13 +40,25 @@ Porest Avatar는 **4 sizes(sm/md/lg/xl) × 2 fills(neutral/primary)** 매트릭�
 
 `width = height` 정사각 + `radius-full` 정원. 폰트 토큰은 한국어 1글자 이니셜 가독성 기준으로 사이즈별 점진 확대.
 
-[표: 크기](avatar.yaml#size)
+| Size | px | 토큰 | Fallback font (token) | Fallback font (px) | 사용처 |
+|---|---|---|---|---|---|
+| `sm` | 32 | `h-8 w-8` | `text-label-sm` | 13 | dense list, comment thread. |
+| `md` *(default)* | 40 | `h-10 w-10` | `text-title-sm` | 16 | preview `.hc-avatar` SoT, user row, mention chip. |
+| `lg` | 48 | `h-12 w-12` | `text-title-md` | 18 | profile header (소형), card emphasis. |
+| `xl` | 64 | `h-16 w-16` | `text-display-sm` | 28 | profile detail page, hero. |
 
 공통 weight: `600` (font-semibold). preview `.hc-avatar`는 `700`이나 spec은 `600` 통일 — body 텍스트 `600`과 시각 위계 일관성. (preview는 다음 sync에서 정합 예정.)
 
 ## States
 
-[표: 상태](avatar.yaml#matrix)
+| State | Background | Text | 추가 |
+|---|---|---|---|
+| `enabled` (image loaded) | (image) | — | — |
+| `enabled` (fallback) | variant 따름 | variant 따름 | — |
+| `image loading` | variant 따름 (fallback 일시 노출) | variant 따름 | — |
+| `image error` | variant 따름 (fallback 영구 노출) | variant 따름 | — |
+| `interactive: hover` | 동일 | 동일 | `cursor-pointer` (avatar가 button/link 안에 있을 때만) |
+| `interactive: focus-visible` | 동일 | 동일 | `ring-2 ring-ring ring-offset-2` |
 
 avatar 자체는 인터랙티브가 아님 — 클릭 가능해야 하면 `<button>` 또는 `<a>`로 wrap.
 
