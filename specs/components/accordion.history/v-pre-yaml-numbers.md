@@ -46,15 +46,35 @@ Type은 Radix `type` prop으로 결정. Accordion 자체 시각 spec은 동일.
 
 Accordion은 **size variant 없음** — 단일 spec. 사용처에서 `max-width` className으로 폭 조정.
 
-[표: 크기와 색](accordion.yaml#base.closed)
-
-[표: 전환](accordion.yaml#motion)
+| 항목 | 값 | 토큰 |
+|---|---|---|
+| Item border | 1px border-bottom | `border-b border-border-default` |
+| Trigger padding-Y | 16px | `py-[var(--spacing-lg)]` |
+| Trigger font | 16 / 500 | `text-title-sm font-medium` |
+| Trigger color | `text-primary` | `text-text-primary` |
+| Trigger gap (text ↔ chevron) | flex justify-between | (text-left + chevron-right) |
+| Chevron size | 16×16 | `h-4 w-4` |
+| Chevron color | `text-secondary` | `text-text-secondary` |
+| Chevron rotation | 0° → 180° (open) | `data-[state=open]:rotate-180` |
+| Content padding-bottom | 16px | `pb-[var(--spacing-lg)]` |
+| Content padding-top | 0 | `pt-0` |
+| Content font | 15 / 400 / 1.6 | `text-body-md` |
+| Content color | `text-secondary` | `text-text-secondary` |
+| Trigger transition | color | `duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]` |
+| Chevron transition | transform | `duration-[var(--motion-duration-base)]` |
+| Content animation | accordion-down/up | (keyframes from DESIGN.md `--motion-duration-base`) |
 
 ## States
 
 ### Trigger
 
-[표: 트리거 상태](accordion.yaml#matrix)
+| State | Color | Chevron | 추가 |
+|---|---|---|---|
+| `closed` (default) | `text-primary` | 0° (down) | — |
+| `closed + hover` | `text-secondary` (또는 underline) | 0° | `transition-[color]` |
+| `closed + focus-visible` | `text-primary` | 0° | `ring-2 ring-ring ring-offset-2 rounded-xs` |
+| `open` | `text-primary` | 180° (up) | — |
+| `disabled` | `text-primary` opacity 0.5 | 0° | `cursor-not-allowed pointer-events-none` |
 
 ### Content
 
