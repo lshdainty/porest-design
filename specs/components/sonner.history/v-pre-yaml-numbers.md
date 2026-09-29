@@ -73,7 +73,13 @@ Porest Sonner는 **단일 spec × 5 kinds(default/success/error/warning/info)** 
 
 ## Kinds
 
-[표: 종류별 아이콘 색](sonner.yaml#kind)
+| Kind | Icon stroke 색상 | 의미 | 사용처 |
+|---|---|---|---|
+| `default` | (icon 없음) | 중립 알림 | 일반 정보 toast, action 동반 알림(예: "보관함으로 이동했습니다 — 되돌리기"). |
+| `success` | `--color-success` (#1A7F47) | 성공 / 완료 | 저장 성공, 결재 승인 완료. |
+| `error` | `--color-error` (#D32F2F) | 실패 / 에러 | 저장 실패, 네트워크 끊김. |
+| `warning` | `--color-warning` (#F59E0B) | 주의 / 임박 | 저장 공간 부족, 기한 임박 D-3. |
+| `info` | `--color-info` (#2271D1) | 정보 / 안내 | 새 알림 도착, 백그라운드 동기화 완료. |
 
 브랜드 분기 없음 — 모든 kind가 brand-neutral semantic 토큰 사용. action button만 `--color-primary`로 브랜드 색이 반영됨.
 
@@ -88,11 +94,30 @@ Porest Sonner는 **단일 spec × 5 kinds(default/success/error/warning/info)** 
 
 Sonner는 **size variant 없음** — 단일 spec. 콘텐츠(title/description 길이)에 따라 `max-width:360px` 안에서 자연 wrap.
 
-[표: 크기와 간격](sonner.yaml#base.visible)
+| 항목 | 값 | 토큰 |
+|---|---|---|
+| Container min-height | **52px** | (literal) |
+| Container padding | 12 / 16 (Y · X) | `var(--spacing-md)` · `var(--spacing-lg)` |
+| Container radius | 8px | `var(--radius-md)` |
+| Container shadow | shadow-md | `var(--shadow-md)` |
+| Container border | 없음 | — (면 + 그림자로 분리) |
+| Container max-width | 360px | (literal — sonner 라이브러리 기본) |
+| Gap (icon · content · action) | 12px | `var(--spacing-md)` |
+| Gap (글 줄 · 버튼 줄) | 12px | `var(--spacing-md)` — 가로 gap 과 같은 값(한 `gap`) |
+| 버튼 자리 | 글 아래 줄 오른쪽 끝 | `margin-left:auto` |
+| Gap (title · description) | 4px | `var(--spacing-xs)` |
+| Icon size | 20×20 | (svg width/height) |
+| Stack gap (multi-toast) | 12px | `var(--spacing-md)` |
 
 ## States
 
-[표: 상태](sonner.yaml#matrix)
+| State | 동작 | 시각 |
+|---|---|---|
+| `enter` | 화면 모서리에서 슬라이드 + fade in | `motion-duration-base` (250ms) · `motion-ease-out` |
+| `visible` | 표시 상태 (auto-dismiss timer 진행) | spec 그대로 |
+| `hover` | timer 일시정지 + 가까운 토스트 stack 펼침 | shadow 변화 없음 |
+| `exit` | swipe 또는 timer 만료 시 fade out | `motion-duration-base` · `motion-ease-in` |
+| `action click` | callback 실행 + 즉시 dismiss | (callback 결과는 별도 toast로 안내) |
 
 자동 dismiss 기본 4000ms(sonner 라이브러리 default). action 동반 toast는 사용자 결정이 필요하므로 자동 dismiss 끔 또는 6000ms+ 권장.
 
