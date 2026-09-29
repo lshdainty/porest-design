@@ -26,7 +26,7 @@ border-default(outline)
 
 - icon-only Toggle은 `size-default`(min-h-8) 권장 + `aria-label`. label 텍스트 있을 땐 label이 자체 의미.
 - on 상태는 `data-state="on"` (Radix 자동) — `bg-surface-input` + `text-primary` 변화로 즉시 식별.
-- 모든 상태 변화는 `motion-duration-fast` (150ms) — Switch보다 가볍게(button 톤이라 즉각 반응 인상).
+- 모든 상태 변화는 `motion-duration-fast` (180ms) — Switch보다 가볍게(button 톤이라 즉각 반응 인상).
 
 ## Variants
 
