@@ -62,7 +62,7 @@ RadioList는 **active row bg 변화 없음**이 기본 — check 단서로 충�
 
 **Form / setting section**
 
-- `<SectionLabel>` "기본 통화"/"언어"/"국가" 등 + 아래 RadioList container. label과 container 사이 gap `var(--spacing-sm)` (8).
+- `<SectionLabel>` "기본 통화"/"언어"/"국가" 등 + 아래 RadioList container. label과 container 사이 gap `var(--spacing-sm)` (10).
 - mobile/desktop 모두 full-width — viewport 따라 row 폭만 조정.
 
 **옵션 수**
