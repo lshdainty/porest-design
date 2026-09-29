@@ -44,7 +44,20 @@ content variant는 없음 — 모든 popover는 동일 시각 spec. 콘텐츠 �
 
 Popover는 **content size variant 없음** — 사용처에서 className으로 폭만 조정(`w-72`(288) 기본, `w-80`(320)/`w-96`(384) 등). padding/radius/shadow는 단일 spec.
 
-[표: 크기와 모양](popover.yaml#base)
+| 항목 | 값 | 토큰 |
+|---|---|---|
+| Content padding | 12px | `var(--spacing-md)` |
+| Content gap (자식 간) | 8px | `var(--spacing-sm)` |
+| Content radius | 8px | `var(--radius-md)` |
+| Content shadow | shadow-md | `var(--shadow-md)` |
+| Content border | 1px solid | `var(--color-border-default)` |
+| Content z-index | `z-[200]` (L3 modal-aware floating) | [`z-index.md`](../z-index.md) |
+| Side offset (trigger ↔ content) | 4px | (Radix 기본) |
+| Default width | 288px (`w-72`) | (literal) |
+| Compact trigger padding | xs · sm | `var(--spacing-xs)` · `var(--spacing-sm)` |
+| Compact trigger font | caption (12) | `var(--text-caption)` |
+| Compact trigger radius | 8px | `var(--radius-md)` |
+| Actions gap | 4px | `var(--spacing-xs)` |
 
 ## States
 
