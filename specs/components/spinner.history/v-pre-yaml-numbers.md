@@ -23,7 +23,12 @@ Spinner는 **variant 없음** — 단일 시각, size만 분기.
 
 ## Sizes
 
-[표: 크기](spinner.yaml#size)
+| Size | Diameter | Stroke | 사용처 |
+|---|---|---|---|
+| `sm` | 16px | 2px | inline (텍스트 옆 — "메모 저장 중…") |
+| `md` *(default)* | 24px | 2px | 카드 안 로딩, 폼 제출 중 |
+| `lg` | 32px | 3px | 섹션 로딩, modal 안 |
+| `xl` | 48px | 4px | full-page 로딩 (가운데 + 라벨) |
 
 Tailwind utility 매핑 (spinner.tsx cva):
 - `sm`: `size-4 border-2`
@@ -33,13 +38,22 @@ Tailwind utility 매핑 (spinner.tsx cva):
 
 ## Color
 
-[표: 색](spinner.yaml#base)
+| 모드 | arc 색 | track 색 |
+|---|---|---|
+| Light | `--color-primary` (브랜드: HR `#357B5F` / Desk `#0147AD`) | `--color-border-default` (`#E5E8EF`) |
+| Dark | `--color-primary-light` (브랜드: HR `#6BAE8C` / Desk `#5FA0E5`) — `[data-theme="dark"]` cascade 자동 swap | `--color-border-default-dark` (`#353B4D`) |
 
 다크 모드에서 `primary-light`로 자동 swap돼 어두운 표면 위에서 시인성 확보 (button focus ring과 동일 패턴).
 
 ## Animation
 
-[표: 회전](spinner.yaml#motion)
+| 항목 | 값 |
+|---|---|
+| 회전 | 360deg `transform: rotate(360deg)` |
+| Duration | `motion-duration-loop` (1500ms) |
+| Easing | `motion-ease-linear` (linear — 회전이 일정 속도여야 자연스러움) |
+| Iteration | infinite |
+| Arc 길이 | 270deg (3/4) — 시각 회전 인지에 충분, 360deg 완전 채우면 회전 안 보임 |
 
 CSS 키:
 
