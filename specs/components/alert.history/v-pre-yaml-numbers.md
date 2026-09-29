@@ -33,7 +33,13 @@ Porest Alert은 **5 variants(default/info/success/warning/error) × dismissable 
 
 ## Variants
 
-[표: 변형별 색](alert.yaml#variant)
+| Variant | Border-left 색 | Background (mix 8%) | Icon stroke | 사용처 |
+|---|---|---|---|---|
+| `default` | (없음, 1px border-default) | `surface-default` (그대로) | 없음(또는 중립) | 일반 메시지 — 시스템 안내. 의미 분기 없을 때만. |
+| `info` | `--color-info` | `info 8% + surface` | `info` | 정보성 안내 — 새 기능, 정책 변경 예고. |
+| `success` | `--color-success` | `success 8% + surface` | `success` | 성공 / 완료 — 결제 완료, 작업 성공 후 페이지 안내. |
+| `warning` | `--color-warning` | `warning 8% + surface` | `warning` | 주의 / 임박 — 약관 변경 예정, 저장 공간 부족. |
+| `error` (destructive) | `--color-error` | `error 8% + surface` | `error` | 실패 / 오류 — 결제 실패, 저장 실패 등. shadcn `destructive` alias. |
 
 브랜드 분기 없음 — 모든 variant가 brand-neutral semantic 토큰 사용. Sonner와 같은 5 kinds 구조로 시각 일관성.
 
@@ -41,7 +47,19 @@ Porest Alert은 **5 variants(default/info/success/warning/error) × dismissable 
 
 Alert은 **size variant 없음** — 단일 spec. 사용처에서 `max-width` className으로 폭 조정(메인 영역 가운데 정렬은 `max-w-3xl mx-auto` 등).
 
-[표: 크기와 모양](alert.yaml#base)
+| 항목 | 값 | 토큰 |
+|---|---|---|
+| Padding | 12px | `var(--spacing-md)` |
+| Gap (icon ↔ body) | 12px | `var(--spacing-md)` |
+| Gap (title ↔ description) | 4px | `var(--spacing-xs)` |
+| Border radius | 4px | `var(--radius-sm)` |
+| Border-left width (semantic) | 4px | (literal — accent strip) |
+| Background (semantic) | `color-mix(in srgb, semantic 8%, surface-default)` | — |
+| Title font | body-md (15) + 600 | `text-body-md font-semibold` |
+| Description font | body-sm (14) + 400 | `text-body-sm text-text-secondary` |
+| Icon size | 20×20 | (svg attr) |
+| Close button | 28×28 | (literal) |
+| Margin block (인접 alert) | 8px | `var(--spacing-sm)` |
 
 ## States
 
