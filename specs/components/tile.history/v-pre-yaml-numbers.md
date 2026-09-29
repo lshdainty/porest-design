@@ -36,17 +36,40 @@ Tile은 **variant 없음** — 단일 시각 spec. 의미 분기는 호출처가
 
 ## Sizes
 
-[표: 크기](tile.yaml#size)
+| Size | Padding | swatch | Gap | Check |
+|---|---|---|---|---|
+| `sm` | `12 10` | 32×32 | 10 | 14 |
+| `md` *(default)* | `16 14` | 40×40 | 12 | 16 |
+| `lg` | `20 18` | 48×48 | 14 | 18 |
 
-[표: 공통 값](tile.yaml#base.enabled)
-
-[표: 선택 여부에 따라 바뀌는 값](tile.yaml#grid.selected)
+| 항목 | 값 (md) | 토큰 |
+|---|---|---|
+| Tile padding (Y · X) | 16 · 14 | (literal) |
+| Tile radius | 12 | `var(--radius-lg)` |
+| Tile border (inactive) | 1px solid `border-subtle` | `var(--border-subtle)` |
+| Tile border (active) | 1.5px solid `primary` | `var(--color-primary)` |
+| Tile bg (inactive) | `var(--bg-surface)` | (semantic) |
+| Tile bg (active) | `color-mix(in oklch, var(--color-primary) 8%, transparent)` | (literal mix) |
+| Swatch size | 40×40 | (literal) |
+| Swatch radius | `var(--radius-tile)` | (= radius-lg 12) |
+| Swatch border | 1px `border-subtle` | (semantic) |
+| Gap (swatch ↔ text) | 12 | `var(--spacing-md)` |
+| Label font | 14 / semi | `var(--fs-body)` + `var(--fw-semi)` |
+| Description font | 11–12 / regular | `var(--fs-caption)` |
+| Description color | `var(--color-text-tertiary)` | (semantic) |
+| Check size | 16 | (literal) |
+| Check color | `var(--color-primary)` | (semantic) |
+| Transition | all 150ms | `var(--motion-duration-fast)` |
 
 ## States
 
-[표: 선택 여부](tile.yaml#selected)
-
-[표: 상태 — inactive](tile.yaml#matrix.selected.inactive)
+| State | Border | Background | Check |
+|---|---|---|---|
+| `enabled` (inactive) | 1px `border-subtle` | `bg-surface` | — |
+| `enabled` (active) | 1.5px `primary` | `primary` 8% tint | ✓ |
+| `hover` (inactive) | 1px `border-default` | `bg-surface` | — |
+| `focus-visible` | (변화 없음) | (변화 없음) | + `ring-2 ring-ring ring-offset-2` |
+| `disabled` | (변화 없음) | (변화 없음) | `opacity 0.5 cursor-not-allowed` |
 
 ## Layout
 
