@@ -1,50 +1,78 @@
 ---
 title: Palette
-description: 브랜드 · 회색 · 의미 색 · 차트 색
+description: 회색 · 브랜드 · 빨강 · 초록 · 주황 · 파랑의 단계와 차트 색
 source: DESIGN.md
 ---
 
 import { COLOR_TABS, SectionTabs } from '@/components/foundations/ui';
-import { PaletteGrid, PaletteTable } from '@/components/foundations/color';
+import { BrandPaletteTable, ChartGrid, ChartTable, PaletteRamp, PaletteTokenTable } from '@/components/foundations/color';
 
 <SectionTabs items={COLOR_TABS} active="Palette" />
 
-기본 색은 [역할 색](/docs/foundations/color/roles)이 가리키는 값이다. 화면에서는 역할 이름으로 부르고, 차트처럼 역할로 나타내기 어려운 자리에서만 기본 색을 직접 쓴다.
+팔레트는 가족마다 차례 번호를 붙인 색이다 — `100` 이 가장 옅고 `1000` 이 가장 짙다(회색은 흰 `00` 도 있다). [역할 색](/docs/foundations/color/roles)이 이 단계를 가리키고, 화면은 역할 이름으로 색을 부른다. 팔레트를 직접 쓰는 것은 역할로 나타내기 어려운 예외적인 자리뿐이다.
 
-## 브랜드
+단계마다 라이트 · 다크 값이 따로 있다. 다크는 차례가 뒤집혀 작은 번호가 어둡다 — 그래서 같은 번호가 두 모드에서 비슷한 무게로 보인다(라이트의 옅은 `100` 은 다크에서도 바탕에 가까운 `100` 이다). 다크 값은 `-dark` 를 붙인 이름(`gray-100-dark`)에 있다.
 
-Desk 는 파랑, HR 은 초록이다. `-light` 는 다크 모드에서 글자 · 선에 쓰는 밝은 짝이다.
+## Gray
 
-<PaletteGrid group="brand" />
+글자 · 선 · 표면의 회색이다. 토스 톤의 푸른 회색이고, 라이트 `1000` 과 다크 `00` 이 같은 짙은 남색이다.
 
-<PaletteTable group="brand" />
+<PaletteRamp family="gray" />
 
-## 회색
+## Brand
 
-토스 톤의 푸른 회색이다. 밝은 것부터 어두운 것 순서이고, 뒤의 셋은 다크 모드 표면이다. 표의 다크 칸은 같은 자리의 다크 모드 값이다.
+브랜드 파일(`DESIGN.desk.md` · `DESIGN.hr.md`)에만 있다. 파일 안에서는 두 브랜드 모두 같은 이름 `brand-100` ~ `brand-1000` 이다.
 
-<PaletteGrid group="neutral" />
+### Desk
 
-<PaletteTable group="neutral" />
+<PaletteRamp family="brand" brand="desk" />
 
-## 의미 색
+### HR
 
-라이트 값은 흰 바탕 · 페이지 · 입력칸 위에서 4.5:1 을 넘기고, `-light` 는 어두운 표면 위 글자 · 선에 쓴다.
+<PaletteRamp family="brand" brand="hr" />
 
-<PaletteGrid group="semantic" />
+## Chromatic
 
-<PaletteTable group="semantic" />
+의미 색의 가족이다. 빨강은 critical, 초록은 positive, 주황은 warning, 파랑은 informative 역할이 가리킨다.
 
-## 차트
+### Red
 
-데이터 시각화용 10색이다. 색상을 고르게 나누고 명도를 맞춰, 어느 색도 데이터를 더 강조해 보이지 않게 했다.
+<PaletteRamp family="red" />
 
-<PaletteGrid group="chart" />
+### Green
 
-<PaletteTable group="chart" />
+<PaletteRamp family="green" />
+
+### Orange
+
+<PaletteRamp family="orange" />
+
+### Blue
+
+<PaletteRamp family="blue" />
+
+## Chart
+
+데이터 시각화용 10색이다. 아직 팔레트 밖에 있다 — 팔레트에서 새로 고를 예정이다.
+
+<ChartGrid />
 
 - 막대 · 선 · 점 같은 채움에만 쓴다(UI 3:1). 차트 위 글자에는 쓰지 않는다 — 글자는 `fg-neutral` · `fg-neutral-muted`.
 - 두 브랜드가 같은 차트 색을 쓴다. 다크 표면에서는 `-light` 짝을 쓴다.
+
+## Tokens
+
+### Palette Colors
+
+<PaletteTokenTable families={['gray', 'red', 'green', 'orange', 'blue']} />
+
+### Brand
+
+<BrandPaletteTable />
+
+### Chart
+
+<ChartTable />
 
 ---
 

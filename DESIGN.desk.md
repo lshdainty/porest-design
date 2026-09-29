@@ -7,57 +7,188 @@ description: |
   all-ages accessibility.
 
 colors:
+  # @sync:brand-start (colors-0)
+  # === v108 — 브랜드 팔레트(Desk 파랑). 파일 안에서는 접미사 없이 brand-100 ~ 1000, 단계마다 라이트 · 다크(-dark) ===
+  brand-100: "#E8F1FE"
+  brand-100-dark: "#202A3C"
+  brand-200: "#D7E5FC"
+  brand-200-dark: "#20314E"
+  brand-300: "#90A7CD"
+  brand-300-dark: "#1F3A69"
+  brand-400: "#6587C1"
+  brand-400-dark: "#1A4386"
+  brand-500: "#3765B1"
+  brand-500-dark: "#1049A4"
+  brand-600: "#0147AD"
+  brand-600-dark: "#1052B8"
+  brand-700: "#013D96"
+  brand-700-dark: "#1A5AC2"
+  brand-800: "#00307A"
+  brand-800-dark: "#4C83DC"
+  brand-900: "#002460"
+  brand-900-dark: "#8CAADA"
+  brand-1000: "#001948"
+  brand-1000-dark: "#CCD5E3"
+  # @sync:brand-end (colors-0)
+  
+  # @sync:shared-start (colors-0)
+  # === v108 — 팔레트(SEED 식 모드별). 가족마다 100 ~ 1000(회색은 00 을 더해 11단), 단계마다 라이트 · 다크(-dark) ===
+  # 역할(fg · bg · stroke)은 이 팔레트를 가리킨다. 다크는 SEED 처럼 뒤집혀 100 이 가장 어둡다
+  gray-00: "#FFFFFF"
+  gray-00-dark: "#1A1F2E"
+  gray-100: "#F7F8FD"
+  gray-100-dark: "#242938"
+  gray-200: "#F5F6FA"
+  gray-200-dark: "#2D3346"
+  gray-300: "#EDEFF3"
+  gray-300-dark: "#353B4D"
+  gray-400: "#D8DFEF"
+  gray-400-dark: "#404757"
+  gray-500: "#8A91A0"
+  gray-500-dark: "#656B78"
+  gray-600: "#767C8B"
+  gray-600-dark: "#838997"
+  gray-700: "#62697A"
+  gray-700-dark: "#A2A8B7"
+  gray-800: "#535866"
+  gray-800-dark: "#B7BDCC"
+  gray-900: "#2F3541"
+  gray-900-dark: "#D6DDEC"
+  gray-1000: "#1A1F2E"
+  gray-1000-dark: "#F5F6FA"
+  red-100: "#FFEFEC"
+  red-100-dark: "#3E231F"
+  red-200: "#FFDEDA"
+  red-200-dark: "#532722"
+  red-300: "#FEC4BC"
+  red-300-dark: "#722722"
+  red-400: "#FCA195"
+  red-400-dark: "#93231F"
+  red-500: "#F8776B"
+  red-500-dark: "#B51317"
+  red-600: "#E95046"
+  red-600-dark: "#CC0E17"
+  red-700: "#D72323"
+  red-700-dark: "#D82424"
+  red-800: "#C01016"
+  red-800-dark: "#FD8679"
+  red-900: "#96030C"
+  red-900-dark: "#FFBCB3"
+  red-1000: "#5C0004"
+  red-1000-dark: "#FEEDEA"
+  green-100: "#EAF5EC"
+  green-100-dark: "#202D23"
+  green-200: "#D8EADB"
+  green-200-dark: "#223927"
+  green-300: "#BBDAC1"
+  green-300-dark: "#20482B"
+  green-400: "#95C49E"
+  green-400-dark: "#1A582F"
+  green-500: "#6AAC7A"
+  green-500-dark: "#076931"
+  green-600: "#43955B"
+  green-600-dark: "#117539"
+  green-700: "#167F3F"
+  green-700-dark: "#198140"
+  green-800: "#026E33"
+  green-800-dark: "#6CB87F"
+  green-900: "#075527"
+  green-900-dark: "#AED6B6"
+  green-1000: "#023214"
+  green-1000-dark: "#E9F4EB"
+  orange-100: "#FFEFE8"
+  orange-100-dark: "#39251E"
+  orange-200: "#FAE0D5"
+  orange-200-dark: "#4B2B1F"
+  orange-300: "#F5C7B6"
+  orange-300-dark: "#65321D"
+  orange-400: "#EDA98E"
+  orange-400-dark: "#833615"
+  orange-500: "#E18663"
+  orange-500-dark: "#9F3901"
+  orange-600: "#D1673B"
+  orange-600-dark: "#B04209"
+  orange-700: "#BE490D"
+  orange-700-dark: "#BF4A10"
+  orange-800: "#A53E0A"
+  orange-800-dark: "#F58C64"
+  orange-900: "#822E02"
+  orange-900-dark: "#F9BFA9"
+  orange-1000: "#4E1801"
+  orange-1000-dark: "#FEEEE7"
+  blue-100: "#EAF3FE"
+  blue-100-dark: "#1F2A39"
+  blue-200: "#D7E6FB"
+  blue-200-dark: "#21344D"
+  blue-300: "#B9D4F6"
+  blue-300-dark: "#204069"
+  blue-400: "#92BCF0"
+  blue-400-dark: "#1C4E8A"
+  blue-500: "#69A0E7"
+  blue-500-dark: "#125AAA"
+  blue-600: "#4387DA"
+  blue-600-dark: "#0F65BF"
+  blue-700: "#1D6EC9"
+  blue-700-dark: "#1F70CB"
+  blue-800: "#0F5FB3"
+  blue-800-dark: "#6BABFD"
+  blue-900: "#06498D"
+  blue-900-dark: "#ACCEFB"
+  blue-1000: "#022956"
+  blue-1000-dark: "#E8F2FE"
+  # @sync:shared-end (colors-0)
+  
   # @sync:brand-start (colors-1)
   # === Brand (Desk primary, single-brand 명명 — DESIGN.desk.md context) ===
-  primary: "#0147AD"
-  primary-light: "#5FA0E5"
+  primary: "{colors.fg-brand}"
+  primary-light: "{colors.fg-brand-dark}"
   # @sync:brand-end (colors-1)
   
   # @sync:shared-start (colors-1)
   # === Neutral - Page background (HR/Desk 공유) ===
-  bg-page: "#F5F6FA"
-  bg-page-dark: "#1A1F2E"
+  bg-page: "{colors.bg-layer-basement}"
+  bg-page-dark: "{colors.bg-layer-basement-dark}"
   
   # === Neutral - Surface (카드/시트/입력 표면, 공통) ===
-  surface-default: "#FFFFFF"
-  surface-default-dark: "#242938"
-  surface-input: "#F0F2F7"
-  surface-input-dark: "#2D3346"
+  surface-default: "{colors.bg-layer-default}"
+  surface-default-dark: "{colors.bg-layer-default-dark}"
+  surface-input: "{colors.bg-neutral-weak}"
+  surface-input-dark: "{colors.bg-neutral-weak-dark}"
   
   # === Neutral - Text (본문/보조/3차/accent 위, 공통) ===
-  text-primary: "#1A1F2E"
-  text-primary-dark: "#F5F6FA"
-  text-secondary: "#4E5968"
-  text-secondary-dark: "#B0B8C4"
-  text-tertiary: "#62697A"
-  text-tertiary-dark: "#9DA3B0"
-  text-disabled: "#828995"
-  text-disabled-dark: "#7A8294"
-  text-on-accent: "#FFFFFF"
+  text-primary: "{colors.fg-neutral}"
+  text-primary-dark: "{colors.fg-neutral-dark}"
+  text-secondary: "{colors.fg-neutral-muted}"
+  text-secondary-dark: "{colors.fg-neutral-muted-dark}"
+  text-tertiary: "{colors.fg-neutral-subtle}"
+  text-tertiary-dark: "{colors.fg-neutral-subtle-dark}"
+  text-disabled: "{colors.fg-disabled}"
+  text-disabled-dark: "{colors.fg-disabled-dark}"
+  text-on-accent: "{colors.static-white}"
   
   # === Neutral - Border (장식 외곽선/필수 UI 외곽선, 공통) ===
-  border-default: "#E5E8EF"
-  border-default-dark: "#353B4D"
-  border-strong: "#7D8593"
-  border-strong-dark: "#8B95A8"
+  border-default: "{colors.stroke-neutral-weak}"
+  border-default-dark: "{colors.stroke-neutral-weak-dark}"
+  border-strong: "{colors.stroke-neutral-solid}"
+  border-strong-dark: "{colors.stroke-neutral-solid-dark}"
   # @sync:shared-end (colors-1)
   
   # @sync:brand-start (colors-2)
   # === Brand - Focus ring (Desk primary 시맨틱 alias) ===
-  border-focus: "#0147AD"
-  border-focus-light: "#5FA0E5"
+  border-focus: "{colors.stroke-focus-ring}"
+  border-focus-light: "{colors.stroke-focus-ring-dark}"
   # @sync:brand-end (colors-2)
   
   # @sync:shared-start (colors-2)
   # === Semantic - Status (functional palette, base + light 페어, 듀얼 브랜드 공유) ===
-  success: "#167F3F"
-  success-light: "#4ADE80"
-  error: "#D72323"
-  error-light: "#F87171"
-  warning: "#BE490D"
-  warning-light: "#FB923C"
-  info: "#1D6EC9"
-  info-light: "#60A5FA"
+  success: "{colors.fg-positive}"
+  success-light: "{colors.fg-positive-dark}"
+  error: "{colors.fg-critical}"
+  error-light: "{colors.fg-critical-dark}"
+  warning: "{colors.fg-warning}"
+  warning-light: "{colors.fg-warning-dark}"
+  info: "{colors.fg-informative}"
+  info-light: "{colors.fg-informative-dark}"
   
   # === Chart palette (data viz, 10색 hue 균등, L≈0.16-0.18 통일, 듀얼 브랜드 공유) ===
   # 1차 5색 (v21): red, orange, yellow, green, blue. 2차 5색은 v22, dark 변형은 v23-v24.
@@ -87,126 +218,126 @@ colors:
   # @sync:brand-start (colors-3)
   # === v102 — 브랜드 역할 색 (Desk). 파일 안에서는 접미사 없이 같은 이름 ===
   # 글자 (fg)
-  fg-brand: "#0147AD"
-  fg-brand-dark: "#5FA0E5"
-  fg-brand-contrast: "#0147AD"
-  fg-brand-contrast-dark: "#5FA0E5"
+  fg-brand: "{colors.brand-600}"
+  fg-brand-dark: "{colors.brand-900-dark}"
+  fg-brand-contrast: "{colors.brand-700}"
+  fg-brand-contrast-dark: "{colors.brand-900-dark}"
   # 배경 (bg)
-  bg-brand-solid: "#0147AD"
-  bg-brand-solid-dark: "#0147AD"
-  bg-brand-solid-pressed: "#013D97"
-  bg-brand-solid-pressed-dark: "#013D97"
-  bg-brand-weak: "#EBF0F8"
-  bg-brand-weak-dark: "#202D46"
-  bg-brand-weak-pressed: "#DBE5F4"
-  bg-brand-weak-pressed-dark: "#1C3052"
+  bg-brand-solid: "{colors.brand-600}"
+  bg-brand-solid-dark: "{colors.brand-500-dark}"
+  bg-brand-solid-pressed: "{colors.brand-700}"
+  bg-brand-solid-pressed-dark: "{colors.brand-700-dark}"
+  bg-brand-weak: "{colors.brand-100}"
+  bg-brand-weak-dark: "{colors.brand-100-dark}"
+  bg-brand-weak-pressed: "{colors.brand-200}"
+  bg-brand-weak-pressed-dark: "{colors.brand-200-dark}"
   # 선 (stroke)
-  stroke-focus-ring: "#0147AD"
-  stroke-focus-ring-dark: "#5FA0E5"
-  stroke-brand-solid: "#0147AD"
-  stroke-brand-solid-dark: "#5FA0E5"
-  stroke-brand-weak: "#5FA0E5"
-  stroke-brand-weak-dark: "#5FA0E5"
+  stroke-focus-ring: "{colors.brand-600}"
+  stroke-focus-ring-dark: "{colors.brand-900-dark}"
+  stroke-brand-solid: "{colors.brand-600}"
+  stroke-brand-solid-dark: "{colors.brand-900-dark}"
+  stroke-brand-weak: "{colors.brand-300}"
+  stroke-brand-weak-dark: "{colors.brand-800-dark}"
   # @sync:brand-end (colors-3)
   
   # @sync:shared-start (colors-3)
   # === v102 — SEED 역할 색 (fg · bg · stroke). 값은 porest 색이고, 옛 이름(text-* · surface-* · border-* · success …)은 같은 값의 별칭이다 ===
   # 글자 (fg)
-  fg-neutral: "#1A1F2E"
-  fg-neutral-dark: "#F5F6FA"
-  fg-neutral-muted: "#4E5968"
-  fg-neutral-muted-dark: "#B0B8C4"
-  fg-neutral-subtle: "#62697A"
-  fg-neutral-subtle-dark: "#9DA3B0"
-  fg-neutral-inverted: "#FFFFFF"
-  fg-neutral-inverted-dark: "#1A1F2E"
-  fg-placeholder: "#62697A"
-  fg-placeholder-dark: "#9DA3B0"
-  fg-disabled: "#828995"
-  fg-disabled-dark: "#7A8294"
+  fg-neutral: "{colors.gray-1000}"
+  fg-neutral-dark: "{colors.gray-1000-dark}"
+  fg-neutral-muted: "{colors.gray-800}"
+  fg-neutral-muted-dark: "{colors.gray-800-dark}"
+  fg-neutral-subtle: "{colors.gray-700}"
+  fg-neutral-subtle-dark: "{colors.gray-700-dark}"
+  fg-neutral-inverted: "{colors.gray-00}"
+  fg-neutral-inverted-dark: "{colors.gray-100-dark}"
+  fg-placeholder: "{colors.gray-700}"
+  fg-placeholder-dark: "{colors.gray-700-dark}"
+  fg-disabled: "{colors.gray-500}"
+  fg-disabled-dark: "{colors.gray-500-dark}"
   static-white: "#FFFFFF"
-  fg-critical: "#D72323"
-  fg-critical-dark: "#F87171"
-  fg-positive: "#167F3F"
-  fg-positive-dark: "#4ADE80"
-  fg-warning: "#BE490D"
-  fg-warning-dark: "#FB923C"
-  fg-informative: "#1D6EC9"
-  fg-informative-dark: "#60A5FA"
-  fg-critical-contrast: "#C11F1F"
-  fg-critical-contrast-dark: "#F87676"
-  fg-positive-contrast: "#14753A"
-  fg-positive-contrast-dark: "#4ADE80"
-  fg-warning-contrast: "#AD420C"
-  fg-warning-contrast-dark: "#FB923C"
-  fg-informative-contrast: "#1B65B9"
-  fg-informative-contrast-dark: "#65A8FA"
+  fg-critical: "{colors.red-700}"
+  fg-critical-dark: "{colors.red-800-dark}"
+  fg-positive: "{colors.green-700}"
+  fg-positive-dark: "{colors.green-800-dark}"
+  fg-warning: "{colors.orange-700}"
+  fg-warning-dark: "{colors.orange-800-dark}"
+  fg-informative: "{colors.blue-700}"
+  fg-informative-dark: "{colors.blue-800-dark}"
+  fg-critical-contrast: "{colors.red-900}"
+  fg-critical-contrast-dark: "{colors.red-900-dark}"
+  fg-positive-contrast: "{colors.green-900}"
+  fg-positive-contrast-dark: "{colors.green-900-dark}"
+  fg-warning-contrast: "{colors.orange-900}"
+  fg-warning-contrast-dark: "{colors.orange-900-dark}"
+  fg-informative-contrast: "{colors.blue-900}"
+  fg-informative-contrast-dark: "{colors.blue-900-dark}"
   # 배경 (bg)
-  bg-layer-basement: "#F5F6FA"
-  bg-layer-basement-dark: "#1A1F2E"
-  bg-layer-default: "#FFFFFF"
-  bg-layer-default-dark: "#242938"
-  bg-layer-default-pressed: "#F0F2F7"
-  bg-layer-default-pressed-dark: "#2D3346"
-  bg-layer-floating: "#FFFFFF"
-  bg-layer-floating-dark: "#2D3346"
-  bg-layer-floating-pressed: "#F0F2F7"
-  bg-layer-floating-pressed-dark: "#353B4D"
-  bg-neutral-weak: "#F0F2F7"
-  bg-neutral-weak-dark: "#2D3346"
-  bg-neutral-weak-pressed: "#E5E8EF"
-  bg-neutral-weak-pressed-dark: "#353B4D"
-  bg-neutral-inverted: "#1A1F2E"
-  bg-neutral-inverted-dark: "#F5F6FA"
-  bg-disabled: "#F0F2F7"
-  bg-disabled-dark: "#2D3346"
-  bg-critical-solid: "#D72323"
-  bg-critical-solid-dark: "#D72323"
-  bg-critical-solid-pressed: "#C42020"
-  bg-critical-solid-pressed-dark: "#C42020"
-  bg-critical-weak: "#FAE5E5"
-  bg-critical-weak-dark: "#442834"
-  bg-critical-weak-pressed: "#F8D7D7"
-  bg-critical-weak-pressed-dark: "#562732"
-  bg-positive-solid: "#167F3F"
-  bg-positive-solid-dark: "#167F3F"
-  bg-positive-solid-pressed: "#136C36"
-  bg-positive-solid-pressed-dark: "#136C36"
-  bg-positive-weak: "#E3F0E8"
-  bg-positive-weak-dark: "#213839"
-  bg-positive-weak-pressed: "#D5E8DC"
-  bg-positive-weak-pressed-dark: "#20413A"
-  bg-warning-solid: "#BE490D"
-  bg-warning-solid-dark: "#BE490D"
-  bg-warning-solid-pressed: "#A9410C"
-  bg-warning-solid-pressed-dark: "#A9410C"
-  bg-warning-weak: "#F7E9E2"
-  bg-warning-weak-dark: "#402F30"
-  bg-warning-weak-pressed: "#F3DED3"
-  bg-warning-weak-pressed-dark: "#4F322C"
-  bg-informative-solid: "#1D6EC9"
-  bg-informative-solid-dark: "#1D6EC9"
-  bg-informative-solid-pressed: "#1A63B6"
-  bg-informative-solid-pressed-dark: "#1A63B6"
-  bg-informative-weak: "#E4EEF9"
-  bg-informative-weak-dark: "#233552"
-  bg-informative-weak-pressed: "#D6E5F5"
-  bg-informative-weak-pressed-dark: "#223C61"
+  bg-layer-basement: "{colors.gray-200}"
+  bg-layer-basement-dark: "{colors.gray-00-dark}"
+  bg-layer-default: "{colors.gray-00}"
+  bg-layer-default-dark: "{colors.gray-100-dark}"
+  bg-layer-default-pressed: "{colors.gray-100}"
+  bg-layer-default-pressed-dark: "{colors.gray-300-dark}"
+  bg-layer-floating: "{colors.gray-00}"
+  bg-layer-floating-dark: "{colors.gray-200-dark}"
+  bg-layer-floating-pressed: "{colors.gray-100}"
+  bg-layer-floating-pressed-dark: "{colors.gray-300-dark}"
+  bg-neutral-weak: "{colors.gray-200}"
+  bg-neutral-weak-dark: "{colors.gray-300-dark}"
+  bg-neutral-weak-pressed: "{colors.gray-300}"
+  bg-neutral-weak-pressed-dark: "{colors.gray-400-dark}"
+  bg-neutral-inverted: "{colors.gray-900}"
+  bg-neutral-inverted-dark: "{colors.gray-1000-dark}"
+  bg-disabled: "{colors.gray-200}"
+  bg-disabled-dark: "{colors.gray-300-dark}"
+  bg-critical-solid: "{colors.red-700}"
+  bg-critical-solid-dark: "{colors.red-600-dark}"
+  bg-critical-solid-pressed: "{colors.red-800}"
+  bg-critical-solid-pressed-dark: "{colors.red-700-dark}"
+  bg-critical-weak: "{colors.red-100}"
+  bg-critical-weak-dark: "{colors.red-100-dark}"
+  bg-critical-weak-pressed: "{colors.red-200}"
+  bg-critical-weak-pressed-dark: "{colors.red-200-dark}"
+  bg-positive-solid: "{colors.green-700}"
+  bg-positive-solid-dark: "{colors.green-600-dark}"
+  bg-positive-solid-pressed: "{colors.green-800}"
+  bg-positive-solid-pressed-dark: "{colors.green-700-dark}"
+  bg-positive-weak: "{colors.green-100}"
+  bg-positive-weak-dark: "{colors.green-100-dark}"
+  bg-positive-weak-pressed: "{colors.green-200}"
+  bg-positive-weak-pressed-dark: "{colors.green-200-dark}"
+  bg-warning-solid: "{colors.orange-700}"
+  bg-warning-solid-dark: "{colors.orange-600-dark}"
+  bg-warning-solid-pressed: "{colors.orange-800}"
+  bg-warning-solid-pressed-dark: "{colors.orange-700-dark}"
+  bg-warning-weak: "{colors.orange-100}"
+  bg-warning-weak-dark: "{colors.orange-100-dark}"
+  bg-warning-weak-pressed: "{colors.orange-200}"
+  bg-warning-weak-pressed-dark: "{colors.orange-200-dark}"
+  bg-informative-solid: "{colors.blue-700}"
+  bg-informative-solid-dark: "{colors.blue-600-dark}"
+  bg-informative-solid-pressed: "{colors.blue-800}"
+  bg-informative-solid-pressed-dark: "{colors.blue-700-dark}"
+  bg-informative-weak: "{colors.blue-100}"
+  bg-informative-weak-dark: "{colors.blue-100-dark}"
+  bg-informative-weak-pressed: "{colors.blue-200}"
+  bg-informative-weak-pressed-dark: "{colors.blue-200-dark}"
   # 선 (stroke)
-  stroke-neutral-subtle: "#E5E8EF"
-  stroke-neutral-subtle-dark: "#353B4D"
-  stroke-neutral-weak: "#E5E8EF"
-  stroke-neutral-weak-dark: "#353B4D"
-  stroke-neutral-solid: "#7D8593"
-  stroke-neutral-solid-dark: "#8B95A8"
-  stroke-critical-solid: "#D72323"
-  stroke-critical-solid-dark: "#F87171"
-  stroke-positive-solid: "#167F3F"
-  stroke-positive-solid-dark: "#4ADE80"
-  stroke-warning-solid: "#BE490D"
-  stroke-warning-solid-dark: "#FB923C"
-  stroke-informative-solid: "#1D6EC9"
-  stroke-informative-solid-dark: "#60A5FA"
+  stroke-neutral-subtle: "{colors.gray-300}"
+  stroke-neutral-subtle-dark: "{colors.gray-300-dark}"
+  stroke-neutral-weak: "{colors.gray-400}"
+  stroke-neutral-weak-dark: "{colors.gray-400-dark}"
+  stroke-neutral-solid: "{colors.gray-800}"
+  stroke-neutral-solid-dark: "{colors.gray-800-dark}"
+  stroke-critical-solid: "{colors.red-700}"
+  stroke-critical-solid-dark: "{colors.red-800-dark}"
+  stroke-positive-solid: "{colors.green-700}"
+  stroke-positive-solid-dark: "{colors.green-800-dark}"
+  stroke-warning-solid: "{colors.orange-700}"
+  stroke-warning-solid-dark: "{colors.orange-800-dark}"
+  stroke-informative-solid: "{colors.blue-700}"
+  stroke-informative-solid-dark: "{colors.blue-800-dark}"
   # @sync:shared-end (colors-3)
   
   # (border-focus 정의 완료 — v16)
@@ -867,6 +998,251 @@ components:
     backgroundColor: "{colors.stroke-brand-weak}"
   role-stroke-brand-weak-dark:
     backgroundColor: "{colors.stroke-brand-weak-dark}"
+  # === v108 — 팔레트 보기용. 역할이 쓰지 않는 단계도 검사기가 "쓰는 색" 으로 세게 한다 ===
+  palette-gray-00:
+    backgroundColor: "{colors.gray-00}"
+  palette-gray-00-dark:
+    backgroundColor: "{colors.gray-00-dark}"
+  palette-gray-100:
+    backgroundColor: "{colors.gray-100}"
+  palette-gray-100-dark:
+    backgroundColor: "{colors.gray-100-dark}"
+  palette-gray-200:
+    backgroundColor: "{colors.gray-200}"
+  palette-gray-200-dark:
+    backgroundColor: "{colors.gray-200-dark}"
+  palette-gray-300:
+    backgroundColor: "{colors.gray-300}"
+  palette-gray-300-dark:
+    backgroundColor: "{colors.gray-300-dark}"
+  palette-gray-400:
+    backgroundColor: "{colors.gray-400}"
+  palette-gray-400-dark:
+    backgroundColor: "{colors.gray-400-dark}"
+  palette-gray-500:
+    backgroundColor: "{colors.gray-500}"
+  palette-gray-500-dark:
+    backgroundColor: "{colors.gray-500-dark}"
+  palette-gray-600:
+    backgroundColor: "{colors.gray-600}"
+  palette-gray-600-dark:
+    backgroundColor: "{colors.gray-600-dark}"
+  palette-gray-700:
+    backgroundColor: "{colors.gray-700}"
+  palette-gray-700-dark:
+    backgroundColor: "{colors.gray-700-dark}"
+  palette-gray-800:
+    backgroundColor: "{colors.gray-800}"
+  palette-gray-800-dark:
+    backgroundColor: "{colors.gray-800-dark}"
+  palette-gray-900:
+    backgroundColor: "{colors.gray-900}"
+  palette-gray-900-dark:
+    backgroundColor: "{colors.gray-900-dark}"
+  palette-gray-1000:
+    backgroundColor: "{colors.gray-1000}"
+  palette-gray-1000-dark:
+    backgroundColor: "{colors.gray-1000-dark}"
+  palette-red-100:
+    backgroundColor: "{colors.red-100}"
+  palette-red-100-dark:
+    backgroundColor: "{colors.red-100-dark}"
+  palette-red-200:
+    backgroundColor: "{colors.red-200}"
+  palette-red-200-dark:
+    backgroundColor: "{colors.red-200-dark}"
+  palette-red-300:
+    backgroundColor: "{colors.red-300}"
+  palette-red-300-dark:
+    backgroundColor: "{colors.red-300-dark}"
+  palette-red-400:
+    backgroundColor: "{colors.red-400}"
+  palette-red-400-dark:
+    backgroundColor: "{colors.red-400-dark}"
+  palette-red-500:
+    backgroundColor: "{colors.red-500}"
+  palette-red-500-dark:
+    backgroundColor: "{colors.red-500-dark}"
+  palette-red-600:
+    backgroundColor: "{colors.red-600}"
+  palette-red-600-dark:
+    backgroundColor: "{colors.red-600-dark}"
+  palette-red-700:
+    backgroundColor: "{colors.red-700}"
+  palette-red-700-dark:
+    backgroundColor: "{colors.red-700-dark}"
+  palette-red-800:
+    backgroundColor: "{colors.red-800}"
+  palette-red-800-dark:
+    backgroundColor: "{colors.red-800-dark}"
+  palette-red-900:
+    backgroundColor: "{colors.red-900}"
+  palette-red-900-dark:
+    backgroundColor: "{colors.red-900-dark}"
+  palette-red-1000:
+    backgroundColor: "{colors.red-1000}"
+  palette-red-1000-dark:
+    backgroundColor: "{colors.red-1000-dark}"
+  palette-green-100:
+    backgroundColor: "{colors.green-100}"
+  palette-green-100-dark:
+    backgroundColor: "{colors.green-100-dark}"
+  palette-green-200:
+    backgroundColor: "{colors.green-200}"
+  palette-green-200-dark:
+    backgroundColor: "{colors.green-200-dark}"
+  palette-green-300:
+    backgroundColor: "{colors.green-300}"
+  palette-green-300-dark:
+    backgroundColor: "{colors.green-300-dark}"
+  palette-green-400:
+    backgroundColor: "{colors.green-400}"
+  palette-green-400-dark:
+    backgroundColor: "{colors.green-400-dark}"
+  palette-green-500:
+    backgroundColor: "{colors.green-500}"
+  palette-green-500-dark:
+    backgroundColor: "{colors.green-500-dark}"
+  palette-green-600:
+    backgroundColor: "{colors.green-600}"
+  palette-green-600-dark:
+    backgroundColor: "{colors.green-600-dark}"
+  palette-green-700:
+    backgroundColor: "{colors.green-700}"
+  palette-green-700-dark:
+    backgroundColor: "{colors.green-700-dark}"
+  palette-green-800:
+    backgroundColor: "{colors.green-800}"
+  palette-green-800-dark:
+    backgroundColor: "{colors.green-800-dark}"
+  palette-green-900:
+    backgroundColor: "{colors.green-900}"
+  palette-green-900-dark:
+    backgroundColor: "{colors.green-900-dark}"
+  palette-green-1000:
+    backgroundColor: "{colors.green-1000}"
+  palette-green-1000-dark:
+    backgroundColor: "{colors.green-1000-dark}"
+  palette-orange-100:
+    backgroundColor: "{colors.orange-100}"
+  palette-orange-100-dark:
+    backgroundColor: "{colors.orange-100-dark}"
+  palette-orange-200:
+    backgroundColor: "{colors.orange-200}"
+  palette-orange-200-dark:
+    backgroundColor: "{colors.orange-200-dark}"
+  palette-orange-300:
+    backgroundColor: "{colors.orange-300}"
+  palette-orange-300-dark:
+    backgroundColor: "{colors.orange-300-dark}"
+  palette-orange-400:
+    backgroundColor: "{colors.orange-400}"
+  palette-orange-400-dark:
+    backgroundColor: "{colors.orange-400-dark}"
+  palette-orange-500:
+    backgroundColor: "{colors.orange-500}"
+  palette-orange-500-dark:
+    backgroundColor: "{colors.orange-500-dark}"
+  palette-orange-600:
+    backgroundColor: "{colors.orange-600}"
+  palette-orange-600-dark:
+    backgroundColor: "{colors.orange-600-dark}"
+  palette-orange-700:
+    backgroundColor: "{colors.orange-700}"
+  palette-orange-700-dark:
+    backgroundColor: "{colors.orange-700-dark}"
+  palette-orange-800:
+    backgroundColor: "{colors.orange-800}"
+  palette-orange-800-dark:
+    backgroundColor: "{colors.orange-800-dark}"
+  palette-orange-900:
+    backgroundColor: "{colors.orange-900}"
+  palette-orange-900-dark:
+    backgroundColor: "{colors.orange-900-dark}"
+  palette-orange-1000:
+    backgroundColor: "{colors.orange-1000}"
+  palette-orange-1000-dark:
+    backgroundColor: "{colors.orange-1000-dark}"
+  palette-blue-100:
+    backgroundColor: "{colors.blue-100}"
+  palette-blue-100-dark:
+    backgroundColor: "{colors.blue-100-dark}"
+  palette-blue-200:
+    backgroundColor: "{colors.blue-200}"
+  palette-blue-200-dark:
+    backgroundColor: "{colors.blue-200-dark}"
+  palette-blue-300:
+    backgroundColor: "{colors.blue-300}"
+  palette-blue-300-dark:
+    backgroundColor: "{colors.blue-300-dark}"
+  palette-blue-400:
+    backgroundColor: "{colors.blue-400}"
+  palette-blue-400-dark:
+    backgroundColor: "{colors.blue-400-dark}"
+  palette-blue-500:
+    backgroundColor: "{colors.blue-500}"
+  palette-blue-500-dark:
+    backgroundColor: "{colors.blue-500-dark}"
+  palette-blue-600:
+    backgroundColor: "{colors.blue-600}"
+  palette-blue-600-dark:
+    backgroundColor: "{colors.blue-600-dark}"
+  palette-blue-700:
+    backgroundColor: "{colors.blue-700}"
+  palette-blue-700-dark:
+    backgroundColor: "{colors.blue-700-dark}"
+  palette-blue-800:
+    backgroundColor: "{colors.blue-800}"
+  palette-blue-800-dark:
+    backgroundColor: "{colors.blue-800-dark}"
+  palette-blue-900:
+    backgroundColor: "{colors.blue-900}"
+  palette-blue-900-dark:
+    backgroundColor: "{colors.blue-900-dark}"
+  palette-blue-1000:
+    backgroundColor: "{colors.blue-1000}"
+  palette-blue-1000-dark:
+    backgroundColor: "{colors.blue-1000-dark}"
+  palette-brand-100:
+    backgroundColor: "{colors.brand-100}"
+  palette-brand-100-dark:
+    backgroundColor: "{colors.brand-100-dark}"
+  palette-brand-200:
+    backgroundColor: "{colors.brand-200}"
+  palette-brand-200-dark:
+    backgroundColor: "{colors.brand-200-dark}"
+  palette-brand-300:
+    backgroundColor: "{colors.brand-300}"
+  palette-brand-300-dark:
+    backgroundColor: "{colors.brand-300-dark}"
+  palette-brand-400:
+    backgroundColor: "{colors.brand-400}"
+  palette-brand-400-dark:
+    backgroundColor: "{colors.brand-400-dark}"
+  palette-brand-500:
+    backgroundColor: "{colors.brand-500}"
+  palette-brand-500-dark:
+    backgroundColor: "{colors.brand-500-dark}"
+  palette-brand-600:
+    backgroundColor: "{colors.brand-600}"
+  palette-brand-600-dark:
+    backgroundColor: "{colors.brand-600-dark}"
+  palette-brand-700:
+    backgroundColor: "{colors.brand-700}"
+  palette-brand-700-dark:
+    backgroundColor: "{colors.brand-700-dark}"
+  palette-brand-800:
+    backgroundColor: "{colors.brand-800}"
+  palette-brand-800-dark:
+    backgroundColor: "{colors.brand-800-dark}"
+  palette-brand-900:
+    backgroundColor: "{colors.brand-900}"
+  palette-brand-900-dark:
+    backgroundColor: "{colors.brand-900-dark}"
+  palette-brand-1000:
+    backgroundColor: "{colors.brand-1000}"
+  palette-brand-1000-dark:
+    backgroundColor: "{colors.brand-1000-dark}"
 ---
 
 ## Overview — Porest Desk (B2C)
@@ -878,6 +1254,99 @@ HR(B2B 조직 관리)은 별도 `DESIGN.hr.md` 파일 — `primary` = `#357B5F` 
 레퍼런스 — 토스의 신뢰감 있는 미니멀리즘, 전 연령 가독성.
 
 ## Colors
+
+### v108 — SEED 팔레트 층 (2026-09-30)
+
+당근 SEED 처럼 색에 팔레트 층을 둔다. 팔레트는 가족마다 차례 번호를 붙인 색이고, 역할 색(v102)은 hex 대신 그 단계를 가리킨다. 사용자가 2026-09-30 SEED 와 나란히 놓은 비교 페이지에서 구조(SEED 식 모드별) · 채우기(가족마다 차례로) · 값(SEED 규칙대로 새로 뽑음)을 정하고, 값 제안표를 보고 그대로 넣기로 했다. 출처: seed-design.io Foundations › Color › Palette(Apache-2.0).
+
+**아직 두 웹 · 앱에는 들어가지 않았다.** 역할 색과 함께 앱 적용 단계에서 옮긴다.
+
+| 자리 | 값 |
+|---|---|
+| 가족 | gray(00 · 100 ~ 1000) · red · green · orange · blue(100 ~ 1000). 브랜드는 brand(100 ~ 1000)로 브랜드 파일에만 있다 |
+| 모드 | 단계마다 라이트 · 다크 값이 있다. 다크 값은 이름 뒤에 -dark 를 붙인다(gray-100-dark) — 역할 색과 같은 규칙 |
+| 차례 | 라이트는 100 이 가장 옅고 1000 이 가장 짙다. 다크는 뒤집혀 100 이 가장 어둡다 — 같은 번호가 두 모드에서 비슷한 무게로 보인다 |
+| 참조 | 역할 색은 단계를 가리키고(`bg-layer-default: "{colors.gray-00}"`), 옛 이름은 역할 색을 가리킨다(`text-primary: "{colors.fg-neutral}"`). hex 는 팔레트에만 있다 |
+
+- 화면 · 컴포넌트는 팔레트를 직접 부르지 않고 역할 색을 부른다. 팔레트를 직접 쓰는 것은 역할로 나타내기 어려운 예외적인 자리뿐이다(SEED 와 같다).
+- 팔레트 이름은 gray-500 처럼 차례 번호다 — "토큰 이름은 의미 기반" 규칙의 예외로, 팔레트 층에만 쓴다.
+- 역할이 가리키지 않는 단계(gray-600 · 의미 색 300 ~ 500 등)도 둔다. design.md 검사기는 어느 컴포넌트도 쓰지 않는 색을 경고하므로, 머리말 `components` 의 palette-* 가 단계마다 한 번씩 가리킨다 — 보기용이고 화면 컴포넌트가 아니다.
+- 옛 이름은 컴포넌트 스펙을 역할 이름으로 옮기고 나면 지운다.
+- 차트 10색(chart-*)은 아직 팔레트 밖이다. 팔레트에서 새로 고를 예정이다.
+- 본문 곳곳의 대비 수치는 대개 v108 전 값으로 잰 것이다. 지금 대비는 `npm run lint:all` · `npm run lint:dark` 가 잰 값이 기준이다.
+
+#### 값을 뽑은 규칙
+
+- OKLCH 에서 가족마다 색상각 하나로 뽑았다. 색상각은 지금 채움색에서 온다 — 의미 색은 라이트 700 이 그 색 그대로다(red #D72323 · green #167F3F · orange #BE490D · blue #1D6EC9, 흰 글자 4.5:1 이상).
+- 단계마다 목표 밝기(CIELAB L*)를 두고, 채도는 SEED 램프 모양의 비율로 준다.
+- 브랜드는 라이트 600 이 브랜드 색이다(Desk #0147AD · HR #357B5F). HR 은 다크 700 도 같은 색이다.
+- 회색의 양 끝은 지금 값이다 — 라이트 00 #FFFFFF · 1000 #1A1F2E, 다크 00 #1A1F2E · 1000 #F5F6FA.
+- 고정한 값 다섯 — 지금 화면의 바닥 · 뜬 표면 · 입력칸 · 흐린 글자가 그대로이게 계산값 대신 지금 hex 를 넣었다(계산값과 색차 ΔE 1.4 이하): gray-200 #F5F6FA · gray-700 #62697A · gray-100-dark #242938 · gray-200-dark #2D3346 · gray-300-dark #353B4D.
+- 다크의 글자 단계(의미 색 800 · 브랜드 900)는 L* 69 다. 제안표 값이 다크 입력칸(bg-neutral-weak-dark #353B4D) 위에서 4.00 ~ 4.28:1 로 `npm run lint:dark` 에 걸려, 4.5:1 을 넘게 밝혔다. 의미 색 900 도 조금 밝아졌다(ΔE 1.7 이하).
+
+#### 역할 → 단계
+
+기본은 SEED 가 그 역할에 쓰는 단계다. porest 규칙 1번(WCAG AA)이 막거나 porest 에 없는 자리만 옮겼다(아래 "SEED 에서 옮긴 자리").
+
+| 역할 | 라이트 | 다크 | SEED 와 다르면 (라이트 / 다크) |
+|---|---|---|---|
+| `bg-layer-basement` | gray-200 | gray-00 | — |
+| `bg-layer-default` | gray-00 | gray-100 | — |
+| `bg-layer-default-pressed` | gray-100 | gray-300 | — |
+| `bg-layer-floating` | gray-00 | gray-200 | — |
+| `bg-layer-floating-pressed` | gray-100 | gray-300 | — |
+| `bg-neutral-weak` | gray-200 | gray-300 | — |
+| `bg-neutral-weak-pressed` | gray-300 | gray-400 | — |
+| `bg-neutral-inverted` | gray-900 | gray-1000 | — |
+| `bg-disabled` | gray-200 | gray-300 | — |
+| `fg-neutral` | gray-1000 | gray-1000 | — |
+| `fg-neutral-muted` | gray-800 | gray-800 | — |
+| `fg-neutral-subtle` | gray-700 | gray-700 | — |
+| `fg-placeholder` | gray-700 | gray-700 | gray-600 / gray-600 |
+| `fg-disabled` | gray-500 | gray-500 | — |
+| `fg-neutral-inverted` | gray-00 | gray-100 | — |
+| `stroke-neutral-subtle` | gray-300 | gray-300 | 투명도 있는 검정 · 흰색 |
+| `stroke-neutral-weak` | gray-400 | gray-400 | — |
+| `stroke-neutral-solid` | gray-800 | gray-800 | — |
+
+의미 색은 네 역할이 같은 단계를 쓴다 — critical → red · positive → green · warning → orange · informative → blue.
+
+| 역할(* = critical · positive · warning · informative) | 라이트 | 다크 | SEED 와 다르면 (라이트 / 다크) |
+|---|---|---|---|
+| bg-*-weak | 100 | 100 | — |
+| bg-*-weak-pressed | 200 | 200 | — |
+| bg-*-solid | 700 | 600 | positive 700 / 500 |
+| bg-*-solid-pressed | 800 | 700 | positive 800 / 600 |
+| fg-* | 700 | 800 | 700 / 700 |
+| fg-*-contrast | 900 | 900 | — |
+| stroke-*-solid | 700 | 800 | 700 / 700 |
+
+SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채움 300 / 800 · 눌림 400 / 900 — 옅은 노랑 위 검은 글자).
+
+| 역할 | Desk (라이트 / 다크) | HR (라이트 / 다크) | SEED (라이트 / 다크) |
+|---|---|---|---|
+| bg-brand-solid | 600 / 500 | 600 / 700 | 600 / 700 |
+| bg-brand-solid-pressed | 700 / 700 | 700 / 600 | 700 / 800 |
+| bg-brand-weak | 100 / 100 | 100 / 100 | 100 / 100 |
+| bg-brand-weak-pressed | 200 / 200 | 200 / 200 | 200 / 200 |
+| fg-brand | 600 / 900 | 600 / 900 | 600 / 700 |
+| fg-brand-contrast | 700 / 900 | 700 / 900 | 700 / 700 |
+| stroke-brand-solid | 600 / 900 | 600 / 900 | 700 / 700 |
+| stroke-brand-weak | 300 / 800 | 300 / 800 | 300 / 300 |
+| stroke-focus-ring | 600 / 900 | 600 / 900 | blue-600 / blue-600 |
+
+#### SEED 에서 옮긴 자리
+
+- fg-placeholder — SEED 600 → 700. 600 은 입력칸(bg-neutral-weak) 위에서 3.87:1(다크 3.18:1)이다.
+- 의미 색 글자 · 선(fg-* · stroke-*-solid)의 다크 — SEED 700 → 800. 다크 700 은 어두운 표면 위 2.9:1 안팎이다 — 흰 글자를 얹는 채움 눌림 자리라 어두워야 한다.
+- stroke-neutral-subtle — SEED 는 투명도 있는 검정 · 흰색이다. 검사기가 8자리 hex 를 받지 않아 gray-300 에 둔다.
+- warning — SEED 의 주의 색은 노랑이고 채움 위 글자가 검정이다. porest 는 주황 + 흰 글자를 그대로 두고, 단계는 다른 의미 색과 같은 규칙으로 앉혔다.
+- bg-positive-solid 의 다크 — SEED 는 500(눌림 600)이다. 다른 의미 색과 맞춰 600(눌림 700)에 둔다.
+- 브랜드 채움의 다크 — Desk 는 브랜드 색이 어두워(L* 33) 채움을 지금 값(#0147AD)과 같은 무게인 500 에 둔다(ΔE 1.4). 눌림은 SEED 의 800 이 흰 글자 3.76:1 이라 700 이다. HR 은 채움이 SEED 대로 700 이고, 눌림은 800 이 흰 글자 3.61:1 이라 600(더 어둡게)이다.
+- 브랜드 글자 · 선 · 포커스 링의 다크 — SEED 700 → 900. 다크 700 은 어두운 표면 위 Desk 2.27:1 · HR 2.86:1 이다.
+- stroke-brand-solid 의 라이트 — SEED 700 → 600. 브랜드 색 그대로다.
+- stroke-brand-weak 의 다크 — SEED 300 → 800. 다크 300 은 표면과 1.3:1 안팎(Desk 1.29 · HR 1.36)이라 선이 보이지 않는다.
+- stroke-focus-ring — SEED 는 파랑(blue-600)이다. porest 는 옛 border-focus 대로 브랜드 색이다.
 
 ### v102 — SEED 역할 색 (2026-09-29)
 
@@ -904,20 +1373,20 @@ HR(B2B 조직 관리)은 별도 `DESIGN.hr.md` 파일 — `primary` = `#357B5F` 
 | 역할 | 라이트 | 다크 | 옛 이름 | Desk 웹 이름 |
 |---|---|---|---|---|
 | `fg-neutral` | `#1A1F2E` | `#F5F6FA` | text-primary | fg-primary |
-| `fg-neutral-muted` | `#4E5968` | `#B0B8C4` | text-secondary | fg-secondary |
-| `fg-neutral-subtle` | `#62697A` | `#9DA3B0` | text-tertiary | fg-tertiary |
-| `fg-neutral-inverted` | `#FFFFFF` | `#1A1F2E` | — | — |
-| `fg-placeholder` | `#62697A` | `#9DA3B0` | — | fg-placeholder |
-| `fg-disabled` | `#828995` | `#7A8294` | text-disabled | fg-disabled |
+| `fg-neutral-muted` | `#535866` | `#B7BDCC` | text-secondary | fg-secondary |
+| `fg-neutral-subtle` | `#62697A` | `#A2A8B7` | text-tertiary | fg-tertiary |
+| `fg-neutral-inverted` | `#FFFFFF` | `#242938` | — | — |
+| `fg-placeholder` | `#62697A` | `#A2A8B7` | — | fg-placeholder |
+| `fg-disabled` | `#8A91A0` | `#656B78` | text-disabled | fg-disabled |
 | `static-white` | `#FFFFFF` | — | text-on-accent | fg-on-brand · fg-on-danger · fg-on-success |
-| `fg-critical` | `#D72323` | `#F87171` | error · error-light | status-danger-fg · fg-expense |
-| `fg-positive` | `#167F3F` | `#4ADE80` | success · success-light | status-success-fg |
-| `fg-warning` | `#BE490D` | `#FB923C` | warning · warning-light | status-warning-fg |
-| `fg-informative` | `#1D6EC9` | `#60A5FA` | info · info-light | status-info-fg · fg-transfer |
-| `fg-critical-contrast` | `#C11F1F` | `#F87676` | — | — |
-| `fg-positive-contrast` | `#14753A` | `#4ADE80` | — | — |
-| `fg-warning-contrast` | `#AD420C` | `#FB923C` | — | — |
-| `fg-informative-contrast` | `#1B65B9` | `#65A8FA` | — | — |
+| `fg-critical` | `#D72323` | `#FD8679` | error · error-light | status-danger-fg · fg-expense |
+| `fg-positive` | `#167F3F` | `#6CB87F` | success · success-light | status-success-fg |
+| `fg-warning` | `#BE490D` | `#F58C64` | warning · warning-light | status-warning-fg |
+| `fg-informative` | `#1D6EC9` | `#6BABFD` | info · info-light | status-info-fg · fg-transfer |
+| `fg-critical-contrast` | `#96030C` | `#FFBCB3` | — | — |
+| `fg-positive-contrast` | `#075527` | `#AED6B6` | — | — |
+| `fg-warning-contrast` | `#822E02` | `#F9BFA9` | — | — |
+| `fg-informative-contrast` | `#06498D` | `#ACCEFB` | — | — |
 
 #### 배경 (bg)
 
@@ -925,41 +1394,41 @@ HR(B2B 조직 관리)은 별도 `DESIGN.hr.md` 파일 — `primary` = `#357B5F` 
 |---|---|---|---|---|
 | `bg-layer-basement` | `#F5F6FA` | `#1A1F2E` | bg-page | bg-canvas · bg-table-head |
 | `bg-layer-default` | `#FFFFFF` | `#242938` | surface-default | bg-surface |
-| `bg-layer-default-pressed` | `#F0F2F7` | `#2D3346` | — | bg-hover · bg-row-hover |
+| `bg-layer-default-pressed` | `#F7F8FD` | `#353B4D` | — | bg-hover · bg-row-hover |
 | `bg-layer-floating` | `#FFFFFF` | `#2D3346` | — | bg-surface-raised |
-| `bg-layer-floating-pressed` | `#F0F2F7` | `#353B4D` | — | — |
-| `bg-neutral-weak` | `#F0F2F7` | `#2D3346` | surface-input | bg-sunken · bg-muted |
-| `bg-neutral-weak-pressed` | `#E5E8EF` | `#353B4D` | — | bg-warm-press |
-| `bg-neutral-inverted` | `#1A1F2E` | `#F5F6FA` | — | bg-inverse |
-| `bg-disabled` | `#F0F2F7` | `#2D3346` | — | bg-disabled |
-| `bg-critical-solid` | `#D72323` | `#D72323` | error | status-danger |
-| `bg-critical-solid-pressed` | `#C42020` | `#C42020` | — | status-danger-press |
-| `bg-critical-weak` | `#FAE5E5` | `#442834` | — | status-danger-subtle |
-| `bg-critical-weak-pressed` | `#F8D7D7` | `#562732` | — | — |
-| `bg-positive-solid` | `#167F3F` | `#167F3F` | success | status-success |
-| `bg-positive-solid-pressed` | `#136C36` | `#136C36` | — | — |
-| `bg-positive-weak` | `#E3F0E8` | `#213839` | — | status-success-subtle |
-| `bg-positive-weak-pressed` | `#D5E8DC` | `#20413A` | — | — |
-| `bg-warning-solid` | `#BE490D` | `#BE490D` | warning | status-warning |
-| `bg-warning-solid-pressed` | `#A9410C` | `#A9410C` | — | — |
-| `bg-warning-weak` | `#F7E9E2` | `#402F30` | — | status-warning-subtle |
-| `bg-warning-weak-pressed` | `#F3DED3` | `#4F322C` | — | — |
-| `bg-informative-solid` | `#1D6EC9` | `#1D6EC9` | info | status-info |
-| `bg-informative-solid-pressed` | `#1A63B6` | `#1A63B6` | — | — |
-| `bg-informative-weak` | `#E4EEF9` | `#233552` | — | status-info-subtle |
-| `bg-informative-weak-pressed` | `#D6E5F5` | `#223C61` | — | — |
+| `bg-layer-floating-pressed` | `#F7F8FD` | `#353B4D` | — | — |
+| `bg-neutral-weak` | `#F5F6FA` | `#353B4D` | surface-input | bg-sunken · bg-muted |
+| `bg-neutral-weak-pressed` | `#EDEFF3` | `#404757` | — | bg-warm-press |
+| `bg-neutral-inverted` | `#2F3541` | `#F5F6FA` | — | bg-inverse |
+| `bg-disabled` | `#F5F6FA` | `#353B4D` | — | bg-disabled |
+| `bg-critical-solid` | `#D72323` | `#CC0E17` | error | status-danger |
+| `bg-critical-solid-pressed` | `#C01016` | `#D82424` | — | status-danger-press |
+| `bg-critical-weak` | `#FFEFEC` | `#3E231F` | — | status-danger-subtle |
+| `bg-critical-weak-pressed` | `#FFDEDA` | `#532722` | — | — |
+| `bg-positive-solid` | `#167F3F` | `#117539` | success | status-success |
+| `bg-positive-solid-pressed` | `#026E33` | `#198140` | — | — |
+| `bg-positive-weak` | `#EAF5EC` | `#202D23` | — | status-success-subtle |
+| `bg-positive-weak-pressed` | `#D8EADB` | `#223927` | — | — |
+| `bg-warning-solid` | `#BE490D` | `#B04209` | warning | status-warning |
+| `bg-warning-solid-pressed` | `#A53E0A` | `#BF4A10` | — | — |
+| `bg-warning-weak` | `#FFEFE8` | `#39251E` | — | status-warning-subtle |
+| `bg-warning-weak-pressed` | `#FAE0D5` | `#4B2B1F` | — | — |
+| `bg-informative-solid` | `#1D6EC9` | `#0F65BF` | info | status-info |
+| `bg-informative-solid-pressed` | `#0F5FB3` | `#1F70CB` | — | — |
+| `bg-informative-weak` | `#EAF3FE` | `#1F2A39` | — | status-info-subtle |
+| `bg-informative-weak-pressed` | `#D7E6FB` | `#21344D` | — | — |
 
 #### 선 (stroke)
 
 | 역할 | 라이트 | 다크 | 옛 이름 | Desk 웹 이름 |
 |---|---|---|---|---|
-| `stroke-neutral-subtle` | `#E5E8EF` | `#353B4D` | — | border-subtle |
-| `stroke-neutral-weak` | `#E5E8EF` | `#353B4D` | border-default | border-default |
-| `stroke-neutral-solid` | `#7D8593` | `#8B95A8` | border-strong | border-strong |
-| `stroke-critical-solid` | `#D72323` | `#F87171` | error | status-danger-border |
-| `stroke-positive-solid` | `#167F3F` | `#4ADE80` | success | status-success-border |
-| `stroke-warning-solid` | `#BE490D` | `#FB923C` | warning | status-warning-border |
-| `stroke-informative-solid` | `#1D6EC9` | `#60A5FA` | info | status-info-border |
+| `stroke-neutral-subtle` | `#EDEFF3` | `#353B4D` | — | border-subtle |
+| `stroke-neutral-weak` | `#D8DFEF` | `#404757` | border-default | border-default |
+| `stroke-neutral-solid` | `#535866` | `#B7BDCC` | border-strong | border-strong |
+| `stroke-critical-solid` | `#D72323` | `#FD8679` | error | status-danger-border |
+| `stroke-positive-solid` | `#167F3F` | `#6CB87F` | success | status-success-border |
+| `stroke-warning-solid` | `#BE490D` | `#F58C64` | warning | status-warning-border |
+| `stroke-informative-solid` | `#1D6EC9` | `#6BABFD` | info | status-info-border |
 
 #### 브랜드 역할
 
@@ -967,17 +1436,19 @@ HR(B2B 조직 관리)은 별도 `DESIGN.hr.md` 파일 — `primary` = `#357B5F` 
 
 | 역할 | 라이트 | 다크 | 옛 이름 | Desk 웹 이름 |
 |---|---|---|---|---|
-| `fg-brand` | `#0147AD` | `#5FA0E5` | primary · primary-light | fg-brand · fg-link |
-| `fg-brand-contrast` | `#0147AD` | `#5FA0E5` | — | fg-brand-strong |
-| `bg-brand-solid` | `#0147AD` | `#0147AD` | primary | bg-brand |
-| `bg-brand-solid-pressed` | `#013D97` | `#013D97` | — | bg-brand-press · bg-brand-hover |
-| `bg-brand-weak` | `#EBF0F8` | `#202D46` | — | bg-brand-subtle |
-| `bg-brand-weak-pressed` | `#DBE5F4` | `#1C3052` | — | bg-brand-muted |
-| `stroke-focus-ring` | `#0147AD` | `#5FA0E5` | border-focus · border-focus-light | border-focus |
-| `stroke-brand-solid` | `#0147AD` | `#5FA0E5` | — | border-brand |
-| `stroke-brand-weak` | `#5FA0E5` | `#5FA0E5` | — | border-brand-soft |
+| `fg-brand` | `#0147AD` | `#8CAADA` | primary · primary-light | fg-brand · fg-link |
+| `fg-brand-contrast` | `#013D96` | `#8CAADA` | — | fg-brand-strong |
+| `bg-brand-solid` | `#0147AD` | `#1049A4` | primary | bg-brand |
+| `bg-brand-solid-pressed` | `#013D96` | `#1A5AC2` | — | bg-brand-press · bg-brand-hover |
+| `bg-brand-weak` | `#E8F1FE` | `#202A3C` | — | bg-brand-subtle |
+| `bg-brand-weak-pressed` | `#D7E5FC` | `#20314E` | — | bg-brand-muted |
+| `stroke-focus-ring` | `#0147AD` | `#8CAADA` | border-focus · border-focus-light | border-focus |
+| `stroke-brand-solid` | `#0147AD` | `#8CAADA` | — | border-brand |
+| `stroke-brand-weak` | `#90A7CD` | `#4C83DC` | — | border-brand-soft |
 
 #### 값을 만든 규칙
+
+v102 때의 규칙이다. v108 부터 값은 팔레트 단계에서 온다 — 위 표의 값은 v108 값이고, 지금 규칙은 v108 절에 있다.
 
 - **약한 배경(weak)**: 의미 색 12%(다크 18%) · 브랜드 8%(다크 12%)를 `bg-layer-default`(흰색 · 다크 #242938) 위에 섞은 불투명 값이다. Desk 가 투명하게 섞던 비율 그대로다 — design.md 검사기가 투명도 있는 색을 받지 않고, SEED 도 불투명 값이다. 페이지 배경 위에 바로 놓이면 전보다 조금 밝다.
 - **약한 배경 눌림(weak-pressed)**: 의미 색 +6%(다크 +10%), 브랜드 14%(다크 22%).
@@ -1165,7 +1636,7 @@ border는 시맨틱 계층을 둘로 분리합니다 — 장식적 외곽선과 
 | 토큰 | hex | 사용 |
 |---|---|---|
 | `text-tertiary` | `#62697A` | 라이트 표면 위 placeholder·hint·메타 (text-secondary보다 미묘) |
-| `text-tertiary-dark` | `#9DA3B0` | 다크 표면 위 placeholder·hint·메타 |
+| `text-tertiary-dark` | `#A2A8B7` | 다크 표면 위 placeholder·hint·메타 |
 
 #### 추가 이유
 1. v2 text 토큰(primary/secondary/on-accent)으로는 input placeholder의 시각 위계가 표현 불가 — secondary를 placeholder에 쓰면 입력값과 동등한 강조로 보여 혼란.
@@ -1197,8 +1668,8 @@ border는 시맨틱 계층을 둘로 분리합니다 — 장식적 외곽선과 
 
 | 토큰 | hex | 사용 |
 |---|---|---|
-| `text-disabled` | `#828995` | 라이트 표면 위 비활성 텍스트 |
-| `text-disabled-dark` | `#7A8294` | 다크 표면 위 비활성 텍스트 |
+| `text-disabled` | `#8A91A0` | 라이트 표면 위 비활성 텍스트 |
+| `text-disabled-dark` | `#656B78` | 다크 표면 위 비활성 텍스트 |
 
 #### 추가 이유
 1. **시맨틱 분리 필수**: text-tertiary(placeholder)는 ≥4.5:1 본문 대비 대상, text-disabled는 incidental 면제 대상 — 두 시맨틱을 같은 토큰에 묶으면 placeholder가 부당하게 약해지거나 disabled가 부당하게 진해짐.
@@ -2400,8 +2871,8 @@ Desk(B2C 모바일 우선) — `md`/`lg` 위주, `sm`은 inline action 한정. f
 #### Mode pair
 | Token | 배경 | text | placeholder |
 |---|---|---|---|
-| `input-light` | `surface-input` (`#F0F2F7`) | `text-primary` (14.49:1 ✅) | `text-tertiary` (5.81:1 ✅) |
-| `input-dark` | `surface-input-dark` (`#2D3346`) | `text-primary-dark` (11.40:1 ✅) | `text-tertiary-dark` (5.51:1 ✅) |
+| `input-light` | `surface-input` (`#F5F6FA`) | `text-primary` (14.49:1 ✅) | `text-tertiary` (5.81:1 ✅) |
+| `input-dark` | `surface-input-dark` (`#353B4D`) | `text-primary-dark` (11.40:1 ✅) | `text-tertiary-dark` (5.51:1 ✅) |
 
 #### State
 | State | border | 비고 |
@@ -2565,7 +3036,7 @@ Desk 브랜드 — `border-focus` (`#0147AD`) / `border-focus-light` (`#5FA0E5`)
 |---|---|
 | `border-focus` (`#0147AD`) vs `bg-page` (`#F5F6FA`) | **5.79:1** ✅ AA |
 | `border-focus` (`#0147AD`) vs `surface-default` (`#FFFFFF`) | **6.12:1** ✅ AA |
-| `border-focus` (`#0147AD`) vs `surface-input` (`#F0F2F7`) | **6.51:1** ✅ AA |
+| `border-focus` (`#0147AD`) vs `surface-input` (`#F5F6FA`) | **6.51:1** ✅ AA |
 | `border-focus-light` (`#5FA0E5`) vs `bg-page-dark` (`#1A1F2E`) | **6.11:1** ✅ AA |
 | `border-focus-light` (`#5FA0E5`) vs `surface-default-dark` (`#242938`) | **5.41:1** ✅ AA |
 

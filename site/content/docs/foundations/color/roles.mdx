@@ -85,6 +85,8 @@ import { BrandExample, BrandRoleTable, LayerExample, NeutralExample, RoleNamingF
 
 ## Tokens
 
+값 옆의 이름은 역할이 가리키는 [팔레트](/docs/foundations/color/palette) 단계다. 모드마다 다른 단계를 가리킬 수 있다 — `bg-layer-default` 는 라이트 `gray-00`, 다크 `gray-100` 이다.
+
 ### Foreground
 
 <RoleTokenTable property="fg" />
@@ -103,7 +105,7 @@ import { BrandExample, BrandRoleTable, LayerExample, NeutralExample, RoleNamingF
 
 <BrandRoleTable />
 
-옛 이름(`text-primary` · `surface-default` · `border-default` · `success` …)은 같은 값의 별칭으로 남아 있고, 컴포넌트를 옮길 때 새 이름으로 바꾼다. SEED 의 `bg.neutral-solid` · `bg.transparent-*` · `stroke.neutral-muted` 같은 역할은 porest 화면에 아직 쓰는 자리가 없어 두지 않았다.
+옛 이름(`text-primary` · `surface-default` · `border-default` · `success` …)은 역할 색을 가리키는 별칭으로 남아 있다 — 값을 따로 갖지 않는다. 컴포넌트 스펙을 새 이름으로 옮기고 나면 지운다. SEED 의 `bg.neutral-solid` · `bg.transparent-*` · `stroke.neutral-muted` 같은 역할은 porest 화면에 아직 쓰는 자리가 없어 두지 않았다.
 
 ---
 

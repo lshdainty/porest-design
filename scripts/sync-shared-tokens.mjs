@@ -28,7 +28,8 @@ const TARGETS = [resolve(ROOT, "DESIGN.hr.md"), resolve(ROOT, "DESIGN.desk.md")]
 const FULL_SYNC_BLOCKS = ["typography", "rounded", "spacing"];
 
 // 자동 검출되는 마커 영역. 향후 components 추가 시 이 list 확장.
-const MARKER_REGIONS = ["colors-1", "colors-2", "colors-3"];
+// colors-0 = v108 팔레트(SEED 식 모드별)
+const MARKER_REGIONS = ["colors-0", "colors-1", "colors-2", "colors-3"];
 
 const SHARED_COLORS = new Set([
   "bg-page", "bg-page-dark",
@@ -75,6 +76,12 @@ const SHARED_COLORS = new Set([
   "stroke-informative-solid", "stroke-informative-solid-dark",
 ]);
 
+// v108 — 공유 팔레트(colors-0). 회색은 00 · 100 ~ 1000, 의미 색 가족은 100 ~ 1000, 단계마다 -dark
+for (const fam of ["gray", "red", "green", "orange", "blue"]) {
+  const steps = fam === "gray" ? ["00", 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000] : [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
+  for (const s of steps) { SHARED_COLORS.add(`${fam}-${s}`); SHARED_COLORS.add(`${fam}-${s}-dark`); }
+}
+
 function findBlockLines(lines, key) {
   const startRe = new RegExp(`^${key}:\\s*$`);
   let start = -1;
@@ -110,7 +117,8 @@ function extractColors(content) {
   const lines = content.split("\n");
   const { start, end } = findBlockLines(lines, "colors");
   for (let i = start + 1; i < end; i++) {
-    const m = /^\s+([a-z0-9-]+):\s*"(#[0-9A-Fa-f]+)"/.exec(lines[i]);
+    // 값은 hex 또는 참조("{colors.gray-00}") — 문자열 그대로 견준다(세 파일이 같은 참조를 써야 한다)
+    const m = /^\s+([a-z0-9-]+):\s*"([^"]+)"/.exec(lines[i]);
     if (m) out[m[1]] = m[2];
   }
   return out;

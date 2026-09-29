@@ -56,7 +56,10 @@ function parseColors(lines) {
   const out = {};
   for (let i = start + 1; i < end; i++) {
     const m = /^\s+([a-z0-9-]+):\s*"(#[0-9A-Fa-f]+)"/.exec(lines[i]);
-    if (m) out[m[1]] = m[2].toLowerCase();
+    if (m) { out[m[1]] = m[2].toLowerCase(); continue; }
+    // v108 — 역할 · 옛 이름은 팔레트 · 역할을 가리키는 참조("{colors.gray-00}")
+    const r = /^\s+([a-z0-9-]+):\s*"\{colors\.([a-z0-9-]+)\}"/.exec(lines[i]);
+    if (r) out[r[1]] = `var(--color-${r[2]})`;
   }
   return out;
 }

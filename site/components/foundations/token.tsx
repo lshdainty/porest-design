@@ -1,5 +1,5 @@
 // Design Token 개요 — 층 · 모드의 예는 모두 DESIGN*.md 의 실제 토큰 값으로 그린다
-import { color, design, pressScale, proseValue, spacingScale } from '@/lib/design-tokens';
+import { color, colorStep, design, pressScale, proseValue, spacingScale } from '@/lib/design-tokens';
 import { Figure, Swatch, Table, Token } from './ui';
 
 function Box({ title, children, tone }: { title: string; children: React.ReactNode; tone: string }) {
@@ -29,7 +29,7 @@ export function TokenTierFigure() {
   const rows: [string, React.ReactNode, React.ReactNode, React.ReactNode, string][] = [
     ['간격', <Chip key="r">{gutter}</Chip>, <Chip key="s">{scaleName}</Chip>, <Chip key="m">global-gutter</Chip>, '화면 좌우 여백'],
     ['모션', <Chip key="r">{d3}</Chip>, <Chip key="s" prefix="motion-duration-">d3</Chip>, <Chip key="m" prefix="motion-duration-">color-transition</Chip>, '버튼의 색 전환'],
-    ['색', <span key="r" className="inline-flex"><Swatch hex={brand} /></span>, <span key="s" className="text-[11px] text-[#62697A]">팔레트 — 들이는 중</span>, <Chip key="m">bg-brand-solid</Chip>, '채움 버튼의 배경'],
+    ['색', <span key="r" className="inline-flex"><Swatch hex={brand} /></span>, <Chip key="s">{colorStep('bg-brand-solid')}</Chip>, <Chip key="m">bg-brand-solid</Chip>, '채움 버튼의 배경'],
   ];
   const tones = [color('fg-neutral-subtle'), color('fg-informative'), color('fg-brand'), color('fg-positive')];
   return (

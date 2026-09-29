@@ -11,6 +11,8 @@ const FILE: Record<Brand, string> = { shared: 'DESIGN.md', hr: 'DESIGN.hr.md', d
 type TypeStyle = { fontFamily?: string; fontSize: string; fontWeight?: number | string; lineHeight?: string; letterSpacing?: string };
 type Front = {
   colors: Record<string, string>;
+  // v108 — 참조("{colors.gray-00}")로 적힌 색의 가리키는 이름. colors 에는 풀어 둔 hex 가 들어 있다
+  colorRefs: Record<string, string>;
   typography: Record<string, TypeStyle>;
   rounded: Record<string, string>;
   spacing: Record<string, string>;
@@ -25,6 +27,18 @@ export function design(brand: Brand = 'shared') {
   const m = text.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
   if (!m) throw new Error(`${FILE[brand]} 에 front matter 가 없다`);
   const front = parseYaml(m[1]) as Front;
+  // 역할 → 팔레트, 옛 이름 → 역할 사슬을 hex 로 푼다(v108). 가리키는 이름은 colorRefs 에 남긴다
+  const raw = front.colors;
+  const refOf = (v: unknown) => /^\{colors\.([a-z0-9-]+)\}$/.exec(String(v))?.[1];
+  const resolve = (n: string, depth = 0): string => {
+    const r = refOf(raw[n]);
+    if (!r) return raw[n];
+    if (!(r in raw)) throw new Error(`${FILE[brand]} 의 색 ${n} 이 없는 색 ${r} 을 가리킨다`);
+    if (depth > 8) throw new Error(`${FILE[brand]} 의 색 ${n} 참조가 돌고 돈다`);
+    return resolve(r, depth + 1);
+  };
+  front.colorRefs = Object.fromEntries(Object.entries(raw).flatMap(([k, v]) => (refOf(v) ? [[k, refOf(v)!]] : [])));
+  front.colors = Object.fromEntries(Object.keys(raw).map((k) => [k, resolve(k)]));
   const out = { front, body: m[2], text };
   cache.set(brand, out);
   return out;
@@ -66,16 +80,37 @@ export function typeScale() {
 
 // 역할 색 — 라이트 값과 `-dark` 짝을 한 줄로
 export type RoleColor = { name: string; light: string; dark?: string };
+const PALETTE_STEP = /^(gray|red|green|orange|blue|brand)-(00|\d+)(-dark)?$/;
 export function roleColors(brand: Brand = 'shared') {
-  const c = design(brand).front.colors;
+  const { colors: c, colorRefs } = design(brand).front;
   const rows: RoleColor[] = [];
   for (const [name, light] of Object.entries(c)) {
     if (!/^(fg|bg|stroke|static)-/.test(name) || name.endsWith('-dark')) continue;
+    // bg-page 처럼 역할을 가리키는 옛 이름은 역할이 아니다
+    if (colorRefs[name] && !PALETTE_STEP.test(colorRefs[name])) continue;
     rows.push({ name, light, dark: c[`${name}-dark`] });
   }
   return rows;
 }
 export const BRAND_ROLES = ['fg-brand', 'fg-brand-contrast', 'bg-brand-solid', 'bg-brand-solid-pressed', 'bg-brand-weak', 'bg-brand-weak-pressed', 'stroke-focus-ring', 'stroke-brand-solid', 'stroke-brand-weak'];
+
+// 역할이 가리키는 팔레트 단계("gray-200") — 옛 이름이면 역할을 거쳐 끝까지
+export function colorStep(name: string, brand: Brand = 'desk') {
+  const refs = { ...design('shared').front.colorRefs, ...design(brand).front.colorRefs };
+  let n = name, k = 0;
+  while (refs[n] && k++ < 8) n = refs[n];
+  return n === name ? undefined : n;
+}
+
+// 팔레트 — 가족마다 단계(00 · 100 ~ 1000)의 라이트 · 다크
+export type PaletteStep = { step: string; light: string; dark: string };
+export function palette(family: string, brand: Brand = 'shared') {
+  const c = design(brand).front.colors;
+  const re = new RegExp(`^${family}-(00|\\d+)$`);
+  const steps = Object.keys(c).filter((k) => re.test(k)).map((k) => ({ step: k.slice(family.length + 1), light: c[k], dark: c[`${k}-dark`] }));
+  if (!steps.length) throw new Error(`팔레트 ${family} 가 ${FILE[brand]} 에 없다`);
+  return steps.sort((a, b) => Number(a.step) - Number(b.step));
+}
 
 export function color(name: string, brand: Brand = 'desk') {
   const v = design(brand).front.colors[name] ?? design('shared').front.colors[name];
