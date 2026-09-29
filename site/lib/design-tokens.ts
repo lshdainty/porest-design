@@ -138,6 +138,27 @@ export function sectionCode(headingStartsWith: string, brand: Brand = 'shared') 
   throw new Error(`"${headingStartsWith}" 절에 코드 블록이 없다`);
 }
 
+// 절 본문(제목 아래부터 같거나 높은 단계의 다음 제목 전까지) — 문장 속 수치를 읽을 때
+export function sectionText(headingStartsWith: string, brand: Brand = 'shared') {
+  const lines = design(brand).body.split('\n');
+  const start = lines.findIndex((l) => /^#{2,5} /.test(l) && l.replace(/^#{2,5} /, '').startsWith(headingStartsWith));
+  if (start === -1) throw new Error(`DESIGN.md 에 "${headingStartsWith}" 제목이 없다`);
+  const level = lines[start].match(/^#+/)![0].length;
+  const out: string[] = [];
+  for (let i = start + 1; i < lines.length; i++) {
+    const h = lines[i].match(/^(#{2,6}) /);
+    if (h && h[1].length <= level) break;
+    out.push(lines[i]);
+  }
+  return out.join('\n');
+}
+// 절 본문에서 정규식의 첫 숫자 묶음 — 없으면 빌드를 멈춘다(문장이 바뀌면 그림도 같이 고치게)
+export function sectionNumber(headingStartsWith: string, re: RegExp) {
+  const m = sectionText(headingStartsWith).match(re);
+  if (!m) throw new Error(`"${headingStartsWith}" 절에서 ${re} 를 찾지 못했다`);
+  return Number(m[1]);
+}
+
 // prose 토큰 하나 — 내보내기(build-tailwind-v4)처럼 뒤에 나온 정의가 이긴다
 export function proseValue(name: string, brand: Brand = 'shared') {
   const esc = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

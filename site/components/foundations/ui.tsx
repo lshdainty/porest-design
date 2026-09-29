@@ -1,7 +1,7 @@
 // 기초 페이지 공용 조각 — SEED 문서처럼 회색 판 위에 그림을 두고 아래에 설명을 단다.
 import type { CSSProperties, ReactNode } from 'react';
 import Link from 'next/link';
-import { color, sectionTable } from '@/lib/design-tokens';
+import { color, sectionTable, sectionText } from '@/lib/design-tokens';
 
 export function Figure({ caption, children, tight = false }: { caption?: ReactNode; children: ReactNode; tight?: boolean }) {
   return (
@@ -175,5 +175,22 @@ export function Measure({ style, label, vertical = false }: { style: CSSProperti
         </span>
       )}
     </div>
+  );
+}
+
+// DESIGN.md 절의 목록(- …) 줄을 그대로 — 표가 아닌 규칙 목록의 수치를 옮겨 적지 않으려고. match 가 있으면 그 글자가 든 줄만
+export function SourceList({ heading, match }: { heading: string; match?: string }) {
+  const items = sectionText(heading)
+    .split('\n')
+    .filter((l) => /^- /.test(l))
+    .map((l) => l.slice(2))
+    .filter((l) => !match || l.includes(match));
+  if (!items.length) throw new Error(`"${heading}" 절에 목록 줄이 없다`);
+  return (
+    <ul className="my-4 flex list-disc flex-col gap-1.5 pl-5 text-[15px] leading-7">
+      {items.map((t, i) => (
+        <li key={i}><Inline text={t} /></li>
+      ))}
+    </ul>
   );
 }

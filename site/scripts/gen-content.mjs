@@ -168,6 +168,19 @@ function table(head, rows) {
 
 const code = (v) => (v === undefined || v === null || v === '' ? '—' : `\`${v}\``);
 
+// 표(prose) 토큰 — `| \`이름\` | \`값\` | 비고 |` 줄. 내보내기(build-tailwind-v4)처럼 뒤에 나온 정의가 이긴다
+const PROSE_GROUPS = [
+  ['breakpoint-', '중단점'], ['layout-', '레이아웃'], ['touch-', '터치 영역'], ['z-', 'z-index'], ['shadow-', '그림자'],
+  ['overlay-', '딤'], ['motion-duration-', '모션 — 지속 시간'], ['motion-ease-', '모션 — 이징'], ['gradient-', '그라디언트'],
+];
+function proseTokenRows(text) {
+  const rows = new Map();
+  for (const m of text.matchAll(/^\|\s*`((?:breakpoint|layout|touch|z|shadow|overlay|motion-duration|motion-ease|gradient)-[a-z0-9_-]+)`\s*\|\s*`([^`]+)`\s*\|\s*([^|\n]*)\|/gm)) {
+    rows.set(m[1], { value: m[2], note: m[3].trim() });
+  }
+  return rows;
+}
+
 function tokenReference() {
   const shared = splitFrontMatter(read('DESIGN.md')).data;
   const hr = splitFrontMatter(read('DESIGN.hr.md')).data;
@@ -186,11 +199,13 @@ function tokenReference() {
     code(t.letterSpacing),
   ]);
   const families = [...new Set(Object.values(shared.typography ?? {}).map((t) => t.fontFamily))];
+  const prose = proseTokenRows(read('DESIGN.md'));
+  const allCount = sharedColors.size + brandNames.length + typography.length + Object.keys(shared.rounded ?? {}).length + Object.keys(shared.spacing ?? {}).length + prose.size;
 
   return [
-    '토큰 값은 `DESIGN.md`(공유)와 `DESIGN.hr.md` · `DESIGN.desk.md`(브랜드)의 YAML 머리말이 원본입니다. 이 표는 빌드할 때 그 머리말에서 그대로 뽑습니다.',
+    '토큰 값은 `DESIGN.md`(공유)와 `DESIGN.hr.md` · `DESIGN.desk.md`(브랜드)가 원본이다. 이 목록은 빌드할 때 그 파일에서 그대로 뽑는다 — 색 · 글자 · 모서리 · 간격은 YAML 머리말에서, 그림자 · 모션 · 중단점 · 레이아웃 · 터치 영역 · z-index · 딤 · 그라디언트는 본문의 표에서.',
     '',
-    '그림자·모션·중단점·레이아웃(콘텐츠 폭·여백·사이드바)·터치 영역·z-index 는 머리말이 아니라 각 기초 페이지의 표에 정의돼 있습니다.',
+    `모두 ${allCount} 개다(색은 라이트 · 다크 짝을 한 줄로). 토큰의 층과 모드는 [Overview](/docs/foundations/design-token) 에 있다.`,
     '',
     '## 공유 색',
     '',
@@ -225,6 +240,10 @@ function tokenReference() {
     '## 간격',
     '',
     table(['토큰', '값'], Object.entries(shared.spacing ?? {}).map(([k, v]) => [code(k), code(v)])),
+    ...PROSE_GROUPS.flatMap(([prefix, title]) => {
+      const rows = [...prose].filter(([name]) => name.startsWith(prefix) && !PROSE_GROUPS.some(([p]) => p !== prefix && p.startsWith(prefix) && name.startsWith(p)));
+      return ['', `## ${title}`, '', table(['토큰', '값', '비고'], rows.map(([name, r]) => [code(name), code(r.value), r.note.replace(/\|/g, '\\|')]))];
+    }),
   ].join('\n');
 }
 
@@ -263,8 +282,8 @@ write(
 );
 
 write(
-  'foundations/tokens.md',
-  { title: 'Token reference', description: '공유·브랜드 토큰의 전체 값', source: 'DESIGN.md' },
+  'foundations/design-token/reference.md',
+  { title: 'Reference', description: '공유 · 브랜드 토큰 전체 목록 — 머리말 토큰과 표 토큰', source: 'DESIGN.md' },
   tokenReference(),
 );
 
