@@ -52,8 +52,7 @@ rules:
         gap: { value: $spacing-md, note: "multi-toast" }
     enter:
       root:
-        # 옮기기 전 표는 250ms 라 적었다. 토큰은 200ms — 값은 고치지 않았다.
-        transitionDuration: { value: $motion-duration-base, note: "옮기기 전 표기 250ms — 토큰 값과 다르다" }
+        transitionDuration: $motion-duration-base
         transitionEasing: $motion-ease-out
     hover:
       root:
@@ -74,19 +73,19 @@ rules:
   - when: { kind: success }
     visible:
       icon:
-        stroke: { value: $color-success, note: "옮기기 전 표기 #1A7F47 — 토큰 값과 다르다" }
+        stroke: $color-success
 
   - when: { kind: error }
     visible:
       icon:
-        stroke: { value: $color-error, note: "옮기기 전 표기 #D32F2F — 토큰 값과 다르다" }
+        stroke: $color-error
 
   - when: { kind: warning }
     visible:
       icon:
-        stroke: { value: $color-warning, note: "옮기기 전 표기 #F59E0B — 토큰 값과 다르다" }
+        stroke: $color-warning
 
   - when: { kind: info }
     visible:
       icon:
-        stroke: { value: $color-info, note: "옮기기 전 표기 #2271D1 — 토큰 값과 다르다" }
+        stroke: $color-info
