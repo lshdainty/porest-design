@@ -112,7 +112,7 @@ export function loadTokens(repo) {
 const hex = (v) => (/^#[0-9a-f]{3,8}$/i.test(v) ? v.toUpperCase() : v);
 
 function parseRef(value) {
-  const m = String(value).match(/^\$([a-z0-9-]+)(?:\s*\/\s*(\d+%))?$/);
+  const m = String(value).match(/^\$([a-z0-9_-]+)(?:\s*\/\s*(\d+%))?$/);
   return m ? { name: m[1], alpha: m[2] } : null;
 }
 

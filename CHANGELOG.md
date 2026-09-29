@@ -53,6 +53,9 @@
 - v56: title/body/caption-md 5종 — `title-md` (16/600/1.25), `title-sm` (16/500/1.25), `body-md` (16/400/1.5 — 영문 본문, 한국어 `body` 15/1.6와 별도), `body-sm` (14/400/1.43), `caption-md` (14/500/1.29 — Airbnb caption 14, **명명 충돌 회피** 위해 caption-md로).
 - v57: caption-sm/badge/uppercase-tag + button-md/nav-link 5종 — `caption-sm` (13/400/1.23), `badge` (11/600/1.18), `uppercase-tag` (8/700/1.25 letterSpacing 0.32px — uppercase는 CSS text-transform), `button-md` (16/500/1.25), `nav-link` (16/600/1.25). caption 3-tier 완성: caption 12 (한국어) / caption-md 14 / caption-sm 13. typography 21 토큰 — Airbnb 14단계 reference 적용 완료.
 
+**v98 — SEED 간격 스케일 (2026-09-29)**
+- v98: spacing 을 당근 SEED dimension 스케일로 — 2px 단위 19단계(`x0_5` 2px ~ `x16` 64px), 이름도 SEED 와 같다. 옛 7단계(`xs` 4 · `sm` 8 · `md` 12 · `lg` 16 · `xl` 24 · `2xl` 32 · `3xl` 48)는 모두 이 눈금 위라 값이 안 바뀌고, 옮기는 동안 같은 값의 별칭으로 남는다. 스펙이 px 로 직접 적은 간격 22곳 가운데 20곳이 이제 토큰으로 가리킬 수 있다. "한 번에 5개" 규칙의 예외 — 사용자 결정(2026-09-29). 파서(내보내기 · prose 검사 · 사이트 변환기)가 밑줄 이름(`x0_5`)을 읽게 했다.
+
 ### Components
 
 **v33~v48 — Component spec batch (16 components, sparse 매핑 자동 검증 활성)**

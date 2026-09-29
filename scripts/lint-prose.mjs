@@ -71,7 +71,7 @@ const NOISE = new Set([
 
 function looksLikeToken(s) {
   if (NOISE.has(s)) return false;
-  if (!/^[a-z][a-z0-9-]*$/.test(s)) return false;
+  if (!/^[a-z][a-z0-9_-]*$/.test(s)) return false;
   return TOKEN_PREFIXES.some(p => s === p.replace(/-$/, "") || s.startsWith(p));
 }
 
@@ -125,7 +125,7 @@ function extractDefinedTokens(content) {
     const block = findBlockLines(lines, key);
     if (!block) continue;
     for (let i = block.start + 1; i < block.end; i++) {
-      const m = /^\s\s([a-z0-9][a-z0-9-]*):/.exec(lines[i]);
+      const m = /^\s\s([a-z0-9][a-z0-9_-]*):/.exec(lines[i]);
       if (m) {
         defined.add(m[1]);
         defined.add(prefixMap[key] + m[1]);
@@ -201,7 +201,7 @@ function extractScale(content, blockKey, prefix) {
   const block = findBlockLines(lines, blockKey);
   if (!block) return out;
   for (let i = block.start + 1; i < block.end; i++) {
-    const m = /^\s+([a-z0-9][a-z0-9-]*):\s*"?(\d+(?:\.\d+)?)px/.exec(lines[i]);
+    const m = /^\s+([a-z0-9][a-z0-9_-]*):\s*"?(\d+(?:\.\d+)?)px/.exec(lines[i]);
     if (m) out.set(`${prefix}-${m[1]}`, Number(m[2]));
   }
   return out;

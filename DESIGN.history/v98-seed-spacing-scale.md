@@ -173,27 +173,6 @@ rounded:
   # (v28: xs(2px)·2xl(20px) 추가. xs는 미세 라운드(tag/chip/tooltip), 2xl은 large modal·hero card)
 
 spacing:
-  # v98 — SEED dimension 스케일(2px 단위 19단계). 이름도 SEED 와 같다(x1 = 4px).
-  x0_5: "2px"
-  x1: "4px"
-  x1_5: "6px"
-  x2: "8px"
-  x2_5: "10px"
-  x3: "12px"
-  x3_5: "14px"
-  x4: "16px"
-  x4_5: "18px"
-  x5: "20px"
-  x6: "24px"
-  x7: "28px"
-  x8: "32px"
-  x9: "36px"
-  x10: "40px"
-  x12: "48px"
-  x13: "52px"
-  x14: "56px"
-  x16: "64px"
-  # 옛 이름 — 옮기는 동안의 별칭(값은 위 SEED 이름과 같다). 스펙 · 제품이 다 옮기면 걷는다.
   xs: "4px"
   sm: "8px"
   md: "12px"
@@ -201,6 +180,7 @@ spacing:
   xl: "24px"
   2xl: "32px"
   3xl: "48px"
+  # (v27: 2xl/3xl 추가 완료. 4px 베이스 그리드 유지(8/12/16/24/32/48))
 
 components:
   # === Brand-specific 컴포넌트(button-primary, button-outline-on-dark)는
@@ -831,38 +811,7 @@ CSS 패턴 (mobile-first, `@media (min-width)`):
 
 ## Layout
 
-### v98 — SEED 간격 스케일 (2026-09-29)
-
-당근 SEED 의 dimension 스케일을 그대로 들인다 — 2px 단위 19단계, 이름도 SEED 와 같다(`x1` = 4px). 지금까지의 7단계(`xs` … `3xl`)는 모두 이 눈금 위에 있어 값이 바뀌지 않고, 옮기는 동안 같은 값의 별칭으로 남는다.
-
-| 토큰 | 값 | 옛 이름(별칭) |
-|---|---|---|
-| `spacing-x0_5` | 2px | — |
-| `spacing-x1` | 4px | `spacing-xs` |
-| `spacing-x1_5` | 6px | — |
-| `spacing-x2` | 8px | `spacing-sm` |
-| `spacing-x2_5` | 10px | — |
-| `spacing-x3` | 12px | `spacing-md` |
-| `spacing-x3_5` | 14px | — |
-| `spacing-x4` | 16px | `spacing-lg` |
-| `spacing-x4_5` | 18px | — |
-| `spacing-x5` | 20px | — |
-| `spacing-x6` | 24px | `spacing-xl` |
-| `spacing-x7` | 28px | — |
-| `spacing-x8` | 32px | `spacing-2xl` |
-| `spacing-x9` | 36px | — |
-| `spacing-x10` | 40px | — |
-| `spacing-x12` | 48px | `spacing-3xl` |
-| `spacing-x13` | 52px | — |
-| `spacing-x14` | 56px | — |
-| `spacing-x16` | 64px | — |
-
-- 새로 쓰는 간격은 SEED 이름으로 적는다. 옛 이름은 컴포넌트 스펙 · 제품이 다 옮기면 걷는다 — 컴포넌트 스펙은 2단계에서 SEED 와 하나씩 비교할 때 옮긴다.
-- "한 번에 토큰 5개까지" 규칙의 예외다. 사용자가 2026-09-29 SEED 스케일 전체를 고르며 그 대가를 알고 정했다.
-- 역할 간격(SEED 의 global-gutter · component-default 등)은 Layout 단계에서 따로 정한다.
-- 이유: 스펙 52개가 토큰 없이 px 로 적은 간격 22곳 가운데 20곳(2 · 10 · 14 · 18 · 20 · 36px)이 SEED 눈금에 있다. 7단계로는 이 값들을 토큰으로 가리킬 수 없었다.
-
-### v4 추가 — 4px 베이스 5단계 (v98 에서 SEED 스케일로 바뀜 — 아래는 기록)
+### v4 추가 — 4px 베이스 5단계
 
 CLAUDE.md "4px 베이스 추천" 규칙을 준수하는 t-shirt 사이즈 스케일. 모든 값은 4의 배수이며, 의미 기반 명명(`xs/sm/md/lg/xl`)으로 값에 의존하지 않습니다.
 

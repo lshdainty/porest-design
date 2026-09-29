@@ -82,7 +82,7 @@ function parseSimpleScale(lines, key) {
   const { start, end } = findBlockLines(lines, key);
   const out = {};
   for (let i = start + 1; i < end; i++) {
-    const m = /^\s+([a-z0-9]+):\s*"?([^"#\n]+?)"?\s*(?:#.*)?$/.exec(lines[i]);
+    const m = /^\s+([a-z0-9_]+):\s*"?([^"#\n]+?)"?\s*(?:#.*)?$/.exec(lines[i]);
     if (m && !m[1].startsWith("#")) out[m[1]] = m[2].trim();
   }
   return out;
