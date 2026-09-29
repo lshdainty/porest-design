@@ -11,7 +11,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { parse as parseYaml } from 'yaml';
 
-export const PLACEHOLDER = /^\[표: ([^\]]+)\]\(([a-z0-9-]+)\.yaml#([a-zA-Z0-9.-]+)\)\s*$/;
+export const PLACEHOLDER = /^\[표: ([^\]]+)\]\(([a-z0-9-]+)\.yaml#([a-zA-Z0-9.@-]+)\)\s*$/;
 
 // 표 머리글. `부위.속성` 이 먼저, 없으면 속성 이름으로 찾고, 그것도 없으면 키를 그대로 쓴다.
 // 순서가 곧 표의 칸 순서다(크기 → 여백 → 모양 → 색 → 글자 → 효과).
@@ -43,6 +43,10 @@ const PROP_LABEL = {
   margin: '바깥 여백',
   marginTop: '위 바깥 여백',
   marginBottom: '아래 바깥 여백',
+  marginY: '상하 바깥 여백',
+  marginX: '좌우 바깥 여백',
+  marginLeft: '왼쪽 바깥 여백',
+  marginRight: '오른쪽 바깥 여백',
   gap: '간격',
   rowGap: '줄 간격',
   columnGap: '칸 간격',
@@ -73,6 +77,13 @@ const PROP_LABEL = {
   pointerEvents: '포인터 이벤트',
   zIndex: 'z-index',
   touchTarget: '터치 영역',
+  rotate: '회전',
+  marginBlock: '위아래 바깥 여백',
+  aspectRatio: '비율',
+  objectFit: '맞춤',
+  textTransform: '대소문자',
+  outlineOffset: '외곽선 간격',
+  glyph: '글리프',
   transitionProperty: '전환 대상',
   transitionDuration: '전환 시간',
   transitionEasing: '전환 곡선',
@@ -264,6 +275,9 @@ function orderKeys(spec, keys) {
   });
 }
 
+// @부위 로 고른 부위의 키만.
+const inSlot = (pick) => (key) => !pick || key.startsWith(`${pick}.`);
+
 function unionKeys(rows) {
   const keys = [];
   for (const row of rows) for (const key of Object.keys(row)) if (!keys.includes(key)) keys.push(key);
@@ -300,7 +314,7 @@ function touch(tokens, row, rootSlot) {
   if (h === null) return '—';
   const w = row[`${rootSlot}.width`] !== undefined ? px(tokens, row[`${rootSlot}.width`]) : h;
   const side = Math.min(h, w ?? h);
-  return `${side >= 24 ? '✓' : '✗'} · ${side >= 44 ? '✓' : '⚠'}`;
+  return `${side >= 24 ? '✓' : '⚠'} · ${side >= 44 ? '✓' : '⚠'}`;
 }
 
 // combo 에 걸리는 규칙(when ⊆ combo).
@@ -324,11 +338,12 @@ function checkCombo(spec, combo) {
 // ── 구역 ────────────────────────────────────────────────────────
 
 // base[.<상태>] — 조건 없는 규칙(상태를 적으면 그 상태만). 부위·상태·비고 칸은 필요할 때만 둔다.
-function baseTable(spec, tokens, only) {
+function baseTable(spec, tokens, only, pick) {
   const rows = [];
   for (const rule of spec.rules.filter(isBase)) {
     for (const state of only ? [only] : stateNames(spec)) {
       for (const [slot, props] of Object.entries(rule[state] ?? {})) {
+        if (pick && slot !== pick) continue;
         for (const [prop, pv] of Object.entries(props)) rows.push({ slot, state, prop, ...cell(tokens, pv) });
       }
     }
@@ -355,7 +370,7 @@ function slotsTable(spec) {
 }
 
 // <축> — 축 값마다 한 줄. 그 축만 조건으로 건 규칙의 기본 상태 값.
-function axisTable(spec, tokens, axis) {
+function axisTable(spec, tokens, axis, pick) {
   const values = axisValues(spec, axis);
   const rows = values.map((v) => {
     const merged = {};
@@ -365,7 +380,7 @@ function axisTable(spec, tokens, axis) {
     }
     return merged;
   });
-  const cols = orderKeys(spec, unionKeys(rows));
+  const cols = orderKeys(spec, unionKeys(rows)).filter(inSlot(pick));
   const root = Object.keys(spec.slots)[0];
   const withTouch = cols.includes(`${root}.height`);
   const withDesc = values.some((v) => descOf(spec.variants[axis], v));
@@ -383,7 +398,7 @@ function axisTable(spec, tokens, axis) {
 // grid.<축>[.<축>.<값>…] — 속성마다 한 줄, 축 값마다 한 칸. 뒤의 짝은 고정 조건.
 // 그 조합에 걸리는 규칙 가운데 고정 조건의 축을 모두 적은 규칙만 합친다(조건 없는 규칙은 뺀다).
 // 그래서 grid.variant 는 변형별 바탕 값, grid.variant.selected.active 는 선택됐을 때 바뀌는 값만 보인다.
-function gridTable(spec, tokens, axis, fixed) {
+function gridTable(spec, tokens, axis, fixed, pick) {
   const values = axisValues(spec, axis);
   const mentionsFixed = (rule) => Object.keys(fixed).every((k) => k in (rule.when ?? {}));
   const columns = values.map((v) => {
@@ -394,7 +409,7 @@ function gridTable(spec, tokens, axis, fixed) {
     }
     return merged;
   });
-  const keys = orderKeys(spec, unionKeys(columns));
+  const keys = orderKeys(spec, unionKeys(columns)).filter(inSlot(pick));
   return table(
     ['속성', ...values.map((v) => valueCell(spec, axis, v))],
     keys.map((k) => [label(spec, k), ...columns.map((col) => inline(tokens, col[k]))]),
@@ -403,7 +418,7 @@ function gridTable(spec, tokens, axis, fixed) {
 
 // states.<축>[.<축>…] — 축 값(여럿이면 곱한 조합)마다, 기본 상태에서 바뀌는 값을 상태별로.
 // 조건 없는 규칙(포커스 링처럼 모두 같은 것)은 빼고 그 조합에 걸리는 규칙만 — 공통은 #base 에 있다.
-function stateDeltaTable(spec, tokens, axes) {
+function stateDeltaTable(spec, tokens, axes, pick) {
   let combos = [{}];
   for (const axis of axes) combos = combos.flatMap((c) => axisValues(spec, axis).map((v) => ({ ...c, [axis]: v })));
   const states = stateNames(spec).filter((s) => s !== baseState(spec));
@@ -411,7 +426,7 @@ function stateDeltaTable(spec, tokens, axes) {
     states.map((state) => {
       const merged = {};
       for (const rule of spec.rules.filter((r) => !isBase(r) && appliesTo(combo)(r))) Object.assign(merged, flatten(rule[state]));
-      const keys = orderKeys(spec, Object.keys(merged));
+      const keys = orderKeys(spec, Object.keys(merged)).filter(inSlot(pick));
       return keys.length ? keys.map((k) => `${label(spec, k)} ${inline(tokens, merged[k])}`).join(' · ') : '—';
     }),
   );
@@ -423,8 +438,9 @@ function stateDeltaTable(spec, tokens, axes) {
 }
 
 // matrix[.<축>.<값>…] — 한 조합의 상태 매트릭스. 공통 규칙 + 그 조합에 걸리는 규칙을 상태마다 누적한다.
-// 칸은 상태에 따라 바뀌는 속성과, 그 조합이 따로 정한 속성만 — 크기처럼 모든 상태에서 같은 공통 값은 다른 표에 있다.
-function stateMatrix(spec, tokens, combo) {
+// 칸은 상태에 따라 바뀌는 속성과, 상태를 정의한 조건부 규칙(변형 색 등)이 정한 속성만 — 크기처럼
+// 상태와 무관한 값은 다른 표에 있다. 부위를 고르면 그 부위가 바뀌는 상태만 줄로 둔다.
+function stateMatrix(spec, tokens, combo, pick) {
   const rules = spec.rules.filter(appliesTo(combo));
   const base = {};
   for (const rule of rules) Object.assign(base, flatten(rule[baseState(spec)]));
@@ -434,23 +450,29 @@ function stateMatrix(spec, tokens, combo) {
     if (state !== baseState(spec)) for (const rule of rules) Object.assign(row, flatten(rule[state]));
     return row;
   });
+  const hasStates = (rule) => states.some((st) => st !== baseState(spec) && rule[st]);
   const own = new Set();
-  for (const rule of rules.filter((r) => !isBase(r))) for (const state of states) for (const k of Object.keys(flatten(rule[state]))) own.add(k);
+  for (const rule of rules.filter((r) => !isBase(r) && hasStates(r))) {
+    for (const state of states) for (const k of Object.keys(flatten(rule[state]))) own.add(k);
+  }
   const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
-  const cols = orderKeys(spec, unionKeys(rows)).filter((c) => own.has(c) || rows.some((r) => !same(r[c], rows[0][c])));
+  const cols = orderKeys(spec, unionKeys(rows))
+    .filter(inSlot(pick))
+    .filter((c) => own.has(c) || rows.some((r) => !same(r[c], rows[0][c])));
+  const keep = rows.map((row, i) => i === 0 || !pick || cols.some((c) => !same(row[c], rows[0][c])));
   return table(
     ['상태', ...cols.map((c) => label(spec, c))],
-    rows.map((row, i) => [stateCell(spec, states[i]), ...cols.map((c) => inline(tokens, row[c]))]),
+    rows.filter((_, i) => keep[i]).map((row) => [stateCell(spec, states[rows.indexOf(row)]), ...cols.map((c) => inline(tokens, row[c]))]),
   );
 }
 
 // compound — 두 축 이상을 함께 건 규칙.
-function compoundTable(spec, tokens) {
+function compoundTable(spec, tokens, pick) {
   const rows = [];
   for (const rule of spec.rules.filter((r) => whenKeys(r).length > 1)) {
     const combo = Object.entries(rule.when).map(([k, v]) => `${k}=${code(v)}`).join(' + ');
     for (const state of stateNames(spec)) {
-      for (const [key, pv] of Object.entries(flatten(rule[state]))) rows.push([combo, code(state), label(spec, key), inline(tokens, pv)]);
+      for (const [key, pv] of Object.entries(flatten(rule[state])).filter(([k]) => inSlot(pick)(k))) rows.push([combo, code(state), label(spec, key), inline(tokens, pv)]);
     }
   }
   if (rows.length === 0) throw new SpecError('두 축 이상을 건 규칙이 없다 — #compound 를 쓸 수 없다');
@@ -483,33 +505,37 @@ function motionTable(spec, tokens) {
 //   matrix[.<축>.<값>…]     그 조합(나머지는 defaults)의 상태 매트릭스
 //   compound                두 축 이상을 건 규칙
 //   motion                  전환 시간 · 곡선
+// 뒤에 @<부위> 를 붙이면 그 부위만 그린다 — 예: matrix@input, base.default@palette.
 export function renderSection(spec, tokens, section) {
-  const [head, ...rest] = section.split('.');
-  if (head === 'base' && rest.length === 0) return baseTable(spec, tokens);
+  const [name, pick, extra] = section.split('@');
+  if (extra !== undefined) throw new SpecError(`구역 #${section} — @부위 는 하나만`);
+  if (pick !== undefined && !(pick in spec.slots)) throw new SpecError(`없는 부위 ${pick}`);
+  const [head, ...rest] = name.split('.');
+  if (head === 'base' && rest.length === 0) return baseTable(spec, tokens, undefined, pick);
   if (head === 'base' && rest.length === 1) {
     if (!stateNames(spec).includes(rest[0])) throw new SpecError(`없는 상태 ${rest[0]}`);
-    return baseTable(spec, tokens, rest[0]);
+    return baseTable(spec, tokens, rest[0], pick);
   }
   if (head === 'slots' && rest.length === 0) return slotsTable(spec);
-  if (head === 'compound' && rest.length === 0) return compoundTable(spec, tokens);
+  if (head === 'compound' && rest.length === 0) return compoundTable(spec, tokens, pick);
   if (head === 'motion' && rest.length === 0) return motionTable(spec, tokens);
   if (head === 'states' && rest.length >= 1) {
     for (const axis of rest) if (!spec.variants[axis]) throw new SpecError(`없는 변형 축 ${axis}`);
-    return stateDeltaTable(spec, tokens, rest);
+    return stateDeltaTable(spec, tokens, rest, pick);
   }
   if (head === 'grid' && rest.length >= 1) {
     const [axis, ...fixedParts] = rest;
     if (!spec.variants[axis]) throw new SpecError(`없는 변형 축 ${axis}`);
     const fixed = pairs(fixedParts, section);
     checkCombo(spec, fixed);
-    return gridTable(spec, tokens, axis, fixed);
+    return gridTable(spec, tokens, axis, fixed, pick);
   }
   if (head === 'matrix') {
     const combo = { ...spec.defaults, ...pairs(rest, section) };
     checkCombo(spec, combo);
-    return stateMatrix(spec, tokens, combo);
+    return stateMatrix(spec, tokens, combo, pick);
   }
-  if (rest.length === 0 && spec.variants[head]) return axisTable(spec, tokens, head);
+  if (rest.length === 0 && spec.variants[head]) return axisTable(spec, tokens, head, pick);
   throw new SpecError(`없는 구역 #${section}`);
 }
 
@@ -527,11 +553,12 @@ export function fillSpecTables(body, { specDir, tokens, source }) {
     .map((line, i) => {
       const m = line.match(PLACEHOLDER);
       if (!m) return line;
-      const [, , name, section] = m;
+      const [, title, name, section] = m;
       const file = join(specDir, `${name}.yaml`);
       try {
         if (!cache.has(file)) cache.set(file, loadSpec(file, tokens));
-        return renderSection(cache.get(file), tokens, section);
+        // 제목을 표 위에 붙인다 — 한 자리를 여러 표로 나눈 곳(toggle 의 off · on)에서 표끼리 가를 수 있게.
+        return `**${title}**\n\n${renderSection(cache.get(file), tokens, section)}`;
       } catch (e) {
         if (e instanceof SpecError || e.code === 'ENOENT') {
           throw new Error(`${source}:${i + 1} ${name}.yaml#${section} — ${e.message}`);
