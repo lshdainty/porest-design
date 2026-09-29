@@ -21,6 +21,23 @@ npm run build:site              # exports/site/ — 풀 docs site (Landing + Tok
 
 ---
 
+## 문서 사이트 (`site/`)
+
+당근 SEED(seed-design.io) 수준의 문서 사이트를 목표로 새로 짓는 중이다 — 기초와 컴포넌트의 세부 수치를 빠짐없이 적어, 웹·앱이 같은 값을 따르게 한다. Next.js + Fumadocs 정적 사이트다.
+
+```bash
+cd site
+npm install
+npm run dev      # 원본에서 페이지를 만든 뒤 개발 서버
+npm run build    # site/out — 정적 사이트 + 검색 색인 + llms.txt
+```
+
+페이지 대부분은 `site/scripts/gen-content.mjs` 가 빌드 때 원본에서 만든다 — `DESIGN.md` 의 `##` 절 → 기초, YAML 머리말 → Token reference, `specs/components/*.md` → 컴포넌트. 만든 페이지는 git 에 없으니 **원본을 고친다.** 원본을 사이트용으로 새로 쓴 페이지는 같은 자리에 `.mdx` 로 두면 생성이 건너뛴다.
+
+미리보기·예제는 아직 옛 사이트(`npm run build:site` → `exports/site/`)에만 있다.
+
+---
+
 ## 파일 구조
 
 ```
@@ -156,8 +173,9 @@ Coverage:
 - `npm run lint:prose` (prose token reference 검사)
 - `npm run test:exports` (Tailwind v4 build + namespace 검증)
 - `npm run export:dtcg` smoke test
+- `site` 잡 — `site/` 에서 `npm ci` → `npm run build`. 원본(DESIGN·specs)이 사이트로 안 옮겨지면 여기서 깨진다
 
-로컬 pre-commit hook이 같은 게이트 — push 전 통과 보장.
+로컬 pre-commit hook이 같은 게이트 — push 전 통과 보장(`site` 빌드는 CI 에서만).
 
 ---
 
