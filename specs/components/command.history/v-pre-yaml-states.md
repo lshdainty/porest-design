@@ -59,17 +59,26 @@ Command는 **variant 없음** — 단일 시각. 사용 형태(inline vs Command
 
 Command는 **size variant 없음** — 단일 spec. 폭은 사용처에서 결정(`w-72` popover 내부 / `w-[min(640px,90%)]` dialog).
 
-[표: 부위별 크기](command.yaml#base.enabled)
+[표: 부위별 크기](command.yaml#base)
 
 ## States
 
 ### Input
 
-[표: Input 상태](command.yaml#matrix@input)
+| State | Background | Border | Text |
+|---|---|---|---|
+| `enabled` (empty) | transparent | (wrapper border-b) | placeholder `text-tertiary` |
+| `enabled` (filled) | transparent | (wrapper border-b) | `text-primary` |
+| `focus-visible` (input) | transparent | (wrapper border-b, no ring change) | `text-primary` |
+| `disabled` | transparent (opacity 0.5) | — | placeholder `text-tertiary` |
 
 ### Item
 
-[표: Item 상태](command.yaml#matrix@item)
+| State | Background | Text |
+|---|---|---|
+| `enabled` | transparent | `text-primary` |
+| `selected` (cmdk `data-[selected=true]`) | `surface-input` | `text-primary` |
+| `disabled` | transparent (opacity 0.5) | `text-primary` |
 
 선택 상태는 키보드(Arrow keys)로 변경 — hover와 분리. focus state는 cmdk가 selected와 동기화.
 
