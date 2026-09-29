@@ -7,8 +7,10 @@
 // 어딘가에 있는지 찾는다. 줄 단위 대응까지는 못 본다 — 빠짐만 잡는다. 어느 칸에 붙었는지는 사람이 본다.
 //
 // 결과
-//   빠짐   토큰 · 수치 · 색 — 옮기다 잃은 값이다. 하나라도 있으면 exit 1
-//   참고   Tailwind 클래스 같은 구현 표기 — 값을 되풀이할 뿐이면 버려도 되지만, 정보가 있으면 note 로 옮긴다
+//   빠짐    토큰 · 수치 · 색 — 페이지 어디에도 없다. 옮기다 잃은 값이다. 하나라도 있으면 exit 1
+//   다른 절  페이지엔 있지만 원래 표가 있던 절(## · ###) 안에는 없다 — 표가 칸을 잃었거나(렌더러가
+//           칸을 숨김) 값을 다른 표로 옮긴 것. 일부러 옮긴 게 아니면 고친다
+//   참고    Tailwind 클래스 같은 구현 표기 — 값을 되풀이할 뿐이면 버려도 되지만, 정보가 있으면 note 로 옮긴다
 
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
@@ -80,35 +82,63 @@ function atoms(row) {
 }
 
 const hay = page.toLowerCase();
-const has = (s) => hay.includes(s.toLowerCase());
+
+// 생성 페이지에서 제목 줄(## 이름)부터 같은 급 이상의 다음 제목까지.
+function sectionOf(text, heading) {
+  const lines = text.split('\n');
+  const start = lines.findIndex((l) => /^#{2,4} /.test(l) && l.replace(/^#+ /, '') === heading);
+  if (start === -1) return null;
+  const level = lines[start].match(/^#+/)[0].length;
+  let end = lines.length;
+  for (let i = start + 1; i < lines.length; i++) {
+    const m = lines[i].match(/^(#{2,4}) /);
+    if (m && m[1].length <= level) { end = i; break; }
+  }
+  return lines.slice(start, end).join('\n').toLowerCase();
+}
 
 let missing = 0;
 let notes = 0;
+let elsewhere = 0;
 for (const t of moved) {
   const lost = [];
   const hints = [];
+  const away = [];
+  const section = sectionOf(page, t.heading) ?? hay;
+  const has = (s) => hay.includes(s.toLowerCase());
+  const near = (s) => section.includes(s.toLowerCase());
   for (const row of t.rows.slice(2)) {
     const label = row.split('|')[1]?.trim();
     for (const a of atoms(row)) {
       const text = norm(a.text);
       if (has(text) || has(a.text)) continue;
       // 코드 안의 여러 조각(`py-2 px-3`, `a / b`)은 조각마다 본다.
-      const parts = text.split(/\s+|\s*\/\s*|\s*·\s*/).filter(Boolean);
+      const parts = text.split(/\s+|\s*\/\s*|\s*·\s*/).filter((p) => /[\p{L}\p{N}]/u.test(p));
       const unresolved = parts.filter((p) => !has(norm(p)) && !(tokenOf(p) && has(tokenOf(p))));
       if (unresolved.length === 0) continue;
       const design = unresolved.filter((p) => !TW.test(p) || /\d+(px|%|ms)|#[0-9a-f]{6}/i.test(p));
       if (a.kind === 'value' || design.length) lost.push(`${label}: ${a.text}`);
       else hints.push(`${label}: ${a.text}`);
     }
+    // 페이지엔 있어도 원래 절 안에 없으면 따로 알린다.
+    for (const a of atoms(row)) {
+      const text = norm(a.text);
+      const parts = text.split(/\s+|\s*\/\s*|\s*·\s*/).filter((p) => /[\p{L}\p{N}]/u.test(p));
+      const onPage = has(text) || has(a.text) || parts.every((p) => has(norm(p)) || (tokenOf(p) && has(tokenOf(p))));
+      const inSection = near(text) || near(a.text) || parts.every((p) => near(norm(p)) || (tokenOf(p) && near(tokenOf(p))));
+      if (onPage && !inSection && (a.kind === 'value' || parts.some((p) => !TW.test(p)))) away.push(`${label}: ${a.text}`);
+    }
   }
-  if (lost.length || hints.length) {
+  if (lost.length || hints.length || away.length) {
     console.log(`\n# ${t.heading} (기준 md ${t.line}행, ${t.rows.length - 2}줄)`);
-    for (const l of lost) console.log(`  빠짐  ${l}`);
-    for (const h of hints) console.log(`  참고  ${h}`);
+    for (const l of lost) console.log(`  빠짐    ${l}`);
+    for (const w of away) console.log(`  다른 절  ${w}`);
+    for (const h of hints) console.log(`  참고    ${h}`);
   }
   missing += lost.length;
   notes += hints.length;
+  elsewhere += away.length;
 }
 
-console.log(`\n${name}: 옮긴 표 ${moved.length}개 · 빠짐 ${missing} · 참고 ${notes}`);
+console.log(`\n${name}: 옮긴 표 ${moved.length}개 · 빠짐 ${missing} · 다른 절 ${elsewhere} · 참고 ${notes}`);
 process.exit(missing ? 1 : 0);
