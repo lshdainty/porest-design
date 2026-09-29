@@ -30,15 +30,30 @@ Porest Badge는 **3 styles(solid / soft / outline) × neutral·semantic 색상**
 
 ### Style: `solid` (3 variants)
 
-[표: solid](badge.yaml#solid)
+| Variant | Background | Text | 사용처 |
+|---|---|---|---|
+| `default` *(default)* | `--color-primary` | `--color-text-on-accent` | brand 강조 라벨 — "NEW", "BETA", primary 강조 상태("승인"). |
+| `secondary` | `--color-surface-input` | `--color-text-primary` | neutral 라벨 — 카테고리 태그, 우선순위 평이. |
+| `destructive` | `--color-error` | `--color-text-on-accent` | 위험·거절 강조 — "반려", "삭제 예정". semantic error의 강조 톤. |
 
 ### Style: `soft` (4 semantic — preview SoT 정합)
 
-[표: soft](badge.yaml#soft)
+| Variant | Background | Text | 사용처 |
+|---|---|---|---|
+| `info` | `color-mix(in srgb, var(--color-info) 16%, transparent)` | `--color-info` | 정보성 라벨 — "신규", "안내". |
+| `success` | `color-mix(in srgb, var(--color-success) 16%, transparent)` | `--color-success` | 성공·완료 — "완료", "정상". |
+| `warning` | `color-mix(in srgb, var(--color-warning) 16%, transparent)` | `--color-warning` | 주의·임박 — "경고", "임박". |
+| `error` | `color-mix(in srgb, var(--color-error) 16%, transparent)` | `--color-error` | 약한 오류 강조 — "실패", "지연". (강한 destructive는 solid `destructive` 사용.) |
 
 ### Style: `outline` (5 — neutral + 4 semantic)
 
-[표: outline](badge.yaml#outline)
+| Variant | Border | Text | 사용처 |
+|---|---|---|---|
+| `outline` | `--color-border-default` | `--color-text-primary` | neutral outline — 정보 강도 가장 낮은 라벨, dot indicator와 조합. shadcn 기본 `outline`. |
+| `outline-info` | `--color-info` | `--color-info` | "LOW" 같은 약한 정보 — 첫 화면 LOW 패턴. |
+| `outline-success` | `--color-success` | `--color-success` | "OK" 같은 약한 긍정. |
+| `outline-warning` | `--color-warning` | `--color-warning` | "MEDIUM" 같은 중간 경고 — 첫 화면 MEDIUM 패턴. |
+| `outline-error` | `--color-error` | `--color-error` | "HIGH" 같은 강한 경고 — 첫 화면 HIGH 패턴. |
 
 **선택 기준** — 강조 강도: `solid` > `soft` > `outline`. 의미 분기: neutral(default/secondary/outline)는 brand-neutral, semantic(info/success/warning/error)은 의미 분기.
 
@@ -46,17 +61,27 @@ Porest Badge는 **3 styles(solid / soft / outline) × neutral·semantic 색상**
 
 Badge는 **size variant 없음** — 단일 spec. micro 라벨이라 사이즈 분기는 시각 noise. 큰 라벨이 필요하면 [`Chip`](./) 또는 별도 spec.
 
-[표: 크기와 모양](badge.yaml#base.default)
-
-[표: 전환](badge.yaml#motion)
+| 항목 | 값 | 토큰 |
+|---|---|---|
+| Padding-Y | 2px | `py-0.5` (Tailwind shortcut — 2px) |
+| Padding-X | 8px | `px-[var(--spacing-sm)]` |
+| Border radius | 9999px (pill) | `rounded-full` (= `var(--radius-full)`) |
+| Border width | 1px (outline·default), 0 (solid·soft) | `border` |
+| Font | 11 / 600 / 1.2 | `text-badge font-semibold` |
+| Letter-spacing | 0 (base) / 0.04em (uppercase opt-in) | (literal) |
+| Min-height | 텍스트 + padding-y (≈ 18px) | (자동) |
+| Dot size | 6×6 | `size-1.5` 또는 6px literal |
+| Dot ↔ text gap | 4px | `mr-1.5` 또는 `var(--spacing-xs)` |
+| Transition | colors | `transition-colors duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]` |
 
 ## States
 
-[표: style 별로 바뀌는 값](badge.yaml#states.style)
-
-모든 style 에 공통인 값:
-
-[표: 공통](badge.yaml#matrix)
+| State | Background | Border | Text | 추가 |
+|---|---|---|---|---|
+| `default` (static) | variant 색 | variant border | variant text | — |
+| `hover` (interactive only) | solid → `brightness-105` / soft → 16% → 24% mix / outline → `bg-surface-input` | (변화 없음) | (변화 없음) | clickable badge만 (filter chip 등). |
+| `focus-visible` (interactive only) | (변화 없음) | (변화 없음) | (변화 없음) | `ring-2 ring-ring ring-offset-2` |
+| `disabled` | opacity 0.5 | — | — | `cursor-not-allowed pointer-events-none` — interactive badge만. |
 
 **규칙**: 정적 라벨 badge는 hover/focus state 불필요. clickable badge(filter chip, dismissable tag)일 때만 state 부여.
 
