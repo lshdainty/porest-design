@@ -22,6 +22,12 @@ const FOUNDATION_SECTIONS = [
   { heading: 'Overview', slug: 'overview', title: 'Overview', description: '공유 baseline 과 브랜드 파일의 관계' },
   { heading: 'Elevation & Depth', slug: 'elevation', title: 'Elevation & Depth', description: '그림자와 오버레이 딤' },
   { heading: 'Motion', slug: 'motion', title: 'Motion', description: '지속 시간·이징·반복·키프레임' },
+  { heading: 'State', slug: 'state', title: 'State', description: '상호작용 상태와 옵션 상태' },
+  { heading: 'Iconography', slug: 'iconography', title: 'Iconography', description: '아이콘 세트 · 크기 · 굵기 · 아이콘 버튼' },
+  { heading: 'Inclusive Design', slug: 'inclusive-design', title: 'Inclusive Design', description: '모든 사용자가 쓸 수 있게' },
+  { heading: 'International Design', slug: 'international-design', title: 'International Design', description: '날짜 · 시각 · 숫자 · 기호의 로케일 표기' },
+  { heading: 'Voice and Tone', slug: 'voice-and-tone', title: 'Voice and Tone', description: 'porest 가 말하는 방법' },
+  { heading: 'Writing', slug: 'writing', title: 'Writing', description: 'porest 가 글을 쓰는 방법' },
 ];
 
 // `##` 절 안의 `###` 하나를 따로 한 페이지로 — Layout 절에 있던 것 가운데 새 Layout 페이지가 다루지 않는 것

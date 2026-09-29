@@ -77,6 +77,9 @@
 **v105 — 키프레임 권장값을 v104 이름으로 (2026-09-29)**
 - v105: v74 키프레임 · `animation` 예시가 걷는 이름(`motion-ease-out` · `motion-duration-slower` 500ms)을 가리키던 것을 v104 이름으로 옮겼다. 같은 값의 별칭은 새 이름으로(fast → d3 · base → d4 · slow → d6), 나타나는 키프레임은 `motion-ease-enter`, 사라지는 키프레임은 `motion-ease-exit`(SEED 컴포넌트와 같은 짝), 500ms 의 `bounce-in` 은 d6. 모든 애니메이션을 0.01ms 로 끄던 줄이기 예시는 v104 모드(큰 전환은 150ms 서서히 · 반복 멈춤 · 색 전환 유지)와 어긋나 걷었다. 눌림 피드백의 "평소 배경이 없는 요소(ghost 버튼 · 탭)" 에서 탭을 뺐다 — 탭은 같은 절의 "색 없이 축소만" 쪽이다(SEED 와 같게). 토큰 추가 없음.
 
+**v106 — SEED 상태 · 아이콘 · 포용적 디자인 · 국제화 · 목소리 · 글쓰기 (2026-09-30)**
+- v106: 사용자가 비교 페이지(https://claude.ai/artifact/11DmriLqavjqcSs1zFrjeZ)에서 정한 대로 `##` 절 여섯을 더했다. State — SEED 이름 + 웹 `hovered` · `focused`, 비활성은 전용 색(불투명도 걷음), 호버 = 누름 색, 포커스 링 2px · 띄움 2px + 입력칸 테두리 2px, 선택 = 반전. Iconography — lucide 유지, UI 16 · 20 · 24(12 는 바닥, 큰 그림은 비율대로), 켜짐 · 선택은 색 + 선 2.5 · 꺼짐은 `-off`, 아이콘 버튼 보이는 크기 40(누르는 영역 44). Inclusive Design — SEED 규칙, 대비는 WCAG 2, 터치 44 필수. International Design — 날짜 표준 · 줄임 · 점, 오전 · 오후 12시간, 지난 시간은 Desk 방식(방금 전), 구간 한국어 `~` · 영어 `–`. Voice and Tone — SEED 원칙 + 차분하고 친절한 톤. Writing — 해요체, 존칭 줄임, 문장이면 마침표, 이름은 붙이고 문장은 띄움, 보조 용언 붙임, 줄임표 `…`, 오류는 무엇이 · 왜 · 어떻게. Components 의 Focus ring(띄움 1 → 2px) · Disabled label(불투명도 → 전용 색)을 맞췄다. 토큰 추가 없음.
+
 ### Components
 
 **v33~v48 — Component spec batch (16 components, sparse 매핑 자동 검증 활성)**
