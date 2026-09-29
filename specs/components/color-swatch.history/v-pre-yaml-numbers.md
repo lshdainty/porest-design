@@ -37,17 +37,35 @@ ColorSwatch는 **variant 없음** — 단일 시각 spec. 의미 분기(brand/se
 
 ## Sizes
 
-[표: 크기](color-swatch.yaml#size)
+| Size | Cell 폭 | Cell 높이 | Check 크기 | 사용처 |
+|---|---|---|---|---|
+| `sm` | grid 균등 (container/N) | aspect-ratio: 1 (자동) | 12px | mobile, dense form |
+| `md` *(default)* | 동일 | 동일 | 14px | desktop, 일반 form |
+| `lg` | 동일 | 동일 | 16px | 강조 영역, 단독 |
 
 container width × grid-cols 분배가 곧 cell 폭이므로 size 명시는 **check icon 크기 + grid gap**만 분기.
 
-[표: 공통](color-swatch.yaml#base.enabled)
+| 항목 | 값 | 토큰 |
+|---|---|---|
+| Border width | 2px | (literal) |
+| Border color (inactive) | transparent | (literal) |
+| Border color (active) | currentColor | (`color: var(--swatch-fg)`) |
+| Border radius | `var(--radius-tile)` | (= radius-lg 12) |
+| Grid gap | 8px | `var(--spacing-sm)` |
+| Aspect ratio | 1:1 (정사각형) | (literal) |
+| Transition | transform 150ms | `var(--motion-duration-fast)` |
+| Hover transform | `scale(1.05)` | (literal) |
+| Focus ring | 2px / offset 2 | `ring-ring ring-offset-2` |
 
 ## States
 
-[표: 선택 여부별](color-swatch.yaml#selected)
-
-[표: 상태 — inactive](color-swatch.yaml#matrix.selected.inactive)
+| State | Border | Indicator | Transform |
+|---|---|---|---|
+| `enabled` (inactive) | transparent | — | — |
+| `enabled` (active) | `currentColor` 2px | ✓ Check | — |
+| `hover` | (변화 없음) | (변화 없음) | `scale(1.05)` |
+| `focus-visible` | (변화 없음) | (변화 없음) | + `ring-2 ring-ring ring-offset-2` |
+| `disabled` | (변화 없음) | (변화 없음) | `opacity 0.5 cursor-not-allowed` |
 
 ## Layout
 
