@@ -1000,6 +1000,19 @@ porest 화면에 아직 쓰는 자리가 없다. 자리가 생기면 위 규칙�
 
 HR 웹은 아직 porest 색에 이어지지 않았다 — shadcn 기본 테마 그대로라 주 색이 파랑(#2563EB)이다. 2026-09-29 사용자가 앱 적용 단계에서 이 파일의 HR 색(초록 #357B5F)으로 옮기기로 정했다.
 
+### v104 — 그라디언트 (2026-09-29)
+
+당근 SEED 의 Gradient 가운데 두 가지만 들인다 — 콘텐츠 끝을 부드럽게 가리는 마스크와 스켈레톤 반짝임. 당근 AI 기능 전용(magic)은 두지 않는다. 투명도가 있어 overlay 처럼 표 토큰으로 둔다(검사기가 8자리 hex 를 받지 않는다). 출처: seed-design.io Foundations › Gradient(Apache-2.0).
+
+| 토큰 | 값 | 쓰는 곳 |
+|---|---|---|
+| `gradient-fade-mask` | `linear-gradient(#00000000 0%, #00000003 8%, #00000005 16%, #0000000d 22%, #00000014 29%, #00000021 35%, #0000002e 41%, #00000040 47%, #00000052 53%, #00000066 59%, #0000007a 65%, #00000094 71%, #000000ab 78%, #000000c7 84%, #000000e3 92%, #000000ff 100%)` | 가림 마스크 — `mask-image` 로 써서 긴 목록 · 가로 스크롤 끝을 부드럽게. 라이트 · 다크 같음 |
+| `gradient-shimmer-neutral` | `linear-gradient(90deg, #ffffff00 0%, #ffffffab 46%, #ffffffab 54%, #ffffff00 100%)` | 스켈레톤 반짝임 띠 — 라이트 |
+| `gradient-shimmer-neutral-dark` | `linear-gradient(90deg, #ffffff00 0%, #ffffff1a 46%, #ffffff1a 54%, #ffffff00 100%)` | 스켈레톤 반짝임 띠 — 다크 |
+
+- 마스크는 방향 없이 적었다(위 → 아래). 쓰는 자리에서 방향을 붙인다(`to right` 등).
+- 반짝임은 `motion-duration-loop`(1500ms) · `motion-ease-linear` 로 지나가고, 모션 줄이기 모드에서는 멈춘다.
+
 ### Surface (v1 추가)
 
 `bg-page` 위에 카드·시트·입력을 그리기 위한 최소 표면 페어. 라이트·다크 모드 모두 동일한 시맨틱(`default` = 콘텐츠 표면, `input` = 입력·recessed 표면)을 유지하며, 시각적 elevation 방향만 모드에 따라 반전됩니다.
@@ -1446,7 +1459,7 @@ v14에서 명시했던 운영 규칙 **"primary는 fill 전용, inline link 금�
 - **줄 높이**: UI 글자는 SEED 값(×1.35 안팎), 긴 글은 article-body · article-note(×1.5 안팎). v82 의 "한국어 본문 줄 높이 1.5+" 는 이제 긴 글에만 적용한다.
 - **옛 15단계**(아래 v82)는 값 그대로 둔다. 컴포넌트는 2단계에서 SEED 와 하나씩 비교할 때 옮긴다. 본문 body-md(15px)는 자리마다 다르게 옮긴다 — 긴 글은 16(article-body), UI 는 14(t4).
 - **옛 이름 → 가까운 새 이름**(옮길 때 참고): display-lg → t13 · display-md → t12 · display-sm → t9 · title-lg → t7 + bold · title-md → t6 + 500 또는 700 · title-sm → t5 + medium · body-lg → t5 또는 article-body · body-md → 자리마다 t4 · t5 · article-body · body-sm → t4 · label-md → t4 + medium · label-sm → t3 · caption → t2 · badge → t1 + 500 또는 700. display-xl(56px) · overline(10px)은 SEED 범위 밖이고 스펙에서 쓰는 곳이 없어 걷을 후보다.
-- **단위**: SEED 는 rem 으로 적어 사용자의 글자 크기 설정을 따른다. porest 는 지금 px 로 둔다 — rem 전환은 따로 정한다.
+- **단위(v104)**: 값은 여기 px 로 적고, 웹에는 rem(÷16)으로 내보낸다 — 사용자의 글자 크기 설정을 따른다. 커지면 깨지는 자리(배지 · 탭 라벨 · 좁은 칸의 숫자)는 `-static`(px 그대로)을 쓴다(text-t5-static 처럼 — 내보낼 때 생긴다). 앱은 OS 글자 크기를 따르고(Flutter 기본), 같은 자리만 `TextScaler.noScaling` 으로 고정한다. SEED 의 rem · static 두 벌과 같다 — 사용자 결정(2026-09-29).
 - 사용자 결정(2026-09-29 — 글자 A: SEED 스케일 그대로, 본문 15px 은 자리마다). "한 번에 토큰 5개" 규칙의 예외다.
 
 ### v5 추가 — 5단계 타입 스케일 (기록 — 지금 스케일은 위 v100)
@@ -1707,6 +1720,54 @@ DESIGN.md baseline 정의 참고 — CSS logical property 기반 LTR ↔ RTL 자
 
 ## Elevation & Depth
 
+### v104 — SEED 고도 (2026-09-29)
+
+당근 SEED 의 Elevation 을 들인다. 사용자가 2026-09-29 "구조는 SEED, 값은 porest" 를 골랐다 — 고도 모델과 규칙은 SEED, 그림자 값은 porest 의 청회색 4단계(v12 · v25) 그대로 s1 ~ s4 로 부른다. 출처: seed-design.io Foundations › Elevation(Apache-2.0).
+
+#### 쌓임 맥락 — Global · Local
+
+- **Global** — 화면 전체의 구조적 층. 제품 화면 자체와 그 위를 덮는 컨테이너(시트 · 경고창).
+- **Local** — 한 층 안에서 콘텐츠끼리의 깊이. 항상 자기가 속한 Global 층 위에 놓인다.
+- 새로 덮인 층(시트)은 곧 새 기준이 된다 — 그 안의 툴팁 · 메뉴는 그 층을 바닥으로 쌓인다(페이지 위 페이지).
+
+| Global 층 | 무엇 | porest |
+|---|---|---|
+| 0 | 바닥 — 스크롤되는 모든 콘텐츠 뒤 | `bg-layer-basement` |
+| 1 | 기본 — 카드 · 목록 · 입력칸 · 상단 내비게이션 | `bg-layer-default` |
+| 2 | 시트 · 메뉴 시트 · 서랍 — 화면을 덮는 새 쌓임 맥락 | `z-drawer` |
+| 3 | 경고창 — 가장 급한 정보, 다른 모달보다도 위 | `z-modal` |
+
+| Local 층 | 무엇 | porest |
+|---|---|---|
+| 1 | 기본 콘텐츠 — 목록 · 탭 · 알림 띠 · 상단 내비게이션 | 층의 표면 |
+| 2 | 떠 있는 동작 — 플로팅 버튼 | `z-sticky` |
+| 3 | 잠깐 뜨는 알림 — 토스트 | `z-toast` |
+
+- 같은 층 안에서 겹칠 때(스크롤되는 목록이 상단 내비게이션 아래로)는 층을 올리지 않는다 — 그림자나 선으로 구분만 준다.
+
+#### 고도를 드러내는 세 가지
+
+- **표면 색** — 배경의 밝기 · 채도를 바꾼다(스낵바 · 플로팅 버튼). 다크 모드는 높을수록 밝아진다(`bg-layer-floating`).
+- **그림자** — 떠 있는 높이를 그림자의 크기 · 퍼짐 · 투명도로. 다크 모드에서 잘 안 보이므로 **화면에서 주목도가 높은 몇 안 되는 요소에만** 쓴다.
+- **선** — 가장자리에 테두리를 둬 영역을 나눈다(하단 탭바).
+
+#### 그림자
+
+| 토큰 | 값 | 쓰는 곳 |
+|---|---|---|
+| `shadow-s1` | `0 1px 2px 0 rgba(15, 18, 28, 0.05)` | 카드 정지 상태(옛 `shadow-sm`) |
+| `shadow-s2` | `0 2px 8px -1px rgba(15, 18, 28, 0.08), 0 1px 3px -1px rgba(15, 18, 28, 0.04)` | 드롭다운 · 툴팁 · 떠 있는 버튼(옛 `shadow-md`) |
+| `shadow-s3` | `0 8px 24px -4px rgba(15, 18, 28, 0.10), 0 2px 6px -2px rgba(15, 18, 28, 0.05)` | 팝오버 · 작은 모달(옛 `shadow-lg`) |
+| `shadow-s4` | `0 24px 48px -8px rgba(15, 18, 28, 0.16), 0 8px 16px -4px rgba(15, 18, 28, 0.08)` | 큰 모달 · 서랍(옛 `shadow-xl`) |
+| `shadow-s1-dark` | `0 1px 2px 0 rgba(0, 0, 0, 0.30), inset 0 1px 0 0 rgba(255, 255, 255, 0.05)` | 다크 — s1 |
+| `shadow-s2-dark` | `0 2px 8px -1px rgba(0, 0, 0, 0.40), 0 1px 3px -1px rgba(0, 0, 0, 0.20), inset 0 1px 0 0 rgba(255, 255, 255, 0.06)` | 다크 — s2 |
+| `shadow-s3-dark` | `0 8px 24px -4px rgba(0, 0, 0, 0.50), 0 2px 6px -2px rgba(0, 0, 0, 0.25), inset 0 1px 0 0 rgba(255, 255, 255, 0.08)` | 다크 — s3 |
+| `shadow-s4-dark` | `0 24px 48px -8px rgba(0, 0, 0, 0.60), 0 8px 16px -4px rgba(0, 0, 0, 0.30), inset 0 1px 0 0 rgba(255, 255, 255, 0.10)` | 다크 — s4 |
+
+- SEED 는 3단계(s1 ~ s3, 검정 한 겹)다. porest 는 큰 모달 · 서랍용 한 단계를 더 둔다.
+- 옛 이름(`shadow-sm` · `md` · `lg` · `xl` 과 `-dark`)은 같은 값의 별칭이다 — 아래 v12 · v25 표.
+- 모달 · 시트 뒤를 덮는 딤은 v43 의 `overlay-dim-light` · `overlay-dim-dark` 를 그대로 쓴다(SEED 의 overlay 0.45 · overlay-muted 0.17 은 들이지 않았다).
+
 Porest는 **Tonal Layers**(표면 휘도 차)를 1차 elevation 수단으로, **Layered Shadow**를 2차 보조 수단으로 사용합니다 — Toss 톤의 절제된 깊이감.
 
 ### v12 추가 — 4단계 shadow 레시피 (prose-token)
@@ -1785,7 +1846,94 @@ modal/sheet/drawer dim overlay (alpha 채널 prose-token).
 
 ## Motion
 
-### v32 추가 — 4단계 duration + ease-out (prose-token)
+### v104 — SEED 모션 (2026-09-29)
+
+당근 SEED 의 Motion · Feedback 을 들인다. 사용자가 2026-09-29 비교 페이지를 보고 지속 시간 · 이징 · 눌림 · 모션 줄이기 넷 다 SEED 쪽을 골랐다. 출처: seed-design.io Foundations › Motion · Feedback, rootage duration · timing-function · scale · collections(Apache-2.0).
+
+**아직 두 웹 · 앱에는 들어가지 않았다.** Desk 앱은 이 밖의 값(`instant` 80ms · 곡선 `spring` · `decel`)을 따로 쓰고, Desk 웹은 500 · 600ms 를 직접 적은 곳이 있다 — 앱 PR 에서 아래 이름으로 옮긴다.
+
+#### 매크로 · 마이크로 모션
+
+- **마이크로 모션** — 버튼 누름 · 입력칸 포커스 · 스크롤처럼 작은 움직임. 200ms 이하.
+- **매크로 모션** — 페이지 전환 · 모달 · 시트 · 메뉴처럼 큰 움직임. 200ms 초과.
+- 사용자 입력에 대한 반응 가운데 누름은 아래 "눌림 피드백" 에서 따로 정한다.
+
+#### 지속 시간
+
+| 토큰 | 값 | 쓰는 곳 |
+|---|---|---|
+| `motion-duration-d1` | `50ms` | 아주 작은 상태 변화 |
+| `motion-duration-d2` | `100ms` | 작은 상태 변화(옛 앱 `instant` 80ms 는 여기로) |
+| `motion-duration-d3` | `150ms` | 마이크로 모션 기본 — 색 전환 · 눌림 |
+| `motion-duration-d4` | `200ms` | 마이크로 모션 상한 — 메뉴 · 툴팁 |
+| `motion-duration-d5` | `250ms` | 매크로 모션 — 시트 · 서랍 |
+| `motion-duration-d6` | `300ms` | 매크로 모션 상한 — 모달 · 페이지 전환 |
+| `motion-duration-color-transition` | `150ms` | 역할 — 색 전환(= d3) |
+| `motion-duration-pressed-scale` | `150ms` | 역할 — 눌림 축소(= d3) |
+
+- 색 전환과 눌림 축소는 같은 150ms 다 — 시작과 속도가 같아야 하나의 반응으로 읽힌다.
+- 반복은 v63 의 `motion-duration-loop`(1500ms)를 그대로 쓴다(porest 역할).
+- 옛 이름은 같은 값의 별칭이다 — `motion-duration-fast` → d3, `motion-duration-base` → d4, `motion-duration-slow` → d6. `motion-duration-slower`(500ms)는 걷는 중이다 — 큰 전환도 d6(300) 안에서 끝낸다.
+
+#### 이징
+
+| 토큰 | 값 | 쓰는 곳 |
+|---|---|---|
+| `motion-ease-easing` | `cubic-bezier(0.35, 0, 0.35, 1)` | 버튼 · 포커스 같은 기능적 마이크로 모션 |
+| `motion-ease-enter` | `cubic-bezier(0, 0, 0.15, 1)` | 다이얼로그 · 시트가 나타날 때 |
+| `motion-ease-exit` | `cubic-bezier(0.35, 0, 1, 1)` | 다이얼로그 · 시트가 사라질 때 |
+| `motion-ease-enter-expressive` | `cubic-bezier(0.03, 0.4, 0.1, 1)` | 특히 강조해야 하는 등장 |
+| `motion-ease-exit-expressive` | `cubic-bezier(0.35, 0, 0.95, 0.55)` | 특히 강조해야 하는 퇴장 |
+| `motion-ease-pressed-scale` | `cubic-bezier(0, 0, 0.15, 1)` | 눌림 축소 |
+
+- 반복은 v63 의 `motion-ease-linear` 를 그대로 쓴다.
+- 옛 `motion-ease-out`(0.16, 1, 0.3, 1)은 걷는 중이다 — 나타나는 모션은 `motion-ease-enter` 로 옮긴다. 앱의 `spring` 은 `motion-ease-enter-expressive`, `decel` 은 `motion-ease-enter` 로.
+
+#### 눌림 피드백
+
+누르면 인터페이스가 입력이 닿았음을 바로 알린다. 색 · 크기 · 햅틱 셋으로 알리고, 셋은 하나의 반응으로 읽히게 같은 시간(150ms)을 쓴다. 햅틱은 기준이 생기면 더한다.
+
+**색 — 기본.** 누를 수 있는 모든 요소는 누르는 동안 표면 색이 `-pressed` 역할로 바뀐다(v102). 동작 줄이기 설정에도 영향받지 않아 기본 요소다.
+
+- 표면만 바뀐다 — 그 위 글자 · 아이콘 색은 그대로다. 글자용 pressed 역할은 두지 않는다.
+- 평소 배경이 없는 요소(ghost 버튼 · 탭)는 누르는 동안 `bg-layer-default-pressed` 표면이 생긴다. 떠 있는 표면(FAB · 메뉴) 위라면 `bg-layer-floating-pressed`. SEED 의 투명도 있는 transparent-pressed 는 검사기가 받지 않아 두지 않았다.
+- 색이 이미 상태를 뜻하는 요소(Switch 의 켜짐 · 탭의 선택)는 색을 바꾸지 않고 축소만 한다 — 손을 떼기 전에 상태가 바뀐 것처럼 보이지 않게.
+
+**크기 — 거리로 줄인다.** 누르는 동안 요소가 세로 2px 만큼 줄어든다. 배율을 고정하면 요소가 클수록 가로로 많이 움직이므로, 거리를 고정하고 배율은 요소 크기에서 계산한다.
+
+| 값 | 크기 | 뜻 |
+|---|---|---|
+| 축소량 | 2px | 세로로 줄어드는 거리 |
+| 폭 보정 | 폭 ÷ 4 | 가로로 긴 요소(목록 줄)가 지나치게 움직이지 않게 |
+| 최소 기준 길이 | 24px | 아주 작은 요소의 축소 비율 상한(8.3%) |
+
+```
+기준 길이 = max(요소 높이, 요소 폭 ÷ 4, 24)
+배율     = (기준 길이 − 2) ÷ 기준 길이
+```
+
+- 가운데를 기준으로 줄고, 차지하는 자리는 그대로다 — 옆 요소가 움직이지 않는다.
+- 영역이 하나의 면으로 잡히는 요소에만 쓴다. 글 속 링크처럼 줄바꿈되는 요소에는 쓰지 않는다.
+- 안의 동작이 요소 전체에 딸린 것(행 안의 Switch)이면 행 전체가 준다. 대등한 동작이 나란하면(카드 안의 닫기 · 좋아요) 누른 버튼만 준다.
+- 요소 전체를 줄여 정렬 · 여백 · 모서리가 어긋나면(목록 줄 · 아코디언) 콘텐츠만 준다.
+- 이미 줄어드는 요소 안의 요소는 따로 줄지 않는다.
+- 선택된 요소도 준다. 불러오는 중 · 비활성은 줄지 않는다.
+- 150ms · `motion-ease-pressed-scale`.
+
+#### 모션 줄이기 모드
+
+색의 라이트 · 다크처럼 "보통 · 줄이기" 두 모드를 둔다. 사용자가 기기에서 동작 줄이기를 켜면 줄이기 모드다 — 웹은 `prefers-reduced-motion: reduce`, 앱은 `MediaQuery.disableAnimations`.
+
+| 무엇 | 보통 | 줄이기 |
+|---|---|---|
+| 눌림 축소 | 세로 2px | 없음(배율 1) — 색 전환만 남는다 |
+| 색 전환 | 150ms | 그대로 |
+| 매크로 모션(200ms 초과) | 이동 · 확대 · 미끄러짐 | 150ms 서서히 나타남 · 사라짐 |
+| 반복(스켈레톤 · 펄스) | 계속 | 멈춘다 — 진행을 알려야 하는 것(스피너)은 컴포넌트 스펙이 대신할 표현을 정한다 |
+
+지금 이 모드를 따르는 곳은 웹 2곳 · 앱 스켈레톤 1곳이다(2026-09-29) — 앱 PR 에서 모든 모션이 따르게 한다.
+
+### v32 추가 — 4단계 duration + ease-out (prose-token · v104 에서 SEED 모션으로 바뀜 — 옛 이름은 별칭)
 
 > **spec 한계**: design.md spec은 motion(transition) 토큰 타입을 정형화하지 않습니다. shadow와 동일한 **prose-token** — `npm run lint` 자동 검증 비대상이며, `scripts/build-tailwind-v4.mjs`가 prose 표에서 추출해 v4 `@theme` CSS의 `--motion-duration-*` / `--motion-ease-*`로 출력.
 

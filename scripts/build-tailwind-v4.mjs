@@ -132,6 +132,15 @@ function parseLayout(md) {
   return out;
 }
 
+function parseGradients(md) {
+  // gradient-* prose tokens (v104 SEED 그라디언트 — 투명도 있는 색이라 머리말이 아니라 표에 둔다)
+  const re = /^\|\s*`(gradient-[a-z0-9-]+)`\s*\|\s*`([^`]+)`\s*\|/gm;
+  const out = {};
+  let m;
+  while ((m = re.exec(md)) !== null) out[m[1]] = m[2];
+  return out;
+}
+
 function parseTouchTargets(md) {
   // touch-* prose tokens (WCAG 2.5.5 AAA + Apple Store reference)
   const re = /^\|\s*`(touch-[a-z0-9-]+)`\s*\|\s*`([^`]+)`\s*\|/gm;
@@ -198,6 +207,7 @@ const motion = parseMotion(content);
 const overlays = parseOverlay(content);
 const breakpoints = parseBreakpoints(content);
 const layout = parseLayout(content);
+const gradients = parseGradients(content);
 const touchTargets = parseTouchTargets(content);
 const zIndex = parseZIndex(content);
 // keyframes는 baseline shared — DESIGN.md에서만 정의(brand-neutral). brand 파일 빌드 시도 fallback.
@@ -224,12 +234,24 @@ for (const [name, hex] of Object.entries(colors)) {
 }
 out += "\n";
 
-out += "  /* Typography (font-size + line-height + font-weight + letter-spacing modifiers) */\n";
+// v104 — 글자는 rem(÷16)으로 내보내 사용자의 글자 크기 설정을 따르고, 커지면 깨지는 자리용으로
+// 같은 값을 px 그대로 `-static` 에 둔다(SEED 의 font-size · font-size-static 두 벌과 같다).
+const toRem = (v) => {
+  const m = /^(\d+(?:\.\d+)?)px$/.exec(String(v).trim());
+  return m ? `${Number((Number(m[1]) / 16).toFixed(4))}rem` : v;
+};
+out += "  /* Typography — rem (글자 크기 설정을 따름) + -static px (고정). font-size · line-height · font-weight · letter-spacing */\n";
 for (const [name, props] of Object.entries(typography)) {
-  if (props.fontSize) out += `  --text-${name}: ${props.fontSize};\n`;
-  if (props.lineHeight) out += `  --text-${name}--line-height: ${props.lineHeight};\n`;
+  if (props.fontSize) out += `  --text-${name}: ${toRem(props.fontSize)};\n`;
+  if (props.lineHeight) out += `  --text-${name}--line-height: ${toRem(props.lineHeight)};\n`;
   if (props.fontWeight) out += `  --text-${name}--font-weight: ${props.fontWeight};\n`;
   if (props.letterSpacing) out += `  --text-${name}--letter-spacing: ${props.letterSpacing};\n`;
+}
+for (const [name, props] of Object.entries(typography)) {
+  if (props.fontSize) out += `  --text-${name}-static: ${props.fontSize};\n`;
+  if (props.lineHeight) out += `  --text-${name}-static--line-height: ${props.lineHeight};\n`;
+  if (props.fontWeight) out += `  --text-${name}-static--font-weight: ${props.fontWeight};\n`;
+  if (props.letterSpacing) out += `  --text-${name}-static--letter-spacing: ${props.letterSpacing};\n`;
 }
 out += "\n";
 
@@ -278,6 +300,12 @@ out += "\n";
 out += "  /* Layout (from prose-token table — v101 SEED: 콘텐츠 폭 · 여백 · 사이드바) */\n";
 for (const [name, val] of Object.entries(layout)) {
   // layout-max-low → --layout-max-low
+  out += `  --${name}: ${val};\n`;
+}
+out += "\n";
+
+out += "  /* Gradient (from prose-token table — v104 SEED: fade-mask · shimmer-neutral) */\n";
+for (const [name, val] of Object.entries(gradients)) {
   out += `  --${name}: ${val};\n`;
 }
 out += "\n";

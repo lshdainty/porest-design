@@ -129,7 +129,9 @@ function formatToken(tokens, { name, alpha }, { withDark }) {
   const mix = (v) => (v && alpha ? `${v} × ${alpha}` : v);
   if (shared.has(name)) {
     if (name.startsWith('text-')) {
-      const parts = [shared.get(name), shared.get(`${name}--font-weight`), shared.get(`${name}--line-height`)];
+      // v104 부터 글자는 rem 으로 내보낸다 — 스펙 표는 사람이 읽는 px(-static)로 보인다
+      const px = (k) => shared.get(`${name}-static${k}`) ?? shared.get(`${name}${k}`);
+      const parts = [px(''), shared.get(`${name}--font-weight`), px('--line-height')];
       return `${tag} ${parts.filter(Boolean).join(' / ')}`;
     }
     const light = mix(short(shared.get(name)));

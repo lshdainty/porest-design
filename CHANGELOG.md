@@ -71,6 +71,9 @@
 **v103 — SEED 레이아웃 보완 (2026-09-29)**
 - v103: 기초 페이지를 SEED 문서와 절 단위로 맞대 본 뒤 사용자가 넷을 정했다. 콘텐츠 레이아웃을 들였다 — 소개 페이지(porest-home 등)용 12칸, `breakpoint-lg` 이상 가운데, `layout-max-content` 1040 · `layout-max-content-wide` 1280. 768 미만 칸 사이 `layout-gutter-narrow` 16. 칸 수는 밀도로만(low 8 · medium 12, 768 미만은 한 줄 — SEED 와 같다). high 밀도는 최소 폭을 두지 않는다(SEED 최소 1040 — 태블릿 세로에서 가로 스크롤이 생겨서). 밀도 표에 정렬 · 칸 사이 · 여백 칸, 중단점 절에 구간별 칸 · 칸 사이 · 여백 표를 SEED 칸대로 더했다.
 
+**v104 — SEED 모션 · 고도 · 그라디언트 · 글자 단위 (2026-09-29)**
+- v104: 사용자가 비교 페이지에서 일곱 가지를 정했다. 지속 시간 SEED 6단계(`motion-duration-d1` 50 ~ `d6` 300) + 역할 `color-transition` · `pressed-scale`(150), 반복 1500 은 남기고 500 은 걷는 중. 이징 SEED 7(`motion-ease-easing` · `enter` · `exit` · `enter-expressive` · `exit-expressive` · `pressed-scale` + `linear`), 옛 `ease-out` 은 걷는 중. 눌림 피드백 = 표면 색(pressed 역할) + 세로 2px 축소(기준 길이 max(높이, 폭 ÷ 4, 24)), 모션 줄이기 모드(축소 없음 · 큰 전환은 150ms 서서히 · 반복 멈춤). 고도는 SEED 모델(Global 0 ~ 3 · Local 1 ~ 3, 색 · 그림자 · 선) + 그림자 `shadow-s1` ~ `s4`(+ `-dark`, porest 값 그대로 — 옛 sm ~ xl 은 별칭). 그라디언트 `gradient-fade-mask` · `gradient-shimmer-neutral`(+ `-dark`). 글자는 rem 으로 내보내고 `-static` px 짝을 함께(스펙 표는 px 로 보인다). "한 번에 5개" 규칙 예외 — 사용자 결정.
+
 ### Components
 
 **v33~v48 — Component spec batch (16 components, sparse 매핑 자동 검증 활성)**
