@@ -41,15 +41,36 @@ IconPicker는 **variant 없음** — 단일 시각 spec. 의미 분기(작은/�
 
 ## Sizes
 
-[표: 크기](icon-picker.yaml#grid.size)
+| Size | Trigger | Popover | Cell |
+|---|---|---|---|
+| `sm` | 32×32 | `w-72` (288) | 28×28 grid-cols-8 |
+| `md` *(default)* | 40×40 (input height 정합) | `w-80` (320) | 32×32 grid-cols-8 |
+| `lg` | 48×48 | `w-96` (384) | 36×36 grid-cols-8 |
+
+| 항목 | 값 (md) | 토큰 |
+|---|---|---|
+| Trigger size | 40×40 | `h-10 w-10` |
+| Trigger radius | 8 | `var(--radius-md)` |
+| Trigger border | 1px | `border-border-default` |
+| Trigger shadow | shadow-sm | `var(--shadow-sm)` |
+| Popover width | 320 | `w-80` |
+| Popover padding | 12 | `var(--spacing-md)` |
+| Search input | input-sm 톤 | (input spec) |
+| Grid cols | 8 | (literal) |
+| Cell size | 32×32 | `h-8 w-8` |
+| Cell radius | 4 | `var(--radius-sm)` |
+| Cell gap | 4 | `var(--spacing-xs)` |
+| Grid max-height | 240 | `max-h-60` |
+| Animation | fade + scale (popover 기본) | `var(--motion-duration-fast)` |
 
 ## States
 
-[표: 선택 여부별 cell — enabled](icon-picker.yaml#grid.selected)
-
-enabled 에서 바뀌는 값:
-
-[표: 상태별로 바뀌는 값](icon-picker.yaml#states.selected)
+| State | Cell bg | Cell text |
+|---|---|---|
+| `enabled` (inactive) | transparent | `text-text-secondary` |
+| `enabled` (active) | `var(--color-primary)` | `var(--color-text-on-accent)` |
+| `hover` (inactive) | `var(--color-surface-input)` | `var(--color-text-primary)` |
+| `focus-visible` | (변화 없음) | + `ring-2 ring-ring ring-offset-2` |
 
 ## Layout
 
