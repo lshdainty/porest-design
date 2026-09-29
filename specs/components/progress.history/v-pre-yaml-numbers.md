@@ -28,7 +28,11 @@ Radix Progress 베이스. 단일 트랙 + indicator로 width transition. determi
 
 ## Sizes
 
-[표: 크기](progress.yaml#size)
+| Size | Height | 사용처 |
+|---|---|---|
+| `sm` | 2px | inline (한 줄 안에 끼워) |
+| `md` *(default)* | 4px | 표준 — 폼 위, 카드 안 |
+| `lg` | 8px | 큰 작업 (다운로드, 업로드) |
 
 Tailwind utility 매핑 (progress.tsx cva):
 - `sm`: `h-0.5`
@@ -37,7 +41,10 @@ Tailwind utility 매핑 (progress.tsx cva):
 
 ## Color
 
-[표: 색](progress.yaml#base)
+| 모드 | track | indicator |
+|---|---|---|
+| Light | `--color-surface-input` (`#F0F2F7`) | `--color-primary` (브랜드) |
+| Dark | `--color-surface-input-dark` (`#2D3346`) — cascade 자동 | `--color-primary-light` (브랜드) — cascade 자동 |
 
 다크 모드에서 indicator는 `primary-light`로 swap (Spinner와 동일 패턴 — `[data-theme="dark"]` cascade).
 
