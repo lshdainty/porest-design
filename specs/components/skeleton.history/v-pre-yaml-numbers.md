@@ -54,9 +54,14 @@ shimmer 구현은 합성 패턴 — base `Skeleton` + 자식 `<div>` gradient ov
 
 Skeleton은 **size variant 없음** — 모든 크기는 사용처 className(`h-*`/`w-*`/`rounded-*`)이 결정.
 
-[표: 색 · 모양](skeleton.yaml#base)
-
-[표: 애니메이션](skeleton.yaml#motion)
+| 항목 | 값 | 토큰 |
+|---|---|---|
+| Background | `surface-input` | `bg-surface-input` |
+| Border radius (base) | 4px | `rounded-sm` (= `var(--radius-sm)`) |
+| Animation duration (pulse) | 2s (Tailwind 기본) | `animate-pulse` |
+| Animation duration (shimmer) | 1500ms | `var(--motion-duration-loop)` |
+| Animation timing (shimmer) | linear | `linear` |
+| Shimmer gradient | `primary` 25% mix | `from-transparent via-primary/25 to-transparent` (또는 `color-mix(in srgb, var(--color-primary) 25%, transparent)`) |
 
 ## States
 
