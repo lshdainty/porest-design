@@ -1896,7 +1896,7 @@ modal/sheet/drawer dim overlay (alpha 채널 prose-token).
 **색 — 기본.** 누를 수 있는 모든 요소는 누르는 동안 표면 색이 `-pressed` 역할로 바뀐다(v102). 동작 줄이기 설정에도 영향받지 않아 기본 요소다.
 
 - 표면만 바뀐다 — 그 위 글자 · 아이콘 색은 그대로다. 글자용 pressed 역할은 두지 않는다.
-- 평소 배경이 없는 요소(ghost 버튼 · 탭)는 누르는 동안 `bg-layer-default-pressed` 표면이 생긴다. 떠 있는 표면(FAB · 메뉴) 위라면 `bg-layer-floating-pressed`. SEED 의 투명도 있는 transparent-pressed 는 검사기가 받지 않아 두지 않았다.
+- 평소 배경이 없는 요소(ghost 버튼)는 누르는 동안 `bg-layer-default-pressed` 표면이 생긴다. 떠 있는 표면(FAB · 메뉴) 위라면 `bg-layer-floating-pressed`. SEED 의 투명도 있는 transparent-pressed 는 검사기가 받지 않아 두지 않았다.
 - 색이 이미 상태를 뜻하는 요소(Switch 의 켜짐 · 탭의 선택)는 색을 바꾸지 않고 축소만 한다 — 손을 떼기 전에 상태가 바뀐 것처럼 보이지 않게.
 
 **크기 — 거리로 줄인다.** 누르는 동안 요소가 세로 2px 만큼 줄어든다. 배율을 고정하면 요소가 클수록 가로로 많이 움직이므로, 거리를 고정하고 배율은 요소 크기에서 계산한다.

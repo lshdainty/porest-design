@@ -1954,7 +1954,7 @@ modal/sheet/drawer 등 floating surface가 페이지 위에 떠 있을 때 배�
 **색 — 기본.** 누를 수 있는 모든 요소는 누르는 동안 표면 색이 `-pressed` 역할로 바뀐다(v102). 동작 줄이기 설정에도 영향받지 않아 기본 요소다.
 
 - 표면만 바뀐다 — 그 위 글자 · 아이콘 색은 그대로다. 글자용 pressed 역할은 두지 않는다.
-- 평소 배경이 없는 요소(ghost 버튼)는 누르는 동안 `bg-layer-default-pressed` 표면이 생긴다. 떠 있는 표면(FAB · 메뉴) 위라면 `bg-layer-floating-pressed`. SEED 의 투명도 있는 transparent-pressed 는 검사기가 받지 않아 두지 않았다.
+- 평소 배경이 없는 요소(ghost 버튼 · 탭)는 누르는 동안 `bg-layer-default-pressed` 표면이 생긴다. 떠 있는 표면(FAB · 메뉴) 위라면 `bg-layer-floating-pressed`. SEED 의 투명도 있는 transparent-pressed 는 검사기가 받지 않아 두지 않았다.
 - 색이 이미 상태를 뜻하는 요소(Switch 의 켜짐 · 탭의 선택)는 색을 바꾸지 않고 축소만 한다 — 손을 떼기 전에 상태가 바뀐 것처럼 보이지 않게.
 
 **크기 — 거리로 줄인다.** 누르는 동안 요소가 세로 2px 만큼 줄어든다. 배율을 고정하면 요소가 클수록 가로로 많이 움직이므로, 거리를 고정하고 배율은 요소 크기에서 계산한다.
@@ -2037,24 +2037,22 @@ skeleton shimmer · spinner · pulse 등 **반복 애니메이션** 용 토큰 2
 
 ### Animation library (v74 추가, prose-token)
 
-> **v105(2026-09-29)**: 권장 지속 시간 · 이징을 v104 이름으로 옮겼다. 같은 값의 별칭은 새 이름으로(`motion-duration-fast` → `motion-duration-d3` · `base` → `d4` · `slow` → `d6`), 나타나는 키프레임은 `motion-ease-enter`, 사라지는 키프레임은 `motion-ease-exit`, 걷는 500ms 는 `motion-duration-d6` 로. 모션 줄이기는 v104 표를 따른다.
-
 v32 duration·ease 토큰만으론 컴포넌트별 transition 작성 시 keyframe 직접 작성이 반복 → 정형 keyframe 12종 + 사용 패턴 prose 표준화. CSS keyframes 정의 + 권장 duration/ease 매핑.
 
 #### Single-shot keyframes (10종 — 단발 전환)
 
 | keyframe | 권장 duration | 권장 ease | 주 용도 |
 |---|---|---|---|
-| `fade-in` | `motion-duration-d4` (200ms) | `motion-ease-enter` | dropdown/popover/toast 등장 |
-| `fade-out` | `motion-duration-d3` (150ms) | `motion-ease-exit` | dropdown/popover/toast 사라짐 (등장보다 빠르게) |
-| `slide-in-up` | `motion-duration-d6` (300ms) | `motion-ease-enter` | drawer bottom / bottom sheet / Toast bottom |
-| `slide-in-down` | `motion-duration-d4` (200ms) | `motion-ease-enter` | dropdown / banner 등장 |
-| `slide-in-left` | `motion-duration-d6` (300ms) | `motion-ease-enter` | drawer right / sidebar 등장 |
-| `slide-in-right` | `motion-duration-d6` (300ms) | `motion-ease-enter` | drawer left / sidebar dismiss |
-| `scale-in` | `motion-duration-d4` (200ms) | `motion-ease-enter` | modal / dialog / popover (`scale(0.96 → 1)` + `opacity 0 → 1`) |
-| `scale-out` | `motion-duration-d3` (150ms) | `motion-ease-exit` | modal / dialog / popover dismiss |
-| `bounce-in` | `motion-duration-d6` (300ms) | `cubic-bezier(0.34, 1.56, 0.64, 1)` | empty state celebrate, success indicator (over-shoot) |
-| `shake` | `motion-duration-d6` (300ms) | `cubic-bezier(.36,.07,.19,.97)` | form validation error, 잘못된 input 강조 |
+| `fade-in` | `motion-duration-base` (200ms) | `motion-ease-out` | dropdown/popover/toast 등장 |
+| `fade-out` | `motion-duration-fast` (150ms) | `motion-ease-out` | dropdown/popover/toast 사라짐 (등장보다 빠르게) |
+| `slide-in-up` | `motion-duration-slow` (300ms) | `motion-ease-out` | drawer bottom / bottom sheet / Toast bottom |
+| `slide-in-down` | `motion-duration-base` (200ms) | `motion-ease-out` | dropdown / banner 등장 |
+| `slide-in-left` | `motion-duration-slow` (300ms) | `motion-ease-out` | drawer right / sidebar 등장 |
+| `slide-in-right` | `motion-duration-slow` (300ms) | `motion-ease-out` | drawer left / sidebar dismiss |
+| `scale-in` | `motion-duration-base` (200ms) | `motion-ease-out` | modal / dialog / popover (`scale(0.96 → 1)` + `opacity 0 → 1`) |
+| `scale-out` | `motion-duration-fast` (150ms) | `motion-ease-out` | modal / dialog / popover dismiss |
+| `bounce-in` | `motion-duration-slower` (500ms) | `cubic-bezier(0.34, 1.56, 0.64, 1)` | empty state celebrate, success indicator (over-shoot) |
+| `shake` | `motion-duration-slow` (300ms) | `cubic-bezier(.36,.07,.19,.97)` | form validation error, 잘못된 input 강조 |
 
 #### Loop keyframes (4종 — 반복)
 
@@ -2090,13 +2088,13 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 
 | 패턴 | shorthand 예시 |
 |---|---|
-| Toast 등장 | `animation: slide-in-up var(--motion-duration-d6) var(--motion-ease-enter) both` |
-| Modal 등장 | `animation: scale-in var(--motion-duration-d4) var(--motion-ease-enter) both` |
-| Modal dismiss | `animation: scale-out var(--motion-duration-d3) var(--motion-ease-exit) both` |
+| Toast 등장 | `animation: slide-in-up var(--motion-duration-slow) var(--motion-ease-out) both` |
+| Modal 등장 | `animation: scale-in var(--motion-duration-base) var(--motion-ease-out) both` |
+| Modal dismiss | `animation: scale-out var(--motion-duration-fast) var(--motion-ease-out) both` |
 | Skeleton | `animation: shimmer var(--motion-duration-loop) linear infinite` |
 | Spinner | `animation: spin var(--motion-duration-loop) linear infinite` |
 | Notification dot | `animation: ping var(--motion-duration-loop) cubic-bezier(0, 0, 0.2, 1) infinite` |
-| Form error | `animation: shake var(--motion-duration-d6) cubic-bezier(.36,.07,.19,.97)` |
+| Form error | `animation: shake var(--motion-duration-slow) cubic-bezier(.36,.07,.19,.97)` |
 
 #### 추가 이유
 1. v32(duration/ease) + v63(loop) → 직접 keyframe 작성 사용 사례 누적: Modal/Dialog scale-in, Drawer slide-in, Toast slide-in, Skeleton shimmer, Spinner spin 등 spec prose에 반복 등장.
@@ -2104,12 +2102,17 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 3. duration/ease 토큰과 결합 → 컴포넌트 spec에서 `animation: <keyframe> <duration-token> <ease>` 형태로 일관 표기 가능.
 
 #### WCAG / 자동 검증
-- **2.3.3 Animation from Interactions**: 줄이기 모드는 v104 "모션 줄이기 모드" 표를 따른다 — 큰 전환은 150ms 서서히 나타남 · 사라짐으로 바꾸고, 반복은 멈추고, 색 전환은 남긴다. 모든 애니메이션을 0.01ms 로 끄는 전역 규칙은 쓰지 않는다 — 서서히 나타남 · 색 전환까지 사라져 무엇이 바뀌었는지 안 보인다(v105).
+- **2.3.3 Animation from Interactions**: 200ms 초과 단발 + 모든 loop는 `prefers-reduced-motion: reduce` 시 비활성화 또는 단순화 — 컴포넌트 spec에서 일괄 명시. 권장 처리:
+  ```css
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+  }
+  ```
 - **2.2.2 Pause/Stop/Hide**: loop 애니메이션은 데이터 도착 시 자동 정지(skeleton/shimmer) 또는 5초 이상 지속 시 cancel 옵션 제공.
 - prose-token이라 lint 비대상. 시각 검토 + 컴포넌트 spec에서 정확한 keyframe 이름 인용 필수 (오타 시 silent failure).
 
 #### HR / Desk 듀얼 브랜드
-- keyframe brand-neutral. 지속 시간 분기 권장 — HR(`motion-duration-d3`/`d4`), Desk(`d4`/`d6`)(v105 — v32 가이드를 새 이름으로).
+- keyframe brand-neutral. duration/ease 분기는 v32 가이드 동일 — HR(`fast`/`base`), Desk(`base`/`slow`).
 - HR(결재 row 등장 fade-in / Toast top-right slide-in-down / Skeleton shimmer) / Desk(메모 카드 scale-in / 가계부 거래 등장 slide-in-up / 알림 dot ping) 사용.
 
 ## Shapes
