@@ -138,7 +138,7 @@ FormItem 자체 상태 없음 — control(Input/Select 등)이 visual 상태 보
 |---|---|
 | **WCAG 1.3.1** Info and Relationships | FormLabel `<label htmlFor>` + FormControl `id` 자동 wire. semantic 관계 명시. |
 | **WCAG 1.4.3** Color contrast (FormLabel × bg-page) | `text-primary` × `bg-page` = 14:1+ ✓ |
-| **WCAG 1.4.3** Color contrast (FormMessage error × bg-page) | `text-error` `#D72323` × `bg-page` `#F5F6FA` = 4.68:1 ✓ (v102 에서 error 를 AA 로 보정) |
+| **WCAG 1.4.3** Color contrast (FormMessage error × bg-page) | `text-error` `#DC2626` × `bg-page` `#F5F6FA` = 4.47:1 — **AA 4.5 미달(⚠)** |
 | **WCAG 2.4.6** Headings and Labels | FormLabel 텍스트는 명확한 의미 — "이메일", "예상 도착 시각" 등 모호한 "값"/"데이터" 금지. |
 | **WCAG 2.4.7** Focus visible | FormControl은 control spec(Input/Select 등)의 `focus-visible:ring-2` 자동 적용. focus 시 시각 영향. |
 | **WCAG 3.3.1** Error Identification | FormMessage가 error를 텍스트로 명시 — 색만 의존 안 함. `aria-invalid="true"` + role="alert" 또는 aria-live="polite" (FormMessage `<p>`에 자동). |

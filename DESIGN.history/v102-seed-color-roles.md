@@ -43,13 +43,13 @@ colors:
   
   # @sync:shared-start (colors-2)
   # === Semantic - Status (functional palette, base + light 페어, 듀얼 브랜드 공유) ===
-  success: "#167F3F"
+  success: "#16803F"
   success-light: "#4ADE80"
-  error: "#D72323"
+  error: "#DC2626"
   error-light: "#F87171"
-  warning: "#BE490D"
+  warning: "#C84D0E"
   warning-light: "#FB923C"
-  info: "#1D6EC9"
+  info: "#1D6FCB"
   info-light: "#60A5FA"
   
   # === Chart palette (data viz, 10색 hue 균등, L≈0.16-0.18 통일, 듀얼 브랜드 공유) ===
@@ -76,106 +76,6 @@ colors:
   chart-brown-light: "#DCB088"
   chart-gray-light: "#B5BBC5"
   # @sync:shared-end (colors-2)
-  
-  # @sync:shared-start (colors-3)
-  # === v102 — SEED 역할 색 (fg · bg · stroke). 값은 porest 색이고, 옛 이름(text-* · surface-* · border-* · success …)은 같은 값의 별칭이다 ===
-  # 글자 (fg)
-  fg-neutral: "#1A1F2E"
-  fg-neutral-dark: "#F5F6FA"
-  fg-neutral-muted: "#4E5968"
-  fg-neutral-muted-dark: "#B0B8C4"
-  fg-neutral-subtle: "#62697A"
-  fg-neutral-subtle-dark: "#9DA3B0"
-  fg-neutral-inverted: "#FFFFFF"
-  fg-neutral-inverted-dark: "#1A1F2E"
-  fg-placeholder: "#62697A"
-  fg-placeholder-dark: "#9DA3B0"
-  fg-disabled: "#828995"
-  fg-disabled-dark: "#7A8294"
-  static-white: "#FFFFFF"
-  fg-critical: "#D72323"
-  fg-critical-dark: "#F87171"
-  fg-positive: "#167F3F"
-  fg-positive-dark: "#4ADE80"
-  fg-warning: "#BE490D"
-  fg-warning-dark: "#FB923C"
-  fg-informative: "#1D6EC9"
-  fg-informative-dark: "#60A5FA"
-  fg-critical-contrast: "#C11F1F"
-  fg-critical-contrast-dark: "#F87676"
-  fg-positive-contrast: "#14753A"
-  fg-positive-contrast-dark: "#4ADE80"
-  fg-warning-contrast: "#AD420C"
-  fg-warning-contrast-dark: "#FB923C"
-  fg-informative-contrast: "#1B65B9"
-  fg-informative-contrast-dark: "#65A8FA"
-  # 배경 (bg)
-  bg-layer-basement: "#F5F6FA"
-  bg-layer-basement-dark: "#1A1F2E"
-  bg-layer-default: "#FFFFFF"
-  bg-layer-default-dark: "#242938"
-  bg-layer-default-pressed: "#F0F2F7"
-  bg-layer-default-pressed-dark: "#2D3346"
-  bg-layer-floating: "#FFFFFF"
-  bg-layer-floating-dark: "#2D3346"
-  bg-layer-floating-pressed: "#F0F2F7"
-  bg-layer-floating-pressed-dark: "#353B4D"
-  bg-neutral-weak: "#F0F2F7"
-  bg-neutral-weak-dark: "#2D3346"
-  bg-neutral-weak-pressed: "#E5E8EF"
-  bg-neutral-weak-pressed-dark: "#353B4D"
-  bg-neutral-inverted: "#1A1F2E"
-  bg-neutral-inverted-dark: "#F5F6FA"
-  bg-disabled: "#F0F2F7"
-  bg-disabled-dark: "#2D3346"
-  bg-critical-solid: "#D72323"
-  bg-critical-solid-dark: "#D72323"
-  bg-critical-solid-pressed: "#C42020"
-  bg-critical-solid-pressed-dark: "#C42020"
-  bg-critical-weak: "#FAE5E5"
-  bg-critical-weak-dark: "#442834"
-  bg-critical-weak-pressed: "#F8D7D7"
-  bg-critical-weak-pressed-dark: "#562732"
-  bg-positive-solid: "#167F3F"
-  bg-positive-solid-dark: "#167F3F"
-  bg-positive-solid-pressed: "#136C36"
-  bg-positive-solid-pressed-dark: "#136C36"
-  bg-positive-weak: "#E3F0E8"
-  bg-positive-weak-dark: "#213839"
-  bg-positive-weak-pressed: "#D5E8DC"
-  bg-positive-weak-pressed-dark: "#20413A"
-  bg-warning-solid: "#BE490D"
-  bg-warning-solid-dark: "#BE490D"
-  bg-warning-solid-pressed: "#A9410C"
-  bg-warning-solid-pressed-dark: "#A9410C"
-  bg-warning-weak: "#F7E9E2"
-  bg-warning-weak-dark: "#402F30"
-  bg-warning-weak-pressed: "#F3DED3"
-  bg-warning-weak-pressed-dark: "#4F322C"
-  bg-informative-solid: "#1D6EC9"
-  bg-informative-solid-dark: "#1D6EC9"
-  bg-informative-solid-pressed: "#1A63B6"
-  bg-informative-solid-pressed-dark: "#1A63B6"
-  bg-informative-weak: "#E4EEF9"
-  bg-informative-weak-dark: "#233552"
-  bg-informative-weak-pressed: "#D6E5F5"
-  bg-informative-weak-pressed-dark: "#223C61"
-  # 선 (stroke)
-  stroke-neutral-subtle: "#E5E8EF"
-  stroke-neutral-subtle-dark: "#353B4D"
-  stroke-neutral-weak: "#E5E8EF"
-  stroke-neutral-weak-dark: "#353B4D"
-  stroke-neutral-solid: "#7D8593"
-  stroke-neutral-solid-dark: "#8B95A8"
-  stroke-critical-solid: "#D72323"
-  stroke-critical-solid-dark: "#F87171"
-  stroke-positive-solid: "#167F3F"
-  stroke-positive-solid-dark: "#4ADE80"
-  stroke-warning-solid: "#BE490D"
-  stroke-warning-solid-dark: "#FB923C"
-  stroke-informative-solid: "#1D6EC9"
-  stroke-informative-solid-dark: "#60A5FA"
-  # @sync:shared-end (colors-3)
   
   # (border-focus 정의 완료 — v16)
 
@@ -568,218 +468,6 @@ components:
     textColor: "{colors.text-disabled}"
   disabled-label-dark:
     textColor: "{colors.text-disabled-dark}"
-  
-  # === v102 — 역할 색 짝 (SEED 역할 — 글자가 놓이는 배경과 함께). 짝마다 대비를 lint 가 잰다(라이트 · 다크) ===
-  role-neutral-on-layer-light:
-    backgroundColor: "{colors.bg-layer-default}"
-    textColor: "{colors.fg-neutral}"
-  role-neutral-on-layer-dark:
-    backgroundColor: "{colors.bg-layer-default-dark}"
-    textColor: "{colors.fg-neutral-dark}"
-  role-neutral-muted-on-layer-light:
-    backgroundColor: "{colors.bg-layer-default}"
-    textColor: "{colors.fg-neutral-muted}"
-  role-neutral-muted-on-layer-dark:
-    backgroundColor: "{colors.bg-layer-default-dark}"
-    textColor: "{colors.fg-neutral-muted-dark}"
-  role-neutral-subtle-on-basement-light:
-    backgroundColor: "{colors.bg-layer-basement}"
-    textColor: "{colors.fg-neutral-subtle}"
-  role-neutral-subtle-on-basement-dark:
-    backgroundColor: "{colors.bg-layer-basement-dark}"
-    textColor: "{colors.fg-neutral-subtle-dark}"
-  role-placeholder-on-neutral-weak-light:
-    backgroundColor: "{colors.bg-neutral-weak}"
-    textColor: "{colors.fg-placeholder}"
-  role-placeholder-on-neutral-weak-dark:
-    backgroundColor: "{colors.bg-neutral-weak-dark}"
-    textColor: "{colors.fg-placeholder-dark}"
-  role-neutral-on-default-pressed-light:
-    backgroundColor: "{colors.bg-layer-default-pressed}"
-    textColor: "{colors.fg-neutral}"
-  role-neutral-on-default-pressed-dark:
-    backgroundColor: "{colors.bg-layer-default-pressed-dark}"
-    textColor: "{colors.fg-neutral-dark}"
-  role-neutral-on-floating-light:
-    backgroundColor: "{colors.bg-layer-floating}"
-    textColor: "{colors.fg-neutral}"
-  role-neutral-on-floating-dark:
-    backgroundColor: "{colors.bg-layer-floating-dark}"
-    textColor: "{colors.fg-neutral-dark}"
-  role-neutral-on-floating-pressed-light:
-    backgroundColor: "{colors.bg-layer-floating-pressed}"
-    textColor: "{colors.fg-neutral}"
-  role-neutral-on-floating-pressed-dark:
-    backgroundColor: "{colors.bg-layer-floating-pressed-dark}"
-    textColor: "{colors.fg-neutral-dark}"
-  role-neutral-on-weak-pressed-light:
-    backgroundColor: "{colors.bg-neutral-weak-pressed}"
-    textColor: "{colors.fg-neutral}"
-  role-neutral-on-weak-pressed-dark:
-    backgroundColor: "{colors.bg-neutral-weak-pressed-dark}"
-    textColor: "{colors.fg-neutral-dark}"
-  role-inverted-light:
-    backgroundColor: "{colors.bg-neutral-inverted}"
-    textColor: "{colors.fg-neutral-inverted}"
-  role-inverted-dark:
-    backgroundColor: "{colors.bg-neutral-inverted-dark}"
-    textColor: "{colors.fg-neutral-inverted-dark}"
-  role-critical-on-layer-light:
-    backgroundColor: "{colors.bg-layer-default}"
-    textColor: "{colors.fg-critical}"
-  role-critical-on-layer-dark:
-    backgroundColor: "{colors.bg-layer-default-dark}"
-    textColor: "{colors.fg-critical-dark}"
-  role-on-critical-solid-light:
-    backgroundColor: "{colors.bg-critical-solid}"
-    textColor: "{colors.static-white}"
-  role-on-critical-solid-dark:
-    backgroundColor: "{colors.bg-critical-solid-dark}"
-    textColor: "{colors.static-white}"
-  role-on-critical-solid-pressed-light:
-    backgroundColor: "{colors.bg-critical-solid-pressed}"
-    textColor: "{colors.static-white}"
-  role-on-critical-solid-pressed-dark:
-    backgroundColor: "{colors.bg-critical-solid-pressed-dark}"
-    textColor: "{colors.static-white}"
-  role-critical-contrast-on-weak-light:
-    backgroundColor: "{colors.bg-critical-weak}"
-    textColor: "{colors.fg-critical-contrast}"
-  role-critical-contrast-on-weak-dark:
-    backgroundColor: "{colors.bg-critical-weak-dark}"
-    textColor: "{colors.fg-critical-contrast-dark}"
-  role-critical-contrast-on-weak-pressed-light:
-    backgroundColor: "{colors.bg-critical-weak-pressed}"
-    textColor: "{colors.fg-critical-contrast}"
-  role-critical-contrast-on-weak-pressed-dark:
-    backgroundColor: "{colors.bg-critical-weak-pressed-dark}"
-    textColor: "{colors.fg-critical-contrast-dark}"
-  role-positive-on-layer-light:
-    backgroundColor: "{colors.bg-layer-default}"
-    textColor: "{colors.fg-positive}"
-  role-positive-on-layer-dark:
-    backgroundColor: "{colors.bg-layer-default-dark}"
-    textColor: "{colors.fg-positive-dark}"
-  role-on-positive-solid-light:
-    backgroundColor: "{colors.bg-positive-solid}"
-    textColor: "{colors.static-white}"
-  role-on-positive-solid-dark:
-    backgroundColor: "{colors.bg-positive-solid-dark}"
-    textColor: "{colors.static-white}"
-  role-on-positive-solid-pressed-light:
-    backgroundColor: "{colors.bg-positive-solid-pressed}"
-    textColor: "{colors.static-white}"
-  role-on-positive-solid-pressed-dark:
-    backgroundColor: "{colors.bg-positive-solid-pressed-dark}"
-    textColor: "{colors.static-white}"
-  role-positive-contrast-on-weak-light:
-    backgroundColor: "{colors.bg-positive-weak}"
-    textColor: "{colors.fg-positive-contrast}"
-  role-positive-contrast-on-weak-dark:
-    backgroundColor: "{colors.bg-positive-weak-dark}"
-    textColor: "{colors.fg-positive-contrast-dark}"
-  role-positive-contrast-on-weak-pressed-light:
-    backgroundColor: "{colors.bg-positive-weak-pressed}"
-    textColor: "{colors.fg-positive-contrast}"
-  role-positive-contrast-on-weak-pressed-dark:
-    backgroundColor: "{colors.bg-positive-weak-pressed-dark}"
-    textColor: "{colors.fg-positive-contrast-dark}"
-  role-warning-on-layer-light:
-    backgroundColor: "{colors.bg-layer-default}"
-    textColor: "{colors.fg-warning}"
-  role-warning-on-layer-dark:
-    backgroundColor: "{colors.bg-layer-default-dark}"
-    textColor: "{colors.fg-warning-dark}"
-  role-on-warning-solid-light:
-    backgroundColor: "{colors.bg-warning-solid}"
-    textColor: "{colors.static-white}"
-  role-on-warning-solid-dark:
-    backgroundColor: "{colors.bg-warning-solid-dark}"
-    textColor: "{colors.static-white}"
-  role-on-warning-solid-pressed-light:
-    backgroundColor: "{colors.bg-warning-solid-pressed}"
-    textColor: "{colors.static-white}"
-  role-on-warning-solid-pressed-dark:
-    backgroundColor: "{colors.bg-warning-solid-pressed-dark}"
-    textColor: "{colors.static-white}"
-  role-warning-contrast-on-weak-light:
-    backgroundColor: "{colors.bg-warning-weak}"
-    textColor: "{colors.fg-warning-contrast}"
-  role-warning-contrast-on-weak-dark:
-    backgroundColor: "{colors.bg-warning-weak-dark}"
-    textColor: "{colors.fg-warning-contrast-dark}"
-  role-warning-contrast-on-weak-pressed-light:
-    backgroundColor: "{colors.bg-warning-weak-pressed}"
-    textColor: "{colors.fg-warning-contrast}"
-  role-warning-contrast-on-weak-pressed-dark:
-    backgroundColor: "{colors.bg-warning-weak-pressed-dark}"
-    textColor: "{colors.fg-warning-contrast-dark}"
-  role-informative-on-layer-light:
-    backgroundColor: "{colors.bg-layer-default}"
-    textColor: "{colors.fg-informative}"
-  role-informative-on-layer-dark:
-    backgroundColor: "{colors.bg-layer-default-dark}"
-    textColor: "{colors.fg-informative-dark}"
-  role-on-informative-solid-light:
-    backgroundColor: "{colors.bg-informative-solid}"
-    textColor: "{colors.static-white}"
-  role-on-informative-solid-dark:
-    backgroundColor: "{colors.bg-informative-solid-dark}"
-    textColor: "{colors.static-white}"
-  role-on-informative-solid-pressed-light:
-    backgroundColor: "{colors.bg-informative-solid-pressed}"
-    textColor: "{colors.static-white}"
-  role-on-informative-solid-pressed-dark:
-    backgroundColor: "{colors.bg-informative-solid-pressed-dark}"
-    textColor: "{colors.static-white}"
-  role-informative-contrast-on-weak-light:
-    backgroundColor: "{colors.bg-informative-weak}"
-    textColor: "{colors.fg-informative-contrast}"
-  role-informative-contrast-on-weak-dark:
-    backgroundColor: "{colors.bg-informative-weak-dark}"
-    textColor: "{colors.fg-informative-contrast-dark}"
-  role-informative-contrast-on-weak-pressed-light:
-    backgroundColor: "{colors.bg-informative-weak-pressed}"
-    textColor: "{colors.fg-informative-contrast}"
-  role-informative-contrast-on-weak-pressed-dark:
-    backgroundColor: "{colors.bg-informative-weak-pressed-dark}"
-    textColor: "{colors.fg-informative-contrast-dark}"
-  role-disabled-surface-light:
-    backgroundColor: "{colors.bg-disabled}"
-  role-disabled-surface-dark:
-    backgroundColor: "{colors.bg-disabled-dark}"
-  role-disabled-label-light:
-    textColor: "{colors.fg-disabled}"
-  role-disabled-label-dark:
-    textColor: "{colors.fg-disabled-dark}"
-  role-stroke-neutral-subtle-light:
-    backgroundColor: "{colors.stroke-neutral-subtle}"
-  role-stroke-neutral-subtle-dark:
-    backgroundColor: "{colors.stroke-neutral-subtle-dark}"
-  role-stroke-neutral-weak-light:
-    backgroundColor: "{colors.stroke-neutral-weak}"
-  role-stroke-neutral-weak-dark:
-    backgroundColor: "{colors.stroke-neutral-weak-dark}"
-  role-stroke-neutral-solid-light:
-    backgroundColor: "{colors.stroke-neutral-solid}"
-  role-stroke-neutral-solid-dark:
-    backgroundColor: "{colors.stroke-neutral-solid-dark}"
-  role-stroke-critical-solid-light:
-    backgroundColor: "{colors.stroke-critical-solid}"
-  role-stroke-critical-solid-dark:
-    backgroundColor: "{colors.stroke-critical-solid-dark}"
-  role-stroke-positive-solid-light:
-    backgroundColor: "{colors.stroke-positive-solid}"
-  role-stroke-positive-solid-dark:
-    backgroundColor: "{colors.stroke-positive-solid-dark}"
-  role-stroke-warning-solid-light:
-    backgroundColor: "{colors.stroke-warning-solid}"
-  role-stroke-warning-solid-dark:
-    backgroundColor: "{colors.stroke-warning-solid-dark}"
-  role-stroke-informative-solid-light:
-    backgroundColor: "{colors.stroke-informative-solid}"
-  role-stroke-informative-solid-dark:
-    backgroundColor: "{colors.stroke-informative-solid-dark}"
 ---
 
 ## Overview
@@ -797,111 +485,6 @@ HR(조직 관리, B2B)과 Desk(개인 생산성, B2C)는 동일한 골격을 공
 - **공유 토큰 변경 시**: 3파일 모두 수동 동기 — design.md spec이 cross-file token reference 미지원이라 자동화 불가.
 
 ## Colors
-
-### v102 — SEED 역할 색 (2026-09-29)
-
-당근 SEED 의 역할 기반 색 체계를 들인다. 사용자가 2026-09-29 porest 와 SEED 를 나란히 놓은 비교 페이지에서 네 가지(구조 · 값 · AA 미달 · HR 웹)를 정하고, 역할 색 제안표를 보고 그대로 넣기로 했다.
-
-**아직 두 웹 · 앱에는 들어가지 않았다.** Desk 웹 · 앱은 같은 역할을 각자 정의해 쓰고 있고(웹 68개 · 앱 67개, 합쳐 4,700여 곳), 앱 PR 에서 그 정의를 이 표에서 만들어 쓰게 바꾼다.
-
-이름은 SEED 처럼 속성 · 역할 · 변형 · 상태 순이다 — 예: fg-critical-contrast, bg-brand-solid-pressed.
-
-| 자리 | 값 |
-|---|---|
-| 속성 | fg(글자 · 아이콘) · bg(배경) · stroke(선) |
-| 역할 | neutral · layer · brand · critical · positive · warning · informative |
-| 변형 | solid(채움) · weak(약한 배경) · contrast(약한 배경 위 글자) · muted · subtle · inverted |
-| 상태 | pressed(눌림) |
-
-- 값은 porest 색이다. SEED 는 대비를 APCA 로 재고 porest 는 WCAG AA 라 SEED 값은 가져오지 않았다 — SEED 의 흐린 글자는 흰 바탕에서 WCAG 3.42:1 이다. 당근 주황(carrot)은 쓰지 않는다.
-- 옛 이름(text-primary · surface-default · border-default · success …)은 같은 값의 별칭으로 남긴다. 컴포넌트 스펙과 제품은 컴포넌트를 옮길 때 새 이름으로 바꾼다.
-- 글자와 그 글자가 놓이는 배경의 짝은 머리말 `components` 의 `role-*` 로 적어 두어 `npm run lint` 가 라이트 · 다크 대비를 잰다(4.5:1 밑이면 경고).
-- 흰 글자는 `static-white` 다(SEED palette.static-white). 채움(solid) 위 글자에 쓴다.
-
-#### 글자 (fg)
-
-| 역할 | 라이트 | 다크 | 옛 이름 | Desk 웹 이름 |
-|---|---|---|---|---|
-| `fg-neutral` | `#1A1F2E` | `#F5F6FA` | text-primary | fg-primary |
-| `fg-neutral-muted` | `#4E5968` | `#B0B8C4` | text-secondary | fg-secondary |
-| `fg-neutral-subtle` | `#62697A` | `#9DA3B0` | text-tertiary | fg-tertiary |
-| `fg-neutral-inverted` | `#FFFFFF` | `#1A1F2E` | — | — |
-| `fg-placeholder` | `#62697A` | `#9DA3B0` | — | fg-placeholder |
-| `fg-disabled` | `#828995` | `#7A8294` | text-disabled | fg-disabled |
-| `static-white` | `#FFFFFF` | — | text-on-accent | fg-on-brand · fg-on-danger · fg-on-success |
-| `fg-critical` | `#D72323` | `#F87171` | error · error-light | status-danger-fg · fg-expense |
-| `fg-positive` | `#167F3F` | `#4ADE80` | success · success-light | status-success-fg |
-| `fg-warning` | `#BE490D` | `#FB923C` | warning · warning-light | status-warning-fg |
-| `fg-informative` | `#1D6EC9` | `#60A5FA` | info · info-light | status-info-fg · fg-transfer |
-| `fg-critical-contrast` | `#C11F1F` | `#F87676` | — | — |
-| `fg-positive-contrast` | `#14753A` | `#4ADE80` | — | — |
-| `fg-warning-contrast` | `#AD420C` | `#FB923C` | — | — |
-| `fg-informative-contrast` | `#1B65B9` | `#65A8FA` | — | — |
-
-#### 배경 (bg)
-
-| 역할 | 라이트 | 다크 | 옛 이름 | Desk 웹 이름 |
-|---|---|---|---|---|
-| `bg-layer-basement` | `#F5F6FA` | `#1A1F2E` | bg-page | bg-canvas · bg-table-head |
-| `bg-layer-default` | `#FFFFFF` | `#242938` | surface-default | bg-surface |
-| `bg-layer-default-pressed` | `#F0F2F7` | `#2D3346` | — | bg-hover · bg-row-hover |
-| `bg-layer-floating` | `#FFFFFF` | `#2D3346` | — | bg-surface-raised |
-| `bg-layer-floating-pressed` | `#F0F2F7` | `#353B4D` | — | — |
-| `bg-neutral-weak` | `#F0F2F7` | `#2D3346` | surface-input | bg-sunken · bg-muted |
-| `bg-neutral-weak-pressed` | `#E5E8EF` | `#353B4D` | — | bg-warm-press |
-| `bg-neutral-inverted` | `#1A1F2E` | `#F5F6FA` | — | bg-inverse |
-| `bg-disabled` | `#F0F2F7` | `#2D3346` | — | bg-disabled |
-| `bg-critical-solid` | `#D72323` | `#D72323` | error | status-danger |
-| `bg-critical-solid-pressed` | `#C42020` | `#C42020` | — | status-danger-press |
-| `bg-critical-weak` | `#FAE5E5` | `#442834` | — | status-danger-subtle |
-| `bg-critical-weak-pressed` | `#F8D7D7` | `#562732` | — | — |
-| `bg-positive-solid` | `#167F3F` | `#167F3F` | success | status-success |
-| `bg-positive-solid-pressed` | `#136C36` | `#136C36` | — | — |
-| `bg-positive-weak` | `#E3F0E8` | `#213839` | — | status-success-subtle |
-| `bg-positive-weak-pressed` | `#D5E8DC` | `#20413A` | — | — |
-| `bg-warning-solid` | `#BE490D` | `#BE490D` | warning | status-warning |
-| `bg-warning-solid-pressed` | `#A9410C` | `#A9410C` | — | — |
-| `bg-warning-weak` | `#F7E9E2` | `#402F30` | — | status-warning-subtle |
-| `bg-warning-weak-pressed` | `#F3DED3` | `#4F322C` | — | — |
-| `bg-informative-solid` | `#1D6EC9` | `#1D6EC9` | info | status-info |
-| `bg-informative-solid-pressed` | `#1A63B6` | `#1A63B6` | — | — |
-| `bg-informative-weak` | `#E4EEF9` | `#233552` | — | status-info-subtle |
-| `bg-informative-weak-pressed` | `#D6E5F5` | `#223C61` | — | — |
-
-#### 선 (stroke)
-
-| 역할 | 라이트 | 다크 | 옛 이름 | Desk 웹 이름 |
-|---|---|---|---|---|
-| `stroke-neutral-subtle` | `#E5E8EF` | `#353B4D` | — | border-subtle |
-| `stroke-neutral-weak` | `#E5E8EF` | `#353B4D` | border-default | border-default |
-| `stroke-neutral-solid` | `#7D8593` | `#8B95A8` | border-strong | border-strong |
-| `stroke-critical-solid` | `#D72323` | `#F87171` | error | status-danger-border |
-| `stroke-positive-solid` | `#167F3F` | `#4ADE80` | success | status-success-border |
-| `stroke-warning-solid` | `#BE490D` | `#FB923C` | warning | status-warning-border |
-| `stroke-informative-solid` | `#1D6EC9` | `#60A5FA` | info | status-info-border |
-
-#### 브랜드 역할
-
-브랜드 파일(DESIGN.hr.md · DESIGN.desk.md)에만 있다 — fg-brand · fg-brand-contrast · bg-brand-solid · bg-brand-solid-pressed · bg-brand-weak · bg-brand-weak-pressed · stroke-focus-ring · stroke-brand-solid · stroke-brand-weak. 파일 안에서는 같은 이름이다.
-
-#### 값을 만든 규칙
-
-- **약한 배경(weak)**: 의미 색 12%(다크 18%) · 브랜드 8%(다크 12%)를 `bg-layer-default`(흰색 · 다크 #242938) 위에 섞은 불투명 값이다. Desk 가 투명하게 섞던 비율 그대로다 — design.md 검사기가 투명도 있는 색을 받지 않고, SEED 도 불투명 값이다. 페이지 배경 위에 바로 놓이면 전보다 조금 밝다.
-- **약한 배경 눌림(weak-pressed)**: 의미 색 +6%(다크 +10%), 브랜드 14%(다크 22%).
-- **채움 눌림(solid-pressed)**: Desk 앱 파랑 램프 500 → 600 과 같은 명도 폭만큼 어둡게. Desk 브랜드는 그 600 값(#013D97)이다.
-- **contrast 글자**: 약한 배경과 그 눌림 위에서 4.5:1 이 되는 가장 밝은 값(색상 · 채도는 그대로)이다. 부드러운 배지처럼 약한 배경 위 글자에 쓴다.
-- **의미 색 AA 보정**: success #16803F → #167F3F, error #DC2626 → #D72323, warning #C84D0E → #BE490D, info #1D6FCB → #1D6EC9. 명도만 낮춰 흰 바탕 · 페이지 · 입력칸 모두 4.5:1 을 넘긴다(전: 페이지 위 오류 4.47 · 경고 4.30).
-- **다크 모드 의미 색 선**은 밝은 변형(-light)이다. 기본색은 어두운 표면 위 2.86:1 로 UI 3:1 에 못 미쳤다.
-
-#### 들이지 않은 SEED 역할
-
-porest 화면에 아직 쓰는 자리가 없다. 자리가 생기면 위 규칙으로 더한다.
-
-- bg.neutral-solid · bg.neutral-inverted-pressed — 짙은 회색 채움 버튼 · 반전 배경 눌림
-- bg.neutral-weak-alpha · bg.transparent-*(4) — 투명도 있는 배경. 필요하면 overlay 처럼 표 토큰으로 따로 둔다
-- bg.overlay · bg.overlay-muted — Elevation 의 overlay-dim 이 같은 자리다
-- stroke.neutral-muted · stroke.neutral-contrast · stroke.*-weak(4) — Desk 는 구분선을 한 값으로 쓴다
-- bg.magic-weak · bg.layer-fill — 당근 AI 기능 전용 · SEED 에서도 없어질 이름
 
 ### Surface (v1 추가)
 
@@ -2270,10 +1853,10 @@ semantic 채움 라벨 — status indicator, count, category tag. small/inline �
 #### Variant (semantic 4)
 | Token | fill | text | contrast |
 |---|---|---|---|
-| `badge-success` | `success` (`#167F3F`) | `text-on-accent` (`#FFFFFF`) | **5.07:1** ✅ |
-| `badge-error` | `error` (`#D72323`) | `text-on-accent` | **5.06:1** ✅ |
-| `badge-warning` | `warning` (`#BE490D`) | `text-on-accent` | **5.06:1** ✅ |
-| `badge-info` | `info` (`#1D6EC9`) | `text-on-accent` | **5.09:1** ✅ |
+| `badge-success` | `success` (`#16803F`) | `text-on-accent` (`#FFFFFF`) | **5.01:1** ✅ |
+| `badge-error` | `error` (`#DC2626`) | `text-on-accent` | **4.83:1** ✅ |
+| `badge-warning` | `warning` (`#C84D0E`) | `text-on-accent` | **4.64:1** ✅ |
+| `badge-info` | `info` (`#1D6FCB`) | `text-on-accent` | **5.01:1** ✅ |
 
 모두 본문 4.5:1 통과. badge text는 작은 크기(12px)이지만 `text-on-accent` (#FFFFFF) × semantic의 충분한 대비로 가독성 확보.
 
@@ -2310,10 +1893,10 @@ surface 위 inline 상태 텍스트 — form validation error, status notificati
 **Light surface (`surface-default` 위)**:
 | Token | text | contrast |
 |---|---|---|
-| `alert-text-success` | `success` (`#167F3F`) | **5.07:1** ✅ |
-| `alert-text-error` | `error` (`#D72323`) | **5.06:1** ✅ |
-| `alert-text-warning` | `warning` (`#BE490D`) | **5.06:1** ✅ |
-| `alert-text-info` | `info` (`#1D6EC9`) | **5.09:1** ✅ |
+| `alert-text-success` | `success` (`#16803F`) | **5.01:1** ✅ |
+| `alert-text-error` | `error` (`#DC2626`) | **4.83:1** ✅ |
+| `alert-text-warning` | `warning` (`#C84D0E`) | **4.64:1** ✅ |
+| `alert-text-info` | `info` (`#1D6FCB`) | **5.01:1** ✅ |
 
 **Dark surface (`surface-default-dark` 위)** — `*-light` semantic 사용:
 | Token | text | contrast |
@@ -2588,10 +2171,10 @@ red → orange → yellow → green → blue → indigo → violet → pink → 
 #### Variant (semantic 4)
 | Variant | 좌측 stroke / icon 색 | 사용 |
 |---|---|---|
-| success | `success` (`#167F3F`) — `✓` | 저장 완료, 추가됨 |
-| error | `error` (`#D72323`) — `!` | 작업 실패, 네트워크 오류 |
-| warning | `warning` (`#BE490D`) — `⚠` | 임박 만료, 데이터 손실 가능 |
-| info | `info` (`#1D6EC9`) — `ℹ` | 일반 정보, 동기화 진행 |
+| success | `success` (`#16803F`) — `✓` | 저장 완료, 추가됨 |
+| error | `error` (`#DC2626`) — `!` | 작업 실패, 네트워크 오류 |
+| warning | `warning` (`#C84D0E`) — `⚠` | 임박 만료, 데이터 손실 가능 |
+| info | `info` (`#1D6FCB`) — `ℹ` | 일반 정보, 동기화 진행 |
 
 `badge`/`alert-text` 토큰을 직접 매핑하지 않고, surface + 기존 semantic 색상 조합 — Toast는 컴포넌트 단위로 별도 sparse 매핑 없이 prose 가이드만.
 

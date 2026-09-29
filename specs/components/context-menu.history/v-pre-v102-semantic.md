@@ -89,7 +89,7 @@ Context Menu 자체는 **variant 없음** — 시각 통일이 일관성에 유�
 | 기준 | 검증 |
 |---|---|
 | **WCAG 1.4.3** Color contrast (text-primary × surface-default) | 21:1 ✓ |
-| **WCAG 1.4.3** Color contrast (text-error × surface-default) | `text-error` `#D72323` × `#FFFFFF` = 5.06:1 ✓ |
+| **WCAG 1.4.3** Color contrast (text-error × surface-default) | `text-error` `#DC2626` × `#FFFFFF` = 4.83:1 ✓ |
 | **WCAG 1.4.11** Non-text contrast (border × surface-default) | `border-default` `#E5E8EF` × `#FFFFFF` = 1.23:1 — 단독 border 식별은 약하나 `shadow-md`이 보강 (preview `.ctx` 동일 패턴). |
 | **WCAG 2.5.5** Target Size (AAA, 44×44) | item 높이 ≈ 32px(8+15+8+1.5) — 미달(⚠). 터치 우선 화면이면 padding-Y `var(--spacing-md)`(12)로 늘려 40px+ 권장. |
 | **WCAG 2.5.8** Target Size Minimum (AA, 24×24) | item 32px ✓ |

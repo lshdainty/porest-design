@@ -35,8 +35,8 @@
 
 `primary` 가 `--color-primary` 가 아니라 `--color-info` 인 것은 버튼 채움과 같은 기조다.
 
-`destructive` 라벨만 다크에서 밝은 변형으로 갈린다 — `--color-error`(#D72323)는 `surface-default-dark`(#242938)
-대비 **2.87:1** 로 본문 기준(4.5:1)에 미달하고 `--color-error-light`(#F87171)는 5.24:1 이다. DESIGN 의
+`destructive` 라벨만 다크에서 밝은 변형으로 갈린다 — `--color-error`(#DC2626)는 `surface-default-dark`(#242938)
+대비 **3.0:1** 로 본문 기준(4.5:1)에 미달하고 `--color-error-light`(#F87171)는 5.24:1 이다. DESIGN 의
 `alert-text-error-on-dark`(다크 표면 위 인라인 텍스트는 `-light` 변형) 규칙을 그대로 따른다. 배지 **안**
 아이콘은 채움 위에 얹히므로 kind 와 무관하게 `--color-text-on-accent` 하나다 — 갈리지 않는다.
 

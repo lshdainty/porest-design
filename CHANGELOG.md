@@ -65,6 +65,9 @@
 **v101 — SEED 레이아웃 (2026-09-29)**
 - v101: 중단점을 당근 SEED 값으로 — `breakpoint-sm` 480 · `md` 768 · `lg` 1280 · `xl` 1440(옛 Apple Store 기준 640 · 736 · 834 · 1069 · 1441, `2xl` 은 없앰). Tailwind 내보내기는 기본 중단점을 먼저 지운다(`--breakpoint-*: initial`). 레이아웃 토큰 6(`layout-max-low` 720 · `layout-max-medium` 1040 — SEED 밀도 low · medium · high, `layout-margin` 32 · `layout-gutter` 24 — SEED Dashboard 격자, `layout-sidebar` 240 · `layout-sidebar-collapsed` 56)과 SEED 역할 간격 6(`global-gutter` 24 — SEED 는 16, porest 앱 규칙 · `between-chips` 8 · `component-default` 12 · `between-text` 6 · `nav-to-title` 20 · `screen-bottom` 56)을 더했다. 정밀 데스크톱 기준(`touch-nav-*`)은 `breakpoint-lg`, hero 글자 단계는 480 · 768 · 1280 으로 옮겼다. 두 웹 · 앱 적용은 앱마다 따로. "한 번에 5개" 규칙의 예외 — 사용자 결정(2026-09-29).
 
+**v102 — SEED 역할 색 (2026-09-29)**
+- v102: 색에 당근 SEED 역할 이름(속성 · 역할 · 변형 · 상태 — fg · bg · stroke)을 들였다. 공유 역할 47(글자 16 · 배경 22 · 선 7 + `static-white` 등)은 `colors-3` 동기 영역에, 브랜드 역할 9(`fg-brand` · `bg-brand-solid` · `stroke-focus-ring` …)는 HR · Desk 파일에 라이트 · 다크로. 값은 porest 색 — 기존 값 36, Desk 가 투명하게 섞던 약한 배경 8 을 같은 비율의 불투명 값으로, 없던 눌림 · contrast 글자 13 을 새로(WCAG AA). 의미 색 AA 보정: success #16803F → #167F3F · error #DC2626 → #D72323 · warning #C84D0E → #BE490D · info #1D6FCB → #1D6EC9(흰 바탕 · 페이지 · 입력칸 모두 4.5:1). 다크 모드 의미 색 선은 밝은 변형(-light). 옛 이름은 같은 값의 별칭. 역할 짝마다 `role-*` 컴포넌트를 두어 lint 가 대비를 잰다. SEED 값(APCA)과 당근 주황은 가져오지 않았다. 사용자 결정(2026-09-29).
+
 ### Components
 
 **v33~v48 — Component spec batch (16 components, sparse 매핑 자동 검증 활성)**
