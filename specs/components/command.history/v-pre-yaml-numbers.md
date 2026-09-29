@@ -59,7 +59,25 @@ Command는 **variant 없음** — 단일 시각. 사용 형태(inline vs Command
 
 Command는 **size variant 없음** — 단일 spec. 폭은 사용처에서 결정(`w-72` popover 내부 / `w-[min(640px,90%)]` dialog).
 
-[표: 부위별 크기](command.yaml#base)
+| 항목 | 값 | 토큰 |
+|---|---|---|
+| Input height | 40px | `h-10` (Input md spec 정합) |
+| Input padding-X (wrapper) | 12px | `px-[var(--spacing-md)]` |
+| Input padding-Y | 8px | `py-[var(--spacing-sm)]` |
+| Input font | 15 / 400 | `text-body-md` |
+| Search icon | 16×16 | `h-4 w-4` |
+| List max-height | 300px | (literal) |
+| List padding | 4px | `var(--spacing-xs)` |
+| Group padding-X | 4px | `px-[var(--spacing-xs)]` (group 내부 컨테이너) |
+| Group heading padding (Y · X) | 8 / 12 | `var(--spacing-sm)` · `var(--spacing-md)` |
+| Group heading font | 13 / 500 | `text-label-sm font-medium` |
+| Item padding (Y · X) | 8 / 12 | `var(--spacing-sm)` · `var(--spacing-md)` |
+| Item radius | 4px | `var(--radius-sm)` |
+| Item font | body-md (15) | `var(--text-body-md)` |
+| Item gap (icon-text) | 8px | `var(--spacing-sm)` |
+| Separator margin (Y) | 4px | `var(--spacing-xs)` |
+| Empty padding (Y) | 24px | `var(--spacing-xl)` |
+| Shortcut font | label-sm (13) | `var(--text-label-sm)` |
 
 ## States
 
