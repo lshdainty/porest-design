@@ -150,16 +150,33 @@ function clean(dir) {
 
 // ── 토큰 레퍼런스 ──────────────────────────────────────────────
 
-function colorRows(colors) {
-  const rows = new Map();
-  for (const [name, value] of Object.entries(colors ?? {})) {
-    const base = name.replace(/-dark$/, '');
-    const row = rows.get(base) ?? {};
-    row[name.endsWith('-dark') ? 'dark' : 'light'] = value;
-    rows.set(base, row);
-  }
-  return rows;
+// v108 — 역할 색 · 옛 이름은 `{colors.x}` 참조다. 값은 끝까지 따라가 hex 로, 단계는 팔레트 이름으로 보인다
+const PALETTE_NAME = /^(gray|red|green|orange|blue|brand)-(00|\d+)$/;
+function colorKit(colors = {}) {
+  const ref = (name) => /^\{colors\.([a-z0-9-]+)\}$/.exec(String(colors[name] ?? ''))?.[1];
+  const follow = (name) => {
+    let n = name;
+    for (let i = 0; ref(n); i++) {
+      if (i > 8) throw new Error(`색 참조가 돌고 돈다: ${name}`);
+      n = ref(n);
+    }
+    return n;
+  };
+  return {
+    names: Object.keys(colors),
+    has: (name) => name in colors,
+    ref,
+    value: (name) => (name in colors ? colors[follow(name)] : undefined),
+    step: (name) => (name in colors && ref(name) ? follow(name).replace(/-dark$/, '') : undefined),
+  };
 }
+const kind = (name) => {
+  const base = name.replace(/-dark$/, '');
+  if (PALETTE_NAME.test(base)) return 'palette';
+  if (/^chart-/.test(name)) return 'chart';
+  if (/^(fg|bg|stroke|static)-/.test(name) && base !== 'bg-page') return 'role';
+  return 'old';
+};
 
 function table(head, rows) {
   const line = (cells) => `| ${cells.join(' | ')} |`;
@@ -186,10 +203,16 @@ function tokenReference() {
   const hr = splitFrontMatter(read('DESIGN.hr.md')).data;
   const desk = splitFrontMatter(read('DESIGN.desk.md')).data;
 
-  const sharedColors = colorRows(shared.colors);
-  const hrColors = colorRows(hr.colors);
-  const deskColors = colorRows(desk.colors);
-  const brandNames = [...new Set([...hrColors.keys(), ...deskColors.keys()])].filter((n) => !sharedColors.has(n));
+  const S = colorKit(shared.colors);
+  const H = colorKit(hr.colors);
+  const D = colorKit(desk.colors);
+  const brandOnly = [...new Set([...H.names, ...D.names])].filter((n) => !S.has(n));
+  const light = (names) => names.filter((n) => !n.endsWith('-dark'));
+  const pick = (names, k) => light(names.filter((n) => kind(n) === k));
+  const step = (kit, name) => (kit.step(name) ? code(kit.step(name)) : '—');
+  const pair = (kit, name) => `${step(kit, name)} / ${step(kit, `${name}-dark`)}`;
+  // static-white 처럼 다크 짝이 없는 색은 두 모드가 같다
+  const dark = (kit, name) => kit.value(`${name}-dark`) ?? kit.value(name);
 
   const typography = Object.entries(shared.typography ?? {}).map(([name, t]) => [
     code(name),
@@ -200,31 +223,70 @@ function tokenReference() {
   ]);
   const families = [...new Set(Object.values(shared.typography ?? {}).map((t) => t.fontFamily))];
   const prose = proseTokenRows(read('DESIGN.md'));
-  const allCount = sharedColors.size + brandNames.length + typography.length + Object.keys(shared.rounded ?? {}).length + Object.keys(shared.spacing ?? {}).length + prose.size;
+  const colorCount = S.names.length + brandOnly.length;
+  const allCount = colorCount + typography.length + Object.keys(shared.rounded ?? {}).length + Object.keys(shared.spacing ?? {}).length + prose.size;
 
   return [
     '토큰 값은 `DESIGN.md`(공유)와 `DESIGN.hr.md` · `DESIGN.desk.md`(브랜드)가 원본이다. 이 목록은 빌드할 때 그 파일에서 그대로 뽑는다 — 색 · 글자 · 모서리 · 간격은 YAML 머리말에서, 그림자 · 모션 · 중단점 · 레이아웃 · 터치 영역 · z-index · 딤 · 그라디언트는 본문의 표에서.',
     '',
-    `모두 ${allCount} 개다(색은 라이트 · 다크 짝을 한 줄로). 토큰의 층과 모드는 [Overview](/docs/foundations/design-token) 에 있다.`,
+    `모두 ${allCount} 개다 — 색이 ${colorCount} 개(라이트 · 다크를 따로 센다)다. 토큰의 층과 모드는 [Overview](/docs/foundations/design-token) 에 있다.`,
     '',
-    '## 공유 색',
+    '## 팔레트',
     '',
-    table(
-      ['토큰', '라이트', '다크'],
-      [...sharedColors].map(([name, v]) => [code(name), code(v.light), code(v.dark)]),
-    ),
+    '가족마다 차례 번호가 붙은 색이다. 단계마다 라이트 · 다크 값이 따로 있고, 다크는 차례가 뒤집혀 작은 번호가 어둡다. 화면은 팔레트를 직접 쓰지 않고 역할 색으로 부른다.',
     '',
-    '## 브랜드 색',
+    table(['토큰', '라이트', '다크'], pick(S.names, 'palette').map((n) => [code(n), code(S.value(n)), code(S.value(`${n}-dark`))])),
     '',
-    '브랜드 파일에서만 정의하는 토큰입니다. 파일 안에서는 접미사 없이 같은 이름을 씁니다.',
+    '### 브랜드 팔레트',
+    '',
+    '브랜드 파일에서만 정의한다. 파일 안에서는 접미사 없이 `brand-100` ~ `brand-1000` 이다.',
     '',
     table(
       ['토큰', 'HR 라이트', 'HR 다크', 'Desk 라이트', 'Desk 다크'],
-      brandNames.map((name) => {
-        const h = hrColors.get(name) ?? {};
-        const d = deskColors.get(name) ?? {};
-        return [code(name), code(h.light), code(h.dark), code(d.light), code(d.dark)];
-      }),
+      pick(brandOnly, 'palette').map((n) => [code(n), code(H.value(n)), code(H.value(`${n}-dark`)), code(D.value(n)), code(D.value(`${n}-dark`))]),
+    ),
+    '',
+    '## 역할 색',
+    '',
+    '화면이 부르는 이름이다. 모드마다 팔레트의 한 단계를 가리킨다 — 단계 칸은 `라이트 / 다크` 다.',
+    '',
+    table(
+      ['토큰', '단계', '라이트', '다크'],
+      pick(S.names, 'role').map((n) => [code(n), pair(S, n), code(S.value(n)), code(dark(S, n))]),
+    ),
+    '',
+    '### 브랜드 역할 색',
+    '',
+    table(
+      ['토큰', 'HR 단계', 'HR 라이트 · 다크', 'Desk 단계', 'Desk 라이트 · 다크'],
+      pick(brandOnly, 'role').map((n) => [
+        code(n),
+        pair(H, n),
+        `${code(H.value(n))} · ${code(dark(H, n))}`,
+        pair(D, n),
+        `${code(D.value(n))} · ${code(dark(D, n))}`,
+      ]),
+    ),
+    '',
+    '## 옛 이름',
+    '',
+    '역할 색 이전의 이름이다. 컴포넌트 스펙이 아직 쓰고 있어 같은 값의 역할 색을 가리키는 별칭으로 남겼다 — 스펙을 모두 옮기면 지운다.',
+    '',
+    table(
+      ['토큰', '가리키는 이름', '값'],
+      [
+        ...S.names.filter((n) => kind(n) === 'old').map((n) => [code(n), code(S.ref(n)), code(S.value(n))]),
+        ...brandOnly.filter((n) => kind(n) === 'old').map((n) => [code(n), code(H.ref(n) ?? D.ref(n)), `HR ${code(H.value(n))} · Desk ${code(D.value(n))}`]),
+      ],
+    ),
+    '',
+    '## 차트',
+    '',
+    '데이터 시각화의 10색이다. 아직 팔레트 밖에 있다 — 팔레트에서 새로 고를 예정이다. 다크 표면에서는 `-light` 짝을 쓴다.',
+    '',
+    table(
+      ['토큰', '라이트 표면', '다크 표면'],
+      S.names.filter((n) => /^chart-[a-z]+$/.test(n) && !n.endsWith('-light')).map((n) => [code(n), code(S.value(n)), code(S.value(`${n}-light`))]),
     ),
     '',
     '## 타이포그래피',

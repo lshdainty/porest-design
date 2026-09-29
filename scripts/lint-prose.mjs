@@ -100,7 +100,7 @@ function extractDefinedTokens(content) {
   const colors = findBlockLines(lines, "colors");
   if (colors) {
     for (let i = colors.start + 1; i < colors.end; i++) {
-      const m = /^\s+([a-z][a-z0-9-]+):\s*"#/.exec(lines[i]);
+      const m = /^\s+([a-z][a-z0-9-]+):\s*"(#|\{colors\.)/.exec(lines[i]);
       if (m) defined.add(m[1]);
     }
   }
@@ -185,12 +185,18 @@ function extractProseReferences(content) {
 function extractDefinedHex(content) {
   const lines = content.split("\n");
   const out = new Map(); // token → hex (lowercase)
+  const refs = new Map(); // token → 가리키는 토큰
   const colors = findBlockLines(lines, "colors");
   if (!colors) return out;
   for (let i = colors.start + 1; i < colors.end; i++) {
     const m = /^\s+([a-z][a-z0-9-]+):\s*"(#[0-9A-Fa-f]{6,8})"/.exec(lines[i]);
-    if (m) out.set(m[1], m[2].toLowerCase());
+    if (m) { out.set(m[1], m[2].toLowerCase()); continue; }
+    const r = /^\s+([a-z][a-z0-9-]+):\s*"\{colors\.([a-z0-9-]+)\}"/.exec(lines[i]);
+    if (r) refs.set(r[1], r[2]);
   }
+  // v108 — 역할 · 옛 이름은 팔레트를 가리키는 참조 — 사슬을 풀어 hex 로
+  const resolveRef = (name, depth = 0) => (out.has(name) ? out.get(name) : depth > 8 || !refs.has(name) ? undefined : resolveRef(refs.get(name), depth + 1));
+  for (const k of refs.keys()) { const v = resolveRef(k); if (v) out.set(k, v); }
   return out;
 }
 

@@ -20,9 +20,9 @@
 
 ### 파일 분리 규칙 (v17부터)
 - **공유**: typography, spacing, rounded, neutral colors(bg-page, surface-*, text-*, border-*, semantic) — DESIGN.md 정의 후 brand 파일에 **복제**(spec이 cross-file reference 미지원)
-- **brand-specific**: primary, primary-light, border-focus, border-focus-light, brand 컴포넌트 — brand 파일에서만 정의. brand 파일 내에선 `-hr`/`-desk` 접미사 없이 단순한 이름 사용(`primary`, `button-primary` 등 — context 암묵)
+- **brand-specific**: primary, primary-light, border-focus, border-focus-light, brand 역할 색(`fg-brand` · `bg-brand-solid` …), brand 팔레트(`brand-100` ~ `brand-1000`, v108), brand 컴포넌트 — brand 파일에서만 정의. brand 파일 내에선 `-hr`/`-desk` 접미사 없이 단순한 이름 사용(`primary`, `button-primary` 등 — context 암묵)
 - **lint 운영**: `npm run lint:all`로 3파일 일괄 검증. DESIGN.md는 missingPrimary warning 1건 영구 수용(brand-agnostic 의도 신호), HR/Desk 파일은 0 warnings 유지
-- **공유 토큰 변경 시 3파일 동기**: `npm run sync`로 `typography`/`rounded`/`spacing` 블록 + `colors` SHARED 영역(v50 마커 도입) 자동 갱신(DESIGN.md → HR/Desk). 마커 영역: `# @sync:shared-start (colors-N)` ... `# @sync:shared-end (colors-N)` 사이. `colors-1` = Neutral(bg/surface/text/border), `colors-2` = Semantic + Chart palette. brand 영역(`@sync:brand-*`)은 sync 비대상으로 보존. components 영역은 향후 마커 도입 후 확장. `npm run verify`로 sync 검사 + lint:all 통합 실행(머지 전 게이트로 권장).
+- **공유 토큰 변경 시 3파일 동기**: `npm run sync`로 `typography`/`rounded`/`spacing` 블록 + `colors` SHARED 영역(v50 마커 도입) 자동 갱신(DESIGN.md → HR/Desk). 마커 영역: `# @sync:shared-start (colors-N)` ... `# @sync:shared-end (colors-N)` 사이. `colors-0` = 팔레트(v108 — `gray` · `red` · `green` · `orange` · `blue` 단계, 브랜드 파일은 `@sync:brand-*` 의 `colors-0` 에 `brand` 단계), `colors-1` = Neutral(bg/surface/text/border), `colors-2` = Semantic + Chart palette, `colors-3` = 역할 색(v102). v108 부터 역할 색은 팔레트를, 옛 이름은 역할 색을 `"{colors.x}"` 로 가리킨다 — hex 는 팔레트에만 있다. brand 영역(`@sync:brand-*`)은 sync 비대상으로 보존. components 영역은 향후 마커 도입 후 확장. `npm run verify`로 sync 검사 + lint:all 통합 실행(머지 전 게이트로 권장).
 
 ## HOW (작업 규칙)
 
@@ -30,13 +30,13 @@
 1. 색상은 WCAG AA 대비비 충족 (본문 4.5:1, UI 3:1) — `npx @google/design.md lint`로 검증
 2. HR / Desk 듀얼 브랜드를 깨지 않도록 — neutral / semantic 토큰은 공통, accent만 분기
 3. 한국어 본문 가독성 우선 — Pretendard 기본, 영문 fallback은 Inter
-4. 토큰 이름은 의미 기반 (`accent-primary`), 색상값 기반 금지 (`green-500` ❌)
+4. 토큰 이름은 의미 기반 (`accent-primary`), 색상값 기반 금지 (`green-500` ❌) — 예외: v108 팔레트 층은 SEED 처럼 `gray-500` 꼴이다. 역할 색이 가리키는 자리로만 쓰고, 화면 · 컴포넌트는 역할 이름만 부른다(사용자 결정 2026-09-30)
 
 ### 작업 흐름
 - 변경 전: 현재 `DESIGN.md`를 `DESIGN.history/v{N}-{이유}.md`로 복사
 - 변경 후: `npm run lint` 실행, 통과해야 commit
 - 색상값 수정 시: `npm run diff`로 변경사항 명시
-- 한 번에 5개 토큰 이상 추가 금지 — 점진적으로 확장 (예외: 2026-09-29 SEED 간격 · 모서리 · 글자 스케일 · 레이아웃 · 역할 색 · 모션 · 고도 도입 — 사용자가 대가를 알고 정했다, v98~v104)
+- 한 번에 5개 토큰 이상 추가 금지 — 점진적으로 확장 (예외: 2026-09-29 SEED 간격 · 모서리 · 글자 스케일 · 레이아웃 · 역할 색 · 모션 · 고도 도입 — 사용자가 대가를 알고 정했다, v98~v104 · 2026-09-30 SEED 팔레트 층 — 팔레트 122 + 보기용 `palette-*` 컴포넌트, v108)
 
 ### 금지 사항
 - DESIGN.md 외부에 토큰을 정의하지 말 것 (CSS, JS 어디서도)

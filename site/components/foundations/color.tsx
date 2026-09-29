@@ -1,6 +1,6 @@
 // Color 페이지 — 색 값은 DESIGN*.md colors 블록에서만 온다
 import type { CSSProperties, ReactNode } from 'react';
-import { BRAND_ROLES, color, contrast, design, roleAliases, roleColors, type Brand } from '@/lib/design-tokens';
+import { BRAND_ROLES, color, colorStep, contrast, design, palette, roleAliases, roleColors, type Brand } from '@/lib/design-tokens';
 import { Chip, Figure, Swatch, Table, Token } from './ui';
 
 type Mode = 'light' | 'dark';
@@ -213,6 +213,20 @@ export function StateExample() {
 }
 
 // ── 토큰 표 ────────────────────────────────────────────────
+// 값 옆에 역할이 가리키는 팔레트 단계를 붙인다(v108)
+function StepSwatch({ hex, step }: { hex?: string; step?: string }) {
+  if (!hex || !step) return <Swatch hex={hex} />;
+  return (
+    <span className="inline-flex items-center gap-2 whitespace-nowrap">
+      <Chip hex={hex} />
+      <span className="flex flex-col leading-tight">
+        <code className="text-[13px]">{hex.toUpperCase()}</code>
+        <span className="text-[11px] text-fd-muted-foreground">{step.replace(/-dark$/, '')}</span>
+      </span>
+    </span>
+  );
+}
+
 export function RoleTokenTable({ property }: { property: 'fg' | 'bg' | 'stroke' }) {
   const alias = roleAliases();
   const rows = roleColors('desk').filter((r) => (property === 'fg' ? /^(fg|static)-/ : new RegExp(`^${property}-`)).test(r.name) && !BRAND_ROLES.includes(r.name));
@@ -221,8 +235,8 @@ export function RoleTokenTable({ property }: { property: 'fg' | 'bg' | 'stroke' 
       {rows.map((r) => (
         <tr key={r.name}>
           <td><Token>{r.name}</Token></td>
-          <td><Swatch hex={r.light} /></td>
-          <td><Swatch hex={r.dark ?? (r.name === 'static-white' ? r.light : undefined)} /></td>
+          <td><StepSwatch hex={r.light} step={colorStep(r.name)} /></td>
+          <td><StepSwatch hex={r.dark ?? (r.name === 'static-white' ? r.light : undefined)} step={colorStep(`${r.name}-dark`)} /></td>
           <td className="text-fd-muted-foreground">{alias.get(r.name)?.old ?? '—'}</td>
         </tr>
       ))}
@@ -238,10 +252,10 @@ export function BrandRoleTable() {
       {BRAND_ROLES.map((n) => (
         <tr key={n}>
           <td><Token>{n}</Token></td>
-          <td><Swatch hex={d.get(n)?.light} /></td>
-          <td><Swatch hex={d.get(n)?.dark} /></td>
-          <td><Swatch hex={h.get(n)?.light} /></td>
-          <td><Swatch hex={h.get(n)?.dark} /></td>
+          <td><StepSwatch hex={d.get(n)?.light} step={colorStep(n, 'desk')} /></td>
+          <td><StepSwatch hex={d.get(n)?.dark} step={colorStep(`${n}-dark`, 'desk')} /></td>
+          <td><StepSwatch hex={h.get(n)?.light} step={colorStep(n, 'hr')} /></td>
+          <td><StepSwatch hex={h.get(n)?.dark} step={colorStep(`${n}-dark`, 'hr')} /></td>
         </tr>
       ))}
     </Table>
@@ -249,40 +263,82 @@ export function BrandRoleTable() {
 }
 
 // ── 팔레트 ─────────────────────────────────────────────────
-function Tile({ name, hex, note }: { name: string; hex: string; note?: string }) {
+// 가족 하나의 단계 띠 — 라이트는 라이트 표면 위에, 다크는 다크 표면 위에 그린다
+export function PaletteRamp({ family, brand = 'shared' }: { family: string; brand?: Brand }) {
+  const steps = palette(family, brand);
+  const modes: [Mode, string][] = [['light', '라이트'], ['dark', '다크']];
   return (
-    <div className="flex flex-col gap-1.5">
-      <span className="block h-14 rounded-lg border border-black/10 dark:border-white/15" style={{ background: hex }} />
-      <code className="text-[12px] text-fd-foreground">{name}</code>
-      <span className="text-[12px] tabular-nums text-fd-muted-foreground">{hex.toUpperCase()}{note ? ` · ${note}` : ''}</span>
+    <div className="not-prose my-6 overflow-hidden rounded-xl border border-fd-border">
+      {modes.map(([m, label]) => (
+        <div key={m} className="px-3 py-3 sm:px-4" style={{ background: rc('bg-layer-default', m) }}>
+          <span className="mb-2 block text-[12px] font-medium" style={{ color: rc('fg-neutral-subtle', m) }}>{label}</span>
+          <div className="grid gap-[3px] sm:gap-1" style={{ gridTemplateColumns: `repeat(${steps.length}, minmax(0, 1fr))` }}>
+            {steps.map((s) => (
+              <div key={s.step} className="flex min-w-0 flex-col items-center gap-1" title={`${family}-${s.step}${m === 'dark' ? '-dark' : ''} ${s[m]}`}>
+                <span className="block h-10 w-full rounded-md" style={{ background: s[m], boxShadow: `inset 0 0 0 1px ${rc('stroke-neutral-subtle', m)}` }} />
+                <span className="text-[10px] font-semibold tabular-nums sm:text-[11px]" style={{ color: rc('fg-neutral', m) }}>{s.step}</span>
+                <span className="hidden text-[10px] tabular-nums lg:block" style={{ color: rc('fg-neutral-subtle', m) }}>{s[m].slice(1).toUpperCase()}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
 
-export function PaletteGrid({ group }: { group: 'brand' | 'neutral' | 'semantic' | 'chart' }) {
-  const c = design('shared').front.colors;
-  let tiles: { name: string; hex: string; note?: string }[] = [];
-  if (group === 'brand') {
-    for (const b of ['desk', 'hr'] as Brand[]) {
-      const bc = design(b).front.colors;
-      tiles.push({ name: `${b === 'desk' ? 'Desk' : 'HR'} primary`, hex: bc.primary, note: '라이트' }, { name: `${b === 'desk' ? 'Desk' : 'HR'} primary-light`, hex: bc['primary-light'], note: '다크' });
-    }
-  } else if (group === 'neutral') {
-    // 라이트 회색은 밝은 것부터(대비가 낮은 것부터), 다크 표면은 뒤에
-    const light = ['surface-default', 'bg-page', 'surface-input', 'border-default', 'border-strong', 'text-disabled', 'text-tertiary', 'text-secondary', 'text-primary'];
-    const dark = ['surface-default-dark', 'surface-input-dark', 'border-default-dark'];
-    const byLight = (n: string) => contrast(c[n], '#FFFFFF');
-    tiles = [...light.filter((n) => c[n]).sort((a, b) => byLight(a) - byLight(b)), ...dark.filter((n) => c[n])].map((n) => ({ name: n, hex: c[n] }));
-  } else if (group === 'semantic') {
-    for (const n of ['success', 'error', 'warning', 'info']) tiles.push({ name: n, hex: c[n], note: '라이트' }, { name: `${n}-light`, hex: c[`${n}-light`], note: '다크' });
-  } else {
-    const hues = Object.keys(c).filter((k) => /^chart-[a-z]+$/.test(k));
-    for (const k of hues) tiles.push({ name: k, hex: c[k] }, { name: `${k}-light`, hex: c[`${k}-light`] });
-  }
-  const cols = group === 'chart' ? 'grid-cols-4 sm:grid-cols-5' : 'grid-cols-2 sm:grid-cols-4';
+// SEED Palette 의 토큰 표처럼 라이트 · 다크를 한 줄에
+export function PaletteTokenTable({ families }: { families: string[] }) {
+  const rows = families.flatMap((f) => palette(f).map((s) => ({ name: `${f}-${s.step}`, ...s })));
   return (
-    <div className={`not-prose my-6 grid gap-4 ${cols}`}>
-      {tiles.map((t) => <Tile key={t.name} {...t} />)}
+    <Table head={['토큰', '라이트', '다크']} minWidth={440}>
+      {rows.map((r) => (
+        <tr key={r.name}>
+          <td><Token>{r.name}</Token></td>
+          <td><Swatch hex={r.light} /></td>
+          <td><Swatch hex={r.dark} /></td>
+        </tr>
+      ))}
+    </Table>
+  );
+}
+
+export function BrandPaletteTable() {
+  const h = new Map(palette('brand', 'hr').map((s) => [s.step, s]));
+  return (
+    <Table head={['토큰', 'Desk 라이트', 'Desk 다크', 'HR 라이트', 'HR 다크']} minWidth={720}>
+      {palette('brand', 'desk').map((s) => (
+        <tr key={s.step}>
+          <td><Token>{`brand-${s.step}`}</Token></td>
+          <td><Swatch hex={s.light} /></td>
+          <td><Swatch hex={s.dark} /></td>
+          <td><Swatch hex={h.get(s.step)?.light} /></td>
+          <td><Swatch hex={h.get(s.step)?.dark} /></td>
+        </tr>
+      ))}
+    </Table>
+  );
+}
+
+// ── 차트 ───────────────────────────────────────────────────
+// 아직 팔레트 밖의 10색 — 다크 표면에서는 `-light` 짝
+function Tile({ name, hex }: { name: string; hex: string }) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span className="block h-14 rounded-lg border border-black/10 dark:border-white/15" style={{ background: hex }} />
+      <code className="text-[12px] text-fd-foreground">{name}</code>
+      <span className="text-[12px] tabular-nums text-fd-muted-foreground">{hex.toUpperCase()}</span>
+    </div>
+  );
+}
+
+const chartHues = () => Object.keys(design('shared').front.colors).filter((k) => /^chart-[a-z]+$/.test(k));
+
+export function ChartGrid() {
+  const c = design('shared').front.colors;
+  return (
+    <div className="not-prose my-6 grid grid-cols-4 gap-4 sm:grid-cols-5">
+      {chartHues().flatMap((k) => [<Tile key={k} name={k} hex={c[k]} />, <Tile key={`${k}-light`} name={`${k}-light`} hex={c[`${k}-light`]} />])}
     </div>
   );
 }
@@ -296,30 +352,15 @@ export function ContrastNote({ fg, bg, brand = 'desk' }: { fg: string; bg: strin
   );
 }
 
-// 팔레트 표 — SEED Palette 의 토큰 표처럼 라이트 · 다크를 한 줄에
-export function PaletteTable({ group }: { group: 'brand' | 'neutral' | 'semantic' | 'chart' }) {
+export function ChartTable() {
   const c = design('shared').front.colors;
-  let rows: { name: string; light: string; dark?: string }[] = [];
-  if (group === 'brand') {
-    for (const b of ['desk', 'hr'] as Brand[]) {
-      const bc = design(b).front.colors;
-      rows.push({ name: `primary (${b === 'desk' ? 'Desk' : 'HR'})`, light: bc.primary, dark: bc['primary-light'] });
-    }
-  } else if (group === 'neutral') {
-    rows = ['bg-page', 'surface-default', 'surface-input', 'border-default', 'border-strong', 'text-disabled', 'text-tertiary', 'text-secondary', 'text-primary']
-      .filter((n) => c[n]).map((n) => ({ name: n, light: c[n], dark: c[`${n}-dark`] }));
-  } else if (group === 'semantic') {
-    rows = ['success', 'error', 'warning', 'info'].map((n) => ({ name: n, light: c[n], dark: c[`${n}-light`] }));
-  } else {
-    rows = Object.keys(c).filter((k) => /^chart-[a-z]+$/.test(k)).map((k) => ({ name: k, light: c[k], dark: c[`${k}-light`] }));
-  }
   return (
-    <Table head={['토큰', '라이트', '다크']} minWidth={480}>
-      {rows.map((r) => (
-        <tr key={r.name}>
-          <td><Token>{r.name}</Token></td>
-          <td><Swatch hex={r.light} /></td>
-          <td><Swatch hex={r.dark} /></td>
+    <Table head={['토큰', '라이트 표면', '다크 표면']} minWidth={480}>
+      {chartHues().map((k) => (
+        <tr key={k}>
+          <td><Token>{k}</Token></td>
+          <td><Swatch hex={c[k]} /></td>
+          <td><Swatch hex={c[`${k}-light`]} /></td>
         </tr>
       ))}
     </Table>

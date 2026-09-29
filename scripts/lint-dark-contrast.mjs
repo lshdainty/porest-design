@@ -40,8 +40,13 @@ function parseColors(content) {
     if (inColors && /^---\s*$/.test(line)) break;
     if (!inColors) continue;
     const m = /^\s+([a-z0-9-]+):\s*"(#[0-9A-Fa-f]+)"/.exec(line);
-    if (m) out[m[1]] = m[2].toLowerCase();
+    if (m) { out[m[1]] = m[2].toLowerCase(); continue; }
+    const r = /^\s+([a-z0-9-]+):\s*"\{colors\.([a-z0-9-]+)\}"/.exec(line);
+    if (r) out[r[1]] = { ref: r[2] };
   }
+  // v108 — 참조 사슬(역할 → 팔레트)을 hex 로 푼다
+  const resolveRef = (v, seen = 0) => (typeof v === "string" ? v : seen > 8 ? undefined : resolveRef(out[v.ref], seen + 1));
+  for (const k of Object.keys(out)) out[k] = resolveRef(out[k]);
   return out;
 }
 

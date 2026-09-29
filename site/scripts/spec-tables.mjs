@@ -104,6 +104,9 @@ export function loadTokens(repo) {
     );
     const vars = new Map();
     for (const m of css.matchAll(/--([a-z0-9_-]+):\s*([^;]+);/g)) if (!vars.has(m[1])) vars.set(m[1], m[2].trim());
+    // v108 — 역할은 var(--color-gray-00) 처럼 팔레트를 가리킨다. 표에는 값을 보이게 사슬을 푼다
+    const res = (v, d = 0) => { const r = /^var\(--([a-z0-9_-]+)\)$/.exec(v); return r && d < 8 && vars.has(r[1]) ? res(vars.get(r[1]), d + 1) : v; };
+    for (const [k, v] of vars) vars.set(k, res(v));
     return vars;
   };
   return { shared: read('DESIGN.md'), hr: read('DESIGN.hr.md'), desk: read('DESIGN.desk.md') };
