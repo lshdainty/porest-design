@@ -38,11 +38,26 @@ Tooltip은 **variant 없음** — 모든 tooltip이 동일 시각. 의미 분기
 
 Tooltip은 **size variant 없음** — 단일 spec. 콘텐츠 길이에 따라 자연 wrap(`max-width` 사용처 className).
 
-[표: 크기와 색](tooltip.yaml#base.closed)
+| 항목 | 값 | 토큰 |
+|---|---|---|
+| Padding (Y · X) | 4 · 12 | `var(--spacing-xs)` · `var(--spacing-md)` |
+| Radius | 2px | `var(--radius-xs)` |
+| Background | `text-primary` (light:#1A1F2E / dark:#F5F6FA) — 페이지와 inverse | `var(--color-text-primary)` |
+| Text | `surface-default` (light:#FFFFFF / dark:#242938) — bg와 inverse | `var(--color-surface-default)` |
+| Border | 없음 (강한 대비로 식별 충분) | — |
+| Font | 13 / 500 | `text-label-sm` |
+| Shadow | shadow-sm (가볍게) | `var(--shadow-sm)` |
+| Side offset | 4px | (Radix `sideOffset={4}` 기본) |
+| z-index | 50 | (literal) |
 
 ## States
 
-[표: 상태](tooltip.yaml#matrix)
+| State | 동작 | 시각 |
+|---|---|---|
+| `closed` (default) | (unmounted) | — |
+| `delay-open` (hover/focus 직후 200ms 대기) | (still closed) | — |
+| `open` | content portal 마운트 + fade-in zoom-in | `data-[state=open]:animate-in fade-in-0 zoom-in-95` |
+| `closed` (hover 이탈) | content unmount + fade-out zoom-out | `data-[state=closed]:animate-out fade-out-0 zoom-out-95` |
 
 Provider `delayDuration` 기본 200ms (Radix). `skipDelayDuration` 300ms (연속 tooltip 시 delay 생략).
 
