@@ -35,9 +35,11 @@ Checkbox는 **variant 없음** — 시각 위계는 size로만 표현, 의미 �
 
 `box-sizing: border-box` 기준 외부 정사각 한 변 = 토큰 값 그대로(16 / 18 / 20). border 1px은 그 안에 inset.
 
-[표: 크기](checkbox.yaml#size)
-
-[표: 공통](checkbox.yaml#base.default)
+| Size | Box | Border | Check icon | Indeterminate dash | Radius | Touch (AA · AAA) |
+|---|---|---|---|---|---|---|
+| `sm` | 16×16px | 1px | 10×10 (lucide `Check` `size-2.5` `stroke-3`) | 8×2 | `radius-sm` (4) | control 단독 AA ⚠ · AAA ⚠ — **label 포함 hit area 44+ 확보 필수** |
+| `md` *(default)* | 18×18px | 1px | 12×12 (lucide `Check` `size-3` `stroke-3`) | 10×2 | `radius-sm` (4) | control 단독 AA ⚠ · AAA ⚠ — **label 포함 hit area 44+ 확보 필수** |
+| `lg` | 20×20px | 1px | 14×14 (lucide `Check` `size-3.5` `stroke-3`) | 12×2 | `radius-sm` (4) | control 단독 AA ⚠ · AAA ⚠ — **label 포함 hit area 44+ 확보 필수** |
 
 Tailwind utility 매핑 (checkbox.tsx cva):
 - `sm`: `size-4 [&_svg]:size-2.5`
@@ -56,11 +58,15 @@ Tailwind utility 매핑 (checkbox.tsx cva):
 
 ### State matrix (default size 기준)
 
-[표: 체크 상태별](checkbox.yaml#checked)
-
-[표: 상태 매트릭스 — unchecked](checkbox.yaml#matrix.checked.unchecked)
-
-[표: 체크 상태별로 바뀌는 값](checkbox.yaml#states.checked)
+| State | Background | Border | Icon | Ring | Cursor |
+|---|---|---|---|---|---|
+| `default` (unchecked) | `--color-surface-default` | `--color-border-strong` 1px | none | none | `pointer` |
+| `hovered` (unchecked) | `--color-surface-input` | `--color-border-strong` 1px | none | none | `pointer` |
+| `checked` | `--color-primary` | `--color-primary` 1px | `Check` `--color-text-on-accent` | none | `pointer` |
+| `indeterminate` | `--color-primary` | `--color-primary` 1px | dash 2px `--color-text-on-accent` | none | `pointer` |
+| `focused` (visible) | 위 상태 유지 | 위 상태 유지 | 위 상태 유지 | 2px `--color-border-focus` + 2px offset (`ring-2 ring-ring ring-offset-2`). 다크 모드는 `--color-border-focus-light` 자동 alias. | `pointer` |
+| `disabled` | `--color-surface-input` | `--color-border-default` 1px | (checked 시 `text-on-accent` opacity 0.5) | none | `not-allowed` (opacity 0.5) |
+| `error` (`aria-invalid="true"`) | `--color-surface-default` | `--color-error` 1px | none | 2px `--color-error/30` ring | `pointer` |
 
 ### Hover 상세
 
@@ -68,7 +74,11 @@ unchecked hover는 `bg-surface-input`로 미세한 affordance만 — checked/dis
 
 ### Motion
 
-[표: 모션](checkbox.yaml#motion)
+| 전환 | duration | easing | 속성 |
+|---|---|---|---|
+| unchecked → checked | `motion-duration-fast` (150ms) | `motion-ease-out` | background + icon scale 0.8→1 + opacity 0→1 |
+| checked → unchecked | `motion-duration-fast` (150ms) | `motion-ease-out` | background + icon scale 1→0.8 + opacity 1→0 |
+| → indeterminate | 동일 | 동일 | background + dash scale 0.8→1 + opacity |
 
 `prefers-reduced-motion: reduce` 시 globally 0.01ms 단축 (DESIGN.md keyframes 가이드).
 
