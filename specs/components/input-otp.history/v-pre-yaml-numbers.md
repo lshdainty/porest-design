@@ -34,11 +34,27 @@ InputOTP는 **variant 없음** — 사이즈 가변(자릿수)으로만 분기.
 
 cell 크기는 단일(`40×40`). 자릿수만 prop으로 결정 (`maxLength={4}` / `maxLength={6}` 등).
 
-[표: 크기와 모양](input-otp.yaml#base.empty)
+| 항목 | 값 | 토큰 |
+|---|---|---|
+| Cell width / height | 40 / 40 | `w-10 h-10` (또는 `w-[40px] h-[40px]`) |
+| Cell font | 18px / 600 / monospace | `var(--text-title-md)` + `font-weight:600` + `ui-monospace` |
+| Cell radius | 8px | `var(--radius-md)` |
+| Cell border | 1px | `border-border-default` |
+| Cell background (empty) | `surface-input` (#F0F2F7 / dark #2D3346) | `bg-surface-input` |
+| Cell background (filled) | `surface-default` (#FFFFFF) | `bg-surface-default` |
+| Container gap | 4px | `gap-[var(--spacing-xs)]` |
+| Separator padding | 0 · 4px | `px-[var(--spacing-xs)]` |
+| Touch target | 40 × 40 — AA ✓ / AAA ⚠ 미달 (모바일 IME 자동 채우기로 직접 탭 비중 낮음) |
 
 ## States
 
-[표: 상태](input-otp.yaml#matrix)
+| State | Background | Border | Outline | Text |
+|---|---|---|---|---|
+| `empty` (default) | `var(--color-surface-input)` | `var(--color-border-default)` 1px | none | — |
+| `filled` (입력값 있음) | `var(--color-surface-default)` | `var(--color-border-default)` 1px | none | `var(--color-text-primary)` |
+| `focus` (active cell) | empty 또는 filled 유지 | `var(--color-border-default)` 1px | 2px `var(--color-border-focus)` + 1px offset | — |
+| `error` (`aria-invalid="true"` on root) | empty/filled 유지 | `var(--color-error)` 1px | 2px `var(--color-error)` 30% ring | — |
+| `disabled` | `var(--color-surface-input)` (opacity 0.5) | `var(--color-border-default)` 1px (opacity 0.5) | none | `cursor:not-allowed` |
 
 ## Layout
 
