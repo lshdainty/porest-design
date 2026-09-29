@@ -12,10 +12,21 @@
 
 ```
 specs/components/<name>.md                    ← SoT (단일 source of truth)
+specs/components/<name>.yaml                  ← 수치 SoT (있을 때만 — 아래 절)
 recipes/shadcn/components/ui/<name>.tsx       ← 코드 (cva variants/sizes가 spec 표와 1:1)
 recipes/shadcn/examples/<name>-examples.mjs   ← 예제 (BASE/VARIANT/SIZE 상수 + render 함수)
 scripts/build-preview-html.mjs `.<name>` CSS  ← preview.html 시각 (spec 시각과 동일)
 ```
+
+### 수치 원본 `<name>.yaml` (2026-09-29, Button 부터)
+
+`specs/components/<name>.yaml` 이 있는 컴포넌트는 **수치의 원본이 YAML** 이다. md 의 수치 표 자리에는
+`[표: 제목](<name>.yaml#<구역>)` 한 줄만 두고, 문서 사이트(`site/`)가 빌드 때 그 파일로 표를 그린다.
+
+- 수치를 바꿀 땐 YAML 을 고친다. md 에는 이유·규칙만 쓴다 — md 에 숫자를 다시 적으면 두 벌이 된다.
+- 구역: `base`(공통) · `<축>`(variant · size …) · `states.<축>` · `matrix.<축>.<값>` · `compound`(두 축 이상).
+- 없는 토큰·변형·상태·구역을 가리키면 사이트 빌드(CI `site` 잡)가 파일·줄과 함께 멈춘다.
+- 형식은 `button.yaml` 머리 주석. 아직 YAML 이 없는 컴포넌트는 지금처럼 md 표가 원본이다.
 
 추가 동기 영역(영향이 있을 때만):
 - DESIGN.md / DESIGN.hr.md / DESIGN.desk.md prose의 컴포넌트 토큰 mention
@@ -27,7 +38,7 @@ scripts/build-preview-html.mjs `.<name>` CSS  ← preview.html 시각 (spec 시�
 
 | # | 규칙 | 이유 |
 |---|---|---|
-| 1 | **`specs/components/<name>.md`가 단일 SoT** | 모순 발생 시 spec이 진실. 코드/예제/preview는 spec을 따라가는 dependent. |
+| 1 | **`specs/components/<name>.md`가 단일 SoT** (수치는 `<name>.yaml` 이 있으면 그쪽) | 모순 발생 시 spec이 진실. 코드/예제/preview는 spec을 따라가는 dependent. |
 | 2 | **4 source 동시 동기** 필수 | 한 곳만 고치면 시각 모순 누적 → 사용자가 직접 발견할 때까지 노출. |
 | 3 | **WCAG 기준 정확히 분리** — 2.5.5 = AAA(44×44), 2.5.8 = AA(24×24) | 한 줄에 묶으면 충족/미달 판단 혼동. |
 | 4 | **변경 전 spec 백업** | 모순 발견 후 되돌리기 어려움. |

@@ -2,9 +2,7 @@
 
 > 사용자가 액션을 trigger하도록 prompt하는 인터랙티브 컨트롤. 폼 제출, 다이얼로그 닫기, 페이지 이동 등 명시적 사용자 의도를 표현합니다.
 
-Porest Button은 **8 variants × 6 sizes × 5 states** 매트릭스로 정의되며, Toss 톤(절제·신뢰감)을 따라 4px radius와 4px 그리드 위 치수를 사용합니다. 한국어 본문 가독성을 우선해 모든 사이즈가 16px 이상의 터치 타겟을 확보합니다.
-
-수치 원본은 [`button.yaml`](button.yaml) 이다. 아래 수치 표는 사이트가 그 파일로 그리고, GitHub 에서는 표 자리가 그 파일로 가는 링크로 보인다.
+Porest Button은 **7 variants × 4 sizes × 5 states** 매트릭스로 정의되며, Toss 톤(절제·신뢰감)을 따라 4px radius와 4px 그리드 위 치수를 사용합니다. 한국어 본문 가독성을 우선해 모든 사이즈가 16px 이상의 터치 타겟을 확보합니다.
 
 ## Anatomy
 
@@ -19,8 +17,8 @@ Porest Button은 **8 variants × 6 sizes × 5 states** 매트릭스로 정의되
 └──────────────────────────────────────┘
 ```
 
-| ⓐ container | 모양 + 배경 + 테두리. 모서리는 크기마다 다르다(Sizes 표). |
-| ⓑ leading icon | 좌측 아이콘. 크기는 Sizes 표. 선택적. |
+| ⓐ container | 모양 + 배경 + 테두리. `radius-sm`(4px) 고정. |
+| ⓑ leading icon | 좌측 아이콘. 16px (sm/md), 18px (lg). 선택적. |
 | ⓒ label | 액션을 명사형 또는 동사형으로 표현. `whitespace: nowrap`. |
 | ⓓ trailing icon | 우측 아이콘. 주로 chevron / external-link. 선택적. |
 | ⓔ focus ring | `border-focus` 색 + 2px ring + 2px offset. keyboard focus 시만. |
@@ -49,23 +47,33 @@ Porest Button은 **8 variants × 6 sizes × 5 states** 매트릭스로 정의되
 
 ### Color tokens
 
-[표: 변형별 색](button.yaml#variant)
+| Variant | bg (enabled) | text | border | shadow |
+|---|---|---|---|---|
+| `default` | `--color-info` | `--color-text-on-accent` | — | `--shadow-sm` |
+| `destructive` | `--color-error` | `--color-text-on-accent` | — | `--shadow-sm` |
+| `outline` | transparent | `--color-text-primary` | `--color-border-default` (1px) | — |
+| `secondary` | `--color-surface-input` | `--color-text-primary` | — | — |
+| `dangerSoft` | `--status-danger-subtle` (error 12%) | `--status-danger-fg` | — | — |
+| `ghost` | transparent | `--color-text-primary` | — | — |
+| `accent` | transparent | `--color-primary` | — | — |
+| `link` | transparent | `--color-primary` | — | — |
 
 > **아이콘 액션 (`ghost` + `size="icon"`)**: 글씨색이 `--color-text-secondary`(보조톤)로 약화되고, hover 시 `--color-surface-input` 위 `radius-md` 둥근 정사각 박스로 또렷한 affordance. 리스트 행/툴바의 보조 아이콘 액션(편집·삭제·일시정지 등)에 사용. label 있는 `ghost`는 `--color-text-primary`(중립) 유지, `default`/`destructive` 등 채움 variant의 icon은 각 variant 색 유지. `size="iconLg"`(모바일 크롬 헤더)는 `ghost`여도 보조톤 약화 없이 중립 유지.
-
-[표: 조합](button.yaml#compound)
 
 브랜드 분기: HR `--color-primary` = `#357B5F`, Desk `--color-primary` = `#0147AD`. `default`/`accent`/`link` variant이 brand 색(`--color-primary`) 영향, `ghost` 포함 나머지는 brand-neutral.
 
 ## Sizes
 
-`box-sizing: border-box` 기준 외부 height = 아래 표의 높이 그대로. padding은 그 안에 inset됨. `line-height: 1` 고정.
+`box-sizing: border-box` 기준 외부 height = `h` 토큰 그대로(32 / 40 / 48). padding은 그 안에 inset됨. `line-height: 1` 고정.
 
-[표: 크기](button.yaml#size)
-
-모든 조합에 공통인 값:
-
-[표: 공통](button.yaml#base)
+| Size | Height | Padding (Y · X) | Font (token) | Font (px) | Icon | Radius | Touch (AA · AAA) |
+|---|---|---|---|---|---|---|---|
+| `sm` | 32px | `spacing-xs` (4) · `spacing-sm` (8) | `text-caption` | 12px | 14px | `radius-sm` (4) | AA ✓ · AAA ⚠ |
+| `default` *(cva 기본)* | 36px | 9 · `spacing-lg` (16) | `text-body-sm` | 14px | 16px | `radius-sm` (4) | AA ✓ · AAA ⚠ |
+| `md` | 40px | `spacing-sm` (8) · `spacing-md` (12) | `text-body-md` | 15px | 16px | `radius-sm` (4) | AA ✓ · AAA ⚠ |
+| `lg` | 48px | `spacing-md` (12) · `spacing-lg` (16) | `text-title-sm` | 16px | 18px | `radius-md` (8) | AA ✓ · AAA ✓ |
+| `icon` | 40×40px | 0 | — | — | 16px | `radius-md` (8) | AA ✓ · AAA ⚠ |
+| `iconLg` | 36×36px | 0 | — | — | 20px | `radius-full` | AA ✓ · AAA ⚠ |
 
 Tailwind utility 매핑 (button.tsx cva):
 - `default`: `h-9 px-4 py-[9px] text-sm [&_svg]:size-4` — 좌우 padding 이 **양쪽 다 16**
@@ -96,11 +104,25 @@ Tailwind utility 매핑 (button.tsx cva):
 
 ### State matrix (default variant 기준)
 
-[표: 상태 매트릭스 — default](button.yaml#matrix.variant.default)
+| State | Background | Brightness | Shadow | Transform | Ring | Cursor |
+|---|---|---|---|---|---|---|
+| `enabled` | `--color-info` | 100% | `--shadow-sm` | none | none | `pointer` |
+| `hovered` | `--color-info` | 105% | **`--shadow-md`** | none | none | `pointer` |
+| `focused` (visible) | `--color-info` | 100% | `--shadow-sm` | none | 2px `--color-border-focus` + 2px offset (`ring-2 ring-ring ring-offset-2`). 다크 모드에서는 `--color-border-focus-light`로 자동 alias (어두운 표면에서 시인성 확보 — WCAG 1.4.11). | `pointer` |
+| `pressed` (active) | `--color-info` | 95% | **none** | **`scale(0.98)`** | none | `pointer` |
+| `disabled` | `--color-info` | 100% (opacity 0.5) | `--shadow-sm` | none | none | `not-allowed` |
 
-### variant 별 state 차이
+### 다른 variant의 state 차이
 
-[표: 변형별 상태 변화](button.yaml#states.variant)
+| Variant | hover | pressed (active) |
+|---|---|---|
+| `destructive` | brightness 105 + `shadow-md` | brightness 95 + scale(0.98) + shadow none (default와 동일 패턴, base color만 `--color-error`) |
+| `outline` | `bg-surface-input` + `border-strong` | `bg-border-default` + scale(0.98) (shadow 없음) |
+| `secondary` | `bg-border-default` | brightness 95 + scale(0.98) |
+| `dangerSoft` | error 18% | brightness 95 + scale(0.98) |
+| `ghost` | `bg-surface-input` | `bg-border-default` + scale(0.98) |
+| `accent` | `bg-surface-input` | `bg-border-default` + scale(0.98) (ghost와 동일, 글씨만 brand `--color-primary`) |
+| `link` | `underline` | brightness 90 |
 
 ### Loading state
 
