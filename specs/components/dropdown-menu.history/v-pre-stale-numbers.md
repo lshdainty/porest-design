@@ -116,7 +116,7 @@ Radix DropdownMenu의 `onSelect` 콜백에서 직접 dialog/sheet/alert-dialog�
 | 기준 | 검증 |
 |---|---|
 | **WCAG 1.4.3** Color contrast (text-primary × surface-default) | 21:1 ✓ |
-| **WCAG 1.4.3** Color contrast (text-error × surface-default) | `text-error` `#DC2626` × `#FFFFFF` = 4.83:1 ✓ |
+| **WCAG 1.4.3** Color contrast (text-error × surface-default) | `#D32F2F` × `#FFFFFF` = 5.0:1 ✓ |
 | **WCAG 1.4.11** Non-text contrast (border × surface-default) | `border-default` × `bg-page` = 1.4:1 — 단독 약함이나 `shadow-md`이 보강. |
 | **WCAG 2.5.5** Target Size (AAA, 44×44) | item 높이 ≈ 32px — 미달(⚠). 터치 우선 화면이면 padding-Y `var(--spacing-md)`(12)로 늘려 40px+ 권장. |
 | **WCAG 2.5.8** Target Size Minimum (AA, 24×24) | item 32px ✓ |
