@@ -55,13 +55,15 @@ Breadcrumb은 **size variant 없음** — 단일 spec. dense 레이아웃에선 
 
 ### Page (current, non-clickable)
 
-[표: Page](breadcrumb.yaml#base.enabled@page)
+| State | Color | 추가 |
+|---|---|---|
+| `current` | `text-primary` + 500 | `aria-current="page"` |
 
 ### Separator / Ellipsis
 
-[표: Separator](breadcrumb.yaml#base.enabled@separator)
-
-[표: Ellipsis](breadcrumb.yaml#base.enabled@ellipsis)
+| State | Color |
+|---|---|
+| 정적 | `text-tertiary` |
 
 Ellipsis가 dropdown trigger일 땐 Link와 동일 hover/focus state 적용.
 

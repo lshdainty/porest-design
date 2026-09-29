@@ -1,6 +1,7 @@
 # Breadcrumb 의 수치 원본 — 형식은 button.yaml 머리 주석, 규칙은 specs/CLAUDE.md.
 #
-# 상태는 Link 의 것이다. 현재 페이지(page)와 separator · ellipsis 는 상태가 없어 값이 바탕(enabled)에 있다.
+# 상태는 Link 의 것이다. 현재 페이지(page)와 separator · ellipsis 는 상태가 없어 값이 바탕(enabled)에 있고,
+# md 에서는 부위마다 `#base.enabled@page` · `@separator` · `@ellipsis` 로 그린다.
 # defaults 를 두면 Link 상태 표(#matrix)에 separator 변형 값이 모든 행의 칸으로 끼어든다 — 기본값은 축 값 설명에 적는다.
 
 name: Breadcrumb
@@ -33,12 +34,13 @@ rules:
       link:
         foreground: $color-text-secondary
       page:
-        foreground: { value: $color-text-primary, note: current }
+        foreground: { value: $color-text-primary, note: 'current — `aria-current="page"`' }
         fontWeight: 500
       separator:
-        foreground: $color-text-tertiary
+        foreground: { value: $color-text-tertiary, note: 정적 }
         iconSize: 14px
       ellipsis:
+        foreground: { value: $color-text-tertiary, note: 정적 }
         size: { value: 36px, note: hit area }
         iconSize: 16px
     hover:
