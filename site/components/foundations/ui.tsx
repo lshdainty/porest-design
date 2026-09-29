@@ -1,7 +1,7 @@
 // 기초 페이지 공용 조각 — SEED 문서처럼 회색 판 위에 그림을 두고 아래에 설명을 단다.
 import type { CSSProperties, ReactNode } from 'react';
 import Link from 'next/link';
-import { sectionTable } from '@/lib/design-tokens';
+import { color, sectionTable } from '@/lib/design-tokens';
 
 export function Figure({ caption, children, tight = false }: { caption?: ReactNode; children: ReactNode; tight?: boolean }) {
   return (
@@ -82,6 +82,37 @@ export const COLOR_TABS = [
   { label: 'Roles', href: '/docs/foundations/color/roles' },
   { label: 'Palette', href: '/docs/foundations/color/palette' },
 ];
+
+export const FEEDBACK_TABS = [
+  { label: 'Overview', href: '/docs/foundations/feedback' },
+  { label: 'Color', href: '/docs/foundations/feedback/color' },
+  { label: 'Scale', href: '/docs/foundations/feedback/scale' },
+];
+
+// 그림 판 — Figure 와 같은 모양이지만 안쪽이 화면 폭을 따라 줄어든다(카드 격자 · 재생 판)
+export function Panel({ caption, children }: { caption?: ReactNode; children: ReactNode }) {
+  return (
+    <figure className="not-prose my-6">
+      <div className="rounded-2xl bg-[#E9E9EC] p-4 dark:bg-fd-muted sm:p-6">{children}</div>
+      {caption && <figcaption className="mt-3 text-center text-sm text-fd-muted-foreground">{caption}</figcaption>}
+    </figure>
+  );
+}
+
+// 이렇게 · 이렇게 하지 않는다 — SEED 의 Do · Don't 처럼 그림 아래 색 띠와 한 줄
+export function Verdict({ ok, children, note }: { ok: boolean; children: ReactNode; note: string }) {
+  const tone = color(ok ? 'fg-positive' : 'fg-critical');
+  return (
+    <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex flex-1 items-center justify-center rounded-t-xl bg-white p-5">{children}</div>
+      <div className="h-1" style={{ background: tone }} />
+      <div className="pt-2 text-[13px] leading-5">
+        <b style={{ color: tone }}>{ok ? '이렇게' : '이렇게 하지 않는다'}</b>
+        <span className="text-fd-muted-foreground"> — {note}</span>
+      </div>
+    </div>
+  );
+}
 
 // 인라인 마크다운(`code` · **굵게**) 만 — DESIGN.md 표 칸을 그대로 옮겨 그릴 때
 export function Inline({ text }: { text: string }) {

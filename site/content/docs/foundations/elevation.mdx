@@ -1,0 +1,109 @@
+---
+title: Elevation
+description: 층 · 쌓임 맥락 · 표면 색 · 그림자 · 선 · 딤
+source: DESIGN.md
+---
+
+import { BasementVsWeakFigure, ElevationHeroFigure, GlobalLevelsFigure, LayerTokenTable, LocalLevelsFigure, PageOverPageFigure, SameLevelFigure, ShadowFigure, ThreeWaysFigure } from '@/components/foundations/elevation';
+import { Note, SourceTable } from '@/components/foundations/ui';
+
+고도(Elevation)는 UI 요소 사이의 깊이와 층을 눈으로 보여 주는 원칙이다.
+
+## 원칙
+
+<ElevationHeroFigure />
+
+물리적인 세계의 높낮이를 빌려, 무엇이 무엇 위에 놓였는지 보여 준다. 사용자는 층을 보고 지금 다루는 것이 화면인지, 화면을 잠시 덮은 것인지를 안다.
+
+<Note>
+  층 번호는 화면 구조의 약속이고, 실제 앞뒤 순서(z-index)는 [z-index](/docs/foundations/z-index) 의 `z-*` 값이 정한다. 아직 두 웹 · 앱에 층 이름으로 들어가지는 않았다 — 앱 적용 단계에서 옮긴다.
+</Note>
+
+## 쌓임 맥락 — Global · Local
+
+층은 **Global** 과 **Local** 두 가지로 나눠 정한다.
+
+- **Global** — 화면 전체의 구조적 층. 제품 화면 자체와, 그 위를 덮는 시트 · 경고창 같은 컨테이너다.
+- **Local** — 한 층 안에서 콘텐츠끼리의 깊이. 늘 자기가 속한 Global 층 위에 놓인다.
+
+## Global 층
+
+<GlobalLevelsFigure />
+
+<SourceTable heading="쌓임 맥락" />
+
+- **0 · 바닥** — 화면 맨 아래의 배경. 스크롤되는 모든 콘텐츠 뒤에 깔려 가장 깊은 곳이 된다.
+- **1 · 기본** — 페이지의 기본 짜임. 카드 · 목록 · 입력칸 같은 콘텐츠 덩어리와 상단 내비게이션이 여기 있다.
+- **2 · 시트** — 화면을 덮으며 새 쌓임 맥락을 만든다. 시트는 그 자체로 새 Global 층이 되어, 그 위의 목록은 시트를 바닥으로 한 Local 콘텐츠가 된다.
+- **3 · 경고창** — 가장 급한 정보를 다루는 맨 위의 모달이다. 사용자의 즉각적이고 온전한 주의를 요구하므로, 이미 열린 시트를 포함해 모든 요소보다 위에 온다.
+
+## 페이지 위 페이지
+
+<PageOverPageFigure />
+
+Global 과 Local 의 구분이 페이지 위에 페이지가 쌓이는 짜임을 만든다. 새로 덮인 층은 곧 새 기준이 되므로, 그 안의 툴팁 · 메뉴도 그 층을 바닥으로 삼아 제대로 쌓인다.
+
+## Local 층
+
+<LocalLevelsFigure />
+
+목록 · 탭 · 버튼처럼 콘텐츠를 나타내는 요소는 자기가 놓인 표면(Global)의 층을 그대로 물려받는다. 그 안에서 위계와 중요도를 나누려고 1 ~ 3 으로 가른다.
+
+<SourceTable heading="쌓임 맥락" n={1} />
+
+- **1 · 기본 콘텐츠** — 목록 · 알림 띠 · 탭 · 상단 내비게이션처럼 페이지의 뼈대를 이루는 요소.
+- **2 · 떠 있는 동작** — 기본 짜임보다 위에 떠 있는 표면. 플로팅 버튼이 여기 든다.
+- **3 · 잠깐 뜨는 알림** — 흐름을 막지 않으면서 바로 확인해야 하는 일시적 알림. 토스트가 여기 든다.
+
+## 같은 층 안에서 구분하기
+
+<SameLevelFigure />
+
+층이 같아도 그 안에서 쌓이는 순서를 나눌 수 있다. 상단 내비게이션과 목록은 둘 다 Local 1 이지만, 스크롤하면 목록이 내비게이션 아래로 들어가야 한다. 이때 내비게이션의 층을 올리지 않는다 — 대신 그림자나 선을 더해 **구분만** 준다. 구분은 아래 세 방법 가운데 하나로 표현한다.
+
+## 고도를 드러내는 세 가지
+
+<ThreeWaysFigure />
+
+### 표면 색
+
+배경색의 밝기나 채도를 바꿔 나타낸다. 토스트 · 플로팅 버튼이 대표적이다. 특정 맥락에서는 톤 차이가 아닌 전혀 다른 색을 배경으로 써서 층을 나타내기도 한다. 다크 모드에서는 높은 층일수록 밝다.
+
+### 그림자
+
+가장 전통적이고 직관적인 방법이다. 빛이 있다고 보고, 얼마나 높이 떠 있는지를 그림자의 크기 · 퍼짐 · 투명도로 나타낸다.
+
+<ShadowFigure />
+
+<SourceTable heading="그림자" minWidth={720} />
+
+**그림자는 다크 모드에서 잘 보이지 않는다.** 그래서 화면에서 주목도가 높은 몇 안 되는 요소에만 쓴다. porest 는 1차 수단으로 표면 색 차이를, 그림자는 보조로 쓴다.
+
+### 선
+
+표면의 가장자리에 테두리를 둬 영역을 나누고 높낮이를 암시한다. 하단 탭바가 대표적이다.
+
+## 색 — 층 토큰
+
+층 토큰은 **콘텐츠를 담는 그릇**의 표면 색이다. 글자나 아이콘 같은 개별 요소가 아니라 화면의 바탕과 층을 만드는 데에만 쓴다. 다크 모드에서는 높을수록 밝아진다.
+
+<LayerTokenTable />
+
+## `bg-layer-basement` 와 `bg-neutral-weak`
+
+<BasementVsWeakFigure />
+
+두 토큰은 라이트 모드에서 비슷해 보이지만 다크 모드에서 다르게 움직인다.
+
+- `bg-layer-basement` — 다크에서 가장 낮은 0 층의 바닥색이다. 기본 화면의 배경으로 쓴다.
+- `bg-neutral-weak` — 라이트의 밝기 톤에 맞춰 다크에서도 대응하는 톤으로 보인다. 카드 안의 입력칸 · 칩처럼 배경이 놓인 층에 맞춰 조정돼야 할 때 쓴다.
+
+## 딤
+
+모달 · 시트가 페이지 위에 뜰 때 뒤를 어둡게 덮는다.
+
+<SourceTable heading="v43 추가 — overlay dim" />
+
+---
+
+<p className="text-sm text-fd-muted-foreground">구성과 일부 설명은 당근 [SEED Design](https://seed-design.io) 의 Foundations 문서(Apache-2.0)를 바탕으로 했다. 값과 그림은 porest 것이다.</p>

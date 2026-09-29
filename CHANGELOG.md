@@ -74,6 +74,9 @@
 **v104 — SEED 모션 · 고도 · 그라디언트 · 글자 단위 (2026-09-29)**
 - v104: 사용자가 비교 페이지에서 일곱 가지를 정했다. 지속 시간 SEED 6단계(`motion-duration-d1` 50 ~ `d6` 300) + 역할 `color-transition` · `pressed-scale`(150), 반복 1500 은 남기고 500 은 걷는 중. 이징 SEED 7(`motion-ease-easing` · `enter` · `exit` · `enter-expressive` · `exit-expressive` · `pressed-scale` + `linear`), 옛 `ease-out` 은 걷는 중. 눌림 피드백 = 표면 색(pressed 역할) + 세로 2px 축소(기준 길이 max(높이, 폭 ÷ 4, 24)), 모션 줄이기 모드(축소 없음 · 큰 전환은 150ms 서서히 · 반복 멈춤). 고도는 SEED 모델(Global 0 ~ 3 · Local 1 ~ 3, 색 · 그림자 · 선) + 그림자 `shadow-s1` ~ `s4`(+ `-dark`, porest 값 그대로 — 옛 sm ~ xl 은 별칭). 그라디언트 `gradient-fade-mask` · `gradient-shimmer-neutral`(+ `-dark`). 글자는 rem 으로 내보내고 `-static` px 짝을 함께(스펙 표는 px 로 보인다). "한 번에 5개" 규칙 예외 — 사용자 결정.
 
+**v105 — 키프레임 권장값을 v104 이름으로 (2026-09-29)**
+- v105: v74 키프레임 · `animation` 예시가 걷는 이름(`motion-ease-out` · `motion-duration-slower` 500ms)을 가리키던 것을 v104 이름으로 옮겼다. 같은 값의 별칭은 새 이름으로(fast → d3 · base → d4 · slow → d6), 나타나는 키프레임은 `motion-ease-enter`, 사라지는 키프레임은 `motion-ease-exit`(SEED 컴포넌트와 같은 짝), 500ms 의 `bounce-in` 은 d6. 모든 애니메이션을 0.01ms 로 끄던 줄이기 예시는 v104 모드(큰 전환은 150ms 서서히 · 반복 멈춤 · 색 전환 유지)와 어긋나 걷었다. 눌림 피드백의 "평소 배경이 없는 요소(ghost 버튼 · 탭)" 에서 탭을 뺐다 — 탭은 같은 절의 "색 없이 축소만" 쪽이다(SEED 와 같게). 토큰 추가 없음.
+
 ### Components
 
 **v33~v48 — Component spec batch (16 components, sparse 매핑 자동 검증 활성)**

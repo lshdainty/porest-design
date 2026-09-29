@@ -1,4 +1,4 @@
 {
   "title": "기초",
-  "pages": ["overview", "tokens", "color", "typography", "spacing", "radius", "layout", "elevation", "motion", "touch-targets", "rtl", "z-index"]
+  "pages": ["overview", "tokens", "color", "gradient", "typography", "spacing", "radius", "layout", "elevation", "motion", "feedback", "touch-targets", "rtl", "z-index"]
 }
