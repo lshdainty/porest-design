@@ -62,6 +62,9 @@
 **v100 — SEED 타입 스케일 (2026-09-29)**
 - v100: typography 에 당근 SEED 스케일을 들였다 — 크기 `t1` 11px ~ `t14` 48px 14단계(줄 높이는 SEED 와 같은 px: 15 · 16 · 18 · 19 · 22 · 24 · 27 · 30 · 32 · 35 · 38 · 42 · 52 · 60), 역할 스타일 `screen-title` 26/700/35 · `article-body` 16/400/24 · `article-note` 14/400/22. 굵기는 400 · 500 · 700 만(600 은 옮길 때 500/700). 옛 15단계(v82)는 값 그대로 — 컴포넌트는 2단계에서 옮기고, 본문 15px 은 자리마다 14 · 16 으로. 사용자 결정(2026-09-29).
 
+**v101 — SEED 레이아웃 (2026-09-29)**
+- v101: 중단점을 당근 SEED 값으로 — `breakpoint-sm` 480 · `md` 768 · `lg` 1280 · `xl` 1440(옛 Apple Store 기준 640 · 736 · 834 · 1069 · 1441, `2xl` 은 없앰). Tailwind 내보내기는 기본 중단점을 먼저 지운다(`--breakpoint-*: initial`). 레이아웃 토큰 6(`layout-max-low` 720 · `layout-max-medium` 1040 — SEED 밀도 low · medium · high, `layout-margin` 32 · `layout-gutter` 24 — SEED Dashboard 격자, `layout-sidebar` 240 · `layout-sidebar-collapsed` 56)과 SEED 역할 간격 6(`global-gutter` 24 — SEED 는 16, porest 앱 규칙 · `between-chips` 8 · `component-default` 12 · `between-text` 6 · `nav-to-title` 20 · `screen-bottom` 56)을 더했다. 정밀 데스크톱 기준(`touch-nav-*`)은 `breakpoint-lg`, hero 글자 단계는 480 · 768 · 1280 으로 옮겼다. 두 웹 · 앱 적용은 앱마다 따로. "한 번에 5개" 규칙의 예외 — 사용자 결정(2026-09-29).
+
 ### Components
 
 **v33~v48 — Component spec batch (16 components, sparse 매핑 자동 검증 활성)**

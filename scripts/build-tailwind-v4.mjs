@@ -82,7 +82,7 @@ function parseSimpleScale(lines, key) {
   const { start, end } = findBlockLines(lines, key);
   const out = {};
   for (let i = start + 1; i < end; i++) {
-    const m = /^\s+([a-z0-9_]+):\s*"?([^"#\n]+?)"?\s*(?:#.*)?$/.exec(lines[i]);
+    const m = /^\s+([a-z0-9_-]+):\s*"?([^"#\n]+?)"?\s*(?:#.*)?$/.exec(lines[i]);
     if (m && !m[1].startsWith("#")) out[m[1]] = m[2].trim();
   }
   return out;
@@ -117,6 +117,15 @@ function parseOverlay(md) {
 function parseBreakpoints(md) {
   // breakpoint-* prose tokens (px values, Tailwind v4 default 호환)
   const re = /^\|\s*`(breakpoint-[a-z0-9-]+)`\s*\|\s*`([^`]+)`\s*\|/gm;
+  const out = {};
+  let m;
+  while ((m = re.exec(md)) !== null) out[m[1]] = m[2];
+  return out;
+}
+
+function parseLayout(md) {
+  // layout-* prose tokens (v101 SEED 레이아웃 — 콘텐츠 폭 · 여백 · 사이드바)
+  const re = /^\|\s*`(layout-[a-z0-9-]+)`\s*\|\s*`([^`]+)`\s*\|/gm;
   const out = {};
   let m;
   while ((m = re.exec(md)) !== null) out[m[1]] = m[2];
@@ -188,6 +197,7 @@ const shadows = parseShadows(content);
 const motion = parseMotion(content);
 const overlays = parseOverlay(content);
 const breakpoints = parseBreakpoints(content);
+const layout = parseLayout(content);
 const touchTargets = parseTouchTargets(content);
 const zIndex = parseZIndex(content);
 // keyframes는 baseline shared — DESIGN.md에서만 정의(brand-neutral). brand 파일 빌드 시도 fallback.
@@ -256,9 +266,18 @@ for (const [name, val] of Object.entries(overlays)) {
 }
 out += "\n";
 
-out += "  /* Breakpoints (from prose-token table — Apple Store reference) */\n";
+out += "  /* Breakpoints (from prose-token table — v101 SEED) */\n";
+// Tailwind 기본 중단점을 먼저 지운다 — 안 지우면 표에 없는 기본 2xl(1536px)이 살아남는다.
+out += "  --breakpoint-*: initial;\n";
 for (const [name, val] of Object.entries(breakpoints)) {
   // breakpoint-sm → --breakpoint-sm
+  out += `  --${name}: ${val};\n`;
+}
+out += "\n";
+
+out += "  /* Layout (from prose-token table — v101 SEED: 콘텐츠 폭 · 여백 · 사이드바) */\n";
+for (const [name, val] of Object.entries(layout)) {
+  // layout-max-low → --layout-max-low
   out += `  --${name}: ${val};\n`;
 }
 out += "\n";

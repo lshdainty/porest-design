@@ -103,7 +103,7 @@ export function loadTokens(repo) {
       { encoding: 'utf8' },
     );
     const vars = new Map();
-    for (const m of css.matchAll(/--([a-z0-9-]+):\s*([^;]+);/g)) if (!vars.has(m[1])) vars.set(m[1], m[2].trim());
+    for (const m of css.matchAll(/--([a-z0-9_-]+):\s*([^;]+);/g)) if (!vars.has(m[1])) vars.set(m[1], m[2].trim());
     return vars;
   };
   return { shared: read('DESIGN.md'), hr: read('DESIGN.hr.md'), desk: read('DESIGN.desk.md') };

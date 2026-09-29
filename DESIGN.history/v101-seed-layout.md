@@ -300,13 +300,6 @@ spacing:
   xl: "24px"
   2xl: "32px"
   3xl: "48px"
-  # v101 — SEED 역할 간격(SEED spacing-x · spacing-y). 값은 위 스케일을 가리킨다.
-  global-gutter: "24px"  # x6 — SEED 는 x4(16px). porest 는 앱 규칙(2026-09-14, 본문 24)을 둔다
-  between-chips: "8px"  # x2
-  component-default: "12px"  # x3
-  between-text: "6px"  # x1_5
-  nav-to-title: "20px"  # x5
-  screen-bottom: "56px"  # x14
 
 components:
   # === Brand-specific 컴포넌트(button-primary, button-outline-on-dark)는
@@ -935,12 +928,10 @@ v7 (brand light variants) · v14 (brand refresh + temporary bg-page fork) · v16
 
 | Breakpoint | 토큰 | size / lh / weight | 사용 |
 |---|---|---|---|
-| `breakpoint-lg` (1280+) | `display-xl` | 56 / 1.05 / 700 | Desktop landing hero |
-| `breakpoint-md` (768~) | `display-lg` | 40 / 1.1 / 700 | Tablet |
-| `breakpoint-sm` (480~) | `display-md` | 32 / 1.2 / 700 | 큰 폰 · 작은 태블릿, 한국어 페이지 제목 |
-| 기본 (~479) | `display-sm` | 24 / 1.3 / 700 | Phone |
-
-v101 에서 중단점이 SEED 값(480 · 768 · 1280 · 1440)으로 바뀌며 단계를 옮겼다 — 데스크톱 hero(`display-xl`)는 v54 의 1069 대신 `breakpoint-lg`(1280)부터다.
+| `breakpoint-xl` (1069+) | `display-xl` | 56 / 1.05 / 700 | Desktop landing hero |
+| `breakpoint-lg` (834~) | `display-lg` | 40 / 1.1 / 700 | Tablet landscape |
+| `breakpoint-md` (736~) | `display-md` | 32 / 1.2 / 700 | Tablet portrait, 한국어 페이지 제목 |
+| `breakpoint-sm` (≤640) | `display-sm` | 24 / 1.3 / 700 | Phone |
 
 CSS 패턴 (mobile-first, `@media (min-width)`):
 
@@ -948,13 +939,13 @@ CSS 패턴 (mobile-first, `@media (min-width)`):
 .hero-h1 {
   font: var(--text-display-sm--font-weight) var(--text-display-sm) / var(--text-display-sm--line-height) var(--font-sans);
 }
-@media (min-width: 480px) {
+@media (min-width: 736px) {
   .hero-h1 { font: var(--text-display-md--font-weight) var(--text-display-md) / var(--text-display-md--line-height) var(--font-sans); }
 }
-@media (min-width: 768px) {
+@media (min-width: 834px) {
   .hero-h1 { font: var(--text-display-lg--font-weight) var(--text-display-lg) / var(--text-display-lg--line-height) var(--font-sans); }
 }
-@media (min-width: 1280px) {
+@media (min-width: 1069px) {
   .hero-h1 { font: var(--text-display-xl--font-weight) var(--text-display-xl) / var(--text-display-xl--line-height) var(--font-sans); }
 }
 ```
@@ -974,84 +965,6 @@ CSS 패턴 (mobile-first, `@media (min-width)`):
 - letterSpacing은 modifier로 export (`--text-{name}--letter-spacing`). v82에서 `display-xl/lg/md` + `overline`이 letterSpacing 사용.
 
 ## Layout
-
-### v101 — SEED 레이아웃 (2026-09-29)
-
-당근 SEED 의 Layout 문서를 기준으로 중단점 · 콘텐츠 폭 · 여백 · 사이드바를 정한다. 사용자가 2026-09-29 porest 와 SEED 를 나란히 놓은 비교 페이지를 보고 네 가지 모두 SEED 쪽을 골랐다. 앱 화면 가장자리만 porest 값(24px)을 둔다 — 2026-09-14 에 정한 앱 규칙이다.
-
-**아직 두 웹 · 앱에는 들어가지 않았다.** 앱마다 PR 을 따로 낸다. 그 전까지는 제품 코드의 값(Desk 웹 중단점 736 · 좌우 여백 28 · 사이드바 256, HR 웹 Tailwind 기본 중단점 · 사이드바 288 등)이 이 표와 다른 게 정상이다.
-
-출처: seed-design.io Foundations › Layout, `@seed-design/qvism-preset` 의 layout · side-navigation 레시피, rootage `dimension`(역할 간격). SEED 는 Apache-2.0 이다.
-
-#### 중단점
-
-| 토큰 | 값 | 구간 |
-|---|---|---|
-| `breakpoint-sm` | `480px` | 480 – 767 · 큰 폰 · 작은 태블릿 |
-| `breakpoint-md` | `768px` | 768 – 1279 · 사이드 내비게이션이 보이기 시작한다 |
-| `breakpoint-lg` | `1280px` | 1280 – 1439 · 데스크톱 |
-| `breakpoint-xl` | `1440px` | 1440 이상 · 넓은 데스크톱 |
-
-- 모바일 우선이다. 0 – 479 는 기본(base)이라 토큰이 없다.
-- 화면 틀을 JS 로 바꾸는 기준도 이 값을 쓴다 — 모바일 틀(하단 탭바) ↔ 사이드바 틀은 `breakpoint-md`. 스타일(`md:`)과 화면 틀이 다른 폭에서 바뀌면 그 사이에서 모바일 틀 안에 태블릿 스타일이 켜진다(v101 전 Desk 웹의 736 – 767).
-- 옛 `2xl`(1441px)은 없앴다 — 두 웹 모두 쓰는 곳이 없었다. Tailwind 로 내보낼 때 기본 중단점을 먼저 지운다(`--breakpoint-*: initial`). 안 지우면 Tailwind 기본 2xl(1536px)이 살아남는다.
-- v54 의 Apple Store 기준(640 · 736 · 834 · 1069 · 1441)은 아래 기록 절과 `DESIGN.history/v101-seed-layout.md` 에 있다.
-
-#### 콘텐츠 폭 — 밀도
-
-화면마다 밀도를 하나 고르고, 밀도가 콘텐츠의 최대 폭을 정한다. 폭을 제한하면 가운데 정렬한다(`margin-inline: auto`).
-
-| 토큰 | 값 | 뜻 |
-|---|---|---|
-| `layout-max-low` | `720px` | low 밀도의 최대 폭 · medium 밀도의 768 – 1279 최대 폭 |
-| `layout-max-medium` | `1040px` | medium 밀도의 1280 이상 최대 폭 |
-
-| 밀도 | 768 – 1279 | 1280 이상 | 칸 | 쓰는 화면 |
-|---|---|---|---|---|
-| low | 720 | 720 | 8 | 간단한 설정 창 · 대시보드 요약 |
-| medium (기본) | 720 | 1040 | 12 | 일반 관리 도구 · 데이터 목록 |
-| high | 제한 없음 | 제한 없음 | 전체 폭 | 대량 데이터 시각화 · 편집 도구 |
-
-- 768 미만은 밀도와 상관없이 화면 폭 전체를 쓴다.
-- 어느 화면이 어느 밀도인지는 앱에 적용할 때 화면 목록을 만들어 정한다.
-- SEED 의 Contents Layout(서비스 소개 페이지 — 1040, 넓게 1280)은 이번에 정하지 않았다.
-
-#### 여백 · 칸 사이
-
-| 토큰 | 값 | 뜻 |
-|---|---|---|
-| `layout-margin` | `32px` | 웹 페이지 좌우 여백 · 768 이상 |
-| `layout-gutter` | `24px` | 웹 칸 · 카드 사이 · 768 이상 |
-
-- 768 미만의 화면 가장자리는 `spacing-global-gutter`(24px)다. 768 미만의 칸 사이는 아직 정하지 않았다(SEED 는 16).
-- SEED 문서 안에서도 값이 둘이다 — Dashboard 격자 표는 여백 32 · 칸 사이 24, Breakpoint 표는 768 이상 여백 24 · 칸 사이 32(768 미만 여백 12 · 칸 사이 16). 두 웹 모두 관리 도구라 Dashboard 격자를 따른다.
-
-#### 역할 간격
-
-SEED 가 자리에 이름을 붙인 간격이다(SEED 이름은 `spacing-x.*` 수평 · `spacing-y.*` 수직). porest 는 머리말의 spacing 블록에 이름만 두고, 값은 v98 스케일 위에 있다.
-
-| 토큰 | 값 | 쓰는 곳 |
-|---|---|---|
-| `spacing-global-gutter` | 24px · `spacing-x6` | 수평 — 화면 전체의 기본 좌우 여백. SEED 는 16px — porest 는 앱 규칙(2026-09-14, 본문 24)을 둔다 |
-| `spacing-between-chips` | 8px · `spacing-x2` | 수평 — 칩 사이 |
-| `spacing-component-default` | 12px · `spacing-x3` | 수직 — 따로 정한 간격이 없는 컴포넌트 사이 |
-| `spacing-between-text` | 6px · `spacing-x1_5` | 수직 — 글 요소 사이 |
-| `spacing-nav-to-title` | 20px · `spacing-x5` | 수직 — 상단 내비게이션과 화면 제목 사이 |
-| `spacing-screen-bottom` | 56px · `spacing-x14` | 수직 — 화면 맨 아래 여백 |
-
-- Desk 앱의 화면 좌우 여백(2026-09-14 규칙): 본문은 24. 주간 띠 · 캘린더 격자 안 칸의 인셋 · 카테고리 탭 바의 전폭은 의도한 예외다.
-
-#### 사이드바 · 영역
-
-| 토큰 | 값 | 뜻 |
-|---|---|---|
-| `layout-sidebar` | `240px` | 사이드 내비게이션 폭 |
-| `layout-sidebar-collapsed` | `56px` | 접은 사이드 내비게이션(아이콘만) |
-
-- 화면은 머리(GNB) · 사이드 내비게이션 · 본문 · 오른쪽 보조 영역(Aside) 넷으로 나눈다.
-- 사이드 내비게이션은 `breakpoint-md`(768px) 이상에서 보인다. 그 아래에서는 머리의 메뉴로 들어간다 — Desk 웹은 앱과 같은 하단 탭바.
-- 머리(상단 바) 높이는 SEED 문서에 없어 정하지 않았다 — 지금 Desk 웹 56 · HR 웹 48.
-- 사이드 내비게이션 안쪽 치수(머리 · 항목 여백 · 높이)는 컴포넌트 단계에서 SEED side navigation 과 비교해 정한다.
 
 ### v98 — SEED 간격 스케일 (2026-09-29)
 
@@ -1109,19 +1022,17 @@ CLAUDE.md "4px 베이스 추천" 규칙을 준수하는 t-shirt 사이즈 스케
 #### HR / Desk 듀얼 브랜드
 - spacing은 neutral 시스템 — 브랜드 분기 없음. HR(B2B 데이터 밀도 위주)·Desk(B2C 여백 위주) 모두 동일 스케일 사용, 화면별 적용 강도(예: HR은 `md` 위주, Desk는 `lg` 위주)로 분기.
 
-### Breakpoints (v54 — v101 에서 SEED 값으로 바뀜, 아래는 기록)
-
-아래는 v54 의 기록이다. 지금 값은 위 v101 절에 있다 — 이 표는 토큰으로 읽히지 않게 이름 · 값의 백틱을 뺐다.
+### Breakpoints (v54 추가, prose-token)
 
 반응형 layout breakpoint — 5단계 (Apple Store reference). spec이 breakpoint 카테고리 미지원이라 prose-token 패턴(shadow/motion/overlay와 동일) — yaml 정의 없이 표만 운영. 모든 파일(DESIGN.md / .hr.md / .desk.md) 수동 동기.
 
 | 토큰 | 값 | 의미 (Apple Store 가이드) |
 |---|---|---|
-| breakpoint-sm | 640px | Phone max — 이하 single-column tiles, hero h1 34px |
-| breakpoint-md | 736px | Tablet portrait — global nav hamburger collapse |
-| breakpoint-lg | 834px | Tablet landscape — global nav full, 3-col → 2-col grids |
-| breakpoint-xl | 1069px | Desktop — full layout, 4-5 col store grids |
-| breakpoint-2xl | 1441px | Wide — content locks at 1440px |
+| `breakpoint-sm` | `640px` | Phone max — 이하 single-column tiles, hero h1 34px |
+| `breakpoint-md` | `736px` | Tablet portrait — global nav hamburger collapse |
+| `breakpoint-lg` | `834px` | Tablet landscape — global nav full, 3-col → 2-col grids |
+| `breakpoint-xl` | `1069px` | Desktop — full layout, 4-5 col store grids |
+| `breakpoint-2xl` | `1441px` | Wide — content locks at 1440px |
 
 #### 추가 이유
 1. v1~v53까지 토큰은 색상·typography·spacing·radius·shadow·motion·overlay만 — 반응형 breakpoint 부재. 컴포넌트 spec(Button/Card/Tabs)에 "모바일 권장 사이즈 lg" prose는 있으나 *어떤 width에서* 모바일이 시작되는지 토큰화되지 않음 → 결정 차단.
@@ -1165,7 +1076,7 @@ WCAG 2.5.5 AAA (Target Size 44×44 minimum) + Apple Store reference 톤을 정�
 | `touch-min` | `44px` | WCAG 2.5.5 AAA minimum (default, 모든 hit target 권장) |
 | `touch-pill-w` | `100px` | Pill CTA min-width (Apple Store: ~44 × 100) |
 | `touch-circular` | `44px` | Circular chip / icon button / Switch handle (= touch-min, explicit alias) |
-| `touch-nav-h` | `32px` | Precision desktop nav height (`breakpoint-lg` 이상, mouse pointer 가정) |
+| `touch-nav-h` | `32px` | Precision desktop nav height (`breakpoint-xl` 이상, mouse pointer 가정) |
 | `touch-nav-w` | `80px` | Precision desktop nav min-width |
 
 #### 추가 이유
@@ -1177,7 +1088,7 @@ WCAG 2.5.5 AAA (Target Size 44×44 minimum) + Apple Store reference 톤을 정�
 - 모든 hit target: `min-height: var(--touch-min); min-width: var(--touch-min);` (44 × 44 충족).
 - Pill CTA: `height: var(--touch-min); min-width: var(--touch-pill-w); border-radius: var(--radius-full);`.
 - Circular icon button: `width: var(--touch-circular); height: var(--touch-circular); border-radius: var(--radius-full);`.
-- Precision desktop nav (`@media (min-width: var(--breakpoint-lg))`): `height: var(--touch-nav-h); min-width: var(--touch-nav-w);`.
+- Precision desktop nav (`@media (min-width: var(--breakpoint-xl))`): `height: var(--touch-nav-h); min-width: var(--touch-nav-w);`.
 
 #### 단위·명명
 - **px**: 한국 디자이너 친화적 + Figma frame 단위 일치.
@@ -1185,7 +1096,7 @@ WCAG 2.5.5 AAA (Target Size 44×44 minimum) + Apple Store reference 톤을 정�
 
 #### 듀얼 브랜드 — unified
 - HR (B2B 데이터 밀도) / Desk (B2C 모바일 우선) 모두 동일 5 토큰. brand-agnostic.
-- 사용 강도 차이: HR은 `breakpoint-lg` 이상 정밀 desktop에서 `touch-nav-h`/`-w` 적극 (데이터 그리드 inline action), Desk는 모든 viewport에서 `touch-min`/`touch-circular` 우선 (모바일 hit target).
+- 사용 강도 차이: HR은 `breakpoint-xl` 이상 정밀 desktop에서 `touch-nav-h`/`-w` 적극 (데이터 그리드 inline action), Desk는 모든 viewport에서 `touch-min`/`touch-circular` 우선 (모바일 hit target).
 
 #### 4px 베이스 호환
 - 44/100/80/32 모두 4의 배수 (11×4, 25×4, 20×4, 8×4). v4 spacing 정신과 일치.
@@ -2585,7 +2496,7 @@ spec brand-neutral. brand 파일에서 사용 패턴 차이 prose — HR(휴가 
 | **horizontal** | 데스크탑·settings 페이지 | label 좌측 (고정 폭 25-30%) + control 우측 (잔여 폭) — `xl` (24px) gap |
 | **inline** | 단순 toggle group | 한 줄에 control + label 옆 — Switch/Checkbox 단일 옵션에 적합 |
 
-horizontal 모드는 viewport `breakpoint-md` (768px) 이상에서만 사용 — 그 이하는 stacked로 자동 전환.
+horizontal 모드는 viewport `breakpoint-md` (736px) 이상에서만 사용 — 그 이하는 stacked로 자동 전환.
 
 #### Validation 시점
 - **on submit** (default): submit 버튼 클릭 시 검증 — 사용자 입력 흐름 방해 최소화.
@@ -2908,7 +2819,7 @@ spec brand-neutral. brand 파일 — HR(side drawer 데스크탑 detail), Desk(b
 - gap: step 사이 `lg` (16px) horizontal, `md` (12px) vertical
 
 #### Layout
-- horizontal: viewport `breakpoint-md` (768px) 이상에서만 사용. 그 이하는 vertical 자동 전환
+- horizontal: viewport `breakpoint-md` (736px) 이상에서만 사용. 그 이하는 vertical 자동 전환
 - vertical: 좌측 dot column + 우측 라벨/내용
 - 4단계 이상: 모바일에서 vertical 권장 (horizontal 너무 좁음)
 
