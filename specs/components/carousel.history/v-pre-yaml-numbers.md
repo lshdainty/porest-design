@@ -51,11 +51,19 @@ horizontal multi-item (basis-1/3):
 
 Carousel은 **size variant 없음** — 사용처 className으로 width/height 결정. 화살표 사이즈는 `h-8 w-8`(32) 기본, 사용처 className으로 [`Button`](button.md) icon size(40) 또는 lg(48) override 가능.
 
-[표: 공통 크기](carousel.yaml#base.default)
-
-[표: 방향별 간격·화살표 위치](carousel.yaml#orientation)
-
-[표: 슬라이드 너비](carousel.yaml#items)
+| 항목 | 값 | 토큰/규칙 |
+|---|---|---|
+| Root | width 사용처 결정 | `max-w-*` / `w-full` |
+| Slide gap | 16px | `-ml-[var(--spacing-lg)]` (content) + `pl-[var(--spacing-lg)]` (item) — negative margin trick |
+| Vertical gap | 16px | `-mt-[var(--spacing-lg)]` + `pt-[var(--spacing-lg)]` |
+| Arrow size | 32×32 | `h-8 w-8` (Button icon보다 작음, carousel 보조 navigation 톤) |
+| Arrow radius | full pill | `rounded-full` |
+| Arrow icon | 16×16 | `h-4 w-4` (`ArrowLeft`/`ArrowRight`) |
+| Arrow position (horizontal) | -48px 외부 | `-left-12` / `-right-12` + `top-1/2 -translate-y-1/2` |
+| Arrow position (vertical) | -48px 외부 | `-top-12` / `-bottom-12` + `left-1/2 -translate-x-1/2` + `rotate-90` |
+| Slide basis (single) | full width | `basis-full` |
+| Slide basis (multi-item, 3개) | 1/3 width | `basis-1/3` (사용처 className) |
+| Dot indicator (옵션) | 6×6 pill | `h-1.5 w-1.5 rounded-full` |
 
 ## States
 
