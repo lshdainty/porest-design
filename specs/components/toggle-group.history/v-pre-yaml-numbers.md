@@ -39,11 +39,10 @@ Type은 Radix `type` prop으로 결정 (`type="single"` 또는 `type="multiple"`
 
 active item 의 시각 강조도 분기. type(single/multiple) 과 직교 — 단일 사용처에서 type + visual 둘 다 명시.
 
-[표: 쓰임](toggle-group.yaml#visual)
-
-[표: active item](toggle-group.yaml#grid.visual.pressed.on)
-
-[표: off item](toggle-group.yaml#grid.visual.pressed.off)
+| Visual | Active item | Off item | 사용처 |
+|---|---|---|---|
+| `subtle` *(default)* | `surface-input` 채움 + `text-primary` + font-semibold (600) — 토스 톤 절제 | transparent + `text-secondary` | dialog footer · 인접 정보 위계에 묻히지 않게 절제할 때. group 형태 자체로 의미 전달. |
+| `solid` | `primary` 채움 + `text-on-accent` + font-semibold (600) — cobalt brand 채움으로 강조(shadow 없음) | transparent + `text-secondary` | form type 선택, 모드 전환 같이 ‟현재 선택‟ 을 명확히 부각해야 할 때. |
 
 선택 가이드: 화면에 다른 강조 요소(큰 카드 / 도메인 색 prefix)가 있으면 `subtle`, 토글 자체가 사용자 결정의 중심이면 `solid`. 한 form 안에서 여러 ToggleGroup 사용 시 visual 통일 (혼합 사용 금지 — 위계 혼란).
 
@@ -51,9 +50,11 @@ active item 의 시각 강조도 분기. type(single/multiple) 과 직교 — �
 
 [`Toggle`](toggle.md) Size 표 그대로 — root에서 한 번 지정 시 context로 전파.
 
-[표: 크기](toggle-group.yaml#size)
-
-[표: 모든 크기에 공통](toggle-group.yaml#base.enabled)
+| Size | Padding (Y · X) | min-height | Font | Icon |
+|---|---|---|---|---|
+| `sm` | `xs` · `sm` (4 · 8) | 28px | `text-caption` (12/600) | 16px |
+| `default` *(default)* | `xs` · `md` (4 · 12) | 32px | `text-caption` (12/600) | 16px |
+| `lg` | `sm` · `lg` (8 · 16) | 40px | `text-caption` (12/600) | 16px |
 
 ## States
 
@@ -61,15 +62,25 @@ active item 의 시각 강조도 분기. type(single/multiple) 과 직교 — �
 
 **subtle (default)** — 토스 톤 절제:
 
-[표: subtle — off](toggle-group.yaml#matrix.visual.subtle.pressed.off)
-
-[표: subtle — on](toggle-group.yaml#matrix.visual.subtle.pressed.on)
+| State | Background | Text |
+|---|---|---|
+| `off (enabled)` | transparent | `text-secondary` |
+| `off + hover` | `surface-input` | `text-primary` |
+| `off + focus-visible` | (동일) | (동일) + `ring-2 ring-ring ring-offset-2` (inset) |
+| `on` (`data-state=on`) | `surface-input` | `text-primary` + 600 |
+| `on + hover` | `surface-input` | `text-primary` |
+| `disabled` | (동일) opacity 0.5 | (동일) + `pointer-events: none` |
 
 **solid** — cobalt brand 강조:
 
-[표: solid — off](toggle-group.yaml#matrix.visual.solid.pressed.off)
-
-[표: solid — on](toggle-group.yaml#matrix.visual.solid.pressed.on)
+| State | Background | Text | Extras |
+|---|---|---|---|
+| `off (enabled)` | transparent | `text-secondary` | — |
+| `off + hover` | transparent | `text-secondary` | — (hover 분리 안 함 — solid 톤은 selected 만 강조) |
+| `off + focus-visible` | (동일) | (동일) | `ring-2 ring-ring ring-offset-2` |
+| `on` (`data-state=on`) | `primary` | `text-on-accent` + 600 | — (shadow 없음) |
+| `on + hover` | `primary` | `text-on-accent` + 600 | — |
+| `disabled` | (동일) opacity 0.5 | (동일) | `pointer-events: none` |
 
 ToggleGroup은 outline variant의 border 분기 사용 안 함 — outer border가 group 시각 단위라 item별 border 무력화.
 
