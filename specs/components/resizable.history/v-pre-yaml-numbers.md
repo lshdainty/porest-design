@@ -64,11 +64,25 @@ horizontal + withHandle:
 
 Resizable은 **size variant 없음** — 부모 컨테이너가 폭/높이 결정. Panel `defaultSize` (prop, %)로 초기 비율, `minSize`/`maxSize`로 제한.
 
-[표: 크기와 색](resizable.yaml#base)
+| 항목 | 값 | 토큰 |
+|---|---|---|
+| Handle thickness | 1px | `w-px` (horizontal) / `h-px` (vertical) |
+| Handle hit area | 4px (라인 + 좌우 2px씩) | `::after` `w-1 -translate-x-1/2` |
+| Handle color | `border-default` | `bg-border-default` |
+| Grip box size | 12×16 (= w-3 h-4) | `h-4 w-3` |
+| Grip icon | 10×10 | `h-2.5 w-2.5` (lucide `GripVertical`) |
+| Grip box bg | `surface-default` | `bg-surface-default` |
+| Grip box border | 1px + radius-sm | `border border-border-default rounded-sm` |
+| Focus ring | 1px + 1px offset | `ring-1 ring-ring ring-offset-1` |
 
 ## States
 
-[표: 상태별로 바뀌는 값](resizable.yaml#states.direction)
+| State | Handle | Grip box | 추가 |
+|---|---|---|---|
+| `default` | `bg-border-default` 1px | (옵션) surface + border | — |
+| `hover` | (변화 없음) | (변화 없음) | cursor: `ew-resize` (horizontal) / `ns-resize` (vertical) — 브라우저 native. |
+| `dragging` | (변화 없음) | (변화 없음) | document cursor 유지. `data-resize-handle-active` 자동. |
+| `focus-visible` (keyboard) | (변화 없음) | (변화 없음) | `ring-1 ring-ring ring-offset-1` (1px ring — handle이 얇아 작게). |
 
 **규칙**: hover/dragging 시각 효과 없음 — handle은 layout primitive라 시각 변화 절제. cursor는 OS native로 충분한 affordance.
 
