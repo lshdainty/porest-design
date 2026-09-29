@@ -30,23 +30,31 @@ border-default(outline)
 
 ## Variants
 
-[표: 변형](toggle.yaml#variant)
-
-[표: outline 이 켜졌을 때](toggle.yaml#compound)
+| Variant | Border | 사용처 |
+|---|---|---|
+| `default` *(default)* | 없음 (transparent) | 텍스트 에디터 toolbar — 여러 toggle이 인접 배치되는 dense UI. |
+| `outline` | 1px `border-default` (off) → `border-strong` (on) | 독립 toggle — filter chip, view 옵션처럼 단독 또는 sparse 배치. preview `.tg` SoT. |
 
 ## Sizes
 
-[표: 크기](toggle.yaml#size)
-
-[표: 모든 크기에 공통](toggle.yaml#base.enabled)
+| Size | Padding (Y · X) | min-height | Font | Icon |
+|---|---|---|---|---|
+| `sm` | `xs` · `sm` (4 · 8) | 28px | `text-caption` (12/600) | 16px |
+| `default` *(default)* | `xs` · `md` (4 · 12) | 32px | `text-caption` (12/600) | 16px |
+| `lg` | `sm` · `lg` (8 · 16) | 40px | `text-caption` (12/600) | 16px |
 
 font는 모든 size에서 `text-caption` + 600 — preview `.tg` SoT(toolbar/filter chip 톤). size 차이는 padding과 min-height로.
 
 ## States
 
-[표: off — outline](toggle.yaml#matrix.variant.outline.pressed.off)
-
-[표: on — outline](toggle.yaml#matrix.variant.outline.pressed.on)
+| State | Background | Text | Border (outline) |
+|---|---|---|---|
+| `off (enabled)` | transparent | `text-secondary` | `border-default` |
+| `off + hover` | `surface-input` | `text-primary` | `border-default` |
+| `off + focus-visible` | (동일) | (동일) | (동일) + `ring-2 ring-ring ring-offset-2` |
+| `on` (`data-state=on`) | `surface-input` | `text-primary` | `border-strong` |
+| `on + hover` | `surface-input` | `text-primary` | `border-strong` |
+| `disabled` | (동일) opacity 0.5 | (동일) | (동일) + `pointer-events: none` |
 
 variant `default`는 outline의 border 분기 없음(항상 transparent).
 
