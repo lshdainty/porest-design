@@ -22,15 +22,15 @@ function Pair({ children }: { children: ReactNode }) {
 }
 function Cap({ children, strong }: { children: ReactNode; strong?: ReactNode }) {
   return (
-    <span className="flex flex-col items-center gap-0.5 text-center text-[12px] leading-4 text-[#62697A]">
-      {strong && <b className="text-[13px] text-[#1A1F2E]">{strong}</b>}
+    <span className="flex flex-col items-center gap-0.5 text-center text-[12px] leading-4 pk-muted">
+      {strong && <b className="text-[13px] pk-text">{strong}</b>}
       {children}
     </span>
   );
 }
 
 // ── 화면 조각 — Desk 홈 · 예산 · HR 휴가 ──────────────────
-function SpendCard({ mode = 'light', actions }: { mode?: Mode; actions?: ReactNode }) {
+function SpendCard({ mode = 'auto', actions }: { mode?: Mode; actions?: ReactNode }) {
   return (
     <Card mode={mode}>
       <span className="text-[13px]" style={{ color: rc('fg-neutral-subtle', mode) }}>
@@ -49,7 +49,7 @@ function SpendCard({ mode = 'light', actions }: { mode?: Mode; actions?: ReactNo
     </Card>
   );
 }
-function RecentCard({ mode = 'light', action }: { mode?: Mode; action?: ReactNode }) {
+function RecentCard({ mode = 'auto', action }: { mode?: Mode; action?: ReactNode }) {
   return (
     <Card mode={mode}>
       <Heading mode={mode} sub={action ? undefined : '전체 보기'}>
@@ -66,7 +66,7 @@ function RecentCard({ mode = 'light', action }: { mode?: Mode; action?: ReactNod
 // ── Hierarchy ─────────────────────────────────────────────
 const Hierarchy: Fig = ({ caption }) => {
   const col = (title: string, count: string, note: string, buttons: ReactNode) => (
-    <div className="flex flex-1 flex-col items-center gap-4 rounded-xl bg-white px-4 pb-5 pt-6">
+    <div className="flex flex-1 flex-col items-center gap-4 rounded-xl pk-surface px-4 pb-5 pt-6">
       <div className="flex flex-col items-center gap-2.5">{buttons}</div>
       <Cap strong={title}>
         {count}
@@ -236,7 +236,7 @@ const BrandColor: Fig = ({ caption }) => (
 // ── 버튼 조합 ─────────────────────────────────────────────
 const ComboSolid: Fig = ({ caption }) => (
   <Figure caption={caption}>
-    <div className="flex flex-col gap-4 rounded-xl bg-white px-10 py-8">
+    <div className="flex flex-col gap-4 rounded-xl pk-surface px-10 py-8">
       <div className="flex w-[320px] gap-2">
         <B variant="neutralWeak" size="large" grow={1} label="취소" />
         <B variant="neutralSolid" size="large" grow={1} label="저장" />
@@ -432,18 +432,19 @@ const ModalFooter: Fig = ({ caption }) => (
 );
 
 // ── 놓는 바탕 ─────────────────────────────────────────────
+// 라이트에서만 생기는 문제라 라이트로 고정해 그린다(다크의 약한 채움은 페이지 바탕 위에서도 보인다)
 const Surface: Fig = ({ caption }) => (
   <Panel caption={caption}>
     <Pair>
-      <Verdict ok note="neutralWeak 는 흰 표면(카드 · 시트 · 모달) 위에" bg={rc('bg-layer-basement')}>
+      <Verdict ok note="neutralWeak 는 흰 표면(카드 · 시트 · 모달) 위에" bg={rc('bg-layer-basement', 'light')}>
         <div className="w-[240px]">
-          <RecentCard action={<B variant="neutralWeak" size="small" label="내역 더보기" />} />
+          <RecentCard mode="light" action={<B variant="neutralWeak" size="small" mode="light" label="내역 더보기" />} />
         </div>
       </Verdict>
-      <Verdict ok={false} note="페이지 바탕 위에 바로 두면 채움이 사라진다 — neutralOutline 을 쓴다" bg={rc('bg-layer-basement')}>
+      <Verdict ok={false} note="라이트에서 페이지 바탕 위에 바로 두면 채움이 사라진다 — neutralOutline 을 쓴다" bg={rc('bg-layer-basement', 'light')}>
         <div className="flex w-[240px] flex-col items-center gap-3">
-          <RecentCard />
-          <B variant="neutralWeak" size="small" label="내역 더보기" />
+          <RecentCard mode="light" />
+          <B variant="neutralWeak" size="small" mode="light" label="내역 더보기" />
         </div>
       </Verdict>
     </Pair>
@@ -558,14 +559,14 @@ const Loading: Fig = ({ caption }) => (
 const ChipCompare: Fig = ({ caption }) => (
   <Panel caption={caption}>
     <div className="flex w-full max-w-[620px] gap-4">
-      <div className="flex flex-1 flex-col items-center gap-4 rounded-xl bg-white p-6">
+      <div className="flex flex-1 flex-col items-center gap-4 rounded-xl pk-surface p-6">
         <div className="flex gap-2">
           <B variant="neutralWeak" size="small" label="취소" />
           <B variant="neutralSolid" size="small" label="완료" />
         </div>
         <Cap strong="Button">액션을 실행한다 — 라벨만 봐도 무슨 일이 일어날지 안다</Cap>
       </div>
-      <div className="flex flex-1 flex-col items-center gap-4 rounded-xl bg-white p-6">
+      <div className="flex flex-1 flex-col items-center gap-4 rounded-xl pk-surface p-6">
         <div className="flex gap-1.5">
           {['전체', '식비', '교통', '쇼핑'].map((t, i) => (
             <span
@@ -592,7 +593,7 @@ const SplitBar: Fig = ({ caption }) => {
   const f = buttonLook({ variant: 'ghost', size: 'xsmall' }).faces.light.enabled;
   return (
     <Figure caption={caption}>
-      <div className="w-[340px] rounded-xl bg-white p-5">
+      <div className="w-[340px] rounded-xl pk-surface p-5">
         <Row title="점심 식사" sub="3명 · 36,000원" hue="orange" />
         <div className="mt-2 flex items-center overflow-hidden" style={{ height: f.height, background: rc('bg-layer-basement'), border: `1px solid ${rc('stroke-neutral-weak')}`, borderRadius: buttonLook({ size: 'small' }).faces.light.enabled.radius }}>
           <B variant="ghost" size="xsmall" grow={1} prefix="plus" label="항목 추가" style={{ borderRadius: 0 }} />
@@ -606,7 +607,7 @@ const SplitBar: Fig = ({ caption }) => {
 
 const Flush: Fig = ({ caption }) => (
   <Figure caption={caption}>
-    <div className="w-[340px] rounded-xl bg-white px-6 py-5">
+    <div className="w-[340px] rounded-xl pk-surface px-6 py-5">
       <Heading>할 일</Heading>
       <Row title="장보기" sub="오늘" hue="green" />
       <Row title="관리비 이체" sub="내일" hue="blue" />
@@ -622,7 +623,7 @@ const Flush: Fig = ({ caption }) => (
 function Preview({ children, caption, dark }: { children: ReactNode; caption?: string; dark?: boolean }) {
   return (
     <figure className="not-prose mt-6 mb-0">
-      <div className="flex min-h-[120px] flex-wrap items-center justify-center gap-3 rounded-t-xl border border-b-0 border-fd-border px-6 py-8" style={{ background: dark ? rc('bg-layer-default', 'dark') : '#FFFFFF' }}>
+      <div className="flex min-h-[120px] flex-wrap items-center justify-center gap-3 rounded-t-xl border border-b-0 border-fd-border px-6 py-8" style={{ background: dark ? rc('bg-layer-default', 'dark') : rc('bg-layer-default') }}>
         {children}
       </div>
       {caption && <figcaption className="sr-only">{caption}</figcaption>}

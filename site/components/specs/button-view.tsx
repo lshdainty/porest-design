@@ -57,7 +57,8 @@ export function Icon({ name, size, color }: { name: IconName; size: number; colo
 
 export type ButtonViewProps = {
   look: ButtonLook;
-  mode?: 'light' | 'dark';
+  // auto 면 사이트의 라이트 · 다크 전환을 따른다(색 값을 둘 다 싣고 CSS 가 고른다 — global.css 의 .pbtn)
+  mode?: 'light' | 'dark' | 'auto';
   state?: ButtonState | 'live';
   label?: ReactNode;
   prefix?: IconName;
@@ -73,7 +74,7 @@ export type ButtonViewProps = {
   style?: CSSProperties;
 };
 
-export function ButtonView({ look, mode = 'light', state = 'live', label, prefix, suffix, icon, fill, width, flush, truncate, ariaLabel, onClick, style }: ButtonViewProps) {
+export function ButtonView({ look, mode = 'auto', state = 'live', label, prefix, suffix, icon, fill, width, flush, truncate, ariaLabel, onClick, style }: ButtonViewProps) {
   const [hover, setHover] = useState(false);
   const [press, setPress] = useState(false);
   const [focusRing, setFocusRing] = useState(false);
@@ -81,15 +82,34 @@ export function ButtonView({ look, mode = 'light', state = 'live', label, prefix
 
   const live = state === 'live';
   const shown: ButtonState = live ? (press ? 'pressed' : hover ? 'hovered' : 'enabled') : state;
-  const f = look.faces[mode][shown];
+  // 치수는 모드와 상관없다 — 라이트 값으로
+  const f = look.faces[mode === 'dark' ? 'dark' : 'light'][shown];
   const iconOnly = look.combo.layout === 'iconOnly';
   const focused = state === 'focused' || (live && focusRing);
   const loading = shown === 'loading';
   const disabled = shown === 'disabled';
   // 가장자리 맞춤(flush) ghost 는 텍스트 버튼 — 배경 없이 글자색으로만 반응한다(button.md)
   const flushText = !!flush && look.combo.variant === 'ghost';
-  const bg = flushText ? 'transparent' : f.bg;
-  const fg = flushText && !disabled ? (shown === 'enabled' && !focused ? look.faces[mode].enabled.fg : look.textPressedFg[mode]) : f.fg;
+  // 색은 라이트(-l) · 다크(-d) 둘 다 — 모드를 정했으면 둘 다 그 모드 값
+  const tone = (m: 'light' | 'dark') => {
+    const t = look.faces[m][shown];
+    return {
+      bg: flushText ? 'transparent' : t.bg,
+      fg: flushText && !disabled ? (shown === 'enabled' && !focused ? look.faces[m].enabled.fg : look.textPressedFg[m]) : t.fg,
+      bd: t.border ?? 'transparent',
+      ring: look.faces[m].focused.ring.color,
+      track: t.progress.track,
+      range: t.progress.range,
+    };
+  };
+  const L = tone(mode === 'dark' ? 'dark' : 'light');
+  const D = tone(mode === 'light' ? 'light' : 'dark');
+  const vars = Object.fromEntries(
+    (['bg', 'fg', 'bd', 'ring', 'track', 'range'] as const).flatMap((k) => [
+      [`--pb-${k}-l`, L[k]],
+      [`--pb-${k}-d`, D[k]],
+    ]),
+  ) as CSSProperties;
 
   // 누름 축소 — 기준 길이 max(높이, 폭 ÷ n, 최소) 에서 축소량만큼(Feedback 의 눌림 피드백)
   let scale: number | undefined;
@@ -114,20 +134,19 @@ export function ButtonView({ look, mode = 'light', state = 'live', label, prefix
     paddingRight: flush === 'right' ? 0 : undefined,
     gap: f.gap,
     borderRadius: f.radius,
-    background: bg,
-    color: fg,
-    border: f.borderWidth ? `${f.borderWidth}px solid ${f.border}` : 'none',
+    border: f.borderWidth ? `${f.borderWidth}px solid var(--pb-bd)` : 'none',
     fontFamily: f.fontFamily,
     fontSize: f.fontSize,
     lineHeight: f.lineHeight,
     fontWeight: f.fontWeight,
     whiteSpace: 'nowrap',
     cursor: disabled ? 'not-allowed' : loading ? 'progress' : 'pointer',
-    outline: focused ? `${f.ring.width}px solid ${look.faces[mode].focused.ring.color}` : 'none',
+    outline: focused ? `${f.ring.width}px solid var(--pb-ring)` : 'none',
     outlineOffset: f.ring.offset,
     transform: scale ? `scale(${scale})` : undefined,
     transition: `background-color ${f.duration.color} ${f.easing.color}, color ${f.duration.color} ${f.easing.color}, transform ${f.duration.scale} ${f.easing.scale}`,
     WebkitTapHighlightColor: 'transparent',
+    ...vars,
     ...style,
   };
   const inner = loading ? 'transparent' : undefined;
@@ -139,6 +158,8 @@ export function ButtonView({ look, mode = 'light', state = 'live', label, prefix
       aria-busy={loading || undefined}
       aria-disabled={disabled || undefined}
       tabIndex={live ? 0 : -1}
+      className="pbtn"
+      data-mode={mode}
       style={box}
       onPointerEnter={live ? () => setHover(true) : undefined}
       onPointerLeave={live ? () => (setHover(false), setPress(false)) : undefined}
@@ -177,8 +198,8 @@ export function ButtonView({ look, mode = 'light', state = 'live', label, prefix
             marginTop: -f.progress.size / 2,
             boxSizing: 'border-box',
             borderRadius: '50%',
-            border: `${f.progress.thickness}px solid ${f.progress.track}`,
-            borderTopColor: f.progress.range,
+            border: `${f.progress.thickness}px solid var(--pb-track)`,
+            borderTopColor: 'var(--pb-range)',
           }}
         />
       )}
@@ -187,7 +208,7 @@ export function ButtonView({ look, mode = 'light', state = 'live', label, prefix
 }
 
 // 로딩을 눌러 보는 버튼 — 누르면 잠시 로딩이 됐다가 돌아온다(누르기는 그동안 막힌다)
-export function LoadingDemo({ look, label, mode = 'light', ms = 1600 }: { look: ButtonLook; label: string; mode?: 'light' | 'dark'; ms?: number }) {
+export function LoadingDemo({ look, label, mode = 'auto', ms = 1600 }: { look: ButtonLook; label: string; mode?: 'light' | 'dark' | 'auto'; ms?: number }) {
   const [busy, setBusy] = useState(false);
   return (
     <ButtonView

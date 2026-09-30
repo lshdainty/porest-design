@@ -30,3 +30,47 @@ html > body[data-scroll-locked] {
     animation: none;
   }
 }
+
+/* 컴포넌트 페이지 그림(site/components/specs) — 색은 --p-* 토큰 변수(components/specs/tokens-style.tsx)라 라이트 · 다크 전환을 따른다 */
+.pk-surface {
+  background: var(--p-bg-layer-default);
+}
+.pk-basement {
+  background: var(--p-bg-layer-basement);
+}
+.pk-text {
+  color: var(--p-fg-neutral);
+}
+.pk-muted {
+  color: var(--p-fg-neutral-subtle);
+}
+/* 스펙대로 그린 버튼 — 라이트(-l) · 다크(-d) 값을 둘 다 받고, 사이트가 다크면 -d 를 쓴다(data-mode=auto 일 때) */
+.pbtn {
+  --pb-bg: var(--pb-bg-l);
+  --pb-fg: var(--pb-fg-l);
+  --pb-bd: var(--pb-bd-l);
+  --pb-ring: var(--pb-ring-l);
+  --pb-track: var(--pb-track-l);
+  --pb-range: var(--pb-range-l);
+  background: var(--pb-bg);
+  color: var(--pb-fg);
+}
+.dark .pbtn[data-mode='auto'] {
+  --pb-bg: var(--pb-bg-d);
+  --pb-fg: var(--pb-fg-d);
+  --pb-bd: var(--pb-bd-d);
+  --pb-ring: var(--pb-ring-d);
+  --pb-track: var(--pb-track-d);
+  --pb-range: var(--pb-range-d);
+}
+/* 버튼이 아닌 그림 조각(Anatomy · 치수)도 같은 방식 */
+.pauto {
+  --pa-bg: var(--pa-bg-l);
+  --pa-fg: var(--pa-fg-l);
+  --pa-ring: var(--pa-ring-l);
+}
+.dark .pauto {
+  --pa-bg: var(--pa-bg-d);
+  --pa-fg: var(--pa-fg-d);
+  --pa-ring: var(--pa-ring-d);
+}

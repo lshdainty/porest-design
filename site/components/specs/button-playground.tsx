@@ -50,7 +50,7 @@ export function ButtonPlayground({ parts }: { parts: Record<'desk' | 'hr', Butto
   const [ghostColor, setGhostColor] = useState('neutral');
   const [state, setState] = useState<(typeof STATES)[number][0]>('live');
   const [width, setWidth] = useState<'hug' | 'fill'>('hug');
-  const [mode, setMode] = useState<'light' | 'dark'>('light');
+  const [mode, setMode] = useState<'auto' | 'light' | 'dark'>('auto');
   const [brand, setBrand] = useState<'desk' | 'hr'>('desk');
   const [label, setLabel] = useState('저장');
 
@@ -84,7 +84,7 @@ export function ButtonPlayground({ parts }: { parts: Record<'desk' | 'hr', Butto
   }, [variant, ghostColor, size, iconOnly, layout, label, state, width]);
 
   const shownState: ButtonState | 'live' = state === 'live' ? 'live' : state;
-  const surface = mode === 'dark' ? '#242938' : '#FFFFFF';
+  const surface = mode === 'auto' ? 'var(--p-bg-layer-default)' : parts[brand].surface[mode];
 
   let preview: ReactNode = (
     <ButtonView
@@ -114,7 +114,7 @@ export function ButtonPlayground({ parts }: { parts: Record<'desk' | 'hr', Butto
         <Seg label="상태" value={state} options={STATES} onChange={setState} />
         <div className="flex flex-wrap gap-5">
           <Seg label="너비" value={width} options={[['hug', '내용 맞춤'], ['fill', '채움']] as const} onChange={setWidth} />
-          <Seg label="모드" value={mode} options={[['light', '라이트'], ['dark', '다크']] as const} onChange={setMode} />
+          <Seg label="모드" value={mode} options={[['auto', '사이트 따라'], ['light', '라이트'], ['dark', '다크']] as const} onChange={setMode} />
           <Seg label="브랜드" value={brand} options={[['desk', 'Desk'], ['hr', 'HR']] as const} onChange={setBrand} />
         </div>
         <label className="flex flex-col gap-1.5 sm:col-span-2">

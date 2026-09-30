@@ -1,7 +1,7 @@
 // Button 의 모양 — specs/components/button.yaml 을 조합 · 상태 · 모드마다 풀어 둔다(서버에서, 빌드 때).
 // 그림(ButtonView)은 이 값만 받아 그린다 — 페이지에 수치를 따로 적지 않는다.
 import { loadComponentSpec, num, resolveState, tokenValue, type Mode, type TypeValue } from '@/lib/component-spec';
-import { pressScale, type Brand } from '@/lib/design-tokens';
+import { design, pressScale, type Brand } from '@/lib/design-tokens';
 
 export const BUTTON_STATES = ['enabled', 'hovered', 'focused', 'pressed', 'loading', 'disabled'] as const;
 export type ButtonState = (typeof BUTTON_STATES)[number];
@@ -133,6 +133,8 @@ export type ButtonParts = {
   sizes: Record<string, Record<'withText' | 'iconOnly', Omit<ButtonFace, (typeof COLOR_KEYS)[number]>>>;
   press: ButtonLook['press'];
   textPressedFg: Record<Mode, string>;
+  // 미리보기 바탕 — bg-layer-default 의 라이트 · 다크
+  surface: Record<Mode, string>;
 };
 
 export function buttonParts(brand: Brand = 'desk'): ButtonParts {
@@ -163,5 +165,7 @@ export function buttonParts(brand: Brand = 'desk'): ButtonParts {
     }
   }
   const base = buttonLook({}, brand);
-  return { colors, sizes: sizeParts, press: base.press, textPressedFg: base.textPressedFg };
+  const c = design(brand).front.colors;
+  const surface = { light: c['bg-layer-default'], dark: c['bg-layer-default-dark'] ?? c['bg-layer-default'] };
+  return { colors, sizes: sizeParts, press: base.press, textPressedFg: base.textPressedFg, surface };
 }

@@ -182,7 +182,7 @@
 
 **놓는 바탕** — `neutralWeak` 의 채움과 비활성 채움(`bg-disabled`)은 라이트에서 페이지 바탕(`bg-page`)과 같은 색(gray-200)이다(v108). 흰 표면(카드 · 시트 · 모달 — `bg-layer-default`) 위에 두고, 페이지 바탕에 바로 둘 땐 `neutralOutline` 을 쓴다 — 바탕 위의 `neutralWeak` 는 채움이 사라져 글자만 남는다.
 
-[그림: neutralWeak 를 놓는 바탕](../../site/components/specs/button.tsx#surface)
+[그림: neutralWeak 를 놓는 바탕 — 라이트에서만 생기는 문제라 라이트로 그렸다](../../site/components/specs/button.tsx#surface)
 
 **모달 footer**(porest)
 

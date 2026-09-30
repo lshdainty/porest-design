@@ -2,11 +2,23 @@
 // 색은 역할 색(DESIGN*.md)에서, 글자 크기는 화면 예시라 그림 안에서 정한다(컴포넌트 자체의 값은 YAML 에서 온다).
 import type { CSSProperties, ReactNode } from 'react';
 import { ChevronLeft, ChevronRight, House, Wallet, CalendarDays, NotebookPen, Menu, Signal, Wifi, BatteryFull, X } from 'lucide-react';
-import { color, proseValue, type Brand } from '@/lib/design-tokens';
+import { color, design, proseValue, type Brand } from '@/lib/design-tokens';
 
-export type Mode = 'light' | 'dark';
-export const rc = (name: string, mode: Mode = 'light', brand: Brand = 'desk') =>
-  name === 'static-white' || name === 'static-black' ? color(name, brand) : color(mode === 'dark' ? `${name}-dark` : name, brand);
+// auto 면 사이트의 라이트 · 다크 전환을 따른다 — 색을 hex 대신 --p-* 변수로(tokens-style.tsx 가 깐다)
+export type Mode = 'light' | 'dark' | 'auto';
+let hrDiff: Set<string> | undefined;
+function hrOnly(name: string) {
+  hrDiff ??= new Set(Object.keys(design('hr').front.colors).filter((n) => design('hr').front.colors[n] !== design('desk').front.colors[n]).map((n) => n.replace(/-dark$/, '')));
+  return hrDiff.has(name);
+}
+export const rc = (name: string, mode: Mode = 'auto', brand: Brand = 'desk') => {
+  if (mode === 'auto') return `var(--p-${brand === 'hr' && hrOnly(name) ? 'hr-' : ''}${name})`;
+  return name === 'static-white' || name === 'static-black' ? color(name, brand) : color(mode === 'dark' ? `${name}-dark` : name, brand);
+};
+const dim = (mode: Mode) => (mode === 'auto' ? 'var(--p-overlay-dim)' : proseValue(mode === 'dark' ? 'overlay-dim-dark' : 'overlay-dim-light'));
+const shadow4 = (mode: Mode) => (mode === 'auto' ? 'var(--p-shadow-s4)' : proseValue(mode === 'dark' ? 'shadow-s4-dark' : 'shadow-s4'));
+const deco = (mode: Mode, name: 'frame' | 'chrome' | 'chrome-url') =>
+  mode === 'auto' ? `var(--p-${name})` : ({ frame: ['#1A1F2E', '#3A3F4C'], chrome: ['#E4E6EB', '#2B303D'], 'chrome-url': ['#F5F6FA', '#1E222C'] } as const)[name][mode === 'dark' ? 1 : 0];
 
 export const PHONE_W = 360;
 
@@ -18,7 +30,7 @@ export function Phone({
   right,
   bottom,
   overlay,
-  mode = 'light',
+  mode = 'auto',
   h = 600,
   scale = 1,
   bg = 'bg-layer-basement',
@@ -47,7 +59,7 @@ export function Phone({
           transform: scale === 1 ? undefined : `scale(${scale})`,
           transformOrigin: 'top left',
           borderRadius: 36,
-          border: `8px solid ${mode === 'dark' ? '#3A3F4C' : '#1A1F2E'}`,
+          border: `8px solid ${deco(mode, 'frame')}`,
           background: rc(bg, mode),
           fontFamily: 'Pretendard Variable, Pretendard, sans-serif',
           color: fg,
@@ -102,7 +114,7 @@ function TabBar({ mode }: { mode: Mode }) {
 }
 
 // 흰 카드 — 회색 바탕 위의 한 묶음
-export function Card({ children, mode = 'light', style, pad = 20 }: { children: ReactNode; mode?: Mode; style?: CSSProperties; pad?: number }) {
+export function Card({ children, mode = 'auto', style, pad = 20 }: { children: ReactNode; mode?: Mode; style?: CSSProperties; pad?: number }) {
   return (
     <div className="rounded-2xl" style={{ background: rc('bg-layer-default', mode), padding: pad, ...style }}>
       {children}
@@ -116,7 +128,7 @@ export function Row({
   sub,
   amount,
   hue = 'blue',
-  mode = 'light',
+  mode = 'auto',
   trailing,
 }: {
   title: string;
@@ -151,7 +163,7 @@ export function Row({
   );
 }
 
-export function Heading({ children, mode = 'light', sub }: { children: ReactNode; mode?: Mode; sub?: string }) {
+export function Heading({ children, mode = 'auto', sub }: { children: ReactNode; mode?: Mode; sub?: string }) {
   return (
     <div className="flex items-end justify-between">
       <span className="text-[17px] font-bold" style={{ color: rc('fg-neutral', mode) }}>
@@ -167,12 +179,12 @@ export function Heading({ children, mode = 'light', sub }: { children: ReactNode
   );
 }
 
-export function Line({ w = '60%', mode = 'light', h = 10, tone = 'stroke-neutral-weak' }: { w?: number | string; mode?: Mode; h?: number; tone?: string }) {
+export function Line({ w = '60%', mode = 'auto', h = 10, tone = 'stroke-neutral-weak' }: { w?: number | string; mode?: Mode; h?: number; tone?: string }) {
   return <span className="block rounded-full" style={{ width: w, height: h, background: rc(tone, mode) }} />;
 }
 
 // 입력칸 — 라벨 · 값
-export function Field({ label, value, mode = 'light', placeholder = false }: { label: string; value: string; mode?: Mode; placeholder?: boolean }) {
+export function Field({ label, value, mode = 'auto', placeholder = false }: { label: string; value: string; mode?: Mode; placeholder?: boolean }) {
   return (
     <div className="flex flex-col gap-1.5">
       <span className="text-[13px] font-medium" style={{ color: rc('fg-neutral-muted', mode) }}>
@@ -189,9 +201,9 @@ export function Field({ label, value, mode = 'light', placeholder = false }: { l
 }
 
 // 아래에서 올라온 시트 — 딤 위에
-export function Sheet({ title, children, footer, mode = 'light', close = true }: { title: string; children?: ReactNode; footer?: ReactNode; mode?: Mode; close?: boolean }) {
+export function Sheet({ title, children, footer, mode = 'auto', close = true }: { title: string; children?: ReactNode; footer?: ReactNode; mode?: Mode; close?: boolean }) {
   return (
-    <div className="absolute inset-0 flex flex-col justify-end" style={{ background: proseValue(mode === 'dark' ? 'overlay-dim-dark' : 'overlay-dim-light') }}>
+    <div className="absolute inset-0 flex flex-col justify-end" style={{ background: dim(mode) }}>
       <div className="rounded-t-[24px] px-6 pb-7 pt-3" style={{ background: rc('bg-layer-floating', mode) }}>
         <span className="mx-auto mb-4 block h-1 w-10 rounded-full" style={{ background: rc('stroke-neutral-weak', mode) }} />
         <div className="mb-4 flex items-center justify-between">
@@ -208,9 +220,9 @@ export function Sheet({ title, children, footer, mode = 'light', close = true }:
 }
 
 // 가운데 대화상자 — 앱의 Alert Dialog
-export function AlertBox({ title, body, footer, mode = 'light' }: { title: string; body: string; footer: ReactNode; mode?: Mode }) {
+export function AlertBox({ title, body, footer, mode = 'auto' }: { title: string; body: string; footer: ReactNode; mode?: Mode }) {
   return (
-    <div className="absolute inset-0 flex items-center justify-center px-7" style={{ background: proseValue(mode === 'dark' ? 'overlay-dim-dark' : 'overlay-dim-light') }}>
+    <div className="absolute inset-0 flex items-center justify-center px-7" style={{ background: dim(mode) }}>
       <div className="w-full rounded-[20px] px-6 pb-5 pt-6" style={{ background: rc('bg-layer-floating', mode) }}>
         <div className="text-[18px] font-bold" style={{ color: rc('fg-neutral', mode) }}>
           {title}
@@ -225,14 +237,14 @@ export function AlertBox({ title, body, footer, mode = 'light' }: { title: strin
 }
 
 // 웹 창 — 데스크탑 화면(Desk 웹 · HR 웹)
-export function WebWindow({ children, mode = 'light', w = 640, h = 380, url = 'desk.porest.app' }: { children: ReactNode; mode?: Mode; w?: number; h?: number; url?: string }) {
+export function WebWindow({ children, mode = 'auto', w = 640, h = 380, url = 'desk.porest.app' }: { children: ReactNode; mode?: Mode; w?: number; h?: number; url?: string }) {
   return (
     <div className="shrink-0 overflow-hidden rounded-xl border border-black/10 shadow-sm" style={{ width: w, height: h, background: rc('bg-layer-basement', mode) }}>
-      <div className="flex h-8 items-center gap-1.5 px-3" style={{ background: mode === 'dark' ? '#2B303D' : '#E4E6EB' }}>
+      <div className="flex h-8 items-center gap-1.5 px-3" style={{ background: deco(mode, 'chrome') }}>
         {['#FF5F57', '#FEBC2E', '#28C840'].map((c) => (
           <span key={c} className="block h-2.5 w-2.5 rounded-full" style={{ background: c }} />
         ))}
-        <span className="ml-3 rounded px-3 text-[11px] leading-5" style={{ background: mode === 'dark' ? '#1E222C' : '#F5F6FA', color: '#8A91A0' }}>
+        <span className="ml-3 rounded px-3 text-[11px] leading-5" style={{ background: deco(mode, 'chrome-url'), color: '#8A91A0' }}>
           {url}
         </span>
       </div>
@@ -244,10 +256,10 @@ export function WebWindow({ children, mode = 'light', w = 640, h = 380, url = 'd
 }
 
 // 웹의 가운데 모달 — 머리 · 본문 · 아래(footer)
-export function WebDialog({ title, children, footer, mode = 'light', w = 440 }: { title: string; children: ReactNode; footer: ReactNode; mode?: Mode; w?: number }) {
+export function WebDialog({ title, children, footer, mode = 'auto', w = 440 }: { title: string; children: ReactNode; footer: ReactNode; mode?: Mode; w?: number }) {
   return (
-    <div className="absolute inset-0 flex items-center justify-center" style={{ background: proseValue(mode === 'dark' ? 'overlay-dim-dark' : 'overlay-dim-light') }}>
-      <div className="overflow-hidden rounded-xl" style={{ width: w, background: rc('bg-layer-floating', mode), boxShadow: proseValue(mode === 'dark' ? 'shadow-s4-dark' : 'shadow-s4') }}>
+    <div className="absolute inset-0 flex items-center justify-center" style={{ background: dim(mode) }}>
+      <div className="overflow-hidden rounded-xl" style={{ width: w, background: rc('bg-layer-floating', mode), boxShadow: shadow4(mode) }}>
         <div className="flex items-center justify-between px-[22px] pb-2 pt-[18px]">
           <span className="text-[17px] font-bold" style={{ color: rc('fg-neutral', mode) }}>
             {title}
@@ -262,7 +274,7 @@ export function WebDialog({ title, children, footer, mode = 'light', w = 440 }: 
 }
 
 // 키 · 값 한 줄(상세 모달 안)
-export function KV({ k, v, mode = 'light' }: { k: string; v: string; mode?: Mode }) {
+export function KV({ k, v, mode = 'auto' }: { k: string; v: string; mode?: Mode }) {
   return (
     <div className="flex justify-between py-2 text-[14px]">
       <span style={{ color: rc('fg-neutral-subtle', mode) }}>{k}</span>
@@ -274,7 +286,7 @@ export function KV({ k, v, mode = 'light' }: { k: string; v: string; mode?: Mode
 }
 
 // 이렇게 · 이렇게 하지 않는다 — 그림 칸 아래 색 띠와 한 줄(SEED 의 Do · Don't)
-export function Verdict({ ok, children, note, bg = '#FFFFFF' }: { ok: boolean; children: ReactNode; note: ReactNode; bg?: string }) {
+export function Verdict({ ok, children, note, bg = 'var(--p-bg-layer-default)' }: { ok: boolean; children: ReactNode; note: ReactNode; bg?: string }) {
   const tone = color(ok ? 'fg-positive' : 'fg-critical');
   return (
     <div className="flex min-w-0 flex-1 flex-col">

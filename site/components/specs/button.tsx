@@ -1,6 +1,6 @@
 // Button 페이지의 그림 — specs/components/button.md 의 `[그림: …](../../site/components/specs/button.tsx#<id>)` 자리.
 // 버튼은 button.yaml 을 푼 값(buttonLook)으로 그린다. 화면 예시는 kit 의 Desk · HR 화면 조각.
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { Figure, Panel, MARK, MARK_LINE } from '../foundations/ui';
 import { axisDesc, axisValues, loadComponentSpec } from '@/lib/component-spec';
 import { buttonLook, buttonParts, BUTTON_STATES, type ButtonCombo } from './button-look';
@@ -23,14 +23,14 @@ function B(p: ButtonCombo & { label?: string; prefix?: IconName; suffix?: IconNa
 
 function Cap({ children, strong }: { children: ReactNode; strong?: ReactNode }) {
   return (
-    <span className="flex flex-col items-center gap-0.5 text-center text-[12px] leading-4 text-[#62697A]">
-      {strong && <b className="text-[13px] text-[#1A1F2E]">{strong}</b>}
+    <span className="flex flex-col items-center gap-0.5 text-center text-[12px] leading-4 pk-muted">
+      {strong && <b className="text-[13px] pk-text">{strong}</b>}
       {children}
     </span>
   );
 }
 
-function Surface({ mode = 'light', children, className = '' }: { mode?: Mode; children: ReactNode; className?: string }) {
+function Surface({ mode = 'auto', children, className = '' }: { mode?: Mode; children: ReactNode; className?: string }) {
   return (
     <div className={`rounded-xl px-6 py-6 ${className}`} style={{ background: rc('bg-layer-default', mode) }}>
       {children}
@@ -67,25 +67,40 @@ function Pin({ n, children }: { n: string; children: ReactNode }) {
     </span>
   );
 }
+// 버튼이 아닌 그림 조각도 라이트 · 다크 전환을 따르게 — 두 모드 값을 싣고 CSS(.pauto)가 고른다
+function autoTone(look: ReturnType<typeof buttonLook>) {
+  const l = look.faces.light, d = look.faces.dark;
+  return {
+    '--pa-bg-l': l.enabled.bg,
+    '--pa-bg-d': d.enabled.bg,
+    '--pa-fg-l': l.enabled.fg,
+    '--pa-fg-d': d.enabled.fg,
+    '--pa-ring-l': l.focused.ring.color,
+    '--pa-ring-d': d.focused.ring.color,
+    background: 'var(--pa-bg)',
+    color: 'var(--pa-fg)',
+  } as CSSProperties;
+}
+
 const Anatomy: Fig = ({ caption }) => {
-  const f = buttonLook({ variant: 'neutralSolid', size: 'large' }).faces.light.enabled;
-  const ring = buttonLook({ variant: 'neutralSolid', size: 'large' }).faces.light.focused.ring;
+  const look = buttonLook({ variant: 'neutralSolid', size: 'large' });
+  const f = look.faces.light.enabled;
+  const ring = look.faces.light.focused.ring;
   return (
     <Figure caption={caption}>
-      <div className="flex flex-col items-center gap-6 rounded-xl bg-white px-16 pb-8 pt-16">
+      <div className="flex flex-col items-center gap-6 rounded-xl pk-surface px-16 pb-8 pt-16">
         <div className="relative" style={{ transform: 'scale(1.5)', transformOrigin: 'center', margin: '16px 60px 44px' }}>
           <span
-            className="relative inline-flex items-center"
+            className="pauto relative inline-flex items-center"
             style={{
+              ...autoTone(look),
               height: f.height,
               padding: `0 ${f.padX}px`,
               gap: f.gap,
               borderRadius: f.radius,
-              background: f.bg,
-              color: f.fg,
               fontSize: f.fontSize,
               fontWeight: f.fontWeight,
-              outline: `${ring.width}px solid ${ring.color}`,
+              outline: `${ring.width}px solid var(--pa-ring)`,
               outlineOffset: ring.offset,
             }}
           >
@@ -112,7 +127,7 @@ const Anatomy: Fig = ({ caption }) => {
             </span>
           </span>
         </div>
-        <div className="mt-4 grid grid-cols-5 gap-4 text-center text-[12px] leading-4 text-[#62697A]">
+        <div className="mt-4 grid grid-cols-5 gap-4 text-center text-[12px] leading-4 pk-muted">
           {[
             ['ⓐ', 'Container'],
             ['ⓑ', 'Prefix Icon'],
@@ -121,7 +136,7 @@ const Anatomy: Fig = ({ caption }) => {
             ['ⓔ', 'Focus ring'],
           ].map(([n, t]) => (
             <span key={n}>
-              <b className="text-[#1A1F2E]">{n}</b> {t}
+              <b className="pk-text">{n}</b> {t}
             </span>
           ))}
         </div>
@@ -133,7 +148,7 @@ const Anatomy: Fig = ({ caption }) => {
 // ── Size ──────────────────────────────────────────────────
 const Sizes: Fig = ({ caption }) => (
   <Figure caption={caption}>
-    <div className="flex items-end gap-8 rounded-xl bg-white px-10 py-8">
+    <div className="flex items-end gap-8 rounded-xl pk-surface px-10 py-8">
       {SIZES().map((s) => {
         const h = buttonLook({ size: s }).faces.light.enabled.height;
         return (
@@ -149,7 +164,8 @@ const Sizes: Fig = ({ caption }) => (
 
 // 크기 하나의 치수 — 디자인 도구의 간격 표시처럼
 function Measured({ size }: { size: string }) {
-  const f = buttonLook({ size }).faces.light.enabled;
+  const look = buttonLook({ size });
+  const f = look.faces.light.enabled;
   const band = (w: number, label: string) => (
     <span className="relative flex h-full shrink-0 items-center justify-center" style={{ width: w, background: MARK }}>
       <span className="absolute -bottom-6 rounded px-1 text-[10px] font-semibold leading-4 text-white" style={{ background: MARK_LINE }}>
@@ -161,8 +177,8 @@ function Measured({ size }: { size: string }) {
     <div className="flex flex-col items-center gap-9">
       <div className="relative flex items-center">
         <span
-          className="flex items-center overflow-visible"
-          style={{ height: f.height, borderRadius: f.radius, background: f.bg, color: f.fg, fontSize: f.fontSize, fontWeight: f.fontWeight, lineHeight: f.lineHeight }}
+          className="pauto flex items-center overflow-visible"
+          style={{ ...autoTone(look), height: f.height, borderRadius: f.radius, fontSize: f.fontSize, fontWeight: f.fontWeight, lineHeight: f.lineHeight }}
         >
           {band(f.padX, `${f.padX}`)}
           <span className="relative flex items-center" style={{ outline: `1px dashed ${MARK_LINE}` }}>
@@ -189,7 +205,7 @@ function Measured({ size }: { size: string }) {
 }
 const SizeSpec: Fig = ({ caption }) => (
   <Figure caption={caption}>
-    <div className="grid grid-cols-2 gap-x-20 gap-y-10 rounded-xl bg-white px-16 pb-8 pt-10">
+    <div className="grid grid-cols-2 gap-x-20 gap-y-10 rounded-xl pk-surface px-16 pb-8 pt-10">
       {SIZES().map((s) => (
         <Measured key={s} size={s} />
       ))}
@@ -200,7 +216,7 @@ const SizeSpec: Fig = ({ caption }) => (
 // ── Layout ────────────────────────────────────────────────
 const Layouts: Fig = ({ caption }) => (
   <Figure caption={caption}>
-    <div className="flex items-end gap-8 rounded-xl bg-white px-10 py-8">
+    <div className="flex items-end gap-8 rounded-xl pk-surface px-10 py-8">
       {[
         ['글자만', <B key="a" label="라벨" />],
         ['앞 아이콘 + 글자', <B key="b" label="라벨" prefix="plus" />],
@@ -243,13 +259,13 @@ const VariantCards: Fig = ({ caption }) => (
   <Panel caption={caption}>
     <div className="grid gap-3 sm:grid-cols-2">
       {VARIANTS().map((v) => (
-        <div key={v} className="flex items-center gap-4 rounded-xl bg-white p-4">
+        <div key={v} className="flex items-center gap-4 rounded-xl pk-surface p-4">
           <div className="flex w-[108px] shrink-0 justify-center">
             <B variant={v} label={v === 'criticalSolid' ? '삭제' : v === 'neutralWeak' ? '취소' : '라벨'} />
           </div>
           <div className="flex min-w-0 flex-col gap-0.5">
-            <code className="text-[13px] font-semibold text-[#1A1F2E]">{v}</code>
-            <span className="text-[12px] leading-[18px] text-[#62697A]">{axisDesc(spec(), 'variant', v)}</span>
+            <code className="text-[13px] font-semibold pk-text">{v}</code>
+            <span className="text-[12px] leading-[18px] pk-muted">{axisDesc(spec(), 'variant', v)}</span>
           </div>
         </div>
       ))}
@@ -259,7 +275,7 @@ const VariantCards: Fig = ({ caption }) => (
 
 const GhostColors: Fig = ({ caption }) => (
   <Figure caption={caption}>
-    <div className="flex items-end gap-6 rounded-xl bg-white px-10 py-8">
+    <div className="flex items-end gap-6 rounded-xl pk-surface px-10 py-8">
       {GHOST().map((g) => (
         <div key={g} className="flex flex-col items-center gap-3">
           <B variant="ghost" ghostColor={g} label={g === 'critical' ? '삭제' : g === 'brand' ? '자세히 보기' : g === 'neutralSubtle' ? '더보기' : '편집'} prefix={g === 'critical' ? 'trash' : g === 'brand' ? undefined : g === 'neutral' ? 'pencil' : undefined} />
@@ -274,13 +290,13 @@ const GhostColors: Fig = ({ caption }) => (
 const STATE_KO: Record<string, string> = { enabled: '기본', hovered: '호버', focused: '포커스', pressed: '누름', loading: '로딩', disabled: '비활성' };
 const States: Fig = ({ caption }) => (
   <Panel caption={caption}>
-    <div className="overflow-x-auto rounded-xl bg-white p-5">
+    <div className="overflow-x-auto rounded-xl pk-surface p-5">
       <table className="w-full border-collapse">
         <thead>
           <tr>
             <th className="w-[120px]" />
             {BUTTON_STATES.map((s) => (
-              <th key={s} className="pb-3 text-center text-[12px] font-medium text-[#62697A]">
+              <th key={s} className="pb-3 text-center text-[12px] font-medium pk-muted">
                 {STATE_KO[s]}
                 <br />
                 <span className="font-mono text-[10px]">{s}</span>
@@ -291,7 +307,7 @@ const States: Fig = ({ caption }) => (
         <tbody>
           {VARIANTS().map((v) => (
             <tr key={v}>
-              <td className="py-2 pr-3 text-[12px] font-medium text-[#1A1F2E]">{v}</td>
+              <td className="py-2 pr-3 text-[12px] font-medium pk-text">{v}</td>
               {BUTTON_STATES.map((s) => (
                 <td key={s} className="px-2 py-2 text-center">
                   <B variant={v} size="small" state={s} label="라벨" />
@@ -307,7 +323,7 @@ const States: Fig = ({ caption }) => (
 
 const LiveStates: Fig = ({ caption }) => (
   <Figure caption={caption}>
-    <div className="flex flex-col items-center gap-5 rounded-xl bg-white px-10 py-8">
+    <div className="flex flex-col items-center gap-5 rounded-xl pk-surface px-10 py-8">
       <div className="flex flex-wrap justify-center gap-3">
         {VARIANTS().map((v) => (
           <B key={v} variant={v} label="눌러 보기" />
@@ -357,7 +373,7 @@ const Width: Fig = ({ caption }) => (
 // ── 누르는 영역 44 ────────────────────────────────────────
 const HitArea: Fig = ({ caption }) => (
   <Figure caption={caption}>
-    <div className="flex items-center gap-12 rounded-xl bg-white px-12 py-10">
+    <div className="flex items-center gap-12 rounded-xl pk-surface px-12 py-10">
       {['xsmall', 'small', 'medium'].map((s) => {
         const f = buttonLook({ size: s, layout: 'iconOnly' }).faces.light.enabled;
         return (
