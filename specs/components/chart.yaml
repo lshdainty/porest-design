@@ -2,7 +2,7 @@
 #
 # Chart Palette 10색은 palette 축의 값이다 — 시리즈마다 한 색을 고르므로 축으로 두면 표가
 # 색마다 한 줄로 그려지고(#palette), 공통 크기 표(#base.default)와 섞이지 않는다.
-# 다크 값은 각 색의 `-light` 짝이다(chart.md 규칙 — `theme.dark: var(--color-chart-*-light)`).
+# 다크 값은 각 색의 `-dark` 짝이다(v110 — 팔레트 800-dark. chart.md 규칙 — `theme.dark: var(--color-chart-*-dark)`, 옛 `-light` 는 별칭).
 # tooltip 의 series indicator 모양(dot · line · dashed)은 indicator 축이다.
 
 name: Chart
@@ -80,49 +80,49 @@ rules:
   - when: { palette: red }
     default:
       series:
-        color: { value: $color-chart-red, dark: $color-chart-red-light }
+        color: { value: $color-chart-red, dark: $color-chart-red-dark }
 
   - when: { palette: orange }
     default:
       series:
-        color: { value: $color-chart-orange, dark: $color-chart-orange-light }
+        color: { value: $color-chart-orange, dark: $color-chart-orange-dark }
 
   - when: { palette: yellow }
     default:
       series:
-        color: { value: $color-chart-yellow, dark: $color-chart-yellow-light }
+        color: { value: $color-chart-yellow, dark: $color-chart-yellow-dark }
 
   - when: { palette: green }
     default:
       series:
-        color: { value: $color-chart-green, dark: $color-chart-green-light }
+        color: { value: $color-chart-green, dark: $color-chart-green-dark }
 
   - when: { palette: blue }
     default:
       series:
-        color: { value: $color-chart-blue, dark: $color-chart-blue-light }
+        color: { value: $color-chart-blue, dark: $color-chart-blue-dark }
 
   - when: { palette: indigo }
     default:
       series:
-        color: { value: $color-chart-indigo, dark: $color-chart-indigo-light }
+        color: { value: $color-chart-indigo, dark: $color-chart-indigo-dark }
 
   - when: { palette: violet }
     default:
       series:
-        color: { value: $color-chart-violet, dark: $color-chart-violet-light }
+        color: { value: $color-chart-violet, dark: $color-chart-violet-dark }
 
   - when: { palette: pink }
     default:
       series:
-        color: { value: $color-chart-pink, dark: $color-chart-pink-light }
+        color: { value: $color-chart-pink, dark: $color-chart-pink-dark }
 
   - when: { palette: brown }
     default:
       series:
-        color: { value: $color-chart-brown, dark: $color-chart-brown-light }
+        color: { value: $color-chart-brown, dark: $color-chart-brown-dark }
 
   - when: { palette: gray }
     default:
       series:
-        color: { value: $color-chart-gray, dark: $color-chart-gray-light }
+        color: { value: $color-chart-gray, dark: $color-chart-gray-dark }

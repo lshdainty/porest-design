@@ -115,107 +115,6 @@ colors:
   blue-900-dark: "#ACCEFB"
   blue-1000: "#022956"
   blue-1000-dark: "#E8F2FE"
-  # v110 — 차트 10색을 팔레트에서 고르려고 더한 가족(700 = v21 ~ v24 차트 색)
-  yellow-100: "#F5F2E8"
-  yellow-100-dark: "#2D2A1D"
-  yellow-200: "#EAE6D4"
-  yellow-200-dark: "#3A331D"
-  yellow-300: "#DAD2B4"
-  yellow-300-dark: "#4A4019"
-  yellow-400: "#C5B98A"
-  yellow-400-dark: "#5C4D0B"
-  yellow-500: "#AF9E5D"
-  yellow-500-dark: "#6C5906"
-  yellow-600: "#998331"
-  yellow-600-dark: "#796400"
-  yellow-700: "#8C7400"
-  yellow-700-dark: "#846E04"
-  yellow-800: "#725E01"
-  yellow-800-dark: "#C5A721"
-  yellow-900: "#574805"
-  yellow-900-dark: "#D7CCA6"
-  yellow-1000: "#332902"
-  yellow-1000-dark: "#F3F1E6"
-  indigo-100: "#EFF2FF"
-  indigo-100-dark: "#26293A"
-  indigo-200: "#E1E4FC"
-  indigo-200-dark: "#2F324E"
-  indigo-300: "#CACFF7"
-  indigo-300-dark: "#383C6A"
-  indigo-400: "#ADB4F1"
-  indigo-400-dark: "#44468B"
-  indigo-500: "#9098E9"
-  indigo-500-dark: "#4F51AB"
-  indigo-600: "#767CDC"
-  indigo-600-dark: "#585AC1"
-  indigo-700: "#5E60C8"
-  indigo-700-dark: "#6264CC"
-  indigo-800: "#5354B6"
-  indigo-800-dark: "#99A1FE"
-  indigo-900: "#3F3E92"
-  indigo-900-dark: "#C3C9FC"
-  indigo-1000: "#242359"
-  indigo-1000-dark: "#EEF0FE"
-  violet-100: "#F7EFFE"
-  violet-100-dark: "#302638"
-  violet-200: "#ECE1F8"
-  violet-200-dark: "#3D2E4B"
-  violet-300: "#DEC9F2"
-  violet-300-dark: "#4F3565"
-  violet-400: "#CCACEA"
-  violet-400-dark: "#643C83"
-  violet-500: "#B88BDF"
-  violet-500-dark: "#7842A1"
-  violet-600: "#A46DD1"
-  violet-600-dark: "#8749B5"
-  violet-700: "#8B4DBA"
-  violet-700-dark: "#9153C0"
-  violet-800: "#7F44AA"
-  violet-800-dark: "#C793F3"
-  violet-900: "#633089"
-  violet-900-dark: "#DCC1F6"
-  violet-1000: "#3B1A53"
-  violet-1000-dark: "#F5EEFC"
-  pink-100: "#FFEEF4"
-  pink-100-dark: "#38242C"
-  pink-200: "#FBDEE9"
-  pink-200-dark: "#4C2938"
-  pink-300: "#F5C5D7"
-  pink-300-dark: "#642D47"
-  pink-400: "#EDA3C2"
-  pink-400-dark: "#813058"
-  pink-500: "#E07FAA"
-  pink-500-dark: "#9E3067"
-  pink-600: "#D05E93"
-  pink-600-dark: "#B23574"
-  pink-700: "#B83B7A"
-  pink-700-dark: "#BD407F"
-  pink-800: "#A7326D"
-  pink-800-dark: "#F485B6"
-  pink-900: "#851F55"
-  pink-900-dark: "#F9BBD3"
-  pink-1000: "#510E31"
-  pink-1000-dark: "#FEECF3"
-  brown-100: "#F8F0EB"
-  brown-100-dark: "#322821"
-  brown-200: "#EFE3DA"
-  brown-200-dark: "#3F3024"
-  brown-300: "#E3CEBD"
-  brown-300-dark: "#533B26"
-  brown-400: "#D2B399"
-  brown-400-dark: "#694628"
-  brown-500: "#C09573"
-  brown-500-dark: "#7E5127"
-  brown-600: "#AC7B51"
-  brown-600-dark: "#8E5A2A"
-  brown-700: "#9A6536"
-  brown-700-dark: "#986334"
-  brown-800: "#855428"
-  brown-800-dark: "#CF9F77"
-  brown-900: "#693F18"
-  brown-900-dark: "#E2C7B2"
-  brown-1000: "#3F240A"
-  brown-1000-dark: "#F7F0EA"
   # @sync:shared-end (colors-0)
   
   # @sync:shared-start (colors-1)
@@ -260,39 +159,29 @@ colors:
   info: "{colors.fg-informative}"
   info-light: "{colors.fg-informative-dark}"
   
-  # === Chart 10색 (v110 — 팔레트 단계에서: 라이트 700 · 다크 800-dark, 듀얼 브랜드 공유) ===
-  # 저장된 옛 hex(카테고리 · 태그 · 캘린더 색)는 이름표로 두고, 그리는 색만 이 토큰을 따른다
-  chart-red: "{colors.red-700}"
-  chart-orange: "{colors.orange-700}"
-  chart-yellow: "{colors.yellow-700}"
-  chart-green: "{colors.green-700}"
-  chart-blue: "{colors.blue-700}"
-  chart-indigo: "{colors.indigo-700}"
-  chart-violet: "{colors.violet-700}"
-  chart-pink: "{colors.pink-700}"
-  chart-brown: "{colors.brown-700}"
-  chart-gray: "{colors.gray-700}"
-  chart-red-dark: "{colors.red-800-dark}"
-  chart-orange-dark: "{colors.orange-800-dark}"
-  chart-yellow-dark: "{colors.yellow-800-dark}"
-  chart-green-dark: "{colors.green-800-dark}"
-  chart-blue-dark: "{colors.blue-800-dark}"
-  chart-indigo-dark: "{colors.indigo-800-dark}"
-  chart-violet-dark: "{colors.violet-800-dark}"
-  chart-pink-dark: "{colors.pink-800-dark}"
-  chart-brown-dark: "{colors.brown-800-dark}"
-  chart-gray-dark: "{colors.gray-800-dark}"
-  # 옛 이름 — 다크 짝(v23 ~ v24). 제품 CSS 가 옮겨 가면 지운다
-  chart-red-light: "{colors.chart-red-dark}"
-  chart-orange-light: "{colors.chart-orange-dark}"
-  chart-yellow-light: "{colors.chart-yellow-dark}"
-  chart-green-light: "{colors.chart-green-dark}"
-  chart-blue-light: "{colors.chart-blue-dark}"
-  chart-indigo-light: "{colors.chart-indigo-dark}"
-  chart-violet-light: "{colors.chart-violet-dark}"
-  chart-pink-light: "{colors.chart-pink-dark}"
-  chart-brown-light: "{colors.chart-brown-dark}"
-  chart-gray-light: "{colors.chart-gray-dark}"
+  # === Chart palette (data viz, 10색 hue 균등, L≈0.16-0.18 통일, 듀얼 브랜드 공유) ===
+  # 1차 5색 (v21): red, orange, yellow, green, blue. 2차 5색은 v22, dark 변형은 v23-v24.
+  chart-red: "#C73838"
+  chart-orange: "#B36418"
+  chart-yellow: "#8C7400"
+  chart-green: "#2D8060"
+  chart-blue: "#2C70BF"
+  chart-indigo: "#5E60C8"
+  chart-violet: "#8B4DBA"
+  chart-pink: "#B83B7A"
+  chart-brown: "#9A6536"
+  chart-gray: "#6B7484"
+  # chart dark 변형 (어두운 표면용, L≈0.45-0.55, v23-v24)
+  chart-red-light: "#ECA0A0"
+  chart-orange-light: "#E8B266"
+  chart-yellow-light: "#D4B83A"
+  chart-green-light: "#6BCB86"
+  chart-blue-light: "#7BBBED"
+  chart-indigo-light: "#ABB0F0"
+  chart-violet-light: "#D2A8EC"
+  chart-pink-light: "#ECA0BC"
+  chart-brown-light: "#DCB088"
+  chart-gray-light: "#B5BBC5"
   # @sync:shared-end (colors-2)
   
   # @sync:shared-start (colors-3)
@@ -746,25 +635,25 @@ components:
     backgroundColor: "{colors.chart-gray}"
   # chart dark 변형 컴포넌트 (어두운 표면 위)
   chart-color-red-on-dark:
-    backgroundColor: "{colors.chart-red-dark}"
+    backgroundColor: "{colors.chart-red-light}"
   chart-color-orange-on-dark:
-    backgroundColor: "{colors.chart-orange-dark}"
+    backgroundColor: "{colors.chart-orange-light}"
   chart-color-yellow-on-dark:
-    backgroundColor: "{colors.chart-yellow-dark}"
+    backgroundColor: "{colors.chart-yellow-light}"
   chart-color-green-on-dark:
-    backgroundColor: "{colors.chart-green-dark}"
+    backgroundColor: "{colors.chart-green-light}"
   chart-color-blue-on-dark:
-    backgroundColor: "{colors.chart-blue-dark}"
+    backgroundColor: "{colors.chart-blue-light}"
   chart-color-indigo-on-dark:
-    backgroundColor: "{colors.chart-indigo-dark}"
+    backgroundColor: "{colors.chart-indigo-light}"
   chart-color-violet-on-dark:
-    backgroundColor: "{colors.chart-violet-dark}"
+    backgroundColor: "{colors.chart-violet-light}"
   chart-color-pink-on-dark:
-    backgroundColor: "{colors.chart-pink-dark}"
+    backgroundColor: "{colors.chart-pink-light}"
   chart-color-brown-on-dark:
-    backgroundColor: "{colors.chart-brown-dark}"
+    backgroundColor: "{colors.chart-brown-light}"
   chart-color-gray-on-dark:
-    backgroundColor: "{colors.chart-gray-dark}"
+    backgroundColor: "{colors.chart-gray-light}"
   
   # === Tertiary 텍스트 (placeholder, caption-tertiary, hint) ===
   caption-tertiary-on-card-light:
@@ -1203,206 +1092,6 @@ components:
     backgroundColor: "{colors.blue-1000}"
   palette-blue-1000-dark:
     backgroundColor: "{colors.blue-1000-dark}"
-  palette-yellow-100:
-    backgroundColor: "{colors.yellow-100}"
-  palette-yellow-100-dark:
-    backgroundColor: "{colors.yellow-100-dark}"
-  palette-yellow-200:
-    backgroundColor: "{colors.yellow-200}"
-  palette-yellow-200-dark:
-    backgroundColor: "{colors.yellow-200-dark}"
-  palette-yellow-300:
-    backgroundColor: "{colors.yellow-300}"
-  palette-yellow-300-dark:
-    backgroundColor: "{colors.yellow-300-dark}"
-  palette-yellow-400:
-    backgroundColor: "{colors.yellow-400}"
-  palette-yellow-400-dark:
-    backgroundColor: "{colors.yellow-400-dark}"
-  palette-yellow-500:
-    backgroundColor: "{colors.yellow-500}"
-  palette-yellow-500-dark:
-    backgroundColor: "{colors.yellow-500-dark}"
-  palette-yellow-600:
-    backgroundColor: "{colors.yellow-600}"
-  palette-yellow-600-dark:
-    backgroundColor: "{colors.yellow-600-dark}"
-  palette-yellow-700:
-    backgroundColor: "{colors.yellow-700}"
-  palette-yellow-700-dark:
-    backgroundColor: "{colors.yellow-700-dark}"
-  palette-yellow-800:
-    backgroundColor: "{colors.yellow-800}"
-  palette-yellow-800-dark:
-    backgroundColor: "{colors.yellow-800-dark}"
-  palette-yellow-900:
-    backgroundColor: "{colors.yellow-900}"
-  palette-yellow-900-dark:
-    backgroundColor: "{colors.yellow-900-dark}"
-  palette-yellow-1000:
-    backgroundColor: "{colors.yellow-1000}"
-  palette-yellow-1000-dark:
-    backgroundColor: "{colors.yellow-1000-dark}"
-  palette-indigo-100:
-    backgroundColor: "{colors.indigo-100}"
-  palette-indigo-100-dark:
-    backgroundColor: "{colors.indigo-100-dark}"
-  palette-indigo-200:
-    backgroundColor: "{colors.indigo-200}"
-  palette-indigo-200-dark:
-    backgroundColor: "{colors.indigo-200-dark}"
-  palette-indigo-300:
-    backgroundColor: "{colors.indigo-300}"
-  palette-indigo-300-dark:
-    backgroundColor: "{colors.indigo-300-dark}"
-  palette-indigo-400:
-    backgroundColor: "{colors.indigo-400}"
-  palette-indigo-400-dark:
-    backgroundColor: "{colors.indigo-400-dark}"
-  palette-indigo-500:
-    backgroundColor: "{colors.indigo-500}"
-  palette-indigo-500-dark:
-    backgroundColor: "{colors.indigo-500-dark}"
-  palette-indigo-600:
-    backgroundColor: "{colors.indigo-600}"
-  palette-indigo-600-dark:
-    backgroundColor: "{colors.indigo-600-dark}"
-  palette-indigo-700:
-    backgroundColor: "{colors.indigo-700}"
-  palette-indigo-700-dark:
-    backgroundColor: "{colors.indigo-700-dark}"
-  palette-indigo-800:
-    backgroundColor: "{colors.indigo-800}"
-  palette-indigo-800-dark:
-    backgroundColor: "{colors.indigo-800-dark}"
-  palette-indigo-900:
-    backgroundColor: "{colors.indigo-900}"
-  palette-indigo-900-dark:
-    backgroundColor: "{colors.indigo-900-dark}"
-  palette-indigo-1000:
-    backgroundColor: "{colors.indigo-1000}"
-  palette-indigo-1000-dark:
-    backgroundColor: "{colors.indigo-1000-dark}"
-  palette-violet-100:
-    backgroundColor: "{colors.violet-100}"
-  palette-violet-100-dark:
-    backgroundColor: "{colors.violet-100-dark}"
-  palette-violet-200:
-    backgroundColor: "{colors.violet-200}"
-  palette-violet-200-dark:
-    backgroundColor: "{colors.violet-200-dark}"
-  palette-violet-300:
-    backgroundColor: "{colors.violet-300}"
-  palette-violet-300-dark:
-    backgroundColor: "{colors.violet-300-dark}"
-  palette-violet-400:
-    backgroundColor: "{colors.violet-400}"
-  palette-violet-400-dark:
-    backgroundColor: "{colors.violet-400-dark}"
-  palette-violet-500:
-    backgroundColor: "{colors.violet-500}"
-  palette-violet-500-dark:
-    backgroundColor: "{colors.violet-500-dark}"
-  palette-violet-600:
-    backgroundColor: "{colors.violet-600}"
-  palette-violet-600-dark:
-    backgroundColor: "{colors.violet-600-dark}"
-  palette-violet-700:
-    backgroundColor: "{colors.violet-700}"
-  palette-violet-700-dark:
-    backgroundColor: "{colors.violet-700-dark}"
-  palette-violet-800:
-    backgroundColor: "{colors.violet-800}"
-  palette-violet-800-dark:
-    backgroundColor: "{colors.violet-800-dark}"
-  palette-violet-900:
-    backgroundColor: "{colors.violet-900}"
-  palette-violet-900-dark:
-    backgroundColor: "{colors.violet-900-dark}"
-  palette-violet-1000:
-    backgroundColor: "{colors.violet-1000}"
-  palette-violet-1000-dark:
-    backgroundColor: "{colors.violet-1000-dark}"
-  palette-pink-100:
-    backgroundColor: "{colors.pink-100}"
-  palette-pink-100-dark:
-    backgroundColor: "{colors.pink-100-dark}"
-  palette-pink-200:
-    backgroundColor: "{colors.pink-200}"
-  palette-pink-200-dark:
-    backgroundColor: "{colors.pink-200-dark}"
-  palette-pink-300:
-    backgroundColor: "{colors.pink-300}"
-  palette-pink-300-dark:
-    backgroundColor: "{colors.pink-300-dark}"
-  palette-pink-400:
-    backgroundColor: "{colors.pink-400}"
-  palette-pink-400-dark:
-    backgroundColor: "{colors.pink-400-dark}"
-  palette-pink-500:
-    backgroundColor: "{colors.pink-500}"
-  palette-pink-500-dark:
-    backgroundColor: "{colors.pink-500-dark}"
-  palette-pink-600:
-    backgroundColor: "{colors.pink-600}"
-  palette-pink-600-dark:
-    backgroundColor: "{colors.pink-600-dark}"
-  palette-pink-700:
-    backgroundColor: "{colors.pink-700}"
-  palette-pink-700-dark:
-    backgroundColor: "{colors.pink-700-dark}"
-  palette-pink-800:
-    backgroundColor: "{colors.pink-800}"
-  palette-pink-800-dark:
-    backgroundColor: "{colors.pink-800-dark}"
-  palette-pink-900:
-    backgroundColor: "{colors.pink-900}"
-  palette-pink-900-dark:
-    backgroundColor: "{colors.pink-900-dark}"
-  palette-pink-1000:
-    backgroundColor: "{colors.pink-1000}"
-  palette-pink-1000-dark:
-    backgroundColor: "{colors.pink-1000-dark}"
-  palette-brown-100:
-    backgroundColor: "{colors.brown-100}"
-  palette-brown-100-dark:
-    backgroundColor: "{colors.brown-100-dark}"
-  palette-brown-200:
-    backgroundColor: "{colors.brown-200}"
-  palette-brown-200-dark:
-    backgroundColor: "{colors.brown-200-dark}"
-  palette-brown-300:
-    backgroundColor: "{colors.brown-300}"
-  palette-brown-300-dark:
-    backgroundColor: "{colors.brown-300-dark}"
-  palette-brown-400:
-    backgroundColor: "{colors.brown-400}"
-  palette-brown-400-dark:
-    backgroundColor: "{colors.brown-400-dark}"
-  palette-brown-500:
-    backgroundColor: "{colors.brown-500}"
-  palette-brown-500-dark:
-    backgroundColor: "{colors.brown-500-dark}"
-  palette-brown-600:
-    backgroundColor: "{colors.brown-600}"
-  palette-brown-600-dark:
-    backgroundColor: "{colors.brown-600-dark}"
-  palette-brown-700:
-    backgroundColor: "{colors.brown-700}"
-  palette-brown-700-dark:
-    backgroundColor: "{colors.brown-700-dark}"
-  palette-brown-800:
-    backgroundColor: "{colors.brown-800}"
-  palette-brown-800-dark:
-    backgroundColor: "{colors.brown-800-dark}"
-  palette-brown-900:
-    backgroundColor: "{colors.brown-900}"
-  palette-brown-900-dark:
-    backgroundColor: "{colors.brown-900-dark}"
-  palette-brown-1000:
-    backgroundColor: "{colors.brown-1000}"
-  palette-brown-1000-dark:
-    backgroundColor: "{colors.brown-1000-dark}"
 ---
 
 ## Overview
@@ -1420,27 +1109,6 @@ HR(조직 관리, B2B)과 Desk(개인 생산성, B2C)는 동일한 골격을 공
 - **공유 토큰 변경 시**: 3파일 모두 수동 동기 — design.md spec이 cross-file token reference 미지원이라 자동화 불가.
 
 ## Colors
-
-### v110 — 차트 10색을 팔레트에서 (2026-09-30)
-
-v108 에서 미뤄 둔 차트 10색을 팔레트 단계로 옮긴다. 사용자가 비교 페이지(https://claude.ai/artifact/QLVzEaAuyakobiWKAwXTUu)에서 넷을 정했다 — 팔레트 가족에서 · 다크 800-dark · 배정 순서는 제품 순서 · 10개가 넘으면 상위 9 + 기타. SEED 에는 차트 전용 색이 없다(팔레트 7가족과 배너 색 10개뿐).
-
-**아직 두 웹 · 앱에는 들어가지 않았다.**
-
-| 자리 | 값 |
-|---|---|
-| 가족 | 팔레트에 yellow · indigo · violet · pink · brown 을 더했다(100 ~ 1000, 라이트 · 다크). 700 이 v21 ~ v24 차트 색 그대로이고, 나머지 단계는 v108 규칙(목표 L* · SEED 채도 비율)으로 뽑았다 |
-| 라이트 | chart-{hue} = {hue}-700(회색은 gray-700). 빨강 · 주황 · 초록 · 파랑은 의미 색 가족이라 위험 · 경고 · 긍정 · 정보 채움과 같은 색이다 |
-| 다크 | chart-{hue}-dark = {hue}-800-dark — 다크 의미 색 글자와 같은 단계(L* 69, 다크 표면 위 6:1). 옛 chart-{hue}-light 는 별칭으로 남기고 제품 CSS 가 옮겨 가면 지운다 |
-| 순서 | 색을 고르지 않은 항목(도넛 · 순위 막대 · 주식 비중)은 blue → green → orange → violet → pink → indigo → red → yellow → brown → gray 순으로 받는다 — 제품이 쓰는 순서 |
-| 넘칠 때 | 한 차트에 10개가 넘으면 상위 9개 + 회색 "기타" 로 묶는다. 회색은 기타 전용이다 |
-
-- 바뀌는 라이트 값은 다섯이다 — 빨강 #C73838 → #D72323(ΔE 4.8) · 주황 #B36418 → #BE490D(10.0) · 초록 #2D8060 → #167F3F(8.2) · 파랑 #2C70BF → #1D6EC9(1.2) · 회색 #6B7484 → #62697A(4.3). 노랑 · 남색 · 보라 · 분홍 · 갈색은 그대로다.
-- 가장 헷갈리는 짝이 멀어졌다 — 주황–갈색 ΔE 7.0(다크 8.0) → 빨강–주황 11.3(다크 9.7). 다크의 빨강 · 주황은 둘 다 산호색이라 여전히 가장 가깝다 — 차트에는 범례 · 라벨을 늘 함께 쓴다(State · Inclusive Design 의 "색만으로 알리지 않는다").
-- 노랑 800-dark 는 v109 규칙대로 채도를 지금 제품(#D4B83A)만큼 올렸다(#C5A721).
-- **저장된 색은 옮기지 않는다.** Desk 는 카테고리 · 태그 · 캘린더 · 라벨 · 저축 목표 · 메모의 색을 라이트 hex 로 저장하고, 웹 · 앱이 그 값으로 다크 짝을 찾는다. 앱 적용 때 저장 값은 이름표로 두고 짝 표만 "옛 hex → 새 토큰" 으로 바꾼다 — 옛 앱은 옛 색을 그대로 그려 강제 업데이트가 필요 없다. DB 값을 새 hex 로 옮기면 옛 앱이 새 값을 몰라 편집할 때 빨강으로 되돌린다.
-- 아바타 이니셜은 fg-neutral-inverted 다 — 라이트는 흰색(700 위 4.55:1 이상), 다크는 어두운 글자(800-dark 위 6.07:1 이상). 다크에서 흰 글자는 2.4:1 이다.
-- HR 은 porest 차트 색을 쓰지 않는다(부서 색은 shadcn chart-1 ~ 5 이름을 저장한다). HR 앱 적용 때 그 다섯 이름을 porest 차트 색에 잇는다.
 
 ### v109 — v108 색 점검 반영 (2026-09-30)
 
@@ -1470,7 +1138,7 @@ v108 로 크게 바뀐 색을 지금 제품 값(Desk 웹 `porest-tokens.css` · 
 
 | 자리 | 값 |
 |---|---|
-| 가족 | gray(00 · 100 ~ 1000) · red · green · orange · blue(100 ~ 1000), (v110) 차트용 yellow · indigo · violet · pink · brown(100 ~ 1000). 브랜드는 brand(100 ~ 1000)로 브랜드 파일에만 있다 |
+| 가족 | gray(00 · 100 ~ 1000) · red · green · orange · blue(100 ~ 1000). 브랜드는 brand(100 ~ 1000)로 브랜드 파일에만 있다 |
 | 모드 | 단계마다 라이트 · 다크 값이 있다. 다크 값은 이름 뒤에 -dark 를 붙인다(gray-100-dark) — 역할 색과 같은 규칙 |
 | 차례 | 라이트는 100 이 가장 옅고 1000 이 가장 짙다. 다크는 뒤집혀 100 이 가장 어둡다 — 같은 번호가 두 모드에서 비슷한 무게로 보인다 |
 | 참조 | 역할 색은 단계를 가리키고(`bg-layer-default: "{colors.gray-00}"`), 옛 이름은 역할 색을 가리킨다(`text-primary: "{colors.fg-neutral}"`). hex 는 팔레트에만 있다 |
@@ -1479,7 +1147,7 @@ v108 로 크게 바뀐 색을 지금 제품 값(Desk 웹 `porest-tokens.css` · 
 - 팔레트 이름은 gray-500 처럼 차례 번호다 — "토큰 이름은 의미 기반" 규칙의 예외로, 팔레트 층에만 쓴다.
 - 역할이 가리키지 않는 단계(gray-600 · 의미 색 300 ~ 500 등)도 둔다. design.md 검사기는 어느 컴포넌트도 쓰지 않는 색을 경고하므로, 머리말 `components` 의 palette-* 가 단계마다 한 번씩 가리킨다 — 보기용이고 화면 컴포넌트가 아니다.
 - 옛 이름은 컴포넌트 스펙을 역할 이름으로 옮기고 나면 지운다.
-- (v110) 차트 10색은 팔레트 단계다 — 라이트 700 · 다크 800-dark. 새 가족 다섯의 700 은 v21 ~ v24 차트 색 그대로다.
+- 차트 10색(chart-*)은 아직 팔레트 밖이다. 팔레트에서 새로 고를 예정이다.
 - 본문 곳곳의 대비 수치는 대개 v108 전 값으로 잰 것이다. 지금 대비는 `npm run lint:all` · `npm run lint:dark` 가 잰 값이 기준이다.
 
 #### 값을 뽑은 규칙
@@ -1963,8 +1631,6 @@ v20과 동일 — light 위에 white 올리면 contrast 2~3:1 미달. 다크 모
 
 ### Chart palette (v21 도입, 4 배치 완료)
 
-**v110 에서 팔레트 단계로 옮겼다** — 아래 표는 v21 ~ v24 값의 기록이다. 지금 값은 Colors 의 v110 절(라이트 700 · 다크 800-dark)에 있다.
-
 데이터 시각화용 hue-균등 10색 팔레트. 양 brand 공유(unified, primary는 brand-specific 유지). L≈0.16-0.18로 통일해 어떤 색이 데이터 차원을 강조하지 않게 시각 균형 확보.
 
 | Batch | Status | 토큰 | 표면 | L 범위 |
@@ -1976,29 +1642,29 @@ v20과 동일 — light 위에 white 올리면 contrast 2~3:1 미달. 다크 모
 
 #### 손계산 휘도 (lint sparse 검증, contrast 룰 미발동)
 
-| 토큰 | v21 hex | L | bg-page 위 contrast | v110 |
-|---|---|---|---|---|
-| `chart-red` | `#C73838` | 0.153 | 4.85 | `#D72323` |
-| `chart-orange` | `#B36418` | 0.187 | 4.10 | `#BE490D` |
-| `chart-yellow` | `#8C7400` | 0.180 | 4.22 | `#8C7400` |
-| `chart-green` | `#2D8060` | 0.169 | 4.45 | `#167F3F` |
-| `chart-blue` | `#2C70BF` | 0.159 | 4.66 | `#1D6EC9` |
+| 토큰 | hex | L | bg-page 위 contrast |
+|---|---|---|---|
+| `chart-red` | `#C73838` | 0.153 | 4.85 |
+| `chart-orange` | `#B36418` | 0.187 | 4.10 |
+| `chart-yellow` | `#8C7400` | 0.180 | 4.22 |
+| `chart-green` | `#2D8060` | 0.169 | 4.45 |
+| `chart-blue` | `#2C70BF` | 0.159 | 4.66 |
 
 `chart-orange`(4.10), `chart-yellow`(4.22)는 본문 4.5:1 미달이나 chart fill 용도라 **UI 1.4.11 (3:1)** 기준 통과 — chart bar/line/marker로 사용 시 적정. 차트 위 inline 텍스트로는 사용 부적합 (텍스트는 `text-primary`/`text-secondary` 사용).
 
 #### v22 hex (light surface 추가 5색 — sparse 손계산 휘도)
 
-| 토큰 | v22 hex | v110 |
-|---|---|---|
-| `chart-indigo` | `#5E60C8` | `#5E60C8` |
-| `chart-violet` | `#8B4DBA` | `#8B4DBA` |
-| `chart-pink` | `#B83B7A` | `#B83B7A` |
-| `chart-brown` | `#9A6536` | `#9A6536` |
-| `chart-gray` | `#6B7484` | `#62697A` |
+| 토큰 | hex |
+|---|---|
+| `chart-indigo` | `#5E60C8` |
+| `chart-violet` | `#8B4DBA` |
+| `chart-pink` | `#B83B7A` |
+| `chart-brown` | `#9A6536` |
+| `chart-gray` | `#6B7484` |
 
 v21 동일 정책 — light 표면 위 chart fill, UI 1.4.11 (3:1) 기준 통과. 일부 본문 4.5:1 미달도 chart bar/line/marker 용도 적정.
 
-#### v23-v24 hex (dark surface — `chart-*-light`, L≈0.45-0.55 — v110 에서 `chart-*-dark` 로, 옛 이름은 별칭)
+#### v23-v24 hex (dark surface — `chart-*-light`, L≈0.45-0.55)
 
 | 토큰 | hex | 토큰 | hex |
 |---|---|---|---|
@@ -3707,33 +3373,33 @@ WCAG 1.4.3 (Contrast Minimum)의 명시적 예외:
 data visualization(bar/line/pie/donut/heatmap)·카테고리 색상·tag 분류용 10색 palette. fill / stroke 용도 sparse 매핑(`backgroundColor`만, `textColor` 페어 비대상).
 
 #### Mode pair (10색 × 2 = 20 토큰)
-**Light surface (`surface-default` 위)** — 팔레트 700 단계(v110, L* 45 ~ 50):
+**Light surface (`surface-default` 위)** — L≈0.16~0.18 통일:
 | Token | hex | Hue |
 |---|---|---|
-| `chart-color-red` | `#D72323` | red |
-| `chart-color-orange` | `#BE490D` | orange |
+| `chart-color-red` | `#C73838` | red |
+| `chart-color-orange` | `#B36418` | orange |
 | `chart-color-yellow` | `#8C7400` | yellow |
-| `chart-color-green` | `#167F3F` | green |
-| `chart-color-blue` | `#1D6EC9` | blue |
+| `chart-color-green` | `#2D8060` | green |
+| `chart-color-blue` | `#2C70BF` | blue |
 | `chart-color-indigo` | `#5E60C8` | indigo |
 | `chart-color-violet` | `#8B4DBA` | violet |
 | `chart-color-pink` | `#B83B7A` | pink |
 | `chart-color-brown` | `#9A6536` | brown |
-| `chart-color-gray` | `#62697A` | gray |
+| `chart-color-gray` | `#6B7484` | gray |
 
-**Dark surface (`surface-default-dark` 위)** — `chart-*-dark` = 팔레트 800-dark(v110, L* 69):
+**Dark surface (`surface-default-dark` 위)** — L≈0.45~0.55 (light variant):
 | Token | hex |
 |---|---|
-| `chart-color-red-on-dark` | `#FF8477` |
-| `chart-color-orange-on-dark` | `#FF8758` |
-| `chart-color-yellow-on-dark` | `#C5A721` |
-| `chart-color-green-on-dark` | `#25C062` |
-| `chart-color-blue-on-dark` | `#69ABFF` |
-| `chart-color-indigo-on-dark` | `#99A1FE` |
-| `chart-color-violet-on-dark` | `#C793F3` |
-| `chart-color-pink-on-dark` | `#F485B6` |
-| `chart-color-brown-on-dark` | `#CF9F77` |
-| `chart-color-gray-on-dark` | `#B7BDCC` |
+| `chart-color-red-on-dark` | `#ECA0A0` |
+| `chart-color-orange-on-dark` | `#E8B266` |
+| `chart-color-yellow-on-dark` | `#D4B83A` |
+| `chart-color-green-on-dark` | `#6BCB86` |
+| `chart-color-blue-on-dark` | `#7BBBED` |
+| `chart-color-indigo-on-dark` | `#ABB0F0` |
+| `chart-color-violet-on-dark` | `#D2A8EC` |
+| `chart-color-pink-on-dark` | `#ECA0BC` |
+| `chart-color-brown-on-dark` | `#DCB088` |
+| `chart-color-gray-on-dark` | `#B5BBC5` |
 
 #### Hue 정렬 의도
 red → orange → yellow → green → blue → indigo → violet → pink → brown → gray 순서는 **무지개 + 보조색 sort** — 인접 색상 간 시각 거리 균등. chart에서 1~3개 카테고리만 사용 시 처음 3개(red/orange/yellow) 또는 brand-친화 3개(green/blue/indigo) 권장.
@@ -3746,7 +3412,7 @@ red → orange → yellow → green → blue → indigo → violet → pink → 
 |---|---|---|
 | 라이트 표면 fill | `chart-color-{hue}` | bar 채움, pie slice |
 | 라이트 표면 stroke | `chart-color-{hue}` | line 그래프 stroke |
-| 다크 표면 fill/stroke | `chart-color-{hue}-on-dark` | 다크 모드에서 `chart-{hue}-dark` 사용 |
+| 다크 표면 fill/stroke | `chart-color-{hue}-on-dark` | 다크 모드에서 light variant 사용 |
 | 카테고리 tag | `chart-color-{hue}` | category badge, label dot |
 
 #### Layout
@@ -4080,7 +3746,7 @@ binary on/off 상태 또는 group 선택을 표현하는 form control 3종. 공�
 - 사각형 변형 (`radius-md`) — list view 컴팩트 (HR 데이터 그리드 inline).
 
 #### Color (chart palette categorical)
-hash(name) % 10 → `chart-{red,orange,yellow,green,blue,indigo,violet,pink,brown,gray}` 분배. brand-neutral (chart palette 통일). 텍스트는 `fg-neutral-inverted` — 라이트는 흰색(700 위 4.55:1 이상), 다크는 `chart-{name}-dark` 위 어두운 글자(6.07:1 이상). 다크에서 흰 글자를 쓰면 2.4:1 이다(v110).
+hash(name) % 10 → `chart-{red,orange,yellow,green,blue,indigo,violet,pink,brown,gray}` 분배. brand-neutral (chart palette 통일). 텍스트는 `text-on-accent` (white). 다크 모드는 `chart-{name}-light` + 어두운 보색 텍스트.
 
 #### Status indicator (선택)
 - online: `success` 12×12 dot + `surface-default` 1px 외곽선 (avatar 우하단).
@@ -5293,10 +4959,10 @@ multi-toast stack management — v46 Toast의 상위 패턴. 동시 다수 toast
 - tooltip: hover 시 hover card 패턴 — 데이터 상세
 
 #### Color allocation
-- 순서(v110 — 제품이 쓰는 순서): blue → green → orange → violet → pink → indigo → red → yellow → brown → gray. 색을 고르지 않은 항목(도넛 · 순위 막대 · 주식 비중)이 이 순서로 받는다
-- 항목이 10개를 넘으면 상위 9개 + 회색 "기타" 로 묶는다 — 회색은 기타 전용이라 같은 색이 두 번 나오지 않는다(v110)
+- 첫 series: `chart-blue` (default — 친숙한 차트 색)
+- 다음: red / green / orange / violet / yellow / pink / indigo / brown / gray 순환
 - HR primary `#357B5F`(forest)와 chart-green hue 비슷 — HR brand color로 chart 차트 동시 표시 시 chart-green 회피
-- 다크 모드: `chart-*-dark`(v110 — 팔레트 800-dark). 옛 `chart-*-light` 는 별칭
+- 다크 모드: `chart-*-light` 자동 alias (v66)
 
 #### Empty / loading
 - empty: 가운데 illustration + "데이터가 없어요" + (필터 적용 시) "필터 초기화"

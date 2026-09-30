@@ -12,7 +12,7 @@
 //     - {success/error/warning/info}-light × dark 표면
 //   UI 3:1 (WCAG 1.4.11)
 //     - border-focus-light × dark 표면
-//     - chart-*-light × dark 표면
+//     - chart-*-dark(v110 — 옛 이름 -light) × dark 표면
 //
 // text-disabled-dark는 1.4.3 incidental 예외 — 검증 제외.
 // text-on-accent는 채움 위 텍스트(primary fill 등) — light pair lint가 이미 검증.
@@ -77,9 +77,9 @@ const BRAND_LIGHT = ["primary-light"]; // brand-specific (HR/Desk)
 const SEMANTIC_LIGHT = ["success-light", "error-light", "warning-light", "info-light"];
 const UI_ELEMENTS_3 = ["border-focus-light"]; // brand-specific
 const CHART_LIGHT = [
-  "chart-red-light", "chart-orange-light", "chart-yellow-light", "chart-green-light",
-  "chart-blue-light", "chart-indigo-light", "chart-violet-light", "chart-pink-light",
-  "chart-brown-light", "chart-gray-light",
+  "chart-red-dark", "chart-orange-dark", "chart-yellow-dark", "chart-green-dark",
+  "chart-blue-dark", "chart-indigo-dark", "chart-violet-dark", "chart-pink-dark",
+  "chart-brown-dark", "chart-gray-dark",
 ];
 
 const RULES = [

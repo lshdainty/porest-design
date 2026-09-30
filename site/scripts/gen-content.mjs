@@ -151,7 +151,7 @@ function clean(dir) {
 // ── 토큰 레퍼런스 ──────────────────────────────────────────────
 
 // v108 — 역할 색 · 옛 이름은 `{colors.x}` 참조다. 값은 끝까지 따라가 hex 로, 단계는 팔레트 이름으로 보인다
-const PALETTE_NAME = /^(gray|red|green|orange|blue|brand)-(00|\d+)$/;
+const PALETTE_NAME = /^(gray|red|green|orange|blue|yellow|indigo|violet|pink|brown|brand)-(00|\d+)$/;
 function colorKit(colors = {}) {
   const ref = (name) => /^\{colors\.([a-z0-9-]+)\}$/.exec(String(colors[name] ?? ''))?.[1];
   const follow = (name) => {
@@ -173,6 +173,7 @@ function colorKit(colors = {}) {
 const kind = (name) => {
   const base = name.replace(/-dark$/, '');
   if (PALETTE_NAME.test(base)) return 'palette';
+  if (/^chart-[a-z]+-light$/.test(name)) return 'old'; // v110 — 다크 짝의 옛 이름
   if (/^chart-/.test(name)) return 'chart';
   if (/^(fg|bg|stroke|static)-/.test(name) && base !== 'bg-page') return 'role';
   return 'old';
@@ -282,11 +283,11 @@ function tokenReference() {
     '',
     '## 차트',
     '',
-    '데이터 시각화의 10색이다. 아직 팔레트 밖에 있다 — 팔레트에서 새로 고를 예정이다. 다크 표면에서는 `-light` 짝을 쓴다.',
+    '데이터 시각화 · 카테고리 색의 10색이다. 팔레트 단계를 가리킨다 — 라이트 700, 다크 800-dark(v110). 다크 짝의 옛 이름 `chart-*-light` 는 옛 이름 표에 있다.',
     '',
     table(
-      ['토큰', '라이트 표면', '다크 표면'],
-      S.names.filter((n) => /^chart-[a-z]+$/.test(n) && !n.endsWith('-light')).map((n) => [code(n), code(S.value(n)), code(S.value(`${n}-light`))]),
+      ['토큰', '단계', '라이트', '다크'],
+      S.names.filter((n) => /^chart-[a-z]+$/.test(n)).map((n) => [code(n), pair(S, n), code(S.value(n)), code(S.value(`${n}-dark`))]),
     ),
     '',
     '## 타이포그래피',
