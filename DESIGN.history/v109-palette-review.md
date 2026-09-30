@@ -21,7 +21,7 @@ colors:
   gray-200-dark: "#2D3346"
   gray-300: "#EDEFF3"
   gray-300-dark: "#353B4D"
-  gray-400: "#E5E8EF"
+  gray-400: "#D8DFEF"
   gray-400-dark: "#404757"
   gray-500: "#8A91A0"
   gray-500-dark: "#656B78"
@@ -50,7 +50,7 @@ colors:
   red-700: "#D72323"
   red-700-dark: "#D82424"
   red-800: "#C01016"
-  red-800-dark: "#FF8477"
+  red-800-dark: "#FD8679"
   red-900: "#96030C"
   red-900-dark: "#FFBCB3"
   red-1000: "#5C0004"
@@ -70,7 +70,7 @@ colors:
   green-700: "#167F3F"
   green-700-dark: "#198140"
   green-800: "#026E33"
-  green-800-dark: "#25C062"
+  green-800-dark: "#6CB87F"
   green-900: "#075527"
   green-900-dark: "#AED6B6"
   green-1000: "#023214"
@@ -90,7 +90,7 @@ colors:
   orange-700: "#BE490D"
   orange-700-dark: "#BF4A10"
   orange-800: "#A53E0A"
-  orange-800-dark: "#FF8758"
+  orange-800-dark: "#F58C64"
   orange-900: "#822E02"
   orange-900-dark: "#F9BFA9"
   orange-1000: "#4E1801"
@@ -110,7 +110,7 @@ colors:
   blue-700: "#1D6EC9"
   blue-700-dark: "#1F70CB"
   blue-800: "#0F5FB3"
-  blue-800-dark: "#69ABFF"
+  blue-800-dark: "#6BABFD"
   blue-900: "#06498D"
   blue-900-dark: "#ACCEFB"
   blue-1000: "#022956"
@@ -198,7 +198,7 @@ colors:
   fg-placeholder: "{colors.gray-700}"
   fg-placeholder-dark: "{colors.gray-700-dark}"
   fg-disabled: "{colors.gray-500}"
-  fg-disabled-dark: "{colors.gray-600-dark}"
+  fg-disabled-dark: "{colors.gray-500-dark}"
   static-white: "#FFFFFF"
   fg-critical: "{colors.red-700}"
   fg-critical-dark: "{colors.red-800-dark}"
@@ -208,13 +208,13 @@ colors:
   fg-warning-dark: "{colors.orange-800-dark}"
   fg-informative: "{colors.blue-700}"
   fg-informative-dark: "{colors.blue-800-dark}"
-  fg-critical-contrast: "{colors.red-800}"
+  fg-critical-contrast: "{colors.red-900}"
   fg-critical-contrast-dark: "{colors.red-900-dark}"
-  fg-positive-contrast: "{colors.green-800}"
+  fg-positive-contrast: "{colors.green-900}"
   fg-positive-contrast-dark: "{colors.green-900-dark}"
-  fg-warning-contrast: "{colors.orange-800}"
+  fg-warning-contrast: "{colors.orange-900}"
   fg-warning-contrast-dark: "{colors.orange-900-dark}"
-  fg-informative-contrast: "{colors.blue-800}"
+  fg-informative-contrast: "{colors.blue-900}"
   fg-informative-contrast-dark: "{colors.blue-900-dark}"
   # 배경 (bg)
   bg-layer-basement: "{colors.gray-200}"
@@ -231,7 +231,7 @@ colors:
   bg-neutral-weak-dark: "{colors.gray-300-dark}"
   bg-neutral-weak-pressed: "{colors.gray-300}"
   bg-neutral-weak-pressed-dark: "{colors.gray-400-dark}"
-  bg-neutral-inverted: "{colors.gray-1000}"
+  bg-neutral-inverted: "{colors.gray-900}"
   bg-neutral-inverted-dark: "{colors.gray-1000-dark}"
   bg-disabled: "{colors.gray-200}"
   bg-disabled-dark: "{colors.gray-300-dark}"
@@ -240,40 +240,40 @@ colors:
   bg-critical-solid-pressed: "{colors.red-800}"
   bg-critical-solid-pressed-dark: "{colors.red-700-dark}"
   bg-critical-weak: "{colors.red-100}"
-  bg-critical-weak-dark: "{colors.red-200-dark}"
+  bg-critical-weak-dark: "{colors.red-100-dark}"
   bg-critical-weak-pressed: "{colors.red-200}"
-  bg-critical-weak-pressed-dark: "{colors.red-300-dark}"
+  bg-critical-weak-pressed-dark: "{colors.red-200-dark}"
   bg-positive-solid: "{colors.green-700}"
   bg-positive-solid-dark: "{colors.green-600-dark}"
   bg-positive-solid-pressed: "{colors.green-800}"
   bg-positive-solid-pressed-dark: "{colors.green-700-dark}"
   bg-positive-weak: "{colors.green-100}"
-  bg-positive-weak-dark: "{colors.green-200-dark}"
+  bg-positive-weak-dark: "{colors.green-100-dark}"
   bg-positive-weak-pressed: "{colors.green-200}"
-  bg-positive-weak-pressed-dark: "{colors.green-300-dark}"
+  bg-positive-weak-pressed-dark: "{colors.green-200-dark}"
   bg-warning-solid: "{colors.orange-700}"
   bg-warning-solid-dark: "{colors.orange-600-dark}"
   bg-warning-solid-pressed: "{colors.orange-800}"
   bg-warning-solid-pressed-dark: "{colors.orange-700-dark}"
   bg-warning-weak: "{colors.orange-100}"
-  bg-warning-weak-dark: "{colors.orange-200-dark}"
+  bg-warning-weak-dark: "{colors.orange-100-dark}"
   bg-warning-weak-pressed: "{colors.orange-200}"
-  bg-warning-weak-pressed-dark: "{colors.orange-300-dark}"
+  bg-warning-weak-pressed-dark: "{colors.orange-200-dark}"
   bg-informative-solid: "{colors.blue-700}"
   bg-informative-solid-dark: "{colors.blue-600-dark}"
   bg-informative-solid-pressed: "{colors.blue-800}"
   bg-informative-solid-pressed-dark: "{colors.blue-700-dark}"
   bg-informative-weak: "{colors.blue-100}"
-  bg-informative-weak-dark: "{colors.blue-200-dark}"
+  bg-informative-weak-dark: "{colors.blue-100-dark}"
   bg-informative-weak-pressed: "{colors.blue-200}"
-  bg-informative-weak-pressed-dark: "{colors.blue-300-dark}"
+  bg-informative-weak-pressed-dark: "{colors.blue-200-dark}"
   # 선 (stroke)
   stroke-neutral-subtle: "{colors.gray-300}"
   stroke-neutral-subtle-dark: "{colors.gray-300-dark}"
   stroke-neutral-weak: "{colors.gray-400}"
   stroke-neutral-weak-dark: "{colors.gray-400-dark}"
-  stroke-neutral-solid: "{colors.gray-600}"
-  stroke-neutral-solid-dark: "{colors.gray-600-dark}"
+  stroke-neutral-solid: "{colors.gray-800}"
+  stroke-neutral-solid-dark: "{colors.gray-800-dark}"
   stroke-critical-solid: "{colors.red-700}"
   stroke-critical-solid-dark: "{colors.red-800-dark}"
   stroke-positive-solid: "{colors.green-700}"
@@ -1110,26 +1110,6 @@ HR(조직 관리, B2B)과 Desk(개인 생산성, B2C)는 동일한 골격을 공
 
 ## Colors
 
-### v109 — v108 색 점검 반영 (2026-09-30)
-
-v108 로 크게 바뀐 색을 지금 제품 값(Desk 웹 `porest-tokens.css` · 앱 `colors.dart` 가 복사해 쓰는 v108 직전 값) · v108 · 대안으로 나란히 그린 점검 페이지(https://claude.ai/artifact/RsFYD1ZoqgnBzDJ2irHm6r)에서 사용자가 정했다. 역할 → 단계와 SEED 에서 옮긴 이유는 아래 v108 절에 반영했다(`(v109)` 표시).
-
-**아직 두 웹 · 앱에는 들어가지 않았다.** v108 과 함께 앱 적용 단계에서 옮긴다.
-
-| 무엇 | 바꾼 것 | 왜 |
-|---|---|---|
-| 다크 글자 채도 | 의미 색 800-dark · 브랜드 900-dark 의 채도를 지금 제품 값만큼(밝기 · 색조는 그대로) | SEED 램프 모양대로 채도를 줄여 다크 링크 · 금액 글자가 회색 기를 띠었다(HR 브랜드는 채도가 절반 아래). 지금 제품 값과 ΔE 는 HR 9.5 → 3.0, Desk 7.6 → 5.0, 초록 10.9 → 7.8 |
-| 다크 약한 배경 | 의미 색 · 브랜드의 약한 배경 · 눌림 100 · 200 → 200 · 300 | 100 이 다크 카드 표면과 같은 밝기(1.00 ~ 1.02:1)라 안내 띠 · 배지 배경이 보이지 않았다 |
-| 대비 글자 | 라이트 900 → 800(다크는 900) | 라이트 900 이 거의 검정에 가깝게 짙었다 |
-| 강한 선 | gray-800 → gray-600 | 체크박스 · 라디오 테두리와 꺼진 스위치가 보조 글자만큼 진했다 |
-| 기본 테두리 | gray-400 라이트를 #E5E8EF 로 고정 | 스펙 40곳의 테두리가 진하고 푸르게 바뀌었다(다크는 입력칸 배경과 겹쳐 그대로) |
-| 다크 비활성 글자 | gray-500 → gray-600 | 다크 비활성 글자가 라이트보다 흐렸다 |
-| 브랜드 옅은 선 | Desk brand-300 채도 올림, HR 은 brand-400(채도 올림)으로 | 옅은 회청 · 회녹으로 바뀌었다 |
-| 토스트 · 툴팁 배경 | gray-900 → gray-1000(#1A1F2E) | 지금 제품 값으로 — 사용자 결정 |
-
-- 대비는 모두 다시 잰다 — `npm run lint:all` · `lint:dark` 가 통과한다. 다크 의미 색 글자는 다크 입력칸 위 4.67 ~ 4.71:1, 브랜드 글자는 4.69 · 4.79:1 이다.
-- 이번에 hex 를 고친 본문 인용 줄의 대비 수치도 다시 쟀다.
-
 ### v108 — SEED 팔레트 층 (2026-09-30)
 
 당근 SEED 처럼 색에 팔레트 층을 둔다. 팔레트는 가족마다 차례 번호를 붙인 색이고, 역할 색(v102)은 hex 대신 그 단계를 가리킨다. 사용자가 2026-09-30 SEED 와 나란히 놓은 비교 페이지에서 구조(SEED 식 모드별) · 채우기(가족마다 차례로) · 값(SEED 규칙대로 새로 뽑음)을 정하고, 값 제안표를 보고 그대로 넣기로 했다. 출처: seed-design.io Foundations › Color › Palette(Apache-2.0).
@@ -1158,7 +1138,6 @@ v108 로 크게 바뀐 색을 지금 제품 값(Desk 웹 `porest-tokens.css` · 
 - 회색의 양 끝은 지금 값이다 — 라이트 00 #FFFFFF · 1000 #1A1F2E, 다크 00 #1A1F2E · 1000 #F5F6FA.
 - 고정한 값 다섯 — 지금 화면의 바닥 · 뜬 표면 · 입력칸 · 흐린 글자가 그대로이게 계산값 대신 지금 hex 를 넣었다(계산값과 색차 ΔE 1.4 이하): gray-200 #F5F6FA · gray-700 #62697A · gray-100-dark #242938 · gray-200-dark #2D3346 · gray-300-dark #353B4D.
 - 다크의 글자 단계(의미 색 800 · 브랜드 900)는 L* 69 다. 제안표 값이 다크 입력칸(bg-neutral-weak-dark #353B4D) 위에서 4.00 ~ 4.28:1 로 `npm run lint:dark` 에 걸려, 4.5:1 을 넘게 밝혔다. 의미 색 900 도 조금 밝아졌다(ΔE 1.7 이하).
-- (v109) 그 글자 단계는 밝기 · 색조를 두고 채도만 지금 제품 값만큼 올렸다 — SEED 램프 모양대로 줄이니 다크 링크 · 금액 글자가 회색 기를 띠었다. Desk brand-300 · HR brand-400(브랜드 옅은 선)도 같은 방식이다. gray-400 은 지금 제품의 테두리 값(#E5E8EF)으로 고정했다.
 
 #### 역할 → 단계
 
@@ -1173,28 +1152,28 @@ v108 로 크게 바뀐 색을 지금 제품 값(Desk 웹 `porest-tokens.css` · 
 | `bg-layer-floating-pressed` | gray-100 | gray-300 | — |
 | `bg-neutral-weak` | gray-200 | gray-300 | — |
 | `bg-neutral-weak-pressed` | gray-300 | gray-400 | — |
-| `bg-neutral-inverted` | gray-1000 | gray-1000 | gray-900 / gray-1000 (v109) |
+| `bg-neutral-inverted` | gray-900 | gray-1000 | — |
 | `bg-disabled` | gray-200 | gray-300 | — |
 | `fg-neutral` | gray-1000 | gray-1000 | — |
 | `fg-neutral-muted` | gray-800 | gray-800 | — |
 | `fg-neutral-subtle` | gray-700 | gray-700 | — |
 | `fg-placeholder` | gray-700 | gray-700 | gray-600 / gray-600 |
-| `fg-disabled` | gray-500 | gray-600 | gray-500 / gray-500 (v109) |
+| `fg-disabled` | gray-500 | gray-500 | — |
 | `fg-neutral-inverted` | gray-00 | gray-100 | — |
 | `stroke-neutral-subtle` | gray-300 | gray-300 | 투명도 있는 검정 · 흰색 |
 | `stroke-neutral-weak` | gray-400 | gray-400 | — |
-| `stroke-neutral-solid` | gray-600 | gray-600 | gray-800 / gray-800 (v109) |
+| `stroke-neutral-solid` | gray-800 | gray-800 | — |
 
 의미 색은 네 역할이 같은 단계를 쓴다 — critical → red · positive → green · warning → orange · informative → blue.
 
 | 역할(* = critical · positive · warning · informative) | 라이트 | 다크 | SEED 와 다르면 (라이트 / 다크) |
 |---|---|---|---|
-| bg-*-weak | 100 | 200 | 100 / 100 (v109) |
-| bg-*-weak-pressed | 200 | 300 | 200 / 200 (v109) |
+| bg-*-weak | 100 | 100 | — |
+| bg-*-weak-pressed | 200 | 200 | — |
 | bg-*-solid | 700 | 600 | positive 700 / 500 |
 | bg-*-solid-pressed | 800 | 700 | positive 800 / 600 |
 | fg-* | 700 | 800 | 700 / 700 |
-| fg-*-contrast | 800 | 900 | 900 / 900 (v109) |
+| fg-*-contrast | 900 | 900 | — |
 | stroke-*-solid | 700 | 800 | 700 / 700 |
 
 SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채움 300 / 800 · 눌림 400 / 900 — 옅은 노랑 위 검은 글자).
@@ -1203,12 +1182,12 @@ SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채�
 |---|---|---|---|
 | bg-brand-solid | 600 / 500 | 600 / 700 | 600 / 700 |
 | bg-brand-solid-pressed | 700 / 700 | 700 / 600 | 700 / 800 |
-| bg-brand-weak | 100 / 200 | 100 / 200 | 100 / 100 |
-| bg-brand-weak-pressed | 200 / 300 | 200 / 300 | 200 / 200 |
+| bg-brand-weak | 100 / 100 | 100 / 100 | 100 / 100 |
+| bg-brand-weak-pressed | 200 / 200 | 200 / 200 | 200 / 200 |
 | fg-brand | 600 / 900 | 600 / 900 | 600 / 700 |
 | fg-brand-contrast | 700 / 900 | 700 / 900 | 700 / 700 |
 | stroke-brand-solid | 600 / 900 | 600 / 900 | 700 / 700 |
-| stroke-brand-weak | 300 / 800 | 400 / 800 | 300 / 300 |
+| stroke-brand-weak | 300 / 800 | 300 / 800 | 300 / 300 |
 | stroke-focus-ring | 600 / 900 | 600 / 900 | blue-600 / blue-600 |
 
 #### SEED 에서 옮긴 자리
@@ -1223,12 +1202,6 @@ SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채�
 - stroke-brand-solid 의 라이트 — SEED 700 → 600. 브랜드 색 그대로다.
 - stroke-brand-weak 의 다크 — SEED 300 → 800. 다크 300 은 표면과 1.3:1 안팎(Desk 1.29 · HR 1.36)이라 선이 보이지 않는다.
 - stroke-focus-ring — SEED 는 파랑(blue-600)이다. porest 는 옛 border-focus 대로 브랜드 색이다.
-- (v109) 다크 약한 배경 · 눌림(의미 색 · 브랜드) — SEED 100 · 200 → 200 · 300. porest 는 다크 카드 표면(#242938, L* 16.7)이 SEED(#16171B, L* 8)보다 밝아서, 100 단계가 표면과 1.00 ~ 1.02:1 로 묻혔다. 200 · 300 이 SEED 의 표면 대비 관계(약한 배경 1.2:1 · 눌림 1.4:1)와 같다 — 지금 1.15 · 1.4:1.
-- (v109) 대비 글자의 라이트 — SEED 900 → 800. 900 은 거의 검정에 가까운 짙은 색(8:1)이었다. 800 은 약한 배경 · 눌림 위 5.0 ~ 5.7:1 이다. 규칙은 "대비 글자는 일반 글자보다 한 단계 바깥" — 라이트 700 → 800, 다크 800 → 900.
-- (v109) stroke-neutral-solid — SEED 800 → 600. porest 는 이 선을 체크박스 · 라디오 테두리와 꺼진 스위치 트랙에 쓴다(SEED 는 그 자리에 옅은 선을 쓴다). UI 3:1 을 넘는 가장 옅은 단계이고, 지금 제품 값과 ΔE 3.5 다.
-- (v109) fg-disabled 의 다크 — SEED 500 → 600. 다크 500 은 비활성 버튼 위 2.08:1 로 라이트(2.93:1)보다 흐렸다. 600 은 3.18:1 이다.
-- (v109) bg-neutral-inverted 의 라이트 — SEED 900 → 1000. 지금 제품의 토스트 · 툴팁 배경(#1A1F2E)이다 — 사용자 결정.
-- (v109) HR 의 stroke-brand-weak 라이트 — 300 → 400(채도 올림). 300 은 옅은 회녹이라 지금 제품 값과 ΔE 15.5 였다. 지금은 ΔE 1.5 다.
 
 ### v102 — SEED 역할 색 (2026-09-29)
 
@@ -1259,16 +1232,16 @@ SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채�
 | `fg-neutral-subtle` | `#62697A` | `#A2A8B7` | text-tertiary | fg-tertiary |
 | `fg-neutral-inverted` | `#FFFFFF` | `#242938` | — | — |
 | `fg-placeholder` | `#62697A` | `#A2A8B7` | — | fg-placeholder |
-| `fg-disabled` | `#8A91A0` | `#838997` | text-disabled | fg-disabled |
+| `fg-disabled` | `#8A91A0` | `#656B78` | text-disabled | fg-disabled |
 | `static-white` | `#FFFFFF` | — | text-on-accent | fg-on-brand · fg-on-danger · fg-on-success |
-| `fg-critical` | `#D72323` | `#FF8477` | error · error-light | status-danger-fg · fg-expense |
-| `fg-positive` | `#167F3F` | `#25C062` | success · success-light | status-success-fg |
-| `fg-warning` | `#BE490D` | `#FF8758` | warning · warning-light | status-warning-fg |
-| `fg-informative` | `#1D6EC9` | `#69ABFF` | info · info-light | status-info-fg · fg-transfer |
-| `fg-critical-contrast` | `#C01016` | `#FFBCB3` | — | — |
-| `fg-positive-contrast` | `#026E33` | `#AED6B6` | — | — |
-| `fg-warning-contrast` | `#A53E0A` | `#F9BFA9` | — | — |
-| `fg-informative-contrast` | `#0F5FB3` | `#ACCEFB` | — | — |
+| `fg-critical` | `#D72323` | `#FD8679` | error · error-light | status-danger-fg · fg-expense |
+| `fg-positive` | `#167F3F` | `#6CB87F` | success · success-light | status-success-fg |
+| `fg-warning` | `#BE490D` | `#F58C64` | warning · warning-light | status-warning-fg |
+| `fg-informative` | `#1D6EC9` | `#6BABFD` | info · info-light | status-info-fg · fg-transfer |
+| `fg-critical-contrast` | `#96030C` | `#FFBCB3` | — | — |
+| `fg-positive-contrast` | `#075527` | `#AED6B6` | — | — |
+| `fg-warning-contrast` | `#822E02` | `#F9BFA9` | — | — |
+| `fg-informative-contrast` | `#06498D` | `#ACCEFB` | — | — |
 
 #### 배경 (bg)
 
@@ -1281,36 +1254,36 @@ SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채�
 | `bg-layer-floating-pressed` | `#F7F8FD` | `#353B4D` | — | — |
 | `bg-neutral-weak` | `#F5F6FA` | `#353B4D` | surface-input | bg-sunken · bg-muted |
 | `bg-neutral-weak-pressed` | `#EDEFF3` | `#404757` | — | bg-warm-press |
-| `bg-neutral-inverted` | `#1A1F2E` | `#F5F6FA` | — | bg-inverse |
+| `bg-neutral-inverted` | `#2F3541` | `#F5F6FA` | — | bg-inverse |
 | `bg-disabled` | `#F5F6FA` | `#353B4D` | — | bg-disabled |
 | `bg-critical-solid` | `#D72323` | `#CC0E17` | error | status-danger |
 | `bg-critical-solid-pressed` | `#C01016` | `#D82424` | — | status-danger-press |
-| `bg-critical-weak` | `#FFEFEC` | `#532722` | — | status-danger-subtle |
-| `bg-critical-weak-pressed` | `#FFDEDA` | `#722722` | — | — |
+| `bg-critical-weak` | `#FFEFEC` | `#3E231F` | — | status-danger-subtle |
+| `bg-critical-weak-pressed` | `#FFDEDA` | `#532722` | — | — |
 | `bg-positive-solid` | `#167F3F` | `#117539` | success | status-success |
 | `bg-positive-solid-pressed` | `#026E33` | `#198140` | — | — |
-| `bg-positive-weak` | `#EAF5EC` | `#223927` | — | status-success-subtle |
-| `bg-positive-weak-pressed` | `#D8EADB` | `#20482B` | — | — |
+| `bg-positive-weak` | `#EAF5EC` | `#202D23` | — | status-success-subtle |
+| `bg-positive-weak-pressed` | `#D8EADB` | `#223927` | — | — |
 | `bg-warning-solid` | `#BE490D` | `#B04209` | warning | status-warning |
 | `bg-warning-solid-pressed` | `#A53E0A` | `#BF4A10` | — | — |
-| `bg-warning-weak` | `#FFEFE8` | `#4B2B1F` | — | status-warning-subtle |
-| `bg-warning-weak-pressed` | `#FAE0D5` | `#65321D` | — | — |
+| `bg-warning-weak` | `#FFEFE8` | `#39251E` | — | status-warning-subtle |
+| `bg-warning-weak-pressed` | `#FAE0D5` | `#4B2B1F` | — | — |
 | `bg-informative-solid` | `#1D6EC9` | `#0F65BF` | info | status-info |
 | `bg-informative-solid-pressed` | `#0F5FB3` | `#1F70CB` | — | — |
-| `bg-informative-weak` | `#EAF3FE` | `#21344D` | — | status-info-subtle |
-| `bg-informative-weak-pressed` | `#D7E6FB` | `#204069` | — | — |
+| `bg-informative-weak` | `#EAF3FE` | `#1F2A39` | — | status-info-subtle |
+| `bg-informative-weak-pressed` | `#D7E6FB` | `#21344D` | — | — |
 
 #### 선 (stroke)
 
 | 역할 | 라이트 | 다크 | 옛 이름 | Desk 웹 이름 |
 |---|---|---|---|---|
 | `stroke-neutral-subtle` | `#EDEFF3` | `#353B4D` | — | border-subtle |
-| `stroke-neutral-weak` | `#E5E8EF` | `#404757` | border-default | border-default |
-| `stroke-neutral-solid` | `#767C8B` | `#838997` | border-strong | border-strong |
-| `stroke-critical-solid` | `#D72323` | `#FF8477` | error | status-danger-border |
-| `stroke-positive-solid` | `#167F3F` | `#25C062` | success | status-success-border |
-| `stroke-warning-solid` | `#BE490D` | `#FF8758` | warning | status-warning-border |
-| `stroke-informative-solid` | `#1D6EC9` | `#69ABFF` | info | status-info-border |
+| `stroke-neutral-weak` | `#D8DFEF` | `#404757` | border-default | border-default |
+| `stroke-neutral-solid` | `#535866` | `#B7BDCC` | border-strong | border-strong |
+| `stroke-critical-solid` | `#D72323` | `#FD8679` | error | status-danger-border |
+| `stroke-positive-solid` | `#167F3F` | `#6CB87F` | success | status-success-border |
+| `stroke-warning-solid` | `#BE490D` | `#F58C64` | warning | status-warning-border |
+| `stroke-informative-solid` | `#1D6EC9` | `#6BABFD` | info | status-info-border |
 
 #### 브랜드 역할
 
@@ -1485,7 +1458,7 @@ border는 시맨틱 계층을 둘로 분리합니다 — 장식적 외곽선과 
 | 토큰 | hex | 사용 |
 |---|---|---|
 | `text-disabled` | `#8A91A0` | 라이트 표면 위 비활성 텍스트 |
-| `text-disabled-dark` | `#838997` | 다크 표면 위 비활성 텍스트 |
+| `text-disabled-dark` | `#656B78` | 다크 표면 위 비활성 텍스트 |
 
 #### 추가 이유
 1. **시맨틱 분리 필수**: text-tertiary(placeholder)는 ≥4.5:1 본문 대비 대상, text-disabled는 incidental 면제 대상 — 두 시맨틱을 같은 토큰에 묶으면 placeholder가 부당하게 약해지거나 disabled가 부당하게 진해짐.
@@ -3201,10 +3174,10 @@ surface 위 inline 상태 텍스트 — form validation error, status notificati
 **Dark surface (`surface-default-dark` 위)** — `*-light` semantic 사용:
 | Token | text | contrast |
 |---|---|---|
-| `alert-text-success-on-dark` | `success-light` (`#25C062`) | **6.07:1** ✅ |
-| `alert-text-error-on-dark` | `error-light` (`#FF8477`) | **6.08:1** ✅ |
-| `alert-text-warning-on-dark` | `warning-light` (`#FF8758`) | **6.11:1** ✅ |
-| `alert-text-info-on-dark` | `info-light` (`#69ABFF`) | **6.12:1** ✅ |
+| `alert-text-success-on-dark` | `success-light` (`#6CB87F`) | **9.42:1** ✅ |
+| `alert-text-error-on-dark` | `error-light` (`#FD8679`) | **5.93:1** ✅ |
+| `alert-text-warning-on-dark` | `warning-light` (`#F58C64`) | **7.25:1** ✅ |
+| `alert-text-info-on-dark` | `info-light` (`#6BABFD`) | **6.46:1** ✅ |
 
 모두 본문 4.5:1 통과 — 1.4.3 통과.
 
@@ -3310,7 +3283,7 @@ surface 위 inline 상태 텍스트 — form validation error, status notificati
 
 #### Mode pair
 - `outline-strong-light` (`outline-strong-light`): `border-strong` (`#7D8593`) 사용
-- `outline-strong-dark` (`outline-strong-dark`): `border-strong-dark` (`#838997`) 사용
+- `outline-strong-dark` (`outline-strong-dark`): `border-strong-dark` (`#B7BDCC`) 사용
 
 #### Spec
 - 두께: 1px (border CSS 또는 1px element)
@@ -3324,9 +3297,9 @@ surface 위 inline 상태 텍스트 — form validation error, status notificati
 #### Contrast (UI 1.4.11)
 - `border-strong` (`#7D8593`) vs `surface-default` (`#FFFFFF`) = **3.34:1** ✅ UI
 - `border-strong` vs `bg-page` (`#F5F6FA`) = **3.13:1** ✅ UI (3:1 통과)
-- `border-strong` vs `surface-input` (`#F5F6FA`) = **3.87:1** ✅ UI
-- `border-strong-dark` (`#838997`) vs `bg-page-dark` (`#1A1F2E`) = **4.68:1** ✅ UI
-- `border-strong-dark` vs `surface-default-dark` (`#242938`) = **4.13:1** ✅ UI
+- `border-strong` vs `surface-input` (`#F5F6FA`) = **3.34:1** ✅ UI
+- `border-strong-dark` (`#B7BDCC`) vs `bg-page-dark` (`#1A1F2E`) = **3.97:1** ✅ UI
+- `border-strong-dark` vs `surface-default-dark` (`#242938`) = **3.39:1** ✅ UI
 - `border-strong-dark` vs `surface-input-dark` (`#353B4D`) = **4.05:1** ✅ UI
 
 모든 표면에서 UI 1.4.11 (3:1) 통과 — 단순 외곽선만으로 컴포넌트 식별 가능.
@@ -3341,11 +3314,11 @@ surface 위 inline 상태 텍스트 — form validation error, status notificati
 
 #### Mode pair (sparse — textColor만 정의, backgroundColor 없음)
 - `disabled-label-light` (`disabled-label-light`): `text-disabled` (`#8A91A0`)
-- `disabled-label-dark` (`disabled-label-dark`): `text-disabled-dark` (`#838997`)
+- `disabled-label-dark` (`disabled-label-dark`): `text-disabled-dark` (`#656B78`)
 
 contrast 참고 (incidental 예외라 통과 비대상):
-- `text-disabled` (`#8A91A0`) on `surface-default` (`#FFFFFF`) = 약 **3.16:1** (본문 4.5:1 미달, AA UI 3:1 통과 — 시인성은 있되 본문 의도 아님)
-- `text-disabled-dark` (`#838997`) on `surface-default-dark` (`#242938`) = 약 **4.13:1** (동일 패턴)
+- `text-disabled` (`#8A91A0`) on `surface-default` (`#FFFFFF`) = 약 **3.69:1** (본문 4.5:1 미달, AA UI 3:1 통과 — 시인성은 있되 본문 의도 아님)
+- `text-disabled-dark` (`#656B78`) on `surface-default-dark` (`#242938`) = 약 **3.74:1** (동일 패턴)
 
 #### 의도
 WCAG 1.4.3 (Contrast Minimum)의 명시적 예외:
@@ -3677,7 +3650,7 @@ binary on/off 상태 또는 group 선택을 표현하는 form control 3종. 공�
 #### Spec 공통 (신규 토큰 없음)
 | 요소 | light | dark |
 |---|---|---|
-| inactive 외곽선 | `border-strong` (`#767C8B`) 1px | `border-strong-dark` (`#838997`) |
+| inactive 외곽선 | `border-strong` (`#535866`) 1px | `border-strong-dark` (`#B7BDCC`) |
 | inactive 채움 | `surface-input` (`#F5F6FA`) | `surface-input-dark` (`#353B4D`) |
 | active 채움 | `primary` (brand) | `primary` (brand) |
 | active 표시(핸들/체크) | `text-on-accent` (`#FFFFFF`) | `text-on-accent` |
