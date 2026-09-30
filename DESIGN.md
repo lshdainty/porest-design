@@ -2566,7 +2566,7 @@ CLAUDE.md "4px 베이스 추천" 규칙을 준수하는 t-shirt 사이즈 스케
 
 #### Touch targets (Apple reference)
 - Pill CTAs: `touch-pill-w` (100) × `touch-min` (44 height) + `radius-full`. Button `large` (48px height — 2026-09-30 전 이름 `lg`)는 본 pill min(44)을 자연스럽게 초과 — pill CTA에 사용 시 padding 그대로 OK.
-- Circular chips: `touch-circular` (44 × 44, icon button, Switch handle, Avatar)
+- Circular chips: `touch-circular` (44 × 44, icon button, Avatar)
 - Global nav utility links: `touch-nav-w` (80) × `touch-nav-h` (32, precision desktop only, breakpoint-xl 이상)
 - WCAG 2.5.5 AAA (44 × 44 minimum) 충족.
 
@@ -2593,7 +2593,7 @@ WCAG 2.5.5 AAA (Target Size 44×44 minimum) + Apple Store reference 톤을 정�
 |---|---|---|
 | `touch-min` | `44px` | WCAG 2.5.5 AAA minimum (default, 모든 hit target 권장) |
 | `touch-pill-w` | `100px` | Pill CTA min-width (Apple Store: ~44 × 100) |
-| `touch-circular` | `44px` | Circular chip / icon button / Switch handle (= touch-min, explicit alias) |
+| `touch-circular` | `44px` | Circular chip / icon button (= touch-min, explicit alias) |
 | `touch-nav-h` | `32px` | Precision desktop nav height (`breakpoint-lg` 이상, mouse pointer 가정) |
 | `touch-nav-w` | `80px` | Precision desktop nav min-width |
 
@@ -4236,28 +4236,36 @@ binary on/off 상태 또는 group 선택을 표현하는 form control 3종. 공�
 #### 의미 차이
 | Component | 의미 | 변경 시점 |
 |---|---|---|
-| **Switch** | 즉시 적용되는 토글 (on/off) | toggle 즉시 effect (e.g. 알림 켜기/끄기) |
+| **Switch** | 즉시 적용되는 토글 (on/off) | 누르는 순간 적용 (e.g. 알림 켜기/끄기) |
 | **Checkbox** | 다중 선택 또는 단일 confirm | form submit 시점 또는 즉시 적용 |
 | **Radio** | 그룹 내 단일 선택 | form submit 또는 즉시 |
 
-선택 기준: **즉시 적용 + on/off** → Switch, **다중 선택 + form** → Checkbox, **단일 선택 + group** → Radio. UI 혼동 회피를 위해 의미별 명확히 분기.
+선택 기준: **즉시 적용 + on/off** → Switch, **다중 선택 + form** → Checkbox, **단일 선택 + group** → Radio. UI 혼동 회피를 위해 의미별 명확히 분기. Switch 는 누르는 순간 적용될 때만 쓴다 — 저장 · 실행을 눌러야 적용되는 켜고 끄기는 Checkbox 다(2026-09-30 사용자 결정 — SEED 와 같다). 누르면 화면이 바로 바뀌는 것(일정의 "종일")은 값이 저장 때 들어가더라도 Switch.
 
 #### Spec 공통 (신규 토큰 없음)
-| 요소 | light | dark |
-|---|---|---|
-| inactive 외곽선 | `border-strong` (`#767C8B`) 1px | `border-strong-dark` (`#838997`) |
-| inactive 채움 | `surface-input` (`#F5F6FA`) | `surface-input-dark` (`#353B4D`) |
-| active 채움 | `primary` (brand) | `primary` (brand) |
-| active 표시(핸들/체크) | `text-on-accent` (`#FFFFFF`) | `text-on-accent` |
-| disabled | opacity 0.5 + cursor:not-allowed (1.4.3 incidental) |
+세 컨트롤 모두 2026-09-30 SEED 구조로 바뀌었다(아래 Switch · Checkbox · Radio, `specs/components/switch.md` · `checkbox.md` · `radio-group.md`). 색 규칙은 셋이 같다(사용자 결정).
 
-**Checkbox · Radio 는 2026-09-30 SEED 구조로 바뀌었다**(아래 Checkbox · Radio, `specs/components/checkbox.md` · `radio-group.md`) — 선택은 `bg-neutral-inverted`(짙은 회색)가 기본이고 브랜드 채움은 `tone="brand"` 일 때만, 선택 안 된 칸 · 동그라미의 테두리는 `stroke-neutral-solid`, 비활성은 전용 색. 위 표는 Switch 의 지금 값이다 — Switch 차례에 같은 규칙으로 옮긴다(사용자 결정).
+| 요소 | 값 |
+|---|---|
+| 선택 · 켜짐 채움 | `bg-neutral-inverted`(짙은 회색)가 기본. 브랜드 채움은 `tone="brand"` 일 때만 — 서비스 핵심 흐름 |
+| 선택 · 켜짐 표시(체크 · 점 · 엄지) | `fg-neutral-inverted`. `tone="brand"` 면 `static-white` |
+| 선택 안 됨 · 꺼짐 | `stroke-neutral-solid`(표면과 3:1 이상, v109) — Checkbox · Radio 는 1px 테두리, Switch 는 트랙 채움 |
+| disabled | 전용 색(v106 — State 절), 불투명도로 흐리게 하지 않는다. 선택 · 켜진 채 막히면 모양 그대로 회색 — Checkbox · Radio 는 `bg-disabled` 채움 + `fg-disabled` 표시, Switch 는 `fg-disabled` 트랙 + `bg-disabled` 엄지. cursor:not-allowed |
+| hover | Checkbox · Radio 는 누름 색. Switch 는 색이 바뀌지 않는다 — 켜짐 색이 상태를 뜻해서(v104) |
+| pressed | 칸 · 동그라미 · 스위치만 세로 2px 거리 축소(v104) |
+| focus | 키보드 포커스에만 링 2px · 띄움 2px(v106) |
 
 #### Switch
-- 크기: `lg` 32×20 (track) / `md` 28×16 / `sm` 24×14
-- 핸들(thumb): track height - 4px, `radius-full`
-- track radius: `radius-full`
-- toggle motion: 핸들 좌우 이동 (`motion-duration-fast` 150ms × `motion-ease-out`) + 색 변화
+> 상세 spec(Anatomy / Sizes / States / Motion / Accessibility / Do-Don't)은 [`specs/components/switch.md`](specs/components/switch.md)가 단일 SoT. 코드(`recipes/shadcn/components/ui/switch.tsx`) · 예제(`recipes/shadcn/examples/switch-examples.mjs`) · preview 4 source 동기.
+
+- 구조: 스위치(Switchmark — 트랙 + 엄지) · 스위치 + 라벨(Switch) — SEED Switch(2026-09-30).
+- 크기(이름은 트랙 높이): `16` 트랙 26 × 16 · 엄지 12 · 라벨 13 / `24` 38 × 24 · 20 · 14(기본) / `32` 52 × 32 · 26 · 16. 트랙 · 엄지 모서리 `radius-full`.
+- 끄면 엄지가 0.8 로 작아진다 — 색 말고도 자리 · 크기로 켬 · 끔이 갈린다. 엄지에 그림자는 없다.
+- 톤: `neutral`(짙은 회색, 기본) · `brand`.
+- 모션: 엄지의 이동 · 크기 `motion-duration-d3` (150ms), 색은 20ms 뒤에 `motion-duration-d1` (50ms) — 둘 다 `motion-ease-easing`. 누르면 스위치만 세로 2px 거리 축소(색은 그대로).
+- 누르는 순간 적용되는 설정에만 쓴다 — 저장해야 적용되는 값은 Checkbox.
+- "라벨 왼쪽 · 스위치 오른쪽" 설정 줄(제목 · 설명 · 아이콘)은 List 가 정한다(List 차례). 그 줄에는 스위치만(Switchmark) 끼우고 줄 전체가 누르는 영역이다.
+- 터치 타겟은 스위치 단독으론 작음(높이 16 · 24 · 32). **반드시 라벨까지 묶어 44** 확보(WCAG 2.5.5 AAA) — 설정 줄에 스위치만 넣으면 줄 전체.
 
 #### Checkbox
 > 상세 spec(Anatomy / Sizes / States / Motion / Accessibility / Do-Don't)은 [`specs/components/checkbox.md`](specs/components/checkbox.md)가 단일 SoT. 코드(`recipes/shadcn/components/ui/checkbox.tsx`) · 예제(`recipes/shadcn/examples/checkbox-examples.mjs`) · preview 4 source 동기.
@@ -4287,23 +4295,23 @@ binary on/off 상태 또는 group 선택을 표현하는 form control 3종. 공�
 - group label (group 제목): control 위 `caption` + `xs` 간격
 
 #### Touch target (WCAG 2.5.5)
-- control 자체는 작음(Radio 동그라미 · Checkbox 칸 20 · 24) — **반드시 label까지 포함한 hit area가 44×44px 이상** 확보 필수
+- control 자체는 작음(Radio 동그라미 · Checkbox 칸 20 · 24, Switch 트랙 높이 16 · 24 · 32) — **반드시 label까지 포함한 hit area가 44×44px 이상** 확보 필수
 - label 클릭으로도 toggle/select 가능 (`<label for="...">` 또는 control wrap)
 
 #### Accessibility
 - [ ] **HTML**: `<input type="checkbox|radio">` + `<label for="...">` 사용 — native a11y 자동
-  - Switch는 HTML native 없음 → `<input type="checkbox" role="switch">` 또는 `role="switch"` + `aria-checked`
+  - Switch는 HTML native 없음 → `<input type="checkbox" role="switch">` 또는 `role="switch"` + `aria-checked`. 스위치만 쓰는 설정 줄은 줄의 제목이 스위치의 이름이 되게 `<label>` 로 감싸거나 `aria-labelledby` 로 잇는다
 - [ ] **focus ring**: control 외곽 + label 영역 모두 focus indicator 표시 (`border-focus` 2px outline)
 - [ ] **aria 상태**:
   - Checkbox: `aria-checked="true|false|mixed"` (mixed = indeterminate)
   - Radio: group은 `role="radiogroup"` + `aria-labelledby="group-title"`
   - Switch: `role="switch"` + `aria-checked` (또는 native checkbox + `role="switch"`)
 - [ ] **키보드**:
-  - Checkbox/Switch: `Space`로 toggle
+  - Checkbox/Switch: `Space`로 toggle (Switch 는 `Enter` 도)
   - Radio: arrow keys (`↑`/`↓` 또는 `←`/`→`)로 group 내 이동, 선택 즉시
   - Tab으로 group 진입 → 첫 번째 또는 현재 선택값으로 focus
 - [ ] **disabled 상태**: control + label 모두 disabled 표시 + 1.4.3 incidental
-- [ ] **error 상태** (form validation 실패): control 외곽선 `error` 색 + alert text 동반(Switch). Checkbox · Radio 는 칸 · 동그라미를 바꾸지 않고 묶음 아래 글로(2026-09-30)
+- [ ] **error 상태** (form validation 실패): Checkbox · Radio 는 칸 · 동그라미를 바꾸지 않고 묶음 아래 글로(2026-09-30). Switch 에는 오류 상태가 없다 — 누르는 순간 적용되므로 검증할 값이 없고, 저장에 실패하면 스위치를 되돌리고 무엇이 안 됐는지 알린다
 
 ### Avatar (v58 추가)
 

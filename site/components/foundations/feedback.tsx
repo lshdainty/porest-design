@@ -1,7 +1,7 @@
 // Feedback 페이지 — 눌림 색은 DESIGN*.md 의 역할 색, 축소 상수 · 시간은 "눌림 피드백" 표 · motion 표,
 // 예로 드는 요소의 크기는 컴포넌트 YAML 에서 온다
 import type { CSSProperties, ReactNode } from 'react';
-import { color, design, pressScale, proseTokenSet, proseValue, px, roleColors, sectionCode, specPartSize, specSize, specSlot, type Brand } from '@/lib/design-tokens';
+import { color, design, pressScale, proseTokenSet, proseValue, px, roleColors, sectionCode, specDefault, specPartSize, specSize, type Brand } from '@/lib/design-tokens';
 import { Figure, Panel, Swatch, Table, Token, Verdict } from './ui';
 import { PressDemo } from './press-demo';
 
@@ -9,6 +9,21 @@ type Mode = 'light' | 'dark';
 const rc = (name: string, mode: Mode = 'light', brand: Brand = 'desk') => (name === 'static-white' ? color(name, brand) : color(mode === 'dark' ? `${name}-dark` : name, brand));
 const r3 = (n: number) => n.toFixed(3);
 const r1 = (n: number) => `${Number(n.toFixed(2))}px`;
+
+// 켜진 Switch — switch.yaml 의 기본 크기에서 트랙 · 엄지를 읽어 그린다(켜짐 = 짙은 회색, 엄지는 오른쪽)
+function switchOn() {
+  const size = specDefault('switch', 'size');
+  const mark = specPartSize('switch', { size }, 'switchmark');
+  const thumb = specPartSize('switch', { size }, 'thumb');
+  const tw = mark.width ?? mark.height, th = mark.height, knob = thumb.height;
+  const pad = (th - knob) / 2;
+  const body = (
+    <span className="relative block rounded-full" style={{ width: tw, height: th, background: rc('bg-neutral-inverted') }}>
+      <span className="absolute rounded-full" style={{ right: pad, top: pad, width: knob, height: knob, background: rc('fg-neutral-inverted') }} />
+    </span>
+  );
+  return { tw, th, body };
+}
 
 // 예시 화면 폭 — 375 폭 휴대폰에서 좌우 여백(spacing-global-gutter)을 뺀 전체 폭, 태블릿(breakpoint-md)에서 layout-margin 을 뺀 전체 폭
 const PHONE = 375;
@@ -176,17 +191,8 @@ export function GhostFigure() {
 }
 
 export function NoColorFigure() {
-  const track = specSlot('switch', 'track');
-  const tw = px(String(track.width)), th = px(String(track.height));
-  const knob = th - 4;
-  const sw = (pressed: boolean) => {
-    const body = (
-      <span className="relative block h-full w-full rounded-full" style={{ background: rc('bg-brand-solid') }}>
-        <span className="absolute top-[2px] rounded-full" style={{ right: 2, width: knob, height: knob, background: rc('static-white'), boxShadow: proseValue('shadow-s2') }} />
-      </span>
-    );
-    return pressed ? <Shrunk w={tw} h={th} radius={th} style={{}}>{body}</Shrunk> : <Plain w={tw} h={th} radius={th} style={{}}>{body}</Plain>;
-  };
+  const { tw, th, body } = switchOn();
+  const sw = (pressed: boolean) => (pressed ? <Shrunk w={tw} h={th} radius={th} style={{}}>{body}</Shrunk> : <Plain w={tw} h={th} radius={th} style={{}}>{body}</Plain>);
   const tabs = (pressed: boolean) => (
     <div className="flex gap-1 border-b" style={{ borderColor: rc('stroke-neutral-weak') }}>
       {['지출', '수입', '이체'].map((t, i) => {
@@ -450,15 +456,12 @@ export function SurfaceTargetFigure() {
 
 export function SubActionsFigure() {
   const { ratio } = pressScale();
-  const track = specSlot('switch', 'track');
-  const tw = px(String(track.width)), th = px(String(track.height));
+  const { body } = switchOn();
   const row = (
     <div className="w-[240px] overflow-hidden rounded-xl" style={{ background: rc('bg-layer-default-pressed') }}>
       <div className="flex h-14 items-center gap-3 px-4" style={{ transform: `scale(${ratio(240, 56)})` }}>
         <span className="flex-1 text-[14px] text-[#1A1F2E]">결제일 알림</span>
-        <span className="relative block rounded-full" style={{ width: tw, height: th, background: rc('bg-brand-solid') }}>
-          <span className="absolute right-[2px] top-[2px] rounded-full" style={{ width: th - 4, height: th - 4, background: rc('static-white') }} />
-        </span>
+        {body}
       </div>
     </div>
   );
@@ -487,13 +490,7 @@ export function SubActionsFigure() {
 }
 
 export function RootContentFigure() {
-  const track = specSlot('switch', 'track');
-  const tw = px(String(track.width)), th = px(String(track.height));
-  const knob = (
-    <span className="relative block h-full w-full rounded-full" style={{ background: rc('bg-brand-solid') }}>
-      <span className="absolute right-[2px] top-[2px] rounded-full" style={{ width: th - 4, height: th - 4, background: rc('static-white') }} />
-    </span>
-  );
+  const { tw, th, body: knob } = switchOn();
   return (
     <Figure caption="Root Scale — 요소 전체가 준다 / Content Scale — 배경은 그대로 두고 안쪽만 준다">
       <div className="flex gap-4">

@@ -1216,6 +1216,157 @@ export function renderRadioGallery(brand) {
   </section>`;
 }
 
+// Switch — spec: specs/components/switch.md · 수치 switch.yaml. 구조는 SEED Switch(2026-09-30).
+// 스위치 .switch(Switchmark — 트랙) · 스위치 + 라벨 .switch-row(Switch). 엄지는 .switch-thumb.
+// 크기 클래스는 16 · 32 에만 단다(.switch--16 · .switch--32) — 기본 24 는 .switch 그대로다
+const SWITCH_SIZE_CLASSES = ["16", "32"];
+const SWITCH_INTERACTIONS = ["focus", "pressed"];
+
+// label 이 있으면 스위치 + 라벨 한 줄(<label class="switch-row">), 없으면 스위치만 — 스위치만 쓰면 name 을 aria-label 로 달거나 줄의 <label> 로 감싼다.
+//   size         "16" · "24"(기본) · "32" — 이름은 트랙 높이
+//   tone         neutral(기본, 짙은 회색) · brand(서비스 핵심 흐름에서만)
+//   checked      켬 · 끔 — false(기본) · true
+//   disabled     전용 색(흐리게 하지 않는다) — 켜진 채 막히면 켜진 모양 그대로 색만 바뀐다
+//   interaction  focus · pressed — 갤러리에서 그 순간을 고정해 보여 줄 때만(.radio--* 와 같은 역할). 호버 모양은 없다
+export function sw({ size = "24", tone = "neutral", checked = false, disabled = false, label = "", interaction = "", name = "" } = {}) {
+  const sized = SWITCH_SIZE_CLASSES.includes(String(size)) ? String(size) : "";
+  const cls = [
+    "switch",
+    sized && `switch--${sized}`,
+    tone === "brand" && "switch--brand",
+    SWITCH_INTERACTIONS.includes(interaction) && `switch--${interaction}`,
+  ].filter(Boolean).join(" ");
+  const attrs = (!label && name ? ` aria-label="${escape(name)}"` : "") + (disabled ? " disabled" : "");
+  // 엄지는 끔에도 넣는다 — 끄면 작아져 왼쪽에 있고, 켜면 오른쪽으로 가며 커진다
+  const mark = `<button type="button" role="switch" aria-checked="${checked ? "true" : "false"}" class="${cls}"${attrs}><span class="switch-thumb"></span></button>`;
+  if (!label) return mark;
+  return `<label class="switch-row${sized ? ` switch-row--${sized}` : ""}">${mark}<span class="switch-label">${escape(label)}</span></label>`;
+}
+
+// 크기 × 켬 · 끔 · 톤 × 켬 · 끔 · 켬 · 끔 × 상태 · 설정 줄 네 판을 흰 표면(.vignette-card) 위에 그린다 — 표는 Checkbox 갤러리의 .cb-* 를 쓴다.
+// 라벨은 제품에 있고 누르는 순간 적용되는 설정만 빌렸다 — 일정의 "종일", Desk 알림 설정의 줄(switch.md Guidelines).
+export function renderSwitchGallery(brand) {
+  const head = (first, cols) => `<div class="cb-matrix-row cb-matrix-row--head"><div class="cb-matrix-head">${escape(first)}</div>${
+    cols.map(c => `<div class="cb-matrix-head">${escape(c.ko)}<span>${escape(c.en)}</span></div>`).join("")
+  }</div>`;
+  // 칸에 .sw-cell 을 더한다 — 줄 높이가 다른 크기(24 · 32)가 한 줄에서 같은 가운데에 서게(.sw-cell 의 주석)
+  const row = (ko, en, cells) => `
+        <div class="cb-matrix-row"><div class="cb-matrix-label">${escape(ko)}<span>${escape(en)}</span></div>${
+          cells.map(c => `<div class="cb-matrix-cell sw-cell">${c}</div>`).join("")
+        }</div>`;
+  const panel = (title, sub, cols, body) => `
+    <div class="vignette-card cb-panel">
+      <div class="vignette-head">
+        <div class="vignette-title">${escape(title)}</div>
+        <div class="vignette-sub">${escape(sub)}</div>
+      </div>
+      <div class="cb-matrix" style="--cb-cols: ${cols};">
+        ${body}
+      </div>
+    </div>`;
+
+  // 1. 크기 × 켬 · 끔 — 스위치 + 라벨. 막힌 줄은 라벨까지 비활성 색이다
+  const sizes = [
+    { ko: "16", en: "트랙 26 × 16 · 엄지 12 · 라벨 13 · 줄 24", size: "16" },
+    { ko: "24", en: "트랙 38 × 24 · 엄지 20 · 라벨 14 · 줄 24 — 기본", size: "24" },
+    { ko: "32", en: "트랙 52 × 32 · 엄지 26 · 라벨 16 · 줄 32", size: "32" },
+  ];
+  const sizeRows = [
+    { ko: "끔", en: "unchecked", args: {} },
+    { ko: "켬", en: "checked", args: { checked: true } },
+    { ko: "비활성 · 끔", en: "disabled · unchecked", args: { disabled: true } },
+    { ko: "비활성 · 켬", en: "disabled · checked", args: { disabled: true, checked: true } },
+  ];
+  const sizePanel = panel(
+    "크기 × 켬 · 끔",
+    "크기 이름은 트랙 높이다 — 트랙 · 엄지 · 라벨 · 줄 높이가 함께 정해지고, 스위치와 라벨 사이는 6 · 8 · 10 이다. 끄면 엄지가 0.8 로 작아지고 켜면 오른쪽으로 가며 제 크기가 된다. 라벨은 500 이고 라벨까지 눌린다 — 누르는 영역은 44 까지 넓힌다. 막으면 라벨도 비활성 색으로 바꾼다.",
+    sizes.length,
+    head("켬 · 끔", sizes) + sizeRows.map(r => row(r.ko, r.en,
+      sizes.map(s => sw({ label: "푸시 알림", ...r.args, size: s.size })),
+    )).join(""),
+  );
+
+  // 2. 톤 × 켬 · 끔 — 스위치 + 라벨
+  const tones = [
+    { ko: "짙은 회색", en: "neutral — 기본", tone: "neutral" },
+    { ko: "브랜드", en: "brand", tone: "brand" },
+  ];
+  const checks = [
+    { ko: "끔", en: "unchecked", checked: false },
+    { ko: "켬", en: "checked", checked: true },
+  ];
+  const tonePanel = panel(
+    "톤 × 켬 · 끔",
+    "꺼진 트랙은 stroke-neutral-solid 이고 톤에 따라 달라지지 않는다. 켜면 neutral 은 bg-neutral-inverted 트랙, brand 는 bg-brand-solid 트랙이다. 엄지는 끔 · 켬이 같은 색이다 — neutral 은 fg-neutral-inverted, brand 는 흰색(static-white). neutral 이 기본이고 brand 는 서비스 핵심 흐름에서만 쓴다.",
+    checks.length,
+    head("톤", checks) + tones.map(t => row(t.ko, t.en,
+      checks.map(c => sw({ tone: t.tone, checked: c.checked, label: "종일" })),
+    )).join(""),
+  );
+
+  // 3. 켬 · 끔 × 상태 — 스위치만. 포커스 · 누름은 고정 클래스, 비활성은 disabled 속성. 호버 열은 없다(호버 모양이 없다)
+  const stateRows = [
+    { ko: "끔", en: "unchecked", tone: "neutral", checked: false },
+    { ko: "짙은 회색 켬", en: "neutral · checked", tone: "neutral", checked: true },
+    { ko: "브랜드 켬", en: "brand · checked", tone: "brand", checked: true },
+  ];
+  const states = [
+    { ko: "기본", en: "enabled" },
+    { ko: "포커스", en: "focused", interaction: "focus" },
+    { ko: "누름", en: "pressed", interaction: "pressed" },
+    { ko: "비활성", en: "disabled", disabled: true },
+  ];
+  const statePanel = panel(
+    "켬 · 끔 × 상태",
+    "포커스 · 누름은 그 순간을 멈춰 그렸다. 호버 모양은 없다 — 켜짐 색이 상태를 뜻해서 마우스를 올려도 색이 바뀌지 않는다. 누름도 색은 그대로이고 스위치만 세로 2px 축소한다(라벨은 줄지 않는다). 포커스는 키보드에만 링 2px · 띄움 2px. 비활성은 전용 색이고 흐리게 하지 않는다 — 꺼진 채 막히면 bg-disabled 트랙 + 안쪽 선(stroke-neutral-weak) + fg-disabled 엄지, 켜진 채 막히면 켜진 모양 그대로 fg-disabled 트랙 + bg-disabled 엄지다.",
+    states.length,
+    head("켬 · 끔", states) + stateRows.map(r => row(r.ko, r.en,
+      states.map(s => sw({ tone: r.tone, checked: r.checked, interaction: s.interaction, disabled: s.disabled, name: `${r.ko} — ${s.ko}` })),
+    )).join(""),
+  );
+
+  // 4. 설정 줄 — 스위치만(Switchmark). 줄 전체가 <label> 이라 어디를 눌러도 스위치에 닿고, 줄의 글자가 스위치의 이름이 된다.
+  //    줄 자체(제목 · 설명 · 간격 · 누름 피드백)는 List 가 정한다(다음 차례) — 여기 줄은 누르는 영역만 보이려고 인라인으로 짰다(switch.md 의 "스위치만" 코드와 같은 간격)
+  const settings = [
+    { title: "결제 알림", desc: "결제 예정일 D-1, 결제일 당일 알림", checked: true },
+    { title: "예산 알림", desc: "카테고리 예산 80%·100% 도달", checked: true },
+    { title: "주간 리포트", desc: "매주 월요일 오전 9시", checked: false },
+  ];
+  const lineStyle = "1px solid var(--color-border-default)";
+  const rowStyle = "display: flex; align-items: center; gap: var(--spacing-x3); padding: var(--spacing-x3) var(--spacing-x6); cursor: pointer;";
+  const titleStyle = "display: block; font-size: var(--text-t4); line-height: var(--text-t4--line-height); font-weight: 500; color: var(--color-text-primary);";
+  const descStyle = "display: block; font-size: var(--text-t2); line-height: var(--text-t2--line-height); color: var(--color-text-secondary);";
+  const settingsPanel = `
+    <div class="vignette-card cb-panel">
+      <div class="vignette-head">
+        <div class="vignette-title">설정 줄(스위치만)</div>
+        <div class="vignette-sub">${escape("설정 줄에는 스위치만(Switchmark) 끼우고 줄을 <label> 로 감싼다 — 줄 어디를 눌러도 바뀌고, 줄의 글자가 스위치의 이름이 된다. 줄 자체(제목 · 설명 · 간격 · 누름 피드백)는 다음 차례인 List 가 정한다 — 여기 줄은 누르는 영역만 보이려고 임시로 짰다. 줄은 Desk 알림 설정에서 빌렸다.")}</div>
+      </div>
+      <div style="max-width: 420px; border: ${lineStyle}; border-radius: var(--radius-md);">
+        ${settings.map((s, i) => `<label style="${rowStyle}${i > 0 ? ` border-top: ${lineStyle};` : ""}">
+          <span style="flex: 1; min-width: 0;"><span style="${titleStyle}">${escape(s.title)}</span><span style="${descStyle}">${escape(s.desc)}</span></span>
+          ${sw({ checked: s.checked })}
+        </label>`).join("\n        ")}
+      </div>
+    </div>`;
+
+  const lede = "SEED Switch 구조 — 스위치(Switchmark) · 스위치 + 라벨(Switch). 끄면 엄지가 작아진다 — 색 말고도 자리 · 크기로 켬 · 끔이 갈린다. 켜짐 색은 짙은 회색(neutral)이 기본이고 brand 는 서비스 핵심 흐름에서만. 비활성은 전용 색(흐리게 하지 않는다). 누르는 순간 적용되는 설정에만 쓴다 — 저장해야 적용되면 Checkbox 다."
+    + (brand.key === "shared" ? " 공유 토큰에는 브랜드 역할 색이 없어 brand 톤이 여기서는 중립으로 보인다 — HR · Desk 미리보기에서 브랜드 색이다." : "");
+
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">03d — Switch</div>
+      <h2 class="section-title">크기 3 · 톤 2 · 켬 · 끔</h2>
+      <p class="section-lede">${escape(lede)}</p>
+    </header>
+    ${sizePanel}
+    ${tonePanel}
+    ${statePanel}
+    ${settingsPanel}
+  </section>`;
+}
+
 export function renderVignettes(brand) {
   const tabs = `
     <div class="vignette-card">
@@ -3549,6 +3700,166 @@ export function pageCss() {
       --color-fg-disabled: var(--color-fg-disabled-dark);
     }
 
+    /* === Switch — specs/components/switch.md · switch.yaml(수치 원본) · switch.tsx 와 같은 모양 ===
+       구조는 SEED Switch(2026-09-30) — 스위치 .switch(Switchmark — 트랙) · 스위치 + 라벨 .switch-row(Switch). 엄지는 .switch-thumb.
+       크기 16 · 24(기본) · 32 — 이름은 트랙 높이다. 톤 neutral(기본) · brand, 켬 · 끔은 aria-checked(false · true).
+       톤 · 켬 · 끔은 색을 --switch-* 변수에 담기만 하고, 상태(비활성)가 그 변수를 골라 칠한다(.checkbox · .radio 와 같은 방식).
+       엄지는 끄면 0.8 로 작아지고 켜면 오른쪽으로 가며 제 크기가 된다 — 색 말고도 자리 · 크기로 켬 · 끔이 갈린다. 그림자는 없다.
+       호버 모양은 없다 — 켜짐 색이 상태를 뜻해서 색이 바뀌지 않는다. 설정 줄(라벨 왼쪽 · 스위치 오른쪽)은 List 가 정한다 — 여기에는 없다.
+       다크 짝은 이 블록 끝의 [data-theme="dark"] .switch 에서 바꾼다. 갤러리의 표는 Checkbox 갤러리의 .cb-panel · .cb-matrix 를 그대로 쓴다. */
+    .switch {
+      /* 브랜드 역할 색 — 공유 토큰(DESIGN.md)에는 없어 중립으로 떨어진다(.btn · .checkbox · .radio 와 같은 대체 사슬) */
+      --switch-brand-solid: var(--color-bg-brand-solid, var(--color-primary, var(--color-bg-neutral-inverted)));
+      /* 브랜드 톤의 엄지 — 브랜드 색이 있으면 static-white, 없으면 중립 톤의 엄지 색(.btn-brand-solid 와 같은 식) */
+      --switch-brand-white: color-mix(in srgb, var(--color-bg-brand-solid, var(--color-primary)) 0%, var(--color-static-white));
+      --switch-brand-thumb: var(--switch-brand-white, var(--color-fg-neutral-inverted));
+      --switch-focus-ring: var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral)));
+      /* 톤 — 켜진 트랙과 엄지의 색. 기본 neutral(짙은 회색) */
+      --switch-solid: var(--color-bg-neutral-inverted);
+      --switch-thumb: var(--color-fg-neutral-inverted);
+      /* 트랙 · 엄지가 쓰는 값 — 기본은 끔. 막힌 끔은 옅은 트랙 + 안쪽 선(box-shadow 라 트랙 크기는 그대로다) + 회색 엄지 */
+      --switch-bg: var(--color-stroke-neutral-solid);
+      --switch-bg-disabled: var(--color-bg-disabled);
+      --switch-line-disabled: inset 0 0 0 1px var(--color-stroke-neutral-weak);
+      --switch-thumb-disabled: var(--color-fg-disabled);
+      /* 크기 기본 = 24. 누름 배율 = (기준 − 2) ÷ 기준 — 기준은 max(높이, 폭 ÷ 4, 24) 라 16 · 24 는 24(22/24), 32 는 32(30/32) */
+      --press-basis: 24;
+      --switch-thumb-size: 20px;
+      --switch-thumb-shift: 14px;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      flex-shrink: 0;
+      box-sizing: border-box;
+      width: 38px;
+      height: 24px;
+      margin: 0;
+      padding: 2px;
+      appearance: none;
+      border: 0;
+      border-radius: var(--radius-full);
+      background: var(--switch-bg);
+      cursor: pointer;
+      vertical-align: middle;
+      transition:
+        background-color var(--motion-duration-d1) var(--motion-ease-easing) 20ms,
+        scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    /* 엄지 — 스위치가 담은 --switch-thumb 을 칠한다. 끄면 0.8 로 작아져 왼쪽에 있다. 색은 트랙과 같이 50ms · 20ms 뒤에 바뀐다 */
+    .switch-thumb {
+      display: block;
+      width: var(--switch-thumb-size);
+      height: var(--switch-thumb-size);
+      border-radius: var(--radius-full);
+      background: var(--switch-thumb);
+      scale: 0.8;
+      pointer-events: none;
+      transition:
+        translate var(--motion-duration-d3) var(--motion-ease-easing),
+        scale var(--motion-duration-d3) var(--motion-ease-easing),
+        background-color var(--motion-duration-d1) var(--motion-ease-easing) 20ms;
+    }
+    /* 크기 — 트랙 · 안쪽 여백 · 엄지 · 엄지가 가는 거리(트랙 폭 − 트랙 높이). 16 은 26 × 16 · 2 · 12 · 10, 32 는 52 × 32 · 3 · 26 · 20 */
+    .switch.switch--16 { width: 26px; height: 16px; --switch-thumb-size: 12px; --switch-thumb-shift: 10px; }
+    .switch.switch--32 { width: 52px; height: 32px; padding: 3px; --press-basis: 32; --switch-thumb-size: 26px; --switch-thumb-shift: 20px; }
+    /* 톤 brand — 서비스 핵심 흐름에서만. 엄지는 끔 · 켬 모두 흰색이다 */
+    .switch.switch--brand {
+      --switch-solid: var(--switch-brand-solid);
+      --switch-thumb: var(--switch-brand-thumb);
+    }
+    /* 켬 — 트랙을 톤 색으로 채우고 엄지가 오른쪽으로 가며 제 크기가 된다.
+       켜진 채 막히면 켜진 모양 그대로 회색 채움(fg-disabled) + 밝은 엄지(bg-disabled), 안쪽 선은 없다 */
+    .switch[aria-checked="true"] {
+      --switch-bg: var(--switch-solid);
+      --switch-bg-disabled: var(--color-fg-disabled);
+      --switch-line-disabled: none;
+      --switch-thumb-disabled: var(--color-bg-disabled);
+    }
+    .switch[aria-checked="true"] .switch-thumb { scale: 1; translate: var(--switch-thumb-shift); }
+
+    /* 상태 — 호버 모양은 없다(v104). 누름 = 색은 그대로, 스위치만 세로 2px 거리 축소(v104), 라벨은 줄지 않는다.
+       라벨을 눌러도 스위치가 반응한다(.switch-row). .switch--focus · --pressed 는 갤러리에서 그 순간을 고정해 보여 주는 클래스다. */
+    .switch:active,
+    .switch-row:active .switch:not(:disabled),
+    .switch.switch--pressed { scale: calc(1 - 2 / var(--press-basis)); }
+    /* 포커스 — 키보드 포커스에만 링 2px · 띄움 2px(v106) */
+    .switch:focus-visible,
+    .switch.switch--focus { outline: 2px solid var(--switch-focus-ring); outline-offset: 2px; }
+    /* 비활성 — 전용 색(v106). 불투명도로 흐리게 하지 않고, 누름에 반응하지 않는다. 톤과 상관없이 같은 색이다 */
+    .switch:disabled {
+      background: var(--switch-bg-disabled);
+      box-shadow: var(--switch-line-disabled);
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .switch:disabled .switch-thumb { background: var(--switch-thumb-disabled); }
+    /* 모션 줄이기 — 누름 축소를 뺀다. 엄지의 이동과 색 전환은 그대로다(기초 Motion) */
+    @media (prefers-reduced-motion: reduce) {
+      .switch:active,
+      .switch-row:active .switch:not(:disabled),
+      .switch.switch--pressed { scale: 1; }
+    }
+
+    /* 스위치 + 라벨 한 줄(Switch) — 스위치 왼쪽 · 라벨 오른쪽, 라벨까지 눌린다. 줄 높이 24 · 24 · 32, 스위치와 라벨 사이 6 · 8 · 10 */
+    .switch-row {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      /* 줄은 스위치 + 라벨만큼만 — 세로로 쌓아도 폭으로 늘지 않는다(switch.tsx 의 self-start) */
+      align-self: flex-start;
+      gap: var(--spacing-x2);
+      min-height: 24px;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    /* 16 의 줄 높이는 트랙(16)보다 큰 24 다 — 누르는 영역의 바닥 */
+    .switch-row--16 { gap: var(--spacing-x1_5); }
+    .switch-row--32 { gap: var(--spacing-x2_5); min-height: 32px; }
+    /* 누르는 영역 44 — 라벨까지 묶은 줄이 44 보다 작으면 가로 · 세로 44 까지 넓힌다(기초 Inclusive) */
+    .switch-row::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 100%;
+      height: 100%;
+      min-width: 44px;
+      min-height: 44px;
+      translate: -50% -50%;
+    }
+    .switch-row:has(.switch:disabled) { cursor: not-allowed; pointer-events: none; }
+    .switch-label {
+      font-family: var(--font-sans);
+      font-size: var(--text-t4);
+      line-height: var(--text-t4--line-height);
+      font-weight: 500;
+      color: var(--color-fg-neutral);
+    }
+    .switch-row--16 .switch-label { font-size: var(--text-t3); line-height: var(--text-t3--line-height); }
+    .switch-row--32 .switch-label { font-size: var(--text-t5); line-height: var(--text-t5--line-height); }
+    /* 막힌 줄은 라벨까지 비활성 색이다 */
+    .switch:disabled + .switch-label { color: var(--color-fg-disabled); }
+
+    /* 다크 — 역할 색을 스위치 안에서만 다크 짝으로 바꾼다(.btn · .checkbox · .radio 와 같다 — 전역 다크 블록은 옛 이름만 바꾼다).
+       라벨이 쓰는 값은 줄(.switch-row)에서 바꾼다. 공유 토큰(DESIGN.md)에 없는 브랜드 짝은 비어서 위 대체값(중립)으로 떨어진다. */
+    [data-theme="dark"] .switch,
+    [data-theme="dark"] .switch-row {
+      --color-bg-brand-solid: var(--color-bg-brand-solid-dark);
+      --color-stroke-focus-ring: var(--color-stroke-focus-ring-dark);
+      --color-stroke-neutral-solid: var(--color-stroke-neutral-solid-dark);
+      --color-stroke-neutral-weak: var(--color-stroke-neutral-weak-dark);
+      --color-bg-neutral-inverted: var(--color-bg-neutral-inverted-dark);
+      --color-fg-neutral-inverted: var(--color-fg-neutral-inverted-dark);
+      --color-fg-neutral: var(--color-fg-neutral-dark);
+      --color-bg-disabled: var(--color-bg-disabled-dark);
+      --color-fg-disabled: var(--color-fg-disabled-dark);
+    }
+
+    /* Switch 갤러리 — 표의 칸(.cb-matrix-cell)을 세로 축으로 돌려 줄을 칸의 세로 가운데에 둔다.
+       가로 축 칸에서는 줄(.switch-row)의 align-self: flex-start 가 줄을 칸 위쪽에 붙여, 줄 높이가 다른 크기(24 · 32)가 한 줄에서 어긋난다. */
+    .sw-cell { flex-direction: column; align-items: flex-start; justify-content: center; }
+
     /* todo-card */
     .todo-list { display: flex; flex-direction: column; gap: 2px; }
     .todo-row {
@@ -4972,6 +5283,7 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     ${renderButtonGallery(brand)}
     ${renderCheckboxGallery(brand)}
     ${renderRadioGallery(brand)}
+    ${renderSwitchGallery(brand)}
     ${renderVignettes(brand)}
     ${renderListingDetail(brand)}
     ${renderCalendar(brand)}

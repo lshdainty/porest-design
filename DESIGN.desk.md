@@ -3641,13 +3641,14 @@ Desk — 메모/할일/가계부에서 비활성 상태(예: 완료된 할일 to
 Desk — 데이터 내보내기 · 카드 혜택 필터 checkbox, 메모 즐겨찾기 switch, 알림 설정 switch 등. 오늘 Desk 의 라디오 동그라미는 반복 거래 "종료" 하나다 — 설명 · 입력칸이 붙어 Select Box 차례에 옮긴다(2026-09-30 조사 · 사용자 결정). 할 일 완료의 동그라미 체크는 Checkbox 가 아니다 — 할 일 목록 컴포넌트 차례에 정한다(2026-09-30 사용자 결정).
 
 #### 공통 spec (신규 토큰 없음)
-- inactive: `border-strong` 1px + `surface-input` 채움
-- active: `primary` (`#0147AD`) 채움 + `text-on-accent`
-- disabled: 전용 색(v106 — State 절)
-- **Checkbox · Radio 는 2026-09-30 SEED 구조로 바뀌었다**(`specs/components/checkbox.md` · `radio-group.md`) — 선택은 `bg-neutral-inverted`(짙은 회색)가 기본이고 `tone="brand"` 면 Desk 파랑, 선택 안 된 칸 · 동그라미의 테두리는 `stroke-neutral-solid`. 위 두 줄은 Switch 의 지금 값이다 — Switch 차례에 같은 규칙으로 옮긴다(사용자 결정).
+- 세 컨트롤 모두 2026-09-30 SEED 구조로 바뀌었다(`specs/components/switch.md` · `checkbox.md` · `radio-group.md`) — 색 규칙은 셋이 같다(사용자 결정)
+- 선택 · 켜짐: `bg-neutral-inverted`(짙은 회색) 채움 + `fg-neutral-inverted` 표시(체크 · 점 · 엄지)가 기본. `tone="brand"` 면 Desk 파랑(`bg-brand-solid`) + `static-white` — 서비스 핵심 흐름에서만
+- 선택 안 됨 · 꺼짐: `stroke-neutral-solid` — Checkbox · Radio 는 1px 테두리, Switch 는 트랙 채움
+- disabled: 전용 색(v106 — State 절). 선택 · 켜진 채 막히면 모양 그대로 회색
+- focus: 키보드 포커스에만 `stroke-focus-ring` 2px · 띄움 2px
 
 #### Variant
-- Switch: `lg` 32×20 (모바일 hit area 우선) — 알림 on/off, 다크모드 toggle 등
+- Switch: 트랙 38 × 24(`24`, 기본) · 26 × 16(`16`) · 52 × 32(`32`), 끄면 엄지가 0.8 로 작아진다 — 알림 on/off 처럼 누르는 순간 적용되는 설정에만. 저장해야 적용되는 값(자산 "합계에 포함" · 반복 "자동 기록")은 Checkbox(앱 적용 단계에서 옮긴다)
 - Checkbox: 칸 20(`medium`, 기본) · 24(`large`) — 모바일에서 홀로 서는 선택은 `large`
 - Radio: 동그라미 20(`medium`, 기본) · 24(`large`), 선택은 채운 원 + 가운데 점, 묶음은 세로 — 모바일에서 홀로 서는 선택은 `large`
 
@@ -3657,13 +3658,13 @@ Desk — 데이터 내보내기 · 카드 혜택 필터 checkbox, 메모 즐겨�
 - touch hit area 44×44 필수 (모바일 우선)
 
 #### Motion
-- toggle: `motion-duration-base` 200ms × `motion-ease-out` (HR 150ms보다 느려 친근감)
+- Switch: 엄지의 이동 · 크기 `motion-duration-d3` (150ms), 색은 20ms 뒤에 50ms — `specs/components/switch.yaml` (2026-09-30 — 옛 "Desk 는 200ms" 는 구현된 적이 없다, 스위치는 두 브랜드가 같은 값)
 - 할일 완료 시 strikethrough + opacity transition: `motion-duration-base` (사용자 만족감 표현)
 
 #### A11y
 - HTML native `<input>` + `<label for>` 우선
 - focus ring `border-focus` (`#0147AD`) 2px
-- Switch는 native `<input type="checkbox" role="switch">` + `aria-checked`
+- Switch는 native `<input type="checkbox" role="switch">` + `aria-checked`. 스위치만 쓰는 설정 줄은 줄 전체가 누르는 영역이고 줄의 제목이 스위치의 이름이 된다 — 줄의 모양은 List 차례에 정한다
 - 키보드 Space, Radio arrow keys, group `role="radiogroup"`
 
 ### Tabs

@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react';
 import { loadComponentSpec, stateNames } from '@/lib/component-spec';
 import { design, proseValue } from '@/lib/design-tokens';
-import { PROP_LABEL, PROP_ORDER } from '../../scripts/spec-tables.mjs';
+import { PROP_LABEL, PROP_ORDER, setsWeight } from '../../scripts/spec-tables.mjs';
 
 type Boxed = { value: unknown; dark?: unknown; note?: string };
 const isBoxed = (v: unknown): v is Boxed => !!v && typeof v === 'object' && 'value' in (v as object);
@@ -61,7 +61,8 @@ function ColorValue({ name, alpha }: { name: string; alpha?: number }) {
   );
 }
 
-function ScalarValue({ raw }: { raw: unknown }): ReactNode {
+// omitWeight — 그 부위의 굵기를 컴포넌트가 따로 정하면 글자 토큰에 딸린 굵기는 적지 않는다(spec-tables 의 setsWeight)
+function ScalarValue({ raw, omitWeight = false }: { raw: unknown; omitWeight?: boolean }): ReactNode {
   const v = String(raw).trim();
   const color = /^\$color-([a-z0-9-]+)(?:\s*\/\s*(\d+)%)?$/.exec(v);
   if (color) return <ColorValue name={color[1]} alpha={color[2] ? Number(color[2]) : undefined} />;
@@ -73,7 +74,7 @@ function ScalarValue({ raw }: { raw: unknown }): ReactNode {
     if (m[1] === 'radius') resolved = m[2] === 'full' ? '9999px(알약)' : front.rounded[m[2]];
     if (m[1] === 'text') {
       const t = front.typography[m[2]];
-      resolved = t ? `${t.fontSize} / ${t.lineHeight ?? '—'} / ${t.fontWeight ?? 400}` : undefined;
+      resolved = t ? [t.fontSize, t.lineHeight ?? '—', ...(omitWeight ? [] : [t.fontWeight ?? 400])].join(' / ') : undefined;
     }
     if (m[1] === 'font') resolved = front.typography.t4?.fontFamily;
     if (m[1] === 'motion') resolved = proseValue(`motion-${m[2]}`);
@@ -87,11 +88,11 @@ function ScalarValue({ raw }: { raw: unknown }): ReactNode {
   return <code className="text-[12.5px] text-fd-foreground">{v}</code>;
 }
 
-function Value({ raw }: { raw: unknown }) {
-  if (!isBoxed(raw)) return <ScalarValue raw={raw} />;
+function Value({ raw, omitWeight = false }: { raw: unknown; omitWeight?: boolean }) {
+  if (!isBoxed(raw)) return <ScalarValue raw={raw} omitWeight={omitWeight} />;
   return (
     <span className="flex flex-col gap-1">
-      <ScalarValue raw={raw.value} />
+      <ScalarValue raw={raw.value} omitWeight={omitWeight} />
       {raw.dark !== undefined && (
         <span className="flex items-center gap-1.5 text-[12px] text-fd-muted-foreground">
           다크 <ScalarValue raw={raw.dark} />
@@ -110,6 +111,7 @@ export function SpecSheet({ component }: { component: string }) {
   const spec = loadComponentSpec(component);
   const states = stateNames(spec);
   const slots = Object.keys(spec.slots);
+  const weightSet = new Set(slots.filter((s) => setsWeight(spec, s)));
   return (
     <div className="not-prose my-6 flex flex-col gap-6">
       {spec.rules.map((rule, i) => {
@@ -149,7 +151,7 @@ export function SpecSheet({ component }: { component: string }) {
                           <span className="ml-1 font-mono text-[11px] text-fd-muted-foreground">{r.prop}</span>
                         </td>
                         <td>
-                          <Value raw={r.raw} />
+                          <Value raw={r.raw} omitWeight={r.prop === 'typography' && weightSet.has(r.slot)} />
                         </td>
                       </tr>
                     );

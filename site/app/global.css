@@ -104,3 +104,18 @@ html > body[data-scroll-locked] {
   --pr-lb: var(--pr-lb-d);
   --pr-ring: var(--pr-ring-d);
 }
+/* Switch 그림(switch-view) — .pchk · .prad 와 같은 방식 */
+.pswt {
+  --ps-bg: var(--ps-bg-l);
+  --ps-bd: var(--ps-bd-l);
+  --ps-th: var(--ps-th-l);
+  --ps-lb: var(--ps-lb-l);
+  --ps-ring: var(--ps-ring-l);
+}
+.dark .pswt[data-mode='auto'] {
+  --ps-bg: var(--ps-bg-d);
+  --ps-bd: var(--ps-bd-d);
+  --ps-th: var(--ps-th-d);
+  --ps-lb: var(--ps-lb-d);
+  --ps-ring: var(--ps-ring-d);
+}
