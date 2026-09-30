@@ -13,7 +13,7 @@
 //   참고    Tailwind 클래스 같은 구현 표기 — 값을 되풀이할 뿐이면 버려도 되지만, 정보가 있으면 note 로 옮긴다
 
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -31,7 +31,11 @@ if (!name) {
 const rel = `specs/components/${name}.md`;
 const before = execFileSync('git', ['-C', REPO, 'show', `${base}:${rel}`], { encoding: 'utf8' });
 const after = readFileSync(join(REPO, rel), 'utf8');
-const page = readFileSync(join(SITE, `content/docs/components/${name}.md`), 'utf8');
+// 그림 자리가 있는 스펙은 .mdx 로 생성된다(gen-content 의 FIGURE) — MDX 이스케이프(\{ \} &lt;)는 풀어서 견준다
+const mdPath = join(SITE, `content/docs/components/${name}.md`);
+const page = existsSync(mdPath)
+  ? readFileSync(mdPath, 'utf8')
+  : readFileSync(join(SITE, `content/docs/components/${name}.mdx`), 'utf8').replace(/\\([{}])/g, '$1').replace(/&lt;/g, '<');
 
 // 코드 펜스 밖의 표 블록.
 function tables(text) {

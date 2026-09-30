@@ -129,23 +129,66 @@ function splitSpec(text) {
   return { title, description: plain(quote.join(' ')), body: lines.slice(i).join('\n').trim() };
 }
 
+// 여기서 만든 .mdx 의 표시 — 손으로 쓴 .mdx 와 가른다(정리 · 건너뛰기)
+const GEN_MARK = '{/* gen-content 가 만든 페이지';
+const isGeneratedMdx = (p) => existsSync(p) && readFileSync(p, 'utf8').includes(GEN_MARK);
+
 function write(relPath, { title, description, source }, body) {
   const out = join(DOCS, relPath);
-  if (existsSync(out.replace(/\.md$/, '.mdx'))) return; // 손으로 쓴 페이지가 이긴다
+  const handMdx = out.replace(/\.mdx?$/, '.mdx');
+  if (existsSync(handMdx) && !isGeneratedMdx(handMdx)) return; // 손으로 쓴 페이지가 이긴다
   mkdirSync(dirname(out), { recursive: true });
   const fm = stringifyYaml({ title, description, source }, { lineWidth: 0 }).trim();
-  writeFileSync(out, `---\n${fm}\n---\n\n<!-- ${source} 에서 생성 — 이 파일을 고치지 말고 원본을 고친다 -->\n\n${body}\n`);
+  const note = relPath.endsWith('.mdx')
+    ? `${GEN_MARK} — ${source} 에서 생성. 이 파일을 고치지 말고 원본을 고친다 */}`
+    : `<!-- ${source} 에서 생성 — 이 파일을 고치지 말고 원본을 고친다 -->`;
+  writeFileSync(out, `---\n${fm}\n---\n\n${note}\n\n${body}\n`);
   generated.push(relPath);
 }
 
-// 지난번에 만든 .md 를 지운다. 손으로 쓴 .mdx · meta.json 은 남긴다.
+// 지난번에 만든 .md · .mdx 를 지운다. 손으로 쓴 .mdx · meta.json 은 남긴다.
 function clean(dir) {
   if (!existsSync(dir)) return;
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const p = join(dir, entry.name);
     if (entry.isDirectory()) clean(p);
-    else if (entry.name.endsWith('.md')) rmSync(p);
+    else if (entry.name.endsWith('.md') || (entry.name.endsWith('.mdx') && isGeneratedMdx(p))) rmSync(p);
   }
+}
+
+// ── 컴포넌트 그림 자리 ────────────────────────────────────────────
+// 스펙 md 의 `[그림: 캡션](../../site/components/specs/<이름>.tsx#<id>)` 한 줄은 사이트에서 그 그림(렌더링된
+// 컴포넌트 · 화면 예시 · Do/Don't)이 된다. GitHub 에서는 그림을 그리는 코드로 가는 링크로 보인다.
+// 그림 자리가 있는 스펙은 .mdx 로 만든다 — 본문의 { } < 는 코드 밖에서만 글자로 바꾼다(MDX 가 JSX 로 읽지 않게).
+export const FIGURE = /^\[그림: ([^\]]+)\]\(\.\.\/\.\.\/site\/components\/specs\/([a-z0-9-]+)\.tsx#([a-zA-Z0-9-]+)\)\s*$/;
+
+function mdxText(line) {
+  return line
+    .split(/(`[^`]*`)/)
+    .map((seg) => (/^`[^`]*`$/.test(seg) ? seg : seg.replace(/[{}<]/g, (c) => ({ '{': '\\{', '}': '\\}', '<': '&lt;' })[c])))
+    .join('');
+}
+
+function toMdx(body, source) {
+  let fence = null;
+  return body
+    .split('\n')
+    .map((line, i) => {
+      const f = /^\s*(```+|~~~+)/.exec(line);
+      if (fence) {
+        if (f && f[1][0] === fence[0] && f[1].length >= fence.length) fence = null;
+        return line;
+      }
+      if (f) {
+        fence = f[1];
+        return line;
+      }
+      const m = line.match(FIGURE);
+      if (m) return `<SpecFigure name=${JSON.stringify(m[2])} id=${JSON.stringify(m[3])} caption={${JSON.stringify(m[1])}} />`;
+      if (/^(import|export)\s/.test(line)) throw new Error(`${source}:${i + 1} 줄이 import · export 로 시작한다 — MDX 가 코드로 읽는다`);
+      return mdxText(line);
+    })
+    .join('\n');
 }
 
 // ── 토큰 레퍼런스 ──────────────────────────────────────────────
@@ -373,7 +416,9 @@ for (const name of readdirSync(specDir).filter((n) => n.endsWith('.md')).sort())
   const withTables = fillSpecTables(addMissingTableHeaders(spec.body), { specDir, tokens, source });
   // 스펙 폴더 밖의 기초 스펙은 사이트에선 foundations 아래에 있다.
   const body = withTables.replace(/\]\(\.\.\/z-index\.md/g, '](../foundations/z-index.md');
-  write(`components/${name}`, { ...spec, source }, body);
+  // 그림 자리가 있으면 .mdx — 그림은 site/components/specs/<이름>.tsx 가 그린다
+  if (body.split('\n').some((l) => FIGURE.test(l))) write(`components/${name.replace(/\.md$/, '.mdx')}`, { ...spec, source }, toMdx(body, source));
+  else write(`components/${name}`, { ...spec, source }, body);
 }
 
 console.log(`gen-content: ${generated.length} pages`);
