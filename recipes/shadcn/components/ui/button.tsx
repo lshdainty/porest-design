@@ -6,97 +6,116 @@ import { cn } from "@/lib/utils";
 import { Spinner } from "@/components/ui/spinner";
 
 /*
- * Porest Button (shadcn 베이스 + Porest 디자인 토큰)
+ * Porest Button — 구조는 SEED Action Button(2026-09-30). 수치 원본은 specs/components/button.yaml.
  *
- * - shadcn/ui button.tsx 표준 구조 그대로 (Slot, cva, forwardRef).
- * - className은 Tailwind v4 utility — 우리 토큰 그대로 사용 가능
- *   (`bg-primary` → `--color-primary`, `text-text-on-accent` → `--color-text-on-accent`).
- * - 사이즈는 Porest typography 토큰 (`text-title-sm`, `text-label-md`)에 매핑.
- * - 한국어 본문 가독성 우선 — 16px / 14px / 13px 위주 (40-48px 터치 타겟).
+ * Variants(7) — 한 화면의 강조 버튼(Solid)은 하나
+ *   brandSolid     브랜드 색 채움 — 서비스 핵심 액션 하나(Desk 거래 추가 · HR 휴가 신청)
+ *   neutralSolid   짙은 회색 채움 — 대부분의 CTA(저장 · 확인 · 다음). 기본값
+ *   neutralWeak    옅은 회색 채움 — 대부분의 액션, CTA 옆 보조(취소)
+ *   criticalSolid  빨강 채움 — 되돌릴 수 없는 작업의 확정(Alert Dialog)
+ *   brandOutline   테두리 + 브랜드 글자 — neutralOutline 과 짝
+ *   neutralOutline 테두리 + 본문 글자 — 가장 낮은 위계
+ *   ghost          배경 없음 — ghostColor 로 글자색(neutral · neutralSubtle · brand · critical)
  *
- * Variants
- *   default     primary 채움 — 주요 액션
- *   destructive 위험 액션 (삭제/취소) — error 색상
- *   outline     surface 위 테두리만 — 보조 액션
- *   secondary   surface-input 채움 — 그룹 내 보조
- *   ghost       비채움(중립 text-primary) — nav/tab/리스트 행, 대부분의 quiet 액션 (icon 조합 시 보조톤 text-secondary)
- *   accent      비채움(brand) — ghost 강조판, 임팩트용 소수
- *   link        밑줄 텍스트 — 인라인 링크
+ * Sizes(4) × layout(withText · iconOnly)
+ *   xsmall 32(알약) · small 36 · medium 40(기본) · large 48 — 크기는 이름이 아니라 높이로 고른다.
  *
- * Sizes
- *   sm    h-8  px-3 / text-label-sm  — dense list, inline action
- *   md    h-10 px-4 / text-title-sm  — default
- *   lg    h-12 px-6 / text-title-md  — hero CTA, primary form action
- *   icon  h-10 w-10 rounded-md         — icon-only(둥근 박스). ghost 조합 시 글씨 보조톤(text-secondary)
- *   iconLg h-9 w-9 rounded-full        — 모바일 크롬 헤더(m-header) 컨텍스트 아이콘, glyph 20px. ghost여도 중립 유지
+ * States
+ *   hover = 누름 색(Tailwind v4 의 hover 는 hover 가능한 기기에서만). 누름은 누름 색 + 세로 2px 거리 축소 —
+ *   배율 = (기준 − 2) ÷ 기준, 기준 = max(높이, 폭 ÷ 4, 24). 누르는 순간 크기를 재서 --press-basis 로 넘기고,
+ *   크기마다 높이를 기본값으로 둔다. 모션 줄이기면 축소하지 않는다.
+ *   disabled 는 전용 색(bg-disabled · fg-disabled) — 흐리게 하지 않는다.
+ *   loading 은 누름 색 위 로딩 원 + 누르기 막기 + aria-busy. 라벨은 글자 · 아이콘 색만 투명하게 해 폭을 그대로 둔다 —
+ *   자식을 따로 감싸지 않으므로 부르는 쪽의 [&>span] · [&>svg] 규칙이 그대로 먹는다. asChild 와 함께 쓰지 않는다.
  *
- * Loading
- *   loading prop — 비동기 액션 중에 좌측에 Spinner(size=sm) 노출 + disabled + aria-busy.
- *   Spinner border 가 currentColor 상속하도록 inline style 강제 → default/destructive
- *   (filled bg) 에선 white, outline/ghost/secondary (transparent/회색 bg) 에선 primary 자동.
- *   asChild 와는 함께 쓰지 말 것 (Slot 단일 child 제약).
+ * 누르는 영역은 보이는 크기와 따로 44×44 까지 넓힌다(::before).
  */
-
-// gap·transition·font-family는 preview-html `.btn` SoT 그대로 — 디자인 토큰 직접 인용.
-//   gap-2 (Tailwind 기본 8px) → gap-[var(--spacing-sm)]
-//   transition-all (모든 속성, Tailwind 기본 cubic-bezier(0.4,0,0.2,1)/150ms)
-//     → transition-[box-shadow] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]
-//   font-sans (Pretendard) — <button> UA stylesheet가 body font를 inherit 안 해서 명시 필수.
-//   preview .btn은 `font-family: inherit` 사용 (body에서 var(--font-sans) 상속) — 동등.
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-[var(--spacing-sm)] whitespace-nowrap rounded-sm font-sans font-medium leading-none transition-[box-shadow] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  [
+    "relative inline-flex items-center justify-center whitespace-nowrap font-sans font-bold",
+    // 누르는 영역 44 — 보이는 상자보다 작으면 ::before 가 넓힌다
+    "before:absolute before:left-1/2 before:top-1/2 before:h-full before:min-h-11 before:w-full before:min-w-11 before:-translate-x-1/2 before:-translate-y-1/2 before:content-['']",
+    // 색은 color-transition, 축소는 pressed-scale
+    "[transition:background-color_var(--motion-duration-color-transition)_var(--motion-ease-easing),color_var(--motion-duration-color-transition)_var(--motion-ease-easing),scale_var(--motion-duration-pressed-scale)_var(--motion-ease-pressed-scale)]",
+    "active:[scale:calc(1-2/var(--press-basis))] motion-reduce:active:[scale:1]",
+    "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stroke-focus-ring",
+    "disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-bg-disabled disabled:text-fg-disabled",
+    // 로딩 — 라벨은 투명하게(폭 유지), 누름 축소 없음. 누르기는 onClick 에서 삼킨다
+    "aria-busy:cursor-progress aria-busy:text-transparent aria-busy:[&>svg]:invisible aria-busy:active:[scale:1]",
+    "[&_svg]:pointer-events-none [&_svg]:shrink-0",
+  ].join(" "),
   {
     variants: {
       variant: {
-        default:
-          "bg-primary text-text-on-accent shadow-sm hover:shadow-md hover:brightness-105 active:shadow-none active:scale-[0.98] active:brightness-95",
-        destructive:
-          "bg-error text-text-on-accent shadow-sm hover:shadow-md hover:brightness-105 active:shadow-none active:scale-[0.98] active:brightness-95",
-        outline:
-          "border border-border-default text-text-primary hover:bg-surface-input hover:border-border-strong active:bg-border-default active:scale-[0.98]",
-        secondary:
-          "bg-surface-input text-text-primary hover:bg-border-default active:scale-[0.98] active:brightness-95",
+        brandSolid:
+          "bg-bg-brand-solid text-static-white hover:bg-bg-brand-solid-pressed active:bg-bg-brand-solid-pressed aria-busy:bg-bg-brand-solid-pressed [--progress-track:color-mix(in_srgb,var(--color-static-white)_30%,transparent)] [--progress-range:var(--color-static-white)]",
+        neutralSolid:
+          "bg-bg-neutral-inverted text-fg-neutral-inverted hover:bg-bg-neutral-inverted-pressed active:bg-bg-neutral-inverted-pressed aria-busy:bg-bg-neutral-inverted-pressed [--progress-track:color-mix(in_srgb,var(--color-fg-neutral-inverted)_30%,transparent)] [--progress-range:var(--color-fg-neutral-inverted)]",
+        neutralWeak:
+          "bg-bg-neutral-weak text-fg-neutral hover:bg-bg-neutral-weak-pressed active:bg-bg-neutral-weak-pressed aria-busy:bg-bg-neutral-weak-pressed [--progress-track:var(--color-gray-500)] [--progress-range:var(--color-fg-neutral)]",
+        criticalSolid:
+          "bg-bg-critical-solid text-static-white hover:bg-bg-critical-solid-pressed active:bg-bg-critical-solid-pressed aria-busy:bg-bg-critical-solid-pressed [--progress-track:color-mix(in_srgb,var(--color-static-white)_30%,transparent)] [--progress-range:var(--color-static-white)]",
+        brandOutline:
+          "border border-stroke-neutral-weak bg-transparent text-fg-brand hover:bg-bg-layer-default-pressed active:bg-bg-layer-default-pressed aria-busy:bg-transparent disabled:bg-transparent [--progress-track:var(--color-bg-brand-weak-pressed)] [--progress-range:var(--color-bg-brand-solid)]",
+        neutralOutline:
+          "border border-stroke-neutral-weak bg-transparent text-fg-neutral hover:bg-bg-layer-default-pressed active:bg-bg-layer-default-pressed aria-busy:bg-transparent disabled:bg-transparent [--progress-track:var(--color-gray-500)] [--progress-range:var(--color-fg-neutral)]",
         ghost:
-          "text-text-primary hover:bg-surface-input active:bg-border-default active:scale-[0.98]",
-        accent:
-          "text-primary hover:bg-surface-input active:bg-border-default active:scale-[0.98]",
-        link:
-          "text-primary underline-offset-4 hover:underline active:brightness-90",
+          "bg-transparent text-fg-neutral hover:bg-bg-layer-default-pressed active:bg-bg-layer-default-pressed aria-busy:bg-bg-layer-default-pressed disabled:bg-transparent [--progress-track:var(--color-gray-500)] [--progress-range:var(--color-fg-neutral)]",
       },
       size: {
-        sm: "h-8 px-2 py-1 text-caption [&_svg]:size-3.5",
-        // 36 — 모달 footer 의 크기(button.md Sizes). 좌우 padding 은 양쪽 다 16.
-        // 이름은 shadcn 을 그대로 뒀다. 이 recipe 의 cva 기본값은 md 다.
-        default: "h-9 px-4 py-[9px] text-sm [&_svg]:size-4",
-        md: "h-10 px-3 py-2 text-body-md [&_svg]:size-4",
-        lg: "h-12 px-4 py-3 text-title-sm rounded-md [&_svg]:size-[18px]",
-        icon: "h-10 w-10 rounded-md [&_svg]:size-4",
-        iconLg: "h-9 w-9 p-0 rounded-full [&_svg]:size-5",
+        xsmall: "h-8 rounded-full [--press-basis:32] [--progress-size:14px]",
+        small: "h-9 rounded-r2 [--press-basis:36] [--progress-size:14px]",
+        medium: "h-10 rounded-r2 [--press-basis:40] [--progress-size:16px]",
+        // SEED large 는 52 — porest 는 48(button.md "SEED 와 다른 점")
+        large: "h-12 rounded-r3 [--press-basis:48] [--progress-size:18px]",
       },
-      // flush — 컨테이너 edge 광학 정렬용. 해당 방향 가로 padding 만 제거해 ghost 버튼
-      // 글자/아이콘이 edge 에 flush(box·hover 위치는 그대로). footer 좌측 삭제 버튼 등.
+      layout: {
+        withText: "",
+        iconOnly: "",
+      },
+      // ghost 의 글자색(SEED ghost 의 color)
+      ghostColor: {
+        neutral: "",
+        neutralSubtle: "",
+        brand: "",
+        critical: "",
+      },
+      // 가장자리 맞춤(SEED bleed) — 그 방향 가로 여백만 0. 여백은 크기 × 배치 조합 뒤에서 뺀다(아래)
       flush: {
-        left: "pl-0",
-        right: "pr-0",
+        left: "",
+        right: "",
       },
     },
     compoundVariants: [
-      // 아이콘 액션 버튼(ghost+icon): 글씨색을 보조톤(text-secondary)으로 약화 —
-      // 리스트 행/툴바의 quiet 아이콘 액션(편집·삭제·일시정지 등). label ghost(text-primary)·채움 variant icon은 불변.
-      // (iconLg는 모바일 크롬 헤더의 페이지당 1개 주 액션 — 약화 없이 중립 유지. v97)
-      { variant: "ghost", size: "icon", className: "text-text-secondary" },
-      // flush ghost 는 텍스트 버튼 — hover 배경 없이 글자색으로만 반응한다(button.md
-      // Edge flush). padding 이 한쪽만 0 이라 hover 채움 상자가 좌우 비대칭으로 보인다.
+      // 크기 × 배치 — 여백 · 간격 · 글자 · 아이콘(button.yaml)
+      { size: "xsmall", layout: "withText", className: "px-x3_5 py-x1_5 gap-x1 text-t3 [&_svg]:size-3.5" },
+      { size: "small", layout: "withText", className: "px-x3_5 py-x2 gap-x1 text-t4 [&_svg]:size-3.5" },
+      { size: "medium", layout: "withText", className: "px-x4 py-x2_5 gap-x1_5 text-t4 [&_svg]:size-4" },
+      { size: "large", layout: "withText", className: "px-x5 py-x3 gap-x2 text-t6 [&_svg]:size-[22px]" },
+      { size: "xsmall", layout: "iconOnly", className: "w-8 p-x1_5 [&_svg]:size-3.5" },
+      { size: "small", layout: "iconOnly", className: "w-9 p-x2 [&_svg]:size-4" },
+      { size: "medium", layout: "iconOnly", className: "w-10 p-x2_5 [&_svg]:size-[18px]" },
+      { size: "large", layout: "iconOnly", className: "w-12 p-x3 [&_svg]:size-[22px]" },
+      // 가장자리 맞춤 — 크기 × 배치의 px 보다 뒤에 둬야 tailwind-merge 가 pl-0 · pr-0 을 남긴다
+      { flush: "left", className: "pl-0" },
+      { flush: "right", className: "pr-0" },
+      // ghost 글자색
+      { variant: "ghost", ghostColor: "neutralSubtle", className: "text-fg-neutral-subtle" },
+      { variant: "ghost", ghostColor: "brand", className: "text-fg-brand" },
+      { variant: "ghost", ghostColor: "critical", className: "text-fg-critical" },
+      // flush ghost 는 텍스트 버튼 — 배경 없이 글자색으로만 반응한다(button.md "porest 에만 있는 것")
       {
         variant: "ghost",
         flush: ["left", "right"],
         className:
-          "text-text-secondary hover:bg-transparent hover:text-text-primary active:bg-transparent focus-visible:text-text-primary",
+          "text-fg-neutral-subtle hover:bg-transparent hover:text-fg-neutral active:bg-transparent active:text-fg-neutral focus-visible:text-fg-neutral",
       },
     ],
     defaultVariants: {
-      variant: "default",
-      size: "md",
+      variant: "neutralSolid",
+      size: "medium",
+      layout: "withText",
+      ghostColor: "neutral",
     },
   },
 );
@@ -105,31 +124,36 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
-  /** true면 좌측에 Spinner 노출 + disabled + aria-busy. asChild와 함께 쓰지 말 것 (Slot 단일 child). */
+  /** 누름 색 위 로딩 원 + 누르기 막기 + aria-busy. asChild 와 함께 쓰지 않는다(Slot 은 자식 하나). */
   loading?: boolean;
+}
+
+// 로딩 중 누르기 — 제출도, 부모로 올라가는 것도 막는다
+function swallow(e: React.MouseEvent<HTMLButtonElement>) {
+  e.preventDefault();
+  e.stopPropagation();
+}
+
+// 누르는 순간 기준 길이 max(높이, 폭 ÷ 4, 24) 를 --press-basis 로 — 폭이 넓은 버튼(w-full)도 세로 2px 만 준다.
+function setPressBasis(e: React.PointerEvent<HTMLElement>) {
+  const el = e.currentTarget;
+  const basis = Math.max(el.offsetHeight, el.offsetWidth / 4, 24);
+  el.style.setProperty("--press-basis", String(basis));
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
-    {
-      className,
-      variant,
-      size,
-      asChild = false,
-      loading = false,
-      disabled,
-      children,
-      ...props
-    },
+    { className, variant, size, layout, ghostColor, flush, asChild = false, loading = false, disabled, children, onPointerDown, onClick, ...props },
     ref,
   ) => {
+    const classes = cn(buttonVariants({ variant, size, layout, ghostColor, flush, className }));
+    const handlePointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
+      setPressBasis(e);
+      onPointerDown?.(e);
+    };
     if (asChild) {
       return (
-        <Slot
-          ref={ref}
-          className={cn(buttonVariants({ variant, size, className }))}
-          {...props}
-        >
+        <Slot ref={ref} className={classes} onPointerDown={handlePointerDown} onClick={onClick} {...props}>
           {children}
         </Slot>
       );
@@ -137,24 +161,28 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         ref={ref}
-        className={cn(buttonVariants({ variant, size, className }))}
-        disabled={disabled || loading}
+        className={classes}
+        disabled={disabled}
         aria-busy={loading || undefined}
+        onPointerDown={handlePointerDown}
+        // 로딩 중엔 포인터뿐 아니라 키보드(Enter · Space) 누르기도 삼킨다 — 두 번 제출 방지(submit 도 막는다)
+        onClick={loading ? swallow : onClick}
         {...props}
       >
+        {children}
         {loading && (
           <Spinner
-            size="sm"
             aria-hidden
-            // 버튼 내부 spinner는 버튼 텍스트 색(currentColor) 상속해 모든 variant 일관 시각.
-            // default/destructive(filled bg-primary/bg-error)에선 white, outline/ghost(흰 bg)에선 primary spinner.
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
             style={{
-              borderColor: "color-mix(in srgb, currentColor 30%, transparent)",
-              borderTopColor: "currentColor",
+              width: "var(--progress-size)",
+              height: "var(--progress-size)",
+              borderWidth: 2,
+              borderColor: "var(--progress-track)",
+              borderTopColor: "var(--progress-range)",
             }}
           />
         )}
-        {children}
       </button>
     );
   },

@@ -18,7 +18,7 @@ function Cell({ label, sub, children }: { label: string; sub?: string; children:
 }
 
 function Button({ bg, fg, style, children, w = 112 }: { bg: string; fg: string; style?: CSSProperties; children: ReactNode; w?: number }) {
-  const h = specSize('button', 'md').height;
+  const h = specSize('button', 'medium').height;
   return (
     <span className="relative inline-flex items-center justify-center rounded-lg text-[14px] font-semibold" style={{ width: w, height: h, background: bg, color: fg, ...style }}>
       {children}
@@ -28,7 +28,7 @@ function Button({ bg, fg, style, children, w = 112 }: { bg: string; fg: string; 
 
 export function InteractionStatesFigure() {
   const { ratio } = pressScale();
-  const h = specSize('button', 'md').height;
+  const h = specSize('button', 'medium').height;
   const w = 112;
   const brand = rc('bg-brand-solid'), pressed = rc('bg-brand-solid-pressed'), white = rc('static-white'), ring = rc('stroke-focus-ring');
   return (
@@ -84,7 +84,7 @@ function Field({ state }: { state: 'enabled' | 'focused' | 'invalid' | 'readonly
   const bg = state === 'readonly' || state === 'disabled' ? rc('bg-disabled') : rc('bg-layer-default');
   const fg = state === 'disabled' ? rc('fg-disabled') : rc('fg-neutral');
   const pad = state === 'focused' || state === 'invalid' ? 11 : 12; // 테두리가 두꺼워진 만큼 안쪽을 줄여 글자가 밀리지 않게
-  const h = specSize('button', 'md').height;
+  const h = specSize('button', 'medium').height;
   return (
     <div className="flex w-[150px] flex-col gap-1">
       <span className="flex items-center rounded-lg text-[14px]" style={{ height: h, border, background: bg, color: fg, paddingInline: pad }}>

@@ -15,7 +15,7 @@ import { ButtonProps, buttonVariants } from "@/components/ui/button";
  * - <a> 또는 button 기반. asChild 미지원(shadcn 표준 패턴).
  * - composition: Pagination > PaginationContent > PaginationItem > PaginationLink + Previous/Next/Ellipsis
  * - 모든 시각은 Button variant/size 인용 — buttonVariants() 호출로 자동 정합.
- * - 활성 페이지는 isActive prop으로 outline + aria-current="page". 비활성은 ghost.
+ * - 활성 페이지는 isActive prop으로 neutralOutline + aria-current="page". 비활성은 ghost.
  */
 
 const Pagination = ({ className, ...props }: React.ComponentProps<"nav">) => (
@@ -50,21 +50,23 @@ PaginationItem.displayName = "PaginationItem";
 
 type PaginationLinkProps = {
   isActive?: boolean;
-} & Pick<ButtonProps, "size"> &
+} & Pick<ButtonProps, "size" | "layout"> &
   React.ComponentProps<"a">;
 
 const PaginationLink = ({
   className,
   isActive,
-  size = "icon",
+  size = "medium",
+  layout = "iconOnly",
   ...props
 }: PaginationLinkProps) => (
   <a
     aria-current={isActive ? "page" : undefined}
     className={cn(
       buttonVariants({
-        variant: isActive ? "outline" : "ghost",
+        variant: isActive ? "neutralOutline" : "ghost",
         size,
+        layout,
       }),
       className,
     )}
@@ -79,7 +81,8 @@ const PaginationPrevious = ({
 }: React.ComponentProps<typeof PaginationLink>) => (
   <PaginationLink
     aria-label="이전 페이지"
-    size="md"
+    size="medium"
+    layout="withText"
     className={cn("gap-[var(--spacing-xs)]", className)}
     {...props}
   >
@@ -95,7 +98,8 @@ const PaginationNext = ({
 }: React.ComponentProps<typeof PaginationLink>) => (
   <PaginationLink
     aria-label="다음 페이지"
-    size="md"
+    size="medium"
+    layout="withText"
     className={cn("gap-[var(--spacing-xs)]", className)}
     {...props}
   >

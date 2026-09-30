@@ -111,22 +111,22 @@ Dialog는 open/closed 2 state. Radix `data-state` attribute(`open`/`closed`)로 
 
 **footer**
 
-- 데스크탑(**≥ 480px**, `--breakpoint-sm`): `flex justify-end gap-sm`. primary 우측, cancel 좌측.
-- 모바일(**< 480px**): `flex gap-sm` + 각 button `flex-1`(가로 균등 분배) + `size="lg"`(48).
+- 데스크탑(**≥ 480px**, `--breakpoint-sm`): `flex justify-end gap-sm`. 주 액션 우측 끝, 취소는 그 왼쪽.
+- 모바일(**< 480px**): `flex gap-sm` + 각 button `flex-1`(가로 균등 분배) + `size="large"`(48).
   한 손 조작 폭을 확보한다 — [`drawer`](drawer.md) footer 와 같은 규칙.
-- **footer 버튼 크기는 `default` 하나** — 높이 36 · 좌우 양쪽 16 · 14px([`button`](button.md)
-  Sizes). 한 footer 안에 두 크기가 섞이면 "어떤 건 글씨 양옆이 넓고 어떤 건 좁다" 가 된다
+- **footer 버튼 크기는 `small` 하나** — 높이 36 · 좌우 14 · 14px([`button`](button.md)
+  Size). 한 footer 안에 두 크기가 섞이면 "어떤 건 글씨 양옆이 넓고 어떤 건 좁다" 가 된다
   (desk 2026-09-16 실측). footer 안에 `<Button>` 을 손으로 놓지 말고 표준 footer 를 쓴다.
-- **삭제 버튼에 `flush` 를 쓰지 않는다** — 삭제는 `dangerSoft` **채움**이라 fill 이 이미
-  edge 까지 닿는다. 좌우 padding 16 을 그대로 두고 좌측 정렬은 `margin-right:auto` 로만 한다.
+- **삭제 버튼에 `flush` 를 쓰지 않는다** — flush ghost 는 글자색만 바뀌는 텍스트 버튼이라 빨간 글자를
+  잃는다. 좌우 여백을 그대로 두고 좌측 정렬은 `margin-right:auto` 로만 한다.
 - footer 왼쪽의 **`leftSlot`**(자산 상세 '금액 가리기' 처럼 ghost + 아이콘)은 반대로
   **`flush="left"` 를 쓴다** — 아이콘을 본문 콘텐츠 열에 맞춘다. 그 버튼은 텍스트 버튼이라
-  hover 에 배경 없이 글자색으로만 반응한다([`button`](button.md) Edge flush).
+  hover 에 배경 없이 글자색으로만 반응한다([`button`](button.md) 가장자리 맞춤).
   글자만 있는 leftSlot(요약 문구 등)에는 쓰지 않는다.
-- 모달 footer 의 **취소는 `secondary`**(테두리 없는 회색 채움), **삭제는 `dangerSoft`**(옅은 빨강
-  채움). 주 액션만 `default`(info 채움)로 두고 보조는 옅게 채워 무게 차이를 준다 —
-  `ghost` 는 배경이 없어 전체 폭 배치에서 버튼으로 보이지 않는다.
-  [`button`](button.md) Migration notes 참조.
+- 모달 footer 의 **취소는 `neutralWeak`**(옅은 회색 채움), **주 액션은 `neutralSolid`**(서비스의 핵심
+  액션이면 `brandSolid`). 확인 창을 여는 **삭제는 왼쪽에 `ghost` + `critical`**(빨간 글자), 삭제의
+  **확정**은 [`AlertDialog`](alert-dialog.md) 의 `criticalSolid` 다 — [`button`](button.md) 모달 footer
+  규칙(2026-09-30). 옛 이름(`secondary` · `dangerSoft` · `default`)은 button Migration notes.
 - **액션은 최대 2개** — 상세는 `삭제`·`수정`, 편집 폼은 `취소`·`저장`. 우상단 X 가 이미 닫기이므로
   footer 에 `확인`·`닫기` 를 두지 않는다. 줄이는 순서와 예외는 [`drawer`](drawer.md#액션-구성) SoT.
 
@@ -165,10 +165,10 @@ DropdownMenu의 `onSelect` 콜백에서 직접 dialog를 열면 `body { pointer-
 
 - title은 사용자 행위를 직접 표현 ("프로필 편집", "메모 삭제 확인") — 시스템 톤 회피.
 - description은 결과·영향을 명시 ("삭제 후 30일 보관함에 보관됩니다") — 사용자 결정에 필요한 정보.
-- footer button은 우측 정렬, primary 우측 끝. cancel은 좌측. **destructive primary는 `AlertDialog` 사용**.
+- footer button은 우측 정렬, 주 액션(`neutralSolid`) 우측 끝, 취소(`neutralWeak`)는 그 왼쪽. **삭제의 확정은 `AlertDialog` 의 `criticalSolid`**.
 - 액션 2개까지 — 3번째가 필요해 보이면 `확인`·`닫기` 부터 뺀다(우상단 X 와 중복).
 - 정보 확인용은 `.dialog-fields` 패턴(gray 채움 + key-val) — 한눈에 비교 가능.
-- 모바일(< 480px)에서 footer button 은 `flex-1` 균등 분배 + `lg`(48) — 주 액션 우측(`default`), 보조 좌측(`secondary`/`dangerSoft`).
+- 모바일(< 480px)에서 footer button 은 `flex-1` 균등 분배 + `large`(48) — 주 액션 우측(`neutralSolid`), 보조 좌측(`neutralWeak` · 삭제는 `ghost` + `critical`).
 
 ### ❌ Don't
 

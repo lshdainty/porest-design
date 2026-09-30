@@ -783,72 +783,127 @@ function renderTypographyMoment(brand, tokens) {
   </section>`;
 }
 
+// Button — spec: specs/components/button.md · 수치 button.yaml. 구조는 SEED Action Button(2026-09-30).
+// 변형 × 상태 · 크기 × 배치 · ghost 글자색 세 판을 흰 표면(.btn-panel) 위에 그린다.
 export function renderButtonGallery(brand) {
-  const states = ["default", "hover", "pressed", "focus", "disabled"];
-  const variants = [
-    { key: "primary", label: "primary" },
-    { key: "outline", label: "outline" },
-    { key: "ghost", label: "ghost" },
-    { key: "accent", label: "accent" },
-  ];
-
-  const head = `<div class="btn-row btn-row--head"><div></div>${
-    states.map(s => `<div class="btn-cell-head">${s}</div>`).join("")
+  const svg = (body) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
+  const ICON = {
+    plus: svg('<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>'),
+    chevron: svg('<polyline points="9 18 15 12 9 6"/>'),
+    search: svg('<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>'),
+    bell: svg('<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>'),
+    more: svg('<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>'),
+    star: svg('<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>'),
+    trash: svg('<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>'),
+  };
+  // 라벨은 <span> 에 싼다 — 로딩이면 숨기기만 해 폭이 그대로다. 아이콘만이면 이름(aria-label)을 단다.
+  const btn = ({ cls, label = "", prefix = "", suffix = "", name = "", attrs = "" }) => {
+    const aria = name ? ` aria-label="${escape(name)}" title="${escape(name)}"` : "";
+    return `<button class="btn ${cls}" type="button"${aria}${attrs}>${prefix}${label ? `<span>${escape(label)}</span>` : ""}${suffix}</button>`;
+  };
+  const head = (first, cols, mod = "") => `<div class="btn-row btn-row--head${mod}"><div class="btn-cell-head">${escape(first)}</div>${
+    cols.map(c => `<div class="btn-cell-head">${escape(c.ko)}<span>${escape(c.en)}</span></div>`).join("")
   }</div>`;
+  const row = (ko, en, cells, mod = "") => `
+      <div class="btn-row${mod}"><div class="btn-row-label">${escape(ko)}<span>${escape(en)}</span></div>${
+        cells.map(c => `<div class="btn-cell">${c}</div>`).join("")
+      }</div>`;
 
-  const variantRows = variants.map(v => {
-    const cells = states.map(s => `
-      <div class="btn-cell">
-        <button class="btn btn-${v.key} btn-state-${s}" ${s === "disabled" ? "disabled" : ""}>승인</button>
-      </div>`).join("");
-    return `<div class="btn-row"><div class="btn-row-label">${v.label}</div>${cells}</div>`;
-  }).join("");
-
-  const sizeRow = `
-    <div class="btn-size-row">
-      <div class="btn-size-label">size</div>
-      <button class="btn btn-primary btn-size-sm">sm · 32</button>
-      <button class="btn btn-primary btn-size-md">md · 40 (default)</button>
-      <button class="btn btn-primary btn-size-lg">lg · 48</button>
+  // 1. 변형 × 상태
+  const coreAction = brand.key === "hr" ? "휴가 신청" : brand.key === "desk" ? "거래 추가" : "핵심 액션";
+  const variants = [
+    { cls: "btn-brand-solid", en: "brandSolid", ko: "브랜드 채움", label: coreAction },
+    { cls: "btn-neutral-solid", en: "neutralSolid", ko: "짙은 회색 채움", label: "저장" },
+    { cls: "btn-neutral-weak", en: "neutralWeak", ko: "옅은 회색 채움", label: "취소" },
+    { cls: "btn-critical-solid", en: "criticalSolid", ko: "빨강 채움", label: "삭제" },
+    { cls: "btn-brand-outline", en: "brandOutline", ko: "테두리 · 브랜드 글자", label: "초대" },
+    { cls: "btn-neutral-outline", en: "neutralOutline", ko: "테두리 · 본문 글자", label: "공유" },
+    { cls: "btn-ghost", en: "ghost", ko: "배경 없음", label: "편집" },
+  ];
+  const states = [
+    { en: "enabled", ko: "기본", cls: "" },
+    { en: "hovered", ko: "호버", cls: "btn-state-hover" },
+    { en: "focused", ko: "포커스", cls: "btn-state-focus" },
+    { en: "pressed", ko: "누름", cls: "btn-state-pressed" },
+    { en: "loading", ko: "로딩", cls: "btn-loading", attrs: ' aria-busy="true"' },
+    { en: "disabled", ko: "비활성", cls: "", attrs: " disabled" },
+  ];
+  const variantPanel = `
+    <div class="btn-panel">
+      <div class="btn-panel-head">
+        <div class="btn-panel-title">변형 × 상태</div>
+        <div class="btn-panel-sub">호버 · 포커스 · 누름은 상태를 고정해 보여 준다 — 실제 버튼도 마우스 · 키보드로 눌러 볼 수 있다. 강조 버튼(Solid)은 한 화면에 하나.</div>
+      </div>
+      <div class="btn-matrix">
+        ${head("변형", states)}${variants.map(v => row(v.ko, v.en,
+          states.map(s => btn({ cls: `${v.cls} ${s.cls}`.trim(), label: v.label, attrs: s.attrs || "" })),
+        )).join("")}
+      </div>
     </div>`;
 
-  const PENCIL = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
-  const TRASH = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
-  const BELL = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>';
-  const SEARCH = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
-  const iconRow = `
-    <div class="btn-size-row">
-      <div class="btn-size-label">icon action</div>
-      <button class="btn btn-ghost btn-icon" aria-label="수정" title="수정">${PENCIL}</button>
-      <button class="btn btn-ghost btn-icon btn-icon-danger" aria-label="삭제" title="삭제">${TRASH}</button>
-      <span style="font-size:var(--text-caption); color:var(--color-text-tertiary);">ghost + size=icon · 보조톤(text-secondary) · radius-md 둥근 박스 · 삭제는 error 색</span>
-    </div>
-    <div class="btn-size-row">
-      <div class="btn-size-label">iconLg (m-header)</div>
-      <button class="btn btn-ghost btn-icon-lg" aria-label="알림" title="알림">${BELL}</button>
-      <button class="btn btn-ghost btn-icon-lg" aria-label="검색" title="검색">${SEARCH}</button>
-      <span style="font-size:var(--text-caption); color:var(--color-text-tertiary);">ghost + size=iconLg · 모바일 크롬 헤더 · 36×36 원형(radius-full) · glyph 20px · 중립색 유지</span>
+  // 2. 크기 × 배치
+  const sizes = [
+    { cls: "btn-size-xsmall", en: "32 · 알약", ko: "xsmall" },
+    { cls: "btn-size-small", en: "36", ko: "small" },
+    { cls: "btn-size-medium", en: "40 · 기본", ko: "medium" },
+    { cls: "btn-size-large", en: "48", ko: "large" },
+  ];
+  const sizeRows = [
+    { ko: "글자", en: "withText", make: s => btn({ cls: `btn-neutral-solid ${s.cls}`, label: "저장" }) },
+    { ko: "앞 아이콘 + 글자", en: "prefixIcon", make: s => btn({ cls: `btn-neutral-solid ${s.cls}`, label: "추가", prefix: ICON.plus }) },
+    { ko: "글자 + 뒤 아이콘", en: "suffixIcon", make: s => btn({ cls: `btn-neutral-solid ${s.cls}`, label: "다음", suffix: ICON.chevron }) },
+    { ko: "아이콘만", en: "iconOnly · 정사각", make: s => btn({ cls: `btn-neutral-solid btn-icon-only ${s.cls}`, prefix: ICON.search, name: "검색" }) },
+    { ko: "로딩", en: "loading · 폭 유지", make: s => btn({ cls: `btn-neutral-solid ${s.cls} btn-loading`, label: "저장", attrs: ' aria-busy="true"' }) },
+  ];
+  const sizePanel = `
+    <div class="btn-panel">
+      <div class="btn-panel-head">
+        <div class="btn-panel-title">크기 × 배치</div>
+        <div class="btn-panel-sub">크기는 이름이 아니라 높이로 고른다. 글자 700 · 아이콘과 글자 사이는 크기마다(4 · 4 · 6 · 8). 앞 · 뒤 아이콘은 함께 쓰지 않는다. 누르는 영역은 44 까지 넓힌다.</div>
+      </div>
+      <div class="btn-matrix">
+        ${head("배치", sizes, " btn-row--4")}${sizeRows.map(r => row(r.ko, r.en, sizes.map(r.make), " btn-row--4")).join("")}
+      </div>
     </div>`;
 
-  const lede = brand.key === "hr"
-    ? "B2B 데이터 밀도 톤 — sm/md 사이즈 위주, hover 미니멀."
-    : brand.key === "desk"
-      ? "B2C 친근 톤 — md/lg 사이즈 위주, hover에 명도/shadow 강조."
-      : "Brand-agnostic 데모. 실제 파일에선 brand 분기.";
+  // 3. ghost 글자색
+  const ghostColors = [
+    { cls: "", en: "neutral", ko: "기본", label: "편집", icon: ICON.bell, name: "알림" },
+    { cls: "btn-ghost-subtle", en: "neutralSubtle", ko: "흐린 글자", label: "더보기", icon: ICON.more, name: "더보기" },
+    { cls: "btn-ghost-brand", en: "brand", ko: "브랜드 글자", label: "자세히 보기", icon: ICON.star, name: "즐겨찾기" },
+    { cls: "btn-ghost-critical", en: "critical", ko: "위험 글자", label: "삭제", icon: ICON.trash, name: "삭제" },
+  ];
+  const ghostCls = (g, extra = "") => ["btn-ghost", g.cls, extra].filter(Boolean).join(" ");
+  const ghostPanel = `
+    <div class="btn-panel">
+      <div class="btn-panel-head">
+        <div class="btn-panel-title">ghost 글자색</div>
+        <div class="btn-panel-sub">배경 · 누름은 ghost 그대로, 글자색만 바뀐다. 확인 창을 여는 삭제는 critical, 목록 · 툴바의 보조 아이콘 액션과 가장자리 텍스트 버튼(flush)은 neutralSubtle.</div>
+      </div>
+      <div class="btn-matrix">
+        ${head("배치", ghostColors, " btn-row--4")}${[
+          row("글자", "withText", ghostColors.map(g => btn({ cls: ghostCls(g), label: g.label })), " btn-row--4"),
+          row("아이콘만", "iconOnly · medium", ghostColors.map(g => btn({ cls: ghostCls(g, "btn-icon-only"), prefix: g.icon, name: g.name })), " btn-row--4"),
+          row("누름", "pressed", ghostColors.map(g => btn({ cls: ghostCls(g, "btn-state-pressed"), label: g.label })), " btn-row--4"),
+          row("비활성", "disabled", ghostColors.map(g => btn({ cls: ghostCls(g), label: g.label, attrs: " disabled" })), " btn-row--4"),
+        ].join("")}
+      </div>
+    </div>`;
+
+  const lede = brand.key === "shared"
+    ? "SEED Action Button 구조 — 변형 7 · 크기 4 · 상태 6. 호버는 누름 색, 누름은 누름 색 + 세로 2px 축소, 비활성은 전용 색(흐리게 하지 않는다). 공유 토큰에는 브랜드 역할 색이 없어 brandSolid · brandOutline 이 여기서는 중립으로 보인다 — HR · Desk 미리보기에서 브랜드 색이다."
+    : `SEED Action Button 구조 — 변형 7 · 크기 4 · 상태 6. 호버는 누름 색, 누름은 누름 색 + 세로 2px 축소, 비활성은 전용 색(흐리게 하지 않는다). brandSolid 는 서비스의 핵심 액션 하나(${coreAction})에만 — 저장 · 확인 같은 대부분의 CTA 는 neutralSolid.`;
 
   return `
   <section class="section">
     <header class="section-head">
       <div class="section-eyebrow">03 — Button</div>
-      <h2 class="section-title">Primary · outline · ghost · accent</h2>
+      <h2 class="section-title">변형 7 · 크기 4 · 상태 6</h2>
       <p class="section-lede">${escape(lede)}</p>
     </header>
-    <div class="btn-matrix">
-      ${head}
-      ${variantRows}
-    </div>
-    ${sizeRow}
-    ${iconRow}
+    ${variantPanel}
+    ${sizePanel}
+    ${ghostPanel}
   </section>`;
 }
 
@@ -1304,8 +1359,8 @@ export function renderModal(brand) {
           <div class="modal-fields">${fields}</div>
         </div>
         <div class="modal-actions">
-          <button class="btn btn-outline">${escape(m.secondary)}</button>
-          <button class="btn btn-primary">${escape(m.primary)}</button>
+          <button class="btn btn-neutral-weak">${escape(m.secondary)}</button>
+          <button class="btn btn-neutral-solid">${escape(m.primary)}</button>
         </div>
       </div>
     </div>
@@ -1518,7 +1573,7 @@ export function renderBatchV67(brand) {
             <div class="drw-row"><span class="drw-key">카테고리</span><span class="drw-val">식비 · 카페</span></div>
           </div>
           <div class="drw-actions">
-            <button class="btn btn-primary" type="button">저장</button>
+            <button class="btn btn-neutral-solid" type="button">저장</button>
           </div>
         </div>
        </div>`
@@ -1535,8 +1590,8 @@ export function renderBatchV67(brand) {
             <div class="drw-row"><span class="drw-key">근속</span><span class="drw-val">2년차</span></div>
           </div>
           <div class="drw-actions">
-            <button class="btn btn-primary" type="button">${isHr ? "권한 수정" : "수정"}</button>
-            <button class="btn btn-outline" type="button">취소</button>
+            <button class="btn btn-neutral-solid" type="button">${isHr ? "권한 수정" : "수정"}</button>
+            <button class="btn btn-neutral-weak" type="button">취소</button>
           </div>
         </div>
        </div>`;
@@ -1832,8 +1887,8 @@ export function renderShadcnDisclose(brand) {
               <div class="modal-description">${brand.key === "hr" ? "\"김서연\" 님의 모든 권한이 회수됩니다. 복구는 관리자 승인이 필요합니다." : brand.key === "desk" ? "\"Porest 브랜드 톤\" 을 30일 보관함을 거치지 않고 즉시 삭제합니다." : "\"2026 예산안\" 을 삭제합니다. 이 작업은 되돌릴 수 없습니다."}</div>
             </div>
             <div class="modal-actions">
-              <button class="btn btn-outline" autofocus>취소</button>
-              <button class="btn btn-destructive">${brand.key === "hr" ? "회수" : "삭제"}</button>
+              <button class="btn btn-neutral-weak" autofocus>취소</button>
+              <button class="btn btn-critical-solid">${brand.key === "hr" ? "회수" : "삭제"}</button>
             </div>
           </div>
         </div>
@@ -2488,15 +2543,7 @@ export function pageCss() {
       opacity: 0.95;
     }
     .hero-actions { display: flex; gap: var(--spacing-sm); }
-    .btn-on-accent {
-      background: var(--color-surface-default);
-      color: var(--color-text-primary);
-    }
-    .btn-on-accent.btn-outline-on-dark {
-      background: transparent;
-      color: var(--color-text-on-accent, #fff);
-      border: 1px solid rgba(255, 255, 255, 0.4);
-    }
+    /* 히어로 버튼(.btn-on-accent · .btn-outline-on-dark)은 아래 Button 블록에 있다 — 변형 변수를 쓰므로 .btn 뒤에 와야 한다 */
     .hero-stack { display: flex; flex-direction: column; gap: var(--spacing-md); }
     .hero-fact {
       display: flex; justify-content: space-between; align-items: baseline;
@@ -2508,74 +2555,259 @@ export function pageCss() {
     .hero-fact-value { font-family: ui-monospace, monospace; font-size: var(--text-body-md); font-weight: 600; }
     .hero-meta { font-size: var(--text-caption); color: var(--color-text-tertiary); margin-top: var(--spacing-md); }
 
-    /* Buttons (공유) — md 기본 (height 40, padding spacing-sm spacing-md = 8/12, font body-md=15, line-height 1, box-sizing: border-box) */
+    /* === Button — specs/components/button.md · button.yaml(수치 원본) · button.tsx 와 같은 모양 ===
+       구조는 SEED Action Button(2026-09-30) — 변형 7 · 크기 4 · 배치 2(글자 · 아이콘만) · 상태 6.
+       변형은 색을 --btn-* 변수에 담기만 하고, 상태(호버 · 누름 · 로딩 · 비활성)가 그 변수를 골라 칠한다.
+       옛 이름(.btn-primary · .btn-outline · .btn-size-sm …)은 button.md Migration notes 대로 새 모양에 붙인다 —
+       다른 컴포넌트 미리보기가 아직 옛 이름을 쓴다. 다크 짝은 아래 [data-theme="dark"] .btn 에서 바꾼다. */
     .btn {
+      /* 브랜드 역할 색 — 공유 토큰(DESIGN.md)에는 없어 중립으로 떨어진다. 옛 사이트(build-site)는 --color-primary · --color-border-focus 만 브랜드로 바꾼다 */
+      --btn-brand-solid: var(--color-bg-brand-solid, var(--color-primary, var(--color-bg-neutral-inverted)));
+      --btn-brand-solid-pressed: var(--color-bg-brand-solid-pressed, var(--color-primary, var(--color-bg-neutral-inverted-pressed)));
+      /* 브랜드 채움 위 글자 — 브랜드 색이 있으면 흰색(static-white), 없으면 중립 채움의 글자색(다크에서 흰 채움 위 흰 글자 방지).
+         color-mix(브랜드 0%, 흰색) 은 늘 흰색이지만, 브랜드 토큰이 비면 식 전체가 무효가 되어 대체값으로 간다 */
+      --btn-brand-white: color-mix(in srgb, var(--color-bg-brand-solid, var(--color-primary)) 0%, var(--color-static-white));
+      --btn-brand-on-solid: var(--btn-brand-white, var(--color-fg-neutral-inverted));
+      --btn-brand-fg: var(--color-fg-brand, var(--color-primary, var(--color-fg-neutral)));
+      --btn-brand-track: var(--color-bg-brand-weak-pressed, var(--color-gray-500));
+      --btn-focus-ring: var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral)));
+      /* 상태가 고르는 값 — 변형이 따로 정하지 않으면 이 기본을 쓴다 */
+      --btn-fg-pressed: var(--btn-fg);
+      --btn-bg-loading: var(--btn-bg-pressed);
+      --btn-bg-disabled: var(--color-bg-disabled);
+      /* 크기 기본 = medium(cva defaultVariants). 누름 배율 = (기준 − 2) ÷ 기준 — 정적 미리보기라 기준은 높이 */
+      --press-basis: 40;
+      --progress-size: 16px;
+      --btn-icon-size: 16px;
+      position: relative;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: var(--spacing-sm);
+      gap: var(--spacing-x1_5);
       box-sizing: border-box;
       height: 40px;
-      padding: var(--spacing-sm) var(--spacing-md);
-      font-family: inherit;
-      font-size: var(--text-body-md);
-      /* 500 — DESIGN.md typography 가이드: weight 강조는 별도 토큰 대신 인라인 modifier.
-         이전 var(--text-body-strong--font-weight) 인용은 typography 15-token에 없는 deprecated 토큰 버그였음. */
-      font-weight: 500;
-      line-height: 1;
+      padding: var(--spacing-x2_5) var(--spacing-x4);
+      font-family: var(--font-sans);
+      font-size: var(--text-t4);
+      line-height: var(--text-t4--line-height);
+      font-weight: 700;
       white-space: nowrap;
+      text-decoration: none;
       border: none;
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-r2);
+      background: var(--btn-bg);
+      color: var(--btn-fg);
       cursor: pointer;
-      transition: box-shadow var(--motion-duration-fast) var(--motion-ease-out);
+      transition:
+        background-color var(--motion-duration-color-transition) var(--motion-ease-easing),
+        color var(--motion-duration-color-transition) var(--motion-ease-easing),
+        scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
     }
-    .btn-primary {
-      background: var(--color-primary, var(--color-text-primary));
-      color: var(--color-text-on-accent, #fff);
-      box-shadow: var(--shadow-sm);
+    /* 누르는 영역 44 — 보이는 상자보다 작으면 가로 · 세로 44 까지 넓힌다(v106) */
+    .btn::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 100%;
+      height: 100%;
+      min-width: 44px;
+      min-height: 44px;
+      translate: -50% -50%;
     }
-    .btn-primary:hover { box-shadow: var(--shadow-md); filter: brightness(1.05); }
-    .btn-primary:focus-visible { outline: 2px solid var(--color-border-focus, var(--color-primary)); outline-offset: 1px; }
-    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-    .btn-outline {
-      background: transparent;
-      color: var(--color-text-primary);
-      border: 1px solid var(--color-border-default);
+    .btn svg { width: var(--btn-icon-size); height: var(--btn-icon-size); flex-shrink: 0; pointer-events: none; }
+
+    /* 변형 — 기본(cva defaultVariants)은 neutralSolid 라 .btn 만 있어도 이 모양이다.
+       옛 이름: default(.btn-primary) → neutralSolid · destructive → criticalSolid · outline → neutralOutline ·
+       accent → ghost + brand 글자. .btn--* 는 옛 사이트(build-site)의 이름이다. */
+    .btn, .btn-neutral-solid, .btn-primary, .btn--primary {
+      --btn-bg: var(--color-bg-neutral-inverted);
+      --btn-fg: var(--color-fg-neutral-inverted);
+      --btn-bg-pressed: var(--color-bg-neutral-inverted-pressed);
+      --progress-track: color-mix(in srgb, var(--color-fg-neutral-inverted) 30%, transparent);
+      --progress-range: var(--color-fg-neutral-inverted);
     }
-    .btn-outline:hover { background: var(--color-surface-input); }
-    .btn-outline:disabled { opacity: 0.5; cursor: not-allowed; }
-    .btn-ghost {
-      background: transparent;
-      color: var(--color-text-primary);
+    .btn-brand-solid {
+      --btn-bg: var(--btn-brand-solid);
+      --btn-fg: var(--btn-brand-on-solid);
+      --btn-bg-pressed: var(--btn-brand-solid-pressed);
+      --progress-track: color-mix(in srgb, var(--btn-brand-on-solid) 30%, transparent);
+      --progress-range: var(--btn-brand-on-solid);
     }
-    .btn-ghost:hover { background: var(--color-surface-input); }
-    /* flush ghost 는 텍스트 버튼 — hover 배경 없이 글자색으로만(button.md Edge flush). */
-    .btn-ghost.btn-flush-left, .btn-ghost.btn-flush-right { color: var(--color-text-secondary); }
-    .btn-ghost.btn-flush-left { padding-left: 0; }
-    .btn-ghost.btn-flush-right { padding-right: 0; }
-    .btn-ghost.btn-flush-left:hover, .btn-ghost.btn-flush-right:hover { background: transparent; color: var(--color-text-primary); }
-    .btn-ghost:disabled { opacity: 0.5; cursor: not-allowed; }
-    .btn-accent {
-      background: transparent;
-      color: var(--color-primary, var(--color-text-primary));
+    .btn-neutral-weak {
+      --btn-bg: var(--color-bg-neutral-weak);
+      --btn-fg: var(--color-fg-neutral);
+      --btn-bg-pressed: var(--color-bg-neutral-weak-pressed);
+      --progress-track: var(--color-gray-500);
+      --progress-range: var(--color-fg-neutral);
     }
-    .btn-accent:hover { background: var(--color-surface-input); }
-    .btn-accent:disabled { opacity: 0.5; cursor: not-allowed; }
-    .btn-state-hover { box-shadow: var(--shadow-md); filter: brightness(1.05); }
-    .btn-state-pressed { transform: scale(0.98); box-shadow: none; filter: brightness(0.95); }
-    .btn-state-focus { outline: 2px solid var(--color-border-focus, var(--color-primary)); outline-offset: 1px; }
-    .btn-size-sm { height: 32px; padding: var(--spacing-xs) var(--spacing-sm); font-size: var(--text-caption); }
-    .btn-size-md { height: 40px; padding: var(--spacing-sm) var(--spacing-md); font-size: var(--text-body-md); }
-    .btn-size-lg { height: 48px; padding: var(--spacing-md) var(--spacing-lg); font-size: var(--text-title-sm); border-radius: var(--radius-md); }
-    /* icon action 버튼 — 정사각 + radius-md 둥근 박스. ghost 조합 시 보조톤(text-secondary). */
-    .btn-icon { width: 40px; height: 40px; padding: 0; border-radius: var(--radius-md); }
-    .btn-ghost.btn-icon { color: var(--color-text-secondary); }
-    .btn-icon.btn-icon-danger { color: var(--color-error); }
-    .btn-icon svg { width: 16px; height: 16px; }
-    /* iconLg — 모바일 크롬 헤더(m-header) 컨텍스트 아이콘. 36×36 원형 + glyph 20px.
-       ghost여도 보조톤 약화 없음(중립 text-primary 유지) — button.md v97. */
-    .btn-icon-lg { width: 36px; height: 36px; padding: 0; border-radius: var(--radius-full); }
-    .btn-icon-lg svg { width: 20px; height: 20px; }
+    .btn-critical-solid, .btn-destructive {
+      --btn-bg: var(--color-bg-critical-solid);
+      --btn-fg: var(--color-static-white);
+      --btn-bg-pressed: var(--color-bg-critical-solid-pressed);
+      --progress-track: color-mix(in srgb, var(--color-static-white) 30%, transparent);
+      --progress-range: var(--color-static-white);
+    }
+    /* Outline — 로딩 · 비활성에도 배경은 투명하고 테두리는 그대로다(button.yaml) */
+    .btn-brand-outline, .btn-neutral-outline, .btn-outline, .btn--outline {
+      --btn-bg: transparent;
+      --btn-bg-pressed: var(--color-bg-layer-default-pressed);
+      --btn-bg-loading: transparent;
+      --btn-bg-disabled: transparent;
+      border: 1px solid var(--color-stroke-neutral-weak);
+    }
+    .btn-brand-outline {
+      --btn-fg: var(--btn-brand-fg);
+      --progress-track: var(--btn-brand-track);
+      --progress-range: var(--btn-brand-solid);
+    }
+    .btn-neutral-outline, .btn-outline, .btn--outline {
+      --btn-fg: var(--color-fg-neutral);
+      --progress-track: var(--color-gray-500);
+      --progress-range: var(--color-fg-neutral);
+    }
+    .btn-ghost, .btn--ghost, .btn-accent {
+      --btn-bg: transparent;
+      --btn-fg: var(--color-fg-neutral);
+      --btn-bg-pressed: var(--color-bg-layer-default-pressed);
+      --btn-bg-disabled: transparent;
+      --progress-track: var(--color-gray-500);
+      --progress-range: var(--color-fg-neutral);
+    }
+    /* ghost 글자색(SEED ghost 의 color) — 배경 · 누름은 ghost 그대로. 옛 ghost 아이콘 액션(.btn-icon)은 neutralSubtle */
+    .btn-ghost-subtle, .btn-ghost.btn-icon { --btn-fg: var(--color-fg-neutral-subtle); }
+    .btn-ghost-brand, .btn-accent { --btn-fg: var(--btn-brand-fg); }
+    .btn-ghost-critical, .btn-icon.btn-icon-danger { --btn-fg: var(--color-fg-critical); }
+    /* 브랜드 채움 위(히어로 카드) — preview 전용, 스펙 변형이 아니다. 표면 버튼 + 흰 테두리 버튼 */
+    .btn-on-accent {
+      --btn-bg: var(--color-bg-layer-default);
+      --btn-fg: var(--color-fg-neutral);
+      --btn-bg-pressed: var(--color-bg-layer-default-pressed);
+    }
+    .btn-on-accent.btn-outline-on-dark {
+      --btn-bg: transparent;
+      --btn-fg: var(--color-static-white);
+      --btn-bg-pressed: color-mix(in srgb, var(--color-static-white) 12%, transparent);
+      border: 1px solid color-mix(in srgb, var(--color-static-white) 40%, transparent);
+    }
+
+    /* 크기 — 이름이 아니라 높이로 고른다. 옛 sm → xsmall(알약) · md → medium · lg → large.
+       모달 footer 는 small(36 — button.md 버튼 배치). */
+    .btn-size-xsmall, .btn-size-sm {
+      --press-basis: 32;
+      --progress-size: 14px;
+      --btn-icon-size: 14px;
+      height: 32px;
+      padding: var(--spacing-x1_5) var(--spacing-x3_5);
+      gap: var(--spacing-x1);
+      border-radius: var(--radius-full);
+      font-size: var(--text-t3);
+      line-height: var(--text-t3--line-height);
+    }
+    .btn-size-small, .modal-actions .btn {
+      --press-basis: 36;
+      --progress-size: 14px;
+      --btn-icon-size: 14px;
+      height: 36px;
+      padding: var(--spacing-x2) var(--spacing-x3_5);
+      gap: var(--spacing-x1);
+      border-radius: var(--radius-r2);
+      font-size: var(--text-t4);
+      line-height: var(--text-t4--line-height);
+    }
+    .btn-size-medium, .btn-size-md {
+      --press-basis: 40;
+      --progress-size: 16px;
+      --btn-icon-size: 16px;
+      height: 40px;
+      padding: var(--spacing-x2_5) var(--spacing-x4);
+      gap: var(--spacing-x1_5);
+      border-radius: var(--radius-r2);
+      font-size: var(--text-t4);
+      line-height: var(--text-t4--line-height);
+    }
+    .btn-size-large, .btn-size-lg {
+      --press-basis: 48;
+      --progress-size: 18px;
+      --btn-icon-size: 22px;
+      height: 48px;
+      padding: var(--spacing-x3) var(--spacing-x5);
+      gap: var(--spacing-x2);
+      border-radius: var(--radius-r3);
+      font-size: var(--text-t6);
+      line-height: var(--text-t6--line-height);
+    }
+    /* 아이콘만 — 정사각(폭 = 높이), 여백은 사방 같다. 기본은 medium. 옛 icon · iconLg 는 medium 아이콘만 */
+    .btn-icon-only, .btn-icon, .btn-icon-lg { width: 40px; padding: var(--spacing-x2_5); --btn-icon-size: 18px; }
+    .btn-icon-only.btn-size-xsmall { width: 32px; padding: var(--spacing-x1_5); --btn-icon-size: 14px; }
+    .btn-icon-only.btn-size-small { width: 36px; padding: var(--spacing-x2); --btn-icon-size: 16px; }
+    .btn-icon-only.btn-size-medium { width: 40px; padding: var(--spacing-x2_5); --btn-icon-size: 18px; }
+    .btn-icon-only.btn-size-large { width: 48px; padding: var(--spacing-x3); --btn-icon-size: 22px; }
+    /* 가장자리 맞춤(flush, SEED bleed) — 그 방향 가로 여백만 0. flush ghost 는 텍스트 버튼이라
+       배경을 깔지 않고 글자색으로만 반응한다(neutralSubtle → 누르면 fg-neutral). */
+    .btn.btn-flush-left { padding-left: 0; }
+    .btn.btn-flush-right { padding-right: 0; }
+    .btn-ghost.btn-flush-left, .btn-ghost.btn-flush-right {
+      --btn-fg: var(--color-fg-neutral-subtle);
+      --btn-fg-pressed: var(--color-fg-neutral);
+      --btn-bg-pressed: transparent;
+    }
+    .btn-ghost.btn-flush-left:focus-visible, .btn-ghost.btn-flush-right:focus-visible { color: var(--color-fg-neutral); }
+
+    /* 상태 — 호버 = 누름 색(v106, hover 되는 기기에서만). 누름 = 누름 색 + 세로 2px 거리 축소(v104).
+       .btn-state-* 는 갤러리에서 상태를 고정해 보여 주는 클래스다. */
+    @media (hover: hover) {
+      .btn:hover { background: var(--btn-bg-pressed); color: var(--btn-fg-pressed); }
+    }
+    .btn.btn-state-hover { background: var(--btn-bg-pressed); color: var(--btn-fg-pressed); }
+    .btn:active,
+    .btn.btn-state-pressed {
+      background: var(--btn-bg-pressed);
+      color: var(--btn-fg-pressed);
+      scale: calc(1 - 2 / var(--press-basis));
+    }
+    /* 포커스 — 키보드 포커스에만 링 2px · 띄움 2px(v106) */
+    .btn:focus-visible,
+    .btn.btn-state-focus { outline: 2px solid var(--btn-focus-ring); outline-offset: 2px; }
+    /* 로딩 — 누름 색 위 로딩 원. 라벨은 숨기기만 해 폭이 그대로다. 누르기를 막는다(aria-busy) */
+    .btn.btn-loading,
+    .btn[aria-busy="true"] {
+      background: var(--btn-bg-loading);
+      color: transparent;
+      cursor: progress;
+      pointer-events: none;
+    }
+    .btn.btn-loading > *,
+    .btn[aria-busy="true"] > * { visibility: hidden; }
+    .btn.btn-loading::after,
+    .btn[aria-busy="true"]::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      box-sizing: border-box;
+      width: var(--progress-size);
+      height: var(--progress-size);
+      border: 2px solid var(--progress-track);
+      border-top-color: var(--progress-range);
+      border-radius: var(--radius-full);
+      animation: btn-progress-spin var(--motion-duration-loop) var(--motion-ease-linear) infinite;
+    }
+    @keyframes btn-progress-spin { to { transform: rotate(360deg); } }
+    /* 비활성 — 전용 색(v106). 불투명도로 흐리게 하지 않고, 호버 · 누름에 반응하지 않는다 */
+    .btn:disabled {
+      background: var(--btn-bg-disabled);
+      color: var(--color-fg-disabled);
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    /* 모션 줄이기 — 축소하지 않는다(누름은 색으로만). 로딩 원도 멈춘다(Spinner 와 같다) */
+    @media (prefers-reduced-motion: reduce) {
+      .btn:active,
+      .btn.btn-state-pressed { scale: 1; }
+      .btn.btn-loading::after,
+      .btn[aria-busy="true"]::after { animation: none; }
+    }
 
     /* Color identity */
     .ci-grid { display: grid; gap: var(--spacing-xl); }
@@ -2662,14 +2894,27 @@ export function pageCss() {
       white-space: nowrap;
     }
 
-    /* Button gallery matrix */
-    .btn-matrix { display: grid; gap: var(--spacing-sm); }
-    .btn-row { display: grid; grid-template-columns: 100px repeat(5, 1fr); gap: var(--spacing-sm); align-items: center; }
-    .btn-row--head { color: var(--color-text-tertiary); font-size: var(--text-caption); padding-bottom: var(--spacing-xs); border-bottom: 1px solid var(--color-border-default); font-family: ui-monospace, monospace; }
-    .btn-cell-head { text-transform: uppercase; letter-spacing: 0.04em; }
-    .btn-row-label { font-weight: 600; font-size: var(--text-caption); color: var(--color-text-secondary); }
-    .btn-cell { display: flex; }
-    .btn-size-row { display: flex; gap: var(--spacing-md); align-items: center; margin-top: var(--spacing-xl); flex-wrap: wrap; }
+    /* Button gallery — 버튼은 흰 표면 위에서 본다. 페이지 바탕(bg-layer-basement)이 bg-neutral-weak · bg-disabled 와
+       같은 gray-200 이라 바탕에 바로 두면 neutralWeak · 비활성 버튼이 보이지 않는다. */
+    .btn-panel {
+      background: var(--color-surface-default);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-lg);
+      box-shadow: var(--shadow-sm);
+      overflow-x: auto;
+    }
+    .btn-panel + .btn-panel { margin-top: var(--spacing-lg); }
+    .btn-panel-head { margin-bottom: var(--spacing-md); }
+    .btn-panel-title { font-weight: 600; font-size: var(--text-title-sm); }
+    .btn-panel-sub { font-size: var(--text-caption); color: var(--color-text-tertiary); margin-top: 2px; }
+    .btn-matrix { display: grid; gap: var(--spacing-md); min-width: 720px; }
+    .btn-row { display: grid; grid-template-columns: 168px repeat(6, minmax(0, 1fr)); gap: var(--spacing-sm); align-items: center; }
+    .btn-row--4 { grid-template-columns: 168px repeat(4, minmax(0, 1fr)); }
+    .btn-row--head { align-items: end; padding-bottom: var(--spacing-xs); border-bottom: 1px solid var(--color-border-default); }
+    .btn-cell-head, .btn-row-label { font-weight: 600; font-size: var(--text-caption); color: var(--color-text-secondary); line-height: 1.4; }
+    .btn-cell-head span, .btn-row-label span { display: block; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 400; color: var(--color-text-tertiary); }
+    .btn-cell { display: flex; align-items: center; }
+    /* checkbox 갤러리의 size 줄도 쓴다 */
     .btn-size-label { width: 100px; font-weight: 600; font-size: var(--text-caption); color: var(--color-text-secondary); }
 
     /* Vignettes */
@@ -3132,9 +3377,8 @@ export function pageCss() {
     .modal-row { display: flex; justify-content: space-between; font-size: var(--text-caption); }
     .modal-key { color: var(--color-text-tertiary); }
     .modal-val { font-weight: 600; }
-    /* footer 18 22 — head 위와 같은 값이다(dialog.md Layout). 버튼은 default(36·좌우 16·14px). */
+    /* footer 18 22 — head 위와 같은 값이다(dialog.md Layout). 버튼은 small(36) — Button 블록의 크기 규칙에 .modal-actions .btn 이 함께 있다. */
     .modal-actions { flex-shrink: 0; padding: 18px 22px; display: flex; gap: var(--spacing-sm); justify-content: flex-end; }
-    .modal-actions .btn { height: 36px; padding: 9px var(--spacing-lg); font-size: var(--text-body-sm); }
 
     /* === Toast === sonner.md SoT — surface-raised + 테두리 없음 + radius-md + shadow-md + 20px stroke svg(kind별 색).
        flex-wrap + content 한 줄 전체 — 버튼이 있으면 글 아래 줄로 간다(2026-09-22). */
@@ -3737,7 +3981,7 @@ export function pageCss() {
     .ad-title { font-size: var(--text-title-md); font-weight: 600; line-height: var(--text-title-md--line-height); color: var(--color-text-primary); letter-spacing: -0.01em; margin-bottom: var(--spacing-xs); }
     .ad-desc { font-size: var(--text-body-md); color: var(--color-text-secondary); line-height: 1.6; margin-bottom: var(--spacing-md); }
     .ad-actions { display: flex; gap: var(--spacing-sm); justify-content: flex-end; }
-    .btn-destructive { background: var(--color-error); color: var(--color-text-on-accent, #fff); padding: var(--spacing-sm) var(--spacing-lg); border: none; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; }
+    /* 확정 버튼(.btn-destructive = criticalSolid)은 Button 블록에 있다 */
 
     /* Data Table */
     .dt { display: flex; flex-direction: column; gap: var(--spacing-sm); }
@@ -4022,15 +4266,36 @@ export function pageCss() {
     [data-theme="dark"] .kpi-cell,
     [data-theme="dark"] .memo-row,
     [data-theme="dark"] .search-pill { background: var(--color-surface-input-dark); }
-    [data-theme="dark"] .btn-outline { border-color: var(--color-border-default-dark); color: var(--color-text-primary-dark); }
-    [data-theme="dark"] .btn-outline:hover { background: var(--color-surface-input-dark); }
-    [data-theme="dark"] .btn-on-accent { background: var(--color-surface-default-dark); color: var(--color-text-primary-dark); }
+    /* Button — 역할 색을 버튼 안에서만 다크 짝으로 바꾼다(button.yaml: dark 가 없으면 토큰의 -dark 짝).
+       전역으로 바꾸면 토큰 카탈로그 견본까지 바뀐다. 공유 토큰(DESIGN.md)에 없는 브랜드 짝은 비어서
+       .btn 의 대체값(중립)으로 떨어진다. 채움 · 글자 · 테두리 · 링 · 로딩 원이 모두 이 값을 따른다. */
+    [data-theme="dark"] .btn {
+      --color-bg-brand-solid: var(--color-bg-brand-solid-dark);
+      --color-bg-brand-solid-pressed: var(--color-bg-brand-solid-pressed-dark);
+      --color-bg-brand-weak-pressed: var(--color-bg-brand-weak-pressed-dark);
+      --color-fg-brand: var(--color-fg-brand-dark);
+      --color-stroke-focus-ring: var(--color-stroke-focus-ring-dark);
+      --color-bg-neutral-inverted: var(--color-bg-neutral-inverted-dark);
+      --color-bg-neutral-inverted-pressed: var(--color-bg-neutral-inverted-pressed-dark);
+      --color-fg-neutral-inverted: var(--color-fg-neutral-inverted-dark);
+      --color-bg-neutral-weak: var(--color-bg-neutral-weak-dark);
+      --color-bg-neutral-weak-pressed: var(--color-bg-neutral-weak-pressed-dark);
+      --color-fg-neutral: var(--color-fg-neutral-dark);
+      --color-fg-neutral-subtle: var(--color-fg-neutral-subtle-dark);
+      --color-bg-critical-solid: var(--color-bg-critical-solid-dark);
+      --color-bg-critical-solid-pressed: var(--color-bg-critical-solid-pressed-dark);
+      --color-fg-critical: var(--color-fg-critical-dark);
+      --color-stroke-neutral-weak: var(--color-stroke-neutral-weak-dark);
+      --color-bg-layer-default: var(--color-bg-layer-default-dark);
+      --color-bg-layer-default-pressed: var(--color-bg-layer-default-pressed-dark);
+      --color-bg-disabled: var(--color-bg-disabled-dark);
+      --color-fg-disabled: var(--color-fg-disabled-dark);
+      --color-gray-500: var(--color-gray-500-dark);
+    }
 
     /* === Dark mode: brand primary → primary-light (어두운 표면 위 비채움 사용) === */
     /* 채움(fill)은 primary 유지 — primary-light fill 위 흰 텍스트는 대비 미달.
        비채움(text/border/outline/tint/small-dot)만 primary-light로 전환. */
-    [data-theme="dark"] .btn-primary:focus-visible,
-    [data-theme="dark"] .btn-state-focus { outline-color: var(--color-border-focus-light, var(--color-primary-light)); }
     [data-theme="dark"] .memo-tag { color: var(--color-primary-light, var(--color-text-secondary-dark)); }
     [data-theme="dark"] .tabs-underline .tab--active {
       color: var(--color-primary-light, var(--color-text-primary-dark));
@@ -4056,7 +4321,6 @@ export function pageCss() {
     [data-theme="dark"] .empty-illustration {
       background: linear-gradient(135deg, color-mix(in srgb, var(--color-primary-light, var(--color-text-tertiary-dark)) 25%, transparent), var(--color-surface-input-dark));
     }
-    /* btn-outline의 border/text는 다크 모드에서 brand 표현이 필요 없는 케이스(중성 outline)라 primary-light 미적용 — 1503 line은 라이트 모드 텍스트가 primary, 다크 모드는 위 .btn-outline 룰로 text-primary-dark로 이미 override 됨. */
 
     /* === Dark mode token aliases ===
        data-theme="dark" 시 light 페어 토큰을 dark 페어로 alias —
@@ -4122,7 +4386,8 @@ export function pageCss() {
       .hero, .vignette-grid, .typo-moment-top, .ld-grid, .review-grid, .typo-scale-grid { grid-template-columns: 1fr; }
       .hero-card--primary .hero-card-content { max-width: 100%; }
       .hero-card-art { width: 120px; height: 120px; opacity: 0.4; right: var(--spacing-md); }
-      .btn-row { grid-template-columns: 80px repeat(5, 1fr); }
+      .btn-row { grid-template-columns: 120px repeat(6, minmax(0, 1fr)); }
+      .btn-row--4 { grid-template-columns: 120px repeat(4, minmax(0, 1fr)); }
       .approval-row { grid-template-columns: 1fr 1fr; }
       .ld-rail, .review-summary { position: static; }
       /* Card spec v4: mobile lg(16) padding (desktop xl(24) 은 기본). */

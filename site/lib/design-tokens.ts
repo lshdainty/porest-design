@@ -239,15 +239,27 @@ export function reducedMotion() {
   return { over, fade };
 }
 
-// 컴포넌트 YAML 의 크기 규칙(when: { size }) — 그림 속 예시를 실제 컴포넌트 크기로 그리려고
-export function specSize(component: string, size: string, state = 'enabled') {
+// 컴포넌트 YAML 의 크기 규칙(when: { size }) — 그림 속 예시를 실제 컴포넌트 크기로 그리려고.
+// layout 을 주면 크기 × 배치 규칙(when: { size, layout })의 값이 겹쳐 쓴다(버튼의 iconOnly 폭)
+export function specSize(component: string, size: string, state = 'enabled', layout?: string) {
   const doc = parseYaml(readFileSync(join(REPO, 'specs/components', `${component}.yaml`), 'utf8')) as {
     rules: { when?: Record<string, string>; [state: string]: unknown }[];
   };
-  const rule = doc.rules.find((r) => r.when?.size === size && Object.keys(r.when).length === 1);
-  const root = (rule?.[state] as { root?: Record<string, unknown> } | undefined)?.root;
-  if (!root) throw new Error(`${component}.yaml 에 size ${size} 규칙이 없다`);
-  const num = (v: unknown) => (typeof v === 'string' && /^\d+(\.\d+)?px$/.test(v) ? parseFloat(v) : undefined);
+  const rootOf = (when: Record<string, string>) => {
+    const keys = Object.keys(when);
+    const rule = doc.rules.find((r) => r.when && Object.keys(r.when).length === keys.length && keys.every((k) => r.when?.[k] === when[k]));
+    return (rule?.[state] as { root?: Record<string, unknown> } | undefined)?.root;
+  };
+  const base = rootOf({ size });
+  if (!base) throw new Error(`${component}.yaml 에 size ${size} 규칙이 없다`);
+  const extra = layout ? rootOf({ size, layout }) : undefined;
+  if (layout && !extra) throw new Error(`${component}.yaml 에 size ${size} × layout ${layout} 규칙이 없다`);
+  const root = { ...base, ...extra };
+  // 값은 '40px' 또는 { value: '48px', note } — note 는 표의 비고라 버린다
+  const num = (v: unknown): number | undefined => {
+    if (v && typeof v === 'object' && 'value' in v) return num((v as { value: unknown }).value);
+    return typeof v === 'string' && /^\d+(\.\d+)?px$/.test(v) ? parseFloat(v) : undefined;
+  };
   const h = num(root.height) ?? num(root.size);
   const w = num(root.width) ?? num(root.size);
   if (h === undefined) throw new Error(`${component}.yaml size ${size} 에 높이가 없다`);
@@ -263,16 +275,6 @@ export function specSlot(component: string, slot: string, state = 'enabled') {
   const v = (rule?.[state] as Record<string, Record<string, unknown>> | undefined)?.[slot];
   if (!v) throw new Error(`${component}.yaml 공통 규칙에 ${state}.${slot} 이 없다`);
   return v;
-}
-
-// 컴포넌트 YAML 의 눌림 배율(지금 값) — "고정 배율" 예를 실제 값으로 들려고
-export function specPressedScale(component: string) {
-  const doc = parseYaml(readFileSync(join(REPO, 'specs/components', `${component}.yaml`), 'utf8')) as {
-    rules: { pressed?: { root?: { scale?: number | string } } }[];
-  };
-  const v = doc.rules.map((r) => r.pressed?.root?.scale).find((s) => s !== undefined);
-  if (v === undefined) throw new Error(`${component}.yaml 에 pressed scale 이 없다`);
-  return Number(v);
 }
 
 // WCAG 2 대비 — 페이지의 견본 옆 숫자

@@ -32,10 +32,10 @@ rules:
       root:
         width: { value: 사용처 결정, note: "`max-w-*` / `w-full`" }
       arrow:
-        width: { value: 32px, note: "Button icon보다 작음, carousel 보조 navigation 톤" }
+        width: { value: 32px, note: "Button `xsmall` · `iconOnly`(32 알약) — carousel 보조 navigation 톤" }
         height: 32px
         radius: $radius-full
-        iconSize: { value: 16px, note: "`ArrowLeft`/`ArrowRight`" }
+        iconSize: { value: 16px, note: "`ArrowLeft`/`ArrowRight` — Button xsmall 의 14 를 `[&_svg]:size-4` 로 덮는다" }
       dot:
         width: { value: 6px, note: "Dot indicator (옵션)" }
         height: 6px

@@ -150,7 +150,8 @@ const AlertDialogAction = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <AlertDialogPrimitive.Action
     ref={ref}
-    className={cn(buttonVariants({ variant: "destructive" }), className)}
+    // 되돌릴 수 없는 작업의 확정 — criticalSolid, 모달 footer 는 small(36) — dialog.md footer 규칙.
+    className={cn(buttonVariants({ variant: "criticalSolid", size: "small" }), className)}
     {...props}
   />
 ));
@@ -162,8 +163,8 @@ const AlertDialogCancel = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <AlertDialogPrimitive.Cancel
     ref={ref}
-    // 모달 footer 의 취소는 secondary — dialog.md footer 규칙.
-    className={cn(buttonVariants({ variant: "secondary" }), className)}
+    // 모달 footer 의 취소는 neutralWeak — dialog.md footer 규칙.
+    className={cn(buttonVariants({ variant: "neutralWeak", size: "small" }), className)}
     {...props}
   />
 ));

@@ -35,8 +35,8 @@ Porest AlertDialog는 시각적으로는 `Dialog`와 **완전히 동일** (같�
 | ⓑ container | dialog와 동일 — preview `.modal-dialog` 그대로 (`background:var(--color-surface-default); border-radius:var(--radius-lg); box-shadow:var(--shadow-xl); width:min(90%, <max-w>); max-height:86vh; display:flex; flex-direction:column; overflow:hidden;`). **padding 0** — 여백은 header·body·footer 가 갖는다([`dialog`](dialog.md) Layout). close button(X) **없음**. |
 | ⓒ title | preview `.modal-title` 그대로 — `font-size:var(--text-title-md); font-weight:600; line-height:var(--text-title-md--line-height); color:var(--color-text-primary); letter-spacing:-0.01em;`. **결정 또는 결과**를 짧은 명사구로. 질문형 아님 — 질문은 ⓓ 가 맡는다. |
 | ⓓ description | preview `.modal-description` 그대로 — `font-size:var(--text-body-md); color:var(--color-text-secondary); line-height:1.6;`. **상세 내역** — 무엇이 어떻게 되는지(결과·영향)와 확인 질문. 파괴적 액션이면 **대상을 이름으로** 짚는다. |
-| ⓔ footer (모바일 < 480px) | 각 button `flex-1` 균등 분배 + `size="lg"`(48). 취소는 `secondary`(테두리 없는 회색 채움). [`dialog`](dialog.md) footer 규칙과 동일. |
-| ⓔ footer | preview `.modal-actions` 그대로 — `display:flex; gap:var(--spacing-sm); justify-content:flex-end; padding:18px 22px;`. 여백·버튼 모두 [`dialog`](dialog.md) Layout 과 **같은 값**이다 — container 는 padding 0 이고 header `18 22` · body `22` · footer `18 22`, 버튼은 `default`(36 · 좌우 양쪽 16 · 14px), 모바일만 `lg`(48). Cancel(좌) + Action(우, destructive). focus default = Cancel. |
+| ⓔ footer (모바일 < 480px) | 각 button `flex-1` 균등 분배 + `size="large"`(48). 취소는 `neutralWeak`(옅은 회색 채움). [`dialog`](dialog.md) footer 규칙과 동일. |
+| ⓔ footer | preview `.modal-actions` 그대로 — `display:flex; gap:var(--spacing-sm); justify-content:flex-end; padding:18px 22px;`. 여백·버튼 모두 [`dialog`](dialog.md) Layout 과 **같은 값**이다 — container 는 padding 0 이고 header `18 22` · body `22` · footer `18 22`, 버튼은 `small`(36 · 좌우 14 · 14px), 모바일만 `large`(48). Cancel(좌, `neutralWeak`) + Action(우, `criticalSolid`). focus default = Cancel. |
 
 **규칙**
 
@@ -52,12 +52,12 @@ Porest AlertDialog는 시각적으로는 `Dialog`와 **완전히 동일** (같�
 
 | Action variant | Button variant | 사용 |
 |---|---|---|
-| `destructive` (default) | `button.destructive` (error 색 채움) | 삭제, 회수, 영구 비활성 등 비가역 위험 액션. |
-| `primary` | `button.default` (primary 색 채움) | 발행, 결제 같이 비가역이지만 위험은 아닌 액션. |
+| `destructive` (default) | `criticalSolid` (빨강 채움) | 삭제, 회수, 영구 비활성 등 비가역 위험 액션. |
+| `primary` | `neutralSolid` (짙은 회색 채움) | 발행, 결제 같이 비가역이지만 위험은 아닌 액션. |
 
 ### acknowledge (단일 액션)
 
-결정이 없는 **결과 통지** — 전제 조건이 안 맞아 액션이 아예 차단된 경우("하위 카테고리가 남아 있어 삭제할 수 없음"). 사용자가 고를 것이 없으므로 footer 는 `확인` 하나(`button.default`)만 두고 **취소를 두지 않는다**. title 은 결과 명사구(`삭제 불가` · `해지 불가`), description 은 이유와 다음 행동.
+결정이 없는 **결과 통지** — 전제 조건이 안 맞아 액션이 아예 차단된 경우("하위 카테고리가 남아 있어 삭제할 수 없음"). 사용자가 고를 것이 없으므로 footer 는 `확인` 하나(`neutralSolid`)만 두고 **취소를 두지 않는다**. title 은 결과 명사구(`삭제 불가` · `해지 불가`), description 은 이유와 다음 행동.
 
 취소를 나란히 두면 두 버튼이 같은 일(닫기)을 한다 — 무엇을 고르는 자리인지 없는데 고르라고 내미는 꼴이다. 파괴적 액션을 그대로 두면 더 나쁘다: 눌러도 아무 일이 없는 빨간 버튼이 남는다.
 
@@ -143,8 +143,8 @@ Default focus가 Cancel인 것이 핵심 — Enter를 무심코 눌렀을 때 de
 - **title `display-sm`(24/700) → `title-md`(18/600)**: Dialog 와 동일 정합. 24px 가 컨텍스트 모달에 과해 모든 모달·시트 타이틀과 통일(18/600 semibold). 공유 `.modal-title` 시각이므로 Dialog 와 함께 이동. 상세는 [`dialog.md`](dialog.md) Migration notes 참조.
 - 기존 `alert-dialog.tsx`는 `dialog.tsx`와 동일한 토큰 부재(`p-6`, `rounded-md`, `shadow-lg`, title `text-title-lg`) 사용 — 이번 동기에서 `Dialog`와 함께 preview `.modal-*` 톤으로 정렬, 픽셀 하드코딩 대신 `--spacing-2xl`/`--spacing-md` 토큰 직접 인용. *(폭·여백은 2026-09-16 에 다시 정해졌다 — 위 Sizes 와 [`dialog`](dialog.md) Layout 이 현재 값이다.)*
 - **AlertDialogTitle 하단 border 제거**: Radix `AlertDialogPrimitive.Title`도 `<h2>`를 렌더해 Dialog와 동일한 충돌이 있었음. `build-site.mjs`의 `.content h2` → `.content > h2` selector 격리로 자동 해소(상세는 [`dialog.md`](dialog.md) Migration notes 참조).
-- `AlertDialogCancel` 은 `secondary`(테두리 없는 회색 채움) — 모달 footer 취소 통일 규칙(2026-08, [`button`](button.md) Migration notes).
-- 기존 `AlertDialogAction`은 default(primary) — destructive 사용 시 `className={cn(buttonVariants({ variant: "destructive" }))}` 명시 패턴 유지. spec에선 destructive를 default action variant로 권장.
+- `AlertDialogCancel` 은 `neutralWeak`, `AlertDialogAction` 은 `criticalSolid` — 둘 다 `small`(36). 2026-09-30 Button 구조 변경으로 옛 `secondary` · `destructive` 에서 옮겼다([`button`](button.md) Migration notes). 모달 footer 취소를 옅은 회색 채움으로 통일한 건 2026-08 부터다.
+- 위험이 아닌 확정(발행 · 결제)은 `className={cn(buttonVariants({ variant: "neutralSolid", size: "small" }))}` 로 바꿔 쓴다. spec 에선 `criticalSolid` 를 기본 action 으로 둔다.
 - preview-html의 `renderShadcnDisclose` 안 `.ad-*`(icon-circle 변형)도 `.modal-*` 톤으로 정렬 — title-sm → display-sm으로 통일.
 - **box-shadow는 Tailwind utility(`shadow-xl`) 대신 inline `style={{ boxShadow: "var(--shadow-xl)" }}` 사용** — Dialog와 동일한 fix. Tailwind v4 `--tw-shadow-*` 분해 처리가 다크 모드 CSS 변수 override를 우회하는 문제. preview `.modal-dialog` SoT와 다크 모드 정합 보장. 상세는 [`dialog.md`](dialog.md) Migration notes 참조.
 - **title 규칙을 "결정 질문형" 에서 "결정 또는 결과(명사구)" 로 개정했다(2026-08).** 원래 Do 는

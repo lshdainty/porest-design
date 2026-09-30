@@ -32,10 +32,11 @@ Bottom sheet (모바일 표준)
 
 - title 없는 drawer는 `aria-label` 필수 (스크린리더 대응).
 - handle은 bottom drawer에만 — side drawer에선 시각적으로 의미 없음(생략).
-- footer의 button은 항상 `flex:1` — 모바일에서 한 손 조작 가능한 너비 확보. 모바일에선 `size="lg"`(48).
-- footer 의 **취소는 `secondary`**(테두리 없는 회색 채움), **삭제는 `dangerSoft`**(옅은 빨강 채움).
-  전체 폭 버튼 둘이 나란히 설 때 `ghost` 는 배경이 없어 한쪽이 빈자리처럼 보인다 —
-  주 액션은 `default`(info 채움), 보조는 옅게 채워 무게 차이만 준다.
+- footer의 button은 항상 `flex:1` — 모바일에서 한 손 조작 가능한 너비 확보. 모바일에선 `size="large"`(48).
+- footer 의 **취소는 `neutralWeak`**(옅은 회색 채움), **주 액션은 `neutralSolid`**(서비스의 핵심 액션이면
+  `brandSolid`). 확인 창을 여는 **삭제는 `ghost` + `critical`**(빨간 글자 — 채움 없이 글자가 버튼임을
+  알린다), 삭제의 확정은 [`AlertDialog`](alert-dialog.md) 의 `criticalSolid` — [`button`](button.md)
+  모달 footer 규칙(2026-09-30). 옛 이름(`secondary` · `dangerSoft` · `default`)은 button Migration notes.
 - bottom drawer는 `radius-2xl` top corners만, side drawer(right)는 `radius-2xl` left corners만 — slide 방향의 반대편 둥글기.
 
 ## Variants (side)
@@ -72,7 +73,7 @@ Bottom sheet (모바일 표준)
 **Action sheet (옵션 리스트)**
 
 - 메뉴 형태의 ghost button list (예: "수정 / 복사 / 삭제"). buttons는 `justify-start`(좌측 정렬) + ghost variant.
-- 위험 액션(삭제)은 마지막 + `text-error`.
+- 위험 액션(삭제)은 마지막 + `ghost` 의 `critical` 글자.
 
 ## 좌우 여백
 
@@ -135,10 +136,11 @@ footer 액션은 **최대 2개**. 셋이 나란히 서면 무엇이 주 액션�
 | 자산 수정 폼의 `금액 숨기기` 스위치 | **그 자산 하나** |
 
 데스크탑·태블릿 상세는 액션이 셋까지 서므로 `금액 가리기` · `수정` 에 삭제가 최좌측으로
-붙는다(`ghost` + `flush="left"`).
+붙는다(`ghost` + `critical`, `margin-right:auto`).
 
-액션이 2개면 **둘 다 균등 분배**한다 — 좌측이 옅은 채움이라 무게 차이는 색으로 충분하다.
-3개가 남는 데스크탑 배치에서만 `삭제`·파괴적 보조를 최좌측에 붙인다(`ghost` + `flush="left"`).
+액션이 2개면 **둘 다 균등 분배**한다 — 무게 차이는 채움 색(`neutralWeak` · `neutralSolid`)으로 준다.
+3개가 남는 데스크탑 배치에서만 `삭제`·파괴적 보조를 최좌측에 붙인다(`ghost` + `critical`).
+삭제에 `flush` 는 쓰지 않는다 — flush ghost 는 글자색만 바뀌는 텍스트 버튼이라 빨간 글자를 잃는다.
 
 > [`AlertDialog`](alert-dialog.md) 는 예외 — X 가 없으므로 **명시적 종료 버튼을 반드시 남긴다**. 결정형은 `취소`, acknowledge(단일 액션) 형은 `확인` 하나가 그 자리를 맡는다.
 
@@ -194,7 +196,7 @@ footer 에는 액션이 둘뿐이고 **둘 다 라벨을 갖고 있다** — 아
 - handle bar 노출 — 시각적 affordance(잡고 드래그 가능 hint).
 - footer button은 `flex:1` 균등 분배 — 한 손 조작 가능 폭.
 - 액션은 2개까지 — 상세는 `삭제`·`수정`, 편집 폼은 `취소`·`저장`.
-- action sheet item은 ghost + 좌측 정렬 — 메뉴 톤. 위험 액션은 마지막 + `text-error`.
+- action sheet item은 ghost + 좌측 정렬 — 메뉴 톤. 위험 액션은 마지막 + `critical` 글자.
 
 ### ❌ Don't
 

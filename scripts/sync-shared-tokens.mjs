@@ -73,7 +73,7 @@ const SHARED_COLORS = new Set([
   "fg-informative-contrast-dark", "bg-layer-basement", "bg-layer-basement-dark", "bg-layer-default",
   "bg-layer-default-dark", "bg-layer-default-pressed", "bg-layer-default-pressed-dark", "bg-layer-floating",
   "bg-layer-floating-dark", "bg-layer-floating-pressed", "bg-layer-floating-pressed-dark", "bg-neutral-weak",
-  "bg-neutral-weak-dark", "bg-neutral-weak-pressed", "bg-neutral-weak-pressed-dark", "bg-neutral-inverted",
+  "bg-neutral-weak-dark", "bg-neutral-weak-pressed", "bg-neutral-weak-pressed-dark", "bg-neutral-inverted", "bg-neutral-inverted-pressed", "bg-neutral-inverted-pressed-dark",
   "bg-neutral-inverted-dark", "bg-disabled", "bg-disabled-dark", "bg-critical-solid",
   "bg-critical-solid-dark", "bg-critical-solid-pressed", "bg-critical-solid-pressed-dark",
   "bg-critical-weak", "bg-critical-weak-dark", "bg-critical-weak-pressed", "bg-critical-weak-pressed-dark",
