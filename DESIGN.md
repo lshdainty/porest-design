@@ -2059,7 +2059,7 @@ design.md `contrastCheck` 룰은 incidental 인지 없이 모든 `backgroundColo
 > **부수 효과 인지**: 이 sparse 패턴은 disabled 외 다른 시맨틱에 함부로 쓰면 lint의 contrast 안전망 무력화 위험 있음. disabled처럼 WCAG가 명시적 면제하는 케이스에만 적용.
 
 #### 운영 가이드
-- 컴포넌트 구현 시 `disabled-label-light/dark` 토큰을 textColor에 적용 + 추가로 `cursor: not-allowed`·`pointer-events: none`·`opacity` 등 비활성 인터랙션 시그널 동반.
+- 컴포넌트 구현 시 `disabled-label-light/dark` 토큰을 textColor에 적용 + 추가로 `cursor: not-allowed` 와 호버 · 누름 모양 빼기를 동반. 포인터 이벤트는 끄지 않는다 — 끄면 커서가 보이지 않는다(2026-10-01, SEED 와 같다). 불투명도로 흐리게 하지 않는다(v106 — State 절).
 - 단순 색만으로 비활성을 표시하지 않음 — 색·커서·인터랙션 비활성을 함께 사용해야 시각·기능적 비활성 일치.
 
 #### HR / Desk 듀얼 브랜드

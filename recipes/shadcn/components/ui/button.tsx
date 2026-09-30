@@ -39,7 +39,7 @@ const buttonVariants = cva(
     "[transition:background-color_var(--motion-duration-color-transition)_var(--motion-ease-easing),color_var(--motion-duration-color-transition)_var(--motion-ease-easing),scale_var(--motion-duration-pressed-scale)_var(--motion-ease-pressed-scale)]",
     "active:[scale:calc(1-2/var(--press-basis))] motion-reduce:active:[scale:1]",
     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stroke-focus-ring",
-    "disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-bg-disabled disabled:text-fg-disabled",
+    "disabled:cursor-not-allowed disabled:[scale:1] disabled:bg-bg-disabled disabled:text-fg-disabled",
     // 로딩 — 라벨은 투명하게(폭 유지), 누름 축소 없음. 누르기는 onClick 에서 삼킨다
     "aria-busy:cursor-progress aria-busy:text-transparent aria-busy:[&>svg]:invisible aria-busy:active:[scale:1]",
     "[&_svg]:pointer-events-none [&_svg]:shrink-0",

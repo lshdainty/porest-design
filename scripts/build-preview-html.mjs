@@ -3161,7 +3161,8 @@ export function pageCss() {
       background: var(--btn-bg-disabled);
       color: var(--color-fg-disabled);
       cursor: not-allowed;
-      pointer-events: none;
+      /* 누르는 영역은 그대로 둔다 — 포인터 이벤트를 끄면 커서가 보이지 않는다. 누름 축소만 뺀다(호버 · 누름 색은 위 규칙을 이 규칙이 덮는다) */
+      scale: 1;
     }
     /* 모션 줄이기 — 축소하지 않는다(누름은 색으로만). 로딩 원도 멈춘다(Spinner 와 같다) */
     @media (prefers-reduced-motion: reduce) {
@@ -3446,7 +3447,8 @@ export function pageCss() {
       border-color: var(--checkbox-border-disabled);
       color: var(--color-fg-disabled);
       cursor: not-allowed;
-      pointer-events: none;
+      /* 누르는 영역은 그대로 둔다 — 포인터 이벤트를 끄면 커서가 보이지 않는다. 누름 축소만 뺀다(호버 · 누름 색은 위 규칙을 이 규칙이 덮는다) */
+      scale: 1;
     }
     /* 모션 줄이기 — 축소하지 않는다(누름은 색으로만) */
     @media (prefers-reduced-motion: reduce) {
@@ -3481,7 +3483,7 @@ export function pageCss() {
       min-height: 44px;
       translate: -50% -50%;
     }
-    .checkbox-row:has(.checkbox:disabled) { cursor: not-allowed; pointer-events: none; }
+    .checkbox-row:has(.checkbox:disabled) { cursor: not-allowed; }
     .checkbox-label {
       font-family: var(--font-sans);
       font-size: var(--text-t4);
@@ -3631,7 +3633,8 @@ export function pageCss() {
       background: var(--radio-bg-disabled);
       border-color: var(--radio-border-disabled);
       cursor: not-allowed;
-      pointer-events: none;
+      /* 누르는 영역은 그대로 둔다 — 포인터 이벤트를 끄면 커서가 보이지 않는다. 누름 축소만 뺀다(호버 · 누름 색은 위 규칙을 이 규칙이 덮는다) */
+      scale: 1;
     }
     .radio:disabled .radio-dot { background: var(--radio-dot-disabled); }
     /* 모션 줄이기 — 축소하지 않는다(누름은 색으로만) */
@@ -3667,7 +3670,7 @@ export function pageCss() {
       min-height: 44px;
       translate: -50% -50%;
     }
-    .radio-row:has(.radio:disabled) { cursor: not-allowed; pointer-events: none; }
+    .radio-row:has(.radio:disabled) { cursor: not-allowed; }
     .radio-label {
       font-family: var(--font-sans);
       font-size: var(--text-t4);
@@ -3790,7 +3793,8 @@ export function pageCss() {
       background: var(--switch-bg-disabled);
       box-shadow: var(--switch-line-disabled);
       cursor: not-allowed;
-      pointer-events: none;
+      /* 누르는 영역은 그대로 둔다 — 포인터 이벤트를 끄면 커서가 보이지 않는다. 누름 축소만 뺀다(Switch 는 호버 · 누름에 색이 바뀌지 않는다) */
+      scale: 1;
     }
     .switch:disabled .switch-thumb { background: var(--switch-thumb-disabled); }
     /* 모션 줄이기 — 누름 축소를 뺀다. 엄지의 이동과 색 전환은 그대로다(기초 Motion) */
@@ -3828,7 +3832,7 @@ export function pageCss() {
       min-height: 44px;
       translate: -50% -50%;
     }
-    .switch-row:has(.switch:disabled) { cursor: not-allowed; pointer-events: none; }
+    .switch-row:has(.switch:disabled) { cursor: not-allowed; }
     .switch-label {
       font-family: var(--font-sans);
       font-size: var(--text-t4);

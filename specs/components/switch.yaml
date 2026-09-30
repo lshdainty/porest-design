@@ -81,7 +81,7 @@ rules:
         color: $color-stroke-focus-ring
     disabled:
       root:
-        cursor: not-allowed
+        cursor: { value: not-allowed, note: "포인터 이벤트는 켜 둔다 — 끄면 이 커서가 안 보인다(SEED 와 같다)" }
       label:
         foreground: $color-fg-disabled
 
