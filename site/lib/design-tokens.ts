@@ -266,6 +266,25 @@ export function specSize(component: string, size: string, state = 'enabled', lay
   return { width: w, height: h };
 }
 
+// 컴포넌트 YAML 의 한 규칙(when 이 정확히 같은)에서 한 부위의 크기 — 예: checkbox 의 칸(checkmark)
+export function specPartSize(component: string, when: Record<string, string>, slot: string, state = 'enabled') {
+  const doc = parseYaml(readFileSync(join(REPO, 'specs/components', `${component}.yaml`), 'utf8')) as {
+    rules: { when?: Record<string, string>; [state: string]: unknown }[];
+  };
+  const keys = Object.keys(when);
+  const rule = doc.rules.find((r) => r.when && Object.keys(r.when).length === keys.length && keys.every((k) => r.when?.[k] === when[k]));
+  const part = (rule?.[state] as Record<string, Record<string, unknown>> | undefined)?.[slot];
+  if (!part) throw new Error(`${component}.yaml 에 ${JSON.stringify(when)} 의 ${state}.${slot} 이 없다`);
+  const num = (v: unknown): number | undefined => {
+    if (v && typeof v === 'object' && 'value' in v) return num((v as { value: unknown }).value);
+    return typeof v === 'string' && /^\d+(\.\d+)?px$/.test(v) ? parseFloat(v) : undefined;
+  };
+  const h = num(part.height) ?? num(part.size);
+  const w = num(part.width) ?? num(part.size);
+  if (h === undefined) throw new Error(`${component}.yaml ${JSON.stringify(when)} 의 ${slot} 에 크기가 없다`);
+  return { width: w, height: h };
+}
+
 // 컴포넌트 YAML 의 공통 규칙(when: {})에서 한 조각(예: switch 의 track)
 export function specSlot(component: string, slot: string, state = 'enabled') {
   const doc = parseYaml(readFileSync(join(REPO, 'specs/components', `${component}.yaml`), 'utf8')) as {

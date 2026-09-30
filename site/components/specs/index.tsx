@@ -3,10 +3,12 @@
 import type { ReactNode } from 'react';
 import { buttonFigures } from './button';
 import { buttonGuideFigures } from './button-guides';
+import { checkboxFigures } from './checkbox';
 import { SpecSheet } from './spec-sheet';
 
 const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactNode>> = {
   button: { ...buttonFigures, ...buttonGuideFigures },
+  checkbox: checkboxFigures,
 };
 
 export function SpecFigure({ name, id, caption }: { name: string; id: string; caption?: string }) {

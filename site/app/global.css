@@ -74,3 +74,18 @@ html > body[data-scroll-locked] {
   --pa-fg: var(--pa-fg-d);
   --pa-ring: var(--pa-ring-d);
 }
+/* 스펙대로 그린 Checkbox(components/specs/checkbox-view.tsx) — .pbtn 과 같은 방식 */
+.pchk {
+  --pc-bg: var(--pc-bg-l);
+  --pc-bd: var(--pc-bd-l);
+  --pc-ic: var(--pc-ic-l);
+  --pc-lb: var(--pc-lb-l);
+  --pc-ring: var(--pc-ring-l);
+}
+.dark .pchk[data-mode='auto'] {
+  --pc-bg: var(--pc-bg-d);
+  --pc-bd: var(--pc-bd-d);
+  --pc-ic: var(--pc-ic-d);
+  --pc-lb: var(--pc-lb-d);
+  --pc-ring: var(--pc-ring-d);
+}

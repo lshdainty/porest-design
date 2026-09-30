@@ -3622,10 +3622,11 @@ HR — 직원 정보 form(필수/선택 옵션), 권한 토글 switch, 평가 �
 - inactive: `border-strong` 1px outline + `surface-input` 채움
 - active: `primary` (`#357B5F`) 채움 + `text-on-accent` 표시 (체크/핸들/dot)
 - disabled: 전용 색(v106 — State 절) + cursor:not-allowed
+- **Checkbox 는 2026-09-30 SEED 구조로 바뀌었다**(`specs/components/checkbox.md`) — 선택은 `bg-neutral-inverted`(짙은 회색)가 기본이고 `tone="brand"` 면 HR 초록, 선택 안 된 칸의 테두리는 `stroke-neutral-solid`. 위 두 줄은 Radio · Switch 의 지금 값이다 — 각 차례에 같은 규칙으로 옮긴다(사용자 결정).
 
 #### Variant
 - Switch: `md` 28×16 default, toggle 즉시 effect (권한 on/off 등)
-- Checkbox: 18×18 default, indeterminate 지원 (직원 multi-select header)
+- Checkbox: 칸 20(`medium`, 기본) · 24(`large`), 일부 선택(indeterminate) 지원 — 직원 다중 선택 표 머리
 - Radio: 18×18 default, group 내 단일 선택 (평가 등급 S/A/B/C/D)
 
 #### Layout
@@ -3636,7 +3637,7 @@ HR — 직원 정보 form(필수/선택 옵션), 권한 토글 switch, 평가 �
 #### A11y
 - HTML native `<input>` + `<label for>` 우선
 - focus ring `border-focus` 2px, 키보드 Space (toggle/check), Radio arrow keys
-- error 상태 외곽 `error` 색 + alert text 동반
+- error 상태 외곽 `error` 색 + alert text 동반(Radio · Switch). Checkbox 는 칸을 바꾸지 않고 묶음 아래 글로 알린다(2026-09-30)
 
 ### Tabs
 
