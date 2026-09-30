@@ -13,6 +13,8 @@ import { fillSpecTables, loadTokens } from './spec-tables.mjs';
 const SITE = join(dirname(fileURLToPath(import.meta.url)), '..');
 const REPO = join(SITE, '..');
 const DOCS = join(SITE, 'content/docs');
+// GitHub 의 원본 파일 주소 — site/lib/shared.ts 의 gitConfig 와 같은 레포 · 브랜치다
+const REPO_BLOB = 'https://github.com/lshdainty/porest-design/blob/main';
 
 // DESIGN.md 의 `## ` 절 → 기초 페이지. 절 이름이 바뀌면 여기서 멈춘다(조용히 빠지지 않게).
 // Color · Gradient · Typography · Spacing · Radius · Layout · Elevation · Motion · Feedback 은 SEED 문서 모양으로
@@ -415,7 +417,10 @@ for (const name of readdirSync(specDir).filter((n) => n.endsWith('.md')).sort())
   // 수치 표 자리(`[표: …](<이름>.yaml#…)`)는 YAML 로 그린 표로 바꾼다.
   const withTables = fillSpecTables(addMissingTableHeaders(spec.body), { specDir, tokens, source });
   // 스펙 폴더 밖의 기초 스펙은 사이트에선 foundations 아래에 있다.
-  const body = withTables.replace(/\]\(\.\.\/z-index\.md/g, '](../foundations/z-index.md');
+  // 스펙 옆 YAML 로 가는 링크(`[button.yaml](button.yaml)`)는 사이트에 그 페이지가 없다 — GitHub 의 원본 파일로 보낸다.
+  const body = withTables
+    .replace(/\]\(\.\.\/z-index\.md/g, '](../foundations/z-index.md')
+    .replace(/\]\(([a-z0-9-]+\.yaml)\)/g, `](${REPO_BLOB}/specs/components/$1)`);
   // 그림 자리가 있으면 .mdx — 그림은 site/components/specs/<이름>.tsx 가 그린다
   if (body.split('\n').some((l) => FIGURE.test(l))) write(`components/${name.replace(/\.md$/, '.mdx')}`, { ...spec, source }, toMdx(body, source));
   else write(`components/${name}`, { ...spec, source }, body);

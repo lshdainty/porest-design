@@ -1,46 +1,155 @@
 import * as React from "react";
 import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
-import { Circle } from "lucide-react";
+import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
 /*
- * Porest Radio Group (shadcn 베이스 + Porest 디자인 토큰)
+ * Porest Radio — 구조는 SEED Radio(2026-09-30). 수치 원본은 specs/components/radio-group.yaml.
  *
- * - Group: 그리드/스택 컨테이너. 하나만 선택 가능.
- * - Item: 18×18px 원형. checked 상태에서 가운데 도트(Circle filled).
+ *   Radiomark   동그라미만 — 라벨이 따로 서는 자리에 넣어 쓴다(누르는 영역은 그 줄 전체가 맡는다, 라벨 연결 필수)
+ *   Radio       동그라미 + 라벨 — 라벨까지 눌리고, 누르는 영역은 44 까지 넓힌다(::before)
+ *   RadioGroup  묶음 — 세로로 쌓고 줄 사이 12. 가로 배치는 두지 않는다(가로로 짧게 고르면 Segmented · Chip)
+ *
+ *   size   medium 20(점 8 · 라벨 14 · 줄 32, 기본) · large 24(점 10 · 라벨 16 · 줄 36)
+ *   tone   neutral(짙은 회색, 기본) · brand(서비스 핵심 흐름에서만)
+ *   weight regular(기본) · bold(강조)
+ *
+ * 선택 안 된 동그라미의 테두리는 stroke-neutral-solid(3:1 — v109). 선택은 테두리 없이 채운 원 + 가운데 점(SEED).
+ * 호버 = 누름 색(v106), 누르면 동그라미만 세로 2px 축소(v104) — 기준 길이는 max(20·24, 24) = 24.
+ * 비활성은 전용 색(v106) — 선택도 채운 원 그대로 색만 바꾼다(Checkbox 와 같다, 사용자 결정).
+ * 오류는 동그라미를 바꾸지 않는다 — 묶음 아래 글. 설명 · 딸린 입력이 붙는 선택은 Radio 가 아니라 Select Box(사용자 결정).
+ * 점은 늘 그려 두고(forceMount) 색만 바꾼다 — 채움과 함께 색으로 전환된다.
+ * 라벨을 눌러도 동그라미가 반응하도록 Radio 는 group/radio, 동그라미는 그 hover · active 도 받는다.
+ * 줄 사이 12 는 누르는 영역 때문이다 — 줄 32 · 36 에 더해 44 · 48 마다 한 줄이라 이웃 줄과 44 영역이 겹치지 않는다
+ * (SEED 의 4 로는 한 줄이 36 · 40 만 받는다, 사용자 결정). Radio 줄은 내용만큼만 차지한다(self-start) — 직접 짠 줄은 묶음 폭을 쓴다.
  */
+const radiomarkVariants = cva(
+  [
+    "peer relative inline-grid shrink-0 cursor-pointer place-items-center rounded-full",
+    "[transition:background-color_var(--motion-duration-color-transition)_var(--motion-ease-easing),border-color_var(--motion-duration-color-transition)_var(--motion-ease-easing),scale_var(--motion-duration-pressed-scale)_var(--motion-ease-pressed-scale)]",
+    "active:[scale:calc(1-2/var(--press-basis))] group-active/radio:[scale:calc(1-2/var(--press-basis))] motion-reduce:active:[scale:1] motion-reduce:group-active/radio:[scale:1]",
+    "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stroke-focus-ring",
+    "disabled:pointer-events-none disabled:cursor-not-allowed",
+    // 선택 안 됨 — 테두리 원. 호버 · 누름은 누름 바탕
+    "border border-stroke-neutral-solid bg-transparent hover:bg-bg-layer-default-pressed active:bg-bg-layer-default-pressed group-hover/radio:bg-bg-layer-default-pressed group-active/radio:bg-bg-layer-default-pressed",
+    "disabled:border-stroke-neutral-weak disabled:bg-bg-disabled",
+    // 선택 — 테두리 없이 채운 원(톤에서). 비활성은 채움 그대로 색만
+    "data-[state=checked]:border-0 data-[state=checked]:disabled:bg-bg-disabled",
+  ].join(" "),
+  {
+    variants: {
+      size: {
+        medium: "size-5 [--press-basis:24]",
+        large: "size-6 [--press-basis:24]",
+      },
+      tone: {
+        neutral:
+          "data-[state=checked]:bg-bg-neutral-inverted data-[state=checked]:hover:bg-bg-neutral-inverted-pressed data-[state=checked]:active:bg-bg-neutral-inverted-pressed data-[state=checked]:group-hover/radio:bg-bg-neutral-inverted-pressed data-[state=checked]:group-active/radio:bg-bg-neutral-inverted-pressed",
+        brand:
+          "data-[state=checked]:bg-bg-brand-solid data-[state=checked]:hover:bg-bg-brand-solid-pressed data-[state=checked]:active:bg-bg-brand-solid-pressed data-[state=checked]:group-hover/radio:bg-bg-brand-solid-pressed data-[state=checked]:group-active/radio:bg-bg-brand-solid-pressed",
+      },
+    },
+    defaultVariants: {
+      size: "medium",
+      tone: "neutral",
+    },
+  },
+);
 
+// 가운데 점 — 선택 안 됨에는 투명, 선택이면 톤 색, 막히면 fg-disabled
+const radiomarkDotVariants = cva(
+  "pointer-events-none block rounded-full bg-transparent [transition:background-color_var(--motion-duration-color-transition)_var(--motion-ease-easing)] data-[disabled]:data-[state=checked]:bg-fg-disabled",
+  {
+    variants: {
+      size: {
+        medium: "size-2",
+        large: "size-2.5",
+      },
+      tone: {
+        neutral: "data-[state=checked]:bg-fg-neutral-inverted",
+        brand: "data-[state=checked]:bg-static-white",
+      },
+    },
+    defaultVariants: {
+      size: "medium",
+      tone: "neutral",
+    },
+  },
+);
+
+export interface RadiomarkProps
+  extends React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Item>,
+    VariantProps<typeof radiomarkVariants> {}
+
+// 동그라미 — RadioGroup 안에서만 쓴다
+const Radiomark = React.forwardRef<React.ElementRef<typeof RadioGroupPrimitive.Item>, RadiomarkProps>(
+  ({ className, size, tone, ...props }, ref) => (
+    <RadioGroupPrimitive.Item ref={ref} className={cn(radiomarkVariants({ size, tone }), className)} {...props}>
+      <RadioGroupPrimitive.Indicator forceMount className={radiomarkDotVariants({ size, tone })} />
+    </RadioGroupPrimitive.Item>
+  ),
+);
+Radiomark.displayName = "Radiomark";
+
+// 한 줄 — 동그라미 + 라벨. 누르는 영역은 ::before 로 44 까지
+const radioVariants = cva(
+  [
+    "group/radio relative inline-flex cursor-pointer select-none items-center gap-x2 self-start",
+    "before:absolute before:left-1/2 before:top-1/2 before:h-full before:min-h-11 before:w-full before:min-w-11 before:-translate-x-1/2 before:-translate-y-1/2 before:content-['']",
+    "has-[:disabled]:pointer-events-none has-[:disabled]:cursor-not-allowed",
+  ].join(" "),
+  {
+    variants: {
+      size: {
+        medium: "min-h-8",
+        large: "min-h-9",
+      },
+    },
+    defaultVariants: { size: "medium" },
+  },
+);
+
+const radioLabelVariants = cva("font-sans text-fg-neutral peer-disabled:text-fg-disabled", {
+  variants: {
+    size: {
+      medium: "text-t4",
+      large: "text-t5",
+    },
+    weight: {
+      regular: "font-normal",
+      bold: "font-bold",
+    },
+  },
+  defaultVariants: { size: "medium", weight: "regular" },
+});
+
+export interface RadioProps extends RadiomarkProps, VariantProps<typeof radioLabelVariants> {
+  label: React.ReactNode;
+  labelClassName?: string;
+}
+
+const Radio = React.forwardRef<React.ElementRef<typeof RadioGroupPrimitive.Item>, RadioProps>(
+  ({ className, labelClassName, label, size, tone, weight, id, ...props }, ref) => {
+    const autoId = React.useId();
+    const rid = id ?? autoId;
+    return (
+      <label htmlFor={rid} className={cn(radioVariants({ size }), className)}>
+        <Radiomark ref={ref} id={rid} size={size} tone={tone} {...props} />
+        <span className={cn(radioLabelVariants({ size, weight }), labelClassName)}>{label}</span>
+      </label>
+    );
+  },
+);
+Radio.displayName = "Radio";
+
+// 묶음 — 세로로 쌓고 줄 사이 12. 제목은 aria-label 또는 aria-labelledby, 오류 글은 aria-describedby
 const RadioGroup = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Root>
 >(({ className, ...props }, ref) => (
-  <RadioGroupPrimitive.Root
-    ref={ref}
-    className={cn("grid gap-[var(--spacing-sm)]", className)}
-    {...props}
-  />
+  <RadioGroupPrimitive.Root ref={ref} className={cn("flex flex-col gap-x3", className)} {...props} />
 ));
-RadioGroup.displayName = RadioGroupPrimitive.Root.displayName;
+RadioGroup.displayName = "RadioGroup";
 
-// transition-colors(Tailwind 기본 --tw-ease/--tw-duration) 대신 motion 토큰 직접 인용.
-const RadioGroupItem = React.forwardRef<
-  React.ElementRef<typeof RadioGroupPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Item>
->(({ className, ...props }, ref) => (
-  <RadioGroupPrimitive.Item
-    ref={ref}
-    className={cn(
-      "aspect-square h-[18px] w-[18px] rounded-full border border-border-strong text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:border-primary transition-[color,background-color,border-color] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]",
-      className,
-    )}
-    {...props}
-  >
-    <RadioGroupPrimitive.Indicator className="flex items-center justify-center">
-      <Circle className="h-4 w-4 fill-primary text-primary" />
-    </RadioGroupPrimitive.Indicator>
-  </RadioGroupPrimitive.Item>
-));
-RadioGroupItem.displayName = RadioGroupPrimitive.Item.displayName;
-
-export { RadioGroup, RadioGroupItem };
+export { Radio, RadioGroup, Radiomark, radioVariants, radioLabelVariants, radiomarkVariants, radiomarkDotVariants };

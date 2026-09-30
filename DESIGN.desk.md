@@ -3638,18 +3638,18 @@ Desk — 메모/할일/가계부에서 비활성 상태(예: 완료된 할일 to
 
 ### Switch / Checkbox / Radio (control 묶음)
 
-Desk — 데이터 내보내기 · 카드 혜택 필터 checkbox, 메모 즐겨찾기 switch, 가계부 분류 radio, 알림 설정 switch 등. 할 일 완료의 동그라미 체크는 Checkbox 가 아니다 — 할 일 목록 컴포넌트 차례에 정한다(2026-09-30 사용자 결정).
+Desk — 데이터 내보내기 · 카드 혜택 필터 checkbox, 메모 즐겨찾기 switch, 알림 설정 switch 등. 오늘 Desk 의 라디오 동그라미는 반복 거래 "종료" 하나다 — 설명 · 입력칸이 붙어 Select Box 차례에 옮긴다(2026-09-30 조사 · 사용자 결정). 할 일 완료의 동그라미 체크는 Checkbox 가 아니다 — 할 일 목록 컴포넌트 차례에 정한다(2026-09-30 사용자 결정).
 
 #### 공통 spec (신규 토큰 없음)
 - inactive: `border-strong` 1px + `surface-input` 채움
 - active: `primary` (`#0147AD`) 채움 + `text-on-accent`
 - disabled: 전용 색(v106 — State 절)
-- **Checkbox 는 2026-09-30 SEED 구조로 바뀌었다**(`specs/components/checkbox.md`) — 선택은 `bg-neutral-inverted`(짙은 회색)가 기본이고 `tone="brand"` 면 Desk 파랑, 선택 안 된 칸의 테두리는 `stroke-neutral-solid`. 위 두 줄은 Radio · Switch 의 지금 값이다 — 각 차례에 같은 규칙으로 옮긴다(사용자 결정).
+- **Checkbox · Radio 는 2026-09-30 SEED 구조로 바뀌었다**(`specs/components/checkbox.md` · `radio-group.md`) — 선택은 `bg-neutral-inverted`(짙은 회색)가 기본이고 `tone="brand"` 면 Desk 파랑, 선택 안 된 칸 · 동그라미의 테두리는 `stroke-neutral-solid`. 위 두 줄은 Switch 의 지금 값이다 — Switch 차례에 같은 규칙으로 옮긴다(사용자 결정).
 
 #### Variant
 - Switch: `lg` 32×20 (모바일 hit area 우선) — 알림 on/off, 다크모드 toggle 등
 - Checkbox: 칸 20(`medium`, 기본) · 24(`large`) — 모바일에서 홀로 서는 선택은 `large`
-- Radio: 20×20 group, 카테고리 단일 선택
+- Radio: 동그라미 20(`medium`, 기본) · 24(`large`), 선택은 채운 원 + 가운데 점, 묶음은 세로 — 모바일에서 홀로 서는 선택은 `large`
 
 #### Layout
 - 모바일 form 행: label + control 간격 `md` (12px), 행 간 `lg` (16px)

@@ -58,6 +58,7 @@ export const PROP_LABEL = {
   rowGap: '줄 간격',
   columnGap: '칸 간격',
   columns: '칸 수',
+  alignSelf: '줄 맞춤',
   radius: '모서리',
   background: '배경',
   foreground: '글자·아이콘',
