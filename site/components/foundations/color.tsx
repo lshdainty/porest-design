@@ -371,3 +371,55 @@ export function ChartTable() {
     </Table>
   );
 }
+
+// v111 — 카테고리 옅은 바탕: 작은 면(weak) 위 아이콘 · 글자, 넓은 면(subtle) 메모 카드
+const TINT_TILES: [string, string][] = [['식', 'red'], ['주', 'green'], ['카', 'orange'], ['생', 'blue'], ['교', 'yellow'], ['쇼', 'indigo'], ['건', 'pink'], ['문', 'violet'], ['부', 'brown'], ['기', 'gray']];
+export function ChartTintExample() {
+  const c = design('shared').front.colors;
+  const v = (name: string, m: Mode) => c[m === 'dark' ? `${name}-dark` : name];
+  return (
+    <div className="not-prose my-6 grid gap-3 sm:grid-cols-2">
+      {(['light', 'dark'] as Mode[]).map((m) => (
+        <div key={m} className="flex flex-col gap-3 rounded-xl border border-fd-border p-4" style={{ background: rc('bg-layer-default', m), color: rc('fg-neutral', m) }}>
+          <span className="text-[12px] font-medium" style={{ color: rc('fg-neutral-subtle', m) }}>{m === 'dark' ? '다크' : '라이트'}</span>
+          <div className="flex flex-wrap gap-1.5">
+            {TINT_TILES.map(([t, h]) => (
+              <span key={h} className="grid h-8 w-8 place-items-center rounded-[9px] text-[13px] font-bold" style={{ background: v(`chart-${h}-weak`, m), color: v(`chart-${h}`, m) }}>{t}</span>
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {([['팀 회의', 'blue'], ['병원', 'pink'], ['월세 이체', 'green'], ['친구 생일', 'orange']] as [string, string][]).map(([t, h]) => (
+              <span key={t} className="rounded-md px-2 py-0.5 text-[12px] font-semibold" style={{ background: v(`chart-${h}-weak`, m), color: v(`chart-${h}-contrast`, m) }}>{t}</span>
+            ))}
+          </div>
+          <div className="flex flex-col gap-0.5 rounded-xl px-3.5 py-3 text-[13.5px]" style={{ background: v('chart-yellow-subtle', m) }}>
+            <b className="text-[14.5px]">장보기</b>
+            <span>우유 · 달걀 · 양파</span>
+            <span className="text-[12px] font-semibold" style={{ color: v('chart-yellow-contrast', m) }}>#노랑</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function ChartTintTable() {
+  const c = design('shared').front.colors;
+  return (
+    <Table head={['색', 'weak(작은 면)', 'subtle(넓은 면)', 'contrast(글자)']} minWidth={760}>
+      {CHART_ORDER.map((h) => (
+        <tr key={h}>
+          <td><Token>{`chart-${h}`}</Token></td>
+          {(['weak', 'subtle', 'contrast'] as const).map((k) => (
+            <td key={k}>
+              <div className="flex flex-col gap-1">
+                <StepSwatch hex={c[`chart-${h}-${k}`]} step={colorStep(`chart-${h}-${k}`)} />
+                <StepSwatch hex={c[`chart-${h}-${k}-dark`]} step={colorStep(`chart-${h}-${k}-dark`)} />
+              </div>
+            </td>
+          ))}
+        </tr>
+      ))}
+    </Table>
+  );
+}
