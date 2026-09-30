@@ -80,6 +80,7 @@ export const PROP_LABEL = {
   textDecoration: '밑줄',
   brightness: '밝기',
   scale: '배율',
+  translateX: '가로 이동',
   opacity: '불투명도',
   cursor: '커서',
   pointerEvents: '포인터 이벤트',
@@ -95,6 +96,7 @@ export const PROP_LABEL = {
   transitionProperty: '전환 대상',
   transitionDuration: '전환 시간',
   transitionEasing: '전환 곡선',
+  transitionDelay: '전환 지연',
   scaleDuration: '축소 시간',
   scaleEasing: '축소 곡선',
   press: '누름',
@@ -139,7 +141,7 @@ function hasToken(tokens, name) {
 
 // 토큰 하나를 "`이름` 값" 으로. 브랜드마다 다르면 둘 다, 다크 짝이 있으면 같이 적는다.
 // 그림자는 값이 길어 이름만 둔다 — 값은 기초 › Elevation & Depth 에 있다.
-function formatToken(tokens, { name, alpha }, { withDark }) {
+function formatToken(tokens, { name, alpha }, { withDark, omitWeight }) {
   const { shared, hr, desk } = tokens;
   const tag = `\`${name}\``;
   const short = (v) => (v && !name.startsWith('shadow-') && v.length <= 36 ? hex(v) : null);
@@ -148,7 +150,7 @@ function formatToken(tokens, { name, alpha }, { withDark }) {
     if (name.startsWith('text-')) {
       // v104 부터 글자는 rem 으로 내보낸다 — 스펙 표는 사람이 읽는 px(-static)로 보인다
       const px = (k) => shared.get(`${name}-static${k}`) ?? shared.get(`${name}${k}`);
-      const parts = [px(''), shared.get(`${name}--font-weight`), px('--line-height')];
+      const parts = [px(''), omitWeight ? null : shared.get(`${name}--font-weight`), px('--line-height')];
       return `${tag} ${parts.filter(Boolean).join(' / ')}`;
     }
     const light = mix(short(shared.get(name)));
@@ -163,9 +165,9 @@ function formatToken(tokens, { name, alpha }, { withDark }) {
   throw new SpecError(`없는 토큰 $${name}`);
 }
 
-function formatScalar(tokens, value, { withDark = true } = {}) {
+function formatScalar(tokens, value, { withDark = true, omitWeight = false } = {}) {
   const ref = parseRef(value);
-  if (ref) return formatToken(tokens, ref, { withDark });
+  if (ref) return formatToken(tokens, ref, { withDark, omitWeight });
   if (/\$[a-z]/.test(String(value))) throw new SpecError(`토큰은 값 하나로만 쓴다: ${value}`);
   return `\`${value}\``;
 }
@@ -180,18 +182,18 @@ function unpack(pv) {
 }
 
 // 값 칸의 글자와 비고를 따로 돌려준다 — 목록 표는 비고를 칸으로, 나머지는 칸 안에 붙인다.
-function cell(tokens, pv) {
+function cell(tokens, pv, opts = {}) {
   if (pv === undefined) return { text: '—', note: undefined };
   const { value, dark, note } = unpack(pv);
   const text =
     dark === undefined
-      ? formatScalar(tokens, value)
-      : `${formatScalar(tokens, value, { withDark: false })} · 다크 ${formatScalar(tokens, dark, { withDark: false })}`;
+      ? formatScalar(tokens, value, opts)
+      : `${formatScalar(tokens, value, { ...opts, withDark: false })} · 다크 ${formatScalar(tokens, dark, { ...opts, withDark: false })}`;
   return { text, note };
 }
 
-function inline(tokens, pv) {
-  const { text, note } = cell(tokens, pv);
+function inline(tokens, pv, opts) {
+  const { text, note } = cell(tokens, pv, opts);
   return note ? `${text} — ${note}` : text;
 }
 
@@ -209,6 +211,23 @@ const stateNames = (spec) => namesOf(spec.states);
 const baseState = (spec) => stateNames(spec)[0];
 const whenKeys = (rule) => Object.keys(rule.when ?? {});
 const isBase = (rule) => whenKeys(rule).length === 0;
+
+// 부위의 굵기를 컴포넌트가 늘 따로 정하면 — 공통 규칙에 있거나, 한 축의 모든 값이 정하거나 — 글자 토큰에 딸린 굵기는
+// 적지 않는다. 토큰의 400 과 컴포넌트의 굵기가 나란히 보이면 어느 쪽이 맞는지 알 수 없다(Button 라벨 700 · Switch 라벨 500).
+// 일부 조건에서만 굵기를 바꾸는 부위(선택된 탭만 600)는 토큰의 굵기가 나머지 조건의 값이라 그대로 적는다.
+export function setsWeight(spec, slot) {
+  const st = baseState(spec);
+  const has = (rule) => rule[st]?.[slot]?.fontWeight !== undefined;
+  if (spec.rules.some((r) => isBase(r) && has(r))) return true;
+  return Object.keys(spec.variants).some((axis) =>
+    axisValues(spec, axis).every((v) => spec.rules.some((r) => whenKeys(r).length === 1 && r.when[axis] === v && has(r))),
+  );
+}
+// 표의 칸("부위.속성")에 넘길 값 표기 옵션
+const fmt = (spec, key) => {
+  const [slot, prop] = key.split('.');
+  return { omitWeight: prop === 'typography' && setsWeight(spec, slot) };
+};
 
 function walkValues(spec, fn) {
   for (const rule of spec.rules) {
@@ -370,7 +389,7 @@ function baseTable(spec, tokens, only, pick) {
     for (const state of only ? [only] : stateNames(spec)) {
       for (const [slot, props] of Object.entries(rule[state] ?? {})) {
         if (pick && slot !== pick) continue;
-        for (const [prop, pv] of Object.entries(props)) rows.push({ slot, state, prop, ...cell(tokens, pv) });
+        for (const [prop, pv] of Object.entries(props)) rows.push({ slot, state, prop, ...cell(tokens, pv, fmt(spec, `${slot}.${prop}`)) });
       }
     }
   }
@@ -414,7 +433,7 @@ function axisTable(spec, tokens, axis, pick) {
     [axis, ...cols.map((c) => label(spec, c)), ...(withTouch ? ['터치 (AA · AAA)'] : []), ...(withDesc ? ['설명'] : [])],
     rows.map((row, i) => [
       valueCell(spec, axis, values[i]),
-      ...cols.map((c) => inline(tokens, row[c])),
+      ...cols.map((c) => inline(tokens, row[c], fmt(spec, c))),
       ...(withTouch ? [touch(tokens, row, root, hitArea(spec, root))] : []),
       ...(withDesc ? [descOf(spec.variants[axis], values[i]) ?? ''] : []),
     ]),
@@ -438,7 +457,7 @@ function gridTable(spec, tokens, axis, fixed, pick) {
   const keys = orderKeys(spec, unionKeys(columns)).filter(inSlot(pick));
   return table(
     ['속성', ...values.map((v) => valueCell(spec, axis, v))],
-    keys.map((k) => [label(spec, k), ...columns.map((col) => inline(tokens, col[k]))]),
+    keys.map((k) => [label(spec, k), ...columns.map((col) => inline(tokens, col[k], fmt(spec, k)))]),
   );
 }
 
@@ -453,7 +472,7 @@ function stateDeltaTable(spec, tokens, axes, pick) {
       const merged = {};
       for (const rule of spec.rules.filter((r) => !isBase(r) && appliesTo(combo)(r))) Object.assign(merged, flatten(rule[state]));
       const keys = orderKeys(spec, Object.keys(merged)).filter(inSlot(pick));
-      return keys.length ? keys.map((k) => `${label(spec, k)} ${inline(tokens, merged[k])}`).join(' · ') : '—';
+      return keys.length ? keys.map((k) => `${label(spec, k)} ${inline(tokens, merged[k], fmt(spec, k))}`).join(' · ') : '—';
     }),
   );
   const used = states.filter((_, i) => cells.some((row) => row[i] !== '—'));
@@ -504,7 +523,7 @@ function stateMatrix(spec, tokens, combo, pick, explicit = []) {
   const keep = rows.map((row, i) => i === 0 || !pick || cols.some((c) => !same(row[c], rows[0][c])));
   return table(
     ['상태', ...cols.map((c) => label(spec, c))],
-    rows.filter((_, i) => keep[i]).map((row) => [stateCell(spec, states[rows.indexOf(row)]), ...cols.map((c) => inline(tokens, row[c]))]),
+    rows.filter((_, i) => keep[i]).map((row) => [stateCell(spec, states[rows.indexOf(row)]), ...cols.map((c) => inline(tokens, row[c], fmt(spec, c)))]),
   );
 }
 
@@ -514,7 +533,7 @@ function compoundTable(spec, tokens, pick) {
   for (const rule of spec.rules.filter((r) => whenKeys(r).length > 1)) {
     const combo = Object.entries(rule.when).map(([k, v]) => `${k}=${code(v)}`).join(' + ');
     for (const state of stateNames(spec)) {
-      for (const [key, pv] of Object.entries(flatten(rule[state])).filter(([k]) => inSlot(pick)(k))) rows.push([combo, code(state), label(spec, key), inline(tokens, pv)]);
+      for (const [key, pv] of Object.entries(flatten(rule[state])).filter(([k]) => inSlot(pick)(k))) rows.push([combo, code(state), label(spec, key), inline(tokens, pv, fmt(spec, key))]);
     }
   }
   if (rows.length === 0) throw new SpecError('두 축 이상을 건 규칙이 없다 — #compound 를 쓸 수 없다');

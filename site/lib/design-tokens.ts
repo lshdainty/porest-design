@@ -285,7 +285,15 @@ export function specPartSize(component: string, when: Record<string, string>, sl
   return { width: w, height: h };
 }
 
-// 컴포넌트 YAML 의 공통 규칙(when: {})에서 한 조각(예: switch 의 track)
+// 컴포넌트 YAML 의 기본값(defaults) — 예: switch 의 기본 크기
+export function specDefault(component: string, axis: string) {
+  const doc = parseYaml(readFileSync(join(REPO, 'specs/components', `${component}.yaml`), 'utf8')) as { defaults?: Record<string, unknown> };
+  const v = doc.defaults?.[axis];
+  if (v === undefined) throw new Error(`${component}.yaml 의 defaults 에 ${axis} 가 없다`);
+  return String(v);
+}
+
+// 컴포넌트 YAML 의 공통 규칙(when: {})에서 한 조각(예: checkbox 의 root)
 export function specSlot(component: string, slot: string, state = 'enabled') {
   const doc = parseYaml(readFileSync(join(REPO, 'specs/components', `${component}.yaml`), 'utf8')) as {
     rules: { when?: Record<string, string>; [state: string]: unknown }[];

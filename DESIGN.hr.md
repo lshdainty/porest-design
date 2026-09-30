@@ -3616,16 +3616,17 @@ HR — 권한 부재(비-승인자가 결재 버튼 보지만 누르지 못함),
 
 ### Switch / Checkbox / Radio (control 묶음)
 
-HR — 직원 정보 form(필수/선택 옵션), 권한 토글 switch, 평가 항목 다중 선택 checkbox 등 form 화면 광범위 사용. 오늘 HR 화면에 Radio 는 없다(2026-09-30 조사).
+HR — 직원 정보 form(필수/선택 옵션), 권한 토글 switch, 평가 항목 다중 선택 checkbox 등 form 화면 광범위 사용. 오늘 HR 화면에 Radio · Switch 는 없다 — 켜고 끄기를 "예 · 아니오" 선택 목록으로 한다(공지 상단 고정 · 공휴일 매년 반복 · 휴가 정책 · 음력 여부). 앱 적용 단계에서 Switch · Checkbox 로 옮긴다(2026-09-30 조사).
 
 #### 공통 spec (신규 토큰 없음)
-- inactive: `border-strong` 1px outline + `surface-input` 채움
-- active: `primary` (`#357B5F`) 채움 + `text-on-accent` 표시 (체크/핸들/dot)
-- disabled: 전용 색(v106 — State 절) + cursor:not-allowed
-- **Checkbox · Radio 는 2026-09-30 SEED 구조로 바뀌었다**(`specs/components/checkbox.md` · `radio-group.md`) — 선택은 `bg-neutral-inverted`(짙은 회색)가 기본이고 `tone="brand"` 면 HR 초록, 선택 안 된 칸 · 동그라미의 테두리는 `stroke-neutral-solid`. 위 두 줄은 Switch 의 지금 값이다 — Switch 차례에 같은 규칙으로 옮긴다(사용자 결정).
+- 세 컨트롤 모두 2026-09-30 SEED 구조로 바뀌었다(`specs/components/switch.md` · `checkbox.md` · `radio-group.md`) — 색 규칙은 셋이 같다(사용자 결정)
+- 선택 · 켜짐: `bg-neutral-inverted`(짙은 회색) 채움 + `fg-neutral-inverted` 표시(체크 · 점 · 엄지)가 기본. `tone="brand"` 면 HR 초록(`bg-brand-solid`) + `static-white` — 서비스 핵심 흐름에서만
+- 선택 안 됨 · 꺼짐: `stroke-neutral-solid` — Checkbox · Radio 는 1px 테두리, Switch 는 트랙 채움
+- disabled: 전용 색(v106 — State 절) + cursor:not-allowed. 선택 · 켜진 채 막히면 모양 그대로 회색
+- focus: 키보드 포커스에만 `stroke-focus-ring` 2px · 띄움 2px
 
 #### Variant
-- Switch: `md` 28×16 default, toggle 즉시 effect (권한 on/off 등)
+- Switch: 트랙 38 × 24(`24`, 기본) · 26 × 16(`16`) · 52 × 32(`32`), 끄면 엄지가 0.8 로 작아진다 — 누르는 순간 적용되는 설정에만(권한 on/off 등), 저장해야 적용되는 값은 Checkbox
 - Checkbox: 칸 20(`medium`, 기본) · 24(`large`), 일부 선택(indeterminate) 지원 — 직원 다중 선택 표 머리
 - Radio: 동그라미 20(`medium`, 기본) · 24(`large`), 선택은 채운 원 + 가운데 점, 묶음은 세로 — 오늘 HR 화면에는 쓰는 곳이 없다
 
@@ -3637,7 +3638,8 @@ HR — 직원 정보 form(필수/선택 옵션), 권한 토글 switch, 평가 �
 #### A11y
 - HTML native `<input>` + `<label for>` 우선
 - focus ring `border-focus` 2px, 키보드 Space (toggle/check), Radio arrow keys
-- error 상태 외곽 `error` 색 + alert text 동반(Switch). Checkbox · Radio 는 칸 · 동그라미를 바꾸지 않고 묶음 아래 글로 알린다(2026-09-30)
+- error 상태: Checkbox · Radio 는 칸 · 동그라미를 바꾸지 않고 묶음 아래 글로 알린다(2026-09-30). Switch 에는 오류 상태가 없다 — 저장에 실패하면 스위치를 되돌리고 무엇이 안 됐는지 알린다
+- Switch 만 쓰는 설정 줄은 줄 전체가 누르는 영역이고, 줄의 제목이 스위치의 이름이 된다(`<label>` 또는 `aria-labelledby`) — 줄의 모양은 List 차례에 정한다
 
 ### Tabs
 

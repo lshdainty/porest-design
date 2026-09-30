@@ -5,12 +5,14 @@ import { buttonFigures } from './button';
 import { buttonGuideFigures } from './button-guides';
 import { checkboxFigures } from './checkbox';
 import { radioGroupFigures } from './radio-group';
+import { switchFigures } from './switch';
 import { SpecSheet } from './spec-sheet';
 
 const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactNode>> = {
   button: { ...buttonFigures, ...buttonGuideFigures },
   checkbox: checkboxFigures,
   'radio-group': radioGroupFigures,
+  switch: switchFigures,
 };
 
 export function SpecFigure({ name, id, caption }: { name: string; id: string; caption?: string }) {

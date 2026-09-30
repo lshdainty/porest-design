@@ -8,6 +8,8 @@ import { CheckboxView, CheckboxGroupDemo } from './checkbox-view';
 import { CheckboxPlayground } from './checkbox-playground';
 import { buttonLook } from './button-look';
 import { ButtonView } from './button-view';
+import { switchLook } from './switch-look';
+import { SwitchView } from './switch-view';
 import { Card, Phone, Sheet, Verdict, rc, type Mode } from './kit';
 
 type Fig = (p: { caption?: string }) => ReactNode;
@@ -435,13 +437,9 @@ const ErrorFig: Fig = ({ caption }) => (
   </Panel>
 );
 
-// 스위치 — 아직 Switch 차례 전이라 모양만(켜짐은 짙은 회색 — 사용자 결정: 선택 색 규칙을 Switch 에도)
-function MiniSwitch({ on }: { on: boolean }) {
-  return (
-    <span className="relative inline-block h-6 w-10 shrink-0 rounded-full" style={{ background: on ? rc('bg-neutral-inverted') : rc('stroke-neutral-solid') }}>
-      <span className="absolute top-0.5 h-5 w-5 rounded-full" style={{ left: on ? 18 : 2, background: rc('fg-neutral-inverted') }} />
-    </span>
-  );
+// 스위치 — switch.yaml 을 푼 값으로(멈춘 그림, 스위치만)
+function MiniSwitch({ on, name }: { on: boolean; name: string }) {
+  return <SwitchView look={switchLook({})} checked={on} state="enabled" ariaLabel={name} passive />;
 }
 const VsSwitch: Fig = ({ caption }) => (
   <Figure caption={caption}>
@@ -457,7 +455,7 @@ const VsSwitch: Fig = ({ caption }) => (
               ].map(([t, on]) => (
                 <div key={String(t)} className="flex items-center justify-between py-2.5">
                   <span className="text-[15px] pk-text">{t}</span>
-                  <MiniSwitch on={!!on} />
+                  <MiniSwitch on={!!on} name={String(t)} />
                 </div>
               ))}
             </Card>
