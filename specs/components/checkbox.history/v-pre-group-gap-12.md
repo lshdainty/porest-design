@@ -99,7 +99,7 @@ Desk 할 일 완료의 동그라미 체크는 Checkbox 의 모양이 아니다 �
 
 ### Group
 
-여러 항목을 묶어 세로로 쌓는다. 줄 사이는 12 다 — 줄 높이 32 · 36 에 더하면 44 · 48 마다 한 줄이 서서, 묶음 안에서도 줄마다 누르는 영역 44 를 온전히 받는다(사용자 결정). 줄은 칸 + 라벨만큼만 차지하고 묶음 폭으로 늘이지 않는다. 부모 Checkbox 를 맨 위에 둘 수 있다 — 부모를 고르면 자식이 모두 선택되고, 자식을 일부만 고르면 부모는 일부 선택(가로줄)이 된다.
+여러 항목을 묶어 세로로 쌓는다. 부모 Checkbox 를 맨 위에 둘 수 있다 — 부모를 고르면 자식이 모두 선택되고, 자식을 일부만 고르면 부모는 일부 선택(가로줄)이 된다.
 
 [그림: 묶음 — 부모를 눌러 보거나 자식을 하나씩 눌러 보면 부모가 따라 바뀐다](../../site/components/specs/checkbox.tsx#group)
 
@@ -109,7 +109,7 @@ Desk 할 일 완료의 동그라미 체크는 Checkbox 의 모양이 아니다 �
 
 ### 누르는 영역
 
-라벨을 포함한 줄 전체가 누르는 영역이다 — 위아래로 44 까지 넓히고, 묶음에서는 줄 사이 12 가 이 영역이 서로 겹치지 않게 한다. 목록처럼 칸(Checkmark)만 행에 넣어 쓸 때는 **행 전체**가 눌려야 한다.
+라벨을 포함한 줄 전체가 누르는 영역이다. 목록처럼 칸(Checkmark)만 행에 넣어 쓸 때는 **행 전체**가 눌려야 한다.
 
 [그림: 누르는 영역(분홍) — Checkbox 는 칸 + 라벨, 목록 행은 행 전체](../../site/components/specs/checkbox.tsx#touch-target)
 
@@ -219,7 +219,7 @@ const parent = picked.length === all.length ? true : picked.length ? "indetermin
 ```tsx
 import { Checkmark } from "@/components/ui/checkbox"
 
-<label className="group/checkbox flex cursor-pointer items-center gap-x3 px-x6 py-x3">
+<label className="group/checkbox flex items-center gap-x3 px-x6 py-x3">
   <Checkmark checked={selected} onCheckedChange={setSelected} aria-label="9월 25일 월급 선택" />
   <span className="flex-1">월급</span>
   <span>+3,200,000원</span>
@@ -243,12 +243,12 @@ import { Checkmark } from "@/components/ui/checkbox"
 | 기준 | 검증 |
 |---|---|
 | **WCAG 1.4.3** Color contrast(라벨 ≥ 4.5:1) | 라벨 `fg-neutral` × 흰 표면 16:1+ ✓ |
-| **WCAG 1.4.11** Non-text contrast(UI ≥ 3:1) | 선택 안 된 칸 테두리 `stroke-neutral-solid` × 표면 4.2:1(다크 4.1:1) ✓ · 선택 채움 `bg-neutral-inverted` 16:1+ ✓ · Ghost 선택 안 됨은 `fg-placeholder` 5.5:1 ✓ |
+| **WCAG 1.4.11** Non-text contrast(UI ≥ 3:1) | 선택 안 된 칸 테두리 `stroke-neutral-solid` × 흰 표면 4.0:1 ✓ · 선택 채움 `bg-neutral-inverted` 16:1+ ✓ · Ghost 선택 안 됨은 `fg-placeholder` 5.5:1 ✓ |
 | **WCAG 2.4.7** Focus visible | 키보드 포커스에만 링 2px · 띄움 2px(`stroke-focus-ring`) |
 | **WCAG 2.5.8** Target Size — Minimum(AA ≥ 24×24) | 칸 20 · 24 + 라벨까지 묶은 줄 32 · 36 ✓ |
-| **WCAG 2.5.5** Target Size — Enhanced(AAA ≥ 44×44) | 라벨까지 묶어 위아래 44 로 넓힌다 ✓. 묶음 안에서도 줄 사이 12 라 줄마다 44 · 48 을 받는다(줄 사이가 4 면 이웃과 겹쳐 36 · 40 이 된다) — 목록 행에서 칸만 쓰면 행 전체 |
+| **WCAG 2.5.5** Target Size — Enhanced(AAA ≥ 44×44) | 라벨까지 묶어 44 로 넓힌다 ✓ — 목록 행에서 칸만 쓰면 행 전체 |
 | **ARIA** | `role="checkbox"` + `aria-checked="true · false · mixed"`(mixed = 일부 선택). 라벨은 `<label>` 로 묶거나 `aria-labelledby`. 칸만 쓰면 `aria-label` 필수. 묶음은 `<fieldset>` + `<legend>`(또는 `role="group"` + `aria-labelledby`), 오류 글은 묶음에 `aria-describedby`. |
-| **Reduced motion** | 모션 줄이기면 누름 축소를 빼고 색만 바꾼다(기초 Motion). |
+| **Reduced motion** | 모션 줄이기면 아이콘의 scale 을 빼고 색만 바꾼다(기초 Motion). |
 
 ## Do / Don't
 
@@ -277,22 +277,10 @@ import { Checkmark } from "@/components/ui/checkbox"
 - **선택 안 된 칸의 테두리는 `stroke-neutral-solid`**(3:1 이상, v109). SEED 는 옅은 선(stroke.neutral-weak)이지만 porest 는 칸을 선으로 알아봐야 한다(1.4.11).
 - 투명한 누름(SEED bg.transparent-pressed) · 비활성 테두리(stroke.neutral-muted)는 불투명한 가장 가까운 역할(`bg-layer-default-pressed` · `stroke-neutral-weak`)로 — 8자리 hex 를 lint 가 거부한다.
 - Ghost 의 누름 바탕(SEED palette.gray-200 · carrot-200)은 역할 색 `bg-neutral-weak` · `bg-brand-weak-pressed` 로.
-- **묶음 줄 사이는 12**(사용자 결정) — SEED 는 4 다. 4 면 이웃 줄의 누르는 영역(44)과 겹쳐 한 줄이 실제로 36 · 40 만 받는다. porest 는 기초에서 44 를 반드시로 정했다(Inclusive Design).
 - 웹의 `hovered` · `focused` 를 더한다(v106).
 - 아이콘은 lucide(선 3) — SEED 는 채운 체크 아이콘.
 
 ## Migration notes
-
-### 2026-09-30 — 묶음 줄 사이 12 · 모션 표
-
-Radio 를 옮기다 드러난 것을 Checkbox 에도 맞췄다(porest-design#143 뒤).
-
-| 옛 | 새 |
-|---|---|
-| 묶음 줄 사이 4(SEED 값) — 이웃 줄과 44 영역이 겹쳐 한 줄이 36 · 40 만 받았다 | 줄 사이 12(`spacing-x3`) — 줄마다 44 · 48. 사용자 결정(기초의 "44 를 반드시") |
-| 줄 맞춤을 적지 않음 — 레시피는 줄을 묶음 폭으로 늘이고 미리보기는 내용만큼 | 줄은 칸 + 라벨만큼만(`alignSelf: flex-start`), 네 곳 모두 |
-| 모션 표: 아이콘 scale 0.8 → 1 · 불투명도(옛 스펙에서 온 값 — 레시피 · 미리보기 어디에도 구현된 적이 없다) | 색 전환(채움 · 테두리 · 아이콘 색) + 누름 축소 — 구현 그대로이고 SEED Checkmark 와 같다 |
-| 칸(버튼) 위 커서 기본 화살표 | 손가락(`cursor-pointer`) — 라벨 위와 같게 |
 
 ### 2026-09-30 — SEED Checkbox 구조로
 

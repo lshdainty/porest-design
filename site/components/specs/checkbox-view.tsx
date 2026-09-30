@@ -113,6 +113,8 @@ export function CheckboxView({ look, checked, defaultChecked = 'unchecked', onCh
         ...vars,
         display: 'inline-flex',
         alignItems: 'center',
+        // 줄은 칸 + 라벨만큼만 — 세로 묶음(flex column) 안에서도 묶음 폭으로 늘지 않는다
+        alignSelf: label ? f.row.align : undefined,
         gap: f.row.gap,
         minHeight: label ? f.row.minHeight : undefined,
         cursor: disabled ? 'not-allowed' : live ? 'pointer' : 'default',

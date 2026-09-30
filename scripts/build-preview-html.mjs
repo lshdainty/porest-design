@@ -1050,7 +1050,7 @@ export function renderCheckboxGallery(brand) {
     <div class="vignette-card cb-panel">
       <div class="vignette-head">
         <div class="vignette-title">묶음 · 일부 선택</div>
-        <div class="vignette-sub">부모(전체 · bold)를 맨 위에 둔다 — 자식을 일부만 고르면 부모는 일부 선택(가로줄). 세로로 쌓고 줄 사이 4, 들여쓰지 않는다. 오류는 칸을 바꾸지 않고 묶음 아래 글로 알린다.</div>
+        <div class="vignette-sub">부모(전체 · bold)를 맨 위에 둔다 — 자식을 일부만 고르면 부모는 일부 선택(가로줄). 세로로 쌓고 줄 사이 12(줄마다 누르는 영역 44 를 온전히 받는다), 들여쓰지 않는다. 오류는 칸을 바꾸지 않고 묶음 아래 글로 알린다.</div>
       </div>
       <div class="cb-group-legend" id="cb-group-export">내보낼 데이터</div>
       <div class="checkbox-group" role="group" aria-labelledby="cb-group-export">
@@ -3309,6 +3309,8 @@ export function pageCss() {
       position: relative;
       display: inline-flex;
       align-items: center;
+      /* 줄은 칸 + 라벨만큼만 — 세로 묶음 안에서도 묶음 폭으로 늘지 않는다(checkbox.tsx 의 self-start) */
+      align-self: flex-start;
       gap: var(--spacing-x2);
       min-height: 32px;
       cursor: pointer;
@@ -3339,8 +3341,9 @@ export function pageCss() {
     .checkbox-row--large .checkbox-label { font-size: var(--text-t5); line-height: var(--text-t5--line-height); }
     .checkbox-label--bold { font-weight: 700; }
     .checkbox:disabled + .checkbox-label { color: var(--color-fg-disabled); }
-    /* 묶음(Checkbox Group) — 세로로 쌓고 줄 사이 4. 부모는 맨 위에 두고 들여쓰지 않는다 */
-    .checkbox-group { display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-x1); }
+    /* 묶음(Checkbox Group) — 세로로 쌓고 줄 사이 12(줄 32 · 36 에 더해 44 · 48 마다 한 줄 — 이웃 줄과 누르는 영역 44 가 겹치지 않는다).
+       부모는 맨 위에 두고 들여쓰지 않는다 */
+    .checkbox-group { display: flex; flex-direction: column; gap: var(--spacing-x3); }
 
     /* 다크 — 역할 색을 체크박스 안에서만 다크 짝으로 바꾼다(.btn 과 같다 — 전역 다크 블록은 옛 이름만 바꾼다).
        라벨이 쓰는 값은 줄(.checkbox-row)에서 바꾼다. 공유 토큰(DESIGN.md)에 없는 브랜드 짝은 비어서 위 대체값(중립)으로 떨어진다. */

@@ -13,7 +13,8 @@ export type CheckFace = {
   box: { size: number; radius: string; bg: string; border: string; borderWidth: number };
   icon: { size: number; color: string; glyph: string };
   label: { fontSize: string; lineHeight?: string; fontWeight: number | string; color: string; fontFamily: string };
-  row: { gap: number; minHeight: number };
+  // align — 줄이 묶음 안에서 차지하는 폭(root.alignSelf): flex-start 면 칸 + 라벨만큼만
+  row: { gap: number; minHeight: number; align: string };
   ring: { width: number; offset: number; color: string };
   duration: { color: string; scale: string };
   easing: { color: string; scale: string };

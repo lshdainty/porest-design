@@ -16,7 +16,7 @@
 
 // Checkmark — 칸(checkmarkVariants)
 const CHECKMARK_BASE = [
-  "peer group/checkmark relative inline-grid shrink-0 place-items-center rounded-r1",
+  "peer group/checkmark relative inline-grid shrink-0 cursor-pointer place-items-center rounded-r1",
   "[transition:background-color_var(--motion-duration-color-transition)_var(--motion-ease-easing),border-color_var(--motion-duration-color-transition)_var(--motion-ease-easing),color_var(--motion-duration-color-transition)_var(--motion-ease-easing),scale_var(--motion-duration-pressed-scale)_var(--motion-ease-pressed-scale)]",
   "active:[scale:calc(1-2/var(--press-basis))] group-active/checkbox:[scale:calc(1-2/var(--press-basis))] motion-reduce:active:[scale:1] motion-reduce:group-active/checkbox:[scale:1]",
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stroke-focus-ring",
@@ -92,7 +92,7 @@ const MINUS_ICON = "hidden group-data-[state=indeterminate]/checkmark:block";
 
 // Checkbox — 한 줄(checkboxVariants). 누르는 영역은 ::before 로 44 까지
 const ROW_BASE = [
-  "group/checkbox relative inline-flex cursor-pointer select-none items-center gap-x2",
+  "group/checkbox relative inline-flex cursor-pointer select-none items-center gap-x2 self-start",
   "before:absolute before:left-1/2 before:top-1/2 before:h-full before:min-h-11 before:w-full before:min-w-11 before:-translate-x-1/2 before:-translate-y-1/2 before:content-['']",
   "has-[:disabled]:pointer-events-none has-[:disabled]:cursor-not-allowed",
 ].join(" ");
@@ -122,8 +122,8 @@ const LABEL_VARIANTS = {
 
 const LABEL_DEFAULTS = { size: "medium", weight: "regular" };
 
-// CheckboxGroup — 묶음, 세로로 쌓고 줄 사이 4
-const GROUP = "flex flex-col gap-x1";
+// CheckboxGroup — 묶음, 세로로 쌓고 줄 사이 12
+const GROUP = "flex flex-col gap-x3";
 
 // ── cva 풀이 ──────────────────────────────────────────────────────────────
 
@@ -449,7 +449,7 @@ export const checkboxExamples = [
   {
     title: "묶음 · 일부 선택",
     description:
-      "여러 항목은 CheckboxGroup 으로 세로로 쌓는다(줄 사이 4). 모두를 한 번에 고를 일이 있으면 부모를 맨 위에 bold 로 둔다 — 자식을 일부만 고르면 부모는 일부 선택(가로줄 · aria-checked=\"mixed\")이 되고, 부모를 누르면 자식이 모두 선택된다. 모두 선택된 부모를 누르면 모두 풀린다. 묶음의 이름은 aria-label(보이는 제목이 있으면 aria-labelledby)로 단다.",
+      "여러 항목은 CheckboxGroup 으로 세로로 쌓는다(줄 사이 12 — 줄마다 누르는 영역 44 를 온전히 받는다). 모두를 한 번에 고를 일이 있으면 부모를 맨 위에 bold 로 둔다 — 자식을 일부만 고르면 부모는 일부 선택(가로줄 · aria-checked=\"mixed\")이 되고, 부모를 누르면 자식이 모두 선택된다. 모두 선택된 부모를 누르면 모두 풀린다. 묶음의 이름은 aria-label(보이는 제목이 있으면 aria-labelledby)로 단다.",
     jsx: `import { useState } from "react"
 import { Checkbox, CheckboxGroup } from "@/components/ui/checkbox"
 
@@ -479,7 +479,7 @@ const parent = picked.length === ITEMS.length ? true : picked.length ? "indeterm
       "목록 행 · 표 머리에는 칸(Checkmark)만 넣는다. 보이는 라벨이 없으니 무엇을 고르는지 aria-label 을 반드시 단다. 행 전체를 <label> 로 감싸 행 어디를 눌러도 선택되게 한다 — 누르는 영역은 칸이 아니라 행이 맡는다. 행에 group/checkbox 를 달면 행을 누르거나 올려도 칸이 누름 색 · 축소로 반응한다.",
     jsx: `import { Checkmark } from "@/components/ui/checkbox"
 
-<label className="group/checkbox flex items-center gap-x3 px-x6 py-x3">
+<label className="group/checkbox flex cursor-pointer items-center gap-x3 px-x6 py-x3">
   <Checkmark checked={selected} onCheckedChange={setSelected} aria-label="9월 25일 월급 선택" />
   <span className="flex-1">월급</span>
   <span>+3,200,000원</span>
