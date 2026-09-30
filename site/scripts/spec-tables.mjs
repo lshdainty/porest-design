@@ -15,7 +15,8 @@ export const PLACEHOLDER = /^\[표: ([^\]]+)\]\(([a-z0-9-]+)\.yaml#([a-zA-Z0-9.@
 
 // 표 머리글. `부위.속성` 이 먼저, 없으면 속성 이름으로 찾고, 그것도 없으면 키를 그대로 쓴다.
 // 순서가 곧 표의 칸 순서다(크기 → 여백 → 모양 → 색 → 글자 → 효과).
-const PROP_LABEL = {
+// 속성 이름표 — 표와 컴포넌트 페이지의 Specification(site/components/specs/spec-sheet.tsx)이 같이 쓴다
+export const PROP_LABEL = {
   'label.typography': '글자',
   'label.fontFamily': '글꼴',
   'label.fontWeight': '굵기',
@@ -100,7 +101,7 @@ const PROP_LABEL = {
   range: '채움',
   thickness: '두께',
 };
-const PROP_ORDER = Object.keys(PROP_LABEL);
+export const PROP_ORDER = Object.keys(PROP_LABEL);
 
 class SpecError extends Error {}
 

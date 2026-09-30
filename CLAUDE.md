@@ -55,6 +55,8 @@
 - `DESIGN.md` 의 `##` 절을 추가·개명하면 `gen-content.mjs` 의 `FOUNDATION_SECTIONS` 도 고친다 — 안 고치면 빌드가 멈춘다(CI `site` 잡).
 - 기초 페이지(Design Token · Color · Gradient · Typography · Iconography · Spacing · Radius · Layout · Elevation · Motion · Feedback · State · Inclusive Design · International Design · Voice and Tone · Writing)는 SEED 문서 모양으로 손으로 쓴 `.mdx` 다(`site/content/docs/foundations`). Design Token 의 Reference 만 생성 페이지다(`gen-content.mjs` 의 `tokenReference` — 머리말 토큰과 표 토큰을 모두 싣는다). **숫자는 `.mdx` 에 적지 않는다** — 표 · 그림의 값은 `site/components/foundations` 가 빌드 때 `site/lib/design-tokens.ts` 로 DESIGN*.md 를 읽어 채운다. 그 컴포넌트는 DESIGN.md 의 절 · 표 제목(예: `v83 추가 — 컴포넌트 ↔ radius 매핑`, `콘텐츠 폭 — 밀도`, `눌림 피드백`), 절 안 문장의 수치(`sectionNumber` — 예: Iconography 의 "12px 은 넘지 말아야 할 바닥"), 컴포넌트 YAML 의 크기 규칙(버튼 · 스위치 · 체크박스)으로 찾으므로, 제목 · 문장 · 규칙을 바꾸면 빌드가 멈춘다 — 같이 고친다. 그림은 porest 화면으로 새로 그린다(SEED 그림은 당근 화면이라 쓰지 않는다).
 - 컴포넌트 수치는 `specs/components/<이름>.yaml` 로 옮기는 중이다(Button 부터). YAML 이 있으면 수치의 원본은 YAML 이고, md 의 표 자리는 `[표: …](<이름>.yaml#구역)` 한 줄이다 — 규칙은 `specs/CLAUDE.md`.
+- **사이트가 최종 스펙이다**(사용자 2026-09-30) — 웹 · 앱 컴포넌트는 사이트에 적힌 그대로 만든다. 그래서 컴포넌트 페이지는 SEED 처럼 렌더링된 모습 · 언제 무엇을 쓰는지(화면 예시 · Do/Don't) · 코드 · Specification(YAML 규칙 전부)까지 둔다. 표와 글만 있는 페이지로 끝내지 않는다.
+- 컴포넌트 페이지는 손으로 쓰지 않는다 — 스펙 md 가 원본이다. 그림은 `[그림: 캡션](../../site/components/specs/<이름>.tsx#<id>)` 한 줄로 넣고(GitHub 에서는 그림 코드로 가는 링크), 사이트가 그 자리에 `site/components/specs/<이름>.tsx` 의 그림을 그린다(그림 자리가 있는 스펙은 `.mdx` 로 생성). 버튼 · 화면 예시의 값은 `site/lib/component-spec.ts` 가 YAML 을 풀어 채운다 — 그림에 수치를 따로 적지 않는다. Specification 은 `[그림: …](../../site/components/specs/spec-sheet.tsx#<컴포넌트>)`.
 
 ## Git 작업 규칙
 - 브랜치·커밋 메시지·머지 전 점검 규칙은 `GIT_CONVENTION.md` 참조 — git 레이어 작업 시 반드시 사전 확인.

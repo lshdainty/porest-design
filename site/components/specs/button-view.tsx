@@ -1,0 +1,205 @@
+'use client';
+// 스펙대로 그린 버튼 — ButtonLook(button.yaml 을 푼 값)만 받아 그린다.
+// state 를 주면 그 상태로 고정해 보여 주고, 'live' 면 실제로 호버 · 누름 · 키보드 포커스에 반응한다.
+import { useState, type CSSProperties, type ReactNode } from 'react';
+import {
+  ArrowRight,
+  Bell,
+  Calendar,
+  Check,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  Ellipsis,
+  Filter,
+  Heart,
+  Pencil,
+  Plus,
+  Search,
+  Settings,
+  Share2,
+  SlidersHorizontal,
+  Star,
+  Trash2,
+  X,
+} from 'lucide-react';
+import type { ButtonLook, ButtonState } from './button-look';
+
+const ICONS = {
+  plus: Plus,
+  'chevron-right': ChevronRight,
+  'chevron-left': ChevronLeft,
+  'chevron-down': ChevronDown,
+  'arrow-right': ArrowRight,
+  search: Search,
+  trash: Trash2,
+  share: Share2,
+  heart: Heart,
+  bell: Bell,
+  more: Ellipsis,
+  check: Check,
+  x: X,
+  pencil: Pencil,
+  filter: Filter,
+  sliders: SlidersHorizontal,
+  download: Download,
+  settings: Settings,
+  star: Star,
+  calendar: Calendar,
+};
+export type IconName = keyof typeof ICONS;
+
+export function Icon({ name, size, color }: { name: IconName; size: number; color?: string }) {
+  const C = ICONS[name];
+  return <C size={size} strokeWidth={2.2} color={color} aria-hidden style={{ flexShrink: 0 }} />;
+}
+
+export type ButtonViewProps = {
+  look: ButtonLook;
+  mode?: 'light' | 'dark';
+  state?: ButtonState | 'live';
+  label?: ReactNode;
+  prefix?: IconName;
+  suffix?: IconName;
+  icon?: IconName;
+  fill?: boolean;
+  width?: number | string;
+  flush?: 'left' | 'right';
+  // 긴 라벨을 말줄임으로 자른다(나쁜 예를 그릴 때)
+  truncate?: boolean;
+  ariaLabel?: string;
+  onClick?: () => void;
+  style?: CSSProperties;
+};
+
+export function ButtonView({ look, mode = 'light', state = 'live', label, prefix, suffix, icon, fill, width, flush, truncate, ariaLabel, onClick, style }: ButtonViewProps) {
+  const [hover, setHover] = useState(false);
+  const [press, setPress] = useState(false);
+  const [focusRing, setFocusRing] = useState(false);
+  const [size, setSize] = useState<{ w: number; h: number } | null>(null);
+
+  const live = state === 'live';
+  const shown: ButtonState = live ? (press ? 'pressed' : hover ? 'hovered' : 'enabled') : state;
+  const f = look.faces[mode][shown];
+  const iconOnly = look.combo.layout === 'iconOnly';
+  const focused = state === 'focused' || (live && focusRing);
+  const loading = shown === 'loading';
+  const disabled = shown === 'disabled';
+  // 가장자리 맞춤(flush) ghost 는 텍스트 버튼 — 배경 없이 글자색으로만 반응한다(button.md)
+  const flushText = !!flush && look.combo.variant === 'ghost';
+  const bg = flushText ? 'transparent' : f.bg;
+  const fg = flushText && !disabled ? (shown === 'enabled' && !focused ? look.faces[mode].enabled.fg : look.textPressedFg[mode]) : f.fg;
+
+  // 누름 축소 — 기준 길이 max(높이, 폭 ÷ n, 최소) 에서 축소량만큼(Feedback 의 눌림 피드백)
+  let scale: number | undefined;
+  if (shown === 'pressed') {
+    const w = size?.w ?? f.height * 2;
+    const h = size?.h ?? f.height;
+    const basis = Math.max(h, w / look.press.widthDivisor, look.press.minBasis);
+    scale = (basis - look.press.distance) / basis;
+  }
+
+  const box: CSSProperties = {
+    position: 'relative',
+    display: fill ? 'flex' : 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxSizing: 'border-box',
+    flexShrink: 0,
+    height: f.height,
+    width: fill ? '100%' : iconOnly ? f.width ?? f.height : width,
+    padding: iconOnly ? f.padX : `0 ${f.padX}px`,
+    paddingLeft: flush === 'left' ? 0 : undefined,
+    paddingRight: flush === 'right' ? 0 : undefined,
+    gap: f.gap,
+    borderRadius: f.radius,
+    background: bg,
+    color: fg,
+    border: f.borderWidth ? `${f.borderWidth}px solid ${f.border}` : 'none',
+    fontFamily: f.fontFamily,
+    fontSize: f.fontSize,
+    lineHeight: f.lineHeight,
+    fontWeight: f.fontWeight,
+    whiteSpace: 'nowrap',
+    cursor: disabled ? 'not-allowed' : loading ? 'progress' : 'pointer',
+    outline: focused ? `${f.ring.width}px solid ${look.faces[mode].focused.ring.color}` : 'none',
+    outlineOffset: f.ring.offset,
+    transform: scale ? `scale(${scale})` : undefined,
+    transition: `background-color ${f.duration.color} ${f.easing.color}, color ${f.duration.color} ${f.easing.color}, transform ${f.duration.scale} ${f.easing.scale}`,
+    WebkitTapHighlightColor: 'transparent',
+    ...style,
+  };
+  const inner = loading ? 'transparent' : undefined;
+
+  return (
+    <button
+      type="button"
+      aria-label={ariaLabel}
+      aria-busy={loading || undefined}
+      aria-disabled={disabled || undefined}
+      tabIndex={live ? 0 : -1}
+      style={box}
+      onPointerEnter={live ? () => setHover(true) : undefined}
+      onPointerLeave={live ? () => (setHover(false), setPress(false)) : undefined}
+      onPointerDown={
+        live
+          ? (e) => {
+              const r = e.currentTarget.getBoundingClientRect();
+              setSize({ w: r.width, h: r.height });
+              setPress(true);
+            }
+          : undefined
+      }
+      onPointerUp={live ? () => setPress(false) : undefined}
+      onFocus={live ? (e) => setFocusRing(e.currentTarget.matches(':focus-visible')) : undefined}
+      onBlur={live ? () => setFocusRing(false) : undefined}
+      onClick={live ? onClick : undefined}
+    >
+      {prefix && !iconOnly && <Icon name={prefix} size={f.icon} color={inner} />}
+      {iconOnly && icon ? (
+        <Icon name={icon} size={f.icon} color={inner} />
+      ) : (
+        <span style={{ color: inner, ...(truncate ? { overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 } : {}) }}>{label}</span>
+      )}
+      {suffix && !iconOnly && <Icon name={suffix} size={f.icon} color={inner} />}
+      {loading && (
+        <span
+          aria-hidden
+          className="porest-spin"
+          style={{
+            position: 'absolute',
+            left: '50%',
+            top: '50%',
+            width: f.progress.size,
+            height: f.progress.size,
+            marginLeft: -f.progress.size / 2,
+            marginTop: -f.progress.size / 2,
+            boxSizing: 'border-box',
+            borderRadius: '50%',
+            border: `${f.progress.thickness}px solid ${f.progress.track}`,
+            borderTopColor: f.progress.range,
+          }}
+        />
+      )}
+    </button>
+  );
+}
+
+// 로딩을 눌러 보는 버튼 — 누르면 잠시 로딩이 됐다가 돌아온다(누르기는 그동안 막힌다)
+export function LoadingDemo({ look, label, mode = 'light', ms = 1600 }: { look: ButtonLook; label: string; mode?: 'light' | 'dark'; ms?: number }) {
+  const [busy, setBusy] = useState(false);
+  return (
+    <ButtonView
+      look={look}
+      mode={mode}
+      label={label}
+      state={busy ? 'loading' : 'live'}
+      onClick={() => {
+        if (busy) return;
+        setBusy(true);
+        setTimeout(() => setBusy(false), ms);
+      }}
+    />
+  );
+}

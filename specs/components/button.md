@@ -4,17 +4,19 @@
 
 구조는 당근 [SEED Action Button](https://seed-design.io/components/action-button)(Apache-2.0)을 따른다 — 크기 4 · 배치 2 · 변형 7 · 상태 6. 값은 porest 토큰이고, SEED 와 다른 자리는 맨 아래 "SEED 와 다른 점" 에 적었다(2026-09-30 사용자 결정).
 
-수치 원본은 [`button.yaml`](button.yaml) 이다. 아래 수치 표는 사이트가 그 파일로 그리고, GitHub 에서는 표 자리가 그 파일로 가는 링크로 보인다.
+수치 원본은 [`button.yaml`](button.yaml) 이다. 아래 수치 표는 사이트가 그 파일로 그리고, GitHub 에서는 표 자리가 그 파일로 가는 링크로 보인다. 그림 자리(`[그림: …]`)도 같다 — 사이트는 그 자리에 스펙 값으로 그린 버튼과 화면 예시를 둔다.
+
+[그림: 변형 일곱 가지 — 위는 라이트, 아래는 다크](../../site/components/specs/button.tsx#hero)
+
+### 직접 골라 보기
+
+변형 · 크기 · 배치 · 상태를 고르면 스펙대로 그린 버튼과 그 코드가 바뀐다. 버튼은 실제로 눌러 볼 수 있다(호버 · 누름 · Tab 포커스).
+
+[그림: 플레이그라운드](../../site/components/specs/button.tsx#playground)
 
 ## Anatomy
 
-```
-┌──────────────────────────────────────────┐
-│  ⓐ Container                              │
-│   ⓑ Prefix Icon   ⓒ Label   ⓓ Suffix Icon │
-└──────────────────────────────────────────┘
-   ⓔ Focus ring(웹 — 키보드 포커스에만)
-```
+[그림: Button 은 Label 을 감싼 Container 로 이뤄지고, 앞 · 뒤 아이콘을 가질 수 있다 — 부위를 보이려고 앞 · 뒤 아이콘을 함께 그렸다(실제로는 함께 쓰지 않는다)](../../site/components/specs/button.tsx#anatomy)
 
 | ⓐ Container | 배경 · 테두리 · 모양. 글자와 아이콘은 이 색(currentColor)을 따른다. |
 | ⓑ Prefix Icon | 라벨 앞 아이콘 — 동작의 뜻을 돕는다. 선택. |
@@ -34,7 +36,13 @@
 - `large`(48) — CTA. 모바일 하단 고정 버튼 · 모바일 모달 footer.
 - `xsmall`(32) — 좁은 자리에서 쓰는 알약 모양.
 
+[그림: 크기 네 가지 — 높이 32 · 36 · 40 · 48](../../site/components/specs/button.tsx#sizes)
+
+[그림: 크기마다의 치수 — 좌우 여백 · 아이콘과 글자 사이 · 높이](../../site/components/specs/button.tsx#size-spec)
+
 누르는 영역은 보이는 크기와 따로 가로 · 세로 44 까지 넓힌다(v106 — 44 는 반드시).
+
+[그림: 보이는 크기가 44 보다 작아도 누르는 영역(분홍)은 44 다](../../site/components/specs/button.tsx#hit-area)
 
 [표: 크기](button.yaml#size)
 
@@ -54,6 +62,8 @@
 
 라벨과 아이콘의 조합이다 — 글자만 · 앞 아이콘 + 글자 · 글자 + 뒤 아이콘 · 아이콘만.
 
+[그림: 배치 네 가지](../../site/components/specs/button.tsx#layouts)
+
 - **앞 · 뒤 아이콘을 함께 쓰지 않는다.** 앞은 동작의 뜻을 돕고(추가의 `+`), 뒤는 동작을 돕는다(다음의 chevron).
 - 아이콘은 꼭 필요할 때만 쓴다 — 라벨을 읽기 어려워진다.
 - **아이콘만**은 아이콘만으로 뜻을 전해 접근성이 떨어진다. 꼭 필요할 때만 쓰고, 이름(`aria-label` 또는 옆 Tooltip)을 반드시 단다. 정사각이고, 아이콘 버튼의 보이는 크기 기본은 `medium`(40 — v106).
@@ -61,6 +71,8 @@
 ### Variant
 
 일곱 가지다. 화면에서 강조하려는 정도에 따라 고른다.
+
+[그림: 변형 일곱 가지 — 라이트는 흰 표면, 다크는 다크 표면 위](../../site/components/specs/button.tsx#variants)
 
 | 변형 | 생김새 | 쓰는 곳 |
 |---|---|---|
@@ -75,6 +87,8 @@
 [표: 변형별 색](button.yaml#grid.variant)
 
 `ghost` 는 글자색을 바꿀 수 있다(SEED ghost 의 `color`) — 배경 · 누름은 그대로다.
+
+[그림: ghost 글자색 네 가지](../../site/components/specs/button.tsx#ghost-colors)
 
 | `ghostColor` | 쓰는 곳 |
 |---|---|
@@ -96,6 +110,8 @@
 | `loading` | 누름 색 위 로딩 원. 라벨 자리는 그대로(폭 유지) |
 | `disabled` | 전용 색(`bg-disabled` · `fg-disabled`, v106). 불투명도로 흐리게 하지 않는다 |
 
+[그림: 변형 × 상태 — 호버 · 포커스 · 누름은 그 순간을 멈춰 그렸다](../../site/components/specs/button.tsx#states)
+
 [표: 변형별 상태 변화](button.yaml#states.variant)
 
 **로딩**
@@ -104,23 +120,35 @@
 - 로딩 중에는 **누르기를 자동으로 막는다**(두 번 제출 방지) — 포인터 · Enter · Space 누르기를 삼키고(`onClick` 을 부르지 않는다), 누름 축소도 없다. 포커스는 그대로 두고 `aria-busy="true"` 를 단다. SEED 는 로딩이 비활성을 포함하지 않지만 porest 는 막는다 — 사용자 결정.
 - 로딩 원 색은 변형마다 다르다(Solid 는 흰 원, 나머지는 회색 트랙 위 본문색).
 
+[그림: 직접 눌러 보기 — 위는 누름 · 호버 · 키보드 포커스(Tab), 아래는 누르면 잠시 로딩이 된다](../../site/components/specs/button.tsx#live-states)
+
 ### Width
 
 - **내용 맞춤**(기본) — 라벨 길이만큼.
 - **채움** — 컨테이너 폭을 채운다(`w-full`). 모바일 하단 고정 CTA · 폼의 마지막 제출.
 - 최소 너비는 두지 않는다. 둘을 나란히 채울 때는 비율로 나눈다(아래 배치).
 
+[그림: 내용 맞춤(Hug)과 채움(Fill)](../../site/components/specs/button.tsx#width)
+
 ## Guidelines
 
 ### Hierarchy
 
-시각적 주목도는 배경 대비로 정해진다.
+시각적 주목도는 배경 대비로 정해진다. 화면에서 강조하려는 정도에 따라 변형을 고른다.
+
+[그림: 강 · 중 · 약 — 대비가 강한 배경일수록 먼저 눈에 들어온다](../../site/components/specs/button.tsx#hierarchy)
 
 | 강조 | 변형 | 화면 안 개수 | 쓰는 곳 |
 |---|---|---|---|
 | **강** — 대비가 강한 배경 | `brandSolid` · `neutralSolid` · `criticalSolid` | 1개 | 가장 중요한 CTA |
 | **중** — 대비가 약한 배경 | `neutralWeak` | 여러 개 | 대부분의 액션, 강 버튼과 짝 |
 | **약** — 투명한 배경 | `brandOutline` · `neutralOutline` · `ghost` | 여러 개 | 중요도가 낮은 보조 액션 |
+
+### 상황에 따라 알맞은 변형 쓰기
+
+화면 안의 중요도에 따라 고른다. 같은 저장이라도 그 화면의 CTA 면 `neutralSolid`, 서비스의 중심 동작이면 `brandSolid` 다.
+
+[그림: 변형마다 쓰는 자리 — 핵심 액션 · 대부분의 CTA · 되돌릴 수 없는 확정 · 여러 번 나오는 보조 액션](../../site/components/specs/button.tsx#usage)
 
 ### 브랜드 색은 꼭 필요한 곳에만
 
@@ -129,11 +157,17 @@
 - `brandSolid` 는 **서비스의 중심 동작 하나**에만 — Desk "거래 추가", HR "휴가 신청"처럼. 어떤 화면이 여기에 드는지는 앱 적용 때 화면마다 정한다.
 - 저장 · 확인 · 다음 같은 대부분의 CTA 는 `neutralSolid` 다.
 
+[그림: 브랜드 색은 한 화면에 하나 — 나머지는 중립색](../../site/components/specs/button.tsx#brand-color)
+
 ### 버튼 조합
 
 - **Solid 조합** — `neutralWeak` + `neutralSolid`(또는 `brandSolid`). 위계가 분명하고 부담이 적다.
 - **Outline 조합** — `neutralOutline` + `brandOutline`. 강조가 낮은 보조 액션을 한 화면에 여러 번 둘 때.
 - Outline 은 Solid 와 함께 쓰지 않는다.
+
+[그림: Solid 조합 — 옅은 회색(보조) + 짙은 회색 · 브랜드(CTA)](../../site/components/specs/button.tsx#combo-solid)
+
+[그림: Outline 조합과 섞지 말아야 할 조합](../../site/components/specs/button.tsx#combo-outline)
 
 ### 버튼 배치
 
@@ -142,13 +176,21 @@
 - **셋 이상 나란히 두지 않는다** — 중요도가 비슷해 보여 고르기 어렵고, 큰 글자에서 라벨이 잘린다. 더 있으면 아이콘만 버튼(더보기)으로 넘긴다.
 - 인접한 버튼 사이는 8(`spacing-x2`).
 
+[그림: 3:7 — Dismiss 와 CTA 를 화면 하단에 채울 때](../../site/components/specs/button.tsx#placement)
+
+[그림: 나란히 둘 수 있는 것과 없는 것](../../site/components/specs/button.tsx#side-by-side)
+
 **놓는 바탕** — `neutralWeak` 의 채움과 비활성 채움(`bg-disabled`)은 라이트에서 페이지 바탕(`bg-page`)과 같은 색(gray-200)이다(v108). 흰 표면(카드 · 시트 · 모달 — `bg-layer-default`) 위에 두고, 페이지 바탕에 바로 둘 땐 `neutralOutline` 을 쓴다 — 바탕 위의 `neutralWeak` 는 채움이 사라져 글자만 남는다.
+
+[그림: neutralWeak 를 놓는 바탕](../../site/components/specs/button.tsx#surface)
 
 **모달 footer**(porest)
 
 - 오른쪽에 `[취소 neutralWeak] [저장 neutralSolid]` — 웹은 `small`(36), 모바일 전체 폭은 `large`(48).
 - 확인 창을 여는 **삭제**는 왼쪽에 `ghost` + `critical` 글자. 삭제의 **확정**은 [Alert Dialog](alert-dialog.md) 의 `criticalSolid`.
 - 모달 footer 의 버튼을 `neutralOutline` 둘로 두지 않는다 — 전체 폭 버튼 둘이 테두리로 서면 위계가 흐려진다.
+
+[그림: Desk 웹의 모달 footer — 상세(삭제 · 수정)와 편집 폼(취소 · 저장)](../../site/components/specs/button.tsx#modal-footer)
 
 ### 라벨
 
@@ -157,9 +199,25 @@
 - "다음" 보다 "저장" · "주문 확인"처럼 무엇을 하는지 알게.
 - 같은 동작에는 같은 말을 쓴다.
 
+[그림: 라벨은 사용자가 할 행동으로](../../site/components/specs/button.tsx#label)
+
 ### 긴 라벨
 
 긴 라벨 · 번역 · 큰 글자로 나란한 두 버튼이 넘치면 **세로로 쌓는다**(주 버튼이 위). 한 줄에 억지로 줄이지 않는다.
+
+[그림: 넘칠 땐 세로로](../../site/components/specs/button.tsx#long-label)
+
+### 아이콘
+
+아이콘은 버튼의 동작을 눈으로 보이게 돕는다. 앞(Prefix)은 액션의 뜻을, 뒤(Suffix)는 chevron 처럼 동작을 돕는다. 라벨을 읽기 어려워지지 않게 꼭 필요할 때만 쓰고, 앞 · 뒤를 함께 쓰지 않는다.
+
+[그림: 아이콘을 쓰는 자리와 쓰지 말아야 할 자리](../../site/components/specs/button.tsx#icon)
+
+### 로딩
+
+저장처럼 시간이 걸리는 액션은 누른 버튼을 로딩으로 바꾼다. 라벨을 바꾸거나 비활성으로 돌리지 않는다.
+
+[그림: 로딩은 그 자리에서 — 폭은 그대로](../../site/components/specs/button.tsx#loading)
 
 ## Button 과 Chip
 
@@ -172,6 +230,8 @@ SEED 는 Button 과 Chip 을 이렇게 가른다. porest 에는 아직 Chip 이 
 | 라벨 | 보면 동작이 예상된다 | 지금 켜진 조건 · 정보 |
 | 쓰는 모양 | 하나로도 | 둘 이상 묶어서 |
 
+[그림: Button 은 실행, 고르기는 지금 켜진 조건](../../site/components/specs/button.tsx#chip)
+
 ## porest 에만 있는 것
 
 **반반 바(split bar)** — 액션 **둘**이 무게가 같고 한 묶음으로 읽힐 때, 본문 폭을 채운 네모 바를 반으로 갈라 각 칸에 하나씩 둔다(예: 내역 분할의 `항목 추가` · `균등 분할`).
@@ -182,12 +242,113 @@ SEED 는 Button 과 Chip 을 이렇게 가른다. porest 에는 아직 Chip 이 
 - **얇게 — `xsmall` 높이(32).** 목록에 줄을 더하는 성격이라 본문 행보다 무거우면 안 된다. 알약 모양은 쓰지 않는다(segmented 와 헷갈린다).
 - **선택이 아니라 실행이다.** 눌린 상태(`data-state=on`)가 없다. 셋 이상으로 나누지 않는다.
 
+[그림: 반반 바 — 내역 분할의 항목 추가 · 균등 분할](../../site/components/specs/button.tsx#split-bar)
+
 **가장자리 맞춤(flush)** — SEED 의 `bleed` 와 같은 기능이다.
 
 - `flush="left" | "right"` — 그 방향 가로 여백을 0 으로 한다.
 - 대상: `ghost` + 앞 아이콘이 컨테이너 가장자리의 첫 · 끝 요소일 때. 글자만 있는 ghost 에는 쓰지 않는다.
 - flush ghost 는 **텍스트 버튼**이다 — 누름 · 호버에 배경을 깔지 않고 글자색으로만 반응한다(`neutralSubtle` → 누르면 `fg-neutral`). 한쪽 여백만 0 이라 채움 상자가 좌우 비대칭이 되기 때문이다.
 - 그래서 flush 는 `ghostColor` 를 덮는다 — 빨간 글자를 지켜야 하는 삭제(`critical`)에는 쓰지 않는다.
+
+[그림: 가장자리 맞춤 — 앞 아이콘이 목록의 왼쪽 선(분홍)에 맞는다](../../site/components/specs/button.tsx#flush)
+
+## 코드
+
+레시피 `recipes/shadcn/components/ui/button.tsx` 를 쓴다. 아래 미리보기는 스펙 값으로 그린 모습이다.
+
+### 기본
+
+[그림: 기본 — neutralSolid · medium](../../site/components/specs/button.tsx#ex-basic)
+
+```tsx
+import { Button } from "@/components/ui/button"
+
+<Button>저장</Button>
+```
+
+### 변형
+
+[그림: 변형](../../site/components/specs/button.tsx#ex-variants)
+
+```tsx
+<Button variant="brandSolid">거래 추가</Button>
+<Button variant="neutralSolid">저장</Button>
+<Button variant="neutralWeak">취소</Button>
+<Button variant="criticalSolid">삭제</Button>
+<Button variant="brandOutline">자세히</Button>
+<Button variant="neutralOutline">건너뛰기</Button>
+<Button variant="ghost">더보기</Button>
+```
+
+### 크기
+
+[그림: 크기](../../site/components/specs/button.tsx#ex-sizes)
+
+```tsx
+<Button size="xsmall">라벨</Button>
+<Button size="small">라벨</Button>
+<Button size="medium">라벨</Button>
+<Button size="large">라벨</Button>
+```
+
+### 아이콘
+
+[그림: 아이콘](../../site/components/specs/button.tsx#ex-icons)
+
+```tsx
+import { ChevronRight, Plus, Search } from "lucide-react"
+
+<Button variant="brandSolid"><Plus />거래 추가</Button>
+<Button variant="neutralWeak">전체 보기<ChevronRight /></Button>
+<Button variant="ghost" ghostColor="neutralSubtle" layout="iconOnly" aria-label="검색">
+  <Search />
+</Button>
+```
+
+### ghost 글자색
+
+[그림: ghost 글자색](../../site/components/specs/button.tsx#ex-ghost)
+
+```tsx
+<Button variant="ghost">편집</Button>
+<Button variant="ghost" ghostColor="neutralSubtle">더보기</Button>
+<Button variant="ghost" ghostColor="brand">자세히 보기</Button>
+<Button variant="ghost" ghostColor="critical">삭제</Button>
+```
+
+### 비활성 · 로딩
+
+[그림: 비활성 · 로딩 — 오른쪽을 눌러 보면 잠시 로딩이 된다](../../site/components/specs/button.tsx#ex-states)
+
+```tsx
+const [saving, setSaving] = useState(false)
+
+<Button disabled>저장</Button>
+<Button loading={saving} onClick={async () => { setSaving(true); await save(); setSaving(false) }}>
+  저장
+</Button>
+```
+
+### 채움
+
+[그림: 채움 — 화면 하단 CTA](../../site/components/specs/button.tsx#ex-fill)
+
+```tsx
+<Button size="large" className="w-full">저장</Button>
+```
+
+### 모달 footer
+
+[그림: 모달 footer — 삭제는 왼쪽, 취소 · 저장은 오른쪽](../../site/components/specs/button.tsx#ex-footer)
+
+```tsx
+<footer className="flex items-center gap-2">
+  <Button variant="ghost" ghostColor="critical" size="small" className="mr-auto">삭제</Button>
+  <Button variant="neutralWeak" size="small">취소</Button>
+  <Button size="small">저장</Button>
+</footer>
+```
 
 ## Behavior
 
@@ -232,6 +393,12 @@ SEED 는 Button 과 Chip 을 이렇게 가른다. porest 에는 아직 Chip 이 
 - Outline 을 Solid 와 섞기.
 - 앞 · 뒤 아이콘을 함께.
 - `disabled` 버튼에 호버 · 누름 반응.
+
+## Specification
+
+`button.yaml` 의 규칙을 하나도 빼지 않고 조건마다 그린다 — 웹 · 앱이 버튼을 만들 때 이 값을 그대로 쓴다. 조건이 없는 `Base` 가 모든 조합에 걸리고, 뒤의 규칙이 앞의 같은 값을 덮는다. 상태는 `enabled` 에서 바뀌는 값만 적었다.
+
+[그림: Specification — button.yaml 의 규칙 전부](../../site/components/specs/spec-sheet.tsx#button)
 
 ## SEED 와 다른 점
 
