@@ -4282,7 +4282,7 @@ binary on/off 상태 또는 group 선택을 표현하는 form control 3종. 공�
 #### Layout
 - label 위치: control 우측 (LTR) — control과 label 간 `sm` (8px) 간격
 - 그룹 spacing:
-  - vertical group: 항목 간 `md` (12px) ~ `lg` (16px) — Radio 묶음은 줄 최소 높이 32 · 36 에 줄 사이 12(`specs/components/radio-group.yaml` — 줄마다 누르는 영역 44 를 온전히 받는다, 사용자 결정 2026-09-30). Checkbox 묶음은 지금 줄 사이 4(`checkbox.yaml`) — 같은 12 로 옮긴다
+  - vertical group: 항목 간 `md` (12px) ~ `lg` (16px) — Checkbox · Radio 묶음은 줄 최소 높이 32 · 36 에 줄 사이 12(`specs/components/checkbox.yaml` · `radio-group.yaml` — 줄마다 누르는 영역 44 를 온전히 받는다, 사용자 결정 2026-09-30. SEED 는 4)
   - horizontal group: 항목 간 `lg` (16px) — Radio 는 가로로 놓지 않는다(2026-09-30)
 - group label (group 제목): control 위 `caption` + `xs` 간격
 

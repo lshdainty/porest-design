@@ -185,7 +185,7 @@ const Tones: Fig = ({ caption }) => (
         ] as const
       ).map(([name, tone, brand, note]) => (
         <div key={name} className="flex flex-col items-center gap-3">
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col" style={{ gap: GROUP_GAP() }}>
             <C tone={tone} brand={brand} checked="checked" state="enabled" label="거래 내역" />
             <C tone={tone} brand={brand} checked="indeterminate" state="enabled" label="예산" />
             <C tone={tone} brand={brand} checked="unchecked" state="enabled" label="메모" />
@@ -202,7 +202,7 @@ const Shapes: Fig = ({ caption }) => (
     <div className="flex items-start gap-16 rounded-xl pk-surface px-12 py-8">
       {axisValues(spec(), 'shape').map((sh) => (
         <div key={sh} className="flex flex-col items-center gap-3">
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col" style={{ gap: GROUP_GAP() }}>
             <C shape={sh} checked="checked" label="식비" />
             <C shape={sh} checked="unchecked" label="교통" />
             <C shape={sh} checked="checked" label="쇼핑" />
@@ -256,12 +256,12 @@ const States: Fig = ({ caption }) => (
 const Live: Fig = ({ caption }) => (
   <Figure caption={caption}>
     <div className="flex flex-wrap items-start gap-12 rounded-xl pk-surface px-12 py-8">
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col" style={{ gap: GROUP_GAP() }}>
         <C label="단종된 카드도 보기" />
         <C label="금액 고정" checked="checked" />
         <C label="이 카드 기억하기" state="disabled" />
       </div>
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col" style={{ gap: GROUP_GAP() }}>
         <C tone="brand" label="brand 톤" checked="checked" />
         <C shape="ghost" label="ghost 모양" checked="checked" />
         <C shape="ghost" label="ghost 모양" />
@@ -320,11 +320,13 @@ function ExportGroup({ picked, bordered = false, message, mode = 'auto', tone = 
       <span className="mb-1 text-[13px] font-semibold" style={{ color: rc('fg-neutral-muted', mode) }}>
         내보낼 데이터
       </span>
-      <C tone={tone} shape={shape} weight="bold" checked={parent} state="enabled" mode={mode} label="전체" boxStyle={bordered ? redBox : undefined} />
-      <span className="my-1.5 h-px" style={{ background: rc('stroke-neutral-weak', mode) }} />
-      {items.map((it, i) => (
-        <C key={it} tone={tone} shape={shape} checked={picked.includes(i) ? 'checked' : 'unchecked'} state="enabled" mode={mode} label={it} boxStyle={bordered ? redBox : undefined} />
-      ))}
+      <div className="flex flex-col" style={{ gap: GROUP_GAP() }}>
+        <C tone={tone} shape={shape} weight="bold" checked={parent} state="enabled" mode={mode} label="전체" boxStyle={bordered ? redBox : undefined} />
+        <span className="h-px" style={{ background: rc('stroke-neutral-weak', mode) }} />
+        {items.map((it, i) => (
+          <C key={it} tone={tone} shape={shape} checked={picked.includes(i) ? 'checked' : 'unchecked'} state="enabled" mode={mode} label={it} boxStyle={bordered ? redBox : undefined} />
+        ))}
+      </div>
       {message && (
         <span className="mt-2 text-[12px]" style={{ color: rc('fg-critical', mode) }}>
           {message}
@@ -362,8 +364,10 @@ const ShapeGuide: Fig = ({ caption }) => (
           <span className="mb-1 text-[13px] font-semibold" style={{ color: rc('fg-neutral-muted') }}>
             보기
           </span>
-          <C shape="ghost" checked="checked" label="지난 달 거래 숨기기" />
-          <C shape="ghost" label="금액 가리기" />
+          <div className="flex flex-col" style={{ gap: GROUP_GAP() }}>
+            <C shape="ghost" checked="checked" label="지난 달 거래 숨기기" />
+            <C shape="ghost" label="금액 가리기" />
+          </div>
         </div>
       </Verdict>
       <Verdict ok={false} note="하나 이상 꼭 골라야 하는 긴 목록에 Ghost — 고른 것과 안 고른 것이 잘 안 갈린다">
@@ -371,9 +375,11 @@ const ShapeGuide: Fig = ({ caption }) => (
           <span className="mb-1 text-[13px] font-semibold" style={{ color: rc('fg-neutral-muted') }}>
             내보낼 데이터(하나 이상)
           </span>
-          {['거래 내역', '예산', '메모', '할 일', '캘린더 일정', '자산'].map((t, i) => (
-            <C key={t} shape="ghost" checked={i % 2 ? 'unchecked' : 'checked'} label={t} />
-          ))}
+          <div className="flex flex-col" style={{ gap: GROUP_GAP() }}>
+            {['거래 내역', '예산', '메모', '할 일', '캘린더 일정', '자산'].map((t, i) => (
+              <C key={t} shape="ghost" checked={i % 2 ? 'unchecked' : 'checked'} label={t} />
+            ))}
+          </div>
         </div>
       </Verdict>
     </Pair>
@@ -441,7 +447,7 @@ const VsSwitch: Fig = ({ caption }) => (
   <Figure caption={caption}>
     <div className="flex gap-6">
       <div className="flex flex-col items-center gap-3">
-        <Phone title="알림" h={420} scale={0.72}>
+        <Phone title="알림" h={500} scale={0.72}>
           <div className="flex flex-col gap-3 p-5">
             <Card>
               {[
@@ -462,7 +468,7 @@ const VsSwitch: Fig = ({ caption }) => (
       <div className="flex flex-col items-center gap-3">
         <Phone
           title="설정"
-          h={420}
+          h={500}
           scale={0.72}
           overlay={
             <Sheet title="데이터 내보내기" footer={<ButtonView look={buttonLook({ variant: 'neutralSolid', size: 'large' })} label="내보내기" fill />}>

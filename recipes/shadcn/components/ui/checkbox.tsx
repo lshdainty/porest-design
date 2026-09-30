@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
  *
  *   Checkmark      칸만 — 목록 행 · 표 머리에 넣어 쓴다(누르는 영역은 행 전체가 맡는다, aria-label 필수)
  *   Checkbox       칸 + 라벨 — 라벨까지 눌리고, 누르는 영역은 44 까지 넓힌다(::before)
- *   CheckboxGroup  묶음 — 세로로 쌓고 줄 사이 4
+ *   CheckboxGroup  묶음 — 세로로 쌓고 줄 사이 12
  *
  *   size   medium 20(라벨 14 · 줄 32, 기본) · large 24(라벨 16 · 줄 36)
  *   shape  square(칸 + 체크, 기본) · ghost(칸 없이 체크만 — 선택 안 됨도 옅은 체크)
@@ -20,10 +20,12 @@ import { cn } from "@/lib/utils";
  * 선택 안 된 칸의 테두리는 stroke-neutral-solid(3:1 — v109). 호버 = 누름 색(v106), 누르면 칸만 세로 2px 축소(v104) —
  * 칸의 기준 길이는 max(20·24, 24) = 24. 비활성은 전용 색(v106). 오류는 칸을 바꾸지 않는다 — 묶음 아래 글(사용자 결정).
  * 라벨을 눌러도 칸이 반응하도록 Checkbox 는 group/checkbox, 칸은 그 hover · active 도 받는다.
+ * 줄 사이 12 는 누르는 영역 때문이다 — 줄 32 · 36 에 더해 44 · 48 마다 한 줄이라 이웃 줄과 44 영역이 겹치지 않는다
+ * (SEED 의 4 로는 한 줄이 36 · 40 만 받는다, 사용자 결정). Checkbox 줄은 내용만큼만 차지한다(self-start) — 직접 짠 줄은 묶음 폭을 쓴다.
  */
 const checkmarkVariants = cva(
   [
-    "peer group/checkmark relative inline-grid shrink-0 place-items-center rounded-r1",
+    "peer group/checkmark relative inline-grid shrink-0 cursor-pointer place-items-center rounded-r1",
     "[transition:background-color_var(--motion-duration-color-transition)_var(--motion-ease-easing),border-color_var(--motion-duration-color-transition)_var(--motion-ease-easing),color_var(--motion-duration-color-transition)_var(--motion-ease-easing),scale_var(--motion-duration-pressed-scale)_var(--motion-ease-pressed-scale)]",
     "active:[scale:calc(1-2/var(--press-basis))] group-active/checkbox:[scale:calc(1-2/var(--press-basis))] motion-reduce:active:[scale:1] motion-reduce:group-active/checkbox:[scale:1]",
     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stroke-focus-ring",
@@ -113,7 +115,7 @@ Checkmark.displayName = "Checkmark";
 // 한 줄 — 칸 + 라벨. 누르는 영역은 ::before 로 44 까지
 const checkboxVariants = cva(
   [
-    "group/checkbox relative inline-flex cursor-pointer select-none items-center gap-x2",
+    "group/checkbox relative inline-flex cursor-pointer select-none items-center gap-x2 self-start",
     "before:absolute before:left-1/2 before:top-1/2 before:h-full before:min-h-11 before:w-full before:min-w-11 before:-translate-x-1/2 before:-translate-y-1/2 before:content-['']",
     "has-[:disabled]:pointer-events-none has-[:disabled]:cursor-not-allowed",
   ].join(" "),
@@ -161,9 +163,9 @@ const Checkbox = React.forwardRef<React.ElementRef<typeof CheckboxPrimitive.Root
 );
 Checkbox.displayName = "Checkbox";
 
-// 묶음 — 세로로 쌓고 줄 사이 4. 제목은 aria-label 또는 aria-labelledby, 오류 글은 aria-describedby
+// 묶음 — 세로로 쌓고 줄 사이 12. 제목은 aria-label 또는 aria-labelledby, 오류 글은 aria-describedby
 const CheckboxGroup = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
-  <div ref={ref} role="group" className={cn("flex flex-col gap-x1", className)} {...props} />
+  <div ref={ref} role="group" className={cn("flex flex-col gap-x3", className)} {...props} />
 ));
 CheckboxGroup.displayName = "CheckboxGroup";
 

@@ -3631,7 +3631,7 @@ HR — 직원 정보 form(필수/선택 옵션), 권한 토글 switch, 평가 �
 
 #### Layout
 - form 행: label + control + helper, 행 간 `lg` (16px)
-- group: vertical 시 항목 간 `md` (12px), horizontal `lg` (16px) — Checkbox · Radio 묶음은 스펙의 줄 사이를 따르고(Radio 12, Checkbox 는 같은 값으로 옮긴다), Radio 는 가로로 놓지 않는다(2026-09-30)
+- group: vertical 시 항목 간 `md` (12px), horizontal `lg` (16px) — Checkbox · Radio 묶음은 스펙의 줄 사이 12 를 따르고, Radio 는 가로로 놓지 않는다(2026-09-30)
 - touch hit area 44×44 (label 포함)
 
 #### A11y

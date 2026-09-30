@@ -28,7 +28,7 @@ function face(v: Record<string, unknown>, focused: Record<string, unknown>, pres
       color: str(t('label.foreground')) ?? 'inherit',
       fontFamily: str(t('label.fontFamily')) ?? 'inherit',
     },
-    row: { gap: num(t('root.gap')) ?? 8, minHeight: num(t('root.minHeight')) ?? 32 },
+    row: { gap: num(t('root.gap')) ?? 8, minHeight: num(t('root.minHeight')) ?? 32, align: str(t('root.alignSelf')) ?? 'flex-start' },
     ring: { width: num(t('focusRing.width', focused)) ?? 2, offset: num(t('focusRing.offset', focused)) ?? 2, color: str(t('focusRing.color', focused)) ?? 'currentColor' },
     duration: { color: str(t('checkmark.transitionDuration')) ?? '150ms', scale: str(t('checkmark.scaleDuration', pressed)) ?? '150ms' },
     easing: { color: str(t('checkmark.transitionEasing')) ?? 'ease', scale: str(t('checkmark.scaleEasing', pressed)) ?? 'ease' },
@@ -94,5 +94,5 @@ export function checkParts(brand: Brand = 'desk'): CheckParts {
 // 묶음(Checkbox Group) 안 줄 사이 — base 의 group.gap
 export function checkGroupGap() {
   const v = tokenValue(resolveState(loadComponentSpec('checkbox'), {}, 'enabled')['group.gap']);
-  return typeof v === 'string' ? v : '4px';
+  return typeof v === 'string' ? v : '12px';
 }
