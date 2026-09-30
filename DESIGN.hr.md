@@ -461,6 +461,9 @@ colors:
   bg-neutral-weak-pressed-dark: "{colors.gray-400-dark}"
   bg-neutral-inverted: "{colors.gray-1000}"
   bg-neutral-inverted-dark: "{colors.gray-1000-dark}"
+  # v112 — neutralSolid 버튼의 누름(SEED bg.neutral-inverted-pressed = gray-800)
+  bg-neutral-inverted-pressed: "{colors.gray-800}"
+  bg-neutral-inverted-pressed-dark: "{colors.gray-800-dark}"
   bg-disabled: "{colors.gray-200}"
   bg-disabled-dark: "{colors.gray-300-dark}"
   bg-critical-solid: "{colors.red-700}"
@@ -1090,6 +1093,12 @@ components:
     textColor: "{colors.fg-neutral-inverted}"
   role-inverted-dark:
     backgroundColor: "{colors.bg-neutral-inverted-dark}"
+    textColor: "{colors.fg-neutral-inverted-dark}"
+  role-inverted-pressed-light:
+    backgroundColor: "{colors.bg-neutral-inverted-pressed}"
+    textColor: "{colors.fg-neutral-inverted}"
+  role-inverted-pressed-dark:
+    backgroundColor: "{colors.bg-neutral-inverted-pressed-dark}"
     textColor: "{colors.fg-neutral-inverted-dark}"
   role-critical-on-layer-light:
     backgroundColor: "{colors.bg-layer-default}"
@@ -3355,50 +3364,16 @@ DESIGN.md baseline 정의 참고 — 14 keyframes (단발 10 + loop 4): fade-in/
 
 ### Button
 
-HR 브랜드는 B2B(조직 HR 관리) 톤 — 절제·신뢰감 우선. 화면당 primary 1개 권장, hover/pressed 강도는 미니멀.
+규칙 · 수치는 공유 `DESIGN.md` 의 Button 절과 `specs/components/button.md` 다(2026-09-30 SEED Action Button 구조, v112). 브랜드마다 달라지는 건 brandSolid 의 채움 · 누름과 brandOutline · ghost(brand) 의 글자뿐이다 — hover · 누름의 세기나 전환 시간을 브랜드마다 달리하지 않는다(옛 HR · Desk 차등은 2026-09-30 에 걷었다).
 
-#### Variant
-| Variant | 토큰 | fill | text | border |
+| 자리 | 토큰 | 라이트 | 다크 | 대비 |
 |---|---|---|---|---|
-| **primary** | `button-primary` | `primary` (`#357B5F`) | `text-on-accent` (`#FFFFFF`) | none |
-| **outline-on-dark** | `button-outline-on-dark` | transparent | `primary-light` (`#6BAE8C`) | `border-strong-dark` |
-| **ghost** (예약) | 미정 | transparent | `primary` | none — hover 시 `surface-input` 채움 |
+| brandSolid 채움 | `bg-brand-solid` | `#357B5F` | `#357B5F` | 흰 글자 5.06:1 · 다크 5.06:1 |
+| brandSolid 누름 · 호버 · 로딩 | `bg-brand-solid-pressed` | `#256D52` | `#256D51` | 흰 글자 6.20:1 · 다크 6.20:1 |
+| 브랜드 글자(brandOutline · ghost brand) | `fg-brand` | `#357B5F` | `#72B898` | `bg-layer-default` 위 5.06:1 · 다크 6.23:1 |
+| 포커스 링 | `stroke-focus-ring` | 브랜드 역할 | 브랜드 역할 | 2px · 띄움 2px |
 
-contrast 검증:
-- primary fill `#357B5F` × text `#FFFFFF` = **5.16:1** ✅ 본문 AA
-- outline-on-dark text `#6BAE8C` × surface `#242938` = **5.45:1** ✅ 본문 AA
-- (primary fill 자체 vs `bg-page` 외곽 대비 = 3.49:1 ✅ UI AA — 1.4.11)
-
-#### State
-| State | 시각 |
-|---|---|
-| default | variant 기본 + `shadow-sm` (primary만, outline-on-dark는 `shadow-sm-dark` inset highlight) |
-| hover | `motion-duration-fast` 150ms × `motion-ease-out`로 fill 명도 +5% (HR primary `#357B5F` → `#3B8A6A`로 자연 hover, 토큰 미정 — 컴포넌트 인라인 처리) + `shadow-md` |
-| pressed | hover 유지 + scale(0.98) + shadow 제거 (시각적 눌림) |
-| focused | `border-focus` (`#357B5F`) 2px outline, 버튼 외곽 1px offset. `focus-visible` 한정 |
-| disabled | `text-disabled` (`#8A91A0`) text + opacity 0.5 + cursor:not-allowed |
-
-#### Size
-| Size | height | padding (V/H) | text | radius |
-|---|---|---|---|---|
-| sm | 32px | `xs` / `sm` | `caption` (12/400) | `sm` (4px) |
-| **md** (default) | 40px | `sm` / `md` | `body-md` (15/500) | `sm` |
-| lg | 48px | `md` / `lg` | `title-sm` (16/500) | `md` (8px) |
-
-HR은 데이터 밀도 화면이 많으므로 `sm`/`md` 위주, `lg`는 onboarding·empty state 등 강조 시.
-
-#### Touch target / Layout
-- 인접 액션 간 최소 `sm` (8px), 권장 `md` (12px) — HR 데이터 그리드의 inline action(승인/반려 등) 가독성
-- 모바일 화면(approval 앱 등)은 `lg` 권장 — WCAG 2.5.5 AAA (44×44px 충족)
-
-#### Motion
-- hover/pressed: `motion-duration-fast` × `motion-ease-out`
-- `prefers-reduced-motion: reduce` 시 0ms 즉시 전환
-
-#### Accessibility
-- keyboard: `Enter`/`Space` 활성, `Tab` focus, focus ring `border-focus` 2px
-- aria: 아이콘 only는 `aria-label`, loading은 `aria-busy="true"` + `disabled` 동시
-- disabled 텍스트 4.5:1 미달은 1.4.3 incidental 예외 (사용 불가 컴포넌트 텍스트)
+HR 은 데이터 밀도가 높은 화면이 많다 — 표 · 툴바의 인라인 액션(승인 · 반려)은 `small` · `xsmall`, 모바일 결재 화면의 하단 CTA 는 `large` 를 쓴다. brandSolid 는 휴가 신청처럼 서비스의 핵심 액션 하나에만 쓰고, 저장 · 확인 같은 일반 CTA 는 neutralSolid 다.
 
 ### Input
 

@@ -2,7 +2,7 @@
 
 > 여러 슬라이드(이미지/카드/콘텐츠)를 가로(또는 세로) 스크롤로 순환 탐색하는 컴포넌트. 화살표 button + (옵션) dot indicator + (옵션) auto-play. shadcn `Carousel` 베이스 — embla-carousel-react primitive 위에 [`Button`](button.md) 화살표 합성.
 
-Porest Carousel은 **2 orientations(horizontal/vertical) × multi-item 옵션** 매트릭스로 정의됩니다. 화살표는 [`Button`](button.md) `variant="outline"` + 32×32 원형 — 절대 위치(`-left-12`/`-right-12`)로 carousel 외부 배치. 슬라이드 간 gap은 `var(--spacing-lg)`(16). dot indicator는 사용처 합성(spec 가이드 제공, 별도 컴포넌트 신규 없음).
+Porest Carousel은 **2 orientations(horizontal/vertical) × multi-item 옵션** 매트릭스로 정의됩니다. 화살표는 [`Button`](button.md) `variant="neutralOutline"` `size="xsmall"` `layout="iconOnly"` — 32×32 알약(원형) — 절대 위치(`-left-12`/`-right-12`)로 carousel 외부 배치. 슬라이드 간 gap은 `var(--spacing-lg)`(16). dot indicator는 사용처 합성(spec 가이드 제공, 별도 컴포넌트 신규 없음).
 
 ## Anatomy
 
@@ -27,14 +27,14 @@ horizontal multi-item (basis-1/3):
 | ⓐ Carousel root | `<div role="region" aria-roledescription="carousel">` — `relative` + 사용처 className(`max-w-*`/`w-full`). |
 | ⓑ CarouselContent | `<div ref={carouselRef}>` (embla ref) + 자식 `<div className="flex -ml-[var(--spacing-lg)]">` — viewport overflow-hidden + slide flex container. negative margin trick으로 첫 slide의 padding 보정. |
 | ⓒ CarouselItem | `<div role="group" aria-roledescription="slide">` — `min-w-0 shrink-0 grow-0 basis-full pl-[var(--spacing-lg)]`. multi-item은 `basis-1/3` 등 className으로 분할. |
-| ⓓ CarouselPrevious | [`Button`](button.md) `variant="outline" size="icon"` + `absolute h-8 w-8 rounded-full -left-12 top-1/2 -translate-y-1/2` + `ArrowLeft` 16 + `sr-only "이전 슬라이드"`. |
+| ⓓ CarouselPrevious | [`Button`](button.md) `variant="neutralOutline" size="xsmall" layout="iconOnly"`(32×32 알약) + `absolute [&_svg]:size-4 -left-12 top-1/2 -translate-y-1/2` + `ArrowLeft` 16 + `sr-only "이전 슬라이드"`. |
 | ⓔ CarouselNext | 동일하게 `-right-12` 위치 + `ArrowRight`. |
 | ⓕ Dot indicator (옵션) | 사용처 합성 — `<div className="flex justify-center gap-[var(--spacing-xs)] mt-[var(--spacing-md)]">{[...n].map(i => <button className="h-1.5 w-1.5 rounded-full bg-border-default data-[active=true]:bg-text-primary" />)}</div>` 패턴. |
 
 **규칙**
 
 - 화살표는 carousel **외부** 위치(`-left-12`/`-right-12`) — 사용처 부모에 `mx-12+` 또는 `px-12+` padding 확보. 모바일 좁은 화면이면 내부(`left-2`/`right-2`)로 className override.
-- 화살표는 32×32 원형 ([`Button`](button.md) `size="icon"`은 40×40지만 carousel은 보조 navigation이라 작게 — 임의값 유지 또는 사용처 `className="h-10 w-10"` override).
+- 화살표는 32×32 알약 — [`Button`](button.md) `xsmall` · `iconOnly` 그대로(보조 navigation 이라 작게). 더 크게 쓰려면 사용처가 `size="medium"`(40)을 준다.
 - 슬라이드 gap은 `var(--spacing-lg)` (16) — Tailwind 기본 `-ml-4`/`pl-4` 토큰 직접 인용.
 - 첫/마지막 슬라이드에서 Previous/Next `disabled` 자동 (embla `canScrollPrev`/`canScrollNext`).
 - dot indicator는 별도 컴포넌트 없음 — 사용처가 `api.scrollSnapList()` + `selectedScrollSnap()`으로 합성. carousel은 시각 framework만 제공.
@@ -49,7 +49,7 @@ horizontal multi-item (basis-1/3):
 
 ## Sizes
 
-Carousel은 **size variant 없음** — 사용처 className으로 width/height 결정. 화살표 사이즈는 `h-8 w-8`(32) 기본, 사용처 className으로 [`Button`](button.md) icon size(40) 또는 lg(48) override 가능.
+Carousel은 **size variant 없음** — 사용처 className으로 width/height 결정. 화살표 크기는 `xsmall`(32) 기본, 사용처가 `size` 로 [`Button`](button.md) `medium`(40) · `large`(48) 를 줄 수 있다.
 
 [표: 공통 크기](carousel.yaml#base.default)
 
@@ -102,10 +102,10 @@ Carousel은 **size variant 없음** — 사용처 className으로 width/height �
 
 | 기준 | 검증 |
 |---|---|
-| **WCAG 1.4.3** Color contrast (Arrow text × bg) | [`Button`](button.md) `outline` variant 인용 — 14:1+ ✓ |
+| **WCAG 1.4.3** Color contrast (Arrow text × bg) | [`Button`](button.md) `neutralOutline` 인용 — 아이콘 `fg-neutral` 16:1+ ✓ |
 | **WCAG 2.1.1** Keyboard | `ArrowLeft/Right` (root focus) + `Tab`으로 Previous/Next focus + `Enter` ✓ |
 | **WCAG 2.2.2** Pause/Stop/Hide (auto-play 5s+) | auto-play 사용 시 사용자 일시정지 button 필수 — `Autoplay({ stopOnInteraction: true })` 권장. hover/focus 시 자동 pause 보강. |
-| **WCAG 2.4.7** Focus Visible | [`Button`](button.md) `focus-visible:ring-2` 인용 ✓ |
+| **WCAG 2.4.7** Focus Visible | [`Button`](button.md) 포커스 링(`stroke-focus-ring` 2px · 띄움 2px) 인용 ✓ |
 | **WCAG 2.5.5** Target Size (AAA, 44×44) | 화살표 32×32 — 미달(⚠). 모바일 우선 화면이면 사용처 `className="h-10 w-10"` 또는 `h-11 w-11` override. |
 | **WCAG 2.5.8** Target Size Minimum (AA, 24×24) | 32 ✓ |
 | **ARIA** | `role="region" aria-roledescription="carousel"` (root) + `role="group" aria-roledescription="slide"` (item) + `aria-label` (slide N of M) + Previous/Next `sr-only "이전 슬라이드"/"다음 슬라이드"`. |
@@ -130,6 +130,7 @@ Carousel은 **size variant 없음** — 사용처 className으로 width/height �
 
 ## Migration notes
 
+- **2026-09-30** — 화살표를 [`Button`](button.md) `neutralOutline` · `xsmall` · `iconOnly` 로 옮겼다. 32×32 알약이 Button 크기에 생겨 `h-8 w-8 rounded-full` 덮어쓰기를 걷었고, 아이콘 16 은 `[&_svg]:size-4` 로 지킨다(xsmall 은 14).
 - 기존 `carousel.tsx` 정정:
   - spacing `-ml-4`/`-mt-4`/`pl-4`/`pt-4` (Tailwind 기본 16) → `-ml-[var(--spacing-lg)]`/`-mt-[var(--spacing-lg)]`/`pl-[var(--spacing-lg)]`/`pt-[var(--spacing-lg)]` 토큰 직접 인용.
   - 화살표 `h-8 w-8 rounded-full` — Button cva의 `size="icon"`(`h-10 w-10`) override. 임의값이나 carousel arrow는 작게 유지(보조 navigation). 사용처가 필요 시 className으로 [`Button`](button.md) icon size 정합 override 가능.

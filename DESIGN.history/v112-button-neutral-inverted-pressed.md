@@ -405,9 +405,6 @@ colors:
   bg-neutral-weak-pressed-dark: "{colors.gray-400-dark}"
   bg-neutral-inverted: "{colors.gray-1000}"
   bg-neutral-inverted-dark: "{colors.gray-1000-dark}"
-  # v112 — neutralSolid 버튼의 누름(SEED bg.neutral-inverted-pressed = gray-800)
-  bg-neutral-inverted-pressed: "{colors.gray-800}"
-  bg-neutral-inverted-pressed-dark: "{colors.gray-800-dark}"
   bg-disabled: "{colors.gray-200}"
   bg-disabled-dark: "{colors.gray-300-dark}"
   bg-critical-solid: "{colors.red-700}"
@@ -1026,12 +1023,6 @@ components:
     textColor: "{colors.fg-neutral-inverted}"
   role-inverted-dark:
     backgroundColor: "{colors.bg-neutral-inverted-dark}"
-    textColor: "{colors.fg-neutral-inverted-dark}"
-  role-inverted-pressed-light:
-    backgroundColor: "{colors.bg-neutral-inverted-pressed}"
-    textColor: "{colors.fg-neutral-inverted}"
-  role-inverted-pressed-dark:
-    backgroundColor: "{colors.bg-neutral-inverted-pressed-dark}"
     textColor: "{colors.fg-neutral-inverted-dark}"
   role-critical-on-layer-light:
     backgroundColor: "{colors.bg-layer-default}"
@@ -2565,7 +2556,7 @@ CLAUDE.md "4px 베이스 추천" 규칙을 준수하는 t-shirt 사이즈 스케
 - max-width 기준: `@media (max-width: calc(var(--breakpoint-md) - 1px))` — 735 이하 (phone).
 
 #### Touch targets (Apple reference)
-- Pill CTAs: `touch-pill-w` (100) × `touch-min` (44 height) + `radius-full`. Button `large` (48px height — 2026-09-30 전 이름 `lg`)는 본 pill min(44)을 자연스럽게 초과 — pill CTA에 사용 시 padding 그대로 OK.
+- Pill CTAs: `touch-pill-w` (100) × `touch-min` (44 height) + `radius-full`. Button `lg` (48px height)는 본 pill min(44)을 자연스럽게 초과 — pill CTA에 사용 시 padding 그대로 OK.
 - Circular chips: `touch-circular` (44 × 44, icon button, Switch handle, Avatar)
 - Global nav utility links: `touch-nav-w` (80) × `touch-nav-h` (32, precision desktop only, breakpoint-xl 이상)
 - WCAG 2.5.5 AAA (44 × 44 minimum) 충족.
@@ -3489,69 +3480,47 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 
 본 파일에서는 brand-neutral 컴포넌트(divider, page text, caption, chart color 등 — 공유 토큰만 사용)만 정의하고, brand-specific 컴포넌트(Button, Focus ring 등)는 brand 파일에서 자체 prose로 작성합니다.
 
-### Button
+### Button (brand-neutral 가이드)
 
-수치 · 규칙의 원본은 `specs/components/button.md` · `specs/components/button.yaml` 이다 — 2026-09-30 SEED Action Button 구조로 다시 썼다(v112). 이 절은 토큰과 닿는 자리만 모은다.
+#### Variant
+- **primary** (`button-primary`): brand `primary` 채움 + `text-on-accent` (#FFFFFF) 텍스트. CTA·submit 등 핵심 액션 1개/뷰.
+- **outline-on-dark** (`button-outline-on-dark`): 다크 표면 위 transparent 채움 + `primary-light` 텍스트 + `border-strong-dark` 외곽선. 다크 모달·hero overlay.
 
-#### 변형과 색
+(brand별 `primary` 값이 다르므로 채움 색·focus ring 색은 `DESIGN.hr.md` / `DESIGN.desk.md` 참조.)
 
-| 변형 | 쓰는 곳 | 바탕 → 누름 · 호버 | 글자 · 아이콘 |
-|---|---|---|---|
-| brandSolid | 서비스 핵심 액션 하나(Desk 거래 추가 · HR 휴가 신청) | 브랜드 채움 → 브랜드 누름(브랜드 파일) | `static-white` |
-| neutralSolid (기본) | 대부분의 CTA — 저장 · 확인 · 다음 | `bg-neutral-inverted` → `bg-neutral-inverted-pressed` | `fg-neutral-inverted` |
-| neutralWeak | CTA 옆 보조(취소) · CTA 를 뺀 대부분의 액션 | `bg-neutral-weak` → `bg-neutral-weak-pressed` | `fg-neutral` |
-| criticalSolid | 되돌릴 수 없는 작업의 확정(주로 Alert Dialog) | `bg-critical-solid` → `bg-critical-solid-pressed` | `static-white` |
-| brandOutline | Solid 보다 낮은 위계 — neutralOutline 과 짝 | 투명 + `stroke-neutral-weak` 1px → `bg-layer-default-pressed` | 브랜드 글자(브랜드 파일) |
-| neutralOutline | 가장 낮은 위계의 보조 액션 | 투명 + `stroke-neutral-weak` 1px → `bg-layer-default-pressed` | `fg-neutral` |
-| ghost | 메뉴 · 툴바 · 목록의 가벼운 액션 | 투명 → `bg-layer-default-pressed` | `fg-neutral` · `fg-neutral-subtle` · 브랜드 글자 · `fg-critical` |
-
-브랜드마다 달라지는 건 브랜드 채움 · 누름과 브랜드 글자뿐이다 — 값과 대비는 `DESIGN.hr.md` · `DESIGN.desk.md` 의 Button 절. 한 화면의 Solid 버튼은 하나, 확인 창을 여는 삭제는 ghost + `fg-critical` 이다.
-
-대비(라이트 · 다크, 글자 × 바탕):
-
-| 조합 | 라이트 | 다크 |
-|---|---|---|
-| neutralSolid | 16.41:1 | 13.42:1 |
-| neutralSolid 누름 | 7.11:1 | 7.70:1 |
-| neutralWeak | 15.20:1 | 10.32:1 |
-| criticalSolid | 5.06:1 | 5.77:1 |
-| ghost `fg-neutral-subtle` × `bg-layer-default` | 5.50:1 | 6.09:1 |
-| ghost `fg-critical` × `bg-layer-default` | 5.06:1 | 6.08:1 |
-
-모두 본문 4.5:1 을 넘는다. Outline 테두리(`stroke-neutral-weak` × `bg-layer-default` 1.23:1)는 글자가 버튼을 알려 주므로 1.4.11 대상이 아니다 — SEED 도 같다.
-
-#### 상태
-
-| 상태 | 표현 |
+#### State (공통)
+| State | 시각 표현 |
 |---|---|
-| hovered | 누름 색(v106) — 마우스 기기에서만, 축소는 없다 |
-| pressed | 누름 색 + 세로 2px 거리 축소(v104 — Motion 의 눌림 피드백). 축소는 `motion-duration-pressed-scale` · `motion-ease-pressed-scale`, 색은 `motion-duration-color-transition` · `motion-ease-easing` |
-| focused | `stroke-focus-ring` 2px · 띄움 2px(v106) — 키보드 포커스(`focus-visible`)에만 |
-| loading | 누름 색 위 로딩 원(Outline 은 투명 그대로), 라벨 자리 폭 유지 · 누르기를 막고 `aria-busy="true"` |
-| disabled | `bg-disabled` · `fg-disabled`(2.93:1 — 1.4.3 incidental 예외). 불투명도로 흐리게 하지 않는다(v106) |
+| default | variant 기본 |
+| hover | `motion-duration-fast` (150ms) ease-out 전환으로 `shadow-sm` 추가 + 명도 미세 조정(필요 시 brand 파일에서 hover-fill 토큰 정의 — 미정) |
+| pressed | hover 상태 유지 + scale(0.98) + `shadow-sm` 제거 (눌림 인지) |
+| focused | `border-focus`(또는 `border-focus-light`) 2px outline, **버튼 외곽 1px offset** — 2.4.11 (focus appearance) 충족. `focus-visible` pseudo만 적용(마우스 클릭 시 미표시) |
+| disabled | `text-disabled` 텍스트 + opacity 0.5 + cursor:not-allowed. WCAG 1.4.3 incidental 예외 (disabled 컴포넌트 텍스트는 본문 4.5:1 비대상) |
 
-#### 크기
+#### Size
+| Size | height | padding | text token | 라운드 |
+|---|---|---|---|---|
+| sm | 32px | `xs` 4px / `sm` 8px (수직/수평) | `caption` (12px) | `radius-sm` (4px) |
+| md | 40px | `sm` 8px / `md` 12px | `body-md` (15/500) | `radius-sm` |
+| lg | 48px | `md` 12px / `lg` 16px | `title-sm` (16/500) | `radius-md` (8px) |
 
-| 크기 | 높이 | 좌우 여백 | 글자 | 모서리 | 아이콘 |
-|---|---|---|---|---|---|
-| xsmall | 32px | `spacing-x3_5` (14px) | t3 13px | `radius-full` (알약) | 14px |
-| small | 36px | `spacing-x3_5` (14px) | t4 14px | `radius-r2` (8px) | 14px |
-| medium (기본) | 40px | `spacing-x4` (16px) | t4 14px | `radius-r2` (8px) | 16px |
-| large | 48px | `spacing-x5` (20px) | t6 18px | `radius-r3` (12px) | 22px |
+`md`가 default. WCAG 2.5.5 (target size 44×44px AAA): `md`는 40px로 AAA 미달이지만 horizontal hit area + spacing 8px 이상 확보 시 AA 인정 (2.5.8 minimum 24×24px 충족). `lg`(48px)는 AAA 충족 — 모바일 우선 화면 권장.
 
-글자 굵기는 모두 700. 아이콘만 있는 버튼은 정사각(높이 = 폭)이다. 크기는 이름이 아니라 높이로 고른다 — 모달 footer 는 small, 모바일 하단 CTA 는 large.
+#### Layout / Touch target
+- 인접 인터랙션 요소 간 최소 간격 `sm` (8px) — 2.5.8 spacing rule
+- group 시 button bar는 `xs` (4px) 간격 + 외곽선으로 group 식별
 
-#### 누르는 영역 · 배치
-
-- 누르는 영역은 보이는 크기와 따로 44 × 44 까지 넓힌다(v106) — 2.5.5 (AAA 44 × 44) 충족.
-- 2.5.8 (AA 24 × 24) 은 모든 크기가 충족한다.
-- 나란히 두는 버튼 사이는 8px, 셋까지. 화면 하단에 채운 두 버튼(닫기 · CTA)은 3:7 — 모달 footer 는 Dialog · Drawer 의 폭 나누기(지금은 균등)를 따른다.
+#### Motion
+- hover/pressed 전환: `motion-duration-fast` × `motion-ease-out`
+- 모든 transition: `prefers-reduced-motion: reduce` 미디어 쿼리에서 즉시 전환(0ms) — 2.3.3 충족
 
 #### Accessibility 체크리스트
-- [ ] keyboard: `Enter` / `Space` 로 누르고 `Tab` 으로 포커스가 들어온다
-- [ ] 아이콘만 있는 버튼은 `aria-label` 필수
-- [ ] 로딩은 `aria-busy="true"` — 포커스는 그대로 두고 누르기만 막는다
-- [ ] 비활성: `aria-disabled="true"` 는 포커스가 남고, `disabled` 속성은 포커스를 뺀다 — 흐름에 맞춰 고른다
+- [ ] keyboard: `Enter`/`Space`로 활성화, `Tab`으로 focus 진입
+- [ ] 2.4.11: focus indicator 외곽선 2px + 1px offset, 인접 표면 대비 3:1 이상
+- [ ] 2.5.5 / 2.5.8: 최소 hit area 24×24px, 권장 44×44px (`lg` 사용)
+- [ ] 1.4.11: outline variant 외곽선 vs 배경 3:1
+- [ ] aria: 아이콘 only 버튼은 `aria-label` 필수, loading 시 `aria-busy="true"`
+- [ ] disabled: `aria-disabled="true"` 사용 시 focus 가능 / `disabled` HTML 속성 사용 시 focus 불가 — UI 흐름에 맞춰 선택
 
 ### Input
 

@@ -21,6 +21,12 @@ const PROP_LABEL = {
   'label.fontWeight': '굵기',
   'label.lineHeight': '줄 높이',
   'label.textDecoration': '밑줄',
+  'prefixIcon.size': '앞 아이콘',
+  'suffixIcon.size': '뒤 아이콘',
+  'progressCircle.size': '로딩 원',
+  'progressCircle.thickness': '로딩 원 두께',
+  'progressCircle.track': '로딩 원 트랙',
+  'progressCircle.range': '로딩 원 채움',
   'icon.size': '아이콘',
   'focusRing.width': '링 두께',
   'focusRing.offset': '링 간격',
@@ -87,6 +93,12 @@ const PROP_LABEL = {
   transitionProperty: '전환 대상',
   transitionDuration: '전환 시간',
   transitionEasing: '전환 곡선',
+  scaleDuration: '축소 시간',
+  scaleEasing: '축소 곡선',
+  press: '누름',
+  track: '트랙',
+  range: '채움',
+  thickness: '두께',
 };
 const PROP_ORDER = Object.keys(PROP_LABEL);
 
@@ -313,13 +325,20 @@ const px = (tokens, pv) => {
   return m ? Number(m[1]) : null;
 };
 
-// WCAG 2.5.8(AA) 24 · 2.5.5(AAA) 44 — 짧은 변 기준.
-function touch(tokens, row, rootSlot) {
+// WCAG 2.5.8(AA) 24 · 2.5.5(AAA) 44 — 짧은 변 기준. hit 은 공통 규칙의 누르는 영역(touchTarget 이
+// "44 × 44" 처럼 수로 시작할 때) — 보이는 상자보다 넓게 잡는 컴포넌트(Button 의 ::before)는 그 값으로 잰다.
+function touch(tokens, row, rootSlot, hit = 0) {
   const h = px(tokens, row[`${rootSlot}.height`]);
   if (h === null) return '—';
   const w = row[`${rootSlot}.width`] !== undefined ? px(tokens, row[`${rootSlot}.width`]) : h;
-  const side = Math.min(h, w ?? h);
+  const side = Math.max(Math.min(h, w ?? h), hit);
   return `${side >= 24 ? '✓' : '⚠'} · ${side >= 44 ? '✓' : '⚠'}`;
+}
+
+function hitArea(spec, rootSlot) {
+  const base = spec.rules.find((r) => whenKeys(r).length === 0)?.[baseState(spec)]?.[rootSlot]?.touchTarget;
+  const m = base === undefined ? null : String(unpack(base).value).match(/^(\d+(?:\.\d+)?)\s*(?:px)?\s*×/);
+  return m ? Number(m[1]) : 0;
 }
 
 // combo 에 걸리는 규칙(when ⊆ combo).
@@ -394,7 +413,7 @@ function axisTable(spec, tokens, axis, pick) {
     rows.map((row, i) => [
       valueCell(spec, axis, values[i]),
       ...cols.map((c) => inline(tokens, row[c])),
-      ...(withTouch ? [touch(tokens, row, root)] : []),
+      ...(withTouch ? [touch(tokens, row, root, hitArea(spec, root))] : []),
       ...(withDesc ? [descOf(spec.variants[axis], values[i]) ?? ''] : []),
     ]),
   );

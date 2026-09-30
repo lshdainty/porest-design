@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
  * - composition: Carousel > CarouselContent > CarouselItem (× n)
  *                          + CarouselPrevious / CarouselNext
  * - spacing-lg(16) 토큰 직접 인용 — slide 간 gap.
- * - 화살표는 Button outline + icon size override(32×32, 보조 navigation 톤).
+ * - 화살표는 Button neutralOutline · xsmall · iconOnly(32×32 알약, 보조 navigation 톤). 아이콘은 16 — xsmall 의 14 를 덮는다(carousel.yaml).
  * - 사용: <Carousel><CarouselContent>{items.map(...)}</CarouselContent></Carousel>
  */
 
@@ -160,15 +160,16 @@ CarouselItem.displayName = "CarouselItem";
 const CarouselPrevious = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<typeof Button>
->(({ className, variant = "outline", size = "icon", ...props }, ref) => {
+>(({ className, variant = "neutralOutline", size = "xsmall", layout = "iconOnly", ...props }, ref) => {
   const { orientation, scrollPrev, canScrollPrev } = useCarousel();
   return (
     <Button
       ref={ref}
       variant={variant}
       size={size}
+      layout={layout}
       className={cn(
-        "absolute h-8 w-8 rounded-full",
+        "absolute [&_svg]:size-4",
         orientation === "horizontal"
           ? "-left-12 top-1/2 -translate-y-1/2"
           : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
@@ -178,7 +179,7 @@ const CarouselPrevious = React.forwardRef<
       onClick={scrollPrev}
       {...props}
     >
-      <ArrowLeft className="h-4 w-4" />
+      <ArrowLeft />
       <span className="sr-only">이전 슬라이드</span>
     </Button>
   );
@@ -188,15 +189,16 @@ CarouselPrevious.displayName = "CarouselPrevious";
 const CarouselNext = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<typeof Button>
->(({ className, variant = "outline", size = "icon", ...props }, ref) => {
+>(({ className, variant = "neutralOutline", size = "xsmall", layout = "iconOnly", ...props }, ref) => {
   const { orientation, scrollNext, canScrollNext } = useCarousel();
   return (
     <Button
       ref={ref}
       variant={variant}
       size={size}
+      layout={layout}
       className={cn(
-        "absolute h-8 w-8 rounded-full",
+        "absolute [&_svg]:size-4",
         orientation === "horizontal"
           ? "-right-12 top-1/2 -translate-y-1/2"
           : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
@@ -206,7 +208,7 @@ const CarouselNext = React.forwardRef<
       onClick={scrollNext}
       {...props}
     >
-      <ArrowRight className="h-4 w-4" />
+      <ArrowRight />
       <span className="sr-only">다음 슬라이드</span>
     </Button>
   );

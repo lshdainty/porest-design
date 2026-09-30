@@ -27,7 +27,7 @@ Porest Sidebar는 **2 sides × 3 variants × 3 collapsible modes × menu item �
 
 | ⓐ SidebarProvider | layout 최상위 — context(`state`, `isMobile`, `toggle`) 제공. CSS variable `--sidebar-width`(16rem) / `--sidebar-width-icon`(3rem) 정의. cookie로 expanded/collapsed 상태 persistence(`sidebar:state`). `Ctrl/⌘ + B` 단축키 자동 binding. |
 | ⓑ SidebarHeader | `flex flex-col gap-[var(--spacing-sm)] p-[var(--spacing-sm)]` — 로고/앱 이름 + 옵션 액션. 보통 첫 row는 큰 SidebarMenuButton(size `lg`) 로고. |
-| ⓒ SidebarTrigger | [`Button`](button.md) `variant="ghost" size="icon"` (28×28) + `PanelLeft` 14×14 + `onClick` 토글. 메인 콘텐츠 헤더 좌측 배치. |
+| ⓒ SidebarTrigger | [`Button`](button.md) `variant="ghost" ghostColor="neutralSubtle" size="small" layout="iconOnly"` (28×28 로 줄임) + `PanelLeft` 14×14 + `onClick` 토글. 메인 콘텐츠 헤더 좌측 배치. |
 | ⓓ SidebarGroup | `flex flex-col p-[var(--spacing-sm)]` — 메뉴 그룹 wrapper. label + content. |
 | ⓔ SidebarGroupLabel | `px-[var(--spacing-sm)] py-[var(--spacing-xs)] text-caption font-semibold uppercase tracking-wide text-text-tertiary` — 그룹 카테고리 헤딩(preview `.sb-group` 정합). |
 | ⓕ SidebarMenu | `<ul>` — `flex w-full min-w-0 flex-col gap-[var(--spacing-xs)]`. menu item 묶음. |
@@ -172,6 +172,7 @@ Sidebar는 자체 size 없음 — width는 CSS variable.
 
 ## Migration notes
 
+- **2026-09-30** — SidebarTrigger 를 [`Button`](button.md) `ghost` · `neutralSubtle` · `small` · `iconOnly` 로 옮겼다. 옛 `ghost` + `icon` 이 주던 보조 글자색 · 모서리 8 · 아이콘 16 을 그대로 지킨다(28×28 은 className).
 - 기존 `sidebar.tsx`는 shadcn 기본 + Porest 색 토큰 일부 정합. 추가 정정:
   - SidebarMenuButton `rounded-xs` (2px) → **`rounded-sm`** (4px) — menu family([`Dropdown Menu`](dropdown-menu.md)) 정합.
   - SidebarMenuButton `text-title-sm` (16) → **`text-body-md`** (15) — menu item은 본문급 가독성.

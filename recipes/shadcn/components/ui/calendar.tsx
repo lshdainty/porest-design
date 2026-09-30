@@ -72,12 +72,13 @@ function Calendar({
           defaultClassNames.nav,
         ),
         button_previous: cn(
-          buttonVariants({ variant: buttonVariant }),
+          // small · iconOnly — 아이콘 16(calendar.md), 크기는 아래 size-(--cell-size)
+          buttonVariants({ variant: buttonVariant, size: "small", layout: "iconOnly" }),
           "size-(--cell-size) aria-disabled:opacity-50 p-0 select-none",
           defaultClassNames.button_previous,
         ),
         button_next: cn(
-          buttonVariants({ variant: buttonVariant }),
+          buttonVariants({ variant: buttonVariant, size: "small", layout: "iconOnly" }),
           "size-(--cell-size) aria-disabled:opacity-50 p-0 select-none",
           defaultClassNames.button_next,
         ),
@@ -215,7 +216,7 @@ function CalendarDayButton({
     <Button
       ref={ref}
       variant="ghost"
-      size="icon"
+      layout="iconOnly"
       data-day={day.date.toLocaleDateString()}
       data-selected-single={
         modifiers.selected &&
@@ -228,7 +229,7 @@ function CalendarDayButton({
       data-range-middle={modifiers.range_middle}
       className={cn(
         // base shape: rounded-full (preview .cal-cell SoT) — 일반 day cell 의 hover/default 모양
-        "flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 leading-none font-normal rounded-full text-body-md text-text-primary",
+        "flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 p-0 leading-none font-normal rounded-full text-body-md text-text-primary",
         "transition-colors duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]",
         "group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-ring/50",
         "group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:ring-[3px]",

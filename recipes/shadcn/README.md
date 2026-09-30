@@ -37,7 +37,9 @@ shadcn 컴포넌트 (.tsx)      ← cva + Tailwind utility
    @import "tailwindcss";
    ```
 4. **컴포넌트 복사** — `components/ui/button.tsx`를 프로젝트로 복사. 같은 디렉터리에
-   shadcn 표준대로 `lib/utils.ts` (cn helper)도 함께 복사.
+   shadcn 표준대로 `lib/utils.ts` (cn helper)도 함께 복사. **`cn` 은 이 레시피 것을 써야 한다** —
+   porest 스케일(`text-t4` · `px-x4` · `rounded-r2`)을 tailwind-merge 에 등록해 둔 것으로, 기본
+   tailwind-merge 는 `text-t4` 를 글자색으로 읽어 버튼의 글자색 클래스를 지운다.
 5. **의존성 설치**:
    ```bash
    npm install clsx tailwind-merge class-variance-authority @radix-ui/react-slot
@@ -54,57 +56,60 @@ recipes/shadcn/
 ├── lib/utils.ts                     ← cn() helper (clsx + tailwind-merge)
 ├── styles/porest-shadcn-bridge.css  ← Porest 토큰 → shadcn variables alias
 ├── components/ui/button.tsx         ← shadcn Button + Porest 토큰
-└── preview/button-demo.html         ← React 없이 Tailwind CDN으로 즉시 시연
+└── examples/*-examples.mjs          ← 컴포넌트별 예제(정적 HTML) — 옛 문서 사이트가 그린다
 ```
 
 ## 미리보기
 
-`preview/button-demo.html`을 정적 서버로 띄우면 React 없이 즉시 확인 가능
-(Tailwind v4 browser CDN 사용). 실제 React 프로젝트의 결과와 시각적으로 동일.
+`npm run build:site` 가 옛 문서 사이트(`exports/site/components/<이름>.html`)와 미리보기
+(`exports/preview*.html`)를 만든다. 수치 · 규칙은 `site/` 문서 사이트의 컴포넌트 페이지가 원본이다.
+(예전의 `preview/button-demo.html` 은 2026-09-30 에 걷었다 — 옛 버튼을 따로 한 벌 들고 있었다.)
 
-```bash
-# 프로젝트 루트에서
-python3 -m http.server 8765
-# → http://localhost:8765/recipes/shadcn/preview/button-demo.html
-```
+## Button — 변형 · 크기 · 배치
 
-## Button variants × sizes
+구조는 SEED Action Button(2026-09-30). 수치 · 규칙의 원본은 `specs/components/button.md` · `button.yaml`.
 
-| variant | 용도 | 색상 |
-|---|---|---|
-| `default` | 주요 액션 | `--color-primary` 채움 |
-| `destructive` | 위험 액션 (삭제) | `--color-error` 채움 |
-| `outline` | 보조 액션 | surface + border |
-| `secondary` | 그룹 내 보조 | surface-input 채움 |
-| `ghost` | nav/tab/icon 자리 | 비채움, hover 배경 |
-| `link` | 인라인 링크 | primary text + 밑줄 |
+| variant | 쓰는 곳 |
+|---|---|
+| `brandSolid` | 서비스 핵심 액션 하나(Desk 거래 추가 · HR 휴가 신청) |
+| `neutralSolid` *(기본)* | 대부분의 CTA — 저장 · 확인 · 다음 |
+| `neutralWeak` | CTA 옆 보조(취소) · CTA 를 뺀 대부분의 액션 |
+| `criticalSolid` | 되돌릴 수 없는 작업의 확정 |
+| `brandOutline` · `neutralOutline` | 낮은 위계의 보조 액션(둘이 짝) |
+| `ghost` | 메뉴 · 툴바 · 목록의 가벼운 액션 — `ghostColor` 로 `neutralSubtle` · `brand` · `critical` |
 
-| size | 높이 | typography | 용도 |
+| size | 높이 | 모서리 | 글자 |
 |---|---|---|---|
-| `sm` | 32px | `text-label-sm` 13/400 | dense list, inline action |
-| `md` (default) | 40px | `text-title-sm` 16/500 | 일반 form, dialog |
-| `lg` | 48px | `text-title-md` 18/600 | hero CTA, primary form |
-| `icon` | 40×40 | — | icon-only |
+| `xsmall` | 32 | 알약 | t3 13px |
+| `small` | 36 | 8 | t4 14px |
+| `medium` *(기본)* | 40 | 8 | t4 14px |
+| `large` | 48 | 12 | t6 18px |
+
+`layout` 은 `withText`(기본) · `iconOnly`(정사각, `aria-label` 필수). `loading` 은 누름 색 위 로딩 원 +
+누르기 막기 + `aria-busy`. `flush="left" | "right"` 는 ghost 텍스트 버튼의 가장자리 맞춤.
 
 ## 사용 예
 
 ```tsx
 import { Button } from "@/components/ui/button"
-import { Save, Trash2 } from "lucide-react"
+import { Plus } from "lucide-react"
 
-export function SavePanel() {
+export function EditFooter({ saving }: { saving: boolean }) {
   return (
     <div className="flex gap-2">
-      <Button variant="default" size="md">
-        <Save />
-        저장
-      </Button>
-      <Button variant="outline" size="md">취소</Button>
-      <Button variant="destructive" size="md">
-        <Trash2 />
-        삭제
-      </Button>
+      <Button variant="ghost" ghostColor="critical" size="small" className="mr-auto">삭제</Button>
+      <Button variant="neutralWeak" size="small">취소</Button>
+      <Button size="small" loading={saving}>저장</Button>
     </div>
+  )
+}
+
+export function AddTransaction() {
+  return (
+    <Button variant="brandSolid" size="large" className="w-full">
+      <Plus />
+      거래 추가
+    </Button>
   )
 }
 ```

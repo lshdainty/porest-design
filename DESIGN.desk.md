@@ -461,6 +461,9 @@ colors:
   bg-neutral-weak-pressed-dark: "{colors.gray-400-dark}"
   bg-neutral-inverted: "{colors.gray-1000}"
   bg-neutral-inverted-dark: "{colors.gray-1000-dark}"
+  # v112 — neutralSolid 버튼의 누름(SEED bg.neutral-inverted-pressed = gray-800)
+  bg-neutral-inverted-pressed: "{colors.gray-800}"
+  bg-neutral-inverted-pressed-dark: "{colors.gray-800-dark}"
   bg-disabled: "{colors.gray-200}"
   bg-disabled-dark: "{colors.gray-300-dark}"
   bg-critical-solid: "{colors.red-700}"
@@ -1090,6 +1093,12 @@ components:
     textColor: "{colors.fg-neutral-inverted}"
   role-inverted-dark:
     backgroundColor: "{colors.bg-neutral-inverted-dark}"
+    textColor: "{colors.fg-neutral-inverted-dark}"
+  role-inverted-pressed-light:
+    backgroundColor: "{colors.bg-neutral-inverted-pressed}"
+    textColor: "{colors.fg-neutral-inverted}"
+  role-inverted-pressed-dark:
+    backgroundColor: "{colors.bg-neutral-inverted-pressed-dark}"
     textColor: "{colors.fg-neutral-inverted-dark}"
   role-critical-on-layer-light:
     backgroundColor: "{colors.bg-layer-default}"
@@ -3378,51 +3387,16 @@ DESIGN.md baseline 정의 참고 — 14 keyframes (단발 10 + loop 4). 모바�
 
 ### Button
 
-Desk 브랜드는 B2C(개인 메모/할일/가계부) 톤 — 친근감·입체감. primary는 hover 시 명도 변화 폭이 HR보다 크고, `shadow-md`/`lg` 적극 사용.
+규칙 · 수치는 공유 `DESIGN.md` 의 Button 절과 `specs/components/button.md` 다(2026-09-30 SEED Action Button 구조, v112). 브랜드마다 달라지는 건 brandSolid 의 채움 · 누름과 brandOutline · ghost(brand) 의 글자뿐이다 — hover · 누름의 세기나 전환 시간을 브랜드마다 달리하지 않는다(옛 HR · Desk 차등은 2026-09-30 에 걷었다).
 
-#### Variant
-| Variant | 토큰 | fill | text | border |
+| 자리 | 토큰 | 라이트 | 다크 | 대비 |
 |---|---|---|---|---|
-| **primary** | `button-primary` | `primary` (`#0147AD`) | `text-on-accent` (`#FFFFFF`) | none |
-| **outline-on-dark** | `button-outline-on-dark` | transparent | `primary-light` (`#5FA0E5`) | `border-strong-dark` |
-| **ghost** (예약) | 미정 | transparent | `primary` | none — hover 시 `surface-input` 채움 |
+| brandSolid 채움 | `bg-brand-solid` | `#0147AD` | `#1049A4` | 흰 글자 8.38:1 · 다크 8.36:1 |
+| brandSolid 누름 · 호버 · 로딩 | `bg-brand-solid-pressed` | `#013D96` | `#1A5AC2` | 흰 글자 9.96:1 · 다크 6.39:1 |
+| 브랜드 글자(brandOutline · ghost brand) | `fg-brand` | `#0147AD` | `#7AA9F6` | `bg-layer-default` 위 8.38:1 · 다크 6.10:1 |
+| 포커스 링 | `stroke-focus-ring` | 브랜드 역할 | 브랜드 역할 | 2px · 띄움 2px |
 
-contrast 검증:
-- primary fill `#0147AD` × text `#FFFFFF` = **8.95:1** ✅ AAA (HR보다 진한 brand → 더 높은 대비)
-- outline-on-dark text `#5FA0E5` × surface `#242938` = **5.41:1** ✅ 본문 AA
-- (primary fill 자체 vs `bg-page` 외곽 대비 = 6.12:1 ✅ UI AA — 1.4.11)
-
-#### State
-| State | 시각 |
-|---|---|
-| default | variant 기본 + `shadow-sm` (primary만), outline-on-dark는 `shadow-sm-dark` |
-| hover | `motion-duration-base` 200ms × `motion-ease-out`로 fill 명도 +8% + `shadow-md` (Desk는 HR보다 hover 변화 폭 큼 — 친근감 톤) |
-| pressed | hover 유지 + scale(0.98) + shadow 제거 |
-| focused | `border-focus` (`#0147AD`) 2px outline, 1px offset. `focus-visible` 한정 |
-| disabled | `text-disabled` text + opacity 0.5 + cursor:not-allowed |
-
-#### Size
-| Size | height | padding (V/H) | text | radius |
-|---|---|---|---|---|
-| sm | 32px | `xs` / `sm` | `caption` (12/400) | `sm` (4px) |
-| **md** (default) | 40px | `sm` / `md` | `body-md` (15/500) | `sm` (4px) |
-| lg | 48px | `md` / `lg` | `title-sm` (16/500) | `md` |
-
-Desk는 모바일 우선 사용 사례(개인 메모/가계부)가 많으므로 `md`/`lg` 위주, `sm`은 inline action 한정. `md` 라운드는 `sm`(4px)보다 부드러운 8px — Desk 친근감 톤.
-
-#### Touch target / Layout
-- 모든 사이즈 권장 hit area 44×44px (모바일 우선) — WCAG 2.5.5 AAA
-- 인접 액션 간 최소 `md` (12px), 권장 `lg` (16px) — 손가락 입력 여유
-
-#### Motion
-- hover: `motion-duration-base` × `motion-ease-out` (HR `fast`보다 한 단계 길어 친근감 표현)
-- pressed: `motion-duration-fast` × `motion-ease-out` (즉각 반응)
-- `prefers-reduced-motion: reduce` 시 0ms 즉시 전환
-
-#### Accessibility
-- keyboard: `Enter`/`Space` 활성, `Tab` focus, focus ring `border-focus` 2px
-- aria: 아이콘 only는 `aria-label`, loading은 `aria-busy="true"` + `disabled` 동시
-- disabled 텍스트 4.5:1 미달은 1.4.3 incidental 예외
+Desk 는 모바일에서 쓰는 일이 많다 — 화면 하단 CTA 는 `large` 전체 폭, 닫기와 둘이면 3:7(보조 : CTA). brandSolid 는 거래 추가처럼 서비스의 핵심 액션 하나에만 쓰고, 저장 · 확인 같은 일반 CTA 는 neutralSolid 다.
 
 ### Input
 

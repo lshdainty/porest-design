@@ -1,271 +1,286 @@
 # Button
 
-> 사용자가 액션을 trigger하도록 prompt하는 인터랙티브 컨트롤. 폼 제출, 다이얼로그 닫기, 페이지 이동 등 명시적 사용자 의도를 표현합니다.
+> 명확한 액션을 쉽게 실행하게 돕는 기본 인터랙션 컴포넌트. 폼 제출 · 대화상자 닫기 · 다음 단계처럼 사용자가 무엇을 하는지 분명한 동작에 쓴다.
 
-Porest Button은 **8 variants × 6 sizes × 5 states** 매트릭스로 정의되며, Toss 톤(절제·신뢰감)을 따라 4px radius와 4px 그리드 위 치수를 사용합니다. 한국어 본문 가독성을 우선해 모든 사이즈가 16px 이상의 터치 타겟을 확보합니다.
+구조는 당근 [SEED Action Button](https://seed-design.io/components/action-button)(Apache-2.0)을 따른다 — 크기 4 · 배치 2 · 변형 7 · 상태 6. 값은 porest 토큰이고, SEED 와 다른 자리는 맨 아래 "SEED 와 다른 점" 에 적었다(2026-09-30 사용자 결정).
 
 수치 원본은 [`button.yaml`](button.yaml) 이다. 아래 수치 표는 사이트가 그 파일로 그리고, GitHub 에서는 표 자리가 그 파일로 가는 링크로 보인다.
 
 ## Anatomy
 
 ```
-┌──────────────────────────────────────┐
-│  ⓐ container                         │
-│  ┌──────────────────────────────┐    │
-│  │ ⓑ leading │ ⓒ label │ ⓓ trail │  │
-│  │   icon    │  text   │   icon  │  │
-│  └──────────────────────────────┘    │
-│  ⓔ focus ring (focus-visible only)   │
-└──────────────────────────────────────┘
+┌──────────────────────────────────────────┐
+│  ⓐ Container                              │
+│   ⓑ Prefix Icon   ⓒ Label   ⓓ Suffix Icon │
+└──────────────────────────────────────────┘
+   ⓔ Focus ring(웹 — 키보드 포커스에만)
 ```
 
-| ⓐ container | 모양 + 배경 + 테두리. 모서리는 크기마다 다르다(Sizes 표). |
-| ⓑ leading icon | 좌측 아이콘. 크기는 Sizes 표. 선택적. |
-| ⓒ label | 액션을 명사형 또는 동사형으로 표현. `whitespace: nowrap`. |
-| ⓓ trailing icon | 우측 아이콘. 주로 chevron / external-link. 선택적. |
-| ⓔ focus ring | `border-focus` 색 + 2px ring + 2px offset. keyboard focus 시만. |
+| ⓐ Container | 배경 · 테두리 · 모양. 글자와 아이콘은 이 색(currentColor)을 따른다. |
+| ⓑ Prefix Icon | 라벨 앞 아이콘 — 동작의 뜻을 돕는다. 선택. |
+| ⓒ Label | 무엇을 하는지 동사로. 한 줄(`white-space: nowrap`). |
+| ⓓ Suffix Icon | 라벨 뒤 아이콘 — chevron 처럼 동작을 돕는다. 선택. |
+| ⓔ Focus ring | 키보드 포커스에만 2px 링 · 2px 띄움(v106). |
 
-**규칙**
+[표: 부위](button.yaml#slots)
 
-- icon만 있을 땐 `size="icon"` (40×40 정사각, `radius-md` 둥근 박스). label 없으면 반드시 `aria-label` 또는 `Tooltip`. `ghost`와 함께 쓰면(리스트/툴바 아이콘 액션) 글씨색이 보조톤 `--color-text-secondary`로 약화.
-- 모바일 크롬 헤더(m-header)의 컨텍스트 아이콘(알림/검색)은 `size="iconLg"` (36×36 원형 `radius-full`, glyph 20px). `ghost`와 조합해도 보조톤 약화 없이 중립 `--color-text-primary` 유지 — 페이지당 1개뿐인 주 액션이라 약화 불필요.
-- label은 1~3 단어 권장. "확인" / "저장" / "삭제하기" 같이 결과를 짐작할 수 있게.
-- "확인" 같은 모호한 동사 단독 지양. 가능하면 "주문 확인" / "변경 저장" 등 목적어 포함.
+## Properties
 
-## Variants
+### Size
 
-7개 variant가 시각 위계(visual hierarchy)와 의미(semantic)를 동시에 전달합니다. **한 화면에 같은 variant 여러 개를 두지 말 것** — 결정 피로를 유발합니다(특히 default).
+네 가지다. **크기는 이름이 아니라 높이로 고른다.**
 
-| Variant | 의미 | 시각 강도 | 사용처 |
-|---|---|---|---|
-| `default` | 가장 강한 주 액션 (primary) | ●●●●● | 페이지/모달당 1개 권장. 폼 제출, 핵심 CTA. |
-| `destructive` | 되돌릴 수 없는 위험 액션 | ●●●●● | 삭제 확정. 반드시 confirm dialog 안에서. |
-| `outline` | 보조 액션 (secondary) | ●●●○○ | 툴바·인라인의 두 번째 우선순위 액션. **모달 footer 의 취소는 `secondary`** (아래 참조). |
-| `secondary` | 동등 보조 액션 | ●●○○○ | toolbar 안 그룹 액션, **모달 footer 의 취소**. 테두리 없는 회색 채움. |
-| `dangerSoft` | 파괴적 보조 액션 | ●●○○○ | 모달 footer 의 **삭제**. 테두리 없는 옅은 빨강 채움 + 빨강 글씨. 확정이 아니라 confirm 을 여는 버튼. |
-| `ghost` | 약한 액션 / nav 자리 (중립색, 기본) | ●○○○○ | 메뉴 항목, icon 버튼, 리스트 행 액션, breadcrumb-like. **모달 footer 의 취소/나중에**. 대부분의 quiet 액션. |
-| `accent` | 강조 quiet 액션 (brand색, 임팩트) | ●●○○○ | ghost와 동일하되 brand 글씨로 강조. 한 영역에 소수만. |
-| `link` | 인라인 텍스트 링크 | ●○○○○ | 본문 흐름 안의 약한 링크. |
+- `small`(36) · `medium`(40) — 화면 안에서 두루 쓴다. 모달 footer 는 `small`.
+- `large`(48) — CTA. 모바일 하단 고정 버튼 · 모바일 모달 footer.
+- `xsmall`(32) — 좁은 자리에서 쓰는 알약 모양.
 
-### Color tokens
-
-[표: 변형별 색](button.yaml#variant)
-
-> **아이콘 액션 (`ghost` + `size="icon"`)**: 글씨색이 `--color-text-secondary`(보조톤)로 약화되고, hover 시 `--color-surface-input` 위 `radius-md` 둥근 정사각 박스로 또렷한 affordance. 리스트 행/툴바의 보조 아이콘 액션(편집·삭제·일시정지 등)에 사용. label 있는 `ghost`는 `--color-text-primary`(중립) 유지, `default`/`destructive` 등 채움 variant의 icon은 각 variant 색 유지. `size="iconLg"`(모바일 크롬 헤더)는 `ghost`여도 보조톤 약화 없이 중립 유지.
-
-[표: 조합](button.yaml#compound)
-
-브랜드 분기: HR `--color-primary` = `#357B5F`, Desk `--color-primary` = `#0147AD`. `default`/`accent`/`link` variant이 brand 색(`--color-primary`) 영향, `ghost` 포함 나머지는 brand-neutral.
-
-## Sizes
-
-`box-sizing: border-box` 기준 외부 height = 아래 표의 높이 그대로. padding은 그 안에 inset됨. `line-height: 1` 고정.
+누르는 영역은 보이는 크기와 따로 가로 · 세로 44 까지 넓힌다(v106 — 44 는 반드시).
 
 [표: 크기](button.yaml#size)
+
+글자와 함께 쓸 때(`withText`):
+
+[표: 크기별 여백 · 글자 · 아이콘 — 글자](button.yaml#grid.size.layout.withText)
+
+아이콘만 쓸 때(`iconOnly`):
+
+[표: 크기별 여백 · 아이콘 — 아이콘만](button.yaml#grid.size.layout.iconOnly)
 
 모든 조합에 공통인 값:
 
 [표: 공통](button.yaml#base)
 
-Tailwind utility 매핑 (button.tsx cva):
-- `default`: `h-9 px-4 py-[9px] text-sm [&_svg]:size-4` — 좌우 padding 이 **양쪽 다 16**
-- `sm`: `h-8 px-2 py-1 text-caption [&_svg]:size-3.5`
-- `md`: `h-10 px-3 py-2 text-body-md [&_svg]:size-4`
-- `lg`: `h-12 px-4 py-3 text-title-sm rounded-md [&_svg]:size-[18px]`
-- `icon`: `h-10 w-10 rounded-md [&_svg]:size-4`
-- `iconLg`: `h-9 w-9 p-0 rounded-full [&_svg]:size-5`
-- compound `ghost`+`icon`: `text-text-secondary` (아이콘 액션 보조톤 — variant text를 덮어씀. `iconLg`엔 미적용 — 중립 유지)
+### Layout
 
-공통(BASE):
-- `font-sans` (`var(--font-sans)` Pretendard) — `<button>` UA stylesheet가 body font를 inherit 안 해서 명시 필수. preview `.btn`은 `font-family: inherit`로 같은 효과.
-- `gap-[var(--spacing-sm)]` (icon-label 간격 8px — 토큰 직접 인용)
-- `transition-[box-shadow] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]` (preview `.btn` SoT — hover/active 시 box-shadow만 부드럽게, brightness/scale은 즉시)
-- `font-medium` (500 — DESIGN.md typography 가이드 "weight 강조는 별도 토큰 대신 인라인 modifier")
+라벨과 아이콘의 조합이다 — 글자만 · 앞 아이콘 + 글자 · 글자 + 뒤 아이콘 · 아이콘만.
 
-**규칙**
+- **앞 · 뒤 아이콘을 함께 쓰지 않는다.** 앞은 동작의 뜻을 돕고(추가의 `+`), 뒤는 동작을 돕는다(다음의 chevron).
+- 아이콘은 꼭 필요할 때만 쓴다 — 라벨을 읽기 어려워진다.
+- **아이콘만**은 아이콘만으로 뜻을 전해 접근성이 떨어진다. 꼭 필요할 때만 쓰고, 이름(`aria-label` 또는 옆 Tooltip)을 반드시 단다. 정사각이고, 아이콘 버튼의 보이는 크기 기본은 `medium`(40 — v106).
 
-- `sm`은 dense list/toolbar 한정. 터치 우선 화면(모바일)에서는 `lg` 권장 (AAA 충족).
-- `lg`는 hero CTA 또는 폼 제출 버튼 + 모바일 sticky CTA. 한 페이지에 1~2개 이내.
-- `icon`은 정사각 + `radius-md`(8) — hover 시 아이콘을 감싸는 둥근 박스가 또렷한 affordance. 옆에 텍스트 버튼이 있을 때 시각 통일을 위해 `md`(h-10)와 같은 높이. `ghost`와 조합 시 글씨색 `--color-text-secondary`(보조톤).
-- `iconLg`는 모바일 크롬 헤더(m-header) 전용 — 36×36 원형(`radius-full`) + glyph 20px (클로드 디자인 `.m-header .ico-btn` 미러). "Lg"는 glyph(20px > icon의 16px) 기준. 페이지당 1개의 컨텍스트 아이콘(홈=알림 벨, 그 외=검색)에 사용하고, `ghost`와 조합해도 중립 `--color-text-primary` 유지.
-- gap (icon ↔ label) = 8px 고정 (`gap-sm`, 모든 사이즈).
+### Variant
 
-## States
+일곱 가지다. 화면에서 강조하려는 정도에 따라 고른다.
 
-5개 visual state. Tailwind v4 utility는 `:hover`, `:focus-visible`, `:active`, `[disabled]` 가상 선택자로 자동 적용됩니다.
+| 변형 | 생김새 | 쓰는 곳 |
+|---|---|---|
+| `brandSolid` | 브랜드 색 채움 | 서비스의 핵심 액션 하나 — Desk "거래 추가", HR "휴가 신청". 한 화면에 하나 |
+| `neutralSolid` | 짙은 회색 채움 | 대부분의 CTA — 저장 · 확인 · 다음. 한 화면에 하나 |
+| `criticalSolid` | 빨강 채움 | 삭제 · 초기화처럼 되돌릴 수 없는 작업의 **확정**. 주로 [Alert Dialog](alert-dialog.md) |
+| `neutralWeak` | 옅은 회색 채움 | CTA 를 뺀 대부분의 액션. CTA 옆에서는 보조(취소 · 닫기) |
+| `brandOutline` | 테두리 + 브랜드 글자 | Solid 보다 낮은 위계. Solid 와 함께 쓰지 않고 `neutralOutline` 과 짝 |
+| `neutralOutline` | 테두리 + 본문 글자 | 가장 낮은 위계의 보조 액션. Solid 와 함께 쓰지 않고 `brandOutline` 과 짝 |
+| `ghost` | 배경 없음 | 메뉴 · 툴바 · 목록 행의 가벼운 액션. 글자색을 바꿀 수 있다(아래) |
 
-### State matrix (default variant 기준)
+[표: 변형별 색](button.yaml#grid.variant)
 
-[표: 상태 매트릭스 — default](button.yaml#matrix.variant.default)
+`ghost` 는 글자색을 바꿀 수 있다(SEED ghost 의 `color`) — 배경 · 누름은 그대로다.
 
-### variant 별 state 차이
+| `ghostColor` | 쓰는 곳 |
+|---|---|
+| `neutral`(기본) | 대부분의 ghost |
+| `neutralSubtle` | 목록 행 · 툴바의 보조 아이콘 액션, 가장자리 텍스트 버튼(flush) |
+| `brand` | 강조하는 가벼운 액션 — 본문 속 "자세히 보기" |
+| `critical` | 확인 창을 여는 **삭제** — 모달 footer 왼쪽. 확정은 확인 창의 `criticalSolid` |
+
+[표: ghost 글자색](button.yaml#compound)
+
+### State
+
+| 상태 | 모습 |
+|---|---|
+| `enabled` | 기본 |
+| `hovered` | 웹. 누름 색과 같다(v106), 축소는 없다 |
+| `focused` | 웹. 키보드 포커스에만 링 2px · 띄움 2px(v106) |
+| `pressed` | 누름 색 + 세로 2px 거리 축소(v104 — 기초 Feedback 의 눌림 피드백) |
+| `loading` | 누름 색 위 로딩 원. 라벨 자리는 그대로(폭 유지) |
+| `disabled` | 전용 색(`bg-disabled` · `fg-disabled`, v106). 불투명도로 흐리게 하지 않는다 |
 
 [표: 변형별 상태 변화](button.yaml#states.variant)
 
-### Loading state
+**로딩**
 
-긴 비동기 작업이 일어나는 버튼은 `loading` prop 으로 처리. Button 컴포넌트가 자체 prop 으로 명세 (recipe button.tsx 에 구현). 동작:
+- `loading` 이면 로딩 원(크기는 Size 표)을 라벨 자리 가운데 둔다. 라벨은 글자 · 아이콘 색만 투명하게 해서 버튼 폭이 그대로다 — 버튼이 자식을 따로 감싸지 않으므로 부르는 쪽의 `[&>span]` · `[&>svg]` 규칙이 그대로 먹는다.
+- 로딩 중에는 **누르기를 자동으로 막는다**(두 번 제출 방지) — 포인터 · Enter · Space 누르기를 삼키고(`onClick` 을 부르지 않는다), 누름 축소도 없다. 포커스는 그대로 두고 `aria-busy="true"` 를 단다. SEED 는 로딩이 비활성을 포함하지 않지만 porest 는 막는다 — 사용자 결정.
+- 로딩 원 색은 변형마다 다르다(Solid 는 흰 원, 나머지는 회색 트랙 위 본문색).
 
-- `loading={true}` → 좌측에 [`Spinner`](spinner.md) `size="sm"` 노출
-- `disabled` 자동 적용 (loading 중 중복 클릭 방지)
-- `aria-busy="true"` 자동 적용
-- Spinner border 가 `currentColor` 상속하도록 inline style (`borderColor: color-mix(in srgb, currentColor 30%, transparent), borderTopColor: currentColor`) — default/destructive(filled bg)에선 white spinner, outline/ghost/secondary(transparent/회색 bg)에선 primary spinner 자동 적응
-- label 텍스트는 그대로 두거나 "저장 중…" 같이 진행형으로 교체 (호출처 결정)
-- `asChild` 와 함께 사용 금지 — Slot 은 단일 child 만 받는데 loading 시 Spinner + children 2개 노출되어 오류
+### Width
 
-## Layout
+- **내용 맞춤**(기본) — 라벨 길이만큼.
+- **채움** — 컨테이너 폭을 채운다(`w-full`). 모바일 하단 고정 CTA · 폼의 마지막 제출.
+- 최소 너비는 두지 않는다. 둘을 나란히 채울 때는 비율로 나눈다(아래 배치).
 
-**Single button**
+## Guidelines
 
-- `min-width`: 명시적 제한 없음 (label width 따라감). 다만 dialog footer 등에서 `min-w-20` (80px) 권장.
-- `width: 100%` (full-width): 모바일 sticky CTA, 폼 마지막 제출 버튼에 사용. `className="w-full"`.
+### Hierarchy
 
-**Button group (인접한 두 개 이상)**
+시각적 주목도는 배경 대비로 정해진다.
 
-- 가로 `gap-2` (8px) 권장. dialog footer는 `gap-2` 고정.
-- 정렬:
-  - 폼 제출/취소 → 우측 정렬 (`justify-end`). 취소가 좌, 제출이 우.
-  - 삭제/취소 → 우측 정렬. 삭제가 우(반대 의견 있음 — Material은 좌측 destructive). Porest는 **destructive를 우측에 두고 destructive 색으로 명확히 구분**.
-- 4개 이상의 버튼을 한 줄에 두지 말 것. 결정 피로 → DropdownMenu로 분리.
+| 강조 | 변형 | 화면 안 개수 | 쓰는 곳 |
+|---|---|---|---|
+| **강** — 대비가 강한 배경 | `brandSolid` · `neutralSolid` · `criticalSolid` | 1개 | 가장 중요한 CTA |
+| **중** — 대비가 약한 배경 | `neutralWeak` | 여러 개 | 대부분의 액션, 강 버튼과 짝 |
+| **약** — 투명한 배경 | `brandOutline` · `neutralOutline` · `ghost` | 여러 개 | 중요도가 낮은 보조 액션 |
 
-**Split bar (반반 액션)**
+### 브랜드 색은 꼭 필요한 곳에만
 
-액션 **둘**이 무게가 같고 한 묶음으로 읽힐 때 — 본문 폭을 꽉 채운 네모 바를 반으로 갈라
-각 칸에 하나씩 둔다. 예: 내역 분할의 `항목 추가` · `균등 분할`.
+브랜드 색은 로고 · 대표 버튼 · 핵심 메시지 같은 브랜드 상징에 모아 쓴다. 많이 쓰면 뜻과 강조가 흩어진다.
 
-- 컨테이너: `display:flex; width:100%; background:var(--color-bg-canvas);
-  border:1px solid var(--color-border-default); border-radius:var(--radius-md);
-  overflow:hidden`. 트랙 톤은 [`toggle-group`](toggle-group.md) 의 segmented 와 같다.
+- `brandSolid` 는 **서비스의 중심 동작 하나**에만 — Desk "거래 추가", HR "휴가 신청"처럼. 어떤 화면이 여기에 드는지는 앱 적용 때 화면마다 정한다.
+- 저장 · 확인 · 다음 같은 대부분의 CTA 는 `neutralSolid` 다.
+
+### 버튼 조합
+
+- **Solid 조합** — `neutralWeak` + `neutralSolid`(또는 `brandSolid`). 위계가 분명하고 부담이 적다.
+- **Outline 조합** — `neutralOutline` + `brandOutline`. 강조가 낮은 보조 액션을 한 화면에 여러 번 둘 때.
+- Outline 은 Solid 와 함께 쓰지 않는다.
+
+### 버튼 배치
+
+- 닫기 · 초기화처럼 Dismiss 뜻의 `neutralWeak` 와 CTA 를 나란히 채울 때는 **3:7** 로 나눈다 — 위계가 분명해진다. 모달 footer 는 [Dialog](dialog.md) · [Drawer](drawer.md) 의 폭 나누기(지금은 균등)를 따른다.
+- 비슷한 위계의 `neutralWeak` 둘은 나란히 둘 수 있다.
+- **셋 이상 나란히 두지 않는다** — 중요도가 비슷해 보여 고르기 어렵고, 큰 글자에서 라벨이 잘린다. 더 있으면 아이콘만 버튼(더보기)으로 넘긴다.
+- 인접한 버튼 사이는 8(`spacing-x2`).
+
+**놓는 바탕** — `neutralWeak` 의 채움과 비활성 채움(`bg-disabled`)은 라이트에서 페이지 바탕(`bg-page`)과 같은 색(gray-200)이다(v108). 흰 표면(카드 · 시트 · 모달 — `bg-layer-default`) 위에 두고, 페이지 바탕에 바로 둘 땐 `neutralOutline` 을 쓴다 — 바탕 위의 `neutralWeak` 는 채움이 사라져 글자만 남는다.
+
+**모달 footer**(porest)
+
+- 오른쪽에 `[취소 neutralWeak] [저장 neutralSolid]` — 웹은 `small`(36), 모바일 전체 폭은 `large`(48).
+- 확인 창을 여는 **삭제**는 왼쪽에 `ghost` + `critical` 글자. 삭제의 **확정**은 [Alert Dialog](alert-dialog.md) 의 `criticalSolid`.
+- 모달 footer 의 버튼을 `neutralOutline` 둘로 두지 않는다 — 전체 폭 버튼 둘이 테두리로 서면 위계가 흐려진다.
+
+### 라벨
+
+기초 Writing(v106)을 따른다 — 사용자가 할 행동을 동사로, 해요체 없이 짧게, 마침표 없이.
+
+- "다음" 보다 "저장" · "주문 확인"처럼 무엇을 하는지 알게.
+- 같은 동작에는 같은 말을 쓴다.
+
+### 긴 라벨
+
+긴 라벨 · 번역 · 큰 글자로 나란한 두 버튼이 넘치면 **세로로 쌓는다**(주 버튼이 위). 한 줄에 억지로 줄이지 않는다.
+
+## Button 과 Chip
+
+SEED 는 Button 과 Chip 을 이렇게 가른다. porest 에는 아직 Chip 이 없고, 선택 · 필터는 [toggle-group](toggle-group.md) 이 맡는다.
+
+| | Button | Chip |
+|---|---|---|
+| 목적 | 액션 실행 | 정보 표현 + 선택 |
+| 예 | 완료 · 제출 · 다음 · 삭제 | 필터(서초4동 외 34) · 옵션(0 ~ 6개월) |
+| 라벨 | 보면 동작이 예상된다 | 지금 켜진 조건 · 정보 |
+| 쓰는 모양 | 하나로도 | 둘 이상 묶어서 |
+
+## porest 에만 있는 것
+
+**반반 바(split bar)** — 액션 **둘**이 무게가 같고 한 묶음으로 읽힐 때, 본문 폭을 채운 네모 바를 반으로 갈라 각 칸에 하나씩 둔다(예: 내역 분할의 `항목 추가` · `균등 분할`).
+
+- 컨테이너: `display:flex; width:100%; background:var(--color-bg-layer-basement); border:1px solid var(--color-stroke-neutral-weak); border-radius:var(--radius-r2); overflow:hidden`. 트랙 톤은 [`toggle-group`](toggle-group.md) 의 segmented 와 같다.
 - 각 칸: `flex:1` 의 `ghost` 버튼, 모서리 없음(컨테이너가 깎는다).
-- 칸 사이는 1px `--color-border-default` 구분선 — **글자 높이만큼만 그린다**
-  (`height: var(--text-caption)`, 세로 가운데). 바 위아래 끝까지 그으면 두 칸이 벽으로
-  막힌 것처럼 답답해 보인다. 여백을 남겨 한 바 안의 두 칸으로 읽히게 한다.
-- **얇게 둔다 — `sm`(32).** 목록에 줄을 더하는 성격의 액션이라 본문 행보다 무거우면 안 된다.
-  이 자리는 화면의 주 액션이 아니다(주 액션은 footer 에 있다).
-- **모서리는 각지게** — pill(`radius-full`)은 쓰지 않는다. [`toggle-group`](toggle-group.md)
-  의 `segmented` 와 헷갈린다.
-- **선택이 아니라 실행이다.** 눌린 상태(`data-state=on`)가 없다. 상태를 고르는 자리는
-  `segmented` 를 쓴다 — 생김새가 비슷해 이 구분이 유일한 단서다.
-- 셋 이상으로 나누지 않는다. 그 이상은 위의 Button group(`gap-2`) 또는 DropdownMenu.
-- **flush 대상이 아니다** — 칸이 컨테이너를 꽉 채워 content edge 가 어긋날 일이 없다.
+- 칸 사이는 1px `stroke-neutral-weak` 구분선을 **글자 높이만큼만** 긋는다 — 끝까지 그으면 두 칸이 벽으로 막힌 것처럼 보인다.
+- **얇게 — `xsmall` 높이(32).** 목록에 줄을 더하는 성격이라 본문 행보다 무거우면 안 된다. 알약 모양은 쓰지 않는다(segmented 와 헷갈린다).
+- **선택이 아니라 실행이다.** 눌린 상태(`data-state=on`)가 없다. 셋 이상으로 나누지 않는다.
 
-**Vertical stack (모바일)**
+**가장자리 맞춤(flush)** — SEED 의 `bleed` 와 같은 기능이다.
 
-- 폭 좁은 화면에서 `flex-col gap-2` + 각 버튼 `w-full`.
-- 순서: primary 위, secondary 아래.
-
-**Edge flush (광학 정렬)** — `flush` prop
-
-- `flush="left" | "right"` — 해당 방향 가로 padding 을 0 으로 제거(`pl-0` / `pr-0`).
-- **대상: `ghost` + leading icon 이 컨테이너 content edge 의 첫/끝 요소일 때.**
-  글자만 있는 ghost 에는 쓰지 않는다 — edge 에 맞출 광학 기준(아이콘)이 없다.
-- 목적: 투명 버튼이 컨테이너 edge 에 놓일 때 내부 padding 만큼 content 가 안쪽으로 들어가
-  **본문 콘텐츠 열과 광학적으로 어긋나** 보이는 문제 해결. content(글자·아이콘)만 edge 로
-  당겨진다(overhang 없음). 반대쪽 padding 은 유지.
-- **flush ghost 는 텍스트 버튼이다** — hover 에 배경을 깔지 않고 **글자색으로만** 반응한다.
-  기본 `--color-text-secondary`, hover·focus 에 `--color-text-primary`, hover·active 배경은
-  둘 다 투명. 아이콘은 `currentColor` 라 글자와 같이 진해진다. `active` 의 `scale(0.98)` 과
-  keyboard focus ring 은 다른 variant 와 같다.
-
-  한쪽 padding 만 0 이라 **hover 채움 상자가 좌우 비대칭**으로 보였다(desk 2026-09-16 실측).
-  상자를 없애면 그 문제가 같이 사라지고, 위계도 맞다 — 옆의 채움 버튼보다 한 단계 약한 액션이다.
-- filled(default/secondary/outline)은 fill 이 이미 edge 까지 닿아 불필요.
-  icon-only(`icon`/`iconLg`)는 padding 이 없어 무관.
-- 사용처: dialog footer 의 `leftSlot` ghost+아이콘(자산 상세 '금액 가리기'), 섹션 상단 '뒤로' 링크.
-  **footer 의 삭제는 `dangerSoft` 채움이라 flush 대상이 아니다**([`dialog`](dialog.md) footer).
-- `flush` 를 안 붙인 ghost(툴바·리스트 행·우측 정렬 헤더 액션)는 지금 규칙 그대로 —
-  hover 에 `--color-surface-input` 채움.
+- `flush="left" | "right"` — 그 방향 가로 여백을 0 으로 한다.
+- 대상: `ghost` + 앞 아이콘이 컨테이너 가장자리의 첫 · 끝 요소일 때. 글자만 있는 ghost 에는 쓰지 않는다.
+- flush ghost 는 **텍스트 버튼**이다 — 누름 · 호버에 배경을 깔지 않고 글자색으로만 반응한다(`neutralSubtle` → 누르면 `fg-neutral`). 한쪽 여백만 0 이라 채움 상자가 좌우 비대칭이 되기 때문이다.
+- 그래서 flush 는 `ghostColor` 를 덮는다 — 빨간 글자를 지켜야 하는 삭제(`critical`)에는 쓰지 않는다.
 
 ## Behavior
 
 | 인터랙션 | 동작 |
 |---|---|
-| Click / Tap | `onClick` 발화. `disabled` 시 무시. |
-| Keyboard `Enter` | 클릭 동등. focus 상태에서. |
-| Keyboard `Space` | 클릭 동등. focus 상태에서. |
-| Keyboard `Tab` | 다음 focusable로 이동. shift+Tab은 역방향. |
-| `asChild` prop | `<Slot>`으로 underlying element 교체 (예: `<a>`로 link로 동작). aria/role 자동 보존. |
-| Disabled | `pointer-events: none`. 클릭/keyboard 불가. focusable에서 제외. |
+| Click / Tap | `onClick` 발화. `disabled` · `loading` 이면 무시. |
+| Keyboard `Enter` · `Space` | 클릭과 같다(포커스 상태에서). |
+| Keyboard `Tab` | 다음 포커스로. Shift+Tab 은 거꾸로. |
+| `asChild` | `<Slot>` 으로 요소를 바꾼다(예: `<a>`). `loading` 과 함께 쓰지 않는다(Slot 은 자식 하나만 받는다). |
+| Disabled | 누르기 · 키보드 불가, 포커스에서 빠진다. |
 
-**Form 안 동작**
-
-- `type="submit"` 없으면 form 안에서도 form 제출 안 함 (shadcn 표준 — 명시적). 명시 필요.
-- `type="button"`은 form 제출 명시 비활성.
+**Form 안** — `type="submit"` 을 적어야 제출한다. `type="button"` 은 제출하지 않는다.
 
 ## Accessibility
 
 | 기준 | 검증 |
 |---|---|
-| **WCAG 1.4.3** Color contrast (text ≥ 4.5:1) | `default` `--color-text-on-accent` × `--color-primary` = 4.5:1+ ✓ (`npm run lint:dark` 검증) |
-| **WCAG 1.4.3** Color contrast — `ghost` variant | `--color-text-primary` × `--color-bg-page` = 21:1 ✓ (중립 텍스트, 기본). `accent`는 `--color-primary` 글씨로 `default`와 동일 검증. |
-| **WCAG 1.4.11** Non-text contrast (UI ≥ 3:1) | focus ring `--color-border-focus` × `--color-bg-page` = 3:1+ ✓ |
-| **WCAG 2.5.8** Target Size — Minimum (AA — ≥ 24×24) | `sm` 32 ✅ / `default` 36 ✅ / `md` 40 ✅ / `lg` 48 ✅ / `icon` 40 ✅ / `iconLg` 36 ✅ — 모든 사이즈 AA 통과 |
-| **WCAG 2.5.5** Target Size — Enhanced (AAA — ≥ 44×44) | `sm` 32 ⚠ 미달 / `default` 36 ⚠ 미달 / `md` 40 ⚠ 미달 / `lg` 48 ✅ / `icon` 40 ⚠ 미달 / `iconLg` 36 ⚠ 미달 — `lg`만 AAA 충족. 모바일 터치 우선 화면은 `lg` 권장, `md`는 데스크톱/태블릿 큐이, `sm`은 dense list 한정. |
-| **WCAG 2.4.7** Focus visible | `focus-visible:ring-2 ring-ring/30` (keyboard focus 시만 표시, 마우스 click 시 안 뜸) |
-| **ARIA** | `<button>` element 자동. `asChild`로 `<a>` 사용 시 `role="button"` 명시적으로 추가하지 말 것 (이중 role 충돌). `aria-label` icon-only일 때 필수. |
-| **Reduced motion** | hover transition은 `motion-duration-fast` (150ms). `prefers-reduced-motion: reduce` 시 globally 0.01ms로 단축 (DESIGN.md `keyframes` 가이드). |
+| **WCAG 1.4.3** 글자 대비(4.5:1) | 흰 글자 × `bg-brand-solid` · `bg-critical-solid`, `fg-neutral-inverted` × `bg-neutral-inverted`(누름 포함), `fg-neutral` × `bg-neutral-weak` — `npm run lint:all` 의 role 짝이 잰다 |
+| **WCAG 1.4.3** 비활성 | `fg-disabled` — 비활성 컴포넌트 글자는 대비 예외(1.4.3 incidental) |
+| **WCAG 1.4.11** UI 대비(3:1) | 포커스 링 `stroke-focus-ring` × 표면 |
+| **WCAG 2.5.8** Target Size — Minimum(AA, 24×24) | 네 크기 모두 통과 |
+| **WCAG 2.5.5** Target Size — Enhanced(AAA, 44×44) | 보이는 크기는 `large` 48 만 넘지만, 누르는 영역을 44 까지 넓혀 모두 통과(v106) |
+| **WCAG 2.4.7** Focus visible | 키보드 포커스에만 링(`focus-visible`) |
+| **ARIA** | `<button>` 기본. 아이콘만이면 `aria-label` 필수. 로딩이면 `aria-busy="true"`. `asChild` 로 `<a>` 를 쓸 때 `role="button"` 을 따로 달지 않는다 |
+| **모션 줄이기** | 축소를 하지 않는다(v104 모드) — 누름은 색으로만 |
 
 ## Do / Don't
 
 ### ✅ Do
 
-- 페이지/모달당 `default` 1개. 보조는 `outline` — 단 **모달 footer 는 `secondary`**(취소)·`dangerSoft`(삭제).
-- 모바일 모달 footer 는 `lg`(48) + 가로 균등 분배 — 한 손 조작 폭 확보. [`dialog`](dialog.md)·[`drawer`](drawer.md) 참조.
-- destructive는 항상 confirm dialog 안에서. label은 "삭제" / "탈퇴" 같이 결과 명시.
-- icon-only는 `size="icon"` + 반드시 `aria-label` 또는 인접 `Tooltip`.
-- 모바일에서 sticky bottom CTA는 `lg` + `w-full` + 안전 영역 (`pb-safe`).
-- 한국어 label은 동사 + 목적어 ("저장", "주문 취소"). 영어 단독 ("Submit", "Cancel") 가능하면 회피.
+- 강조 버튼(`brandSolid` · `neutralSolid` · `criticalSolid`)은 한 화면에 하나.
+- 모달 footer 는 `[취소 neutralWeak] [저장 neutralSolid]`, 삭제는 왼쪽 `ghost` + `critical`.
+- 되돌릴 수 없는 작업의 확정은 확인 창의 `criticalSolid`.
+- 아이콘만 있는 버튼에는 이름을 단다.
+- 모바일 하단 CTA 는 `large` + 채움 + 안전 영역(`pb-safe`).
 
 ### ❌ Don't
 
-- 한 화면에 `default`(primary) 여러 개 — 위계 무너짐. 1개만.
-- 4개 이상의 버튼을 한 줄에 — DropdownMenu로 분리.
-- `ghost`를 primary 액션으로 — affordance 부족.
-- **모달 footer 의 좌측 버튼을 `ghost` 로** — 전체 폭 두 버튼이 나란히 설 때 배경 없는 쪽은 버튼으로 안 보인다. `secondary`/`dangerSoft` 로 옅게 채운다.
-- 모달 footer 취소에 `outline` — 전체 폭 버튼 둘이 나란히 테두리·채움으로 서면 위계가 흐려지고, 취소가 주 액션만큼 눈에 띈다.
-- `sm` size를 모바일 터치 타겟으로 — AA 미달.
-- destructive를 좌측에 두고 cancel을 우측에 — 사용자가 destructive를 잘못 누를 위험.
-- `disabled` 버튼에 hover/click 가짜 피드백 — 혼란 유발. 정말 disable일 땐 그대로 표시.
+- 강조 버튼을 한 화면에 여럿.
+- 셋 이상을 한 줄에.
+- `brandSolid` 를 일반 저장 · 확인에 — 브랜드 색이 흩어진다.
+- Outline 을 Solid 와 섞기.
+- 앞 · 뒤 아이콘을 함께.
+- `disabled` 버튼에 호버 · 누름 반응.
+
+## SEED 와 다른 점
+
+- `large` 는 **48** 이다(SEED 52) — 여백 · 글자 · 아이콘은 SEED large 그대로다.
+- 테두리 · 투명 누름은 SEED 가 투명도 있는 색(`stroke.neutral-muted` · `bg.transparent-pressed`)이라, 불투명한 가장 가까운 역할(`stroke-neutral-weak` · `bg-layer-default-pressed`)을 쓴다 — design.md 검사기가 8자리 hex 를 받지 않는다.
+- 웹의 `hovered` · `focused` 상태를 더한다(v106).
+- 로딩 중 누르기를 **자동으로 막는다**(SEED 는 막지 않는다).
+- `neutralSolid` 의 누름은 새 역할 `bg-neutral-inverted-pressed`(gray-800, v112)다.
 
 ## Migration notes
 
-### 2026-08 — 모달 footer 취소를 `ghost` 로 (→ 아래 항목에서 `secondary` 로 정정)
+### 2026-09-30 — SEED Action Button 구조로
 
-전체 폭 버튼 둘이 테두리·채움으로 나란히 서면 위계가 흐려진다고 보고 취소를 `ghost` 로 통일했다.
-**실제로는 배경이 아예 없어 버튼으로 보이지 않는 게 더 큰 문제였다** — 아래 항목에서 다시 고쳤다.
+사용자가 비교 페이지(https://claude.ai/artifact/JRfDTChty6VDZzzqpWSF6C)에서 정했다 — 변형은 SEED 7가지만(옛 `dangerSoft` 는 없앰, 정말 위험한 건 `criticalSolid`) · 일반 CTA 는 `neutralSolid` · 크기는 SEED 틀 + `large` 48 · 모양은 SEED(모서리 8 · 12 · 알약, 글자 700) · 확인 창을 여는 삭제는 `ghost` + `critical` · `brandSolid` 는 핵심 액션에만 · 로딩은 SEED 모양 + 누름 자동 막기.
 
-### 2026-08 — 채움 버튼을 `info` 로, 모달 footer 좌측을 옅은 채움으로
+제품(Desk 웹 197 · 앱 133 · HR 웹 176곳)은 앱 적용 단계에서 옮긴다. 그동안 옛 이름은 아래처럼 읽는다.
 
-세 가지를 한 번에 정리했다.
+| 옛 변형 | 새 변형 |
+|---|---|
+| `default`(정보 파랑 채움) | `neutralSolid`(일반 CTA) · `brandSolid`(핵심 액션) |
+| `destructive` | `criticalSolid` |
+| `secondary` | `neutralWeak` |
+| `outline` | `neutralOutline` |
+| `dangerSoft` | `ghost` + `critical`(확인 창을 여는 삭제) |
+| `ghost` | `ghost` — 보조 아이콘 액션은 `neutralSubtle` |
+| `accent` · `link` | `ghost` + `brand` |
 
-**1. `default` 채움색 `--color-primary`(#0147AD) → `--color-info`(#1D6FCB).**
-브랜드 primary 는 남색에 가까워 버튼 채움으로 쓰면 무겁다. 토스를 비롯한 국내 앱도 버튼에는
-로고색이 아니라 한 단계 밝은 파랑을 쓴다. **버튼 채움에 한정** — 탭 선택·토글·배지 등
-brand 채움을 쓰는 다른 자리는 그대로 `--bg-brand`(primary) 다.
+| 옛 크기 | 새 크기 |
+|---|---|
+| `sm`(32) | `xsmall` — 알약 |
+| `default`(36) | `small` |
+| `md`(40) | `medium` |
+| `lg`(48) | `large` |
+| `icon`(40) | `medium` · `iconOnly` |
+| `iconLg`(36 원형, 모바일 헤더) | `medium` · `iconOnly`(보이는 크기 40 — v106) |
 
-**2. 모달 footer 의 취소는 `secondary`**(테두리 없는 회색 채움). `ghost` 는 배경이 없어
-전체 폭 두 버튼 중 한쪽이 빈자리처럼 보였다.
+그 밖에 바뀐 것 — 누름은 밝기 95% · 0.98 배 → 누름 색 + 2px 거리 축소(v104), 비활성은 50% 불투명 → 전용 색(v106), 글자 굵기 500 → 700, 모서리 4 → 8(`large` 12, `xsmall` 알약), 아이콘–글자 간격 8 고정 → 크기마다(4 · 4 · 6 · 8), 로딩 스피너는 라벨 앞 → 라벨 자리.
 
-**3. 모달 footer 의 삭제는 `dangerSoft`**(옅은 빨강 채움 + 빨강 글씨). 같은 이유이고,
-파괴적 액션이라 중립 회색 대신 error 계열로 둔다. 삭제 **확정**은 여전히
-[`AlertDialog`](alert-dialog.md) 의 `destructive`(솔리드 빨강)다.
+**앱에 옮길 때 — `cn` 부터.** 새 cva 는 porest 스케일 이름(`text-t4` · `px-x4` · `rounded-r2`)을 쓴다. 기본 tailwind-merge 는 `text-t4` 를 글자색으로 읽어 앞의 `text-fg-neutral-inverted` 를 지우고(짙은 버튼의 흰 글자가 사라진다), `px-x4` 를 여백으로 못 읽어 `p-0` 덮어쓰기가 먹지 않는다. 레시피 `lib/utils.ts` 처럼 spacing · radius · text 스케일을 `extendTailwindMerge` 에 등록한다 — Desk 웹의 `cn` 은 지금 옛 글자 이름만 안다.
 
-`secondary` 는 원래 spec 상 테두리가 없는데(Color tokens 표) 웹·앱 구현에만 1px border 가
-들어가 있었다 — 이번에 구현을 spec 에 맞춰 제거했다.
+**다른 컴포넌트에 남은 옛 이름** — 버튼을 부르는 레시피 코드(alert-dialog · calendar · carousel · pagination · sidebar)와 그 스펙, 모달 footer 규칙(dialog · drawer · alert-dialog)은 이 변경에서 옮겼다. 아래는 옛 이름을 글로만 적고 있어 각 컴포넌트 차례에 옮긴다 — 예제 속 JSX(tooltip · sheet · popover · form · dropdown-menu · drawer · dialog · card · alert-dialog · table · spinner 예제), 스펙 본문(table · popover · spinner · toggle-group · collapsible · context-menu · dropdown-menu · icon-picker · calendar 의 nav `outline`), DESIGN.md 의 다른 컴포넌트 절(Form 의 `button-primary` lg · Pagination 의 페이지 버튼), 미리보기의 빈 화면 · 폼 · 결재 행(Outline 과 Solid 를 한 줄에 둔다 — Outline 조합 규칙과 어긋난다).
 
 ### 2026-09-16 — `default`(36) 를 정식 사이즈로 올리고 모달 footer 를 그걸로
 
 Sizes 표는 원래 `sm` 32 · `md` 40 · `lg` 48 셋이었는데, desk 웹 구현에는 shadcn 이름을 그대로
-둔 `default`(높이 36 · **좌우 양쪽 16** · 14px)가 하나 더 있었고 그게 cva 기본값이다. 표에
-없으니 "`size` 를 안 적으면 규격 밖 값이 나온다" 가 되고, 실제로 모달 footer 20종 실측에서
-표준 footer 40 과 손수 footer 36 이 섞여 있었다.
+둔 `default`(높이 36 · 좌우 양쪽 16 · 14px)가 하나 더 있었고 그게 cva 기본값이다. 모달 footer 20종 실측에서
+표준 footer 40 과 손수 footer 36 이 섞여 있었고, 화면으로 보니 40 은 대화상자에 비해 굵어 사용자가 36 을 골랐다 —
+2026-09-30 구조에서는 `small`(36)이 그 자리다.
 
-하루 동안 두 방향을 다 시도했다. 먼저 **footer 를 `md`(40)로 통일**했는데, 화면으로 보니
-버튼이 대화상자에 비해 굵어 보였다. 사용자가 36 쪽을 골랐다 — **`default` 을 표에 올리고
-모달 footer 는 이 사이즈 하나로 간다**(모바일만 `lg` 48).
+### 2026-08 — 채움 버튼을 `info` 로, 모달 footer 좌측을 옅은 채움으로
 
-- 이름은 `default` 그대로 둔다. 코드에 이미 그 이름으로 박혀 있고, 바꾸면 호출처 전부가 움직인다.
-- 좌우 padding 은 **양쪽 다 16** 이다(`px-4`). 한쪽만 다른 값이 아니다.
-- recipe 에도 같은 사이즈를 넣되 cva 기본값은 `md` 그대로다 — HR 쪽 기준을 흔들지 않는다.
-  크기는 **이름이 아니라 표의 높이로** 고른다.
-
+`default` 채움색을 브랜드 남색에서 정보 파랑으로 바꾸고(남색은 버튼 채움으로 무겁다), 모달 footer 의 취소는 `secondary`, 삭제는 `dangerSoft` 로 두었다. 2026-09-30 에 일반 CTA 는 `neutralSolid`, 취소는 `neutralWeak`, 삭제는 `ghost` + `critical` 로 다시 정했다.

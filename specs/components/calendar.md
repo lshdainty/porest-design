@@ -134,6 +134,11 @@ Calendar는 **size variant 없음** — day cell 40×40 고정. 사용처 classN
 
 ## Migration notes
 
+### 2026-09-30 — Button 이름 변경
+
+- 이전 · 다음 달 버튼은 `buttonVariants({ variant: buttonVariant, size: "small", layout: "iconOnly" })` — 아이콘 16 을 지키려고 `small`, 크기는 `size-(--cell-size)`. 날짜 버튼은 `layout="iconOnly"` + `p-0`(옛 `size="icon"` 은 여백이 없었다).
+- 이 스펙의 nav 는 `variant="outline"` 이라 적혀 있지만 코드는 이 변경 전부터 `ghost`(`buttonVariant` 기본값)다 — Calendar 차례에 맞춘다.
+
 ### react-day-picker v8 → v9 API 매핑 (v9.14+ 기준)
 
 v9는 v8 대비 classNames 이름 + components slot 큰 변경. spec/tsx/examples 모두 v9 API 기준.

@@ -95,6 +95,9 @@
 **v111 — 카테고리 옅은 바탕 (2026-09-30)**
 - v111: SEED 의 배너 색(`$color.banner.*` 10색)은 두지 않았다 — SEED 컴포넌트 어디에도 쓰이지 않는 장식 색이고 porest 에는 홍보 배너 자리가 없다(안내 메시지는 이미 역할 색으로 있다). 대신 차트 10색을 화면마다 따로 섞던 옅은 바탕(웹 18% · 17% · 12 ~ 16%, 앱 13 · 22%)을 토큰으로 두었다 — `chart-{hue}-weak`(작은 면 — 타일 · 칩, 200 · 다크 300, 지금 제품과 같은 진하기) · `chart-{hue}-subtle`(넓은 면 — 메모 카드 · 배너, 100 · 다크 200) · `chart-{hue}-contrast`(그 위 글자, 800 · 다크 900 — v109 규칙). 회색은 한 단계씩 진하게(400 · 300). 아이콘은 `chart-{hue}` 그대로(작은 면 위 3.63:1 이상). 글자 대비는 lint 컴포넌트 40개가 잰다(5.02:1 이상). 60 토큰 — "한 번에 5개" 규칙의 예외, 사용자 결정(2026-09-30).
 
+**v112 — neutralSolid 버튼의 누름 (2026-09-30)**
+- v112: `bg-neutral-inverted-pressed`(gray-800 · 다크 gray-800-dark) 한 쌍 — SEED `bg.neutral-inverted-pressed`. 일반 CTA 를 neutralSolid(짙은 회색)로 정하면서 그 누름 · 호버 · 로딩 색이 필요해졌다. 대비 쌍 `role-inverted-pressed-light` · `-dark`(흰 글자 7.11:1 · 다크 7.70:1). Button 스펙 재작성(아래 Changed)과 같은 PR.
+
 ### Components
 
 **v33~v48 — Component spec batch (16 components, sparse 매핑 자동 검증 활성)**
@@ -328,6 +331,8 @@
 - **v53**: semantic 4 light vivid refresh — `success-light` `#5DC07B`→`#4ADE80` (green-400), `error-light` `#F08080`→`#F87171` (red-400), `warning-light` `#E8A05A`→`#FB923C` (orange-400 — 가장 큰 hue 변화, base와 일치), `info-light` `#6FAEDF`→`#60A5FA` (blue-400). Tailwind 400 톤 채택, 다크 alert 4.5:1 silent pass.
 - **v64**: Desk `primary-light` 톤 다운 — `#6BA0EE` → `#5FA0E5` (Y 0.354→0.329, surface-input-dark `#2D3346` 대비 4.81→4.51:1 마지널 통과). 사용자 시각 피드백: 다크 모드에서 outlined 버튼·focus 링이 너무 밝게 보임. 4.5:1 안전 마진 한계라 hex 추가 다운 불가(spec 변경 필요). HR `primary-light` `#6BAE8C`는 그대로 유지 (forest green hue가 cobalt blue 대비 시각 적정). `border-focus-light` 동일 hex 추적 동기.
 - **v66**: HR/Desk Semantic colors prose에 v51-v53 vivid refresh 반영 — 기존 brand prose는 v10 `#117A3A`/`#C53030`/`#A85800`/`#006395` 및 v20 `#5DC07B`/`#F08080`/`#E8A05A`/`#6FAEDF`만 표기 → "v10 → v51-v52" / "v20 → v53" 변천 표로 변환, 현재 사용 hex 강조 + history 보존. yaml은 sync `colors-2` region으로 이미 최신, prose만 outdated 상태였음.
+
+- **v112 (Button)**: Button 스펙을 SEED Action Button 구조로 다시 썼다 — 변형 7(brandSolid · neutralSolid · neutralWeak · criticalSolid · brandOutline · neutralOutline · ghost, 옛 dangerSoft · accent · link 는 ghost 의 글자색으로), 크기 4(xsmall 32 알약 · small 36 · medium 40 · large 48 — SEED large 는 52), 배치 축(withText · iconOnly), 글자 700 · 모서리 8 · 12, hover = 누름 색, 누름 = 세로 2px 축소, 비활성 전용 색, 로딩은 누름 색 위 로딩 원 + 누르기 막기. 일반 CTA 는 neutralSolid, brandSolid 는 핵심 액션 하나. 4 source(`button.md` · `button.yaml` · `button.tsx` · 예제 · 미리보기 CSS)와 DESIGN*.md 의 Button 절을 함께 고쳤다. 버튼을 부르는 레시피 다섯(alert-dialog · calendar · carousel · pagination · sidebar)은 새 이름으로 옮겼고, 레시피 `cn` 이 porest 스케일(`text-t4` · `px-x4` · `rounded-r2`)을 알게 했다 — 기본 tailwind-merge 는 `text-t4` 를 글자색으로 읽어 버튼 글자색을 지운다. 옛 이름 → 새 이름 표는 `button.md` Migration notes. 사용자 결정(2026-09-30).
 
 ### Fixed
 - **v9**: 매 batch마다 lint 결과를 손계산만 하던 방식 발견 → 16 sparse component를 매핑해 lint contrastCheck 자동 검증 활성. 이후 모든 토큰 추가는 components 매핑 동반.

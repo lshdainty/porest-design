@@ -328,9 +328,26 @@ function buildTokens() {
     "  --color-foreground: var(--color-text-primary);",
   ].join("\n");
 
+  // 브랜드 파일에만 있는 색 — v102 브랜드 역할(bg-brand-solid · fg-brand · stroke-focus-ring …) ·
+  // v108 브랜드 팔레트(brand-100 ~ 1000). 옛 이름(primary · border-focus …)도 v108 부터 이 역할을 가리킨다.
+  // Default 는 브랜드 팔레트를 회색 단계로 채워 중립으로 두고 역할 정의는 Desk 것을 빌린다 —
+  // @theme 안에 있어야 Tailwind 가 bg-bg-brand-solid 같은 utility 를 만든다(Button 예제).
+  const colorDefs = (cssText) =>
+    new Map([...cssText.matchAll(/^\s*--(color-[a-z0-9-]+):\s*([^;]+);/gm)].map((m) => [m[1], m[2].trim()]));
+  const sharedDefs = colorDefs(def);
+  const brandOnly = [...colorDefs(desk)].filter(([n]) => !sharedDefs.has(n));
+  const OLD_BRAND = /^color-(primary|primary-light|border-focus|border-focus-light)$/;
+  const neutralBrand = brandOnly
+    .filter(([n]) => !OLD_BRAND.test(n))
+    .map(([n, v]) => {
+      const step = /^color-brand-(\d+)(-dark)?$/.exec(n);
+      return `  --${n}: ${step ? `var(--color-gray-${step[1]}${step[2] || ""})` : v};`;
+    })
+    .join("\n");
+
   const defaultWithFallback = def.replace(
     /@theme\s*\{/,
-    "@theme {\n  /* Brand fallback — Default = neutral, no specific accent */\n  --color-primary: #1a1f2e;\n  --color-primary-light: #4a5568;\n  --color-border-focus: #1a1f2e;\n  --color-border-focus-light: #4a5568;\n" + shadcnAliases + "\n",
+    "@theme {\n  /* Brand fallback — Default = neutral, no specific accent */\n  --color-primary: #1a1f2e;\n  --color-primary-light: #4a5568;\n  --color-border-focus: #1a1f2e;\n  --color-border-focus-light: #4a5568;\n" + neutralBrand + "\n" + shadcnAliases + "\n",
   );
 
   // @theme 내용 추출 → :root 미러 (브라우저가 즉시 적용)
@@ -342,15 +359,11 @@ function buildTokens() {
   const keyframesMatch = def.match(/(\/\* Keyframes[\s\S]*?)$/);
   const keyframes = keyframesMatch ? keyframesMatch[1].trim() : "";
 
-  // brand override (@theme 외부, CSS variable만 재정의)
+  // brand override (@theme 외부, CSS variable만 재정의) — 브랜드 파일에만 있는 색을 모두 덮는다.
+  // 옛 이름 넷만 덮던 때는 v108 부터 그 이름이 가리키는 역할(fg-brand …)이 없어 브랜드를 바꾸면 색이 빠졌다.
   const brandOverride = (cssText, attr) => {
-    const tokens = [];
-    const re = /^\s*--color-(primary|primary-light|border-focus|border-focus-light)(-dark)?:\s*([^;]+);/gm;
-    let m;
-    while ((m = re.exec(cssText)) !== null) {
-      const name = `--color-${m[1]}${m[2] || ""}`;
-      tokens.push(`  ${name}: ${m[3].trim()};`);
-    }
+    const own = colorDefs(cssText);
+    const tokens = [...own].filter(([n]) => !sharedDefs.has(n)).map(([n, v]) => `  --${n}: ${v};`);
     return `[data-brand="${attr}"] {\n${tokens.join("\n")}\n}`;
   };
 
@@ -371,6 +384,10 @@ function buildTokens() {
     "  --shadow-md: var(--shadow-md-dark);",
     "  --shadow-lg: var(--shadow-lg-dark);",
     "  --shadow-xl: var(--shadow-xl-dark);",
+    "  /* v102 역할 색(bg · fg · stroke)도 다크 짝으로 — 위 옛 이름만 바꾸던 때는 역할을 쓰는 예제(Button)가 다크에서 라이트 값을 썼다 */",
+    ...[...new Set([...sharedDefs.keys(), ...brandOnly.map(([n]) => n)])]
+      .filter((n) => /^color-(bg|fg|stroke)-/.test(n) && !n.endsWith("-dark") && (sharedDefs.has(`${n}-dark`) || brandOnly.some(([b]) => b === `${n}-dark`)))
+      .map((n) => `  --${n}: var(--${n}-dark);`),
     "}",
   ].join("\n");
 
@@ -1924,7 +1941,7 @@ function parseExamplesMd() {
 // 페이지 1대1 매핑: 묶지 않음 (input-textarea 같은 묶음 폐기).
 const SHADCN_CATALOG = [
   // Form (15)
-  { slug: "button", name: "Button", category: "Form", description: "주요 액션을 트리거하는 버튼. variant 6종 × size 4종." },
+  { slug: "button", name: "Button", category: "Form", description: "액션을 실행하는 버튼. 변형 7 × 크기 4 × 배치 2(SEED Action Button 구조)." },
   { slug: "checkbox", name: "Checkbox", category: "Form", description: "여러 선택 가능한 박스." },
   { slug: "combobox", name: "Combobox", category: "Form", description: "검색·필터 가능한 select." },
   { slug: "date-picker", name: "Date Picker", category: "Form", description: "calendar + popover 조합 날짜 선택." },

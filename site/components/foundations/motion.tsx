@@ -23,7 +23,7 @@ export function MacroMicroFigure() {
   const press = proseValue('motion-duration-pressed-scale');
   const sheet = proseValue('motion-duration-d5');
   const { over } = reducedMotion();
-  const lg = specSize('button', 'lg');
+  const lg = specSize('button', 'large');
   const { ratio } = pressScale();
   const w = 148;
   const dim = proseValue('overlay-dim-light');

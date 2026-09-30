@@ -98,7 +98,7 @@ export function TouchTargetFigure() {
 }
 
 export function ErrorAnnounceFigure() {
-  const h = specSize('button', 'md').height;
+  const h = specSize('button', 'medium').height;
   return (
     <Figure caption="오류는 테두리 색과 함께 글자로, 입력칸 바로 아래에, 고칠 방법까지 — 보조 기술에도 바로 알린다">
       <div className="flex items-start gap-8 rounded-xl bg-white px-8 py-6">

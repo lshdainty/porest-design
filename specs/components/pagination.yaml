@@ -16,9 +16,9 @@ slots:
 
 variants:
   link:
-    active: Active (`outline`)
+    active: Active (`neutralOutline`)
     inactive: Inactive (`ghost`)
-    prev-next: Previous/Next (`ghost md`)
+    prev-next: Previous/Next (`ghost` · `medium`)
 
 states:
   default: ""
@@ -35,7 +35,7 @@ rules:
         gap: { value: $spacing-xs, note: "item 사이" }
       ellipsis:
         height: 40px
-        width: { value: 40px, note: "Button icon과 동일" }
+        width: { value: 40px, note: "Button `medium` · `iconOnly` 와 동일" }
       icon:
         size: { value: 16px, note: "chevron, ellipsis" }
 
@@ -44,7 +44,7 @@ rules:
     default:
       root:
         height: 40px
-        width: { value: 40px, note: "Button `size=\"icon\"`" }
+        width: { value: 40px, note: "Button `size=\"medium\" layout=\"iconOnly\"`" }
         background: $color-surface-default
         foreground: $color-text-primary
         borderColor: $color-border-default
@@ -71,7 +71,7 @@ rules:
     default:
       root:
         height: 40px
-        width: { value: 40px, note: "Button `size=\"icon\"`" }
+        width: { value: 40px, note: "Button `size=\"medium\" layout=\"iconOnly\"`" }
         background: transparent
         foreground: $color-text-primary
     hover:
@@ -94,7 +94,7 @@ rules:
     default:
       root:
         height: 40px
-        paddingX: { value: 가변, note: "Button `size=\"md\"` (`h-10 px-3`)" }
+        paddingX: { value: 가변, note: "Button `size=\"medium\"` (`h-10 px-x4`)" }
         background: transparent
         foreground: $color-text-primary
     hover:

@@ -1,7 +1,7 @@
 // Feedback 페이지 — 눌림 색은 DESIGN*.md 의 역할 색, 축소 상수 · 시간은 "눌림 피드백" 표 · motion 표,
 // 예로 드는 요소의 크기는 컴포넌트 YAML 에서 온다
 import type { CSSProperties, ReactNode } from 'react';
-import { color, design, pressScale, proseTokenSet, proseValue, px, roleColors, sectionCode, specPressedScale, specSize, specSlot, type Brand } from '@/lib/design-tokens';
+import { color, design, pressScale, proseTokenSet, proseValue, px, roleColors, sectionCode, specSize, specSlot, type Brand } from '@/lib/design-tokens';
 import { Figure, Panel, Swatch, Table, Token, Verdict } from './ui';
 import { PressDemo } from './press-demo';
 
@@ -44,7 +44,7 @@ function Cap({ children }: { children: ReactNode }) {
 
 // ── Overview ─────────────────────────────────────────────
 export function FeedbackElementsFigure() {
-  const lg = specSize('button', 'lg');
+  const lg = specSize('button', 'large');
   const brand = { background: rc('bg-brand-solid'), color: rc('static-white') };
   const pressed = { background: rc('bg-brand-solid-pressed'), color: rc('static-white') };
   const card = 'flex w-[168px] flex-col items-center gap-3 rounded-xl bg-white px-3 pb-4 pt-6';
@@ -97,7 +97,7 @@ export function FeedbackTimingTable() {
 
 // ── Color ────────────────────────────────────────────────
 export function PressColorFigure() {
-  const lg = specSize('button', 'lg');
+  const lg = specSize('button', 'large');
   const label = { color: rc('static-white'), fontSize: 15, fontWeight: 600 };
   return (
     <Figure caption="기본과 눌림 — 표면 색만 bg-brand-solid 에서 bg-brand-solid-pressed 로 바뀌고 글자 색은 그대로다">
@@ -261,7 +261,7 @@ export function PressedTokenTable() {
 
 // ── Scale ────────────────────────────────────────────────
 export function ScaleHeroFigure() {
-  const lg = specSize('button', 'lg');
+  const lg = specSize('button', 'large');
   const { ratio, distance, widthDivisor } = pressScale();
   const w = lg.height * widthDivisor - 12; // 폭 ÷ 4 가 높이보다 작게 — 기준 길이가 높이라 세로로 축소량만큼 준다
   const style = { background: rc('bg-brand-solid-pressed'), color: rc('static-white'), fontSize: 15, fontWeight: 600 };
@@ -282,8 +282,11 @@ export function ScaleHeroFigure() {
 }
 
 export function FixedRatioTable() {
-  const fixed = specPressedScale('button');
-  const h = specSize('button', 'lg').height;
+  const h = specSize('button', 'large').height;
+  const { distance } = pressScale();
+  // 큰 버튼이 세로로 축소량만큼 줄도록 맞춘 배율 — 이것을 모든 요소에 똑같이 준다면
+  const exact = (h - distance) / h;
+  const fixed = Number(r3(exact));
   const { mobile, tablet } = widths();
   const rows: [string, number][] = [
     ['짧은 버튼', 80],
@@ -298,13 +301,13 @@ export function FixedRatioTable() {
           <tr key={n}>
             <td className="whitespace-nowrap">{n} <span className="tabular-nums text-fd-muted-foreground">{w} × {h}</span></td>
             <td className="tabular-nums">{fixed}</td>
-            <td className="tabular-nums">{r1(w * (1 - fixed))}</td>
-            <td className="tabular-nums">{r1(h * (1 - fixed))}</td>
+            <td className="tabular-nums">{r1(w * (1 - exact))}</td>
+            <td className="tabular-nums">{r1(h * (1 - exact))}</td>
           </tr>
         ))}
       </Table>
       <p className="-mt-2 text-sm text-fd-muted-foreground">
-        고정 배율 {fixed} 은 porest 버튼이 지금 쓰는 값이다(button.yaml). 세로로는 모두 같게 줄지만 가로로 줄어드는 양은 {Math.round(tablet / 80)}배까지 벌어지고, 화면이 넓을수록 커진다.
+        고정 배율 {fixed} 은 높이 {h} 버튼이 세로로 {distance}px 줄도록 맞춘 값이다. 이 배율을 모든 요소에 똑같이 주면 세로로는 모두 같게 줄지만 가로로 줄어드는 양은 {Math.round(tablet / 80)}배까지 벌어지고, 화면이 넓을수록 커진다.
       </p>
     </>
   );
@@ -319,7 +322,7 @@ export function ScaleFormula() {
 }
 
 export function BasisFigure() {
-  const md = specSize('button', 'md');
+  const md = specSize('button', 'medium');
   const { ratio, distance } = pressScale();
   const tall = 100; // 예 — 높이 100 의 카드형 버튼
   const style = { background: rc('bg-brand-weak-pressed'), color: rc('fg-brand-contrast'), fontSize: 14, fontWeight: 600 };
@@ -342,9 +345,9 @@ export function BasisFigure() {
 
 export function ScaleResultTable() {
   const { basis, ratio, widthDivisor, minBasis } = pressScale();
-  const icon = specSize('button', 'icon');
-  const btn = specSize('button', 'default');
-  const lg = specSize('button', 'lg');
+  const icon = specSize('button', 'medium', 'enabled', 'iconOnly');
+  const btn = specSize('button', 'small');
+  const lg = specSize('button', 'large');
   const check = specSize('checkbox', 'md', 'default');
   const { mobile } = widths();
   const rows: [string, number, number][] = [
@@ -374,7 +377,7 @@ export function ScaleResultTable() {
 }
 
 export function CenterFigure() {
-  const lg = specSize('button', 'lg');
+  const lg = specSize('button', 'large');
   const w = 180;
   const line = rc('fg-critical');
   return (
@@ -426,7 +429,7 @@ export function NoShiftFigure() {
 }
 
 export function SurfaceTargetFigure() {
-  const lg = specSize('button', 'lg');
+  const lg = specSize('button', 'large');
   const link = rc('fg-brand');
   return (
     <Figure>
@@ -459,7 +462,7 @@ export function SubActionsFigure() {
       </div>
     </div>
   );
-  const icon = specSize('button', 'icon');
+  const icon = specSize('button', 'medium', 'enabled', 'iconOnly');
   const card = (
     <div className="w-[240px] rounded-xl p-4" style={{ background: rc('bg-layer-default'), border: `1px solid ${rc('stroke-neutral-weak')}` }}>
       <div className="flex items-start justify-between">
@@ -516,7 +519,7 @@ export function RootContentFigure() {
 }
 
 export function StatesFigure() {
-  const btn = specSize('button', 'default');
+  const btn = specSize('button', 'small');
   const w = 120;
   const col = (title: string, note: string, el: ReactNode) => (
     <div className="flex w-[170px] flex-col items-center gap-3 rounded-xl bg-white px-3 pb-4 pt-7">
@@ -564,7 +567,7 @@ export function PressPlayground() {
     weak: rc('bg-brand-weak'),
     weakPressed: rc('bg-brand-weak-pressed'),
   };
-  const heights = { icon: specSize('button', 'icon').height, button: specSize('button', 'default').height, wide: specSize('button', 'lg').height, row: 56 };
+  const heights = { icon: specSize('button', 'medium', 'enabled', 'iconOnly').height, button: specSize('button', 'small').height, wide: specSize('button', 'large').height, row: 56 };
   return (
     <Panel caption="눌러 보는 판 — 누르는 동안의 배율은 요소의 실제 크기에서 계산한다">
       <PressDemo c={{ distance, widthDivisor, minBasis }} t={t} colors={colors} heights={heights} />
