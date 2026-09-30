@@ -29,7 +29,7 @@ const checkmarkVariants = cva(
     "[transition:background-color_var(--motion-duration-color-transition)_var(--motion-ease-easing),border-color_var(--motion-duration-color-transition)_var(--motion-ease-easing),color_var(--motion-duration-color-transition)_var(--motion-ease-easing),scale_var(--motion-duration-pressed-scale)_var(--motion-ease-pressed-scale)]",
     "active:[scale:calc(1-2/var(--press-basis))] group-active/checkbox:[scale:calc(1-2/var(--press-basis))] motion-reduce:active:[scale:1] motion-reduce:group-active/checkbox:[scale:1]",
     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stroke-focus-ring",
-    "disabled:pointer-events-none disabled:cursor-not-allowed",
+    "disabled:cursor-not-allowed disabled:[scale:1]",
     "[&_svg]:pointer-events-none",
   ].join(" "),
   {
@@ -44,7 +44,7 @@ const checkmarkVariants = cva(
           "border border-stroke-neutral-solid bg-transparent hover:bg-bg-layer-default-pressed active:bg-bg-layer-default-pressed group-hover/checkbox:bg-bg-layer-default-pressed group-active/checkbox:bg-bg-layer-default-pressed data-[state=checked]:border-0 data-[state=indeterminate]:border-0 disabled:border-stroke-neutral-weak disabled:bg-bg-disabled data-[state=checked]:disabled:bg-bg-disabled data-[state=checked]:disabled:text-fg-disabled data-[state=indeterminate]:disabled:bg-bg-disabled data-[state=indeterminate]:disabled:text-fg-disabled",
         // 칸 없이 체크만 — 선택 안 됨도 옅은 체크(fg-placeholder)
         ghost:
-          "border-0 bg-transparent text-fg-placeholder hover:bg-bg-layer-default-pressed active:bg-bg-layer-default-pressed group-hover/checkbox:bg-bg-layer-default-pressed group-active/checkbox:bg-bg-layer-default-pressed disabled:text-fg-disabled data-[state=checked]:disabled:text-fg-disabled data-[state=indeterminate]:disabled:text-fg-disabled",
+          "border-0 bg-transparent text-fg-placeholder hover:bg-bg-layer-default-pressed active:bg-bg-layer-default-pressed group-hover/checkbox:bg-bg-layer-default-pressed group-active/checkbox:bg-bg-layer-default-pressed disabled:bg-transparent disabled:text-fg-disabled data-[state=checked]:disabled:bg-transparent data-[state=checked]:disabled:text-fg-disabled data-[state=indeterminate]:disabled:bg-transparent data-[state=indeterminate]:disabled:text-fg-disabled",
       },
       tone: {
         neutral: "",
@@ -117,7 +117,7 @@ const checkboxVariants = cva(
   [
     "group/checkbox relative inline-flex cursor-pointer select-none items-center gap-x2 self-start",
     "before:absolute before:left-1/2 before:top-1/2 before:h-full before:min-h-11 before:w-full before:min-w-11 before:-translate-x-1/2 before:-translate-y-1/2 before:content-['']",
-    "has-[:disabled]:pointer-events-none has-[:disabled]:cursor-not-allowed",
+    "has-[:disabled]:cursor-not-allowed",
   ].join(" "),
   {
     variants: {

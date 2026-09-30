@@ -21,7 +21,7 @@ const SWITCHMARK_BASE = [
   "[transition:background-color_var(--motion-duration-d1)_var(--motion-ease-easing)_20ms,scale_var(--motion-duration-pressed-scale)_var(--motion-ease-pressed-scale)]",
   "active:[scale:calc(1-2/var(--press-basis))] group-active/switch:[scale:calc(1-2/var(--press-basis))] motion-reduce:active:[scale:1] motion-reduce:group-active/switch:[scale:1]",
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stroke-focus-ring",
-  "disabled:pointer-events-none disabled:cursor-not-allowed",
+  "disabled:cursor-not-allowed disabled:[scale:1]",
   // 끔 — 꺼진 트랙. 켬은 톤에서 채운다
   "bg-stroke-neutral-solid",
   // 막힘 — 끔은 옅은 트랙 + 안쪽 선, 켬은 켜진 모양 그대로 회색 채움
@@ -76,7 +76,7 @@ const THUMB_DEFAULTS = {
 const ROW_BASE = [
   "group/switch relative inline-flex cursor-pointer select-none items-center self-start",
   "before:absolute before:left-1/2 before:top-1/2 before:h-full before:min-h-11 before:w-full before:min-w-11 before:-translate-x-1/2 before:-translate-y-1/2 before:content-['']",
-  "has-[:disabled]:pointer-events-none has-[:disabled]:cursor-not-allowed",
+  "has-[:disabled]:cursor-not-allowed",
 ].join(" ");
 
 const ROW_VARIANTS = {

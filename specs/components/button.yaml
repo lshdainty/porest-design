@@ -105,7 +105,7 @@ rules:
       label: { color: { value: transparent, note: "글자 · 아이콘을 투명하게 해 폭을 그대로 둔다" } }
     disabled:
       root:
-        cursor: not-allowed
+        cursor: { value: not-allowed, note: "포인터 이벤트는 켜 둔다 — 끄면 이 커서가 안 보인다(SEED 와 같다)" }
         background: $color-bg-disabled
         foreground: $color-fg-disabled
 
