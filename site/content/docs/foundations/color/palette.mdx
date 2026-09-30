@@ -5,7 +5,7 @@ source: DESIGN.md
 ---
 
 import { COLOR_TABS, SectionTabs } from '@/components/foundations/ui';
-import { BrandPaletteTable, ChartRamp, ChartTable, PaletteRamp, PaletteTokenTable } from '@/components/foundations/color';
+import { BrandPaletteTable, ChartRamp, ChartTable, ChartTintExample, ChartTintTable, PaletteRamp, PaletteTokenTable } from '@/components/foundations/color';
 
 <SectionTabs items={COLOR_TABS} active="Palette" />
 
@@ -89,6 +89,16 @@ import { BrandPaletteTable, ChartRamp, ChartTable, PaletteRamp, PaletteTokenTabl
 - 색 위에 이니셜을 올리면(아바타) 글자는 `fg-neutral-inverted` 다 — 라이트는 흰색, 다크는 어두운 글자.
 - 두 브랜드가 같은 차트 색을 쓴다. 다크 짝의 옛 이름 `chart-*-light` 는 별칭으로 남아 있다.
 
+### 옅은 바탕
+
+카테고리 색을 옅게 깐 면이다 — SEED 의 배너 색이 하는 일을 porest 에서는 이 색이 한다. 작은 면(카테고리 타일 · 캘린더 칩 · 주식 나라 표시)은 `chart-*-weak`, 넓은 면(메모 카드 · 배너)은 한 단계 옅은 `chart-*-subtle` 이다. 그 위 글자는 `chart-*-contrast`, 아이콘은 차트 색 그대로다.
+
+<ChartTintExample />
+
+- 옅은 바탕은 화면마다 섞어 만들지 않는다 — 이 토큰을 쓴다.
+- 글자는 일반 차트 색보다 한 단계 바깥이다(라이트 800 · 다크 900) — 의미 색의 약한 배경 위 글자와 같은 규칙이다.
+- 회색은 라이트 100 · 200 이 바닥색과 같아서 한 단계씩 진하게 둔다.
+
 ## Tokens
 
 ### Palette Colors
@@ -102,6 +112,10 @@ import { BrandPaletteTable, ChartRamp, ChartTable, PaletteRamp, PaletteTokenTabl
 ### Chart
 
 <ChartTable />
+
+### Chart 옅은 바탕
+
+<ChartTintTable />
 
 ---
 

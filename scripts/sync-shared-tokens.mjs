@@ -52,6 +52,17 @@ const SHARED_COLORS = new Set([
   // v110 — 차트 다크 짝의 새 이름(-light 는 별칭)
   "chart-red-dark", "chart-orange-dark", "chart-yellow-dark", "chart-green-dark", "chart-blue-dark",
   "chart-indigo-dark", "chart-violet-dark", "chart-pink-dark", "chart-brown-dark", "chart-gray-dark",
+  // v111 — 카테고리 옅은 바탕 · 그 위 글자
+  "chart-red-weak", "chart-red-weak-dark", "chart-red-subtle", "chart-red-subtle-dark", "chart-red-contrast", "chart-red-contrast-dark",
+  "chart-orange-weak", "chart-orange-weak-dark", "chart-orange-subtle", "chart-orange-subtle-dark", "chart-orange-contrast", "chart-orange-contrast-dark",
+  "chart-yellow-weak", "chart-yellow-weak-dark", "chart-yellow-subtle", "chart-yellow-subtle-dark", "chart-yellow-contrast", "chart-yellow-contrast-dark",
+  "chart-green-weak", "chart-green-weak-dark", "chart-green-subtle", "chart-green-subtle-dark", "chart-green-contrast", "chart-green-contrast-dark",
+  "chart-blue-weak", "chart-blue-weak-dark", "chart-blue-subtle", "chart-blue-subtle-dark", "chart-blue-contrast", "chart-blue-contrast-dark",
+  "chart-indigo-weak", "chart-indigo-weak-dark", "chart-indigo-subtle", "chart-indigo-subtle-dark", "chart-indigo-contrast", "chart-indigo-contrast-dark",
+  "chart-violet-weak", "chart-violet-weak-dark", "chart-violet-subtle", "chart-violet-subtle-dark", "chart-violet-contrast", "chart-violet-contrast-dark",
+  "chart-pink-weak", "chart-pink-weak-dark", "chart-pink-subtle", "chart-pink-subtle-dark", "chart-pink-contrast", "chart-pink-contrast-dark",
+  "chart-brown-weak", "chart-brown-weak-dark", "chart-brown-subtle", "chart-brown-subtle-dark", "chart-brown-contrast", "chart-brown-contrast-dark",
+  "chart-gray-weak", "chart-gray-weak-dark", "chart-gray-subtle", "chart-gray-subtle-dark", "chart-gray-contrast", "chart-gray-contrast-dark",
   // v102 — SEED 역할 색 (colors-3)
   "fg-neutral", "fg-neutral-dark", "fg-neutral-muted", "fg-neutral-muted-dark", "fg-neutral-subtle",
   "fg-neutral-subtle-dark", "fg-neutral-inverted", "fg-neutral-inverted-dark", "fg-placeholder",

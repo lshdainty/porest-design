@@ -282,67 +282,6 @@ colors:
   chart-pink-dark: "{colors.pink-800-dark}"
   chart-brown-dark: "{colors.brown-800-dark}"
   chart-gray-dark: "{colors.gray-800-dark}"
-  # v111 — 카테고리 옅은 바탕(작은 면 weak · 넓은 면 subtle)과 그 위 글자(contrast). 아이콘은 chart-{hue} 그대로
-  chart-red-weak: "{colors.red-200}"
-  chart-red-weak-dark: "{colors.red-300-dark}"
-  chart-red-subtle: "{colors.red-100}"
-  chart-red-subtle-dark: "{colors.red-200-dark}"
-  chart-red-contrast: "{colors.red-800}"
-  chart-red-contrast-dark: "{colors.red-900-dark}"
-  chart-orange-weak: "{colors.orange-200}"
-  chart-orange-weak-dark: "{colors.orange-300-dark}"
-  chart-orange-subtle: "{colors.orange-100}"
-  chart-orange-subtle-dark: "{colors.orange-200-dark}"
-  chart-orange-contrast: "{colors.orange-800}"
-  chart-orange-contrast-dark: "{colors.orange-900-dark}"
-  chart-yellow-weak: "{colors.yellow-200}"
-  chart-yellow-weak-dark: "{colors.yellow-300-dark}"
-  chart-yellow-subtle: "{colors.yellow-100}"
-  chart-yellow-subtle-dark: "{colors.yellow-200-dark}"
-  chart-yellow-contrast: "{colors.yellow-800}"
-  chart-yellow-contrast-dark: "{colors.yellow-900-dark}"
-  chart-green-weak: "{colors.green-200}"
-  chart-green-weak-dark: "{colors.green-300-dark}"
-  chart-green-subtle: "{colors.green-100}"
-  chart-green-subtle-dark: "{colors.green-200-dark}"
-  chart-green-contrast: "{colors.green-800}"
-  chart-green-contrast-dark: "{colors.green-900-dark}"
-  chart-blue-weak: "{colors.blue-200}"
-  chart-blue-weak-dark: "{colors.blue-300-dark}"
-  chart-blue-subtle: "{colors.blue-100}"
-  chart-blue-subtle-dark: "{colors.blue-200-dark}"
-  chart-blue-contrast: "{colors.blue-800}"
-  chart-blue-contrast-dark: "{colors.blue-900-dark}"
-  chart-indigo-weak: "{colors.indigo-200}"
-  chart-indigo-weak-dark: "{colors.indigo-300-dark}"
-  chart-indigo-subtle: "{colors.indigo-100}"
-  chart-indigo-subtle-dark: "{colors.indigo-200-dark}"
-  chart-indigo-contrast: "{colors.indigo-800}"
-  chart-indigo-contrast-dark: "{colors.indigo-900-dark}"
-  chart-violet-weak: "{colors.violet-200}"
-  chart-violet-weak-dark: "{colors.violet-300-dark}"
-  chart-violet-subtle: "{colors.violet-100}"
-  chart-violet-subtle-dark: "{colors.violet-200-dark}"
-  chart-violet-contrast: "{colors.violet-800}"
-  chart-violet-contrast-dark: "{colors.violet-900-dark}"
-  chart-pink-weak: "{colors.pink-200}"
-  chart-pink-weak-dark: "{colors.pink-300-dark}"
-  chart-pink-subtle: "{colors.pink-100}"
-  chart-pink-subtle-dark: "{colors.pink-200-dark}"
-  chart-pink-contrast: "{colors.pink-800}"
-  chart-pink-contrast-dark: "{colors.pink-900-dark}"
-  chart-brown-weak: "{colors.brown-200}"
-  chart-brown-weak-dark: "{colors.brown-300-dark}"
-  chart-brown-subtle: "{colors.brown-100}"
-  chart-brown-subtle-dark: "{colors.brown-200-dark}"
-  chart-brown-contrast: "{colors.brown-800}"
-  chart-brown-contrast-dark: "{colors.brown-900-dark}"
-  chart-gray-weak: "{colors.gray-400}"
-  chart-gray-weak-dark: "{colors.gray-400-dark}"
-  chart-gray-subtle: "{colors.gray-300}"
-  chart-gray-subtle-dark: "{colors.gray-300-dark}"
-  chart-gray-contrast: "{colors.gray-800}"
-  chart-gray-contrast-dark: "{colors.gray-900-dark}"
   # 옛 이름 — 다크 짝(v23 ~ v24). 제품 CSS 가 옮겨 가면 지운다
   chart-red-light: "{colors.chart-red-dark}"
   chart-orange-light: "{colors.chart-orange-dark}"
@@ -826,127 +765,6 @@ components:
     backgroundColor: "{colors.chart-brown-dark}"
   chart-color-gray-on-dark:
     backgroundColor: "{colors.chart-gray-dark}"
-  # v111 — 옅은 바탕 위 글자 대비(lint 가 잰다)
-  chart-red-contrast-on-weak-light:
-    backgroundColor: "{colors.chart-red-weak}"
-    textColor: "{colors.chart-red-contrast}"
-  chart-red-contrast-on-weak-dark:
-    backgroundColor: "{colors.chart-red-weak-dark}"
-    textColor: "{colors.chart-red-contrast-dark}"
-  chart-red-contrast-on-subtle-light:
-    backgroundColor: "{colors.chart-red-subtle}"
-    textColor: "{colors.chart-red-contrast}"
-  chart-red-contrast-on-subtle-dark:
-    backgroundColor: "{colors.chart-red-subtle-dark}"
-    textColor: "{colors.chart-red-contrast-dark}"
-  chart-orange-contrast-on-weak-light:
-    backgroundColor: "{colors.chart-orange-weak}"
-    textColor: "{colors.chart-orange-contrast}"
-  chart-orange-contrast-on-weak-dark:
-    backgroundColor: "{colors.chart-orange-weak-dark}"
-    textColor: "{colors.chart-orange-contrast-dark}"
-  chart-orange-contrast-on-subtle-light:
-    backgroundColor: "{colors.chart-orange-subtle}"
-    textColor: "{colors.chart-orange-contrast}"
-  chart-orange-contrast-on-subtle-dark:
-    backgroundColor: "{colors.chart-orange-subtle-dark}"
-    textColor: "{colors.chart-orange-contrast-dark}"
-  chart-yellow-contrast-on-weak-light:
-    backgroundColor: "{colors.chart-yellow-weak}"
-    textColor: "{colors.chart-yellow-contrast}"
-  chart-yellow-contrast-on-weak-dark:
-    backgroundColor: "{colors.chart-yellow-weak-dark}"
-    textColor: "{colors.chart-yellow-contrast-dark}"
-  chart-yellow-contrast-on-subtle-light:
-    backgroundColor: "{colors.chart-yellow-subtle}"
-    textColor: "{colors.chart-yellow-contrast}"
-  chart-yellow-contrast-on-subtle-dark:
-    backgroundColor: "{colors.chart-yellow-subtle-dark}"
-    textColor: "{colors.chart-yellow-contrast-dark}"
-  chart-green-contrast-on-weak-light:
-    backgroundColor: "{colors.chart-green-weak}"
-    textColor: "{colors.chart-green-contrast}"
-  chart-green-contrast-on-weak-dark:
-    backgroundColor: "{colors.chart-green-weak-dark}"
-    textColor: "{colors.chart-green-contrast-dark}"
-  chart-green-contrast-on-subtle-light:
-    backgroundColor: "{colors.chart-green-subtle}"
-    textColor: "{colors.chart-green-contrast}"
-  chart-green-contrast-on-subtle-dark:
-    backgroundColor: "{colors.chart-green-subtle-dark}"
-    textColor: "{colors.chart-green-contrast-dark}"
-  chart-blue-contrast-on-weak-light:
-    backgroundColor: "{colors.chart-blue-weak}"
-    textColor: "{colors.chart-blue-contrast}"
-  chart-blue-contrast-on-weak-dark:
-    backgroundColor: "{colors.chart-blue-weak-dark}"
-    textColor: "{colors.chart-blue-contrast-dark}"
-  chart-blue-contrast-on-subtle-light:
-    backgroundColor: "{colors.chart-blue-subtle}"
-    textColor: "{colors.chart-blue-contrast}"
-  chart-blue-contrast-on-subtle-dark:
-    backgroundColor: "{colors.chart-blue-subtle-dark}"
-    textColor: "{colors.chart-blue-contrast-dark}"
-  chart-indigo-contrast-on-weak-light:
-    backgroundColor: "{colors.chart-indigo-weak}"
-    textColor: "{colors.chart-indigo-contrast}"
-  chart-indigo-contrast-on-weak-dark:
-    backgroundColor: "{colors.chart-indigo-weak-dark}"
-    textColor: "{colors.chart-indigo-contrast-dark}"
-  chart-indigo-contrast-on-subtle-light:
-    backgroundColor: "{colors.chart-indigo-subtle}"
-    textColor: "{colors.chart-indigo-contrast}"
-  chart-indigo-contrast-on-subtle-dark:
-    backgroundColor: "{colors.chart-indigo-subtle-dark}"
-    textColor: "{colors.chart-indigo-contrast-dark}"
-  chart-violet-contrast-on-weak-light:
-    backgroundColor: "{colors.chart-violet-weak}"
-    textColor: "{colors.chart-violet-contrast}"
-  chart-violet-contrast-on-weak-dark:
-    backgroundColor: "{colors.chart-violet-weak-dark}"
-    textColor: "{colors.chart-violet-contrast-dark}"
-  chart-violet-contrast-on-subtle-light:
-    backgroundColor: "{colors.chart-violet-subtle}"
-    textColor: "{colors.chart-violet-contrast}"
-  chart-violet-contrast-on-subtle-dark:
-    backgroundColor: "{colors.chart-violet-subtle-dark}"
-    textColor: "{colors.chart-violet-contrast-dark}"
-  chart-pink-contrast-on-weak-light:
-    backgroundColor: "{colors.chart-pink-weak}"
-    textColor: "{colors.chart-pink-contrast}"
-  chart-pink-contrast-on-weak-dark:
-    backgroundColor: "{colors.chart-pink-weak-dark}"
-    textColor: "{colors.chart-pink-contrast-dark}"
-  chart-pink-contrast-on-subtle-light:
-    backgroundColor: "{colors.chart-pink-subtle}"
-    textColor: "{colors.chart-pink-contrast}"
-  chart-pink-contrast-on-subtle-dark:
-    backgroundColor: "{colors.chart-pink-subtle-dark}"
-    textColor: "{colors.chart-pink-contrast-dark}"
-  chart-brown-contrast-on-weak-light:
-    backgroundColor: "{colors.chart-brown-weak}"
-    textColor: "{colors.chart-brown-contrast}"
-  chart-brown-contrast-on-weak-dark:
-    backgroundColor: "{colors.chart-brown-weak-dark}"
-    textColor: "{colors.chart-brown-contrast-dark}"
-  chart-brown-contrast-on-subtle-light:
-    backgroundColor: "{colors.chart-brown-subtle}"
-    textColor: "{colors.chart-brown-contrast}"
-  chart-brown-contrast-on-subtle-dark:
-    backgroundColor: "{colors.chart-brown-subtle-dark}"
-    textColor: "{colors.chart-brown-contrast-dark}"
-  chart-gray-contrast-on-weak-light:
-    backgroundColor: "{colors.chart-gray-weak}"
-    textColor: "{colors.chart-gray-contrast}"
-  chart-gray-contrast-on-weak-dark:
-    backgroundColor: "{colors.chart-gray-weak-dark}"
-    textColor: "{colors.chart-gray-contrast-dark}"
-  chart-gray-contrast-on-subtle-light:
-    backgroundColor: "{colors.chart-gray-subtle}"
-    textColor: "{colors.chart-gray-contrast}"
-  chart-gray-contrast-on-subtle-dark:
-    backgroundColor: "{colors.chart-gray-subtle-dark}"
-    textColor: "{colors.chart-gray-contrast-dark}"
   
   # === Tertiary 텍스트 (placeholder, caption-tertiary, hint) ===
   caption-tertiary-on-card-light:
@@ -1602,25 +1420,6 @@ HR(조직 관리, B2B)과 Desk(개인 생산성, B2C)는 동일한 골격을 공
 - **공유 토큰 변경 시**: 3파일 모두 수동 동기 — design.md spec이 cross-file token reference 미지원이라 자동화 불가.
 
 ## Colors
-
-### v111 — 카테고리 옅은 바탕 (2026-09-30)
-
-SEED 의 배너 색(`$color.banner.*` 10색)을 porest 에 둘지 보고, 같은 자리에서 쓰는 porest 의 옅은 바탕을 팔레트 단계로 정했다. 사용자가 비교 페이지(https://claude.ai/artifact/Re8MSU1eb6VKwg3wfySbHS)에서 넷을 정했다 — 배너 10색은 두지 않음 · 작은 면 200 · 다크 300 · 넓은 면은 한 단계 옅게 따로 · 글자 · 아이콘은 v109 규칙.
-
-**아직 두 웹 · 앱에는 들어가지 않았다.**
-
-- SEED 의 안내 메시지(Callout · Page Banner)는 배너 색이 아니라 역할 색(약한 배경 + 대비 글자)을 쓴다 — porest 에는 v102 · v109 로 있다. `$color.banner.*` 는 SEED 컴포넌트 104개 가운데 쓰는 것이 없는 장식 색이고, porest 에는 홍보 배너 자리가 없어 두지 않는다.
-- 대신 차트 10색을 화면마다 따로 섞던 옅은 바탕(웹 타일 18% · 캘린더 칩 17% · 메모 카드 12 ~ 16% · 앱 13 · 22%)을 토큰으로 둔다.
-
-| 토큰 | 라이트 | 다크 | 쓰는 곳 |
-|---|---|---|---|
-| chart-{hue}-weak | 200(회색 400) | 300(회색 400) | 작은 면 — 카테고리 타일 · 캘린더 칩 · 주식 나라 표시 · 태그 배지. 지금 제품과 같은 진하기(흰 바탕과 1.25:1 이상, 다크 표면과 1.38:1 이상) |
-| chart-{hue}-subtle | 100(회색 300) | 200(회색 300) | 넓은 면 — 메모 카드 · 배너. 한 단계 옅다(1.12:1 · 다크 1.15:1 이상) |
-| chart-{hue}-contrast | 800 | 900 | 옅은 바탕 위 글자 — 일반 차트 색보다 한 단계 바깥(v109 규칙). 두 바탕 위 모두 5.02:1 이상 |
-
-- 아이콘은 chart-{hue} 그대로다(라이트 700 · 다크 800) — 작은 면 위 3.63:1(라이트) · 4.35:1(다크) 이상으로 UI 3:1 을 넘는다.
-- 회색은 라이트 100 · 200 이 바닥색과 같아서 한 단계씩 진하게 둔다.
-- 대비는 머리말 `components` 의 chart-{hue}-contrast-on-{weak,subtle}-{light,dark} 40개로 lint 가 잰다.
 
 ### v110 — 차트 10색을 팔레트에서 (2026-09-30)
 
@@ -3949,8 +3748,6 @@ red → orange → yellow → green → blue → indigo → violet → pink → 
 | 라이트 표면 stroke | `chart-color-{hue}` | line 그래프 stroke |
 | 다크 표면 fill/stroke | `chart-color-{hue}-on-dark` | 다크 모드에서 `chart-{hue}-dark` 사용 |
 | 카테고리 tag | `chart-color-{hue}` | category badge, label dot |
-| 작은 면 옅은 바탕(v111) | `chart-{hue}-weak` + 글자 `chart-{hue}-contrast` · 아이콘 `chart-{hue}` | 카테고리 타일 · 캘린더 칩 · 주식 나라 표시 |
-| 넓은 면 옅은 바탕(v111) | `chart-{hue}-subtle` + 글자 `chart-{hue}-contrast` | 메모 카드 · 배너 |
 
 #### Layout
 - pie/donut: 1~5 slice 권장 (그 이상은 가독성 저하 → "기타"로 묶기)
