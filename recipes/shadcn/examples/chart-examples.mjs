@@ -11,8 +11,9 @@ const HEADER = "display:flex; flex-direction:column; gap:var(--spacing-xs); marg
 const TITLE = "font-size:var(--text-title-md); line-height:var(--text-title-md--line-height); font-weight:var(--text-title-md--font-weight); color:var(--color-text-primary);";
 const SUBTITLE = "font-size:var(--text-body-sm); line-height:var(--text-body-sm--line-height); color:var(--color-text-secondary);";
 
-const PALETTE_5 = ["chart-red", "chart-orange", "chart-yellow", "chart-green", "chart-blue"];
-const PALETTE_7 = [...PALETTE_5, "chart-indigo", "chart-violet"];
+// v110 배정 순서(제품 순서) — blue → green → orange → violet → pink → indigo → red → yellow → brown → gray
+const PALETTE_5 = ["chart-blue", "chart-green", "chart-orange", "chart-violet", "chart-pink"];
+const PALETTE_7 = [...PALETTE_5, "chart-indigo", "chart-red"];
 
 function barChartHR() {
   const data = [42, 38, 28, 25, 18, 14, 9];

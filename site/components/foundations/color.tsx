@@ -1,6 +1,6 @@
 // Color 페이지 — 색 값은 DESIGN*.md colors 블록에서만 온다
 import type { CSSProperties, ReactNode } from 'react';
-import { BRAND_ROLES, color, colorStep, contrast, design, palette, roleAliases, roleColors, type Brand } from '@/lib/design-tokens';
+import { BRAND_ROLES, CHART_ORDER, color, colorStep, contrast, design, palette, roleAliases, roleColors, type Brand } from '@/lib/design-tokens';
 import { Chip, Figure, Swatch, Table, Token } from './ui';
 
 type Mode = 'light' | 'dark';
@@ -321,24 +321,29 @@ export function BrandPaletteTable() {
 }
 
 // ── 차트 ───────────────────────────────────────────────────
-// 아직 팔레트 밖의 10색 — 다크 표면에서는 `-light` 짝
-function Tile({ name, hex }: { name: string; hex: string }) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <span className="block h-14 rounded-lg border border-black/10 dark:border-white/15" style={{ background: hex }} />
-      <code className="text-[12px] text-fd-foreground">{name}</code>
-      <span className="text-[12px] tabular-nums text-fd-muted-foreground">{hex.toUpperCase()}</span>
-    </div>
-  );
-}
-
-const chartHues = () => Object.keys(design('shared').front.colors).filter((k) => /^chart-[a-z]+$/.test(k));
-
-export function ChartGrid() {
+// v110 — 팔레트 단계(라이트 700 · 다크 800-dark). 색을 고르지 않은 항목이 받는 순서대로 그린다
+export function ChartRamp() {
   const c = design('shared').front.colors;
+  const modes: [Mode, string][] = [['light', '라이트'], ['dark', '다크']];
   return (
-    <div className="not-prose my-6 grid grid-cols-4 gap-4 sm:grid-cols-5">
-      {chartHues().flatMap((k) => [<Tile key={k} name={k} hex={c[k]} />, <Tile key={`${k}-light`} name={`${k}-light`} hex={c[`${k}-light`]} />])}
+    <div className="not-prose my-6 overflow-hidden rounded-xl border border-fd-border">
+      {modes.map(([m, label]) => (
+        <div key={m} className="px-3 py-3 sm:px-4" style={{ background: rc('bg-layer-default', m) }}>
+          <span className="mb-2 block text-[12px] font-medium" style={{ color: rc('fg-neutral-subtle', m) }}>{label}</span>
+          <div className="grid gap-[3px] sm:gap-1" style={{ gridTemplateColumns: `repeat(${CHART_ORDER.length}, minmax(0, 1fr))` }}>
+            {CHART_ORDER.map((h, i) => {
+              const name = m === 'dark' ? `chart-${h}-dark` : `chart-${h}`;
+              return (
+                <div key={h} className="flex min-w-0 flex-col items-center gap-1" title={`${name} ${c[name]}`}>
+                  <span className="block h-10 w-full rounded-md" style={{ background: c[name] }} />
+                  <span className="text-[10px] font-semibold tabular-nums sm:text-[11px]" style={{ color: rc('fg-neutral', m) }}>{i + 1}</span>
+                  <span className="hidden text-[10px] lg:block" style={{ color: rc('fg-neutral-subtle', m) }}>{h}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
@@ -355,12 +360,12 @@ export function ContrastNote({ fg, bg, brand = 'desk' }: { fg: string; bg: strin
 export function ChartTable() {
   const c = design('shared').front.colors;
   return (
-    <Table head={['토큰', '라이트 표면', '다크 표면']} minWidth={480}>
-      {chartHues().map((k) => (
-        <tr key={k}>
-          <td><Token>{k}</Token></td>
-          <td><Swatch hex={c[k]} /></td>
-          <td><Swatch hex={c[`${k}-light`]} /></td>
+    <Table head={['토큰', '라이트', '다크']} minWidth={480}>
+      {CHART_ORDER.map((h) => (
+        <tr key={h}>
+          <td><Token>{`chart-${h}`}</Token></td>
+          <td><StepSwatch hex={c[`chart-${h}`]} step={colorStep(`chart-${h}`)} /></td>
+          <td><StepSwatch hex={c[`chart-${h}-dark`]} step={colorStep(`chart-${h}-dark`)} /></td>
         </tr>
       ))}
     </Table>

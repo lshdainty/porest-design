@@ -80,7 +80,7 @@ export function typeScale() {
 
 // 역할 색 — 라이트 값과 `-dark` 짝을 한 줄로
 export type RoleColor = { name: string; light: string; dark?: string };
-const PALETTE_STEP = /^(gray|red|green|orange|blue|brand)-(00|\d+)(-dark)?$/;
+const PALETTE_STEP = /^(gray|red|green|orange|blue|yellow|indigo|violet|pink|brown|brand)-(00|\d+)(-dark)?$/;
 export function roleColors(brand: Brand = 'shared') {
   const { colors: c, colorRefs } = design(brand).front;
   const rows: RoleColor[] = [];
@@ -92,6 +92,8 @@ export function roleColors(brand: Brand = 'shared') {
   }
   return rows;
 }
+// v110 — 색을 고르지 않은 항목이 받는 차트 색 순서(제품 순서)
+export const CHART_ORDER = ['blue', 'green', 'orange', 'violet', 'pink', 'indigo', 'red', 'yellow', 'brown', 'gray'];
 export const BRAND_ROLES = ['fg-brand', 'fg-brand-contrast', 'bg-brand-solid', 'bg-brand-solid-pressed', 'bg-brand-weak', 'bg-brand-weak-pressed', 'stroke-focus-ring', 'stroke-brand-solid', 'stroke-brand-weak'];
 
 // 역할이 가리키는 팔레트 단계("gray-200") — 옛 이름이면 역할을 거쳐 끝까지

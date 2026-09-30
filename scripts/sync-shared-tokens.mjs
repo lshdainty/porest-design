@@ -49,6 +49,9 @@ const SHARED_COLORS = new Set([
   "chart-indigo", "chart-violet", "chart-pink", "chart-brown", "chart-gray",
   "chart-red-light", "chart-orange-light", "chart-yellow-light", "chart-green-light", "chart-blue-light",
   "chart-indigo-light", "chart-violet-light", "chart-pink-light", "chart-brown-light", "chart-gray-light",
+  // v110 — 차트 다크 짝의 새 이름(-light 는 별칭)
+  "chart-red-dark", "chart-orange-dark", "chart-yellow-dark", "chart-green-dark", "chart-blue-dark",
+  "chart-indigo-dark", "chart-violet-dark", "chart-pink-dark", "chart-brown-dark", "chart-gray-dark",
   // v102 — SEED 역할 색 (colors-3)
   "fg-neutral", "fg-neutral-dark", "fg-neutral-muted", "fg-neutral-muted-dark", "fg-neutral-subtle",
   "fg-neutral-subtle-dark", "fg-neutral-inverted", "fg-neutral-inverted-dark", "fg-placeholder",
@@ -77,7 +80,8 @@ const SHARED_COLORS = new Set([
 ]);
 
 // v108 — 공유 팔레트(colors-0). 회색은 00 · 100 ~ 1000, 의미 색 가족은 100 ~ 1000, 단계마다 -dark
-for (const fam of ["gray", "red", "green", "orange", "blue"]) {
+// v110 — 차트용 가족 다섯(yellow · indigo · violet · pink · brown)
+for (const fam of ["gray", "red", "green", "orange", "blue", "yellow", "indigo", "violet", "pink", "brown"]) {
   const steps = fam === "gray" ? ["00", 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000] : [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
   for (const s of steps) { SHARED_COLORS.add(`${fam}-${s}`); SHARED_COLORS.add(`${fam}-${s}-dark`); }
 }
