@@ -1,6 +1,6 @@
 // Inclusive Design 페이지 — 대비는 역할 색으로 계산하고, 터치 영역은 touch-min, 오류 표현은 State 절 규칙을 따른다
 import { CircleAlert, TrendingDown, TrendingUp, X } from 'lucide-react';
-import { color, contrast, proseValue, px, specSize, type Brand } from '@/lib/design-tokens';
+import { color, contrast, proseValue, px, specPartSize, specSize, type Brand } from '@/lib/design-tokens';
 import { Figure, MARK, MARK_LINE, Table, Token, Verdict, Swatch } from './ui';
 
 type Mode = 'light' | 'dark';
@@ -66,7 +66,7 @@ export function ContrastTable() {
 
 export function TouchTargetFigure() {
   const touch = px(proseValue('touch-min'));
-  const check = specSize('checkbox', 'md', 'default');
+  const check = specPartSize('checkbox', { size: 'medium' }, 'checkmark');
   const small = (icon: number, label: string) => {
     const w = icon + 8;
     return (

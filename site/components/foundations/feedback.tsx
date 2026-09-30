@@ -1,7 +1,7 @@
 // Feedback 페이지 — 눌림 색은 DESIGN*.md 의 역할 색, 축소 상수 · 시간은 "눌림 피드백" 표 · motion 표,
 // 예로 드는 요소의 크기는 컴포넌트 YAML 에서 온다
 import type { CSSProperties, ReactNode } from 'react';
-import { color, design, pressScale, proseTokenSet, proseValue, px, roleColors, sectionCode, specSize, specSlot, type Brand } from '@/lib/design-tokens';
+import { color, design, pressScale, proseTokenSet, proseValue, px, roleColors, sectionCode, specPartSize, specSize, specSlot, type Brand } from '@/lib/design-tokens';
 import { Figure, Panel, Swatch, Table, Token, Verdict } from './ui';
 import { PressDemo } from './press-demo';
 
@@ -348,7 +348,7 @@ export function ScaleResultTable() {
   const icon = specSize('button', 'medium', 'enabled', 'iconOnly');
   const btn = specSize('button', 'small');
   const lg = specSize('button', 'large');
-  const check = specSize('checkbox', 'md', 'default');
+  const check = specPartSize('checkbox', { size: 'medium' }, 'checkmark');
   const { mobile } = widths();
   const rows: [string, number, number][] = [
     ['아이콘 버튼', icon.width ?? icon.height, icon.height],

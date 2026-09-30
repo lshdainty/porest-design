@@ -3430,12 +3430,12 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 | 컴포넌트 | radius | 값 | 비고 |
 |---|---|---|---|
 | **Form / Action** | | | |
-| `button` (sm/md/lg) | `sm` | 4px | Toss 절제 톤 |
+| `button` | `r2` · `r3` · `full` | 8px · 12px · 9999px | small · medium 8, large 12, xsmall 알약 — 2026-09-30 SEED Action Button 구조(v112, `specs/components/button.yaml`) |
 | `input` / `textarea` | `sm` | 4px | |
 | `select` / `combobox` / `date-picker` | `sm` | 4px | popover trigger 포함 |
 | `slider` (track) | `full` | 9999px | |
 | `toggle` / `toggle-group` item | `sm` | 4px | |
-| `checkbox` | `xs` | 2px | 작은 박스에 옅은 라운드 |
+| `checkbox` (칸) | `r1` | 4px | SEED Checkmark(2026-09-30, `specs/components/checkbox.yaml`). 이 표는 2px 이었지만 스펙 · 코드는 4px 이었다 |
 | `radio-group` item | `full` | 9999px | 원형 |
 | `switch` (track + thumb) | `full` | 9999px | 알약 |
 | **Display** | | | |
@@ -4251,6 +4251,8 @@ binary on/off 상태 또는 group 선택을 표현하는 form control 3종. 공�
 | active 표시(핸들/체크) | `text-on-accent` (`#FFFFFF`) | `text-on-accent` |
 | disabled | opacity 0.5 + cursor:not-allowed (1.4.3 incidental) |
 
+**Checkbox 는 2026-09-30 SEED 구조로 바뀌었다**(아래 Checkbox · `specs/components/checkbox.md`) — 선택은 `bg-neutral-inverted`(짙은 회색)가 기본이고 브랜드 채움은 `tone="brand"` 일 때만, 선택 안 된 칸의 테두리는 `stroke-neutral-solid`, 비활성은 전용 색. 위 표는 Radio · Switch 의 지금 값이다 — 각 차례에 같은 규칙으로 옮긴다(사용자 결정).
+
 #### Switch
 - 크기: `lg` 32×20 (track) / `md` 28×16 / `sm` 24×14
 - 핸들(thumb): track height - 4px, `radius-full`
@@ -4260,13 +4262,15 @@ binary on/off 상태 또는 group 선택을 표현하는 form control 3종. 공�
 #### Checkbox
 > 상세 spec(Anatomy / Sizes / States / Motion / Accessibility / Do-Don't)은 [`specs/components/checkbox.md`](specs/components/checkbox.md)가 단일 SoT. 코드(`recipes/shadcn/components/ui/checkbox.tsx`) · 예제(`recipes/shadcn/examples/checkbox-examples.mjs`) · preview 4 source 동기.
 
-- 크기: `sm` 16 / `md` 18 (default) / `lg` 20 — DESIGN.md `### Selection controls` 정합.
-- box radius: `radius-sm` (4px) — 외곽선 1px + checked 시 `primary` 채움 + 흰 체크(stroke 3).
-- indeterminate: 가로 dash `text-on-accent` — 부모-자식 그룹 일부 선택 표현.
-- 터치 타겟은 control 단독으론 작음(16-20). **반드시 label까지 묶어 row hit area ≥ 44** 확보 (WCAG 2.5.5 AAA).
+- 구조: 칸(Checkmark) · 칸 + 라벨(Checkbox) · 묶음(Checkbox Group) — SEED Checkbox(2026-09-30).
+- 크기: `medium` 칸 20 · 라벨 14 · 줄 32(기본) / `large` 24 · 16 · 36. 모서리 `radius-r1` (4px).
+- 모양: `square`(칸 + 체크, 기본) · `ghost`(칸 없이 체크만 — 필수가 아니고 셋 이하). 톤: `neutral`(짙은 회색, 기본) · `brand`.
+- 일부 선택(indeterminate): 가로줄 — 부모 · 자식 묶음에서 자식을 일부만 골랐을 때.
+- 터치 타겟은 칸 단독으론 작음(20 · 24). **반드시 라벨까지 묶어 44** 확보(WCAG 2.5.5 AAA) — 목록 행에 칸만 넣으면 행 전체.
+- 오류는 칸을 바꾸지 않는다 — 묶음 아래 글로 알린다.
 
 #### Radio
-- 크기: 18×18 default, sm 16×16, lg 20×20 (Checkbox와 동일)
+- 크기: 18×18 default, sm 16×16, lg 20×20 (Checkbox 의 옛 크기와 같다 — Radio 차례에 옮긴다)
 - box radius: `radius-full`
 - inner dot: 8×8 `text-on-accent` `radius-full`
 - selected motion: dot 등장 `motion-duration-fast` scale
@@ -4274,12 +4278,12 @@ binary on/off 상태 또는 group 선택을 표현하는 form control 3종. 공�
 #### Layout
 - label 위치: control 우측 (LTR) — control과 label 간 `sm` (8px) 간격
 - 그룹 spacing:
-  - vertical group: 항목 간 `md` (12px) ~ `lg` (16px)
+  - vertical group: 항목 간 `md` (12px) ~ `lg` (16px) — Checkbox 묶음은 줄 최소 높이 32 · 36 에 줄 사이 4(`specs/components/checkbox.yaml`)
   - horizontal group: 항목 간 `lg` (16px)
 - group label (group 제목): control 위 `caption` + `xs` 간격
 
 #### Touch target (WCAG 2.5.5)
-- control 자체는 18×18 (작음) — **반드시 label까지 포함한 hit area가 44×44px 이상** 확보 필수
+- control 자체는 작음(Radio 18 · Checkbox 칸 20) — **반드시 label까지 포함한 hit area가 44×44px 이상** 확보 필수
 - label 클릭으로도 toggle/select 가능 (`<label for="...">` 또는 control wrap)
 
 #### Accessibility
@@ -4295,7 +4299,7 @@ binary on/off 상태 또는 group 선택을 표현하는 form control 3종. 공�
   - Radio: arrow keys (`↑`/`↓` 또는 `←`/`→`)로 group 내 이동, 선택 즉시
   - Tab으로 group 진입 → 첫 번째 또는 현재 선택값으로 focus
 - [ ] **disabled 상태**: control + label 모두 disabled 표시 + 1.4.3 incidental
-- [ ] **error 상태** (form validation 실패): control 외곽선 `error` 색 + alert text 동반
+- [ ] **error 상태** (form validation 실패): control 외곽선 `error` 색 + alert text 동반(Radio · Switch). Checkbox 는 칸을 바꾸지 않고 묶음 아래 글로(2026-09-30)
 
 ### Avatar (v58 추가)
 

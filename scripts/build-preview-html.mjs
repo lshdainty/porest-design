@@ -907,101 +907,172 @@ export function renderButtonGallery(brand) {
   </section>`;
 }
 
-// checkbox helper — spec: specs/components/checkbox.md
-const CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-const DASH_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+// Checkbox — spec: specs/components/checkbox.md · 수치 checkbox.yaml. 구조는 SEED Checkbox(2026-09-30).
+// 칸 .checkbox(Checkmark) · 칸 + 라벨 .checkbox-row(Checkbox) · 묶음 .checkbox-group. 아이콘은 lucide Check · Minus, 선 3.
+const CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+const MINUS_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/></svg>';
+// 옛 크기 이름은 새 크기로 — sm 16 · md 18 → medium 20, lg 20 → large 24(checkbox.md Migration notes)
+const CHECKBOX_SIZE = { medium: "medium", large: "large", sm: "medium", md: "medium", lg: "large" };
+const CHECKBOX_INTERACTIONS = ["hover", "focus", "pressed"];
 
-export function cbox({ state = "default", size = "md", id = "" } = {}) {
-  const modifiers = [`checkbox--${size}`];
-  let icon = "";
-  let aria = "false";
-  if (state === "checked") { modifiers.push("checkbox--checked"); icon = CHECK_SVG; aria = "true"; }
-  else if (state === "indeterminate") { modifiers.push("checkbox--indeterminate"); icon = DASH_SVG; aria = "mixed"; }
-  else if (state === "focus") modifiers.push("checkbox--focus");
-  else if (state === "disabled") modifiers.push("checkbox--disabled");
-  else if (state === "error") modifiers.push("checkbox--error");
-  const isDisabled = state === "disabled";
-  return `<button type="button" role="checkbox" aria-checked="${aria}"${isDisabled ? " disabled" : ""}${state === "error" ? ` aria-invalid="true"` : ""}${id ? ` id="${id}"` : ""} class="checkbox ${modifiers.join(" ")}">${icon}</button>`;
+// label 이 있으면 칸 + 라벨 한 줄(<label class="checkbox-row">), 없으면 칸만 — 칸만 쓰면 name 을 aria-label 로 단다.
+//   size         medium(기본) · large. 옛 sm · md · lg 도 받는다
+//   shape        square(기본) · ghost(칸 없이 체크만 — 선택 안 됨도 옅은 체크)
+//   tone         neutral(기본, 짙은 회색) · brand(서비스 핵심 흐름에서만)
+//   state        체크 여부 — unchecked(기본) · checked · indeterminate. 옛 이름도 받는다: default → unchecked,
+//                focus → unchecked + 포커스 고정, disabled → unchecked + disabled, error → unchecked(오류 칸은 없다 — 묶음 아래 글)
+//   disabled     전용 색(흐리게 하지 않는다)
+//   weight       라벨 굵기 — regular(기본) · bold(강조 · 묶음의 부모)
+//   interaction  hover · focus · pressed — 갤러리에서 그 순간을 고정해 보여 줄 때만(.btn-state-* 와 같은 역할)
+export function cbox({ size = "medium", shape = "square", tone = "neutral", state = "unchecked", disabled = false, label = "", weight = "regular", interaction = "", name = "", id = "" } = {}) {
+  if (state === "focus") { state = "unchecked"; interaction = interaction || "focus"; }
+  else if (state === "disabled") { state = "unchecked"; disabled = true; }
+  else if (state !== "checked" && state !== "indeterminate") state = "unchecked";
+  const large = CHECKBOX_SIZE[size] === "large";
+  const ghost = shape === "ghost";
+  const aria = state === "checked" ? "true" : state === "indeterminate" ? "mixed" : "false";
+  // Square 는 선택 안 됨에 아이콘이 없다. Ghost 는 선택 안 됨에도 옅은 체크를 보인다
+  const icon = state === "indeterminate" ? MINUS_SVG : state === "checked" || ghost ? CHECK_SVG : "";
+  const cls = [
+    "checkbox",
+    large && "checkbox--large",
+    ghost && "checkbox--ghost",
+    tone === "brand" && "checkbox--brand",
+    CHECKBOX_INTERACTIONS.includes(interaction) && `checkbox--${interaction}`,
+  ].filter(Boolean).join(" ");
+  const attrs = (id ? ` id="${escape(id)}"` : "") + (!label && name ? ` aria-label="${escape(name)}"` : "") + (disabled ? " disabled" : "");
+  const box = `<button type="button" role="checkbox" aria-checked="${aria}" class="${cls}"${attrs}>${icon}</button>`;
+  if (!label) return box;
+  const labelCls = weight === "bold" ? "checkbox-label checkbox-label--bold" : "checkbox-label";
+  return `<label class="checkbox-row${large ? " checkbox-row--large" : ""}">${box}<span class="${labelCls}">${escape(label)}</span></label>`;
 }
 
+// 모양 · 톤 × 체크 여부 · 체크 여부 × 상태 · 크기 × 굵기 · 묶음 네 판을 흰 표면(.vignette-card) 위에 그린다.
 export function renderCheckboxGallery(brand) {
-  const states = [
-    { key: "default", label: "DEFAULT", desc: "surface-default + border-strong" },
-    { key: "hover", label: "HOVERED", desc: "bg-surface-input (hover affordance)", state: "default", hover: true },
-    { key: "checked", label: "CHECKED", desc: "bg-primary + 흰 체크 (stroke 3)" },
-    { key: "indeterminate", label: "INDETERMINATE", desc: "bg-primary + 흰 dash (부모-자식 그룹)" },
-    { key: "focus", label: "FOCUSED", desc: "2px border-focus + 2px offset (다크는 light)" },
-    { key: "disabled", label: "DISABLED", desc: "opacity 0.5 + cursor not-allowed" },
-    { key: "error", label: "ERROR", desc: "border-error + ring 30% · aria-invalid" },
+  const head = (first, cols) => `<div class="cb-matrix-row cb-matrix-row--head"><div class="cb-matrix-head">${escape(first)}</div>${
+    cols.map(c => `<div class="cb-matrix-head">${escape(c.ko)}<span>${escape(c.en)}</span></div>`).join("")
+  }</div>`;
+  const row = (ko, en, cells) => `
+        <div class="cb-matrix-row"><div class="cb-matrix-label">${escape(ko)}<span>${escape(en)}</span></div>${
+          cells.map(c => `<div class="cb-matrix-cell">${c}</div>`).join("")
+        }</div>`;
+  const panel = (title, sub, cols, body) => `
+    <div class="vignette-card cb-panel">
+      <div class="vignette-head">
+        <div class="vignette-title">${escape(title)}</div>
+        <div class="vignette-sub">${escape(sub)}</div>
+      </div>
+      <div class="cb-matrix" style="--cb-cols: ${cols};">
+        ${body}
+      </div>
+    </div>`;
+
+  // 1. 모양 · 톤 × 체크 여부(비활성 포함) — 칸만
+  const looks = [
+    { ko: "칸 · 짙은 회색", en: "square · neutral — 기본", shape: "square", tone: "neutral" },
+    { ko: "칸 · 브랜드", en: "square · brand", shape: "square", tone: "brand" },
+    { ko: "체크만 · 짙은 회색", en: "ghost · neutral", shape: "ghost", tone: "neutral" },
+    { ko: "체크만 · 브랜드", en: "ghost · brand", shape: "ghost", tone: "brand" },
   ];
+  const checks = [
+    { ko: "선택 안 됨", en: "unchecked", state: "unchecked" },
+    { ko: "선택", en: "checked", state: "checked" },
+    { ko: "일부 선택", en: "indeterminate", state: "indeterminate" },
+    { ko: "비활성", en: "disabled", state: "unchecked", disabled: true },
+    { ko: "비활성 · 선택", en: "disabled · checked", state: "checked", disabled: true },
+    { ko: "비활성 · 일부 선택", en: "disabled · indeterminate", state: "indeterminate", disabled: true },
+  ];
+  const checkedPanel = panel(
+    "모양 · 톤 × 체크 여부",
+    "선택 안 된 칸은 테두리(stroke-neutral-solid) · 투명 바탕, 선택 · 일부 선택은 테두리 없이 채운다. Ghost 는 칸 없이 체크만 — 선택 안 됨도 옅은 체크. 비활성은 전용 색이고 흐리게 하지 않는다.",
+    checks.length,
+    head("모양 · 톤", checks) + looks.map(l => row(l.ko, l.en,
+      checks.map(c => cbox({ shape: l.shape, tone: l.tone, state: c.state, disabled: c.disabled, name: `${l.ko} — ${c.ko}` })),
+    )).join(""),
+  );
 
-  const matrix = states.map(s => {
-    let cb;
-    if (s.hover) {
-      cb = `<span class="checkbox checkbox--md" style="background:var(--color-surface-input);"></span>`;
-    } else {
-      cb = cbox({ state: s.key });
-    }
-    return `
-    <div class="cb-matrix-label">${s.label}</div>
-    <div>${cb}</div>
-    <div class="cb-matrix-desc">${escape(s.desc)}</div>`;
-  }).join("");
+  // 2. 체크 여부 × 상태 — 칸만
+  const stateRows = [
+    { ko: "칸 · 선택 안 됨", en: "square · unchecked", shape: "square", tone: "neutral", state: "unchecked" },
+    { ko: "칸 · 짙은 회색 선택", en: "square · neutral · checked", shape: "square", tone: "neutral", state: "checked" },
+    { ko: "칸 · 브랜드 선택", en: "square · brand · checked", shape: "square", tone: "brand", state: "checked" },
+    { ko: "체크만 · 선택 안 됨", en: "ghost · unchecked", shape: "ghost", tone: "neutral", state: "unchecked" },
+    { ko: "체크만 · 짙은 회색 선택", en: "ghost · neutral · checked", shape: "ghost", tone: "neutral", state: "checked" },
+    { ko: "체크만 · 브랜드 선택", en: "ghost · brand · checked", shape: "ghost", tone: "brand", state: "checked" },
+  ];
+  const states = [
+    { ko: "기본", en: "enabled", interaction: "" },
+    { ko: "호버", en: "hovered", interaction: "hover" },
+    { ko: "포커스", en: "focused", interaction: "focus" },
+    { ko: "누름", en: "pressed", interaction: "pressed" },
+  ];
+  const statePanel = panel(
+    "체크 여부 × 상태",
+    "호버 · 포커스 · 누름은 그 순간을 멈춰 그렸다. 호버는 누름 색, 누름은 누름 색 + 칸만 세로 2px 축소(라벨은 줄지 않는다), 포커스는 키보드에만 링 2px · 띄움 2px.",
+    states.length,
+    head("체크 여부", states) + stateRows.map(r => row(r.ko, r.en,
+      states.map(s => cbox({ shape: r.shape, tone: r.tone, state: r.state, interaction: s.interaction, name: `${r.ko} — ${s.ko}` })),
+    )).join(""),
+  );
 
-  const sizes = ["sm", "md", "lg"].map((sz, i) => {
-    const dim = sz === "sm" ? 16 : sz === "md" ? 18 : 20;
-    const note = sz === "md" ? " (default)" : "";
-    return `<div class="cb-size-cell">${cbox({ state: "checked", size: sz })}<span>${sz} · ${dim}${note}</span></div>`;
-  }).join("");
+  // 3. 크기 × 굵기 — 칸 + 라벨
+  const sizes = [
+    { ko: "medium", en: "칸 20 · 라벨 14 · 줄 32 — 기본", size: "medium" },
+    { ko: "large", en: "칸 24 · 라벨 16 · 줄 36", size: "large" },
+  ];
+  const sizeRows = [
+    { ko: "선택 안 됨", en: "unchecked", args: {} },
+    { ko: "선택", en: "checked", args: { state: "checked" } },
+    { ko: "일부 선택", en: "indeterminate", args: { state: "indeterminate" } },
+    { ko: "체크만", en: "ghost · checked", args: { shape: "ghost", state: "checked" } },
+    { ko: "굵게", en: "weight bold", args: { weight: "bold", state: "checked" } },
+    { ko: "비활성", en: "disabled", args: { disabled: true, label: "이 카드 기억하기" } },
+    { ko: "비활성 · 선택", en: "disabled · checked", args: { disabled: true, state: "checked", label: "이 카드 기억하기" } },
+  ];
+  const sizePanel = panel(
+    "크기 × 굵기",
+    "칸 · 라벨 · 줄 높이가 함께 정해진다. 칸과 라벨 사이 8, 라벨은 regular 400 — 강조나 묶음의 부모는 bold 700. 라벨까지 눌리고, 누르는 영역은 44 까지 넓힌다.",
+    sizes.length,
+    head("체크 여부", sizes) + sizeRows.map(r => row(r.ko, r.en,
+      sizes.map(s => cbox({ label: "단종된 카드도 보기", ...r.args, size: s.size })),
+    )).join(""),
+  );
 
-  const sample = brand.key === "hr"
-    ? [
-        { label: "엔지니어링", state: "checked", id: "cb-hr-eng" },
-        { label: "디자인", state: "checked", id: "cb-hr-design" },
-        { label: "PM", state: "default", id: "cb-hr-pm" },
-        { label: "HR / 운영", state: "default", id: "cb-hr-ops" },
-      ]
-    : brand.key === "desk"
-      ? [
-          { label: "필수 약관", state: "checked", id: "cb-desk-1" },
-          { label: "마케팅 수신 (선택)", state: "default", id: "cb-desk-2" },
-          { label: "개인정보 수집 동의", state: "checked", id: "cb-desk-3" },
-        ]
-      : [
-          { label: "기본 토큰", state: "checked", id: "cb-sh-1" },
-          { label: "확장 토큰", state: "default", id: "cb-sh-2" },
-          { label: "Deprecated", state: "default", id: "cb-sh-3" },
-        ];
+  // 4. 묶음 — 부모는 자식을 따른다(모두 → 선택, 일부 → 일부 선택, 없음 → 선택 안 됨)
+  const items = [
+    { label: "거래 내역", on: true },
+    { label: "예산", on: true },
+    { label: "메모", on: false },
+    { label: "할 일", on: false },
+  ];
+  const parent = items.every(i => i.on) ? "checked" : items.some(i => i.on) ? "indeterminate" : "unchecked";
+  const groupPanel = `
+    <div class="vignette-card cb-panel">
+      <div class="vignette-head">
+        <div class="vignette-title">묶음 · 일부 선택</div>
+        <div class="vignette-sub">부모(전체 · bold)를 맨 위에 둔다 — 자식을 일부만 고르면 부모는 일부 선택(가로줄). 세로로 쌓고 줄 사이 4, 들여쓰지 않는다. 오류는 칸을 바꾸지 않고 묶음 아래 글로 알린다.</div>
+      </div>
+      <div class="cb-group-legend" id="cb-group-export">내보낼 데이터</div>
+      <div class="checkbox-group" role="group" aria-labelledby="cb-group-export">
+        ${cbox({ label: "전체", weight: "bold", state: parent })}
+        ${items.map(i => cbox({ label: i.label, state: i.on ? "checked" : "unchecked" })).join("\n        ")}
+      </div>
+    </div>`;
 
-  const groupTitle = brand.key === "hr" ? "필터링할 부서" : brand.key === "desk" ? "약관 동의" : "토큰 그룹";
-  const parentState = sample.every(s => s.state === "checked") ? "checked" : sample.some(s => s.state === "checked") ? "indeterminate" : "default";
-  const groupRows = sample.map(s => `
-    <div class="cb-row">${cbox({ state: s.state, id: s.id })}<label class="cb-row-label" for="${s.id}">${escape(s.label)}</label></div>`).join("");
-
-  const lede = "Spec: specs/components/checkbox.md — sm 16 / md 18 (default) / lg 20 · radius-sm · stroke 3 · 터치 타겟은 label 포함 row hit area로 확보.";
+  const lede = "SEED Checkbox 구조 — 칸(Checkmark) · 칸 + 라벨(Checkbox) · 묶음(Checkbox Group). 선택 색은 짙은 회색(neutral)이 기본이고 brand 는 서비스 핵심 흐름에서만. 비활성은 전용 색(흐리게 하지 않는다), 오류 칸은 없다 — 묶음 아래 글로 알린다."
+    + (brand.key === "shared" ? " 공유 토큰에는 브랜드 역할 색이 없어 brand 톤이 여기서는 중립으로 보인다 — HR · Desk 미리보기에서 브랜드 색이다." : "");
 
   return `
   <section class="section">
     <header class="section-head">
       <div class="section-eyebrow">03b — Checkbox</div>
-      <h2 class="section-title">State · Size · Group</h2>
+      <h2 class="section-title">크기 2 · 모양 2 · 톤 2 · 체크 여부 3</h2>
       <p class="section-lede">${escape(lede)}</p>
     </header>
-    <div class="cb-matrix">${matrix}</div>
-    <div class="cb-size-row" style="margin-top: var(--spacing-xl);">
-      <div class="btn-size-label">size</div>
-      ${sizes}
-    </div>
-    <div class="vignette-card" style="margin-top: var(--spacing-xl);">
-      <div class="vignette-head">
-        <div class="vignette-title">${escape(groupTitle)} — parent ${parentState}</div>
-        <div class="vignette-sub">label 클릭 시 row 전체 toggle (htmlFor)</div>
-      </div>
-      <div style="display:flex; flex-direction:column; gap:var(--spacing-sm);">
-        <div class="cb-row">${cbox({ state: parentState, id: "cb-parent" })}<label class="cb-row-label" for="cb-parent">전체 선택</label></div>
-        <div style="display:flex; flex-direction:column; gap:var(--spacing-sm); padding-left:24px;">${groupRows}</div>
-      </div>
-    </div>
+    ${checkedPanel}
+    ${statePanel}
+    ${sizePanel}
+    ${groupPanel}
   </section>`;
 }
 
@@ -1912,11 +1983,11 @@ export function renderShadcnData(brand) {
         <div class="dt">
           <div class="dt-bulk">3개 선택됨 · <button class="dt-bulk-btn">${brand.key === "hr" ? "일괄 승인" : brand.key === "desk" ? "보관" : "Export"}</button> · <button class="dt-bulk-btn">삭제</button></div>
           <table class="dt-table">
-            <thead><tr><th>${cbox({ state: "indeterminate" })}</th><th>${brand.key === "hr" ? "신청자" : brand.key === "desk" ? "제목" : "Token"} <span class="dt-sort">↑</span></th><th>${brand.key === "hr" ? "기간" : brand.key === "desk" ? "수정일" : "Value"}</th><th>${brand.key === "hr" ? "상태" : brand.key === "desk" ? "태그" : "Type"}</th></tr></thead>
+            <thead><tr><th>${cbox({ state: "indeterminate", name: "모두 선택" })}</th><th>${brand.key === "hr" ? "신청자" : brand.key === "desk" ? "제목" : "Token"} <span class="dt-sort">↑</span></th><th>${brand.key === "hr" ? "기간" : brand.key === "desk" ? "수정일" : "Value"}</th><th>${brand.key === "hr" ? "상태" : brand.key === "desk" ? "태그" : "Type"}</th></tr></thead>
             <tbody>
-              <tr><td>${cbox({ state: "checked" })}</td><td>${brand.key === "hr" ? "김지원" : brand.key === "desk" ? "Porest 톤" : "primary"}</td><td>${brand.key === "hr" ? "5/12-14" : brand.key === "desk" ? "2시간 전" : "#357B5F"}</td><td><span class="dt-badge dt-badge--success">${brand.key === "hr" ? "승인" : brand.key === "desk" ? "공개" : "color"}</span></td></tr>
-              <tr><td>${cbox({ state: "checked" })}</td><td>${brand.key === "hr" ? "이도현" : brand.key === "desk" ? "5월 회고" : "primary-light"}</td><td>${brand.key === "hr" ? "5/15-16" : brand.key === "desk" ? "어제" : "#5DAD86"}</td><td><span class="dt-badge dt-badge--warning">${brand.key === "hr" ? "대기" : brand.key === "desk" ? "초안" : "color"}</span></td></tr>
-              <tr><td>${cbox({ state: "checked" })}</td><td>${brand.key === "hr" ? "최가람" : brand.key === "desk" ? "참고 자료" : "border-focus"}</td><td>${brand.key === "hr" ? "5/20" : brand.key === "desk" ? "3일 전" : "#357B5F"}</td><td><span class="dt-badge">${brand.key === "hr" ? "반려" : brand.key === "desk" ? "보관" : "color"}</span></td></tr>
+              <tr><td>${cbox({ state: "checked", name: "이 행 선택" })}</td><td>${brand.key === "hr" ? "김지원" : brand.key === "desk" ? "Porest 톤" : "primary"}</td><td>${brand.key === "hr" ? "5/12-14" : brand.key === "desk" ? "2시간 전" : "#357B5F"}</td><td><span class="dt-badge dt-badge--success">${brand.key === "hr" ? "승인" : brand.key === "desk" ? "공개" : "color"}</span></td></tr>
+              <tr><td>${cbox({ state: "checked", name: "이 행 선택" })}</td><td>${brand.key === "hr" ? "이도현" : brand.key === "desk" ? "5월 회고" : "primary-light"}</td><td>${brand.key === "hr" ? "5/15-16" : brand.key === "desk" ? "어제" : "#5DAD86"}</td><td><span class="dt-badge dt-badge--warning">${brand.key === "hr" ? "대기" : brand.key === "desk" ? "초안" : "color"}</span></td></tr>
+              <tr><td>${cbox({ state: "checked", name: "이 행 선택" })}</td><td>${brand.key === "hr" ? "최가람" : brand.key === "desk" ? "참고 자료" : "border-focus"}</td><td>${brand.key === "hr" ? "5/20" : brand.key === "desk" ? "3일 전" : "#357B5F"}</td><td><span class="dt-badge">${brand.key === "hr" ? "반려" : brand.key === "desk" ? "보관" : "color"}</span></td></tr>
             </tbody>
           </table>
         </div>
@@ -2914,8 +2985,6 @@ export function pageCss() {
     .btn-cell-head, .btn-row-label { font-weight: 600; font-size: var(--text-caption); color: var(--color-text-secondary); line-height: 1.4; }
     .btn-cell-head span, .btn-row-label span { display: block; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 400; color: var(--color-text-tertiary); }
     .btn-cell { display: flex; align-items: center; }
-    /* checkbox 갤러리의 size 줄도 쓴다 */
-    .btn-size-label { width: 100px; font-weight: 600; font-size: var(--text-caption); color: var(--color-text-secondary); }
 
     /* Vignettes */
     .vignette-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg); }
@@ -2975,52 +3044,200 @@ export function pageCss() {
     .kpi-value { font-size: var(--text-display-sm); font-weight: 700; line-height: 1.2; }
     .kpi-delta { font-size: 11px; color: var(--color-text-secondary); margin-top: var(--spacing-xs); }
 
-    /* checkbox — spec: specs/components/checkbox.md (단일 SoT) */
+    /* === Checkbox — specs/components/checkbox.md · checkbox.yaml(수치 원본) · checkbox.tsx 와 같은 모양 ===
+       구조는 SEED Checkbox(2026-09-30) — 칸 .checkbox(Checkmark) · 칸 + 라벨 .checkbox-row(Checkbox) · 묶음 .checkbox-group.
+       크기 medium 20(기본) · large 24, 모양 square(기본) · ghost, 톤 neutral(기본) · brand, 체크 여부는 aria-checked(false · true · mixed).
+       모양 · 톤 · 체크 여부는 색을 --checkbox-* 변수에 담기만 하고, 상태(호버 · 누름 · 비활성)가 그 변수를 골라 칠한다(.btn 과 같은 방식).
+       옛 sm 16 · md 18 · lg 20 · 빨간 오류 테두리 · 50% 흐림은 없다(checkbox.md Migration notes) — 오류는 묶음 아래 글이다.
+       다크 짝은 이 블록 끝의 [data-theme="dark"] .checkbox 에서 바꾼다. */
     .checkbox {
+      /* 브랜드 역할 색 — 공유 토큰(DESIGN.md)에는 없어 중립으로 떨어진다(.btn 과 같은 대체 사슬) */
+      --checkbox-brand-solid: var(--color-bg-brand-solid, var(--color-primary, var(--color-bg-neutral-inverted)));
+      --checkbox-brand-solid-pressed: var(--color-bg-brand-solid-pressed, var(--color-primary, var(--color-bg-neutral-inverted-pressed)));
+      /* 브랜드 채움 위 체크 — 브랜드 색이 있으면 static-white, 없으면 중립 채움의 글자색(.btn-brand-solid 와 같은 식) */
+      --checkbox-brand-white: color-mix(in srgb, var(--color-bg-brand-solid, var(--color-primary)) 0%, var(--color-static-white));
+      --checkbox-brand-on-solid: var(--checkbox-brand-white, var(--color-fg-neutral-inverted));
+      --checkbox-brand-fg: var(--color-fg-brand, var(--color-primary, var(--color-fg-neutral)));
+      --checkbox-brand-weak-pressed: var(--color-bg-brand-weak-pressed, var(--color-bg-neutral-weak));
+      --checkbox-focus-ring: var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral)));
+      /* 톤 — 선택 · 일부 선택의 색. 기본 neutral(짙은 회색) */
+      --checkbox-solid: var(--color-bg-neutral-inverted);
+      --checkbox-solid-pressed: var(--color-bg-neutral-inverted-pressed);
+      --checkbox-on-solid: var(--color-fg-neutral-inverted);
+      --checkbox-ghost-fg: var(--color-fg-neutral);
+      --checkbox-ghost-pressed: var(--color-bg-neutral-weak);
+      /* 칸이 쓰는 값 — 기본은 square · 선택 안 됨 */
+      --checkbox-bg: transparent;
+      --checkbox-bg-pressed: var(--color-bg-layer-default-pressed);
+      --checkbox-border: var(--color-stroke-neutral-solid);
+      --checkbox-fg: var(--color-fg-neutral-inverted);
+      --checkbox-bg-disabled: var(--color-bg-disabled);
+      --checkbox-border-disabled: var(--color-stroke-neutral-weak);
+      /* 크기 기본 = medium. 누름 배율 = (기준 − 2) ÷ 기준 — 기준은 max(칸, 24) 라 두 크기 모두 24(22/24) */
+      --press-basis: 24;
+      --checkbox-icon-size: 12px;
+      position: relative;
+      display: inline-grid;
+      place-items: center;
+      flex-shrink: 0;
       box-sizing: border-box;
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 18px; height: 18px;
-      border: 1px solid var(--color-border-strong);
-      border-radius: var(--radius-sm);
-      background: var(--color-surface-default);
-      color: var(--color-text-on-accent);
-      cursor: pointer;
+      width: 20px;
+      height: 20px;
+      margin: 0;
       padding: 0;
-      transition: background-color var(--motion-duration-fast) var(--motion-ease-out), border-color var(--motion-duration-fast) var(--motion-ease-out);
+      appearance: none;
+      border: 1px solid var(--checkbox-border);
+      border-radius: var(--radius-r1);
+      background: var(--checkbox-bg);
+      color: var(--checkbox-fg);
+      cursor: pointer;
+      vertical-align: middle;
+      transition:
+        background-color var(--motion-duration-color-transition) var(--motion-ease-easing),
+        border-color var(--motion-duration-color-transition) var(--motion-ease-easing),
+        color var(--motion-duration-color-transition) var(--motion-ease-easing),
+        scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
     }
-    .checkbox:hover { background: var(--color-surface-input); }
-    .checkbox--sm { width: 16px; height: 16px; }
-    .checkbox--md { width: 18px; height: 18px; }
-    .checkbox--lg { width: 20px; height: 20px; }
-    .checkbox--checked,
-    .checkbox--indeterminate {
-      background: var(--color-primary, var(--color-text-primary));
-      border-color: var(--color-primary, var(--color-text-primary));
+    .checkbox svg { display: block; width: var(--checkbox-icon-size); height: var(--checkbox-icon-size); pointer-events: none; }
+    /* 크기 × 모양 — 칸과 아이콘. Ghost 는 칸이 없어 아이콘이 크다(12 · 14 → 14 · 18) */
+    .checkbox.checkbox--large { width: 24px; height: 24px; --checkbox-icon-size: 14px; }
+    .checkbox.checkbox--ghost { --checkbox-icon-size: 14px; }
+    .checkbox.checkbox--ghost.checkbox--large { --checkbox-icon-size: 18px; }
+    /* 톤 brand — 서비스 핵심 흐름에서만 */
+    .checkbox.checkbox--brand {
+      --checkbox-solid: var(--checkbox-brand-solid);
+      --checkbox-solid-pressed: var(--checkbox-brand-solid-pressed);
+      --checkbox-on-solid: var(--checkbox-brand-on-solid);
+      --checkbox-ghost-fg: var(--checkbox-brand-fg);
+      --checkbox-ghost-pressed: var(--checkbox-brand-weak-pressed);
     }
-    .checkbox--checked:hover,
-    .checkbox--indeterminate:hover {
-      background: var(--color-primary, var(--color-text-primary));
+    /* Square · 선택 · 일부 선택 — 테두리 없이 톤 색으로 채운다 */
+    .checkbox[aria-checked="true"],
+    .checkbox[aria-checked="mixed"] {
+      --checkbox-bg: var(--checkbox-solid);
+      --checkbox-bg-pressed: var(--checkbox-solid-pressed);
+      --checkbox-fg: var(--checkbox-on-solid);
+      border-width: 0;
     }
-    .checkbox--focus { outline: 2px solid var(--color-border-focus); outline-offset: 2px; }
-    .checkbox--disabled {
-      opacity: 0.5; cursor: not-allowed;
-      background: var(--color-surface-input);
-      border-color: var(--color-border-default);
+    /* Ghost — 칸 없이 체크만. 선택 안 됨도 옅은 체크(fg-placeholder), 비활성에도 바탕을 깔지 않는다 */
+    .checkbox.checkbox--ghost {
+      --checkbox-bg: transparent;
+      --checkbox-bg-pressed: var(--color-bg-layer-default-pressed);
+      --checkbox-fg: var(--color-fg-placeholder);
+      --checkbox-bg-disabled: transparent;
+      border-width: 0;
     }
-    .checkbox--error {
-      border-color: var(--color-error);
-      box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-error) 30%, transparent);
+    .checkbox--ghost[aria-checked="true"],
+    .checkbox--ghost[aria-checked="mixed"] {
+      --checkbox-fg: var(--checkbox-ghost-fg);
+      --checkbox-bg-pressed: var(--checkbox-ghost-pressed);
     }
-    .checkbox svg { width: 12px; height: 12px; }
-    .checkbox--sm svg { width: 10px; height: 10px; }
-    .checkbox--lg svg { width: 14px; height: 14px; }
-    .cb-row { display: flex; align-items: center; gap: var(--spacing-sm); }
-    .cb-row-label { font-size: var(--text-label-md); font-weight: 500; color: var(--color-text-primary); cursor: pointer; line-height: 1.2; }
-    .cb-matrix { display: grid; grid-template-columns: 140px auto 1fr; gap: var(--spacing-sm) var(--spacing-md); align-items: center; }
-    .cb-matrix-label { font-size: var(--text-label-sm); font-weight: 500; color: var(--color-text-secondary); letter-spacing: 0.06em; white-space: nowrap; }
-    .cb-matrix-desc { font-size: var(--text-caption); color: var(--color-text-tertiary); }
-    .cb-size-row { display: flex; align-items: end; gap: var(--spacing-xl); }
-    .cb-size-cell { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-xs); font-family: ui-monospace, monospace; font-size: var(--text-caption); color: var(--color-text-tertiary); }
+
+    /* 상태 — 호버 = 누름 색(v106, hover 되는 기기에서만). 누름 = 누름 색 + 칸만 세로 2px 거리 축소(v104), 라벨은 줄지 않는다.
+       라벨을 눌러도 칸이 반응한다(.checkbox-row). .checkbox--hover · --focus · --pressed 는 갤러리에서 그 순간을 고정해 보여 주는 클래스다. */
+    @media (hover: hover) {
+      .checkbox:hover,
+      .checkbox-row:hover .checkbox:not(:disabled) { background: var(--checkbox-bg-pressed); }
+    }
+    .checkbox.checkbox--hover { background: var(--checkbox-bg-pressed); }
+    .checkbox:active,
+    .checkbox-row:active .checkbox:not(:disabled),
+    .checkbox.checkbox--pressed {
+      background: var(--checkbox-bg-pressed);
+      scale: calc(1 - 2 / var(--press-basis));
+    }
+    /* 포커스 — 키보드 포커스에만 링 2px · 띄움 2px(v106) */
+    .checkbox:focus-visible,
+    .checkbox.checkbox--focus { outline: 2px solid var(--checkbox-focus-ring); outline-offset: 2px; }
+    /* 비활성 — 전용 색(v106). 불투명도로 흐리게 하지 않고, 호버 · 누름에 반응하지 않는다 */
+    .checkbox:disabled {
+      background: var(--checkbox-bg-disabled);
+      border-color: var(--checkbox-border-disabled);
+      color: var(--color-fg-disabled);
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    /* 모션 줄이기 — 축소하지 않는다(누름은 색으로만) */
+    @media (prefers-reduced-motion: reduce) {
+      .checkbox:active,
+      .checkbox-row:active .checkbox:not(:disabled),
+      .checkbox.checkbox--pressed { scale: 1; }
+    }
+
+    /* 칸 + 라벨 한 줄(Checkbox) — 라벨까지 눌린다. 줄 높이 32 · 36, 칸과 라벨 사이 8 */
+    .checkbox-row {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-x2);
+      min-height: 32px;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .checkbox-row--large { min-height: 36px; }
+    /* 누르는 영역 44 — 라벨까지 묶은 줄이 44 보다 작으면 가로 · 세로 44 까지 넓힌다(기초 Inclusive) */
+    .checkbox-row::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 100%;
+      height: 100%;
+      min-width: 44px;
+      min-height: 44px;
+      translate: -50% -50%;
+    }
+    .checkbox-row:has(.checkbox:disabled) { cursor: not-allowed; pointer-events: none; }
+    .checkbox-label {
+      font-family: var(--font-sans);
+      font-size: var(--text-t4);
+      line-height: var(--text-t4--line-height);
+      font-weight: 400;
+      color: var(--color-fg-neutral);
+    }
+    .checkbox-row--large .checkbox-label { font-size: var(--text-t5); line-height: var(--text-t5--line-height); }
+    .checkbox-label--bold { font-weight: 700; }
+    .checkbox:disabled + .checkbox-label { color: var(--color-fg-disabled); }
+    /* 묶음(Checkbox Group) — 세로로 쌓고 줄 사이 4. 부모는 맨 위에 두고 들여쓰지 않는다 */
+    .checkbox-group { display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-x1); }
+
+    /* 다크 — 역할 색을 체크박스 안에서만 다크 짝으로 바꾼다(.btn 과 같다 — 전역 다크 블록은 옛 이름만 바꾼다).
+       라벨이 쓰는 값은 줄(.checkbox-row)에서 바꾼다. 공유 토큰(DESIGN.md)에 없는 브랜드 짝은 비어서 위 대체값(중립)으로 떨어진다. */
+    [data-theme="dark"] .checkbox,
+    [data-theme="dark"] .checkbox-row {
+      --color-bg-brand-solid: var(--color-bg-brand-solid-dark);
+      --color-bg-brand-solid-pressed: var(--color-bg-brand-solid-pressed-dark);
+      --color-bg-brand-weak-pressed: var(--color-bg-brand-weak-pressed-dark);
+      --color-fg-brand: var(--color-fg-brand-dark);
+      --color-stroke-focus-ring: var(--color-stroke-focus-ring-dark);
+      --color-stroke-neutral-solid: var(--color-stroke-neutral-solid-dark);
+      --color-stroke-neutral-weak: var(--color-stroke-neutral-weak-dark);
+      --color-bg-layer-default-pressed: var(--color-bg-layer-default-pressed-dark);
+      --color-bg-neutral-inverted: var(--color-bg-neutral-inverted-dark);
+      --color-bg-neutral-inverted-pressed: var(--color-bg-neutral-inverted-pressed-dark);
+      --color-fg-neutral-inverted: var(--color-fg-neutral-inverted-dark);
+      --color-bg-neutral-weak: var(--color-bg-neutral-weak-dark);
+      --color-fg-neutral: var(--color-fg-neutral-dark);
+      --color-fg-placeholder: var(--color-fg-placeholder-dark);
+      --color-bg-disabled: var(--color-bg-disabled-dark);
+      --color-fg-disabled: var(--color-fg-disabled-dark);
+    }
+
+    /* Checkbox 갤러리 — 흰 표면(.vignette-card) 위 표. 페이지 바탕(bg-layer-basement)이 bg-disabled 와 같은 gray-200 이라
+       바탕에 바로 두면 비활성 칸이 보이지 않는다. 열 수는 --cb-cols 로 받는다. */
+    .cb-panel { overflow-x: auto; }
+    .cb-panel + .cb-panel { margin-top: var(--spacing-lg); }
+    .cb-matrix { display: grid; gap: var(--spacing-sm); }
+    .cb-matrix-row { display: grid; grid-template-columns: 168px repeat(var(--cb-cols), minmax(96px, 1fr)); gap: var(--spacing-sm); align-items: center; }
+    .cb-matrix-row--head { align-items: end; padding-bottom: var(--spacing-xs); border-bottom: 1px solid var(--color-border-default); }
+    .cb-matrix-head, .cb-matrix-label { font-weight: 600; font-size: var(--text-caption); color: var(--color-text-secondary); line-height: 1.4; }
+    .cb-matrix-head span, .cb-matrix-label span { display: block; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 400; color: var(--color-text-tertiary); }
+    .cb-matrix-cell { display: flex; align-items: center; min-height: 36px; }
+    .cb-group-legend { margin-bottom: var(--spacing-xs); font-size: var(--text-caption); font-weight: 600; color: var(--color-text-secondary); }
+    @media (max-width: 900px) {
+      .cb-matrix-row { grid-template-columns: 120px repeat(var(--cb-cols), minmax(96px, 1fr)); }
+    }
 
     /* todo-card */
     .todo-list { display: flex; flex-direction: column; gap: 2px; }

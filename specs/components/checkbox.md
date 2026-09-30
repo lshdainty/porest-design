@@ -1,158 +1,305 @@
 # Checkbox
 
-> 다중 선택 또는 단일 confirm을 표현하는 form control. 그룹 내 단일 선택은 Radio, 즉시 적용되는 on/off는 Switch — DESIGN.md `### Selection controls` 의미 분기 참조.
+> 사용자가 하나 이상의 옵션을 고르게 하는 컴포넌트. 여러 항목 가운데 여러 개를 고르거나, 저장하기 전에 켜고 끌 것을 모아 둘 때 쓴다.
 
-Porest Checkbox는 **3 sizes × 6 states (default · checked · indeterminate · focused · disabled · error)** 매트릭스로 정의됩니다. Toss 톤(절제 · 신뢰감)을 따라 `radius-sm`(4px) + 단단한 1px 외곽선 + checked 시 `primary` 채움 + 흰 체크 아이콘. **터치 타겟은 control 자체가 아닌 label까지 포함한 hit area**가 책임 — control은 시각적으로 작게 두고 라벨 클릭으로 toggle 가능하게 묶어야 WCAG 2.5.5 AAA 44×44 충족.
+구조는 당근 [SEED Checkbox](https://seed-design.io/components/checkbox)(Apache-2.0)를 따른다 — 칸(Checkmark) · 칸 + 라벨(Checkbox) · 묶음(Checkbox Group). 값은 porest 토큰이고, SEED 와 다른 자리는 맨 아래 "SEED 와 다른 점" 에 적었다(2026-09-30 사용자 결정).
+
+수치 원본은 [`checkbox.yaml`](checkbox.yaml) 이다. 수치 표 자리(`[표: …]`)와 그림 자리(`[그림: …]`)는 사이트가 그 파일로 그린다 — GitHub 에서는 그 파일 · 그림 코드로 가는 링크로 보인다.
+
+[그림: 선택 안 됨 · 선택 · 일부 선택 — Square 의 neutral · brand 와 Ghost, 위는 라이트 아래는 다크](../../site/components/specs/checkbox.tsx#hero)
+
+### 직접 골라 보기
+
+크기 · 모양 · 톤 · 굵기 · 상태를 고르면 스펙대로 그린 Checkbox 와 그 코드가 바뀐다. 칸은 실제로 눌러 볼 수 있다.
+
+[그림: 플레이그라운드](../../site/components/specs/checkbox.tsx#playground)
 
 ## Anatomy
 
-```
-┌────────────────────────────────────────┐
-│  ┌──────┐                              │
-│  │ ⓐ □  │  ⓑ label text                │
-│  └──────┘                              │
-│  ⓒ focus ring (focus-visible only)     │
-│  ⓓ helper / error text (optional)      │
-└────────────────────────────────────────┘
-```
+[그림: Checkbox 는 칸(Checkmark)과 라벨로 이뤄진다 — 칸은 따로 떼어 목록 행에 넣어 쓸 수 있다](../../site/components/specs/checkbox.tsx#anatomy)
 
-| ⓐ control | 정사각형 컨테이너 + 1px 외곽선. checked/indeterminate 시 `primary` 채움. `radius-sm`(4px) 고정. |
-| ⓑ label | 우측 외부. `label-md`(14/500) 기본. `<label htmlFor="...">` 또는 `aria-labelledby` 필수. label 클릭 시 control toggle. |
-| ⓒ focus ring | `focus-visible` 한정. 2px ring + 2px offset. 라이트는 `border-focus`, 다크는 `border-focus-light` 자동 alias. |
-| ⓓ helper / error text | (옵션) 아래 외부. `caption`(12/400). 에러 시 `text-error` + `aria-describedby` 연결. |
+| ⓐ Checkmark | 칸 — 배경 · 테두리 · 모양. 체크 · 가로줄 아이콘이 들어간다. 따로 떼어 목록 행 · 표 머리에 쓴다. |
+| ⓑ Icon | 체크(선택) · 가로줄(일부 선택). lucide `Check` · `Minus`, 선 3. |
+| ⓒ Label | 무엇을 고르는지. 칸과 함께 눌린다. |
+| ⓓ Focus ring | 키보드 포커스에만 2px 링 · 2px 띄움(v106). |
 
-**규칙**
+[표: 부위](checkbox.yaml#slots)
 
-- control 자체는 16–20px(작음) → **반드시 label까지 묶어 hit area 44×44 이상** 확보. 가장 간단한 방법은 `<label>`로 control + 텍스트를 감싸 padding으로 키우기.
-- 라벨 없는 단독 checkbox는 `aria-label` 필수 (스크린리더 대응).
-- placeholder는 사용하지 않음 — checkbox는 텍스트 입력이 아님.
+## Properties
 
-## Variants
+### Size
 
-Checkbox는 **variant 없음** — 시각 위계는 size로만 표현, 의미 분기는 state(checked/indeterminate)에 위임. 한 화면에서 시각 통일이 가독성 · 일관성에 유리합니다.
+두 가지다. 칸 · 라벨 · 줄 높이가 함께 정해진다.
 
-## Sizes
+- `medium`(칸 20 · 라벨 14 · 줄 32) — 기본. 화면 안의 목록 · 설정.
+- `large`(칸 24 · 라벨 16 · 줄 36) — 한 화면의 중심 선택, 모바일에서 홀로 서는 선택.
 
-`box-sizing: border-box` 기준 외부 정사각 한 변 = 토큰 값 그대로(16 / 18 / 20). border 1px은 그 안에 inset.
+누르는 영역은 라벨까지 묶어 가로 · 세로 44 까지 넓힌다(기초 Inclusive — 44 는 반드시).
+
+[그림: 크기 두 가지 — 칸 · 라벨 · 줄 높이](../../site/components/specs/checkbox.tsx#sizes)
 
 [표: 크기](checkbox.yaml#size)
 
-[표: 공통](checkbox.yaml#base.default)
+칸 모양마다 아이콘 크기가 다르다 — Ghost 는 칸이 없어 아이콘이 크다.
 
-Tailwind utility 매핑 (checkbox.tsx cva):
-- `sm`: `size-4 [&_svg]:size-2.5`
-- `md`: `size-[18px] [&_svg]:size-3`
-- `lg`: `size-5 [&_svg]:size-3.5`
+[표: 크기별 아이콘 — Square](checkbox.yaml#grid.size.shape.square)
 
-**규칙**
+[표: 크기별 아이콘 — Ghost](checkbox.yaml#grid.size.shape.ghost)
 
-- `sm`은 dense list/toolbar 한정 (예: 표 헤더 select-all). 모바일 터치 우선 화면에서는 `lg` 권장 + label `gap-3`로 hit area 강화.
-- `lg`는 single-question form, 약관 동의처럼 강조가 필요한 상황. 모바일 sticky form footer.
-- size 변경 시에도 check icon `stroke-width`는 항상 3 (Toss 톤 — 명확한 체크 표식).
+모든 조합에 공통인 값:
 
-## States
+[표: 공통](checkbox.yaml#base)
 
-6개 visual state. Radix `data-state` attribute(unchecked/checked/indeterminate) + native 가상 selectors(`:hover`, `:focus-visible`, `:disabled`)로 적용.
+### Weight
 
-### State matrix (default size 기준)
+라벨 굵기다. 강조하거나 묶음의 부모처럼 한 단계 위에 설 때 `bold`.
 
-[표: 체크 상태별](checkbox.yaml#checked)
+[그림: 라벨 굵기 — regular · bold](../../site/components/specs/checkbox.tsx#weight)
 
-[표: 상태 매트릭스 — unchecked](checkbox.yaml#matrix.checked.unchecked)
+[표: 굵기](checkbox.yaml#weight)
 
-[표: 체크 상태별로 바뀌는 값](checkbox.yaml#states.checked)
+### Tone
 
-### Hover 상세
+선택했을 때의 색이다. **`neutral`(짙은 회색)이 기본**이고, 브랜드 색(`brand`)은 서비스 핵심 흐름에서만 쓴다 — 버튼에서 정한 "브랜드 색은 꼭 필요한 곳에만" 과 같다. Radio · Switch 도 같은 규칙이다(각 차례에 옮긴다).
 
-unchecked hover는 `bg-surface-input`로 미세한 affordance만 — checked/disabled 상태는 hover 효과 없음(이미 강조된 상태이거나 비활성).
+[그림: 톤 두 가지 — neutral · brand(Desk · HR)](../../site/components/specs/checkbox.tsx#tones)
 
-### Motion
+### Shape
+
+- `square` — 칸 + 체크. 여러 개를 고르는 목록, 사용자가 알고 골라야 하는 선택(기본).
+- `ghost` — 칸 없이 체크만. 선택 안 됨도 옅은 체크로 보인다. 필수가 아니고 셋 이하일 때.
+
+Desk 할 일 완료의 동그라미 체크는 Checkbox 의 모양이 아니다 — 할 일 목록 컴포넌트 차례에 정한다(사용자 결정).
+
+[그림: 모양 두 가지 — Square · Ghost](../../site/components/specs/checkbox.tsx#shapes)
+
+### State
+
+체크 여부(선택 안 됨 · 선택 · 일부 선택)와 상호작용 상태가 곱해진다.
+
+| 상태 | 모습 |
+|---|---|
+| `enabled` | 기본 |
+| `hovered` | 웹. 누름 색과 같다(v106), 축소는 없다 |
+| `focused` | 웹. 키보드 포커스에만 링 2px · 띄움 2px(v106) |
+| `pressed` | 누름 색 + 칸 세로 2px 거리 축소(v104). 라벨은 줄지 않는다 |
+| `disabled` | 전용 색(`bg-disabled` · `fg-disabled`, v106). 불투명도로 흐리게 하지 않는다 |
+
+[그림: 체크 여부 × 상태 — 호버 · 포커스 · 누름은 그 순간을 멈춰 그렸다](../../site/components/specs/checkbox.tsx#states)
+
+[표: 상태 매트릭스 — Square · 선택 안 됨](checkbox.yaml#matrix.checked.unchecked)
+
+[표: 상태 매트릭스 — Square · neutral · 선택](checkbox.yaml#matrix.checked.checked)
+
+[표: 상태 매트릭스 — Ghost · neutral · 선택](checkbox.yaml#matrix.shape.ghost.checked.checked)
+
+[그림: 직접 눌러 보기 — 칸이나 라벨을 누르면 바뀐다(Tab 으로 포커스)](../../site/components/specs/checkbox.tsx#live)
 
 [표: 모션](checkbox.yaml#motion)
 
-`prefers-reduced-motion: reduce` 시 globally 0.01ms 단축 (DESIGN.md keyframes 가이드).
+### Group
 
-## Layout
+여러 항목을 묶어 세로로 쌓는다. 부모 Checkbox 를 맨 위에 둘 수 있다 — 부모를 고르면 자식이 모두 선택되고, 자식을 일부만 고르면 부모는 일부 선택(가로줄)이 된다.
 
-**Single checkbox + label**
+[그림: 묶음 — 부모를 눌러 보거나 자식을 하나씩 눌러 보면 부모가 따라 바뀐다](../../site/components/specs/checkbox.tsx#group)
+
+[표: 묶음](checkbox.yaml#base@group)
+
+## Guidelines
+
+### 누르는 영역
+
+라벨을 포함한 줄 전체가 누르는 영역이다. 목록처럼 칸(Checkmark)만 행에 넣어 쓸 때는 **행 전체**가 눌려야 한다.
+
+[그림: 누르는 영역(분홍) — Checkbox 는 칸 + 라벨, 목록 행은 행 전체](../../site/components/specs/checkbox.tsx#touch-target)
+
+### 묶음 쓰기
+
+항목이 여럿이면 묶음으로 둔다. 모두를 한 번에 고를 일이 있으면 부모를 맨 위에 둔다.
+
+[그림: Desk 데이터 내보내기 — 아무것도 · 모두 · 일부 골랐을 때의 부모](../../site/components/specs/checkbox.tsx#group-guide)
+
+### 모양 고르기
+
+필수가 아니고 셋 이하면 `ghost`, 필수이거나 사용자가 알고 골라야 하면 `square` 다.
+
+[그림: 모양 고르기](../../site/components/specs/checkbox.tsx#shape-guide)
+
+### 선택 색
+
+선택 색은 짙은 회색이 기본이다. 브랜드 색은 서비스 핵심 흐름에만 — 체크가 많은 화면에 브랜드 색을 깔면 브랜드 색 버튼이 설 자리가 없어진다.
+
+[그림: 선택 색](../../site/components/specs/checkbox.tsx#tone-guide)
+
+### 오류
+
+칸 모양은 바꾸지 않는다. 묶음 아래에 무엇을 해야 하는지 글로 알린다(사용자 결정 — SEED 와 같다). 오늘 제품의 체크 오류는 모두 묶음 단위(하나 이상 고르기)다.
+
+[그림: 오류는 묶음 아래 글로](../../site/components/specs/checkbox.tsx#error)
+
+### Checkbox 와 Switch
+
+둘 다 켜고 끄는 선택을 보인다.
+
+| | Checkbox | Switch |
+|---|---|---|
+| 값이 적용될 때 | 저장 같은 액션을 해야 적용(권장) | 바로 적용(권장) |
+| 항목 구성 | 한 묶음에 여러 항목 | 항목마다 따로 |
+| 하위 항목 | 부모가 모두를 고르고 풀 수 있다 | 부모와 하위 사이 관계 없음 |
+
+[그림: 저장해야 적용되는 폼은 Checkbox, 바로 적용되는 설정은 Switch](../../site/components/specs/checkbox.tsx#vs-switch)
+
+## 코드
+
+레시피 `recipes/shadcn/components/ui/checkbox.tsx` 를 쓴다 — `Checkbox`(칸 + 라벨) · `Checkmark`(칸) · `CheckboxGroup`(묶음). 아래 미리보기는 스펙 값으로 그린 모습이다.
+
+### 기본
+
+[그림: 기본 — medium · square · neutral](../../site/components/specs/checkbox.tsx#ex-basic)
 
 ```tsx
-<div className="flex items-center gap-2">
-  <Checkbox id="terms" />
-  <label htmlFor="terms" className="text-label-md cursor-pointer">서비스 이용약관에 동의합니다</label>
-</div>
+import { Checkbox } from "@/components/ui/checkbox"
+
+<Checkbox label="단종된 카드도 보기" />
 ```
 
-- control과 label 간 `gap-2` (8px) 고정.
-- label `cursor: pointer`로 hit area 강조.
+### 크기 · 굵기
 
-**Checkbox list (vertical group)**
+[그림: 크기 · 굵기](../../site/components/specs/checkbox.tsx#ex-sizes)
 
-- 항목 간 `gap-3` (12px) ~ `gap-4` (16px).
-- group label은 위에 `label-md` + `gap-2`로 분리.
-- 4개 이상이면 scroll 영역이나 collapsible 그룹으로 분리.
+```tsx
+<Checkbox size="medium" label="medium" />
+<Checkbox size="large" label="large" />
+<Checkbox size="large" weight="bold" label="large · bold" />
+```
 
-**Checkbox group (horizontal)**
+### 모양 · 톤
 
-- 항목 간 `gap-4` (16px).
-- 모바일 좁은 화면에서는 vertical로 fallback.
+[그림: 모양 · 톤](../../site/components/specs/checkbox.tsx#ex-variants)
 
-**Indeterminate parent + nested**
+```tsx
+<Checkbox defaultChecked label="neutral" />
+<Checkbox defaultChecked tone="brand" label="brand" />
+<Checkbox defaultChecked shape="ghost" label="ghost" />
+```
 
-- 부모 checkbox `indeterminate` + 자식 일부만 checked일 때 사용.
-- 자식 들여쓰기 `pl-6` (24px) 또는 `pl-8` (32px) 권장.
+### 묶음 · 일부 선택
+
+[그림: 묶음 · 일부 선택](../../site/components/specs/checkbox.tsx#ex-group)
+
+```tsx
+const all = ["tx", "budget", "memo"] as const
+const [picked, setPicked] = useState<string[]>(["tx"])
+const parent = picked.length === all.length ? true : picked.length ? "indeterminate" : false
+
+<CheckboxGroup aria-label="내보낼 데이터">
+  <Checkbox weight="bold" label="전체" checked={parent}
+    onCheckedChange={(v) => setPicked(v === true ? [...all] : [])} />
+  <Checkbox label="거래 내역" checked={picked.includes("tx")}
+    onCheckedChange={(v) => setPicked((p) => (v ? [...p, "tx"] : p.filter((x) => x !== "tx")))} />
+  {/* 예산 · 메모도 같은 방식 */}
+</CheckboxGroup>
+```
+
+### 비활성
+
+[그림: 비활성](../../site/components/specs/checkbox.tsx#ex-disabled)
+
+```tsx
+<Checkbox disabled label="이 카드 기억하기" />
+<Checkbox disabled defaultChecked label="이 카드 기억하기" />
+```
+
+### 칸만(목록 행)
+
+행을 `<label>` 로 감싸 행 어디를 눌러도 선택되게 하고, `group/checkbox` 를 달아 행을 누르거나 올려도 칸이 누름 색 · 축소로 반응하게 한다.
+
+[그림: 칸만 — 행 전체가 누르는 영역](../../site/components/specs/checkbox.tsx#ex-checkmark)
+
+```tsx
+import { Checkmark } from "@/components/ui/checkbox"
+
+<label className="group/checkbox flex items-center gap-x3 px-x6 py-x3">
+  <Checkmark checked={selected} onCheckedChange={setSelected} aria-label="9월 25일 월급 선택" />
+  <span className="flex-1">월급</span>
+  <span>+3,200,000원</span>
+</label>
+```
 
 ## Behavior
 
 | 인터랙션 | 동작 |
 |---|---|
-| Click / Tap (control) | toggle. `disabled` 시 무시. |
-| Click / Tap (label) | 연결된 control toggle (`htmlFor` 또는 `<label>` wrap). |
-| Keyboard `Space` | toggle. focus 상태에서. `Enter`는 작동 안 함(폼 제출 별도). |
-| Keyboard `Tab` | 다음 focusable로 이동. shift+Tab은 역방향. |
-| `indeterminate` prop | 시각만 indeterminate. 클릭하면 unchecked 또는 checked로 전환(부모는 보통 `onCheckedChange` 안에서 자식 일괄 처리). |
-| Disabled | `pointer-events: none`. 클릭/keyboard 불가. focusable에서 제외. |
+| Click / Tap(칸 · 라벨) | 선택 ↔ 선택 안 됨. 일부 선택이면 선택으로. `disabled` 면 무시. |
+| Keyboard `Space` | 포커스 상태에서 누르기와 같다. `Enter` 는 폼 제출에 둔다. |
+| Keyboard `Tab` | 다음 포커스로. 묶음 안의 항목도 하나씩 들어간다. |
+| 부모(일부 선택) | 누르면 자식을 모두 선택. 다 선택이면 모두 해제. |
+| Disabled | 누르기 · 키보드 불가, 포커스에서 빠진다. |
 
-**Form 안 동작**
-
-- `<form>` 안 `<input type="checkbox">`는 native 제출에 포함. shadcn(Radix) 버전은 hidden input 자동 동기.
-- 다중 선택 결과는 배열로 처리 (`checked: string[]`).
-- 검증 시점: `onBlur`(권장) 또는 `onSubmit`. `onChange`는 즉시 빨간색 깜빡임 회피.
+**Form 안** — `<input type="checkbox">`(또는 Radix 의 숨은 input)는 폼 제출에 들어간다. 여러 개의 결과는 배열이다. 검증은 `onSubmit` 또는 묶음을 떠날 때 — 누르는 동안 오류를 띄우지 않는다.
 
 ## Accessibility
 
 | 기준 | 검증 |
 |---|---|
-| **WCAG 1.4.3** Color contrast (text ≥ 4.5:1) | label `text-primary` × `bg-page` = 14:1+ ✓ (`npm run lint:dark` 검증) |
-| **WCAG 1.4.11** Non-text contrast (UI ≥ 3:1) | unchecked `border-strong` × `bg-page` = 3.2:1+ ✓ / checked `bg-primary` × `bg-page` = 4.5:1+ ✓ |
-| **WCAG 2.4.7** Focus visible | `focus-visible:ring-2 ring-ring ring-offset-2` (keyboard focus 시만) |
-| **WCAG 2.4.11** Focus Appearance (AA) | 2px ring + 2px offset, 인접 표면 대비 3:1 충족 ✓ |
-| **WCAG 2.5.8** Target Size — Minimum (AA — ≥ 24×24) | control 단독 16/18/20 ⚠ — **label 포함 hit area로 충족** (label `cursor:pointer` + 최소 `py-2` 권장으로 row hit area ≥ 32 확보) |
-| **WCAG 2.5.5** Target Size — Enhanced (AAA — ≥ 44×44) | control 단독 ⚠ — **label 포함 row hit area로 44+ 확보 필수** (모바일 터치 우선) |
-| **ARIA** | `<input type="checkbox">` 또는 `role="checkbox"` + `aria-checked="true|false|mixed"`(mixed = indeterminate). label은 `<label htmlFor>` 또는 `aria-labelledby`. 에러 시 `aria-invalid="true"` + `aria-describedby`. 그룹은 `<fieldset>` + `<legend>` 권장. |
-| **Reduced motion** | 위 Motion 표 참조. `prefers-reduced-motion: reduce` 시 transition 0.01ms로 단축. |
+| **WCAG 1.4.3** Color contrast(라벨 ≥ 4.5:1) | 라벨 `fg-neutral` × 흰 표면 16:1+ ✓ |
+| **WCAG 1.4.11** Non-text contrast(UI ≥ 3:1) | 선택 안 된 칸 테두리 `stroke-neutral-solid` × 흰 표면 4.0:1 ✓ · 선택 채움 `bg-neutral-inverted` 16:1+ ✓ · Ghost 선택 안 됨은 `fg-placeholder` 5.5:1 ✓ |
+| **WCAG 2.4.7** Focus visible | 키보드 포커스에만 링 2px · 띄움 2px(`stroke-focus-ring`) |
+| **WCAG 2.5.8** Target Size — Minimum(AA ≥ 24×24) | 칸 20 · 24 + 라벨까지 묶은 줄 32 · 36 ✓ |
+| **WCAG 2.5.5** Target Size — Enhanced(AAA ≥ 44×44) | 라벨까지 묶어 44 로 넓힌다 ✓ — 목록 행에서 칸만 쓰면 행 전체 |
+| **ARIA** | `role="checkbox"` + `aria-checked="true · false · mixed"`(mixed = 일부 선택). 라벨은 `<label>` 로 묶거나 `aria-labelledby`. 칸만 쓰면 `aria-label` 필수. 묶음은 `<fieldset>` + `<legend>`(또는 `role="group"` + `aria-labelledby`), 오류 글은 묶음에 `aria-describedby`. |
+| **Reduced motion** | 모션 줄이기면 아이콘의 scale 을 빼고 색만 바꾼다(기초 Motion). |
 
 ## Do / Don't
 
 ### ✅ Do
 
-- 모든 checkbox에 `<label>` 페어 (시각 노출 또는 `aria-label`). 스크린리더 사용자에게 필수.
-- 다중 선택은 Checkbox, 단일 선택은 Radio — 의미를 혼동하지 말 것.
-- 부모-자식 그룹에서 일부만 checked일 때 부모는 `indeterminate`로 표시 (Radix는 `checked="indeterminate"` 명시 지원).
-- 한국어 라벨은 명사형 또는 행위형 ("동의합니다") — 일관성 유지.
-- 모바일 터치 우선 화면은 `lg` size + label `py-2` 이상으로 row hit area 44+ 확보.
+- 모든 Checkbox 에 라벨을 둔다(보이는 글자 또는 `aria-label`).
+- 여러 개 고르기는 Checkbox, 하나만 고르기는 Radio, 바로 적용되는 켜기 · 끄기는 Switch.
+- 부모 · 자식 묶음에서 일부만 고르면 부모는 일부 선택으로 둔다.
+- 목록 행에 칸만 넣으면 행 전체가 눌리게 한다.
 
 ### ❌ Don't
 
-- 즉시 적용되는 on/off에 Checkbox 사용 (→ Switch가 올바른 의미). 예: "알림 받기"는 Switch.
-- 그룹 내 단일 선택에 Checkbox 사용 (→ Radio). 예: "성별 선택"은 Radio.
-- control 단독에 hit area 의존 — label까지 묶어 row clickable로 만들 것.
-- `onChange`로 즉시 에러 표시 — 사용자 입력 중 빨간 깜빡임 회피.
-- disabled checkbox에 컨텍스트 없이 — 왜 disabled인지 helper text로 설명.
+- 바로 적용되는 켜기 · 끄기에 Checkbox — "알림 받기" 는 Switch 다.
+- 하나만 고르는 묶음에 Checkbox — Radio 를 쓴다.
+- 선택 색을 브랜드로 깔아 두기 — 브랜드 색은 핵심 흐름에서만.
+- 오류를 칸 색만으로 알리기 — 묶음 아래 글로 알린다.
+
+## Specification
+
+`checkbox.yaml` 의 규칙을 하나도 빼지 않고 조건마다 그린다 — 웹 · 앱이 Checkbox 를 만들 때 이 값을 그대로 쓴다. 조건이 없는 `Base` 가 모든 조합에 걸리고, 뒤의 규칙이 앞의 같은 값을 덮는다. 상태는 `enabled` 에서 바뀌는 값만 적었다.
+
+[그림: Specification — checkbox.yaml 의 규칙 전부](../../site/components/specs/spec-sheet.tsx#checkbox)
+
+## SEED 와 다른 점
+
+- **선택 안 된 칸의 테두리는 `stroke-neutral-solid`**(3:1 이상, v109). SEED 는 옅은 선(stroke.neutral-weak)이지만 porest 는 칸을 선으로 알아봐야 한다(1.4.11).
+- 투명한 누름(SEED bg.transparent-pressed) · 비활성 테두리(stroke.neutral-muted)는 불투명한 가장 가까운 역할(`bg-layer-default-pressed` · `stroke-neutral-weak`)로 — 8자리 hex 를 lint 가 거부한다.
+- Ghost 의 누름 바탕(SEED palette.gray-200 · carrot-200)은 역할 색 `bg-neutral-weak` · `bg-brand-weak-pressed` 로.
+- 웹의 `hovered` · `focused` 를 더한다(v106).
+- 아이콘은 lucide(선 3) — SEED 는 채운 체크 아이콘.
 
 ## Migration notes
 
-- v93 이전 `checkbox.tsx`는 `h-[18px] w-[18px]` 고정 단일 사이즈였으나 이번 동기에서 `cva size variants` (`sm` 16 / `md` 18 / `lg` 20) 도입 — DESIGN.md `### Selection controls` Checkbox 정의(16/18/20) 정합.
-- v93 이전 `rounded-xs`(2px) → `rounded-sm`(4px)로 정정 — DESIGN.md `box radius: radius-sm (4px)` 정합.
-- v93 이전 unchecked hover 없음 → `hover:bg-surface-input` 추가 (Toss 톤 미세 affordance).
-- `indeterminate` 시각은 spec에 정의됐으나 코드 미지원 → Radix `CheckboxPrimitive.Indicator`에서 `data-state="indeterminate"` 분기 추가.
+### 2026-09-30 — SEED Checkbox 구조로
+
+사용자가 비교 페이지(https://claude.ai/artifact/SERp881jg537tG3nMxeUEB)에서 정했다 — 틀은 SEED(Checkmark · Checkbox · Checkbox Group, 크기 medium 20 · large 24 + 라벨 14 · 16 + 줄 32 · 36) · 선택 색은 neutral 기본 + brand 선택(Radio · Switch 도 같은 규칙) · 모양은 Square + Ghost(할 일 동그라미는 할 일 목록 차례에) · 오류는 묶음 아래 글만.
+
+| 옛 | 새 |
+|---|---|
+| `sm`(16) · `md`(18, 기본) · `lg`(20) | `medium`(20, 기본) · `large`(24) |
+| 선택 = `primary`(브랜드) 채움 | 선택 = `bg-neutral-inverted`(짙은 회색), `tone="brand"` 면 `bg-brand-solid` |
+| 선택 안 됨 테두리 `border-strong` · 바탕 `surface-default` · 호버 `surface-input` | 테두리 `stroke-neutral-solid` · 바탕 투명 · 호버 = 누름 `bg-layer-default-pressed` |
+| 비활성 50% 흐림 | `bg-disabled` · `fg-disabled`(v106) |
+| 오류 `aria-invalid` 빨간 테두리 | 없음 — 묶음 아래 안내 글 |
+| 라벨은 쓰는 쪽이(`label-md` 14/500 · `gap-2`) | `Checkbox` 가 라벨까지 — t4 14/400(굵게는 `weight="bold"` 700) |
+| 칸 컴포넌트 이름 `Checkbox` | 칸은 `Checkmark`, `Checkbox` 는 칸 + 라벨 |
+
+제품은 앱 적용 단계에서 옮긴다 — Desk 웹 공용 Checkbox 6곳 · 앱 PCheckbox 5곳 · HR 웹 shadcn 기본 체크박스 19곳. Desk 의 손으로 그린 흉내(더치페이 참여자 · "나도 포함" · 캘린더 보이기 — 캘린더는 칸 색이 캘린더마다 제 색이라 캘린더 차례에)와 HR 의 일부 선택 없음(권한 "전체" 가 빈칸에 체크)도 그때.
+
+다른 컴포넌트 — Table 의 선택 열(`table.md` ⓙ · `table-examples.mjs`)은 칸(`Checkmark`)을 쓰고 행 전체가 누르는 영역이 된다. Table 차례에 옮긴다. 메뉴의 체크 항목(Dropdown · Context · Menubar 의 CheckboxItem)은 이 컴포넌트가 아니다.
+
+### 2026-09-29 — 수치를 YAML 로
+
+수치 표를 `checkbox.yaml` 로 옮겼다(값은 그대로). 이전 md 는 `checkbox.history/v-pre-yaml-numbers.md`.

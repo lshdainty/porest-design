@@ -3638,21 +3638,22 @@ Desk — 메모/할일/가계부에서 비활성 상태(예: 완료된 할일 to
 
 ### Switch / Checkbox / Radio (control 묶음)
 
-Desk — 할일 완료 checkbox(즉시 적용), 메모 즐겨찾기 switch, 가계부 분류 radio, 알림 설정 switch 등.
+Desk — 데이터 내보내기 · 카드 혜택 필터 checkbox, 메모 즐겨찾기 switch, 가계부 분류 radio, 알림 설정 switch 등. 할 일 완료의 동그라미 체크는 Checkbox 가 아니다 — 할 일 목록 컴포넌트 차례에 정한다(2026-09-30 사용자 결정).
 
 #### 공통 spec (신규 토큰 없음)
 - inactive: `border-strong` 1px + `surface-input` 채움
 - active: `primary` (`#0147AD`) 채움 + `text-on-accent`
 - disabled: 전용 색(v106 — State 절)
+- **Checkbox 는 2026-09-30 SEED 구조로 바뀌었다**(`specs/components/checkbox.md`) — 선택은 `bg-neutral-inverted`(짙은 회색)가 기본이고 `tone="brand"` 면 Desk 파랑, 선택 안 된 칸의 테두리는 `stroke-neutral-solid`. 위 두 줄은 Radio · Switch 의 지금 값이다 — 각 차례에 같은 규칙으로 옮긴다(사용자 결정).
 
 #### Variant
 - Switch: `lg` 32×20 (모바일 hit area 우선) — 알림 on/off, 다크모드 toggle 등
-- Checkbox: 20×20 (모바일 우선 lg 사이즈), 할일 완료 ↔ 미완료 즉시 toggle
+- Checkbox: 칸 20(`medium`, 기본) · 24(`large`) — 모바일에서 홀로 서는 선택은 `large`
 - Radio: 20×20 group, 카테고리 단일 선택
 
 #### Layout
 - 모바일 form 행: label + control 간격 `md` (12px), 행 간 `lg` (16px)
-- 할일 list 인라인 checkbox: list item left에 위치, 좌측 padding `md`
+- 목록 행에 칸(Checkmark)만 넣을 땐 행 전체가 누르는 영역(`specs/components/checkbox.md`)
 - touch hit area 44×44 필수 (모바일 우선)
 
 #### Motion
