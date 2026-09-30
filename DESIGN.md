@@ -3436,7 +3436,7 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 | `slider` (track) | `full` | 9999px | |
 | `toggle` / `toggle-group` item | `sm` | 4px | |
 | `checkbox` (칸) | `r1` | 4px | SEED Checkmark(2026-09-30, `specs/components/checkbox.yaml`). 이 표는 2px 이었지만 스펙 · 코드는 4px 이었다 |
-| `radio-group` item | `full` | 9999px | 원형 |
+| `radio-group` (동그라미 · 점) | `full` | 9999px | 원형 — SEED Radiomark(2026-09-30, `specs/components/radio-group.yaml`) |
 | `switch` (track + thumb) | `full` | 9999px | 알약 |
 | **Display** | | | |
 | `badge` | `full` | 9999px | pill (Tag/Chip 대체) |
@@ -4251,7 +4251,7 @@ binary on/off 상태 또는 group 선택을 표현하는 form control 3종. 공�
 | active 표시(핸들/체크) | `text-on-accent` (`#FFFFFF`) | `text-on-accent` |
 | disabled | opacity 0.5 + cursor:not-allowed (1.4.3 incidental) |
 
-**Checkbox 는 2026-09-30 SEED 구조로 바뀌었다**(아래 Checkbox · `specs/components/checkbox.md`) — 선택은 `bg-neutral-inverted`(짙은 회색)가 기본이고 브랜드 채움은 `tone="brand"` 일 때만, 선택 안 된 칸의 테두리는 `stroke-neutral-solid`, 비활성은 전용 색. 위 표는 Radio · Switch 의 지금 값이다 — 각 차례에 같은 규칙으로 옮긴다(사용자 결정).
+**Checkbox · Radio 는 2026-09-30 SEED 구조로 바뀌었다**(아래 Checkbox · Radio, `specs/components/checkbox.md` · `radio-group.md`) — 선택은 `bg-neutral-inverted`(짙은 회색)가 기본이고 브랜드 채움은 `tone="brand"` 일 때만, 선택 안 된 칸 · 동그라미의 테두리는 `stroke-neutral-solid`, 비활성은 전용 색. 위 표는 Switch 의 지금 값이다 — Switch 차례에 같은 규칙으로 옮긴다(사용자 결정).
 
 #### Switch
 - 크기: `lg` 32×20 (track) / `md` 28×16 / `sm` 24×14
@@ -4270,20 +4270,24 @@ binary on/off 상태 또는 group 선택을 표현하는 form control 3종. 공�
 - 오류는 칸을 바꾸지 않는다 — 묶음 아래 글로 알린다.
 
 #### Radio
-- 크기: 18×18 default, sm 16×16, lg 20×20 (Checkbox 의 옛 크기와 같다 — Radio 차례에 옮긴다)
-- box radius: `radius-full`
-- inner dot: 8×8 `text-on-accent` `radius-full`
-- selected motion: dot 등장 `motion-duration-fast` scale
+> 상세 spec(Anatomy / Sizes / States / Motion / Accessibility / Do-Don't)은 [`specs/components/radio-group.md`](specs/components/radio-group.md)가 단일 SoT. 코드(`recipes/shadcn/components/ui/radio-group.tsx`) · 예제(`recipes/shadcn/examples/radio-group-examples.mjs`) · preview 4 source 동기.
+
+- 구조: 동그라미(Radiomark) · 동그라미 + 라벨(Radio) · 묶음(Radio Group) — SEED Radio(2026-09-30).
+- 크기: `medium` 동그라미 20 · 점 8 · 라벨 14 · 줄 32(기본) / `large` 24 · 10 · 16 · 36. 모서리 `radius-full`.
+- 선택: 테두리 없이 채운 원 + 가운데 점. 톤: `neutral`(짙은 회색, 기본) · `brand`.
+- 묶음은 세로로만 쌓는다(줄 사이 12 — 줄마다 누르는 영역 44 를 온전히 받게, SEED 는 4) — 짧은 선택지를 한 줄에서 고르게 하려면 Segmented · Chip.
+- 설명 · 딸린 입력이 붙는 선택지는 Radio 가 아니라 Select Box(Select Box 차례에 정한다).
+- 오류는 동그라미를 바꾸지 않는다 — 묶음 아래 글로 알린다.
 
 #### Layout
 - label 위치: control 우측 (LTR) — control과 label 간 `sm` (8px) 간격
 - 그룹 spacing:
-  - vertical group: 항목 간 `md` (12px) ~ `lg` (16px) — Checkbox 묶음은 줄 최소 높이 32 · 36 에 줄 사이 4(`specs/components/checkbox.yaml`)
-  - horizontal group: 항목 간 `lg` (16px)
+  - vertical group: 항목 간 `md` (12px) ~ `lg` (16px) — Radio 묶음은 줄 최소 높이 32 · 36 에 줄 사이 12(`specs/components/radio-group.yaml` — 줄마다 누르는 영역 44 를 온전히 받는다, 사용자 결정 2026-09-30). Checkbox 묶음은 지금 줄 사이 4(`checkbox.yaml`) — 같은 12 로 옮긴다
+  - horizontal group: 항목 간 `lg` (16px) — Radio 는 가로로 놓지 않는다(2026-09-30)
 - group label (group 제목): control 위 `caption` + `xs` 간격
 
 #### Touch target (WCAG 2.5.5)
-- control 자체는 작음(Radio 18 · Checkbox 칸 20) — **반드시 label까지 포함한 hit area가 44×44px 이상** 확보 필수
+- control 자체는 작음(Radio 동그라미 · Checkbox 칸 20 · 24) — **반드시 label까지 포함한 hit area가 44×44px 이상** 확보 필수
 - label 클릭으로도 toggle/select 가능 (`<label for="...">` 또는 control wrap)
 
 #### Accessibility
@@ -4299,7 +4303,7 @@ binary on/off 상태 또는 group 선택을 표현하는 form control 3종. 공�
   - Radio: arrow keys (`↑`/`↓` 또는 `←`/`→`)로 group 내 이동, 선택 즉시
   - Tab으로 group 진입 → 첫 번째 또는 현재 선택값으로 focus
 - [ ] **disabled 상태**: control + label 모두 disabled 표시 + 1.4.3 incidental
-- [ ] **error 상태** (form validation 실패): control 외곽선 `error` 색 + alert text 동반(Radio · Switch). Checkbox 는 칸을 바꾸지 않고 묶음 아래 글로(2026-09-30)
+- [ ] **error 상태** (form validation 실패): control 외곽선 `error` 색 + alert text 동반(Switch). Checkbox · Radio 는 칸 · 동그라미를 바꾸지 않고 묶음 아래 글로(2026-09-30)
 
 ### Avatar (v58 추가)
 

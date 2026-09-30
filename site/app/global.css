@@ -89,3 +89,18 @@ html > body[data-scroll-locked] {
   --pc-lb: var(--pc-lb-d);
   --pc-ring: var(--pc-ring-d);
 }
+/* Radio 그림(radio-group-view) — .pchk 와 같은 방식: 라이트 · 다크 값을 둘 다 싣고 사이트 모드로 고른다 */
+.prad {
+  --pr-bg: var(--pr-bg-l);
+  --pr-bd: var(--pr-bd-l);
+  --pr-dot: var(--pr-dot-l);
+  --pr-lb: var(--pr-lb-l);
+  --pr-ring: var(--pr-ring-l);
+}
+.dark .prad[data-mode='auto'] {
+  --pr-bg: var(--pr-bg-d);
+  --pr-bd: var(--pr-bd-d);
+  --pr-dot: var(--pr-dot-d);
+  --pr-lb: var(--pr-lb-d);
+  --pr-ring: var(--pr-ring-d);
+}

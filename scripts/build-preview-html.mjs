@@ -1076,6 +1076,146 @@ export function renderCheckboxGallery(brand) {
   </section>`;
 }
 
+// Radio — spec: specs/components/radio-group.md · 수치 radio-group.yaml. 구조는 SEED Radio(2026-09-30).
+// 동그라미 .radio(Radiomark) · 동그라미 + 라벨 .radio-row(Radio) · 묶음 .radio-group. 가운데 점은 .radio-dot.
+const RADIO_INTERACTIONS = ["hover", "focus", "pressed"];
+
+// label 이 있으면 동그라미 + 라벨 한 줄(<label class="radio-row">), 없으면 동그라미만 — 동그라미만 쓰면 name 을 aria-label 로 단다.
+//   size         medium(기본) · large
+//   tone         neutral(기본, 짙은 회색) · brand(서비스 핵심 흐름에서만)
+//   checked      선택 여부 — false(기본) · true
+//   disabled     전용 색(흐리게 하지 않는다) — 선택이면 채운 원 그대로 색만 바뀐다
+//   weight       라벨 굵기 — regular(기본) · bold(강조)
+//   interaction  hover · focus · pressed — 갤러리에서 그 순간을 고정해 보여 줄 때만(.checkbox--* 와 같은 역할)
+export function radio({ size = "medium", tone = "neutral", checked = false, disabled = false, label = "", weight = "regular", interaction = "", name = "" } = {}) {
+  const large = size === "large";
+  const cls = [
+    "radio",
+    large && "radio--large",
+    tone === "brand" && "radio--brand",
+    RADIO_INTERACTIONS.includes(interaction) && `radio--${interaction}`,
+  ].filter(Boolean).join(" ");
+  const attrs = (!label && name ? ` aria-label="${escape(name)}"` : "") + (disabled ? " disabled" : "");
+  // 점은 선택 안 됨에도 넣는다 — 색만 투명하고, 선택하면 채움과 함께 색으로 바뀐다
+  const mark = `<button type="button" role="radio" aria-checked="${checked ? "true" : "false"}" class="${cls}"${attrs}><span class="radio-dot"></span></button>`;
+  if (!label) return mark;
+  const labelCls = weight === "bold" ? "radio-label radio-label--bold" : "radio-label";
+  return `<label class="radio-row${large ? " radio-row--large" : ""}">${mark}<span class="${labelCls}">${escape(label)}</span></label>`;
+}
+
+// 톤 × 선택 여부 · 선택 여부 × 상태 · 크기 × 굵기 · 묶음 네 판을 흰 표면(.vignette-card) 위에 그린다 — 표는 Checkbox 갤러리의 .cb-* 를 쓴다.
+// 오늘 제품에는 라벨만 있는 Radio 가 없다 — 라벨은 캘린더 일정의 반복 선택지를 빌렸다(radio-group.md Guidelines).
+export function renderRadioGallery(brand) {
+  const head = (first, cols) => `<div class="cb-matrix-row cb-matrix-row--head"><div class="cb-matrix-head">${escape(first)}</div>${
+    cols.map(c => `<div class="cb-matrix-head">${escape(c.ko)}<span>${escape(c.en)}</span></div>`).join("")
+  }</div>`;
+  const row = (ko, en, cells) => `
+        <div class="cb-matrix-row"><div class="cb-matrix-label">${escape(ko)}<span>${escape(en)}</span></div>${
+          cells.map(c => `<div class="cb-matrix-cell">${c}</div>`).join("")
+        }</div>`;
+  const panel = (title, sub, cols, body) => `
+    <div class="vignette-card cb-panel">
+      <div class="vignette-head">
+        <div class="vignette-title">${escape(title)}</div>
+        <div class="vignette-sub">${escape(sub)}</div>
+      </div>
+      <div class="cb-matrix" style="--cb-cols: ${cols};">
+        ${body}
+      </div>
+    </div>`;
+
+  // 1. 톤 × 선택 여부 — 동그라미 + 라벨
+  const tones = [
+    { ko: "짙은 회색", en: "neutral — 기본", tone: "neutral" },
+    { ko: "브랜드", en: "brand", tone: "brand" },
+  ];
+  const checks = [
+    { ko: "선택 안 됨", en: "unchecked", checked: false },
+    { ko: "선택", en: "checked", checked: true },
+  ];
+  const tonePanel = panel(
+    "톤 × 선택 여부",
+    "선택 안 된 동그라미는 테두리(stroke-neutral-solid) · 투명 바탕이고 톤에 따라 달라지지 않는다. 선택하면 테두리 없이 원을 채우고 가운데에 점이 선다 — neutral 은 bg-neutral-inverted 채움 + fg-neutral-inverted 점, brand 는 bg-brand-solid 채움 + 흰 점(static-white). 한 묶음 안에서 톤을 섞지 않는다.",
+    checks.length,
+    head("톤", checks) + tones.map(t => row(t.ko, t.en,
+      checks.map(c => radio({ tone: t.tone, checked: c.checked, label: "매월" })),
+    )).join(""),
+  );
+
+  // 2. 선택 여부 × 상태 — 동그라미만. 호버 · 포커스 · 누름은 고정 클래스, 비활성은 disabled 속성
+  const stateRows = [
+    { ko: "선택 안 됨", en: "unchecked", tone: "neutral", checked: false },
+    { ko: "짙은 회색 선택", en: "neutral · checked", tone: "neutral", checked: true },
+    { ko: "브랜드 선택", en: "brand · checked", tone: "brand", checked: true },
+  ];
+  const states = [
+    { ko: "기본", en: "enabled" },
+    { ko: "호버", en: "hovered", interaction: "hover" },
+    { ko: "포커스", en: "focused", interaction: "focus" },
+    { ko: "누름", en: "pressed", interaction: "pressed" },
+    { ko: "비활성", en: "disabled", disabled: true },
+  ];
+  const statePanel = panel(
+    "선택 여부 × 상태",
+    "호버 · 포커스 · 누름은 그 순간을 멈춰 그렸다. 호버는 누름 색, 누름은 누름 색 + 동그라미만 세로 2px 축소(라벨은 줄지 않는다), 포커스는 키보드에만 링 2px · 띄움 2px. 비활성은 전용 색이고 흐리게 하지 않는다 — 선택도 채운 원 그대로 색만 바뀐다.",
+    states.length,
+    head("선택 여부", states) + stateRows.map(r => row(r.ko, r.en,
+      states.map(s => radio({ tone: r.tone, checked: r.checked, interaction: s.interaction, disabled: s.disabled, name: `${r.ko} — ${s.ko}` })),
+    )).join(""),
+  );
+
+  // 3. 크기 × 굵기 — 동그라미 + 라벨
+  const sizes = [
+    { ko: "medium", en: "동그라미 20 · 점 8 · 라벨 14 · 줄 32 — 기본", size: "medium" },
+    { ko: "large", en: "동그라미 24 · 점 10 · 라벨 16 · 줄 36", size: "large" },
+  ];
+  const sizeRows = [
+    { ko: "선택 안 됨", en: "unchecked", args: {} },
+    { ko: "선택", en: "checked · weight regular", args: { checked: true } },
+    { ko: "선택 · 굵게", en: "checked · weight bold", args: { checked: true, weight: "bold" } },
+    { ko: "비활성", en: "disabled", args: { disabled: true, label: "매년" } },
+    { ko: "비활성 · 선택", en: "disabled · checked", args: { disabled: true, checked: true, label: "매년" } },
+  ];
+  const sizePanel = panel(
+    "크기 × 굵기",
+    "동그라미 · 점 · 라벨 · 줄 높이가 함께 정해진다. 동그라미와 라벨 사이 8, 라벨은 regular 400 — 강조는 bold 700. 라벨까지 눌리고, 누르는 영역은 44 까지 넓힌다.",
+    sizes.length,
+    head("선택 여부", sizes) + sizeRows.map(r => row(r.ko, r.en,
+      sizes.map(s => radio({ label: "매월", ...r.args, size: s.size })),
+    )).join(""),
+  );
+
+  // 4. 묶음 — 제목 아래 세로로 쌓고 처음 값(반복 없음)을 골라 둔다
+  const repeats = ["반복 없음", "매일", "매주", "매월", "매년"];
+  const groupPanel = `
+    <div class="vignette-card cb-panel">
+      <div class="vignette-head">
+        <div class="vignette-title">묶음</div>
+        <div class="vignette-sub">묶음 위에 무엇을 고르는지 제목을 두고 선택지를 세로로 쌓는다 — 줄 사이 12(줄마다 누르는 영역 44 를 온전히 받는다), 가로로 늘어놓지 않는다. 골라 둘 수 있으면 처음부터 하나를 골라 둔다. 오류는 동그라미를 바꾸지 않고 묶음 아래 글로 알린다. 선택지는 캘린더 일정의 반복을 빌렸다 — 오늘 제품에는 라벨만 있는 Radio 가 없다.</div>
+      </div>
+      <div class="cb-group-legend" id="rd-group-repeat">반복</div>
+      <div class="radio-group" role="radiogroup" aria-labelledby="rd-group-repeat">
+        ${repeats.map((label, i) => radio({ label, checked: i === 0 })).join("\n        ")}
+      </div>
+    </div>`;
+
+  const lede = "SEED Radio 구조 — 동그라미(Radiomark) · 동그라미 + 라벨(Radio) · 묶음(Radio Group). 선택은 테두리 없이 채운 원 + 가운데 점이다. 선택 색은 짙은 회색(neutral)이 기본이고 brand 는 서비스 핵심 흐름에서만. 비활성은 전용 색(흐리게 하지 않는다), 오류 동그라미는 없다 — 묶음 아래 글로 알린다."
+    + (brand.key === "shared" ? " 공유 토큰에는 브랜드 역할 색이 없어 brand 톤이 여기서는 중립으로 보인다 — HR · Desk 미리보기에서 브랜드 색이다." : "");
+
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">03c — Radio</div>
+      <h2 class="section-title">크기 2 · 톤 2 · 굵기 2 · 선택 여부 2</h2>
+      <p class="section-lede">${escape(lede)}</p>
+    </header>
+    ${tonePanel}
+    ${statePanel}
+    ${sizePanel}
+    ${groupPanel}
+  </section>`;
+}
+
 export function renderVignettes(brand) {
   const tabs = `
     <div class="vignette-card">
@@ -3239,6 +3379,173 @@ export function pageCss() {
       .cb-matrix-row { grid-template-columns: 120px repeat(var(--cb-cols), minmax(96px, 1fr)); }
     }
 
+    /* === Radio — specs/components/radio-group.md · radio-group.yaml(수치 원본) · radio-group.tsx 와 같은 모양 ===
+       구조는 SEED Radio(2026-09-30) — 동그라미 .radio(Radiomark) · 동그라미 + 라벨 .radio-row(Radio) · 묶음 .radio-group.
+       크기 medium 20(기본) · large 24, 톤 neutral(기본) · brand, 선택 여부는 aria-checked(false · true).
+       톤 · 선택 여부는 색을 --radio-* 변수에 담기만 하고, 상태(호버 · 누름 · 비활성)가 그 변수를 골라 칠한다(.checkbox 와 같은 방식).
+       가운데 점 .radio-dot 은 선택 안 됨에도 자리에 있고 색만 투명하다 — 채움과 함께 색으로 바뀌고, 커지거나 줄지 않는다.
+       오류 모양 · 가로 배치는 없다 — 오류는 묶음 아래 글이다. 다크 짝은 이 블록 끝의 [data-theme="dark"] .radio 에서 바꾼다.
+       갤러리의 표는 Checkbox 갤러리의 .cb-panel · .cb-matrix 를 그대로 쓴다. */
+    .radio {
+      /* 브랜드 역할 색 — 공유 토큰(DESIGN.md)에는 없어 중립으로 떨어진다(.btn · .checkbox 와 같은 대체 사슬) */
+      --radio-brand-solid: var(--color-bg-brand-solid, var(--color-primary, var(--color-bg-neutral-inverted)));
+      --radio-brand-solid-pressed: var(--color-bg-brand-solid-pressed, var(--color-primary, var(--color-bg-neutral-inverted-pressed)));
+      /* 브랜드 채움 위 점 — 브랜드 색이 있으면 static-white, 없으면 중립 채움의 점 색(.btn-brand-solid 와 같은 식) */
+      --radio-brand-white: color-mix(in srgb, var(--color-bg-brand-solid, var(--color-primary)) 0%, var(--color-static-white));
+      --radio-brand-on-solid: var(--radio-brand-white, var(--color-fg-neutral-inverted));
+      --radio-focus-ring: var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral)));
+      /* 톤 — 선택의 색. 기본 neutral(짙은 회색) */
+      --radio-solid: var(--color-bg-neutral-inverted);
+      --radio-solid-pressed: var(--color-bg-neutral-inverted-pressed);
+      --radio-on-solid: var(--color-fg-neutral-inverted);
+      /* 동그라미 · 점이 쓰는 값 — 기본은 선택 안 됨(점은 투명) */
+      --radio-bg: transparent;
+      --radio-bg-pressed: var(--color-bg-layer-default-pressed);
+      --radio-border: var(--color-stroke-neutral-solid);
+      --radio-dot: transparent;
+      --radio-bg-disabled: var(--color-bg-disabled);
+      --radio-border-disabled: var(--color-stroke-neutral-weak);
+      --radio-dot-disabled: transparent;
+      /* 크기 기본 = medium. 누름 배율 = (기준 − 2) ÷ 기준 — 기준은 max(동그라미, 24) 라 두 크기 모두 24(22/24) */
+      --press-basis: 24;
+      --radio-dot-size: 8px;
+      position: relative;
+      display: inline-grid;
+      place-items: center;
+      flex-shrink: 0;
+      box-sizing: border-box;
+      width: 20px;
+      height: 20px;
+      margin: 0;
+      padding: 0;
+      appearance: none;
+      border: 1px solid var(--radio-border);
+      border-radius: var(--radius-full);
+      background: var(--radio-bg);
+      cursor: pointer;
+      vertical-align: middle;
+      transition:
+        background-color var(--motion-duration-color-transition) var(--motion-ease-easing),
+        border-color var(--motion-duration-color-transition) var(--motion-ease-easing),
+        scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    /* 가운데 점 — 동그라미가 담은 --radio-dot 을 칠한다. 색만 바뀐다 */
+    .radio-dot {
+      display: block;
+      width: var(--radio-dot-size);
+      height: var(--radio-dot-size);
+      border-radius: var(--radius-full);
+      background: var(--radio-dot);
+      pointer-events: none;
+      transition: background-color var(--motion-duration-color-transition) var(--motion-ease-easing);
+    }
+    /* 크기 — 동그라미와 점(20 · 8 → 24 · 10) */
+    .radio.radio--large { width: 24px; height: 24px; --radio-dot-size: 10px; }
+    /* 톤 brand — 서비스 핵심 흐름에서만 */
+    .radio.radio--brand {
+      --radio-solid: var(--radio-brand-solid);
+      --radio-solid-pressed: var(--radio-brand-solid-pressed);
+      --radio-on-solid: var(--radio-brand-on-solid);
+    }
+    /* 선택 — 테두리 없이 톤 색으로 채우고 점을 올린다. 비활성이면 점은 fg-disabled */
+    .radio[aria-checked="true"] {
+      --radio-bg: var(--radio-solid);
+      --radio-bg-pressed: var(--radio-solid-pressed);
+      --radio-dot: var(--radio-on-solid);
+      --radio-dot-disabled: var(--color-fg-disabled);
+      border-width: 0;
+    }
+
+    /* 상태 — 호버 = 누름 색(v106, hover 되는 기기에서만). 누름 = 누름 색 + 동그라미만 세로 2px 거리 축소(v104), 라벨은 줄지 않는다.
+       라벨을 눌러도 동그라미가 반응한다(.radio-row). .radio--hover · --focus · --pressed 는 갤러리에서 그 순간을 고정해 보여 주는 클래스다. */
+    @media (hover: hover) {
+      .radio:hover,
+      .radio-row:hover .radio:not(:disabled) { background: var(--radio-bg-pressed); }
+    }
+    .radio.radio--hover { background: var(--radio-bg-pressed); }
+    .radio:active,
+    .radio-row:active .radio:not(:disabled),
+    .radio.radio--pressed {
+      background: var(--radio-bg-pressed);
+      scale: calc(1 - 2 / var(--press-basis));
+    }
+    /* 포커스 — 키보드 포커스에만 링 2px · 띄움 2px(v106) */
+    .radio:focus-visible,
+    .radio.radio--focus { outline: 2px solid var(--radio-focus-ring); outline-offset: 2px; }
+    /* 비활성 — 전용 색(v106). 불투명도로 흐리게 하지 않고, 호버 · 누름에 반응하지 않는다. 선택이면 채운 원 그대로 색만 바뀐다 */
+    .radio:disabled {
+      background: var(--radio-bg-disabled);
+      border-color: var(--radio-border-disabled);
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .radio:disabled .radio-dot { background: var(--radio-dot-disabled); }
+    /* 모션 줄이기 — 축소하지 않는다(누름은 색으로만) */
+    @media (prefers-reduced-motion: reduce) {
+      .radio:active,
+      .radio-row:active .radio:not(:disabled),
+      .radio.radio--pressed { scale: 1; }
+    }
+
+    /* 동그라미 + 라벨 한 줄(Radio) — 라벨까지 눌린다. 줄 높이 32 · 36, 동그라미와 라벨 사이 8 */
+    .radio-row {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      /* 줄은 동그라미 + 라벨만큼만 — 세로 묶음 안에서도 묶음 폭으로 늘지 않는다(radio-group.tsx 의 self-start) */
+      align-self: flex-start;
+      gap: var(--spacing-x2);
+      min-height: 32px;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .radio-row--large { min-height: 36px; }
+    /* 누르는 영역 44 — 라벨까지 묶은 줄이 44 보다 작으면 가로 · 세로 44 까지 넓힌다(기초 Inclusive) */
+    .radio-row::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 100%;
+      height: 100%;
+      min-width: 44px;
+      min-height: 44px;
+      translate: -50% -50%;
+    }
+    .radio-row:has(.radio:disabled) { cursor: not-allowed; pointer-events: none; }
+    .radio-label {
+      font-family: var(--font-sans);
+      font-size: var(--text-t4);
+      line-height: var(--text-t4--line-height);
+      font-weight: 400;
+      color: var(--color-fg-neutral);
+    }
+    .radio-row--large .radio-label { font-size: var(--text-t5); line-height: var(--text-t5--line-height); }
+    .radio-label--bold { font-weight: 700; }
+    .radio:disabled + .radio-label { color: var(--color-fg-disabled); }
+    /* 묶음(Radio Group) — 세로로 쌓고 줄 사이 12(줄 32 · 36 에 더해 44 · 48 마다 한 줄 — 이웃 줄과 누르는 영역 44 가 겹치지 않는다).
+       가로로 늘어놓지 않는다 */
+    .radio-group { display: flex; flex-direction: column; gap: var(--spacing-x3); }
+
+    /* 다크 — 역할 색을 라디오 안에서만 다크 짝으로 바꾼다(.btn · .checkbox 와 같다 — 전역 다크 블록은 옛 이름만 바꾼다).
+       라벨이 쓰는 값은 줄(.radio-row)에서 바꾼다. 공유 토큰(DESIGN.md)에 없는 브랜드 짝은 비어서 위 대체값(중립)으로 떨어진다. */
+    [data-theme="dark"] .radio,
+    [data-theme="dark"] .radio-row {
+      --color-bg-brand-solid: var(--color-bg-brand-solid-dark);
+      --color-bg-brand-solid-pressed: var(--color-bg-brand-solid-pressed-dark);
+      --color-stroke-focus-ring: var(--color-stroke-focus-ring-dark);
+      --color-stroke-neutral-solid: var(--color-stroke-neutral-solid-dark);
+      --color-stroke-neutral-weak: var(--color-stroke-neutral-weak-dark);
+      --color-bg-layer-default-pressed: var(--color-bg-layer-default-pressed-dark);
+      --color-bg-neutral-inverted: var(--color-bg-neutral-inverted-dark);
+      --color-bg-neutral-inverted-pressed: var(--color-bg-neutral-inverted-pressed-dark);
+      --color-fg-neutral-inverted: var(--color-fg-neutral-inverted-dark);
+      --color-fg-neutral: var(--color-fg-neutral-dark);
+      --color-bg-disabled: var(--color-bg-disabled-dark);
+      --color-fg-disabled: var(--color-fg-disabled-dark);
+    }
+
     /* todo-card */
     .todo-list { display: flex; flex-direction: column; gap: 2px; }
     .todo-row {
@@ -4661,6 +4968,7 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     ${renderTypographyMoment(brand, tokens)}
     ${renderButtonGallery(brand)}
     ${renderCheckboxGallery(brand)}
+    ${renderRadioGallery(brand)}
     ${renderVignettes(brand)}
     ${renderListingDetail(brand)}
     ${renderCalendar(brand)}
