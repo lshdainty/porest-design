@@ -9,6 +9,9 @@
 
 html {
   scrollbar-gutter: stable;
+  /* 한국어 줄바꿈 — 단어 단위(DESIGN.md Typography "v114 — 줄바꿈"). 한 줄보다 긴 낱말만 칸 끝에서 끊는다 */
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 html > body[data-scroll-locked] {

@@ -3408,6 +3408,8 @@ function renderTokenCatalog(tokens) {
 export function pageCss() {
   return `
     * { box-sizing: border-box; }
+    /* 한국어 줄바꿈 — 단어 단위(DESIGN.md Typography "v114 — 줄바꿈"). 한 줄보다 긴 낱말만 칸 끝에서 끊는다 */
+    html { word-break: keep-all; overflow-wrap: break-word; }
     body {
       font-family: var(--font-sans);
       background: var(--color-bg-page);
