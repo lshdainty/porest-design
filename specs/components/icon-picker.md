@@ -24,13 +24,13 @@ trigger (closed)               popover (open)
 
 | ⓐ trigger | `<button>` 40×40 — `flex h-10 w-10 items-center justify-center rounded-md border border-border-default bg-surface-default shadow-sm hover:bg-surface-input transition-colors`. 현재 value(`iconName`) 이 있으면 `<DynamicIcon name={value} size={18} />` 미리보기, 없으면 `—` placeholder. |
 | ⓑ popover content | `<PopoverContent>` width 320 (`w-80`) + `padding md`. align="start". |
-| ⓒ search | `<Input>` + `<Search size={14} />` 아이콘 (좌측 absolute). autoFocus on open. placeholder "아이콘 검색...". |
+| ⓒ search | [Input](input.md) — `prefixIcon={<Search />}` · `clearable` · `aria-label="아이콘 검색"`(2026-10-01 — 아이콘을 절대 위치로 겹쳐 그리던 것을 Input 의 앞 아이콘으로). autoFocus on open. placeholder "아이콘 검색...". |
 | ⓓ grid | `<ScrollArea>` + `grid grid-cols-8 gap-1 max-h-60`. 각 cell: `<button>` 32×32 — `flex h-8 w-8 items-center justify-center rounded transition-colors`. active 시 `bg-primary text-text-on-accent`, inactive `text-text-secondary hover:bg-surface-input`. |
 | ⓔ footer (선택) | 매칭 총 개수 표시 (`총 N개 중 100개 표시`) — 검색 결과 많을 때 도움. |
 
 **규칙**
 
-- trigger 크기는 **input-md 와 동일 height(40)** — form 안에서 input과 정렬 자연.
+- trigger 크기는 **40** — Input medium(데스크톱 웹)과 같은 높이. 폰 폼의 Input 은 large 52 다(2026-10-01) — 고르는 칸(Input Button) 차례에 트리거를 다시 맞춘다.
 - popover 폭은 **w-80**(320) — 8-col × 32 + gap × 7 + padding 24 ≈ 312 → 최소 폭 보장.
 - grid는 `max-height` 제한 + ScrollArea — 2000+ 아이콘 중 매칭 매우 많을 수 있어 화면 넘침 방지.
 - 검색 매칭 표시는 **상위 100건 limit** — 성능 + 인지 부담. 그 이상은 검색어 추가 입력 유도.

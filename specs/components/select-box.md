@@ -100,7 +100,7 @@
 
 ### Group
 
-하나 고르기 묶음은 `RadioSelectBoxGroup`(radiogroup), 여럿은 `CheckSelectBoxGroup`(fieldset)이다. 둘 다 이름이 있어야 한다 — 위에 칸 이름(목록 제목 · 라벨)이 있으면 `aria-labelledby` 로 잇는다. 오류는 상자를 바꾸지 않고 묶음 아래 글로 알린다(Checkbox 때 정한 규칙).
+하나 고르기 묶음은 `RadioSelectBoxGroup`(radiogroup), 여럿은 `CheckSelectBoxGroup`(fieldset)이다. 둘 다 이름이 있어야 한다 — 묶음을 [Field](field.md) 로 감싸면 Field 의 라벨이 이름이 되고(`aria-labelledby` 를 Field 가 잇는다), 아니면 `aria-label` · `aria-labelledby` 를 준다. 오류는 상자를 바꾸지 않고 묶음 아래 글로 알린다(Checkbox 때 정한 규칙 — Field 의 꼬리).
 
 [그림: 묶음 — 칸 이름 · 상자 · 묶음 아래 오류 글](../../site/components/specs/select-box.tsx#group)
 
@@ -275,7 +275,7 @@ import { RadioSelectBox, RadioSelectBoxGroup } from "@/components/ui/select-box"
 - **펼침 안쪽 여백을 컴포넌트가 정한다**(좌우 20 · 아래 16) — SEED 는 쓰는 쪽이 정한다(예제 값이 이것이다).
 - **여럿 고르기의 체크는 Checkbox 의 Ghost 칸**(체크 14) — SEED 는 선택 상자 전용 체크(15)이고 호버에 색이 한 단계 진해진다. porest 는 `fg-placeholder` 와 `fg-neutral-subtle` 이 같은 색이라 호버 색 변화가 없다.
 - **칸이 비지 않게 한다** — 5개를 2열에 두는 것처럼 빈 칸이 생기면 1열로 쌓거나 열 수를 맞춘다(제품 조사에서 더했다).
-- 묶음의 칸 이름 · 설명 · 오류를 묶음이 그리지 않는다 — SEED 는 Fieldset · RadioGroupField 와 함께 그린다. porest 는 이름만 잇고 오류는 묶음 아래 글이다(Checkbox 규칙, Field 차례에 다시 본다).
+- 묶음의 칸 이름 · 설명 · 오류는 묶음이 아니라 [Field](field.md) 가 그린다(2026-10-01 — SEED 의 Select Box Group Field 자리). SEED 의 Fieldset 은 따로 두지 않는다.
 - 고른 테두리 `stroke-neutral-contrast` 는 v113 에 더한 역할이다(SEED 와 같은 gray-1000).
 
 ## Migration notes

@@ -53,7 +53,7 @@ Transition: `transition-[box-shadow,border-color] duration-[var(--motion-duratio
 
 **Single slider with meta**
 
-- slider 위에 label, 아래에 `meta` row (min · max 또는 현재값). Label은 [`Label`](label.md) — `label-md` (14/500).
+- slider 위에 label, 아래에 `meta` row (min · max 또는 현재값). 칸 이름은 [Field](field.md) 의 라벨(16 · 500 — 2026-10-01, Label 스펙은 Field 로 합쳤다).
 - 사용자 입력값 표시는 meta 안 strong 텍스트(`text-primary` 600) — "현재 값: 65%" 같은 명시적 노출.
 
 **Range slider**

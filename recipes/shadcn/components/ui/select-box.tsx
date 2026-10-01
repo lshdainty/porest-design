@@ -4,6 +4,7 @@ import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
+import { useFieldGroup } from "@/components/ui/field";
 import { Checkmark } from "@/components/ui/checkbox";
 import { Radiomark } from "@/components/ui/radio-group";
 
@@ -212,11 +213,12 @@ export interface RadioSelectBoxGroupProps
   extends React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Root>,
     VariantProps<typeof selectBoxGroupVariants> {}
 
-// 하나 고르기 묶음 — role=radiogroup, 이름(aria-label · aria-labelledby) 필수. 화살표로 옮기며 고른다
+// 하나 고르기 묶음 — role=radiogroup, 이름 필수(Field 로 감싸면 라벨이 이름 · 오류가 설명이 된다, 아니면 aria-label · aria-labelledby).
+// 화살표로 옮기며 고른다
 const RadioSelectBoxGroup = React.forwardRef<React.ElementRef<typeof RadioGroupPrimitive.Root>, RadioSelectBoxGroupProps>(
   ({ className, columns = 1, ...props }, ref) => (
     <SelectBoxGroupContext.Provider value={{ columns: columns ?? 1 }}>
-      <RadioGroupPrimitive.Root ref={ref} className={cn(selectBoxGroupVariants({ columns }), className)} {...props} />
+      <RadioGroupPrimitive.Root ref={ref} className={cn(selectBoxGroupVariants({ columns }), className)} {...useFieldGroup(props)} />
     </SelectBoxGroupContext.Provider>
   ),
 );
@@ -269,10 +271,11 @@ RadioSelectBox.displayName = "RadioSelectBox";
 
 export interface CheckSelectBoxGroupProps extends React.FieldsetHTMLAttributes<HTMLFieldSetElement>, VariantProps<typeof selectBoxGroupVariants> {}
 
-// 여럿 고르기 묶음 — fieldset, 이름(aria-label · aria-labelledby) 필수. "없음" 으로 여럿을 고르게 하면 몇 개까지인지 미리 적는다
+// 여럿 고르기 묶음 — fieldset, 이름 필수(Field 로 감싸면 라벨이 이름 · 오류가 설명이 된다, 아니면 aria-label · aria-labelledby).
+// "없음" 으로 여럿을 고르게 하면 몇 개까지인지 미리 적는다
 const CheckSelectBoxGroup = React.forwardRef<HTMLFieldSetElement, CheckSelectBoxGroupProps>(({ className, columns = 1, ...props }, ref) => (
   <SelectBoxGroupContext.Provider value={{ columns: columns ?? 1 }}>
-    <fieldset ref={ref} className={cn(selectBoxGroupVariants({ columns }), "m-0 min-w-0 border-0 p-0", className)} {...props} />
+    <fieldset ref={ref} className={cn(selectBoxGroupVariants({ columns }), "m-0 min-w-0 border-0 p-0", className)} {...useFieldGroup(props)} />
   </SelectBoxGroupContext.Provider>
 ));
 CheckSelectBoxGroup.displayName = "CheckSelectBoxGroup";

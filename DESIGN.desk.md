@@ -3119,7 +3119,7 @@ DESIGN.md baseline 정의 참고 — 14 keyframes (단발 10 + loop 4). 모바�
 |---|---|---|---|---|
 | `hovered` | `-pressed` 역할 색(누름과 같다) | 그대로 | 그대로 | — |
 | `focused` — 키보드 | 그대로 | 그대로 | 링 2px · 띄움 2px · `stroke-focus-ring` | `outline` 으로 그려 자리가 밀리지 않는다 |
-| `focused` — 입력 중 | 그대로 | 그대로 | 테두리 2px `stroke-focus-ring` | 반투명 링은 쓰지 않는다. 테두리가 두꺼워진 만큼 안쪽 여백을 줄인다 |
+| `focused` — 입력 중 | 그대로 | 그대로 | 안쪽 2px `stroke-neutral-contrast` | 반투명 링은 쓰지 않는다. 안쪽에 덧그려 내용이 밀리지 않는다(Text Field 2026-10-01 — 처음엔 `stroke-focus-ring` 이었다) |
 | `pressed` | `-pressed` 역할 색 | 그대로 | 그대로 | 축소(Feedback) |
 | `selected` | `bg-neutral-inverted` | `fg-neutral-inverted` | — | 칩 · 세그먼트 · 날짜처럼 고르는 요소 |
 | `disabled` | `bg-disabled`(배경이 있는 요소만) | `fg-disabled` | `stroke-neutral-weak` | 불투명도를 쓰지 않는다. 커서 not-allowed |
@@ -3431,44 +3431,15 @@ DESIGN.md baseline 정의 참고 — 14 keyframes (단발 10 + loop 4). 모바�
 
 Desk 는 모바일에서 쓰는 일이 많다 — 화면 하단 CTA 는 `large` 전체 폭, 닫기와 둘이면 3:7(보조 : CTA). brandSolid 는 거래 추가처럼 서비스의 핵심 액션 하나에만 쓰고, 저장 · 확인 같은 일반 CTA 는 neutralSolid 다.
 
-### Input
+### Input · Textarea
 
-Desk(B2C 모바일 우선) — `md`/`lg` 위주, `sm`은 inline action 한정. focus ring은 brand `primary` (`#0147AD`).
+공통 정의는 `DESIGN.md` 의 Input · Textarea 절, 원본은 `specs/components/input.md` · `textarea.md`(2026-10-01 SEED Text Input · Textarea). 포커스 · 오류 · 비활성 색은 브랜드와 관계없이 같다 — 포커스는 `stroke-neutral-contrast` 2px(브랜드 색 아님).
 
-#### Mode pair
-| Token | 배경 | text | placeholder |
-|---|---|---|---|
-| `input-light` | `surface-input` (`#F5F6FA`) | `text-primary` (14.49:1 ✅) | `text-tertiary` (5.81:1 ✅) |
-| `input-dark` | `surface-input-dark` (`#353B4D`) | `text-primary-dark` (11.40:1 ✅) | `text-tertiary-dark` (5.51:1 ✅) |
+#### Desk 쓰임
 
-#### State
-| State | border | 비고 |
-|---|---|---|
-| default | `border-default` 1px | label/형태 보강 |
-| focused | `border-focus` (`#0147AD`) 2px + 1px offset | focus ring vs `surface-input` = 6.51:1 ✅ (HR보다 진한 brand → 더 높은 대비) |
-| filled | default 유지 | |
-| error | `error` 1px + helper `error` 색상 | error vs `surface-input` = 5.34:1 ✅ |
-| disabled | default + `text-disabled` + opacity 0.5 | 1.4.3 incidental |
-
-#### Size
-| Size | height | padding (V/H) | text | radius |
-|---|---|---|---|---|
-| sm | 32px | `xs` / `sm` | `caption` (12/400) | `sm` |
-| **md** (default) | 40px | `sm` / `md` | `body-lg` (16/400) | `sm` |
-| lg | 48px | `md` / `lg` | `body-lg` (16/400) | `sm` |
-
-입력 container 는 사이즈와 무관하게 `sm` radius(4px) 고정 — `specs/components/input.md`. 모바일 입력 사용 사례(가계부 입금/지출 입력 등) 많아 `lg` 권장 — touch hit area 48px.
-
-#### Layout
-- label `caption` + `xs` 간격
-- form 행 간 `xl` (24px), section 간 `2xl` (32px) — Desk는 여백 톤
-
-#### Motion
-- focus ring: `motion-duration-base` × `motion-ease-out` (HR `fast`보다 한 단계 길어 친근감)
-- error 등장: `motion-duration-base` × `motion-ease-out`
-
-#### A11y
-- HR과 동일 — `Tab` focus, `aria-invalid`/`aria-describedby`, `aria-required`, `<label for>`
+- Desk 앱은 늘 large 52 · 글자 16. Desk 웹은 반응형 기본(1280 미만 large · 이상 medium).
+- 금액을 먼저 받는 단계 화면 · 목록 위 검색은 밑줄형(화면에 입력이 하나뿐일 때) — 금액은 숫자 키보드 · 쓰는 동안 쉼표 · 뒤 글자 "원".
+- 메모 본문 · 거래 메모는 Textarea 자동 높이. 시트 안에서는 최대 높이를 정해 저장 버튼이 밀리지 않게 한다.
 
 ### Card
 
@@ -3939,63 +3910,17 @@ Desk(B2C) — 가계부 거래일·할일 due date·메모 캡처일 등 일상 
 #### Sparse 매핑
 신규 yaml 컴포넌트 0. 기존 `button-primary`(selected cell), `alert-text-success/error/warning/info`(거래·할일 상태 dot), `card-light`(셀 default ground)이 contrast 페어 활성.
 
-### Textarea / Form layout (v62 추가)
+### Field — Desk
 
-Desk(B2C) — 메모 본문, 할일 상세 설명, 가계부 거래 메모 등 일상 multi-line 입력. 모바일 우선이라 stacked layout + auto-grow 적극 활용.
+공통 정의는 `DESIGN.md` 의 Field 절, 원본은 `specs/components/field.md`(2026-10-01 SEED Field). 옛 v62 Form layout · v75 Form validation 의 Desk 절은 여기로 합쳤다.
 
-#### Desk 사용 패턴
-- **메모 본문**: textarea auto-grow + min 4 line max viewport 60%. 본문 영역은 `body-lg` (16/400/1.5 영문) 또는 `body-md` (15/400/1.6 한국어) — 메모 톤에 맞춤.
-- **할일 상세 설명**: 할일 카드 펼침 시 inline textarea. min 2 line + counter `120 / 500`. 80% 도달 시 `warning` tint.
-- **가계부 거래 메모**: 단일 line Input이 default, optional textarea (메모/영수증 설명) — bottom sheet 펼침 시 노출.
-- **프로필·설정**: stacked layout (모바일 풀스크린 form) — label 위, control 아래, primary action 하단 sticky.
+#### Desk 쓰임
 
-#### Validation
-- **on blur** 활용 — 모바일에서 즉시 피드백 선호 (focus 후 다른 필드 이동 시).
-- error toast는 키보드 가린 영역 회피 위해 viewport 상단 + safe-area 고려.
-
-#### 모바일 mode
-stacked 강제 (horizontal 사용 안 함) — viewport 너비 한계 + 한 손 조작 친화. label/helper/error 모두 control 위·아래 인라인.
-
-#### Auto-grow
-모바일에서 scrollbar 회피 → JS auto-resize. iOS Safari focus 시 viewport zoom 방지(`font-size: 16px` 유지 — `body-lg` 채택 이유 일치).
-
-#### Bottom sheet form
-거래 입력·할일 추가 등 — 화면 하단 sheet (radius-xl 상단만, swipe-down close). primary 버튼은 sheet 하단 sticky `touch-comfortable` (48×48).
-
-### Form validation (v75 추가)
-
-DESIGN.md baseline 정의 참고 — 8 rule + 5 field state + form state machine + ARIA live + async + multi-field. Desk(B2C) 친근체 톤 적용 (그러나 존댓말 유지).
-
-#### Desk 우선 patterns
-- **금액 input (numeric range)** — 가계부 거래 금액 `min=1` (0원 거래 무의미). "0보다 큰 금액을 입력해주세요" — pattern.
-- **카테고리 required (dropdown)** — 거래 입력 시 카테고리 필수. 미선택 시 "카테고리를 선택해주세요".
-- **할일 due-date (optional but conditional)** — 알림 ON 시 due-date 자동 required toggle. `aria-required` 동적.
-- **메모 max-length (550 글자)** — `text-tertiary` counter "234 / 550". 80% 도달 시 `warning` tint, 100% 도달 시 `error`.
-- **이메일 가입 (async)** — 회원가입 시 이메일 unique check + 형식 검증. debounce 500ms, AbortController.
-- **비밀번호 강도 (on change)** — 가입 시 8자 + 영문 + 숫자, 강도 bar (`error`/`warning`/`success` 색).
-
-#### Desk error message 친근체 (예시)
-- "메모 내용을 입력해주세요" (required)
-- "올바른 이메일 주소를 입력해주세요 (예: hello@porest.app)" (email + 예시)
-- "이미 가입된 이메일이에요. 로그인 해주세요" (async — 친근한 체)
-- "비밀번호가 일치하지 않아요" (match)
-- "0보다 큰 금액을 입력해주세요" (custom)
-- "최대 550자까지 입력 가능해요" (max-length)
-
-비격식 어미("입니다" → "이에요/요")는 가입 후 toast 메시지나 settings에서 부분 적용. validation은 표준 "해주세요" 유지 (사용자에게 행동 요청 톤이 자연).
-
-#### Desk 위계 (짧은 form 위주)
-- 메모 작성 / 할일 추가 / 가계부 거래 — 1-3 필드 → field-level error 만으로 충분, 상단 banner 거의 미사용.
-- 회원가입 / 프로필 설정 — 4-6 필드 → 첫 invalid 필드 focus, banner 생략 (모바일 화면 좁음).
-
-#### 모바일 키보드 + validation
-- on blur validation: focus 떠날 때 즉시 → 사용자가 다음 필드로 이동 직후 error 발견 흐름 자연.
-- 키보드 노출 영역 고려: error message는 control 바로 아래 표시 (스크롤로 가려지지 않게), submit 버튼은 sheet 하단 sticky로 키보드 위에 항상 보이도록.
-- `inputmode` 속성 활용 — 금액(`numeric`/`decimal`), 이메일(`email`), 전화번호(`tel`).
-
-#### Desk async validation
-- 회원가입 이메일 unique check (async) — 핵심 사용. AbortController로 입력 중 stale 응답 차단.
-- 메모/할일 작성 — async 없음 (즉시 local 저장 + background sync).
+- 거래 · 메모 · 할 일처럼 칸이 적은 폼 — 필수가 적으면 필수 칸에만 점, 많으면 선택 칸에만 "선택".
+- 저장 버튼은 켜 두고 누르면 칸마다 오류(금액 · 카테고리를 비우고 눌러도 무엇이 빠졌는지 보인다). 송금액 · 계좌번호처럼 잘못 넣으면 위험한 칸만 칸을 떠날 때 바로.
+- 아래 시트 폼(거래 추가 · 할 일 추가)은 바깥 누름 · 끌어내림 · 뒤로가기로 닫힐 때 값이 바뀌었으면 "작성한 내용이 사라져요" 를 묻는다.
+- 키보드 — 오류 글은 칸 바로 아래, 저장 버튼은 시트 아래에 붙여 키보드 위에 보이게. 금액 `numeric` · 소수 `decimal` · 이메일 `email` · 전화 `tel` 키보드.
+- 글자 수 — 카테고리 이름(12) · 메모(100)처럼 최대가 있는 칸에만.
 
 ### Skeleton / Loading (v63 추가)
 

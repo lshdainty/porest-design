@@ -1,3 +1,5 @@
+> **걷음(2026-10-01)** — 라벨 · 설명 · 오류의 묶음과 react-hook-form 연결, 폼 구성 · 검증 · 나가기 안내는 Field 가 맡는다. 새 스펙은 [`../field.md`](../field.md). 아래는 걷기 전 마지막 스펙이다(수치는 같은 폴더의 `v-retired-to-field.yaml`).
+
 # Form
 
 > react-hook-form 기반 form composition helper. **Form** (Provider) · **FormField** (Controller) · **FormItem** (group) · **FormLabel** · **FormControl** (Slot) · **FormDescription** · **FormMessage** 7 primitive로 검증·라벨링·에러 표시·접근성(aria) wiring을 자동화. spec은 시각 토큰(form-card / form-grid / form-group / form-label / form-helper / form-message / form-actions) + composition pattern 두 축을 다룬다.

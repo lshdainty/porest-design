@@ -421,7 +421,7 @@ const ModalFooter: Fig = ({ caption }) => (
             }
           >
             <div className="flex flex-col gap-3">
-              <Field label="금액" value="12,000원" />
+              <Field label="금액" value="12,000원" size="medium" />
             </div>
           </WebDialog>
         </WebWindow>

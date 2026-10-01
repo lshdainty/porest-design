@@ -3159,7 +3159,7 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 |---|---|---|---|---|
 | `hovered` | `-pressed` 역할 색(누름과 같다) | 그대로 | 그대로 | — |
 | `focused` — 키보드 | 그대로 | 그대로 | 링 2px · 띄움 2px · `stroke-focus-ring` | `outline` 으로 그려 자리가 밀리지 않는다 |
-| `focused` — 입력 중 | 그대로 | 그대로 | 테두리 2px `stroke-focus-ring` | 반투명 링은 쓰지 않는다. 테두리가 두꺼워진 만큼 안쪽 여백을 줄인다 |
+| `focused` — 입력 중 | 그대로 | 그대로 | 안쪽 2px `stroke-neutral-contrast` | 반투명 링은 쓰지 않는다. 안쪽에 덧그려 내용이 밀리지 않는다(Text Field 2026-10-01 — 처음엔 `stroke-focus-ring` 이었다) |
 | `pressed` | `-pressed` 역할 색 | 그대로 | 그대로 | 축소(Feedback) |
 | `selected` | `bg-neutral-inverted` | `fg-neutral-inverted` | — | 칩 · 세그먼트 · 날짜처럼 고르는 요소 |
 | `disabled` | `bg-disabled`(배경이 있는 요소만) | `fg-disabled` | `stroke-neutral-weak` | 불투명도를 쓰지 않는다. 커서 not-allowed |
@@ -3586,61 +3586,52 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 - [ ] 로딩은 `aria-busy="true"` — 포커스는 그대로 두고 누르기만 막는다
 - [ ] 비활성: `aria-disabled="true"` 는 포커스가 남고, `disabled` 속성은 포커스를 뺀다 — 흐름에 맞춰 고른다
 
-### Input
+### Input · Textarea
 
-text / number / email / password / search 단일 행 입력 필드의 공통 정의. textarea는 height 자유, select / combobox는 별도.
+수치 · 규칙의 원본은 `specs/components/input.md` · `input.yaml`(한 줄 — SEED Text Input)과 `textarea.md` · `textarea.yaml`(여러 줄)이다 — 2026-10-01 SEED Text Input · Textarea 구조로 다시 썼다. 라벨 · 설명 · 오류 · 글자 수는 Field(아래 Field 절)가 둘레에서 그린다. 이 절은 토큰과 닿는 자리만 모은다.
 
-#### Mode pair (yaml 토큰)
-- **input-light** (`input-light`): `surface-input` (`#F5F6FA`) 배경 + `text-primary` 텍스트
-- **input-dark** (`input-dark`): `surface-input-dark` (`#353B4D`) 배경 + `text-primary-dark` 텍스트
+#### 모양과 색
 
-다크 모드에서 `surface-input-dark`가 `surface-default-dark`보다 **밝다** (반전 elevation) — 어두운 카드 위 입력 필드가 elevated되어 시인성 확보.
+| 요소 | 값 |
+|---|---|
+| 바탕 | 투명 — 놓인 표면(`bg-layer-default` · `bg-layer-floating`)이 비친다 |
+| 테두리 | 안쪽 1px `stroke-neutral-weak`. 밑줄형은 아래만 |
+| 포커스 | 안쪽에 2px `stroke-neutral-contrast` 를 덧그린다 — 마우스 · 터치로 눌러도(입력 중). 내용은 밀리지 않는다. 읽기 전용이면 없다 |
+| 오류 | 안쪽 2px `stroke-critical-solid` — 포커스해도 그대로 |
+| 비활성 | 바탕 `bg-disabled` · 글자 · 아이콘 `fg-disabled`. 불투명도로 흐리게 하지 않는다(v106) |
+| 읽기 전용 | 바탕 `bg-disabled` · 값은 `fg-neutral` 그대로(밑줄형은 바탕 없이 값 `fg-neutral-muted`) |
+| 값 · placeholder | `fg-neutral` · `fg-placeholder` |
+| 앞 · 뒤 글자 · 아이콘 · 지우기 | `fg-neutral-subtle` · `fg-neutral-muted` · `fg-neutral-subtle` |
 
-**Detailed spec**: [`specs/components/input.md`](specs/components/input.md) — anatomy / 6 state matrix / size · padding · font / accessibility(2.4.11 / 1.4.11 / 2.5.5 / 2.5.8) / do-don't / migration notes 모두 포함. 단일 SoT.
+덧그린 2px 의 색만 `motion-duration-d2` (100ms) · `motion-ease-easing` 로 바뀐다 — 두께는 바로 바뀐다(SEED).
 
-### Textarea (v62 추가)
+대비(라이트 · 다크, `bg-layer-default` 위): 값 16.41 · 13.42, placeholder · 앞뒤 글자 5.50 · 6.09, 포커스 테두리 16.41 · 13.42, 오류 테두리 5.06 · 6.08. 1px `stroke-neutral-weak`(1.23 · 1.56)는 칸을 알리는 유일한 표시가 아니다 — 라벨 · placeholder 가 함께 알린다(SEED 와 같다). lint 대비 쌍 `input-light` · `input-dark`(본문 × `surface-input`)는 읽기 전용 칸(값 × `bg-disabled` — 같은 색)을 잰다.
 
-multi-line 텍스트 입력 — Input의 height 가변 변형. 메모, 휴가 사유, 평가 코멘트 등 자유 형식 텍스트. **새 토큰 추가 0** — Input 토큰 + 추가 sizing 규칙만.
+#### 크기
 
-#### Mode pair (Input과 동일)
-- **input-light** / **input-dark** 컴포넌트 매핑 그대로 사용. 배경·텍스트·placeholder 모두 동일.
+| 크기 | 높이 | 좌우 여백 | 글자 | 모서리 | 아이콘 · 지우기 |
+|---|---|---|---|---|---|
+| large | 52px | `spacing-x4` (16px) | `t5` 16px | `radius-r3` (12px) | 20 · 22 |
+| medium | 40px | `spacing-x3_5` (14px) | `t4` 14px | `radius-r2` (8px) | 16 · 18 |
+| underline large | 40px(위아래 8) | 0 | `t6` 18px | 0 | 24 · 22 |
+| underline medium | 34px(위아래 6) | 0 | `t5` 16px | 0 | 20 · 18 |
 
-#### State (Input과 동일)
-default / focused / filled / error / disabled / readonly — 모든 시각적 표현 Input과 일치. 차이점은 height/resize만.
+- 웹의 기본은 반응형 — 1280 미만 large, 이상 medium(SEED `lg`). 앱은 늘 large. medium 은 데스크톱 웹(마우스)에서만 — 폰에서 40 은 누르는 영역 44(AAA)에 못 미친다. 한 폼 안에서 크기를 섞지 않는다.
+- Textarea 는 상자형 하나 — 자동 높이 3줄(large 94 · medium 82, 위아래 14 · 12)에서 쓴 만큼 자라고, 끄면 2줄(72 · 62) 이상 고정 높이에서 칸 안 스크롤. 손잡이(resize)는 두지 않는다.
 
-#### Sizing
-| 속성 | 값 | 설명 |
-|---|---|---|
-| min-height | `4 line` (≈ `body-lg` × 1.6 × 4 = 96px) | 최소 4줄 — 한 줄짜리 입력은 Input 사용 |
-| max-height | `12 line` (≈ 288px) 또는 viewport 60% | 초과 시 내부 scroll |
-| line-height | `body-lg` line-height (1.6) | 한국어 본문 가독성 |
-| padding | `md` 12px (V/H) | Input md size와 일치 — 텍스트 1줄과 다중줄 시각 일관 |
-| resize | `vertical` 기본 | 사용자 수동 확장 가능, horizontal/both 비권장 (layout 깨짐) |
+#### 쓰는 규칙
 
-#### Auto-grow (선택)
-- JavaScript로 입력 길이에 맞춰 height 자동 증가. min/max 범위 내에서.
-- `motion-duration-fast` 트랜지션으로 부드러운 확장.
-- 모바일은 auto-grow 권장(scrollbar 회피), 데스크탑은 manual resize 허용.
+- 밑줄형은 화면에 입력이 하나뿐일 때(금액을 먼저 받는 화면 · 목록 위 검색 · 초대 코드 · 잠금 해제).
+- 단위는 칸 안 뒤 글자로 — 라벨에 "(원)" 을 붙이지 않는다. 금액은 숫자 키보드 · 천 단위 쉼표, `type="number"` 는 쓰지 않는다.
+- 고르는 값(날짜 · 시각 · 카테고리 · 자산)은 타이핑으로 받지 않는다 — Input Button 으로 시트 · 달력 · 목록을 연다.
+- 형식이 정해진 값(전화번호 · 주민등록번호)은 칸을 나누지 않는다 — 한 칸에서 형식을 맞춰 준다.
+- 지우기 버튼은 검색칸 · 선택 사항인 칸에, 값이 있을 때만(이름 "지우기").
 
-#### Counter (글자수 표시, 선택)
-- 우하단 `caption` (12/400) `text-tertiary` — `현재 / 최대` 형식 (예: `120 / 500`).
-- 80% 도달 시 `warning` 색, 100% 초과 시 `error` 색.
-
-#### Layout
-- label / helper / error 위치는 Input과 동일 (위 label, 아래 helper).
-- form group 간 `lg` (16px), section 간 `xl` (24px).
-
-#### Accessibility
-- [ ] **HTML**: `<textarea>` native — placeholder, required, maxlength, readonly 그대로 사용.
-- [ ] **aria 라벨**: `<label for="...">` 필수. 글자수 카운터는 `aria-describedby` 연결.
-- [ ] **2.4.11 focus**: Input과 동일 — `border-focus` 2px outline.
-- [ ] **resize a11y**: 사용자가 resize handle 인지 가능해야 — 기본 native UA 표시 유지 권장 (커스텀 시 `cursor: nwse-resize` + 시각 hint).
-- [ ] **maxlength 초과**: native `maxlength` 사용 권장(자동 차단). 초과 시 visual feedback (`error` border + screen reader 알림).
-
-#### 추가 이유
-1. v34 Input은 single-line만 spec, multi-line은 "별도(P0-C 신규)"로 표기 후 미보충.
-2. HR 평가 코멘트 / Desk 메모·할일 상세 텍스트 등 multi-line 입력 사용 빈번.
-3. **새 토큰 0** — Input 시각 토큰 100% 재사용, sizing/resize/counter 규칙만 추가.
+#### Accessibility 체크리스트
+- [ ] 모든 칸에 라벨(Field) — placeholder 를 이름으로 쓰지 않는다
+- [ ] 오류면 `aria-invalid`, 설명 · 오류 · 글자 수 · 단위 글자는 `aria-describedby`
+- [ ] 포커스하면 테두리가 2px 로 짙어진다(키보드 · 마우스 모두)
+- [ ] 최대 글자 수는 자소 단위로 세고, 한글은 조합이 끝난 뒤 자른다
 
 ### Card
 
@@ -4488,187 +4479,54 @@ spec 자체는 brand-neutral. brand 파일에서 사용 패턴 차이 prose — 
 #### HR / Desk 듀얼 브랜드
 spec brand-neutral. brand 파일에서 사용 패턴 차이 prose — HR(휴가 신청 range, 결재 일정 marker), Desk(가계부 거래 dot, 할일 due date 강조) 분기.
 
-### Form layout (v62 추가)
+### Field (폼 — 라벨 · 설명 · 오류)
 
-여러 form control(Input/Textarea/Select/Switch/Checkbox/Radio)을 묶는 layout 패턴. 단일 form control spec과 별개로 **field grouping·label 위계·error 정합·a11y 흐름**을 정의.
+수치 · 규칙의 원본은 `specs/components/field.md` · `field.yaml` 이다 — 2026-10-01 SEED Field 구조로 정했다. 옛 Label · Form 스펙과 v62 Form layout · v75 Form validation 의 규칙을 여기로 합쳤다(옛 글은 바로 앞 백업 `DESIGN.history/v114-korean-line-break.md` 의 Form layout · Form validation 절, 옛 스펙은 `specs/components/label.history/` · `form.history/`). 이 절은 토큰과 닿는 자리만 모은다.
 
-#### Anatomy
-```
-[ section title (title-sm) ]
-  [ section description (body-lg, text-secondary) ]
-  ─────────────────────────────────────
-  [ form-group ]
-    label (caption / required mark)
-    [ input | textarea | select | control ]
-    helper / error (caption)
-  [ form-group ] ...
-```
+#### 짜임
 
-#### Spacing (4px grid)
-| 위치 | spacing | 토큰 |
-|---|---|---|
-| label ↔ control | 4px | `xs` |
-| control ↔ helper/error | 4px | `xs` |
-| form-group ↔ form-group | 16px | `lg` |
-| section ↔ section | 24px | `xl` |
-| section title ↔ first group | 16px | `lg` |
+Field 는 머리(라벨 · 필수 점 또는 "선택" · 보조 액션) · 입력 · 꼬리(설명 또는 오류 · 글자 수)를 8 간격으로 쌓는다. 머리 · 꼬리는 좌우로 2 들어온다. 입력은 Text Input · Textarea · Checkbox · Radio · Select Box 묶음(고르는 칸은 그 차례에)이다.
 
-#### Label
-- `caption` (12/400) + `text-secondary` 색.
-- 필수: 라벨 우측 `error` 컬러 별표(`*`) 또는 "(필수)" 텍스트 — 스크린리더는 `aria-required` 발화 + 시각만 추가.
-- 선택: 라벨 우측 `text-tertiary` "(선택)" — 필수 아님을 명시 (긴 form에서 인지 부담↓).
+| 부위 | 값 |
+|---|---|
+| 라벨 | `t5` 16px · 500(bold 700) · `fg-neutral` — 오류여도 그대로 |
+| 필수 점 | 6px(0.375rem) `fg-critical` — 라벨 끝, 위 4 · 왼쪽 2. 화면 읽기 프로그램에는 숨기고 칸의 `aria-required` 로 알린다 |
+| "선택" | `t4` 14px · 줄 높이 22 · `fg-neutral-subtle` |
+| 설명 | `t4` 14px `fg-neutral-subtle`(앞 아이콘 16 은 선택) |
+| 오류 | `t4` 14px `fg-critical` + 아이콘 16 — 설명 자리를 대신한다 |
+| 글자 수 | `t4` 14px — 쓴 수 `fg-neutral`(비면 `fg-neutral-subtle`), 최대 `fg-neutral-subtle`, 오류면 둘 다 `fg-critical` |
+| 폼 | Field 사이 `spacing-x6` (24px) · 나란히 둔 두 칸 사이 `spacing-x4` (16px, 768 미만은 한 줄에 하나) |
 
-#### Helper / Error 텍스트
-- helper(default): `caption` (12/400) `text-tertiary` — control 사용 가이드 (예: "8자 이상").
-- error: `caption` (12/400) `error` 색 + screen reader live region (`aria-live="polite"`).
-- helper와 error는 동일 위치 — error 등장 시 helper 대체 (`role="alert"` 또는 `aria-describedby` 갱신).
+대비(라이트 · 다크): 라벨 16.41 · 13.42, 설명 · "선택" 5.50 · 6.09(시트 다크 5.27), 오류 5.06 · 6.08(시트 다크 5.27).
 
-#### Layout 모드
-| 모드 | 사용 | 구조 |
-|---|---|---|
-| **stacked** (default) | 모바일·dense form | label 위, control 아래 — 좁은 viewport 친화 |
-| **horizontal** | 데스크탑·settings 페이지 | label 좌측 (고정 폭 25-30%) + control 우측 (잔여 폭) — `xl` (24px) gap |
-| **inline** | 단순 toggle group | 한 줄에 control + label 옆 — Switch/Checkbox 단일 옵션에 적합 |
+#### 규칙
 
-horizontal 모드는 viewport `breakpoint-md` (768px) 이상에서만 사용 — 그 이하는 stacked로 자동 전환.
+- 필수 표시는 2/3 규칙 — 한 화면 칸의 2/3 이상이 필수면 선택 칸에만 "선택", 아니면 필수 칸에만 점. 한 폼에 섞지 않는다. 칸이 하나뿐이면 붙이지 않는다.
+- 라벨은 칸 위에 둔다 — 왼쪽 라벨 배치(옛 horizontal)는 두지 않는다. 라벨은 명사형, 마침표 없이.
+- 오류 글은 무엇을 하면 되는지 짧게(Writing — 해요체 · 마침표) — "휴대폰 번호 10~11자리로 입력해주세요.". 맞음 · 확인 중은 설명 자리에 글로 — 초록 테두리 · 돌림 표시를 두지 않는다.
+- 묶음(Checkbox · Radio · Select Box)의 칸 이름 · 오류도 Field 가 그린다 — 라벨이 묶음의 이름(`aria-labelledby`)이다.
+- 오류가 생기면 화면 밖 알림 자리(`aria-live="polite"`)가 한 번 읽는다.
 
-#### Validation 시점
-- **on submit** (default): submit 버튼 클릭 시 검증 — 사용자 입력 흐름 방해 최소화.
-- **on blur**: focus 떠날 때 — 즉시 피드백 필요한 경우 (예: 이메일 형식).
-- **on change**: 입력 중 실시간 — 강도가 큰 피드백(비밀번호 강도) 또는 글자수 카운터.
-- **never run on focus** — 사용자가 입력 시작도 안 했는데 error 띄우면 거슬림.
+#### 검증과 나가기
 
-#### 그룹 actions
-- form 하단에 primary action(`button-primary` lg) + secondary(`btn-outline` lg) 2개 권장.
-- 다중 step form: stepper 또는 progress bar(별도 컴포넌트).
-- 정렬: 데스크탑 우측 정렬, 모바일 full-width stacked (primary 위/secondary 아래).
+- 저장 · 신청 버튼은 켜 둔다. 누르면 비거나 틀린 칸마다 오류를 보이고 첫 오류 칸으로 포커스를 옮긴다(제출 시 검증 — 기본). 다 채울 때까지 버튼을 끄지 않는다.
+- 잘못 넣으면 위험한 칸(보안 · 금융 — 비밀번호 확인 · 계좌번호 · 송금액)만 칸을 떠날 때 바로 알린다. 입력하는 동안 글자마다 오류를 띄우지 않는다.
+- 서버 확인(아이디 중복)은 칸을 떠난 뒤 — 확인하는 동안 설명 자리에 "확인하는 중…", 결과도 설명 · 오류 자리에. 늦게 온 옛 응답이 새 응답을 덮지 않게 이전 요청을 취소한다.
+- 작성 · 수정 화면에서 값이 바뀐 채 나가려 하면(뒤로 · 닫기 · 바깥 누름 · 시트 끌어내림) "작성한 내용이 사라져요" 를 묻는다(Alert Dialog). 바뀐 값이 없거나 자동 저장이면 묻지 않는다.
 
-#### Fieldset (관련 control 그룹화)
-- 시각적 그룹: `<fieldset>` + `<legend>` 또는 group label + 1px `border-default` divider 위.
-- group label: `body-md` (15/600) — section title보다 작고, control label보다 큼.
+#### 오류 글 꼴(v75 에서 옮겨 Writing 에 맞췄다)
 
-#### Accessibility (a11y 흐름)
-- [ ] **HTML 사용**: `<form>` + `<fieldset>` + `<label for="">` + native control. ARIA는 보충용.
-- [ ] **focus order**: tab 순서 = 시각 순서. CSS order/grid order로 시각 reorder는 가능하지만 `tabindex` 변경 금지.
-- [ ] **error summary**: form 상단에 모든 error 요약 list (긴 form) — screen reader 사용자가 한 번에 파악.
-- [ ] **error 첫 필드 focus**: submit 후 error 발생 시 첫 invalid 필드로 focus 이동 (auto-scroll into view).
-- [ ] **success state**: submit 성공 시 toast(success variant) + form 초기화 또는 detail 페이지로 이동.
+| 규칙 | 오류 글 |
+|---|---|
+| 필수 | "{칸 이름}을(를) 입력해주세요." · 고르는 칸은 "{칸 이름}을(를) 골라주세요." |
+| 최소 · 최대 길이 | "{N}자 이상 입력해주세요." · "{N}자 이내로 입력해주세요." |
+| 숫자 범위 | "{N} 이상으로 입력해주세요." · "{N} 이하로 입력해주세요." |
+| 형식 | "{칸 이름}을(를) {형식}으로 입력해주세요."(예: "휴대폰 번호 10~11자리로 입력해주세요.") |
+| 이메일 | "이메일 주소를 확인해주세요(예: kim@porest.app)." |
+| 다시 입력 | "비밀번호가 서로 달라요." |
+| 서버 확인 | "이미 쓰고 있는 {칸 이름}이에요." |
 
-#### Sparse 매핑
-신규 yaml 컴포넌트 0. 기존 `caption-on-card-light/dark`(label), `caption-tertiary-on-card-light/dark`(helper), `alert-text-error`(error text)이 contrast 페어 활성. **prose-only spec** (v60 responsive typography와 동일 톤).
-
-#### 추가 이유
-1. 개별 form control(Input/Textarea/Select/Switch/Checkbox/Radio)은 완비, **묶음 layout**과 validation 흐름은 미정의 → form 일관성 빈틈.
-2. 한국어 form 가독성(label 위 stacked) + 데스크탑 settings(horizontal) 양쪽 권장 패턴 명시.
-3. **새 토큰 0** — 기존 spacing/typography/semantic 토큰 합성 패턴만 정리.
-
-#### HR / Desk 듀얼 브랜드
-spec brand-neutral. HR(휴가 신청 form, 평가 입력, 권한 설정) Desk(메모 작성, 가계부 거래 입력, 프로필 수정) 사용 패턴은 brand 파일 prose 참조.
-
-### Form validation (v75 추가)
-
-v62 Form layout이 layout과 timing(on submit/blur/change)을 정의했다면, v75는 **validation rule 패턴 / 한국어 error message 템플릿 / async validation / form state machine / ARIA live region 패턴**을 정형화 — 컴포넌트 spec에서 일관 인용.
-
-#### Validation rule 패턴 (8 rule)
-
-| rule | 적용 control | error message 한국어 템플릿 | a11y |
-|---|---|---|---|
-| **required** | 모든 control | "{필드명}을(를) 입력해주세요" | `aria-required="true"`, label에 `*` |
-| **min-length / max-length** | Input/Textarea | "최소 {N}자 이상 입력해주세요" / "최대 {N}자까지 입력 가능합니다" | `minlength`/`maxlength` HTML attribute |
-| **min / max (numeric)** | Input(type=number) | "{N} 이상의 값을 입력해주세요" / "{N} 이하의 값을 입력해주세요" | `min`/`max` HTML attribute |
-| **pattern (regex)** | Input | "올바른 {필드명} 형식이 아닙니다 (예: {예시})" | `pattern` HTML attribute |
-| **email** | Input(type=email) | "올바른 이메일 주소를 입력해주세요" | `type="email"` native |
-| **match (confirm)** | 비밀번호 재입력 | "비밀번호가 일치하지 않습니다" | 두 input 묶어 `aria-describedby` |
-| **async (server)** | Input(unique check) | "이미 사용 중인 {필드명}입니다" | loading spinner + `aria-busy="true"` |
-| **custom** | 모든 control | 컴포넌트 정의 | n/a |
-
-`{필드명}` 자리는 label과 일치해야 — error만 보고 어느 필드인지 식별 가능.
-
-#### Field state (5 상태 machine)
-
-| 상태 | 의미 | 시각 |
-|---|---|---|
-| **idle (default)** | 사용자 미접근 | default border, helper 노출 |
-| **focused** | 포커스 상태, 입력 중 | `border-focus`/`border-focus-light` ring |
-| **invalid** | validation 실패 | border를 `error` 색으로 + error message + `aria-invalid="true"` |
-| **valid** | validation 통과 (선택적 표시) | `border-default` + 우측 success icon (옵션) |
-| **validating (async)** | server check 중 | spinner + `aria-busy="true"` |
-
-`valid` 시각 표시는 **긴 form**에서만 권장 — 짧은 form에선 noise. 회원가입처럼 다단계엔 표시.
-
-#### Form state machine (form-level)
-
-```
-idle → submitting → success / error → idle
-       ↓
-       validating-async (async rule 있을 때)
-```
-
-| 상태 | submit button | 다른 control |
-|---|---|---|
-| **idle** | enabled (입력값 valid 시) / disabled (invalid 또는 빈 필수 필드) | enabled |
-| **validating-async** | `loading` variant + spinner | disabled (overlay 차단 또는 individual `aria-busy`) |
-| **submitting** | `loading` variant + spinner | disabled (`fieldset[disabled]`) |
-| **success** | "완료" 텍스트 + check icon, 2초 후 dismiss 또는 페이지 이동 | n/a |
-| **error (form-level)** | enabled (재시도 가능) | enabled |
-
-form-level error: 네트워크 오류, 서버 5xx, 권한 거부 등. 개별 필드와 무관 — form 상단 banner(`error` variant)로 표시.
-
-#### Error 표시 위계 (3 단계)
-
-| 위계 | 위치 | 시점 |
-|---|---|---|
-| **field-level** | helper 자리 (control 아래) | on blur / on submit |
-| **form-level (top)** | form 상단 banner (error variant) | 서버 오류 / 다중 field summary |
-| **toast (transient)** | 화면 하단 (Sonner) | submit 성공/실패 직후 |
-
-긴 form (10+ 필드) — submit 시 첫 invalid 필드 focus + 상단 summary banner 동시 표시. 짧은 form (3-5 필드) — field-level 만으로 충분.
-
-#### ARIA live region 패턴
-
-| 사용 | role / aria-live | 적용 |
-|---|---|---|
-| 개별 field error 등장 | `role="alert"` (또는 `aria-live="assertive"`) | 즉시 발화 — 사용자 입력 흐름 차단 |
-| field 보조 helper 변경 | `aria-live="polite"` | 사용자가 다른 동작 중일 때 양보 |
-| form-level error banner | `role="alert"` | submit 직후 즉시 발화 |
-| form-level success toast | `aria-live="polite"` | success는 차단 우선 아님 |
-| async validating spinner | `aria-busy="true"` | 검증 중 인지 |
-
-`assertive`는 사용자 동작을 가로채므로 **신중히** — 다중 error 동시 등장 시 `assertive` 남발은 발화 충돌. summary banner 하나만 `assertive`, 개별 field error는 `polite` 권장.
-
-#### Async validation 패턴
-
-```
-1. 사용자 입력 시작 → 입력 끝까지 대기 (debounce)
-2. 입력 멈춤 후 300-500ms (debounce) → 서버 요청 시작
-3. spinner 노출 + aria-busy="true"
-4. 응답 도착 → spinner 제거 + valid/invalid 표시
-```
-
-debounce 미적용 시 키 누를 때마다 서버 요청 — 서버 부하 + UX 깜빡임. Combobox(v69) async search 패턴과 동일.
-
-`AbortController`로 이전 요청 취소 — 입력 중 도착한 stale 응답이 새 응답 덮어쓰지 않도록.
-
-#### Multi-field validation 패턴
-
-| 패턴 | 예시 | 처리 |
-|---|---|---|
-| **confirm match** | 비밀번호 / 비밀번호 재입력 | 둘 중 나중 input의 error에 표시 — 첫 input엔 valid 유지 |
-| **date range** | 시작일 / 종료일 | 종료일 input의 error: "시작일 이후로 설정해주세요" |
-| **conditional required** | "다른 답변" 선택 시 textarea 필수 | textarea의 `aria-required` 동적 토글 |
-| **mutually exclusive** | 둘 중 하나만 입력 가능 | 둘 다 채워지면 form-level error |
-
-#### 추가 이유
-1. v62는 layout/timing 골격, v75는 **rule + message + state + ARIA** 깊이. 컴포넌트 spec에서 "validation: 한국어 message 템플릿 v75 참조" 인용 가능.
-2. 한국어 error message 일관성 — 다른 컴포넌트 spec에서 매번 새로 작성하지 않도록 8 템플릿 정형.
-3. async validation 패턴 + AbortController + debounce 정형 — Combobox/Input/회원가입 같은 컴포넌트에서 재사용.
-4. **새 토큰 0**, 새 yaml 컴포넌트 0 — prose-only.
-
-#### HR / Desk 듀얼 브랜드
-spec brand-neutral. error message 톤 분기:
-- HR: 격식체 ("입력해주세요" / "사용 중입니다")
-- Desk: 친근체 가능 ("입력해주세요" 유지하되 일부 placeholder는 "예: 점심 식사" 같은 편안한 예시).
-- 둘 다 존댓말 유지 (한국어 form 표준).
+`{칸 이름}` 은 라벨과 같게 쓴다 — 오류만 보고도 어느 칸인지 안다.
 
 ### Skeleton / Loading (v63 추가)
 

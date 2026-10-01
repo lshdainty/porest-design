@@ -65,16 +65,14 @@ const SearchableList = React.forwardRef<HTMLDivElement, SearchableListProps>(
             )}
           </div>
         )}
-        <div className="relative mb-[var(--spacing-sm)]">
-          <Search
-            size={14}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary"
-          />
+        <div className="mb-[var(--spacing-sm)]">
           <Input
+            aria-label="검색"
             value={searchValue}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder={placeholder}
-            className="pl-9"
+            prefixIcon={<Search />}
+            clearable
           />
         </div>
         <div

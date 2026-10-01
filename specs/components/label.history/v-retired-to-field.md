@@ -1,3 +1,5 @@
+> **걷음(2026-10-01)** — 칸 이름(라벨) · 필수 / 선택 표시는 Field 의 머리가 그린다. 새 스펙은 [`../field.md`](../field.md). 아래는 걷기 전 마지막 스펙이다(수치는 같은 폴더의 `v-retired-to-field.yaml`).
+
 # Label
 
 > form 컨트롤(Input · Textarea · Select · Checkbox · Radio · Switch 등)에 의미를 부여하는 텍스트 라벨. `<label htmlFor>` semantic + Radix `Label` 베이스. 시각·접근성 측면에서 form의 단일 SoT — placeholder 단독 사용 금지, 모든 폼 control은 Label 페어 필수.
