@@ -1762,6 +1762,277 @@ export function renderListGallery(brand) {
   </section>`;
 }
 
+// Select Box — spec: specs/components/select-box.md · 수치 select-box.yaml. 구조는 SEED Select Box(2026-10-01).
+// 묶음 .psb-group(RadioSelectBoxGroup · CheckSelectBoxGroup) · 상자 .psb(RadioSelectBox · CheckSelectBox).
+// 상자의 짜임은 select-box.tsx 와 같다 — .psb(테두리 · 바탕, 고른 테두리는 ::after) > .psb-trigger(label — 누르는 자리) > .psb-content(.psb-prefix · .psb-body > .psb-label · .psb-desc) + 오른쪽 컨트롤,
+// 그 아래 펼침 .psb-footer > .psb-footer-clip > .psb-footer-inner. 누르는 자리와 컨트롤에 [data-select-box-action], 컨트롤에 [data-select-box-control] 을 달고, 막히면 둘 다 [data-disabled] 를 단다.
+// 컨트롤은 Radio · Checkbox 갤러리의 radio()(medium · neutral) · cbox()(ghost · medium) 그대로다 — 컨트롤이 '없음' 이면 화면 밖 라디오 · 체크(.psb-sr-only)다.
+const SELECT_BOX_INTERACTIONS = ["hover", "focus", "pressed"];
+// 앞 아이콘은 lucide 그림(선 2)이다 — 크기는 앞 자리가 정한다(22)
+const SELECT_BOX_ICON = {
+  fileText: listSvg('<path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>'),
+  sheet: listSvg('<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" x2="21" y1="9" y2="9"/><line x1="3" x2="21" y1="15" y2="15"/><line x1="9" x2="9" y1="9" y2="21"/><line x1="15" x2="15" y1="9" y2="21"/>'),
+  braces: listSvg('<path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1"/><path d="M16 21h1a2 2 0 0 0 2-2v-5c0-1.1.9-2 2-2a2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1"/>'),
+  divide: listSvg('<circle cx="12" cy="6" r="1"/><line x1="5" x2="19" y1="12" y2="12"/><circle cx="12" cy="18" r="1"/>'),
+  percent: listSvg('<line x1="19" x2="5" y1="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>'),
+  coins: listSvg('<path d="M13.744 17.736a6 6 0 1 1-7.48-7.48"/><path d="M15 6h1v4"/><path d="m6.134 14.768.866-.5 2 3.464"/><circle cx="16" cy="8" r="6"/>'),
+  wallet: listSvg('<path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>'),
+  piggyBank: listSvg('<path d="M11 17h3v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3a3.16 3.16 0 0 0 2-2h1a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1h-1a5 5 0 0 0-2-4V3a4 4 0 0 0-3.2 1.6l-.3.4H11a6 6 0 0 0-6 6v1a5 5 0 0 0 2 4v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1z"/><path d="M16 10h.01"/><path d="M2 8v1a2 2 0 0 0 2 2h1"/>'),
+  trendingUp: listSvg('<path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/>'),
+  landmark: listSvg('<path d="M10 18v-7"/><path d="M11.119 2.205a2 2 0 0 1 1.762 0l7.84 3.846A.5.5 0 0 1 20.5 7h-17a.5.5 0 0 1-.22-.949z"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M3 22h18"/><path d="M6 18v-7"/>'),
+};
+
+// 상자 하나(RadioSelectBox · CheckSelectBox) — 글(title · description)은 여기서 escape 하고, 앞(prefix) · 펼침(footer)은 HTML 조각으로 받는다.
+//   type         radio(하나 고르기 — 기본) · check(여럿 고르기)
+//   control      ""(type 의 컨트롤 — 라디오 · 칸 없는 체크, 기본) · none(테두리만으로 고른 것이 보일 때 — 라디오 · 체크는 화면 밖에 남는다)
+//   id           컨트롤의 id — 누르는 자리(label)의 for 가 가리킨다
+//   checked      고름
+//   disabled     막힘 — 컨트롤은 disabled, 누르는 자리와 컨트롤에 data-disabled
+//   layout       horizontal(가로형 — 1열, 기본) · vertical(세로형 — 2 ~ 3열). 묶음(selectBoxGroup)이 열 수에서 정한다
+//   tabindex     하나 고르기 묶음의 Tab 자리 — 고른 상자(없으면 처음 상자)만 0, 나머지 -1(Radix 의 roving focus)
+//   interaction  hover · focus · pressed — 갤러리에서 그 순간을 고정해 보여 줄 때만(.btn-state-* 와 같은 역할)
+export function selectBox({ type = "radio", control = "", id, title, description = "", prefix = "", footer = "", checked = false, disabled = false, layout = "horizontal", tabindex = null, interaction = "" } = {}) {
+  const check = type === "check";
+  const off = disabled ? ' data-disabled=""' : "";
+  const mark = control === "none"
+    ? `<button type="button" role="${check ? "checkbox" : "radio"}" aria-checked="${checked ? "true" : "false"}" class="psb-sr-only"${disabled ? " disabled" : ""}></button>`
+    : check ? cbox({ shape: "ghost", state: checked ? "checked" : "unchecked", disabled }) : radio({ checked, disabled });
+  const markAttrs = ` id="${escape(id)}" data-select-box-control="" data-select-box-action=""${off}${tabindex === null ? "" : ` tabindex="${tabindex}"`}`;
+  const cls = ["psb", layout === "vertical" && "psb--vertical", SELECT_BOX_INTERACTIONS.includes(interaction) && `psb--${interaction}`].filter(Boolean).join(" ");
+  const pre = prefix ? `<span class="psb-prefix">${prefix}</span>` : "";
+  const desc = description ? `<span class="psb-desc">${escape(description)}</span>` : "";
+  const foot = footer ? `<div class="psb-footer" data-select-box-footer=""><div class="psb-footer-clip"><div class="psb-footer-inner">${footer}</div></div></div>` : "";
+  return `<div class="${cls}"><label class="psb-trigger" for="${escape(id)}" data-select-box-action=""${off}><span class="psb-content">${pre}<span class="psb-body"><span class="psb-label">${escape(title)}</span>${desc}</span></span>${mark.replace("<button ", `<button${markAttrs} `)}</label>${foot}</div>`;
+}
+
+// 묶음 — 하나 고르기는 role=radiogroup(RadioSelectBoxGroup), 여럿은 fieldset(CheckSelectBoxGroup). 이름(aria-labelledby · aria-label)을 꼭 단다.
+//   columns  1(가로형, 기본) · 2 · 3(세로형 — 상자 높이를 가장 긴 상자에 맞춘다)
+//   items    상자마다 selectBox() 의 인자 — type · layout · tabindex 는 묶음이 채운다
+//   live     섹션 끝 스크립트가 고르기를 맡는다 — 그 순간을 멈춘 칸은 false
+export function selectBoxGroup({ type = "radio", columns = 1, labelledby = "", label = "", live = true, items = [] } = {}) {
+  const layout = columns > 1 ? "vertical" : "horizontal";
+  // 하나 고르기의 Tab 자리 — 고른 상자, 없거나 막혔으면 막히지 않은 처음 상자
+  const open = items.filter(i => !i.disabled);
+  const stop = type === "radio" ? open.find(i => i.checked) || open[0] : null;
+  const boxes = items.map(i => selectBox({ ...i, type, layout, tabindex: stop && !i.disabled ? (i === stop ? 0 : -1) : null }));
+  const cls = `psb-group${columns > 1 ? ` psb-group--cols-${columns}` : ""}`;
+  const attrs = (labelledby ? ` aria-labelledby="${escape(labelledby)}"` : ` aria-label="${escape(label)}"`) + (live ? ' data-psb-live=""' : "");
+  return type === "check"
+    ? `<fieldset class="${cls}"${attrs}>${boxes.join("")}</fieldset>`
+    : `<div class="${cls}" role="radiogroup"${attrs}>${boxes.join("")}</div>`;
+}
+
+// 하나 고르기 · 여럿 고르기 · 여러 열 · 고름 × 상태 · 직접 눌러 보기 네 판을 흰 표면(.vignette-card) 위에 그린다 — 상태 표는 Checkbox 갤러리의 .cb-* 를 쓴다.
+// 선택지는 Desk(반복 거래 종료 · 내보내기 · 더치페이 · 계좌 종류)와 HR(휴가 권한)에서 빌렸다 — select-box.md 코드 예 · 사이트 그림과 같은 글이다.
+// 그 순간을 멈춘 칸을 뺀 모든 묶음이 실제로 고른다 — 섹션 끝 스크립트가 Radix 가 하는 일(고르기 · Tab 자리 · 화살표)을 흉내 낸다.
+export function renderSelectBoxGallery(brand) {
+  let seq = 0;
+  const nextId = () => `psb-${(seq += 1)}`;
+  const panel = (title, sub, body) => `
+    <div class="vignette-card cb-panel">
+      <div class="vignette-head">
+        <div class="vignette-title">${escape(title)}</div>
+        <div class="vignette-sub">${escape(sub)}</div>
+      </div>${body}
+    </div>`;
+  const samples = (items) => `
+      <div class="psb-samples">${items.join("")}
+      </div>`;
+  // 견본 하나 — 무엇을 보이는지(머리 글) · 칸 이름(묶음의 aria-labelledby) · 묶음
+  const sample = (cap, en, legend, args) => {
+    const legendId = nextId();
+    return `
+        <div class="psb-sample">
+          <div class="psb-cap">${escape(cap)}<span>${escape(en)}</span></div>
+          <div class="cb-group-legend" id="${legendId}">${escape(legend)}</div>
+          ${selectBoxGroup({ ...args, labelledby: legendId, items: args.items.map(i => ({ ...i, id: nextId() })) })}
+        </div>`;
+  };
+  const icon = (name) => SELECT_BOX_ICON[name];
+  // 펼침의 내용 — Desk 반복 거래의 "총 · 회" 반복 횟수 칸. 입력칸은 Input 미리보기(.fv-input) 모양이다 — 펼침의 내용은 쓰는 쪽이 정한다
+  const countField = (value) => `<span class="psb-count">총 <input class="fv-input" type="text" inputmode="numeric" value="${escape(value)}" aria-label="반복 횟수"> 회</span>`;
+
+  // 1. 하나 고르기 · 여럿 고르기 · 펼침 — 1열 가로형
+  const ends = [
+    { title: "무기한", description: "중지할 때까지 계속 반복" },
+    { title: "횟수 지정", description: "정한 횟수만큼 반복", footer: countField("12"), checked: true },
+    { title: "종료일 지정", description: "정한 날까지 반복" },
+  ];
+  const permissions = [
+    { title: "휴가 조회", description: "본인 휴가 내역을 조회할 수 있는 권한입니다.", checked: true },
+    { title: "휴가 신청", description: "OT, 경조 휴가 등 휴가를 신청할 수 있는 권한입니다.", checked: true },
+    { title: "휴가 승인", description: "팀원이 신청한 추가 휴가 내역을 조회 및 승인/반려할 수 있는 권한입니다." },
+  ];
+  const basicsPanel = panel(
+    "하나 고르기 · 여럿 고르기 · 펼침",
+    "상자 하나가 선택지 하나다 — 제목 16 · 500 · fg-neutral, 설명 13 · fg-neutral-muted(두 줄까지), 사이 2. 1열은 가로형이다 — 위아래 16 · 왼쪽 20 · 오른쪽 16, 세로 가운데이고 상자 사이 12. 하나 고르기는 오른쪽에 라디오(Radio 의 medium · neutral), 여럿 고르기는 칸 없는 체크(Checkbox 의 Ghost medium — 꺼지면 옅은 체크)를 둔다 — 상자가 칸 노릇을 한다. 그 선택지를 고를 때만 필요한 칸은 펼침에 둔다 — 고른 상자 아래로 열리고(안쪽 좌우 20 · 아래 16), 닫히면 보이지 않고 Tab 도 닿지 않는다. 눌러서 고를 수 있다. 선택지는 Desk 반복 거래의 종료와 HR 휴가 권한에서 빌렸다.",
+    samples([
+      sample("하나 고르기 · 펼침", "RadioSelectBoxGroup · RadioSelectBox footer", "종료", { type: "radio", items: ends }),
+      sample("여럿 고르기", "CheckSelectBoxGroup · CheckSelectBox", "휴가 권한", { type: "check", items: permissions }),
+    ]),
+  );
+
+  // 2. 여러 열 — 세로형 · 앞 아이콘 · 컨트롤 없음 · 같은 높이
+  const formats = [
+    { title: "CSV", description: "구글시트", prefix: icon("fileText"), control: "none", checked: true },
+    { title: "Excel", description: "엑셀", prefix: icon("sheet"), control: "none" },
+    { title: "JSON", description: "백업용", prefix: icon("braces"), control: "none" },
+  ];
+  // 개별 금액은 설명을 뺐다 — 짧은 상자도 가장 긴 상자에 높이를 맞추고, 늘어난 누르는 자리의 빈 아래쪽까지 눌린다
+  const splits = [
+    { title: "N분의 1", description: "균등 분배", prefix: icon("divide"), control: "none", checked: true },
+    { title: "비율", description: "인원수·기준", prefix: icon("percent"), control: "none" },
+    { title: "개별 금액", prefix: icon("coins"), control: "none" },
+  ];
+  // 대출은 설명이 두 줄이다 — 위 줄의 상자도 그 높이에 맞춘다(같은 줄뿐 아니라 묶음의 모든 줄이 같은 높이)
+  const accounts = [
+    { title: "입출금", description: "월급 · 생활비", prefix: icon("wallet"), checked: true },
+    { title: "저축", description: "적금 · 예금", prefix: icon("piggyBank") },
+    { title: "투자", description: "증권 · 연금", prefix: icon("trendingUp") },
+    { title: "대출", description: "빌린 돈 · 이자 · 갚을 날", prefix: icon("landmark") },
+  ];
+  const columnsPanel = panel(
+    "여러 열 — 세로형 · 앞 아이콘 · 컨트롤 없음",
+    "2 ~ 3열이면 세로형이다 — 앞이 위에 서고 컨트롤은 위 오른쪽, 위아래 20 · 좌우 16, 앞과 본문 사이 10, 열 사이 12 · 줄 사이 12. 앞 아이콘은 22 · fg-neutral. 상자 높이는 가장 긴 상자에 맞춘다 — 같은 줄뿐 아니라 묶음의 모든 줄이 같은 높이다. 누르는 자리도 상자 끝까지 늘어, 내용이 짧은 상자의 빈 아래쪽도 눌린다. 3열은 폭이 좁으니 제목과 짧은 설명만 두고 컨트롤을 없앤다 — 테두리만으로 고른 것이 보이고, 라디오는 화면 밖에 남아 키보드와 화면 읽기 프로그램이 쓴다. 칸이 비지 않게 열 수를 맞춘다. 선택지는 Desk 내보내기의 파일 형식 · 더치페이의 분배 방식(개별 금액은 설명을 빼 높이 맞춤을 보였다) · 계좌 종류에서 빌렸다.",
+    samples([
+      sample("3열 · 앞 아이콘 · 컨트롤 없음", "RadioSelectBoxGroup columns={3} · control=\"none\"", "파일 형식", { type: "radio", columns: 3, items: formats }),
+      sample("3열 · 같은 높이", "설명 없는 상자도 가장 긴 상자에 맞춘다", "분배 방식", { type: "radio", columns: 3, items: splits }),
+      sample("2열 · 앞 아이콘 · 라디오 · 두 줄", "RadioSelectBoxGroup columns={2} — 모든 줄이 같은 높이", "계좌 종류", { type: "radio", columns: 2, items: accounts }),
+    ]),
+  );
+
+  // 3. 고름 × 상태 — 그 순간을 멈춰 그린다. 누름 칸의 배율 기준은 섹션 끝 스크립트가 잰다
+  const stateCols = [
+    { ko: "하나 고르기 · 고르지 않음", en: "RadioSelectBox", type: "radio", checked: false },
+    { ko: "하나 고르기 · 고름", en: "RadioSelectBox — 고른 상자", type: "radio", checked: true },
+    { ko: "여럿 고르기 · 고르지 않음", en: "CheckSelectBox", type: "check", checked: false },
+    { ko: "여럿 고르기 · 고름", en: "CheckSelectBox — 고른 상자", type: "check", checked: true },
+  ];
+  const states = [
+    { ko: "기본", en: "enabled" },
+    { ko: "호버", en: "hovered", interaction: "hover" },
+    { ko: "포커스", en: "focused", interaction: "focus" },
+    { ko: "누름", en: "pressed", interaction: "pressed" },
+    { ko: "비활성", en: "disabled", disabled: true },
+  ];
+  const stateText = { radio: { title: "횟수 지정", description: "정한 횟수만큼 반복" }, check: { title: "거래 내역", description: "모든 수입·지출·이체" } };
+  const stateCell = (c, s) => selectBoxGroup({
+    type: c.type,
+    live: false,
+    label: `${c.ko} — ${s.ko}`,
+    items: [{ ...stateText[c.type], id: nextId(), checked: c.checked, disabled: s.disabled, interaction: s.interaction }],
+  });
+  const stateHead = `<div class="cb-matrix-row cb-matrix-row--head"><div class="cb-matrix-head">상태</div>${
+    stateCols.map(c => `<div class="cb-matrix-head">${escape(c.ko)}<span>${escape(c.en)}</span></div>`).join("")
+  }</div>`;
+  const statePanel = panel(
+    "고름 × 상태",
+    "호버 · 포커스 · 누름은 그 순간을 멈춰 그렸다. 호버는 누름과 같은 바탕(bg-layer-default-pressed)이고, 누름은 그 바탕에 누르는 자리(콘텐츠 + 컨트롤)만 2px 거리 축소다 — 기준 길이는 max(높이, 폭 ÷ 4, 24). 테두리 · 바탕은 줄지 않고 컨트롤도 따로 줄지 않는다. 라디오는 누르는 자리에 올리거나 누르면 제 누름 색이 되고, 체크는 바탕을 상자에 맡긴다. 포커스는 키보드에만 — 상자 바깥 링 2px · 띄움 2px 이고 컨트롤은 제 링을 그리지 않는다. 비활성은 전용 색(fg-disabled)이고 흐리게 하지 않는다 — 고른 채 막히면 2px 옅은 테두리(stroke-neutral-weak)다.",
+    `
+      <div class="cb-matrix psb-matrix" style="--cb-cols: ${stateCols.length};">
+        ${stateHead}${states.map(s => `
+        <div class="cb-matrix-row"><div class="cb-matrix-label">${escape(s.ko)}<span>${escape(s.en)}</span></div>${
+          stateCols.map(c => `<div class="cb-matrix-cell psb-cell">${stateCell(c, s)}</div>`).join("")
+        }</div>`).join("")}
+      </div>`,
+  );
+
+  // 4. 직접 눌러 보기 — 막힌 상자 · 고른 채 막힌 상자 · 펼침을 섞었다
+  const liveEnds = [
+    { title: "무기한", description: "중지할 때까지 계속 반복", checked: true },
+    { title: "횟수 지정", description: "정한 횟수만큼 반복", footer: countField("12") },
+    { title: "종료일 지정", description: "정한 날까지 반복", disabled: true },
+  ];
+  const includes = [
+    { title: "거래 내역", description: "모든 수입·지출·이체", checked: true },
+    { title: "카테고리 요약", description: "카테고리별 합계와 비율" },
+    { title: "예산 진행 상황", description: "할당·사용·초과 현황", checked: true, disabled: true },
+    { title: "자산 스냅샷", description: "기간 말일 기준 잔액", disabled: true },
+  ];
+  const livePanel = panel(
+    "직접 눌러 보기",
+    "마우스를 올리고 눌러서 고른다 — 하나 고르기는 하나만 고르고, 여럿 고르기는 켜고 끈다. 고르면 펼침이 열리고 다른 상자를 고르면 닫힌다. Tab 은 하나 고르기 묶음에서 고른 상자 하나로 들어오고 화살표로 옮기며 고른다(막힌 상자는 건너뛴다). 여럿 고르기는 상자마다 Tab 이 닿고 Space 로 켜고 끈다 — 누르고 있는 동안은 누름 모습이다. 막힌 상자는 바탕이 바뀌지 않고 커서가 not-allowed 다. 모션 줄이기면 누르는 자리가 줄지 않고, 펼침은 높이가 바로 바뀌고 투명도만 150ms 다. 반영은 저장 · 다음 같은 버튼이 한다 — 여기서는 고르기만 한다.",
+    samples([
+      sample("하나 고르기 — 막힌 상자 · 펼침", "종료일 지정은 막혔다", "종료", { type: "radio", items: liveEnds }),
+      sample("여럿 고르기 — 고른 채 막힌 상자", "예산 진행 상황 · 자산 스냅샷은 막혔다", "포함할 내용", { type: "check", items: includes }),
+    ]),
+  );
+
+  const lede = "SEED Select Box 구조 — 하나 고르기(Radio Select Box) · 여럿 고르기(Check Select Box) · 묶음(Select Box Group). 상자 하나가 선택지 하나이고, 펼침을 뺀 상자 전체가 누르는 영역이다. 고르면 테두리만 2px 짙은 색(stroke-neutral-contrast)으로 바뀌고 바탕은 그대로다 — 브랜드 톤은 없다. 제목 16 · 500, 설명 13 · fg-neutral-muted. 고르기만 하고, 고른 값은 저장 · 다음 같은 버튼이 반영한다. 옛 Tile 을 대신한다 — 누르는 순간 바뀌는 테마는 03e — List 의 라디오 줄이다."
+    + (brand.key === "shared" ? " 공유 토큰에는 브랜드 역할 색이 없어 포커스 링이 여기서는 중립(fg-neutral)으로 보인다 — HR · Desk 미리보기에서 브랜드 색이다." : "");
+
+  // 누름 배율의 기준 = max(높이, 폭 ÷ 4, 24) — 누르는 자리(label) 폭이 놓인 자리마다 달라 누르는 순간(포인터 · 키) 재서 --press-basis 로 넘긴다(select-box.tsx 의 measurePress).
+  // 누르는 동안 누르는 자리가 줄어 가장자리를 누른 포인터가 그 밖에 남아도 click 이 그 상자로 가게, 마우스 · 펜으로 누르면 누른 요소에 포인터를 잡아 둔다(터치는 브라우저가 이미 잡는다).
+  // 고르기는 Radix 가 하는 일을 흉내 낸다 — 하나 고르기는 하나만(Tab 자리는 고른 상자 하나, 화살표로 옮기며 고르고 막힌 상자는 건너뛴다), 여럿 고르기는 켜고 끈다, Enter 로는 고르지 않는다.
+  // 그 순간을 멈춘 칸(data-psb-live 가 없는 묶음)은 고르지 않는다. 그 누름 칸은 누르지 않으니 그릴 때와 크기가 바뀔 때 잰다.
+  const script = `
+    <script>
+      (function () {
+        var section = document.currentScript.closest("section");
+        function measure(trigger) { trigger.style.setProperty("--press-basis", String(Math.max(trigger.offsetHeight, trigger.offsetWidth / 4, 24))); }
+        function closestIn(e, selector) {
+          var el = e.target && e.target.closest ? e.target.closest(selector) : null;
+          return el && section.contains(el) ? el : null;
+        }
+        function controlsOf(group) { return Array.prototype.slice.call(group.querySelectorAll("[data-select-box-control]")); }
+        section.addEventListener("pointerdown", function (e) {
+          var trigger = closestIn(e, ".psb-trigger");
+          if (!trigger) return;
+          measure(trigger);
+          if (e.pointerType !== "touch" && e.target.setPointerCapture) e.target.setPointerCapture(e.pointerId);
+        }, true);
+        section.addEventListener("keydown", function (e) {
+          var trigger = closestIn(e, ".psb-trigger");
+          if (trigger) measure(trigger);
+        }, true);
+        section.addEventListener("click", function (e) {
+          var control = closestIn(e, "[data-select-box-control]");
+          var group = control ? control.closest(".psb-group[data-psb-live]") : null;
+          if (!group || control.disabled) return;
+          if (control.getAttribute("role") === "radio") {
+            var open = controlsOf(group).filter(function (c) { return !c.disabled; });
+            controlsOf(group).forEach(function (c) { c.setAttribute("aria-checked", c === control ? "true" : "false"); });
+            open.forEach(function (c) { c.tabIndex = c === control ? 0 : -1; });
+          } else {
+            control.setAttribute("aria-checked", control.getAttribute("aria-checked") === "true" ? "false" : "true");
+          }
+        });
+        section.addEventListener("keydown", function (e) {
+          var control = closestIn(e, "[data-select-box-control]");
+          if (!control) return;
+          if (e.key === "Enter") { e.preventDefault(); return; }
+          var step = e.key === "ArrowDown" || e.key === "ArrowRight" ? 1 : e.key === "ArrowUp" || e.key === "ArrowLeft" ? -1 : 0;
+          var group = control.getAttribute("role") === "radio" ? control.closest(".psb-group[data-psb-live]") : null;
+          if (!step || !group) return;
+          e.preventDefault();
+          var open = controlsOf(group).filter(function (c) { return !c.disabled; });
+          var next = open[(open.indexOf(control) + step + open.length) % open.length];
+          next.focus();
+          next.click();
+        });
+        var frozen = section.querySelectorAll(".psb--pressed > .psb-trigger");
+        frozen.forEach(measure);
+        if (window.ResizeObserver) {
+          var ro = new ResizeObserver(function (entries) { entries.forEach(function (entry) { measure(entry.target); }); });
+          frozen.forEach(function (trigger) { ro.observe(trigger); });
+        }
+      })();
+    </script>`;
+
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">03f — Select Box</div>
+      <h2 class="section-title">하나 · 여럿 고르기 · 1 ~ 3열 · 펼침 · 상태 5</h2>
+      <p class="section-lede">${escape(lede)}</p>
+    </header>
+    ${basicsPanel}
+    ${columnsPanel}
+    ${statePanel}
+    ${livePanel}${script}
+  </section>`;
+}
+
 export function renderVignettes(brand) {
   const tabs = `
     <div class="vignette-card">
@@ -2935,8 +3206,9 @@ export function renderBatchV73V78(brand) {
 }
 
 export function renderBatchSpecs5(brand) {
-  // 신규 spec (2026-05-15) — color-swatch / icon-picker / tile / searchable-list
-  // 도메인 시나리오: 카테고리 색/아이콘, 테마, 카드 카탈로그. 기본 통화(옛 radio-list)는 List 의 라디오 줄로 옮겼다(2026-10-01 — renderListGallery).
+  // 신규 spec (2026-05-15) — color-swatch / icon-picker / searchable-list
+  // 도메인 시나리오: 카테고리 색/아이콘, 카드 카탈로그. 기본 통화(옛 radio-list)는 List 의 라디오 줄로 옮겼다(2026-10-01 — renderListGallery).
+  // 테마 선택(옛 tile)은 앞에 미리보기를 둔 List 라디오 줄로, 제목 · 설명이 붙는 미리보기 카드는 Select Box 로 옮겼다(2026-10-01 — renderSelectBoxGallery).
   const isHr = brand.key === "hr";
   const isDesk = brand.key === "desk";
 
@@ -2954,7 +3226,6 @@ export function renderBatchSpecs5(brand) {
     { v: "slate", bg: "#E5E8EE", fg: "#3F4960" },
   ];
   const CHECK14 = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-  const CHECK16 = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
   const activeColorIdx = isHr ? 4 : isDesk ? 6 : 4; // HR=forest, Desk=sky, base=forest
   const swatchCells = palette.map((c, i) =>
     `<button type="button" class="csw-cell${i === activeColorIdx ? " csw-cell--active" : ""}" style="background:${c.bg}; color:${c.fg};" aria-label="${c.v}" aria-checked="${i === activeColorIdx}">${i === activeColorIdx ? CHECK14 : ""}</button>`
@@ -2978,24 +3249,6 @@ export function renderBatchSpecs5(brand) {
   const iconCells = iconSet.map((svg, i) =>
     `<button type="button" class="ipk-cell${i === activeIconIdx ? " ipk-cell--active" : ""}" aria-label="icon-${i}" aria-pressed="${i === activeIconIdx}">${svg}</button>`
   ).join("");
-
-  // Tile (테마)
-  const SUN = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
-  const MOON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
-  const MONITOR = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>';
-
-  const themeActive = isDesk ? "dark" : "light"; // Desk=다크, HR/base=라이트
-  function tile(k, swatchBg, swatchColor, icon, label, desc) {
-    const active = k === themeActive;
-    return `<button type="button" role="radio" aria-checked="${active}" class="tile${active ? " tile--active" : ""}">
-      <span class="tile-swatch" style="background:${swatchBg}; color:${swatchColor};">${icon}</span>
-      <span class="tile-body"><span class="tile-label">${label}</span><span class="tile-desc">${desc}</span></span>
-      ${active ? `<span class="tile-check">${CHECK16}</span>` : ""}
-    </button>`;
-  }
-  const tileGrid = `${tile("light", "#ffffff", "var(--color-text-primary)", SUN, "라이트", "밝은 배경")}
-    ${tile("dark", "oklch(0.205 0.022 110)", "#fff", MOON, "다크", "어두운 배경")}
-    ${tile("system", "linear-gradient(135deg, #fff 50%, oklch(0.205 0.022 110) 50%)", "var(--color-text-primary)", MONITOR, "시스템", "OS 설정 따라가기")}`;
 
   // SearchableList (카드 카탈로그)
   const cards = [
@@ -3021,8 +3274,8 @@ export function renderBatchSpecs5(brand) {
   <section class="section">
     <header class="section-head">
       <div class="section-eyebrow">21 — Domain selectors (2026-05-15 신규 spec)</div>
-      <h2 class="section-title">ColorSwatch · IconPicker · Tile · SearchableList</h2>
-      <p class="section-lede">desk-front 도메인에서 spec으로 끌어올린 4개 단일-선택 패턴 — 카테고리 색/아이콘, 테마 선택, 카드 카탈로그. 기본 통화(옛 RadioList)는 03e — List 의 라디오 줄로 옮겼다.</p>
+      <h2 class="section-title">ColorSwatch · IconPicker · SearchableList</h2>
+      <p class="section-lede">desk-front 도메인에서 spec으로 끌어올린 3개 단일-선택 패턴 — 카테고리 색/아이콘, 카드 카탈로그. 기본 통화(옛 RadioList)는 03e — List 의 라디오 줄로 옮겼다. 테마 선택(옛 Tile)은 앞에 미리보기를 둔 List 라디오 줄로 옮겼고, 제목 · 설명이 붙는 미리보기 카드는 03f — Select Box 다.</p>
     </header>
 
     <div class="sc-grid">
@@ -3049,15 +3302,6 @@ export function renderBatchSpecs5(brand) {
           </div>
         </div>
         <div class="sc-note">2000+ Lucide 아이콘 중 매칭 상위 100건 limit. trigger 40×40 (input height 정합).</div>
-      </div>
-
-      <!-- Tile -->
-      <div class="sc-card sc-card--full">
-        <div class="sc-head">Tile — 테마 선택 (swatch + label + desc, single-select 큰 카드)</div>
-        <div class="tile-grid" role="radiogroup" style="grid-template-columns: repeat(3, minmax(0, 1fr));">
-          ${tileGrid}
-        </div>
-        <div class="sc-note">grid 3-col + radius-lg. active 시 border-primary 1.5px + bg 8% tint + ✓. mobile은 columns=1 stack 권장.</div>
       </div>
 
       <!-- SearchableList -->
@@ -4480,6 +4724,207 @@ export function pageCss() {
       .plst-matrix .cb-matrix-row { grid-template-columns: 120px repeat(var(--cb-cols), minmax(280px, 1fr)); }
     }
 
+    /* === Select Box — specs/components/select-box.md · select-box.yaml(수치 원본) · select-box.tsx 와 같은 모양 ===
+       구조는 SEED Select Box(2026-10-01) — 묶음 .psb-group(RadioSelectBoxGroup · CheckSelectBoxGroup) · 상자 .psb(RadioSelectBox · CheckSelectBox).
+       상자는 테두리 · 바탕만 맡고, 그 안의 누르는 자리 .psb-trigger(label)가 콘텐츠 .psb-content(앞 .psb-prefix · 본문 .psb-body > 제목 .psb-label · 설명 .psb-desc)와
+       오른쪽 컨트롤을 담는다 — 펼침 .psb-footer 를 뺀 상자 전체가 누르는 영역이고, 누르는 자리는 상자가 늘면 남는 자리까지 채운다(grow).
+       컨트롤은 Radio 갤러리의 .radio(medium · neutral) · Checkbox 갤러리의 .checkbox--ghost(medium) 그대로이고, '없음' 이면 화면 밖 라디오 · 체크(.psb-sr-only)다.
+       테두리 1px 은 안쪽 그림자로 그리고, 고른 테두리 2px 은 ::after 로 그 안쪽에 덧그린다 — 1 → 2px 로 바뀌어도 내용이 밀리지 않는다. 바탕은 고름과 상관없다(브랜드 톤 없음).
+       고름은 컨트롤의 aria-checked 에서 읽는다(레시피는 Radix 의 data-state). 호버 · 누름은 [data-select-box-action](누르는 자리 · 컨트롤)에서 읽고 [data-disabled] 면 없다.
+       호버는 마우스 있는 기기에서만이다. 누름 배율 = (기준 − 2) ÷ 기준, 기준 = max(누르는 자리의 높이, 폭 ÷ 4, 24) — 섹션 끝 스크립트가 누르는 순간 재서 --press-basis 로 넘긴다.
+       .psb--hover · --focus · --pressed 는 갤러리에서 그 순간을 고정해 보여 주는 클래스다. 다크 짝은 이 블록 끝의 [data-theme="dark"] .psb-group 에서 바꾼다. */
+    .psb-group {
+      /* 포커스 링 — 공유 토큰(DESIGN.md)에는 브랜드 역할 색이 없어 중립으로 떨어진다(.plst 와 같은 대체 사슬) */
+      --psb-focus-ring: var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral)));
+      display: grid;
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+      column-gap: var(--spacing-x3);
+      row-gap: var(--spacing-component-default);
+      width: 100%;
+      min-width: 0;
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+    /* 2 ~ 3열 — 상자 높이를 가장 긴 상자에 맞춘다(select-box.tsx 의 auto-rows-fr) */
+    .psb-group--cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(0, 1fr); }
+    .psb-group--cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: minmax(0, 1fr); }
+    /* 상자 — 모서리 12, 바탕 투명, 테두리 1px stroke-neutral-weak(안쪽). 바탕만 전환한다 */
+    .psb {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      border-radius: var(--radius-r3);
+      background: transparent;
+      box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-weak);
+      transition: background-color var(--motion-duration-color-transition) var(--motion-ease-easing);
+    }
+    /* 고른 테두리 — 안쪽 2px. 고르면 stroke-neutral-contrast, 고른 채 막히면 stroke-neutral-weak. 색만 d2 로 전환한다 */
+    .psb::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border: 2px solid transparent;
+      border-radius: inherit;
+      pointer-events: none;
+      transition: border-color var(--motion-duration-d2) var(--motion-ease-easing);
+    }
+    .psb:has([data-select-box-control][aria-checked="true"]:not([data-disabled]))::after { border-color: var(--color-stroke-neutral-contrast); }
+    .psb:has([data-select-box-control][aria-checked="true"][data-disabled])::after { border-color: var(--color-stroke-neutral-weak); }
+    /* 호버 = 누름과 같은 바탕(v106, 마우스 있는 기기에서만). 펼침에 올리거나 눌러도 바뀌지 않는다 — 누르는 자리가 아니다 */
+    @media (hover: hover) {
+      .psb:has([data-select-box-action]:not([data-disabled]):hover) { background: var(--color-bg-layer-default-pressed); }
+    }
+    .psb:has([data-select-box-action]:not([data-disabled]):active),
+    .psb.psb--hover,
+    .psb.psb--pressed { background: var(--color-bg-layer-default-pressed); }
+    /* 포커스 — 키보드 포커스에만 상자 바깥 링 2px · 띄움 2px(상자는 화면 폭이 아니라 링이 잘리지 않는다) */
+    .psb:has([data-select-box-control]:focus-visible),
+    .psb.psb--focus { outline: 2px solid var(--psb-focus-ring); outline-offset: 2px; }
+
+    /* 누르는 자리(label) — 콘텐츠와 컨트롤 사이 6. 가로형(1열)은 위아래 16 · 왼쪽 20 · 오른쪽 16, 세로 가운데 */
+    .psb-trigger {
+      position: relative;
+      display: flex;
+      flex-grow: 1;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--spacing-x1_5);
+      width: 100%;
+      padding: var(--spacing-x4) var(--spacing-x4) var(--spacing-x4) var(--spacing-x5);
+      cursor: pointer;
+      user-select: none;
+      transition: scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    /* 세로형(2 ~ 3열) — 위아래 20 · 좌우 16, 컨트롤은 위 오른쪽 */
+    .psb--vertical > .psb-trigger { align-items: flex-start; padding: var(--spacing-x5) var(--spacing-x4); }
+    .psb-trigger[data-disabled] { cursor: not-allowed; }
+    /* 누름 — 누르는 자리(콘텐츠 + 컨트롤)만 2px 거리 축소(v104). 테두리 · 바탕 · 펼침은 줄지 않는다 */
+    .psb:has([data-select-box-action]:not([data-disabled]):active) > .psb-trigger,
+    .psb.psb--pressed > .psb-trigger { scale: calc(1 - 2 / var(--press-basis)); }
+    /* 모션 줄이기 — 줄지 않는다. 바탕 전환은 그대로다(기초 Motion) */
+    @media (prefers-reduced-motion: reduce) {
+      .psb:has([data-select-box-action]:not([data-disabled]):active) > .psb-trigger,
+      .psb.psb--pressed > .psb-trigger { scale: 1; }
+    }
+
+    /* 콘텐츠 — 가로형은 앞 · 본문이 한 줄(사이 12), 세로형은 앞이 위(사이 10) */
+    .psb-content { display: flex; flex: 1; flex-direction: row; align-items: center; gap: var(--spacing-x3); min-width: 0; }
+    .psb--vertical .psb-content { flex-direction: column; align-items: normal; gap: var(--spacing-x2_5); }
+    /* 앞 — 아이콘 22 · fg-neutral */
+    .psb-prefix { display: flex; flex-shrink: 0; color: var(--color-fg-neutral); }
+    .psb-prefix > svg { width: 22px; height: 22px; }
+    /* 본문 — 제목 + 설명(사이 2), 컨트롤과 4 더 떨어진다 */
+    .psb-body {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--spacing-x0_5);
+      min-width: 0;
+      margin-right: auto;
+      padding-right: var(--spacing-x1);
+      text-align: left;
+    }
+    /* 제목 t5 · 500 · fg-neutral(옆 배지와 4), 설명 t3 · fg-neutral-muted */
+    .psb-label {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-x1);
+      font-family: var(--font-sans);
+      font-size: var(--text-t5);
+      line-height: var(--text-t5--line-height);
+      font-weight: 500;
+      color: var(--color-fg-neutral);
+    }
+    .psb-desc {
+      font-family: var(--font-sans);
+      font-size: var(--text-t3);
+      line-height: var(--text-t3--line-height);
+      font-weight: var(--text-t3--font-weight);
+      color: var(--color-fg-neutral-muted);
+    }
+    /* 비활성 — 앞 · 제목 · 설명이 fg-disabled. 불투명도로 흐리게 하지 않고, 호버 · 누름은 위 규칙의 :not([data-disabled]) 가 뺀다 */
+    .psb-trigger[data-disabled] :is(.psb-prefix, .psb-label, .psb-desc) { color: var(--color-fg-disabled); }
+
+    /* 컨트롤 — 상자 안에서는 따로 줄지 않고(누르는 자리가 함께 준다) 제 포커스 링도 그리지 않는다(링은 상자가 — select-box.tsx 의 MARK_IN_BOX).
+       누르는 자리에 올리거나 누르면 브라우저가 라벨이 가리키는 컨트롤도 :hover · :active 로 본다 — 라디오는 제 누름 색이 되고(Radio 의 규칙 그대로),
+       체크(Ghost)는 상자가 바탕을 맡아 제 바탕을 끈다(GHOST_NO_BG). 그 순간을 멈춘 칸도 같게 그린다 */
+    .psb :is(.radio, .checkbox):active { scale: 1; }
+    .psb :is(.radio, .checkbox):focus-visible { outline-style: none; }
+    .psb .checkbox--ghost:is(:hover, :active) { background: transparent; }
+    .psb.psb--hover .radio:not(:disabled),
+    .psb.psb--pressed .radio:not(:disabled) { background: var(--radio-bg-pressed); }
+    /* 컨트롤 '없음' — 화면 밖에 두고 키보드 · 화면 읽기 프로그램이 그대로 쓴다(Tailwind sr-only) */
+    .psb-sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+      border-width: 0;
+    }
+
+    /* 펼침 — 고른 상자 아래로 열린다(안쪽 좌우 20 · 아래 16). 높이는 grid-template-rows 0fr → 1fr 로 바꾼다.
+       열 때 높이 400ms · 투명도 d6, 닫을 때 높이 d6 · 투명도 400ms(내용이 높이보다 먼저 사라지지 않게). 닫히면 보이지 않는다 — Tab 도 닿지 않는다 */
+    .psb-footer {
+      display: grid;
+      grid-template-rows: 0fr;
+      visibility: hidden;
+      opacity: 0;
+      transition:
+        grid-template-rows var(--motion-duration-d6) var(--motion-ease-easing),
+        opacity 400ms var(--motion-ease-easing),
+        visibility 0s linear 400ms;
+    }
+    .psb:has([data-select-box-control][aria-checked="true"]) > .psb-footer {
+      grid-template-rows: 1fr;
+      visibility: visible;
+      opacity: 1;
+      transition:
+        grid-template-rows 400ms var(--motion-ease-easing),
+        opacity var(--motion-duration-d6) var(--motion-ease-easing),
+        visibility 0s;
+    }
+    .psb-footer-clip { min-height: 0; overflow: hidden; }
+    .psb-footer-inner { padding: 0 var(--spacing-x5) var(--spacing-x4); }
+    /* 모션 줄이기 — 높이는 바로 바뀌고 투명도만 150ms(기초 Motion) */
+    @media (prefers-reduced-motion: reduce) {
+      .psb-footer { transition: opacity 150ms linear, visibility 0s linear 150ms; }
+      .psb:has([data-select-box-control][aria-checked="true"]) > .psb-footer { transition: opacity 150ms linear, visibility 0s; }
+    }
+
+    /* 다크 — 역할 색을 묶음 안에서만 다크 짝으로 바꾼다(.plst · .radio · .checkbox 와 같다 — 전역 다크 블록은 옛 이름만 바꾼다).
+       끼운 .radio · .checkbox 는 저마다의 다크 블록이 다시 바꾼다. 공유 토큰(DESIGN.md)에 없는 브랜드 짝은 비어서 위 대체값(중립)으로 떨어진다. */
+    [data-theme="dark"] .psb-group {
+      --color-stroke-focus-ring: var(--color-stroke-focus-ring-dark);
+      --color-stroke-neutral-weak: var(--color-stroke-neutral-weak-dark);
+      --color-stroke-neutral-contrast: var(--color-stroke-neutral-contrast-dark);
+      --color-bg-layer-default-pressed: var(--color-bg-layer-default-pressed-dark);
+      --color-fg-neutral: var(--color-fg-neutral-dark);
+      --color-fg-neutral-muted: var(--color-fg-neutral-muted-dark);
+      --color-fg-disabled: var(--color-fg-disabled-dark);
+    }
+
+    /* Select Box 갤러리 — 상자는 흰 표면(.vignette-card) 위에 그대로 둔다(상자 바탕이 투명이다). 견본마다 머리 글(.psb-cap) · 칸 이름(.cb-group-legend) · 묶음.
+       견본은 휴대폰 화면 폭(320 이상 — List 의 틀과 같다)이다 — 2 ~ 3열 상자가 실제 폭으로 그려져 글이 줄바꿈되고 높이 맞춤이 보인다 */
+    .psb-samples { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: var(--spacing-xl) var(--spacing-lg); align-items: start; }
+    .psb-cap { margin-bottom: var(--spacing-sm); font-size: var(--text-caption); font-weight: 600; line-height: 1.4; color: var(--color-text-secondary); }
+    .psb-cap span { display: block; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 400; color: var(--color-text-tertiary); }
+    /* 펼침의 반복 횟수 칸 — 입력칸은 Input 미리보기(.fv-input), 앞뒤 글자는 t4 */
+    .psb-count { display: flex; align-items: center; gap: var(--spacing-x2); font-family: var(--font-sans); font-size: var(--text-t4); line-height: var(--text-t4--line-height); color: var(--color-fg-neutral); }
+    .psb-count .fv-input { width: 80px; }
+    /* 상태 표 — 칸마다 상자 하나를 실제 폭(200 이상)으로 그리고, 한 줄의 상자는 같은 높이로 늘인다. 칸이 그보다 좁아지면 판(.cb-panel)이 가로로 밀린다 */
+    .psb-matrix .cb-matrix-row { grid-template-columns: 168px repeat(var(--cb-cols), minmax(200px, 1fr)); }
+    .psb-cell { align-self: stretch; align-items: stretch; }
+    .psb-cell > .psb-group { flex: 1; min-width: 0; }
+    @media (max-width: 900px) {
+      .psb-matrix .cb-matrix-row { grid-template-columns: 120px repeat(var(--cb-cols), minmax(200px, 1fr)); }
+    }
+
     /* todo-card */
     .todo-list { display: flex; flex-direction: column; gap: 2px; }
     .todo-row {
@@ -5508,17 +5953,6 @@ export function pageCss() {
     .ipk-cell--active { background: var(--color-primary, var(--color-text-primary)); color: var(--color-text-on-accent, #fff); }
     .ipk-footer { margin-top: var(--spacing-sm); padding-top: var(--spacing-sm); border-top: 1px solid var(--color-border-subtle, var(--color-border-default)); font-size: 11px; color: var(--color-text-tertiary); text-align: center; }
 
-    /* Tile — tile.md SoT (큰 카드 single-select with swatch + label + desc) */
-    .tile-grid { display: grid; gap: var(--spacing-sm); }
-    .tile { display: flex; align-items: center; gap: var(--spacing-md); padding: 16px 14px; border: 1px solid var(--color-border-subtle, var(--color-border-default)); background: var(--color-surface-default); border-radius: var(--radius-lg); cursor: pointer; transition: border-color var(--motion-duration-fast) var(--motion-ease-out), background-color var(--motion-duration-fast) var(--motion-ease-out); text-align: left; font: inherit; color: inherit; }
-    .tile:hover { border-color: var(--color-border-default); }
-    .tile--active { border-width: 1.5px; border-color: var(--color-primary, var(--color-text-primary)); background: color-mix(in oklch, var(--color-primary, var(--color-text-primary)) 8%, transparent); }
-    .tile-swatch { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 1px solid var(--color-border-subtle, var(--color-border-default)); border-radius: var(--radius-tile); flex-shrink: 0; }
-    .tile-body { flex: 1; min-width: 0; }
-    .tile-label { display: block; font-size: var(--text-body-md); font-weight: 600; color: var(--color-text-primary); }
-    .tile-desc { display: block; margin-top: 2px; font-size: var(--text-caption); color: var(--color-text-tertiary); }
-    .tile-check { flex-shrink: 0; color: var(--color-primary, var(--color-text-primary)); }
-
     /* SearchableList — searchable-list.md SoT (search + thumbnail list single-select) */
     .sl-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--spacing-sm); }
     .sl-head-label { font-size: var(--text-caption); font-weight: 500; color: var(--color-text-secondary); }
@@ -5605,20 +6039,17 @@ export function pageCss() {
     [data-theme="dark"] .ctx,
     [data-theme="dark"] .car-arrow,
     [data-theme="dark"] .son-toast,
-    [data-theme="dark"] .tile,
     [data-theme="dark"] .sl,
     [data-theme="dark"] .ipk-content,
     [data-theme="dark"] .ipk-trigger,
     [data-theme="dark"] .swatch { background: var(--color-surface-default-dark); }
     [data-theme="dark"] .ipk-search input,
     [data-theme="dark"] .sl-search input { background: var(--color-surface-default-dark); border-color: var(--color-border-default-dark); color: var(--color-text-primary-dark); }
-    [data-theme="dark"] .tile,
     [data-theme="dark"] .sl,
     [data-theme="dark"] .ipk-content,
     [data-theme="dark"] .ipk-trigger { border-color: var(--color-border-default-dark); }
     [data-theme="dark"] .sl-row + .sl-row,
     [data-theme="dark"] .ipk-footer { border-color: var(--color-border-default-dark); }
-    [data-theme="dark"] .tile-label,
     [data-theme="dark"] .sl-title { color: var(--color-text-primary-dark); }
     [data-theme="dark"] .sl-row:hover,
     [data-theme="dark"] .ipk-cell:hover { background: var(--color-surface-input-dark); }
@@ -5888,6 +6319,7 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     ${renderRadioGallery(brand)}
     ${renderSwitchGallery(brand)}
     ${renderListGallery(brand)}
+    ${renderSelectBoxGallery(brand)}
     ${renderVignettes(brand)}
     ${renderListingDetail(brand)}
     ${renderCalendar(brand)}

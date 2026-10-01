@@ -116,7 +116,7 @@
 
 선택지마다 설명이 붙거나, 고르면 입력칸이 따라 나와야 하면 Radio 가 아니라 **Select Box** 다(사용자 결정 — SEED 와 같다). Radio 에는 라벨 하나만 있다(길면 줄이 바뀐다) — 설명 줄이나 딸린 입력 자리가 없다. 줄 안에 입력칸을 넣으면 화면 읽기 프로그램이 입력칸을 라디오의 일부로 읽는다.
 
-[그림: 반복 거래 "종료" — 설명 · 입력칸이 붙는 선택은 Select Box(모양만 — 값은 Select Box 차례에)](../../site/components/specs/radio-group.tsx#selectbox-guide)
+[그림: 반복 거래 "종료" — 설명 · 입력칸이 붙는 선택은 Select Box](../../site/components/specs/radio-group.tsx#selectbox-guide)
 
 ### 오류
 
@@ -308,4 +308,4 @@ import { Radiomark, RadioGroup } from "@/components/ui/radio-group"
 | 동그라미 컴포넌트 이름 `RadioGroupItem` | 동그라미는 `Radiomark`, `Radio` 는 동그라미 + 라벨 |
 | 전환 `motion-duration-fast` · `ease-out` | `motion-duration-color-transition` · `motion-ease-easing`(v104 이름) + 누름 축소 |
 
-제품은 앱 적용 단계에서 옮긴다 — 라디오 동그라미가 나오는 곳은 반복 거래의 "종료" 하나다(웹 추가 대화상자 · 거래에서 반복 만들기 대화상자, 앱 반복 설정). 셋 다 그 화면 안에서 손으로 그렸고(웹은 17 · 2px 고리 + 점 7, 앱은 17 · 채운 원 + 흰 점 6), 설명 · 입력칸이 붙어 Select Box 차례에 옮긴다. 앱의 공용 `PRadio` · `PRadioTile` 은 쓰는 곳이 없다(점이 14 로 옛 스펙 16 과도 달랐다). HR 웹에는 라디오가 없다.
+제품은 앱 적용 단계에서 옮긴다 — 라디오 동그라미가 나오는 곳은 반복 거래의 "종료" 하나다(웹 추가 대화상자 · 거래에서 반복 만들기 대화상자, 앱 반복 설정). 셋 다 그 화면 안에서 손으로 그렸고(웹은 17 · 2px 고리 + 점 7, 앱은 17 · 채운 원 + 흰 점 6), 설명 · 입력칸이 붙어 Select Box([`select-box.md`](select-box.md))로 옮긴다. 앱의 공용 `PRadio` · `PRadioTile` 은 쓰는 곳이 없다(점이 14 로 옛 스펙 16 과도 달랐다). HR 웹에는 라디오가 없다.

@@ -146,3 +146,30 @@ html > body[data-scroll-locked] {
   --pl-div: var(--pl-div-d);
   --pl-hd: var(--pl-hd-d);
 }
+/* Select Box 그림(select-box-view) — .plst 와 같은 방식. 상자 · 묶음(입력칸 · 안내)마다 라이트 · 다크 값을 싣는다 */
+.psb {
+  --psb-bg: var(--psb-bg-l);
+  --psb-bd: var(--psb-bd-l);
+  --psb-title: var(--psb-title-l);
+  --psb-desc: var(--psb-desc-l);
+  --psb-icon: var(--psb-icon-l);
+  --psb-ring: var(--psb-ring-l);
+  --psb-in-bg: var(--psb-in-bg-l);
+  --psb-in-fg: var(--psb-in-fg-l);
+  --psb-in-bd: var(--psb-in-bd-l);
+  --psb-nt-bg: var(--psb-nt-bg-l);
+  --psb-nt-fg: var(--psb-nt-fg-l);
+}
+.dark .psb[data-mode='auto'] {
+  --psb-bg: var(--psb-bg-d);
+  --psb-bd: var(--psb-bd-d);
+  --psb-title: var(--psb-title-d);
+  --psb-desc: var(--psb-desc-d);
+  --psb-icon: var(--psb-icon-d);
+  --psb-ring: var(--psb-ring-d);
+  --psb-in-bg: var(--psb-in-bg-d);
+  --psb-in-fg: var(--psb-in-fg-d);
+  --psb-in-bd: var(--psb-in-bd-d);
+  --psb-nt-bg: var(--psb-nt-bg-d);
+  --psb-nt-fg: var(--psb-nt-fg-d);
+}

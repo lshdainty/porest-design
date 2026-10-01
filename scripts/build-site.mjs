@@ -24,6 +24,7 @@ import { textareaExamples } from "../recipes/shadcn/examples/textarea-examples.m
 import { labelExamples } from "../recipes/shadcn/examples/label-examples.mjs";
 import { checkboxExamples } from "../recipes/shadcn/examples/checkbox-examples.mjs";
 import { radioGroupExamples } from "../recipes/shadcn/examples/radio-group-examples.mjs";
+import { selectBoxExamples } from "../recipes/shadcn/examples/select-box-examples.mjs";
 import { switchExamples } from "../recipes/shadcn/examples/switch-examples.mjs";
 import { badgeExamples } from "../recipes/shadcn/examples/badge-examples.mjs";
 import { avatarExamples } from "../recipes/shadcn/examples/avatar-examples.mjs";
@@ -79,7 +80,6 @@ import { spinnerExamples } from "../recipes/shadcn/examples/spinner-examples.mjs
 // Porest 도메인 spec (shadcn 외) — 2026-05-15 추가
 import { colorSwatchExamples } from "../recipes/shadcn/examples/color-swatch-examples.mjs";
 import { iconPickerExamples } from "../recipes/shadcn/examples/icon-picker-examples.mjs";
-import { tileExamples } from "../recipes/shadcn/examples/tile-examples.mjs";
 import { searchableListExamples } from "../recipes/shadcn/examples/searchable-list-examples.mjs";
 
 import {
@@ -112,6 +112,7 @@ const SHADCN_EXAMPLES = {
   label: labelExamples,
   checkbox: checkboxExamples,
   "radio-group": radioGroupExamples,
+  "select-box": selectBoxExamples,
   switch: switchExamples,
   // Display (Phase 2)
   badge: badgeExamples,
@@ -169,7 +170,6 @@ const SHADCN_EXAMPLES = {
   // Porest 도메인 spec (shadcn 카탈로그 외) — 2026-05-15
   "color-swatch": colorSwatchExamples,
   "icon-picker": iconPickerExamples,
-  tile: tileExamples,
   "searchable-list": searchableListExamples,
 };
 
@@ -1941,7 +1941,7 @@ function parseExamplesMd() {
 // 각 항목: slug, name, category, description.
 // 페이지 1대1 매핑: 묶지 않음 (input-textarea 같은 묶음 폐기).
 const SHADCN_CATALOG = [
-  // Form (15)
+  // Form (16)
   { slug: "button", name: "Button", category: "Form", description: "액션을 실행하는 버튼. 변형 7 × 크기 4 × 배치 2(SEED Action Button 구조)." },
   { slug: "checkbox", name: "Checkbox", category: "Form", description: "여러 선택 가능한 박스." },
   { slug: "combobox", name: "Combobox", category: "Form", description: "검색·필터 가능한 select." },
@@ -1951,6 +1951,7 @@ const SHADCN_CATALOG = [
   { slug: "input-otp", name: "Input OTP", category: "Form", description: "OTP / 인증 코드 입력." },
   { slug: "label", name: "Label", category: "Form", description: "form 레이블 (label-md, peer 인식)." },
   { slug: "radio-group", name: "Radio Group", category: "Form", description: "여러 옵션 중 하나만 선택." },
+  { slug: "select-box", name: "Select Box", category: "Form", description: "제목 · 설명이 붙은 선택지를 상자로 비교해 하나 · 여럿을 고른다 (SEED Select Box 구조)." },
   { slug: "select", name: "Select", category: "Form", description: "옵션 드롭다운 — Radix Select 베이스." },
   { slug: "slider", name: "Slider", category: "Form", description: "범위 값 선택 슬라이더." },
   { slug: "switch", name: "Switch", category: "Form", description: "on/off 토글." },
@@ -2006,10 +2007,9 @@ const SHADCN_CATALOG = [
   { slug: "data-table", name: "Data Table", category: "Data", description: "정렬·필터·페이징 테이블 — TanStack Table 베이스." },
   { slug: "table", name: "Table", category: "Data", description: "기본 HTML 테이블 스타일." },
 
-  // Porest 도메인 spec (4) — shadcn 카탈로그 외, desk-front SoT 역방향 정합
+  // Porest 도메인 spec (3) — shadcn 카탈로그 외, desk-front SoT 역방향 정합
   { slug: "color-swatch", name: "Color Swatch", category: "Domain", description: "카테고리·라벨·태그 색 single-select 정사각형 grid (Porest 도메인 spec)." },
   { slug: "icon-picker", name: "Icon Picker", category: "Domain", description: "Lucide 2000+ 아이콘 popover + 8-col grid 단일 선택 (Porest 도메인 spec)." },
-  { slug: "tile", name: "Tile", category: "Domain", description: "swatch + label + desc 의 큰 카드 single-select — 테마·표시 단위 (Porest 도메인 spec)." },
   { slug: "searchable-list", name: "Searchable List", category: "Domain", description: "search input + 카드 list — 카드·은행·증권사 카탈로그 (Porest 도메인 spec)." },
 ];
 
