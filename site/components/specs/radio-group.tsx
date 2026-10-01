@@ -10,6 +10,8 @@ import { RadioPlayground } from './radio-group-playground';
 import { buttonLook } from './button-look';
 import { ButtonView } from './button-view';
 import { Phone, Sheet, Verdict, rc, type Mode } from './kit';
+import { selectBoxLook } from './select-box-look';
+import { SelectBoxGroupView } from './select-box-view';
 
 type Fig = (p: { caption?: string }) => ReactNode;
 const spec = () => loadComponentSpec('radio-group');
@@ -352,7 +354,7 @@ const ToneGuide: Fig = ({ caption }) => (
   </Panel>
 );
 
-// 반복 거래 "종료" — 설명 · 입력칸이 붙는 선택. Select Box 는 차례 전이라 모양만(값은 Select Box 차례에 SEED 로 정한다)
+// 반복 거래 "종료" — 설명 · 입력칸이 붙는 선택은 Select Box(select-box.yaml 의 값으로 그린다)
 function Inp({ children, w = 64 }: { children: ReactNode; w?: number }) {
   return (
     <span className="inline-block rounded-lg px-2 py-1 text-center text-[13px] tabular-nums" style={{ minWidth: w, border: `1px solid ${rc('stroke-neutral-weak')}`, background: rc('bg-layer-default'), color: rc('fg-neutral') }}>
@@ -368,30 +370,20 @@ const END = [
 const SelectBoxGuide: Fig = ({ caption }) => (
   <Panel caption={caption}>
     <Pair>
-      <Verdict ok note="Select Box — 설명은 라벨 아래, 입력칸은 고른 상자 안에서 펼쳐진다(모양만)">
-        <div className="flex w-[260px] flex-col gap-2">
-          <Title>종료</Title>
-          {END.map((o, i) => {
-            const on = i === 1;
-            return (
-              <div key={o.t} className="flex flex-col rounded-xl" style={{ border: on ? `2px solid ${rc('fg-neutral')}` : `1px solid ${rc('stroke-neutral-weak')}`, padding: on ? '13px 13px 13px 15px' : '14px 14px 14px 16px' }}>
-                <div className="flex items-center gap-3">
-                  <div className="min-w-0 flex-1">
-                    <div className="text-[15px] font-medium" style={{ color: rc('fg-neutral') }}>
-                      {o.t}
-                    </div>
-                    {o.d && (
-                      <div className="mt-0.5 text-[13px]" style={{ color: rc('fg-neutral-muted') }}>
-                        {o.d}
-                      </div>
-                    )}
-                  </div>
-                  <R checked={on ? 'checked' : 'unchecked'} ariaLabel={o.t} />
-                </div>
-                {on && o.input && <div className="mt-2.5">{o.input}</div>}
-              </div>
-            );
-          })}
+      <Verdict ok note="Select Box — 설명은 제목 아래, 입력칸은 고른 상자 아래로 펼쳐진다">
+        <div className="flex w-[280px] flex-col">
+          <Title id="rg-sb-end">종료</Title>
+          <SelectBoxGroupView
+            look={selectBoxLook('desk')}
+            kind="radio"
+            value="count"
+            ariaLabelledby="rg-sb-end"
+            boxes={[
+              { value: 'none', title: '무기한', description: '중지할 때까지 계속 반복' },
+              { value: 'count', title: '횟수 지정', description: '정한 횟수만큼 반복', footer: { before: '총', value: '12', after: '회', aria: '반복 횟수' } },
+              { value: 'date', title: '종료일 지정', description: '정한 날까지 반복', footer: { value: '2027. 3. 31.', width: 148, aria: '종료일' } },
+            ]}
+          />
         </div>
       </Verdict>
       <Verdict ok={false} note="Radio 줄 안에 설명 · 입력칸 — 입력칸이 라디오의 일부로 읽히고, 누르는 영역이 겹친다">

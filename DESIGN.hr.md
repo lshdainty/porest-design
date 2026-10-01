@@ -505,6 +505,9 @@ colors:
   stroke-neutral-weak-dark: "{colors.gray-400-dark}"
   stroke-neutral-solid: "{colors.gray-600}"
   stroke-neutral-solid-dark: "{colors.gray-600-dark}"
+  # v113 — 고른 선택 상자(Select Box)의 짙은 테두리(SEED stroke.neutral-contrast = gray-1000)
+  stroke-neutral-contrast: "{colors.gray-1000}"
+  stroke-neutral-contrast-dark: "{colors.gray-1000-dark}"
   stroke-critical-solid: "{colors.red-700}"
   stroke-critical-solid-dark: "{colors.red-800-dark}"
   stroke-positive-solid: "{colors.green-700}"
@@ -1240,6 +1243,10 @@ components:
     backgroundColor: "{colors.stroke-neutral-solid}"
   role-stroke-neutral-solid-dark:
     backgroundColor: "{colors.stroke-neutral-solid-dark}"
+  role-stroke-neutral-contrast-light:
+    backgroundColor: "{colors.stroke-neutral-contrast}"
+  role-stroke-neutral-contrast-dark:
+    backgroundColor: "{colors.stroke-neutral-contrast-dark}"
   role-stroke-critical-solid-light:
     backgroundColor: "{colors.stroke-critical-solid}"
   role-stroke-critical-solid-dark:
@@ -1871,6 +1878,7 @@ v108 로 크게 바뀐 색을 지금 제품 값(Desk 웹 `porest-tokens.css` · 
 | `stroke-neutral-subtle` | gray-300 | gray-300 | 투명도 있는 검정 · 흰색 |
 | `stroke-neutral-weak` | gray-400 | gray-400 | — |
 | `stroke-neutral-solid` | gray-600 | gray-600 | gray-800 / gray-800 (v109) |
+| `stroke-neutral-contrast` | gray-1000 | gray-1000 | — (v113) |
 
 의미 색은 네 역할이 같은 단계를 쓴다 — critical → red · positive → green · warning → orange · informative → blue.
 
@@ -1994,6 +2002,7 @@ SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채�
 | `stroke-neutral-subtle` | `#EDEFF3` | `#353B4D` | — | border-subtle |
 | `stroke-neutral-weak` | `#E5E8EF` | `#404757` | border-default | border-default |
 | `stroke-neutral-solid` | `#767C8B` | `#838997` | border-strong | border-strong |
+| `stroke-neutral-contrast` | `#1A1F2E` | `#F5F6FA` | — | — |
 | `stroke-critical-solid` | `#D72323` | `#FF8477` | error | status-danger-border |
 | `stroke-positive-solid` | `#167F3F` | `#25C062` | success | status-success-border |
 | `stroke-warning-solid` | `#BE490D` | `#FF8758` | warning | status-warning-border |
@@ -2030,10 +2039,10 @@ v102 때의 규칙이다. v108 부터 값은 팔레트 단계에서 온다 — �
 
 porest 화면에 아직 쓰는 자리가 없다. 자리가 생기면 위 규칙으로 더한다.
 
-- bg.neutral-solid · bg.neutral-inverted-pressed — 짙은 회색 채움 버튼 · 반전 배경 눌림
+- bg.neutral-solid — 짙은 회색 채움(bg.neutral-inverted-pressed 는 v112 에 Button 의 누름으로 들였다)
 - bg.neutral-weak-alpha · bg.transparent-*(4) — 투명도 있는 배경. 필요하면 overlay 처럼 표 토큰으로 따로 둔다
 - bg.overlay · bg.overlay-muted — Elevation 의 overlay-dim 이 같은 자리다
-- stroke.neutral-muted · stroke.neutral-contrast · stroke.*-weak(4) — Desk 는 구분선을 한 값으로 쓴다
+- stroke.neutral-muted · stroke.*-weak(4) — Desk 는 구분선을 한 값으로 쓴다(stroke.neutral-contrast 는 v113 에 Select Box 의 고른 테두리로 들였다)
 - bg.magic-weak · bg.layer-fill — 당근 AI 기능 전용 · SEED 에서도 없어질 이름
 
 #### HR 웹
@@ -3073,7 +3082,7 @@ DESIGN.md baseline 정의 참고 — 14 keyframes (단발 10 + loop 4): fade-in/
 
 - 호버와 누름이 같은 색이라, 마우스로 누를 때는 색이 더 바뀌지 않고 축소만 더해진다. 호버는 마우스가 있는 기기에서만 켠다 — 터치 화면에 호버가 붙어 남지 않게.
 - 불러오는 중 · 읽기 전용의 표면은 SEED 컴포넌트 값을 따랐다(불러오는 중 = 누름 색, 읽기 전용 = 비활성 배경).
-- 선택을 테두리로 보이는 요소(선택 상자 · 타일)와 목록 · 메뉴의 지금 항목은 컴포넌트 단계에서 SEED 의 해당 컴포넌트와 비교해 정한다 — SEED 선택 상자는 진한 테두리(stroke.neutral-contrast, porest 에는 아직 없는 역할)다.
+- 선택을 테두리로 보이는 요소: Select Box 는 고른 상자만 2px `stroke-neutral-contrast`(v113 — SEED 와 같다, 바탕은 바꾸지 않는다). 목록 · 메뉴의 지금 항목은 그 컴포넌트 차례에 SEED 와 비교해 정한다.
 - 스위치처럼 색으로 켜짐을 뜻하는 요소의 비활성도 컴포넌트 단계에서 정한다(SEED 스위치는 불투명도 0.58).
 
 #### 겹칠 때
@@ -3655,6 +3664,20 @@ HR — 직원 정보 form(필수/선택 옵션), 권한 토글 switch, 평가 �
 - 목록 제목: `t4` 14 · 위아래 8 · 좌우 24 — `mediumWeak`(500 · `fg-neutral-subtle`, 기본) · `boldSolid`(700 · `fg-neutral`).
 - HR — 오늘 줄 모양 24가지 · 목록 33곳, 오른쪽 화살표 0, 줄 전체를 누르는 10 중 키보드로 닿는 것 3(2026-10-01 조사). 앱 적용 단계에서 List 로 옮긴다.
 - 목록은 흰 바탕(`bg-layer-default`) · 시트(`bg-layer-floating`) 위에 둔다 — 회색 바탕(`bg-layer-basement`) 위에서는 누름 바탕이 보이지 않는다(카드에 담는다).
+
+### Select Box
+
+> 상세 spec(Anatomy / 컨트롤 / 배치 / 상태 / 펼침 / 모션 / Accessibility / Do-Don't)은 [`specs/components/select-box.md`](specs/components/select-box.md)가 단일 SoT, 수치는 `select-box.yaml`. 코드(`recipes/shadcn/components/ui/select-box.tsx`) · 예제(`recipes/shadcn/examples/select-box-examples.mjs`) · preview 4 source 동기.
+
+- 구조: 하나 고르기(Radio Select Box) · 여럿 고르기(Check Select Box) · 묶음(Select Box Group) — SEED Select Box(2026-10-01). 설명 · 아이콘 · 딸린 입력이 붙는 선택지 2 ~ 6개를 견줘 고르고, 저장 · 다음 같은 버튼으로 반영한다. Tile 은 걷었다.
+- 상자: 모서리 `radius-r3` (12) · 안쪽 1px `stroke-neutral-weak`. 고르면 안쪽에 2px `stroke-neutral-contrast`(v113)를 덧그린다 — 내용이 밀리지 않고, 바탕은 그대로다(브랜드 색 없음).
+- 글자: 제목 `t5` 16 · 500 `fg-neutral` · 설명 `t3` 13 `fg-neutral-muted`(두 줄까지). 앞 아이콘 22(`fg-neutral`).
+- 컨트롤은 오른쪽 — 라디오 20(neutral) · 칸 없는 체크(Checkbox Ghost) · 없음(테두리만, 좁은 3열 같은 자리). 컨트롤은 따로 줄지 않고 자기 포커스 링도 그리지 않는다.
+- 배치: 1열은 가로형(위아래 16 · 왼쪽 20 · 오른쪽 16, 세로 가운데), 2 ~ 3열은 세로형(위아래 20 · 좌우 16, 앞이 위 · 컨트롤은 위 오른쪽). 묶음 줄 사이 `spacing-component-default` · 열 사이 12, 2열 이상이면 모든 상자가 가장 긴 상자의 높이다. 가장 작은 상자 54.
+- 누름 · 호버(웹): 상자 바탕이 `bg-layer-default-pressed` 가 되고 누르는 자리(콘텐츠 + 컨트롤)만 2px 거리로 준다(v104). 키보드 포커스 링은 상자 바깥 2px · 띄움 2px.
+- 펼침: 고른 상자 아래로 딸린 입력 · 안내가 열린다(안쪽 좌우 20 · 아래 16, 높이 400ms · 투명도 300ms). 닫히면 보이지 않고 Tab 도 닿지 않는다.
+- 누르는 순간 바뀌는 고르기(테마 같은)는 List 의 라디오 줄, 누르면 바로 무언가를 하는 자리는 버튼이다.
+- HR — 상자 4 패턴 · 5곳이 모두 손으로 짠 여럿 고르기(권한 · 역할 할당 · 플랜 정책 · 시스템 데일리 체크)다(2026-10-01 조사). 하나 고르기는 지금 모두 드롭다운이다 — 휴가 정책의 부여 방법 · 가변 부여 여부처럼 설명이 붙는 고르기는 앱 적용 단계에서 Select Box 로 옮긴다.
 
 ### Tabs
 

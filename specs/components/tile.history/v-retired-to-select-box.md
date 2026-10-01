@@ -1,3 +1,5 @@
+> **걷음(2026-10-01)** — 미리보기 · 제목 · 설명이 붙은 선택지는 Select Box(`RadioSelectBox`)로 그린다. 테마처럼 누르는 순간 바뀌는 설정은 List 의 라디오 줄(`ListRadioItem`, 앞에 미리보기)이다. 새 스펙은 [`../select-box.md`](../select-box.md). 아래는 걷기 전 마지막 스펙이다(수치는 같은 폴더의 `v-retired-to-select-box.yaml`).
+
 # Tile
 
 > swatch(미리보기) + 라벨 + 설명 + 우측 check 의 큰 카드(tile) 1개를 single-select 하는 도메인 컴포넌트. 테마/기본통화/표시단위 등 **시각적 미리보기가 의미 자체**인 선택지에 사용. shadcn에는 없는 Porest 도메인 spec — desk-front AppearanceSection "테마" 영역 SoT.

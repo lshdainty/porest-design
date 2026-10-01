@@ -6,6 +6,7 @@ import { buttonGuideFigures } from './button-guides';
 import { checkboxFigures } from './checkbox';
 import { listFigures } from './list';
 import { radioGroupFigures } from './radio-group';
+import { selectBoxFigures } from './select-box';
 import { switchFigures } from './switch';
 import { SpecSheet } from './spec-sheet';
 
@@ -14,6 +15,7 @@ const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactN
   checkbox: checkboxFigures,
   list: listFigures,
   'radio-group': radioGroupFigures,
+  'select-box': selectBoxFigures,
   switch: switchFigures,
 };
 
