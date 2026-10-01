@@ -352,7 +352,8 @@ const Divider: Fig = ({ caption }) => (
 );
 
 // ── Guidelines ────────────────────────────────────────────
-const Pair = ({ children }: { children: ReactNode }) => <div className="flex w-full max-w-[640px] flex-wrap gap-4 sm:flex-nowrap">{children}</div>;
+// 좁은 화면에서는 위아래로 — 나란히 두면 줄의 본문이 몇 px 로 눌려 낱말이 칸 밖으로 넘친다(단어 단위 줄바꿈 v114)
+const Pair = ({ children }: { children: ReactNode }) => <div className="flex w-full max-w-[640px] flex-col gap-4 sm:flex-row">{children}</div>;
 
 const AllRows: Fig = ({ caption }) => (
   <Figure caption={caption}>
@@ -428,12 +429,12 @@ const TargetsGuide: Fig = ({ caption }) => (
     <Pair>
       <Verdict ok note="줄 자체 + 작은 버튼 하나 — 나머지는 상세 화면에서">
         <Surface className="w-full">
-          <L rows={[{ kind: 'button', prefix: { tile: 'brown', icon: 'coffee' }, title: '스타벅스 강남점', detail: '즐겨찾는 가맹점', suffix: { buttons: ['more'] } }]} />
+          <L rows={[{ kind: 'button', prefix: { tile: 'brown', icon: 'coffee' }, title: '동네 카페', detail: '즐겨찾는 가맹점', suffix: { buttons: ['more'] } }]} />
         </Surface>
       </Verdict>
       <Verdict ok={false} note="줄 · 즐겨찾기 · 고치기 · 지우기 — 누르는 것이 넷이라 잘못 누른다">
         <Surface className="w-full">
-          <L rows={[{ kind: 'button', prefix: { tile: 'brown', icon: 'coffee' }, title: '스타벅스 강남점', detail: '즐겨찾는 가맹점', suffix: { buttons: ['star', 'pencil', 'trash'] } }]} />
+          <L rows={[{ kind: 'button', prefix: { tile: 'brown', icon: 'coffee' }, title: '동네 카페', detail: '즐겨찾는 가맹점', suffix: { buttons: ['star', 'pencil', 'trash'] } }]} />
         </Surface>
       </Verdict>
     </Pair>

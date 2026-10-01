@@ -443,7 +443,7 @@ function siteCss() {
   return `
 :root { color-scheme: light dark; }
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; word-break: keep-all; overflow-wrap: break-word; } /* 한국어 줄바꿈 — 단어 단위(DESIGN.md v114) */
 body {
   font-family: var(--font-sans);
   margin: 0;

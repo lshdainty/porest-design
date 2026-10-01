@@ -295,7 +295,8 @@ const TouchTarget: Fig = ({ caption }) => (
   </Figure>
 );
 
-const Pair = ({ children }: { children: ReactNode }) => <div className="flex w-full max-w-[620px] gap-4">{children}</div>;
+// 좁은 화면에서는 위아래로 — 나란히 두면 줄의 본문이 눌려 낱말이 칸 밖으로 넘친다(단어 단위 줄바꿈 v114)
+const Pair = ({ children }: { children: ReactNode }) => <div className="flex w-full max-w-[620px] flex-col gap-4 sm:flex-row">{children}</div>;
 
 function NotiPhone({ tone, masterOn = true, forceOff = false }: { tone?: string; masterOn?: boolean; forceOff?: boolean }) {
   return (

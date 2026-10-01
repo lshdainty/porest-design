@@ -1,6 +1,7 @@
 // Typography 페이지 — 값은 DESIGN.md typography 블록에서만 온다
-import { color, design, sectionTable, typeScale } from '@/lib/design-tokens';
-import { Figure, Inline, Table, Token } from './ui';
+import type { CSSProperties } from 'react';
+import { color, design, sectionCode, sectionTable, typeScale } from '@/lib/design-tokens';
+import { Figure, Inline, MARK, MARK_LINE, Table, Token } from './ui';
 
 // "쓰는 곳" · "배수" 는 DESIGN.md v100 표에서 읽는다
 function v100Rows() {
@@ -129,6 +130,90 @@ export function UnitTable() {
           <td className="tabular-nums">{rem(t.fontSize)}</td>
           <td className="tabular-nums">{t.fontSize}</td>
           <td className="tabular-nums text-fd-muted-foreground">{t.lineHeight ? `${rem(t.lineHeight)} / ${t.lineHeight}` : '—'}</td>
+        </tr>
+      ))}
+    </Table>
+  );
+}
+
+// ── 줄바꿈(v114) ─────────────────────────────────────────
+// DESIGN.md "v114 — 줄바꿈" 의 CSS 를 그대로 걸어, 지금의 글자 단위(브라우저 기본값)와 나란히 그린다
+const LINE_BREAK = 'v114 — 줄바꿈';
+function lineBreakCss(): CSSProperties {
+  const decl = Object.fromEntries([...sectionCode(LINE_BREAK).matchAll(/([a-z-]+):\s*([a-z-]+);/g)].map((m) => [m[1], m[2]]));
+  if (!decl['word-break'] || !decl['overflow-wrap']) throw new Error(`DESIGN.md "${LINE_BREAK}" 의 CSS 에서 word-break · overflow-wrap 을 읽지 못했다`);
+  return { wordBreak: decl['word-break'] as CSSProperties['wordBreak'], overflowWrap: decl['overflow-wrap'] as CSSProperties['overflowWrap'] };
+}
+// 사이트는 v114 규칙을 전체에 건다 — 지금 모습은 기본값으로 되돌려 그린다
+const BROWSER_DEFAULT: CSSProperties = { wordBreak: 'normal', overflowWrap: 'normal' };
+
+// 컴포넌트 자리의 실제 글 · 폭(폰 360 기준) — mark 는 글자 단위에서 갈리는 낱말
+const BREAK_SAMPLES: { where: string; size: string; weight?: number; width: number; text: string; mark?: string }[] = [
+  { where: 'Select Box 설명 · 1열', size: 't3', width: 246, text: 'OT, 경조 휴가 등 휴가를 신청할 수 있는 권한입니다.', mark: '권한입니다.' },
+  { where: 'Select Box 설명 · 2열', size: 't3', width: 88, text: '중지할 때까지 계속 반복', mark: '계속' },
+  { where: 'Select Box 제목 · 3열', size: 't5', weight: 500, width: 64, text: '최근 3개월', mark: '3개월' },
+  { where: 'List 설명', size: 't3', width: 250, text: '내보낸 파일에서 계좌번호 · 카드번호의 가운데 자리를 별표로 바꿔요. 받는 사람이 번호 전체를 보지 못해요', mark: '자리를' },
+  { where: 'Checkbox 라벨 · 시트', size: 't4', width: 200, text: '알림을 받을 때 결제 예정 금액도 함께 보여 주기', mark: '함께' },
+  { where: '이메일 · 2열', size: 't3', width: 88, text: 'porest.desk@example.com' },
+];
+
+function BreakSample({ s, rule }: { s: (typeof BREAK_SAMPLES)[number]; rule: CSSProperties }) {
+  const t = typeScale().scale.find((x) => x.name === s.size);
+  if (!t) throw new Error(`글자 토큰 ${s.size} 이 없다`);
+  const [before, after] = s.mark ? s.text.split(s.mark) : [s.text, ''];
+  return (
+    <div className="rounded-xl bg-white p-3">
+      <div style={{ width: s.width, outline: `1px dashed ${MARK_LINE}`, fontSize: t.fontSize, lineHeight: t.lineHeight, fontWeight: s.weight ?? 400, color: color(s.weight ? 'fg-neutral' : 'fg-neutral-muted'), ...rule }}>
+        {before}
+        {s.mark && <mark style={{ background: MARK, color: 'inherit', borderRadius: 3 }}>{s.mark}</mark>}
+        {after}
+      </div>
+    </div>
+  );
+}
+
+export function LineBreakFigure() {
+  const rule = lineBreakCss();
+  return (
+    // Figure 는 내용 폭(w-max)으로 가로 스크롤한다 — 여기서는 좁은 화면에서 두 칸이 아래로 내려오게 판을 따로 둔다
+    <figure className="not-prose my-6">
+      <div className="flex flex-col gap-5 rounded-2xl bg-[#E9E9EC] p-5 text-fd-foreground dark:bg-fd-muted sm:p-8">
+        {BREAK_SAMPLES.map((s) => (
+          <div key={s.where} className="flex flex-col gap-1.5">
+            <span className="text-[12px] font-semibold">{s.where}</span>
+            <div className="flex flex-wrap items-start gap-3">
+              {(
+                [
+                  ['지금 — 글자 단위', BROWSER_DEFAULT],
+                  ['단어 단위', rule],
+                ] as const
+              ).map(([label, css]) => (
+                <div key={label} className="flex flex-col gap-1">
+                  <span className="text-[11px] text-fd-muted-foreground">{label}</span>
+                  <BreakSample s={s} rule={css} />
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+      <figcaption className="mt-3 text-center text-sm text-fd-muted-foreground">지금(글자 단위)과 v114(단어 단위) — 점선이 글이 쓸 수 있는 폭, 분홍이 글자 단위에서 갈리는 낱말</figcaption>
+    </figure>
+  );
+}
+
+// DESIGN.md v114 의 플랫폼 표를 그대로
+export function LineBreakTable() {
+  const { head, rows } = sectionTable(LINE_BREAK);
+  return (
+    <Table head={head} minWidth={640}>
+      {rows.map((r) => (
+        <tr key={r[0]}>
+          {r.map((c, i) => (
+            <td key={i} className={i === 0 ? 'whitespace-nowrap font-medium' : undefined}>
+              <Inline text={c} />
+            </td>
+          ))}
         </tr>
       ))}
     </Table>

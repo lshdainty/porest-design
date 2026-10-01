@@ -101,6 +101,9 @@
 **v113 — 고른 선택 상자의 짙은 테두리 (2026-10-01)**
 - v113: `stroke-neutral-contrast`(gray-1000 · 다크 gray-1000-dark) 한 쌍 — SEED `stroke.neutral-contrast`. Select Box 의 고른 상자를 2px 짙은 테두리로 알리기로 정하면서(바탕은 그대로, 브랜드 색 없음) 그 색이 필요해졌다. 흰 바탕 위 16.41:1 · 다크 13.42:1, 대비 쌍 `role-stroke-neutral-contrast-light` · `-dark`. Select Box 신설(아래 Changed)과 같은 PR. 사용자 결정(2026-10-01).
 
+**v114 — 줄바꿈: 단어 단위 (2026-10-01)**
+- v114: 한국어를 글자(음절)가 아니라 낱말 사이에서 줄을 바꾼다 — 웹은 `word-break: keep-all` + `overflow-wrap: break-word` 를 문서 맨 바깥에 한 번, 앱(Flutter)은 공용 글자 위젯에서 낱말 안에 WORD JOINER(U+2060)를 넣는다(Flutter 에는 이 설정이 없다 — 3.41 에서 시험). 컴포넌트 예시 글 12개 중 7개가 낱말 중간에서 끊겼고("권한입니 / 다.", "3개 / 월"), 바꿔도 줄이 늘어난 글은 없었다. 한 줄보다 긴 낱말은 칸 끝에서 끊어 넘치지 않는다. 당근(SEED)은 읽는 글(본문 · 시트 제목 · 도움말)만 단어 단위이고 porest 는 컴포넌트 라벨 · 설명까지 — 사용자 결정. 사이트 · 옛 사이트 · 미리보기 · shadcn bridge 에 걸었고, 제품은 앱 적용 단계에서. 토큰 추가 없음.
+
 ### Components
 
 **v33~v48 — Component spec batch (16 components, sparse 매핑 자동 검증 활성)**
