@@ -109,17 +109,15 @@ function IconPicker({
         align="start"
         className={cn("p-[var(--spacing-md)]", CONTENT_WIDTH[size])}
       >
-        <div className="relative mb-[var(--spacing-sm)]">
-          <Search
-            size={14}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary"
-          />
+        <div className="mb-[var(--spacing-sm)]">
           <Input
             autoFocus
+            aria-label="아이콘 검색"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={placeholder}
-            className="pl-9"
+            prefixIcon={<Search />}
+            clearable
           />
         </div>
         <ScrollArea className="max-h-60">

@@ -56,7 +56,7 @@ export type SbLook = {
   // 오른쪽 컨트롤 — 그 컴포넌트의 YAML 에서(Radiomark medium neutral · Checkbox Ghost medium neutral)
   marks: { radio: RadioLook; check: CheckLook };
   // 펼침 안의 입력칸 — input.yaml 에서(펼침의 내용은 쓰는 쪽이 정한다 — 예시로만)
-  input: { height: number; padX: number; radius: number; fontSize: string; lineHeight?: string | number; bg: Record<Mode, string>; fg: Record<Mode, string>; border: Record<Mode, string> };
+  input: { height: number; padX: number; radius: number; fontSize: string; lineHeight?: string | number; bg: Record<Mode, string>; fg: Record<Mode, string>; border: Record<Mode, string>; focus: Record<Mode, string> };
   surface: Record<'default' | 'basement' | 'floating', Record<Mode, string>>;
   // 최대 개수에 닿았을 때 띄우는 안내(스낵바 모양 — 그림에서만)
   notice: { bg: Record<Mode, string>; fg: Record<Mode, string> };
@@ -134,6 +134,8 @@ export function sbGroupVars(look: SbLook, mode: 'light' | 'dark' | 'auto' = 'aut
     '--psb-in-fg-d': i.fg[pickD],
     '--psb-in-bd-l': i.border[pickL],
     '--psb-in-bd-d': i.border[pickD],
+    '--psb-in-focus-l': i.focus[pickL],
+    '--psb-in-focus-d': i.focus[pickD],
     '--psb-nt-bg-l': n.bg[pickL],
     '--psb-nt-bg-d': n.bg[pickD],
     '--psb-nt-fg-l': n.fg[pickL],

@@ -1,154 +1,253 @@
 # Input
 
-> 사용자가 short-form text(이름·이메일·검색어·숫자 등)를 입력하는 단일 행 텍스트 필드. multi-line은 Textarea, 옵션 선택은 Select / Combobox 별도.
+> 한 줄 글 · 숫자를 직접 치는 입력칸(Text Input). 이름 · 금액 · 제목 · 아이디 · 검색어처럼 짧은 값을 받는다. 여러 줄은 [Textarea](textarea.md), 목록 · 달력에서 고르는 값은 Input Button · Select(그 차례에)다.
 
-Porest Input은 **단일 size + 6 state** 매트릭스로 정의됩니다. Toss 톤(절제·신뢰감) 따라 회색 채움(`surface-input`) 배경을 기본으로 — 외곽선만으로는 1.4.11 식별이 약하므로 **배경 톤차로 입력 필드임을 명시**. 한국어 본문 가독성을 위해 `body-lg` (16/400) — 굵은 폰트보다 가벼운 폰트가 입력값 가독성에 유리.
+구조는 당근 [SEED Text Input](https://seed-design.io/components/text-input)(Apache-2.0)을 따른다 — 상자(Container) · 입력 · 앞 · 뒤 붙이개 · 지우기 버튼. 라벨 · 설명 · 오류 · 글자 수는 [Field](field.md)가 둘레에서 그린다. 값은 porest 토큰이고, SEED 와 다른 자리는 맨 아래 "SEED 와 다른 점" 에 적었다(2026-10-01 사용자 결정).
+
+수치 원본은 [`input.yaml`](input.yaml)이다. 수치 표 자리(`[표: …]`)와 그림 자리(`[그림: …]`)는 사이트가 그 파일로 그린다 — GitHub 에서는 그 파일 · 그림 코드로 가는 링크로 보인다.
+
+[그림: 거래 추가 · 휴가 신청 — 라이트 · 다크](../../site/components/specs/input.tsx#hero)
+
+### 직접 골라 보기
+
+모양 · 크기 · 상태 · 앞 · 뒤 붙이개 · 지우기를 고르면 스펙대로 그린 칸과 그 코드가 바뀐다. 실제로 쓸 수 있다.
+
+[그림: 플레이그라운드](../../site/components/specs/input.tsx#playground)
 
 ## Anatomy
 
-```
-┌──────────────────────────────────┐
-│ ⓐ label                          │
-│                                  │
-│ ┌──────────────────────────────┐ │
-│ │ ⓑ container                  │ │
-│ │ ⓒ icon  ⓓ value/placeholder  │ │
-│ └──────────────────────────────┘ │
-│ ⓔ focus ring (focus-visible only)│
-│                                  │
-│ ⓕ helper text / error text       │
-└──────────────────────────────────┘
-```
+[그림: 칸은 상자 · 입력 · 앞 · 뒤 붙이개 · 지우기 버튼으로 이뤄진다](../../site/components/specs/input.tsx#anatomy)
 
-| ⓐ label | 위쪽 외부. `label-md` (14/500). `htmlFor` 또는 `aria-labelledby` 필수. |
-| ⓑ container | 채움 + 1px 외곽선. `radius-sm` (4px) 고정. |
-| ⓒ icon (optional) | 좌측 leading icon. 16px. 검색·이메일 등 컨텍스트 표시. |
-| ⓓ value / placeholder | 입력값 또는 placeholder. value는 `text-primary`, placeholder는 `text-tertiary`. |
-| ⓔ focus ring | `focus-visible` 한정. 2px ring + 1px offset. 라이트는 `border-focus`, 다크는 `border-focus-light` 자동 alias. |
-| ⓕ helper / error text | 아래 외부. `caption` (12/400). 에러 시 `text-error` + `aria-describedby`로 연결. |
+| ⓐ Container | 상자 — 테두리 · 바탕 · 모서리. 어디를 눌러도 입력으로 포커스가 간다. |
+| ⓑ Prefix | 앞 붙이개 — 아이콘(검색 돋보기) · 글자(https:// · 만 · −). 없어도 된다. |
+| ⓒ Value · Placeholder | 입력 — 쓴 값, 비었으면 예시 글(placeholder). |
+| ⓓ Suffix | 뒤 붙이개 — 단위 글자(원 · % · 일 · 회) · 아이콘. |
+| ⓔ Clear Button | 지우기 — 값이 있을 때만. |
 
-**규칙**
+[표: 부위](input.yaml#slots)
 
-- icon 내장 시 `padding-left`를 늘려 텍스트와 겹침 방지 (icon 16px + gap 8px = 24px).
-- placeholder는 영구 콘텐츠가 아니므로 1.4.3 incidental 예외(text-tertiary 회색 OK).
-- `<label>` 클릭 시 input focus되도록 `htmlFor` 필수.
+## Properties
 
-## Variants
+### Variant
 
-Input은 **variant 없음** — form 안에서 단일 시각 통일이 가독성·일관성에 유리합니다. type 속성(`text` / `email` / `password` / `number` / `search` / `tel` / `url` / `date` 등)에 따라 키보드 IME나 validation 동작이 달라지지만 시각 spec은 동일.
+상자(`outline`)가 기본이다. 화면에 입력이 하나뿐이면 밑줄(`underline`)을 쓴다 — 금액을 먼저 받는 화면, 목록 위 검색, 초대 코드, 잠금 해제 비밀번호(SEED). 밑줄은 글자가 한 단계 크고(large 18) 좌우 여백 · 모서리가 없다.
 
-## Sizes
+[그림: 모양 — 상자 · 밑줄](../../site/components/specs/input.tsx#variant)
 
-**단일 size — `md` (h-10, 40px) 고정**. 사용처에서 dense list 등 예외가 필요하면 `className`으로 직접 조정 (예: `className="h-8 text-caption"`). variant 분리 안 함은 form 안에서 통일된 사이즈 권장 의도.
+[표: 모양](input.yaml#variant)
 
-[표: 크기와 모양](input.yaml#base.default)
+### Size
 
-다크 모드는 `surface-input-dark` (`#2D3346`)가 `surface-default-dark` (`#1B1F2A`)보다 **밝아** elevation 반전 — 어두운 카드 위 입력 필드가 elevated되어 시인성 확보(DESIGN.md `### Input` 정의).
+`large`(52 · 밑줄 40)는 폰 · 앱에서, `medium`(40 · 밑줄 34)은 1280 이상 데스크톱 웹(마우스)에서만 쓴다. 웹의 기본은 `responsive` 다 — 1280 미만은 large, 이상은 medium(SEED `lg`). 앱은 늘 large 다. 한 폼 안에서 크기를 섞지 않는다.
 
-## States
+[그림: 크기 — large · medium, 반응형은 1280 에서 바뀐다](../../site/components/specs/input.tsx#size)
 
-6개 visual state. Tailwind v4 utility는 `:focus-visible`, `[aria-invalid="true"]`, `[disabled]`, `[readonly]` 가상 selectors로 자동 적용.
+[표: large](input.yaml#grid.variant.size.large)
 
-[표: 상태](input.yaml#matrix)
+[표: medium](input.yaml#grid.variant.size.medium)
 
-**Hover state는 명시적 변화 없음** — 입력 필드는 hover로 affordance 강조하지 않음(클릭/탭 시 즉시 focus). DESIGN.md `### Input` 의도와 일치.
+[표: 반응형](input.yaml#grid.variant.size.responsive)
 
-### 다크 모드 자동 alias
+### State
 
-`[data-theme="dark"]` 활성 시 토큰 cascade로 자동 swap:
-- `surface-input` → `surface-input-dark` (#2D3346 — elevation 반전)
-- `border-default` → `border-default-dark`
-- `border-focus` → `border-focus-light` (다크 표면 시인성)
-- `text-primary` → `text-primary-dark`
+| 상태 | 모습 |
+|---|---|
+| `enabled` | 투명 바탕 · 안쪽 1px `stroke-neutral-weak` |
+| `focused` | 안쪽에 2px `stroke-neutral-contrast` 를 덧그린다 — 마우스 · 터치로 눌러도(캐럿과 함께 지금 쓰는 칸을 알린다). 내용은 밀리지 않는다 |
+| `invalid` | 안쪽 2px `stroke-critical-solid` — 포커스해도 그대로. 오류 글은 Field 가 칸 아래에 |
+| `disabled` | 바탕 `bg-disabled` · 글자 · 아이콘 `fg-disabled`. 흐리게 하지 않는다(v106) |
+| `readonly` | 바탕 `bg-disabled` · 값은 진한 글자 그대로, 포커스 테두리 없음. 밑줄형은 바탕 대신 글자가 `fg-neutral-muted` |
 
-코드 변경 없이 cascade만으로 다크 정합 보장.
+[그림: 상태 — 기본 · 포커스 · 오류 · 오류 + 포커스 · 비활성 · 읽기 전용(상자 · 밑줄)](../../site/components/specs/input.tsx#states)
 
-## Layout
+[표: 상태 — 상자](input.yaml#matrix)
 
-**Form group**
+[표: 상태 — 밑줄](input.yaml#matrix.variant.underline)
 
-- label 위 input: `gap-2` (8px) 또는 `space-y-2`. `<label>`과 `<input>` 사이.
-- input 아래 helper/error: `gap-1` (4px). `caption` font.
-- form group 간 최소 `gap-4` (16px), section 간 `gap-6` (24px).
+[표: 모션](input.yaml#motion)
 
-**Width**
+### Prefix · Suffix
 
-- 명시적 제한 없음 (`w-full` 권장 — form 컨테이너에 맞춤).
-- 좁은 inline edit(예: 숫자 nudge)은 `w-20` / `w-24` 등 직접 지정.
+칸 안 앞 · 뒤에 글자나 아이콘을 둔다. 글자(`prefix` · `suffix`)는 칸 글자와 같은 크기의 `fg-neutral-subtle`, 아이콘(`prefixIcon` · `suffixIcon`)은 large 20 · medium 16(밑줄 24 · 20)의 `fg-neutral-muted` 다.
 
-**Layout 안 그룹** (e.g. icon + input)
+- 단위는 뒤 글자로 둔다 — 라벨에 "(원)" 을 붙이거나 칸 밖에 따로 쓰지 않는다. 단위 글자는 칸의 설명으로도 읽힌다(화면 읽기 프로그램이 "원" 을 듣는다).
+- 아이콘만으로 뜻을 알리지 않는다 — 라벨이나 설명에 글로도 쓴다.
+
+[그림: 붙이개 — https:// · 원 · 만 ~ 세 · 검색 돋보기](../../site/components/specs/input.tsx#affix)
+
+### Clear Button
+
+값이 있을 때 한 번에 지우는 버튼(`clearable`) — large 22 · medium 18 의 `fg-neutral-subtle` 원 X. 막혔거나 읽기 전용이면 보이지 않는다. 누르면 값을 비우고 입력에 포커스를 둔다. 검색칸 · 선택 사항인 칸에 둔다(필수 칸에는 두지 않는다 — 지울 일이 드물다).
+
+[그림: 지우기 — 값이 있을 때만](../../site/components/specs/input.tsx#clear)
+
+## Guidelines
+
+### 화면에 입력이 하나뿐이면 밑줄
+
+한 화면이 값 하나를 받으면(금액을 먼저 받는 단계 화면, 목록 위 검색) 밑줄형으로 크게 둔다. 상자형 칸 하나만 덩그러니 두지 않는다(SEED).
+
+[그림: 밑줄 — 금액을 먼저 받는 화면 · 상자 하나만 둔 화면](../../site/components/specs/input.tsx#underline-guide)
+
+### 숫자 · 금액
+
+- 숫자 키보드를 띄운다(`inputMode="numeric"` · 소수면 `"decimal"`). `type="number"` 는 쓰지 않는다 — 쉼표를 못 넣고, 휠 · 화살표로 값이 바뀐다.
+- 쓰는 동안 천 단위 쉼표를 넣는다("12,000"). 단위는 뒤 글자("원").
+
+[그림: 금액 — 쉼표와 뒤 글자 원 · 쉼표 없이 라벨에 (원)](../../site/components/specs/input.tsx#number-guide)
+
+### 형식이 정해진 값은 한 칸에
+
+전화번호 · 주민등록번호 · 카드 번호처럼 형식이 정해진 값은 칸을 나누지 않는다 — 한 칸에서 쓰는 대로 형식(하이픈)을 맞춰 준다(SEED). 두 칸을 나란히 두는 것은 라벨과 값이 짧을 때만이다(Field › Form 의 구성).
+
+[그림: 형식 — 한 칸에 하이픈을 맞춰 준다 · 세 칸으로 나눈 전화번호](../../site/components/specs/input.tsx#format-guide)
+
+### 고르는 값은 치게 하지 않는다
+
+날짜 · 시각 · 카테고리 · 자산처럼 정해진 값 중에서 고르는 것은 Input(타이핑)으로 받지 않는다 — 입력칸 모양의 버튼(Input Button)으로 달력 · 시트 · 목록을 연다(그 차례에 정한다).
+
+| 이런 자리 | 컴포넌트 |
+|---|---|
+| 짧은 글 · 숫자를 직접 친다 | **Input** |
+| 여러 줄 글을 친다 | Textarea |
+| 값을 목록 · 달력 · 시트에서 고른다 | Input Button · Select(그 차례에) |
+| 설명이 붙는 2 ~ 6개를 견줘 고른다 | Select Box |
+
+## 코드
+
+레시피 `recipes/shadcn/components/ui/input.tsx`(Input)를 [Field](field.md) 안에 둔다. 아래 미리보기는 스펙 값으로 그린 모습이다.
+
+### 기본
+
+[그림: 기본 — Field 안의 칸](../../site/components/specs/input.tsx#ex-basic)
 
 ```tsx
-<div className="relative">
-  <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-text-tertiary" />
-  <Input className="pl-9" placeholder="검색…" />
-</div>
+import { Field } from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+
+<Field label="제목" description="결재 목록에 이 제목으로 보여요.">
+  <Input placeholder="예: 개인 사유" />
+</Field>
+```
+
+### 붙이개
+
+[그림: 붙이개 — 금액 · 검색](../../site/components/specs/input.tsx#ex-affix)
+
+```tsx
+import { Search } from "lucide-react"
+
+<Field label="금액">
+  <Input inputMode="numeric" value={formatted} onChange={onAmountChange} suffix="원" />
+</Field>
+
+<Input aria-label="메모 검색" prefixIcon={<Search />} placeholder="메모 검색" clearable />
+```
+
+### 밑줄
+
+[그림: 밑줄 — 화면에 입력 하나](../../site/components/specs/input.tsx#ex-underline)
+
+```tsx
+<Field label="얼마를 썼나요?" labelWeight="bold">
+  <Input variant="underline" size="large" inputMode="numeric" suffix="원" autoFocus />
+</Field>
+```
+
+### 상태
+
+[그림: 상태 — 오류 · 비활성 · 읽기 전용](../../site/components/specs/input.tsx#ex-states)
+
+```tsx
+<Field label="이름" invalid errorMessage="이름을 입력해주세요.">
+  <Input />
+</Field>
+<Field label="계좌" disabled>
+  <Input defaultValue="국민 123-45-6789" />
+</Field>
+<Field label="아이디" readOnly>
+  <Input defaultValue="porest" />
+</Field>
 ```
 
 ## Behavior
 
 | 인터랙션 | 동작 |
 |---|---|
-| Click / Tap | `:focus-visible` 활성. 키보드 작성 가능. |
-| Keyboard `Tab` | 다음 focusable로 이동. shift+Tab 역방향. |
-| `<label>` click | 연결된 input으로 focus 위임 (`htmlFor` 필수). |
-| `Enter` (form 안) | form 제출 트리거 (브라우저 기본). 막으려면 `onKeyDown`에서 `e.preventDefault()`. |
-| `Esc` | (옵션) 사용자 정의. shadcn 기본 동작 없음. |
-| Disabled | `pointer-events: none`. 클릭/keyboard 불가. focusable에서 제외. |
-| Readonly | focus·copy만 가능, 입력 불가. |
-
-**Form validation** — DESIGN.md `### Form validation (v75 추가)` SoT 인용.
-
-검증 흐름은 [`States`](#states) 의 visual state(렌더 시점에 자동 적용되는 6개 가상 selector)와 별개로, **사용자 입력 → 검증 → 결과 표시** flow 를 명시한 **5 state machine** 으로 정의. 동일 input element 가 입력 단계에 따라 5개 상태를 transition 함.
-
-| state | 의미 | 시각 | helper / message |
-|---|---|---|---|
-| `idle` (default) | 사용자 미접근 | `border-default` | helper text 노출 (예: "로그인 시 사용됩니다") |
-| `focused` | 포커스 상태, 입력 중 | `border-focus` + 2px ring | "입력 중..." 또는 helper 유지 |
-| `invalid` | 검증 실패 (`aria-invalid="true"`) | `border-error` + `ring-error/30` | `text-error` message (예: "올바른 이메일 주소를 입력해주세요") |
-| `valid` | 검증 통과 (선택적 표시) | `border-default` + 우측 success icon | `text-success` (예: "사용 가능 ✓"). **긴 form 한정** — 짧은 form 에선 noise |
-| `validating` (async) | server check 중 (`aria-busy="true"`) | `border-default` + spinner | "중복 확인 중..." |
-
-- 검증 시점: `onBlur` 권장 또는 `onSubmit`. `onChange` 는 사용자 입력 중 빨간색 깜빡임 유발 — 회피.
-- helper text 자리(아래)에 메시지 가변. 자리 자체는 layout shift 회피 위해 항상 reserve (`min-h-5`).
-- `validating` → `valid` 또는 `invalid` 로 transition 시 spinner 제거 + message 교체. `AbortController` 로 stale 응답 차단(DESIGN.md v75 Async validation 패턴 참조).
-- 한국어 message 템플릿 8 rule (required / min-max / email / pattern / match / async / custom) 은 DESIGN.md v75 표 인용 — spec 마다 재정의 금지.
-- 참고: examples mjs `Validation states (5-state machine)` + preview-html `Form validation (v75) — 5 state machine` 데모로 4 source 동기.
+| Click / Tap | 상자 어디를 눌러도(붙이개 · 여백 포함) 입력으로 포커스가 가고 테두리가 2px 짙어진다. |
+| Keyboard `Tab` | 다음 칸으로. 지우기 버튼은 Tab 순서에 없다(값을 지우는 키는 있다). |
+| `<label>` 누르기 | 연결된 칸으로 포커스(Field 가 잇는다). |
+| 쓰기 | 최대 글자 수(Field `maxGraphemeCount`)에 닿으면 더 들어가지 않는다 — 한글은 조합이 끝난 뒤 자른다. |
+| 지우기 | 값을 비우고(`onChange` 로 빈 값) 입력에 포커스를 둔다. |
+| `Enter`(폼 안) | 폼 제출(브라우저 기본). Enter 를 직접 받는 곳은 한글을 조합하는 중(`isComposing`)이면 무시한다. |
+| Disabled | 포커스 · 입력 불가. 커서 not-allowed. |
+| Readonly | 포커스 · 복사는 되고 입력은 안 된다. 포커스 테두리 없음. |
+| 자동 완성 | 브라우저 자동 완성의 바탕색을 지운다 — 칸 모양 그대로. |
 
 ## Accessibility
 
 | 기준 | 검증 |
 |---|---|
-| **WCAG 1.4.3** Color contrast (text ≥ 4.5:1) | `text-primary` × `surface-input` = 14:1+ ✓ (`npm run lint:dark` 검증) |
-| **WCAG 1.4.11** Non-text contrast (UI ≥ 3:1) | ⚠ default `border-default` × `surface-input` = 1.16:1 미달 — **회색 배경 채움**(`surface-input`)으로 보강. focus 시 `border-focus` × `surface-input` = 3.96:1 ✓. (DESIGN.md `### Input` 1.4.11 평가 결과 그대로 — Toss·Material도 동일 한계) |
-| **WCAG 2.4.11** Focus Appearance (AA) | 2px ring `border-focus` + 1px offset, 인접 표면 대비 3:1 충족 ✓ |
-| **WCAG 2.5.8** Target Size — Minimum (AA — ≥ 24×24) | `md` 40 ✅ AA 통과 |
-| **WCAG 2.5.5** Target Size — Enhanced (AAA — ≥ 44×44) | `md` 40 ⚠ 미달 — 모바일 터치 우선 화면은 `className="h-12"`로 키울 것 |
-| **ARIA** | `<label htmlFor="...">` 필수. 에러 시 `aria-invalid="true"` + `aria-describedby="<error-id>"`. required 시 `aria-required="true"` + 시각 표시(* 또는 "(필수)"). |
+| **WCAG 1.4.3** Color contrast(글자 ≥ 4.5:1) | 값 `fg-neutral` 16.41 · 13.42, placeholder `fg-placeholder` · 붙이개 글자 `fg-neutral-subtle` 5.50 · 6.09(시트 다크 5.27), 읽기 전용 바탕 위 값 15.20 · 10.32 · placeholder 5.09 · 4.68 ✓. 비활성 `fg-disabled` 는 기준 밖(비활성 UI) |
+| **WCAG 1.4.11** Non-text contrast(≥ 3:1) | 포커스 테두리 `stroke-neutral-contrast` 16.41 · 13.42, 오류 `stroke-critical-solid` 5.06 · 6.08 ✓. 기본 1px `stroke-neutral-weak`(1.23 · 1.56)는 칸을 알리는 유일한 표시가 아니다 — 라벨 · placeholder 가 칸을 알린다(SEED 와 같다) |
+| **WCAG 2.4.7** Focus visible | 포커스하면 테두리가 2px 짙어진다(키보드 · 마우스 모두) |
+| **WCAG 2.5.8** Target Size — Minimum(AA ≥ 24×24) | 모든 크기 ✓(가장 작은 밑줄 medium 34) |
+| **WCAG 2.5.5** Target Size — Enhanced(AAA ≥ 44×44) | large 52 ✓ · medium 40 ⚠ — medium 은 1280 이상 데스크톱 웹(마우스)에서만. 밑줄 large 40 ⚠ — 칸 폭 전체가 누르는 영역이라 가로는 넉넉하다 |
+| **ARIA** | 이름은 Field 의 라벨(`<label for>`) — 라벨이 없으면 `aria-label`. 오류면 `aria-invalid`, 필수면 `aria-required`, 설명 · 오류 · 글자 수 · 붙이개 글자는 `aria-describedby`. 지우기 버튼 이름 "지우기" |
 
 ## Do / Don't
 
 ### ✅ Do
 
-- 모든 input에 `<label>` 페어. screen reader 사용자에게 필수.
-- placeholder는 **예시값**으로만 (예: "you@example.com"). 라벨 대용 금지(입력 시 사라짐).
-- 에러 메시지는 구체적이고 행동 가이드 있게: ❌ "잘못된 이메일" / ✅ "이메일 형식이 아닙니다 (예: kim@example.com)".
-- 검증은 `onBlur`로 — 사용자 입력 중 빨간 깜빡임 회피.
-- 한국어 라벨은 명사형 ("이메일") 또는 행위형 ("이메일을 입력하세요"). 일관성 유지.
+- 모든 칸을 Field 로 감싸 라벨을 단다.
+- placeholder 는 예시만("예: 개인 사유").
+- 단위는 뒤 글자로, 금액은 쉼표를 넣어서.
+- 화면에 입력이 하나뿐이면 밑줄형.
+- 한 폼 안에서 크기를 맞춘다.
 
 ### ❌ Don't
 
-- placeholder를 라벨 대신 사용 — 입력 시 사라져 컨텍스트 손실.
-- 외곽선만으로 input 식별 — `surface-input` 채움 필수 (1.4.11 보강).
-- `onChange`로 즉시 빨간 에러 — 입력 중 자극.
-- input height 32 미만 — AA 24×24는 통과하지만 한국어 IME 변환 행에 시각적 부담.
-- disabled input에 placeholder만 두고 컨텍스트 없이 — 왜 disabled인지 helper text로 설명.
+- placeholder 를 라벨 대신 쓰기.
+- 비활성 칸을 흐리게(불투명도) 그리기.
+- 고르는 값(날짜 · 카테고리)을 타이핑으로 받기.
+- 형식이 정해진 값을 여러 칸으로 나누기.
+- `type="number"` 로 금액 받기.
+- 폰에서 medium(40) 쓰기.
+
+## Specification
+
+`input.yaml` 의 규칙을 하나도 빼지 않고 조건마다 그린다 — 웹 · 앱이 Input 을 만들 때 이 값을 그대로 쓴다. 조건이 없는 `Base` 가 모든 조합에 걸리고, 뒤의 규칙이 앞의 같은 값을 덮는다. 상태는 `enabled` 에서 바뀌는 값만 적었다.
+
+[그림: Specification — input.yaml 의 규칙 전부](../../site/components/specs/spec-sheet.tsx#input)
+
+## SEED 와 다른 점
+
+- **지우기 버튼을 Text Input 에도 둔다** — SEED 는 Input Button 에만 둔다. 값은 SEED Input Button 의 지우기(large 22 · medium 18)를 따랐고, Tab 순서에는 넣지 않는다.
+- **아이콘은 lucide 선 아이콘**(기초 Iconography v106) — 지우기는 `circle-x`, 오류는 `circle-alert`. SEED 는 채운 아이콘이다.
+- **상자의 붙이개 · 여백을 눌러도 입력으로 포커스가 간다** — SEED 는 입력이 맨 앞 · 맨 뒤일 때만 그 여백까지 입력이다.
+- **붙이개 글자를 입력의 설명으로 잇는다** — 단위가 화면 읽기 프로그램에도 들린다.
 
 ## Migration notes
 
-- v93 이전 `input.tsx`는 `bg-surface-default`(흰색) + `text-title-sm`(16/500)였으나 이번 동기에서 `bg-surface-input`(회색) + `text-body-lg`(16/400)로 정정 — DESIGN.md `### Input` 원래 의도(채움 + 가벼운 폰트) 복원.
-- `aria-invalid` 처리는 input.tsx에 이미 정의됐으나 examples.mjs의 BASE 상수에서 누락 → 동기.
-- size variant는 도입 안 함 — input은 form 안 통일이 우선. 예외는 사용처 className으로 처리.
-- **토큰 직접 인용으로 정정**: `px-3 py-2`(Tailwind 기본 spacing 8/12) → `px-[var(--spacing-md)] py-[var(--spacing-sm)]`, `transition-[color,box-shadow,border-color]`(Tailwind 기본 ease/duration) → `transition-[color,box-shadow,border-color] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]`. `<input>` UA가 body font를 자동 inherit 안 해서 `font-sans` 추가(Pretendard 강제). preview-html `.fv-input`은 `padding: 8px 10px` 픽셀 하드코딩 버그였으나 같이 정정해 `padding: var(--spacing-sm) var(--spacing-md)` (8/12, spec 정합).
-- **v3: `min-w-0` + `file:*` 유틸 추가** — desk-front 실제 사용에서 spec 반영 (역방향 sync).
-  `min-w-0` 은 flex item 으로 Input 이 들어갈 때 contents-width 로 줄어들지 않고 부모 너비를 따라가게 함 (form 안 정렬 보호). `file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-text-primary` 는 `<input type="file">` 의 native button 톤을 spec 토큰으로 정합 (border-0 + transparent bg + text-sm + text-primary).
+### 2026-10-01 — SEED Text Input 으로
+
+사용자가 [비교 페이지](https://claude.ai/artifact/1hPpsfdTEJY7j4GPPx24i5)에서 정했다 — 투명 바탕 + 1px `stroke-neutral-weak` · 포커스 · 오류는 안쪽 2px(`stroke-neutral-contrast` · `stroke-critical-solid`) · 비활성 · 읽기 전용은 `bg-disabled`(흐림 금지) · 크기 large 52 · medium 40 · 웹 기본 반응형(앱 large) · 상자 기본 + 밑줄(화면에 입력 하나) · 라벨 · 오류 · 글자 수는 Field · 고르는 칸은 Input Button(그 차례에). 옛 스펙은 `input.history/v-pre-seed-text-input.*` 에 남겼다.
+
+| 옛 Input | 새 Input |
+|---|---|
+| 높이 40 하나 · 모서리 4 · 여백 12 / 8 | large 52(모서리 12 · 좌우 16) · medium 40(8 · 14) · 반응형 · 밑줄 40 · 34 |
+| 회색 채운 바탕(`surface-input`) + 1px `border-default` | 투명 바탕 + 안쪽 1px `stroke-neutral-weak` |
+| 포커스: 브랜드 테두리 + 브랜드 30% 링(키보드만) | 안쪽 2px `stroke-neutral-contrast`(마우스 · 터치도) |
+| 오류: 빨간 테두리 + 빨간 30% 링 | 안쪽 2px `stroke-critical-solid`, 포커스해도 그대로 |
+| 비활성 흐림 50% · 읽기 전용은 테두리 없음 | 둘 다 `bg-disabled` 바탕 — 비활성은 글자도 `fg-disabled`, 읽기 전용은 값이 진하다 |
+| 글자 `body-lg` 16 / 1.6 | large `t5` 16 / 22 · medium `t4` 14 / 19 · 밑줄 `t6` 18 / 24 · `t5` |
+| 아이콘은 쓰는 쪽이 절대 위치로(`pl-9`) | `prefixIcon` · `suffixIcon` · `prefix` · `suffix` · `clearable` |
+| 상태 6(default · focused · filled · error · disabled · readonly) | 상태 5(enabled · focused · invalid · disabled · readonly) — 값이 있는지(filled)는 모습이 같다 |
+
+레시피는 `<input>` 하나에서 상자(div) + 입력으로 바뀌었다 — `className` 은 입력에, 상자에는 `rootClassName`. 쓰던 곳(Sidebar · Searchable List · Icon Picker)의 검색칸은 `prefixIcon` 으로 옮겼다. Select 의 트리거 · Command 의 입력 · Input OTP 는 아직 옛 모양이다 — 그 컴포넌트 차례에 맞춘다.
+
+제품은 앱 적용 단계에서 옮긴다(2026-10-01 조사).
+
+- **Desk 웹** — 입력 94(40 · 채운 바탕) · 검색 11(36 · 테두리 투명 · 포커스 때 흰 바탕) · 덮어써서 34 · 32 · 28. 포커스는 브랜드 테두리 + 30% 링, 비활성 흐림 50%, 읽기 전용은 편집 칸과 같다. 오류 테두리는 `aria-invalid` 를 단 13곳에만. 금액 칸 34곳 중 쉼표를 넣는 곳 5, 단위 없는 원화 칸 17 · 라벨에 "(원)" 6, "%" 를 붙인 칸 1(값은 가중치라 뜻이 틀림). 지우기 버튼 2곳(18 · 28 — 손으로). 매월 일자 칸은 지우면 1로 돌아와 비울 수 없다.
+- **Desk 앱** — PTextInput 87곳(40 고정 · 모서리 4 · 채운 바탕 · 포커스 1px), 검색 PSearchField 13(36 · 모서리 8 · 테두리 없음). 금액 칸 4곳은 18 · 20 굵은 글자를 40 상자에 넣어 넘친다(줄 높이 41 · 44). 지우기 버튼은 일반 칸 0 / 84 · 검색 2 / 13. 금액 칸 26곳 중 쉼표 1곳. 비활성 칸이 편집 칸과 구분되지 않는 곳 18. 칸 경계 대비 바탕 1.12 · 테두리 1.23.
+- **HR 웹** — Input 54(36 · 모서리 6 · 테두리 #eee — 흰 바탕 1.16:1 · 투명), 글자 768 미만 16 · 이상 14. 포커스는 파랑 테두리 + 3px 반투명 링(다크는 회색). 비활성 흐림 50%. 읽기 전용을 흉내 낸 div 상자 4. 숫자는 `type="number"` 14곳 · 소수가 잘리는 칸이 있다. 단위는 칸 밖 글자로.

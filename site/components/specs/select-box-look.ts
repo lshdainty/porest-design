@@ -83,10 +83,11 @@ export function selectBoxLook(brand: Brand = 'desk'): SbLook {
   const base = resolveState(spec, {}, 'enabled');
   const group = { gapX: must(num(tokenValue(base['group.gapX'])), 'group.gapX'), gapY: must(num(tokenValue(base['group.gapY'])), 'group.gapY') };
 
-  // 펼침 안의 입력칸 — input.yaml 의 기본 상태(펼침의 내용은 쓰는 쪽이 정한다)
-  const iv = resolveState(loadComponentSpec('input'), {}, 'default');
+  // 펼침 안의 입력칸 — input.yaml 의 상자형 large(폰 화면의 칸 — 펼침의 내용은 쓰는 쪽이 정한다)
+  const iv = resolveState(loadComponentSpec('input'), { variant: 'outline', size: 'large' }, 'enabled');
   const it = (k: string, mode: Mode = 'light') => tokenValue(iv[k], mode, brand);
-  const inType = it('root.typography') as TypeValue;
+  const inType = it('value.typography') as TypeValue;
+  const ivFocus = resolveState(loadComponentSpec('input'), { variant: 'outline', size: 'large' }, 'focused');
   const both = (k: string) => ({ light: must(str(it(k, 'light')), `input ${k}`), dark: must(str(it(k, 'dark')), `input ${k}`) });
 
   const pick = (name: string): Record<Mode, string> => ({ light: color(name, brand), dark: design(brand).front.colors[`${name}-dark`] ? color(`${name}-dark`, brand) : color(name, brand) });
@@ -110,14 +111,15 @@ export function selectBoxLook(brand: Brand = 'desk'): SbLook {
       check: checkLook({ size: 'medium', shape: 'ghost', tone: 'neutral' }, brand),
     },
     input: {
-      height: must(num(it('root.height')), 'input root.height'),
+      height: must(num(it('root.minHeight')), 'input root.minHeight'),
       padX: must(num(it('root.paddingX')), 'input root.paddingX'),
       radius: must(num(it('root.radius')), 'input root.radius'),
       fontSize: inType.fontSize,
       lineHeight: inType.lineHeight,
       bg: both('root.background'),
-      fg: both('root.foreground'),
+      fg: both('value.foreground'),
       border: both('root.borderColor'),
+      focus: { light: must(str(tokenValue(ivFocus['root.borderColor'], 'light', brand)), 'input focused root.borderColor'), dark: must(str(tokenValue(ivFocus['root.borderColor'], 'dark', brand)), 'input focused root.borderColor') },
     },
     surface: { default: pick('bg-layer-default'), basement: pick('bg-layer-basement'), floating: pick('bg-layer-floating') },
     notice: { bg: pick('bg-neutral-inverted'), fg: pick('fg-neutral-inverted') },

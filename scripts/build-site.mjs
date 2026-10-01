@@ -21,7 +21,7 @@ import { dirname, resolve } from "node:path";
 import { buttonExamples } from "../recipes/shadcn/examples/button-examples.mjs";
 import { inputExamples } from "../recipes/shadcn/examples/input-examples.mjs";
 import { textareaExamples } from "../recipes/shadcn/examples/textarea-examples.mjs";
-import { labelExamples } from "../recipes/shadcn/examples/label-examples.mjs";
+import { fieldExamples } from "../recipes/shadcn/examples/field-examples.mjs";
 import { checkboxExamples } from "../recipes/shadcn/examples/checkbox-examples.mjs";
 import { radioGroupExamples } from "../recipes/shadcn/examples/radio-group-examples.mjs";
 import { selectBoxExamples } from "../recipes/shadcn/examples/select-box-examples.mjs";
@@ -66,7 +66,6 @@ import { toggleExamples } from "../recipes/shadcn/examples/toggle-examples.mjs";
 import { toggleGroupExamples } from "../recipes/shadcn/examples/toggle-group-examples.mjs";
 import { sliderExamples } from "../recipes/shadcn/examples/slider-examples.mjs";
 import { selectExamples } from "../recipes/shadcn/examples/select-examples.mjs";
-import { formExamples } from "../recipes/shadcn/examples/form-examples.mjs";
 import { inputOtpExamples } from "../recipes/shadcn/examples/input-otp-examples.mjs";
 import { comboboxExamples } from "../recipes/shadcn/examples/combobox-examples.mjs";
 import { datePickerExamples } from "../recipes/shadcn/examples/date-picker-examples.mjs";
@@ -109,7 +108,7 @@ const SHADCN_EXAMPLES = {
   button: buttonExamples,
   input: inputExamples,
   textarea: textareaExamples,
-  label: labelExamples,
+  field: fieldExamples,
   checkbox: checkboxExamples,
   "radio-group": radioGroupExamples,
   "select-box": selectBoxExamples,
@@ -156,7 +155,6 @@ const SHADCN_EXAMPLES = {
   "toggle-group": toggleGroupExamples,
   slider: sliderExamples,
   select: selectExamples,
-  form: formExamples,
   "input-otp": inputOtpExamples,
   combobox: comboboxExamples,
   "date-picker": datePickerExamples,
@@ -1941,21 +1939,20 @@ function parseExamplesMd() {
 // 각 항목: slug, name, category, description.
 // 페이지 1대1 매핑: 묶지 않음 (input-textarea 같은 묶음 폐기).
 const SHADCN_CATALOG = [
-  // Form (16)
+  // Form (15)
   { slug: "button", name: "Button", category: "Form", description: "액션을 실행하는 버튼. 변형 7 × 크기 4 × 배치 2(SEED Action Button 구조)." },
   { slug: "checkbox", name: "Checkbox", category: "Form", description: "여러 선택 가능한 박스." },
   { slug: "combobox", name: "Combobox", category: "Form", description: "검색·필터 가능한 select." },
   { slug: "date-picker", name: "Date Picker", category: "Form", description: "calendar + popover 조합 날짜 선택." },
-  { slug: "form", name: "Form", category: "Form", description: "react-hook-form + zod 통합 폼." },
-  { slug: "input", name: "Input", category: "Form", description: "한 줄 텍스트 입력." },
+  { slug: "field", name: "Field", category: "Form", description: "칸 이름 · 필수 표시 · 설명 · 오류 · 글자 수를 입력 하나에 붙이는 둘레 (SEED Field 구조)." },
+  { slug: "input", name: "Input", category: "Form", description: "한 줄 글 · 숫자를 직접 치는 입력칸. 상자 · 밑줄 × large · medium · 반응형, 앞 · 뒤 붙이개 · 지우기 (SEED Text Input 구조)." },
   { slug: "input-otp", name: "Input OTP", category: "Form", description: "OTP / 인증 코드 입력." },
-  { slug: "label", name: "Label", category: "Form", description: "form 레이블 (label-md, peer 인식)." },
   { slug: "radio-group", name: "Radio Group", category: "Form", description: "여러 옵션 중 하나만 선택." },
   { slug: "select-box", name: "Select Box", category: "Form", description: "제목 · 설명이 붙은 선택지를 상자로 비교해 하나 · 여럿을 고른다 (SEED Select Box 구조)." },
   { slug: "select", name: "Select", category: "Form", description: "옵션 드롭다운 — Radix Select 베이스." },
   { slug: "slider", name: "Slider", category: "Form", description: "범위 값 선택 슬라이더." },
   { slug: "switch", name: "Switch", category: "Form", description: "on/off 토글." },
-  { slug: "textarea", name: "Textarea", category: "Form", description: "여러 줄 텍스트 입력." },
+  { slug: "textarea", name: "Textarea", category: "Form", description: "여러 줄 글을 받는 입력칸. 3줄에서 쓴 만큼 자라고 최대 · 고정 높이를 정할 수 있다 (SEED Textarea 구조)." },
   { slug: "toggle", name: "Toggle", category: "Form", description: "on/off 버튼 (인라인)." },
   { slug: "toggle-group", name: "Toggle Group", category: "Form", description: "단일 또는 복수 선택 토글 그룹." },
 

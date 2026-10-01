@@ -3096,7 +3096,7 @@ DESIGN.md baseline 정의 참고 — 14 keyframes (단발 10 + loop 4): fade-in/
 |---|---|---|---|---|
 | `hovered` | `-pressed` 역할 색(누름과 같다) | 그대로 | 그대로 | — |
 | `focused` — 키보드 | 그대로 | 그대로 | 링 2px · 띄움 2px · `stroke-focus-ring` | `outline` 으로 그려 자리가 밀리지 않는다 |
-| `focused` — 입력 중 | 그대로 | 그대로 | 테두리 2px `stroke-focus-ring` | 반투명 링은 쓰지 않는다. 테두리가 두꺼워진 만큼 안쪽 여백을 줄인다 |
+| `focused` — 입력 중 | 그대로 | 그대로 | 안쪽 2px `stroke-neutral-contrast` | 반투명 링은 쓰지 않는다. 안쪽에 덧그려 내용이 밀리지 않는다(Text Field 2026-10-01 — 처음엔 `stroke-focus-ring` 이었다) |
 | `pressed` | `-pressed` 역할 색 | 그대로 | 그대로 | 축소(Feedback) |
 | `selected` | `bg-neutral-inverted` | `fg-neutral-inverted` | — | 칩 · 세그먼트 · 날짜처럼 고르는 요소 |
 | `disabled` | `bg-disabled`(배경이 있는 요소만) | `fg-disabled` | `stroke-neutral-weak` | 불투명도를 쓰지 않는다. 커서 not-allowed |
@@ -3408,45 +3408,15 @@ DESIGN.md baseline 정의 참고 — 14 keyframes (단발 10 + loop 4): fade-in/
 
 HR 은 데이터 밀도가 높은 화면이 많다 — 표 · 툴바의 인라인 액션(승인 · 반려)은 `small` · `xsmall`, 모바일 결재 화면의 하단 CTA 는 `large` 를 쓴다. brandSolid 는 휴가 신청처럼 서비스의 핵심 액션 하나에만 쓰고, 저장 · 확인 같은 일반 CTA 는 neutralSolid 다.
 
-### Input
+### Input · Textarea
 
-HR(B2B 데이터 밀도) — `sm`/`md` 사이즈 위주, 인라인 그리드 편집(approval form 등)에서 `sm` 적극 사용. focus ring은 brand `primary` (`#357B5F`).
+공통 정의는 `DESIGN.md` 의 Input · Textarea 절, 원본은 `specs/components/input.md` · `textarea.md`(2026-10-01 SEED Text Input · Textarea). 포커스 · 오류 · 비활성 색은 브랜드와 관계없이 같다 — 포커스는 `stroke-neutral-contrast` 2px(브랜드 색 아님).
 
-#### Mode pair
-| Token | 배경 | text | placeholder |
-|---|---|---|---|
-| `input-light` | `surface-input` (`#F5F6FA`) | `text-primary` (`#1A1F2E`, 14.49:1 ✅) | `text-tertiary` (`#62697A`, 5.81:1 ✅ — placeholder는 1.4.3 incidental 예외이지만 본문 통과) |
-| `input-dark` | `surface-input-dark` (`#353B4D`) | `text-primary-dark` (`#F5F6FA`, 11.40:1 ✅) | `text-tertiary-dark` (`#9DA3B0`, 5.51:1 ✅) |
+#### HR 쓰임
 
-#### State
-| State | border | 비고 |
-|---|---|---|
-| default | `border-default` 1px | 외곽선 단독 식별 부족 — label/형태 보강 |
-| focused | `border-focus` (`#357B5F`) 2px + 1px offset | `focus-visible` 한정. focus ring vs `surface-input` = 3.96:1 ✅ (1.4.11) |
-| filled | default 유지 | |
-| error | `error` (`#D72323`) 1px + helper text `error` 색상 | border vs `surface-input` = 4.51:1 ✅ (1.4.11 UI 3:1 통과) |
-| disabled | default + `text-disabled` + opacity 0.5 | 1.4.3 incidental |
-
-#### Size
-| Size | height | padding (V/H) | text | radius |
-|---|---|---|---|---|
-| sm | 32px | `xs` / `sm` | `caption` (12/400) | `sm` |
-| **md** (default) | 40px | `sm` / `md` | `body-lg` (16/400) | `sm` |
-| lg | 48px | `md` / `lg` | `body-lg` (16/400) | `sm` |
-
-입력 container 는 사이즈와 무관하게 `sm` radius(4px) 고정 — `specs/components/input.md`.
-
-#### Layout
-- label `caption` (12/400) + `xs` 간격, error/helper도 동일
-- form 행 간 `lg` (16px), section 간 `xl` (24px) — HR은 정보 밀도 높여야 하므로 spacing 보수적
-
-#### Motion
-- focus ring: `motion-duration-fast` × `motion-ease-out` (HR 절제 톤)
-- error 등장: `motion-duration-base` × `motion-ease-out`
-
-#### A11y
-- keyboard `Tab`/`Shift+Tab` focus, `aria-invalid`/`aria-describedby` for 에러, `aria-required` for 필수
-- screen reader: label은 `<label for>` 또는 `aria-labelledby` 필수
+- HR 웹은 데스크톱이 대부분 — 반응형 기본(1280 이상 medium 40 · 글자 14). 폰 폭에서는 large 52 로 커진다.
+- 결재 · 평가처럼 칸이 많은 폼도 크기를 섞지 않는다. 표(엑셀 셀) 안의 칸은 표 컴포넌트 차례에 정한다.
+- 읽기 전용 값은 입력처럼 생긴 상자를 흉내 내지 않고 읽기 전용 칸(`bg-disabled` 바탕 · 진한 값)으로 둔다.
 
 ### Card
 
@@ -3905,51 +3875,19 @@ HR(B2B) — 휴가 신청·결재 일정·근태 캘린더·평가 일정 등 �
 #### Sparse 매핑
 신규 yaml 컴포넌트 0. 기존 `button-primary`(selected cell), `alert-text-success/error/warning`(근태 dot color), `card-light`(셀 default ground)이 contrast 페어 활성.
 
-### Textarea / Form layout (v62 추가)
+### Field — HR
 
-HR(B2B) — 평가 코멘트, 휴가 사유, 결재 의견, 공지·정책 입력 등 multi-line 필드 빈번. 데이터 밀도 우선이라 horizontal layout 활용.
+공통 정의는 `DESIGN.md` 의 Field 절, 원본은 `specs/components/field.md`(2026-10-01 SEED Field). 옛 v62 Form layout · v75 Form validation 의 HR 절은 여기로 합쳤다.
 
-#### HR 사용 패턴
-- **평가 코멘트**: textarea min 6 line + counter (`max 1000자`). 폼 우측 50% 폭 + 우측 평가 점수 panel.
-- **휴가 사유**: textarea min 4 line + 결재라인 dropdown 동반. label 좌측 정렬(horizontal).
-- **결재 의견**: 결재 row 내 inline textarea — surface-input 배경, 카드 안에서 자연스러운 elevation pair.
-- **권한 설정 form**: horizontal layout (라벨 좌측 200px 고정 + control 우측). 다수 Switch/Checkbox 그룹화 — `<fieldset>`로 영역 구분.
+#### HR 쓰임
 
-#### Validation
-- **on submit** 기본 — 결재·평가 form은 입력 흐름 방해 회피.
-- 필수 필드 누락 시 form 상단 error summary + 첫 필드 focus.
-- 결재 라인 누락 같은 도메인 validation은 backend round-trip 후 toast(error) + 인라인 필드 강조.
-
-#### 데스크탑 모드
-horizontal layout 활용 — `breakpoint-md` (768px) 이상에서 라벨 좌측 25-30% 고정. 모바일은 stacked 자동 전환.
-
-### Form validation (v75 추가)
-
-DESIGN.md baseline 정의 참고 — 8 rule + 5 field state + form state machine + ARIA live + async + multi-field. HR(B2B) 격식체 톤 적용.
-
-#### HR 우선 patterns
-- **사번/이메일 unique check (async)** — 직원 등록 시 사번 중복 검증. 입력 후 500ms debounce → server check, "이미 등록된 사번입니다" 즉시 표시.
-- **비밀번호 강도 (on change)** — 관리자 계정 생성 시 8자+숫자+특수문자, 강도 bar 실시간 표시(약/보통/강).
-- **휴가 일수 validation (multi-field)** — 시작일/종료일 + 잔여 연차 ≥ 신청 일수 동시 검증. 조건 미달 시 종료일 input의 error.
-- **결재라인 conditional required** — 결재 종류 "임원 결재" 선택 시 임원 추가 필수. dropdown 변경 시 동적 `aria-required` 토글.
-- **권한 mutually exclusive** — "관리자" + "외부 협력자" 동시 선택 불가, form-level error.
-- **format pattern** — 사번(`HR-2026-0001`), 전화번호(`010-1234-5678`), 사업자번호(`123-45-67890`) 정규식.
-
-#### HR error message 격식 톤 (예시)
-- "사번을 입력해주세요" (required)
-- "올바른 사번 형식이 아닙니다 (예: HR-2026-0001)" (pattern)
-- "이미 등록된 사번입니다. 다른 사번을 사용해주세요" (async)
-- "비밀번호가 일치하지 않습니다" (match)
-- "잔여 연차(3일)를 초과할 수 없습니다" (custom — 잔여 일수 노출)
-- "권한 그룹은 하나만 선택 가능합니다" (mutually exclusive)
-
-#### HR 위계 (긴 form 위주)
-- 결재 form / 직원 등록 / 평가 입력 — 10+ 필드 → submit 시 첫 invalid 필드 focus + 상단 summary banner 동시.
-- 짧은 form (휴가 신청 3-4 필드) — field-level error만으로 충분, banner 생략.
-
-#### HR async validation 빈도
-- 사번/이메일 unique check (async) — 직원 등록만 사용. 자주 쓰는 form엔 server load 부담.
-- 결재 form — async validation 없음 (submit 시 backend round-trip).
+- 결재 · 직원 등록 · 평가 입력처럼 칸이 많은 폼 — 필수가 2/3 이상이면 선택 칸에만 "선택". 라벨은 칸 위(왼쪽 라벨 배치는 두지 않는다).
+- 저장 · 신청 버튼은 켜 두고, 누르면 칸마다 오류 + 첫 오류 칸으로 포커스. 결재 라인 누락처럼 서버가 가르는 오류도 그 칸의 오류 글로 돌려준다.
+- 사번 · 이메일 중복 확인은 칸을 떠난 뒤 서버에 묻는다 — 확인하는 동안 설명 자리에 "확인하는 중…". 중복이면 제출을 막는다.
+- 휴가 일수처럼 두 칸을 함께 보는 규칙은 뒤 칸(종료일)의 오류 글로 알린다 — "남은 연차(3일)보다 길게 신청할 수 없어요.".
+- 글자 수 — 서버 제한(20 · 50 · 100 · 1000자)이 있는 칸은 Field 의 글자 수로 알린다.
+- 문구는 Writing(v106) — HR 도 해요체다("사번을 입력해주세요." · "이미 등록된 사번이에요.").
+- 결재 의견 · 권한 설정 같은 시트 · 대화상자도 값이 바뀐 채 닫으려 하면 "작성한 내용이 사라져요" 를 묻는다.
 
 ### Skeleton / Loading (v63 추가)
 

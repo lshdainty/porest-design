@@ -3,6 +3,7 @@ import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
+import { useFieldGroup } from "@/components/ui/field";
 
 /*
  * Porest Radio — 구조는 SEED Radio(2026-09-30). 수치 원본은 specs/components/radio-group.yaml.
@@ -143,12 +144,13 @@ const Radio = React.forwardRef<React.ElementRef<typeof RadioGroupPrimitive.Item>
 );
 Radio.displayName = "Radio";
 
-// 묶음 — 세로로 쌓고 줄 사이 12. 제목은 aria-label 또는 aria-labelledby, 오류 글은 aria-describedby
+// 묶음 — 세로로 쌓고 줄 사이 12. 제목 · 오류 글은 Field 로 감싸면 이어진다(라벨 → aria-labelledby, 설명 · 오류 → aria-describedby).
+// Field 없이 쓰면 aria-label 또는 aria-labelledby 를 준다
 const RadioGroup = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Root>
 >(({ className, ...props }, ref) => (
-  <RadioGroupPrimitive.Root ref={ref} className={cn("flex flex-col gap-x3", className)} {...props} />
+  <RadioGroupPrimitive.Root ref={ref} className={cn("flex flex-col gap-x3", className)} {...useFieldGroup(props)} />
 ));
 RadioGroup.displayName = "RadioGroup";
 

@@ -3,6 +3,8 @@ import type { CSSProperties, ReactNode } from 'react';
 import { LoaderCircle } from 'lucide-react';
 import { color, pressScale, specSize, type Brand } from '@/lib/design-tokens';
 import { Figure, Verdict } from './ui';
+import { textFieldLook } from '../specs/text-field-look';
+import { TfFieldView, TfInputView } from '../specs/text-field-view';
 
 type Mode = 'light' | 'dark';
 const rc = (name: string, mode: Mode = 'light', brand: Brand = 'desk') => (name === 'static-white' ? color(name, brand) : color(mode === 'dark' ? `${name}-dark` : name, brand));
@@ -78,19 +80,19 @@ export function OptionStatesFigure() {
   );
 }
 
+// 입력칸 — input.yaml 의 상자형 medium(좁은 칸이라). 오류는 Field 의 꼬리 글
 function Field({ state }: { state: 'enabled' | 'focused' | 'invalid' | 'readonly' | 'disabled' }) {
-  const border =
-    state === 'focused' ? `2px solid ${rc('stroke-focus-ring')}` : state === 'invalid' ? `2px solid ${rc('stroke-critical-solid')}` : `1px solid ${rc('stroke-neutral-weak')}`;
-  const bg = state === 'readonly' || state === 'disabled' ? rc('bg-disabled') : rc('bg-layer-default');
-  const fg = state === 'disabled' ? rc('fg-disabled') : rc('fg-neutral');
-  const pad = state === 'focused' || state === 'invalid' ? 11 : 12; // 테두리가 두꺼워진 만큼 안쪽을 줄여 글자가 밀리지 않게
-  const h = specSize('button', 'medium').height;
+  const lk = textFieldLook('desk');
+  const input = <TfInputView look={lk.input} mode="light" size="medium" state={state} value={state === 'enabled' ? undefined : '장보기 목록'} placeholder="메모 제목" />;
   return (
-    <div className="flex w-[150px] flex-col gap-1">
-      <span className="flex items-center rounded-lg text-[14px]" style={{ height: h, border, background: bg, color: fg, paddingInline: pad }}>
-        {state === 'enabled' ? <span style={{ color: rc('fg-placeholder') }}>메모 제목</span> : '장보기 목록'}
-      </span>
-      <span className="h-4 text-[11px]" style={{ color: rc('fg-critical') }}>{state === 'invalid' ? '제목을 입력해주세요.' : ''}</span>
+    <div className="w-[160px]">
+      {state === 'invalid' ? (
+        <TfFieldView look={lk.field} mode="light" invalid errorMessage="제목을 입력해주세요.">
+          {input}
+        </TfFieldView>
+      ) : (
+        input
+      )}
     </div>
   );
 }
@@ -98,13 +100,13 @@ export function FieldStatesFigure() {
   const states = ['enabled', 'focused', 'invalid', 'readonly', 'disabled'] as const;
   const sub: Record<(typeof states)[number], string> = {
     enabled: '기본',
-    focused: '입력 중 — 테두리 2px',
-    invalid: '오류 — 오류 색 테두리 2px',
+    focused: '입력 중 — 안쪽 2px 짙은 테두리',
+    invalid: '오류 — 안쪽 2px 오류 색, 아래 오류 글',
     readonly: '읽기 전용 — 값은 읽힌다',
     disabled: '비활성 — 전용 색',
   };
   return (
-    <Figure caption="입력칸의 상태 — 입력 중과 오류는 테두리 2px(두꺼워진 만큼 안쪽 여백을 줄인다), 읽기 전용 · 비활성은 비활성 배경">
+    <Figure caption="입력칸의 상태 — 입력 중과 오류는 안쪽에 2px 를 덧그린다(내용이 밀리지 않는다), 읽기 전용 · 비활성은 비활성 배경(Input 스펙)">
       <div className="grid grid-cols-3 gap-x-5 gap-y-4 rounded-xl bg-white px-6 pb-5 pt-6">
         {states.map((s) => (
           <div key={s} className="flex flex-col items-center gap-1.5">

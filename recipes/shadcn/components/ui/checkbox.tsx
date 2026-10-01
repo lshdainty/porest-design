@@ -4,6 +4,7 @@ import { Check, Minus } from "lucide-react";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
+import { useFieldGroup } from "@/components/ui/field";
 
 /*
  * Porest Checkbox — 구조는 SEED Checkbox(2026-09-30). 수치 원본은 specs/components/checkbox.yaml.
@@ -163,9 +164,10 @@ const Checkbox = React.forwardRef<React.ElementRef<typeof CheckboxPrimitive.Root
 );
 Checkbox.displayName = "Checkbox";
 
-// 묶음 — 세로로 쌓고 줄 사이 12. 제목은 aria-label 또는 aria-labelledby, 오류 글은 aria-describedby
+// 묶음 — 세로로 쌓고 줄 사이 12. 제목 · 오류 글은 Field 로 감싸면 이어진다(라벨 → aria-labelledby, 설명 · 오류 → aria-describedby).
+// Field 없이 쓰면 aria-label 또는 aria-labelledby 를 준다
 const CheckboxGroup = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
-  <div ref={ref} role="group" className={cn("flex flex-col gap-x3", className)} {...props} />
+  <div ref={ref} role="group" className={cn("flex flex-col gap-x3", className)} {...useFieldGroup(props)} />
 ));
 CheckboxGroup.displayName = "CheckboxGroup";
 

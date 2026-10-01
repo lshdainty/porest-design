@@ -230,14 +230,15 @@ export function brandProfile(brandName, tokens) {
         { kind: "warning", title: "기한 임박", body: "이번 분기 평가 작성이 D-3 남았어요." },
         { kind: "info", title: "신규 공고", body: "디자인 시스템 디자이너 공고가 등록됐어요." },
       ],
+      // 폼 칸 — renderForm 이 Field 로 그린다. pair 는 다음 칸과 나란히(짧은 두 칸), max 는 글자 수 최대, 고르는 칸(기간 포함)은 select
       form: {
         title: "휴가 신청 폼",
-        sectionDescription: "필수 필드는 별표(*)로 표시. 결재 라인은 권한 그룹 기준 자동 매핑.",
+        sectionDescription: "칸의 2/3 이상이 필수라 선택 칸(사유)에만 \"선택\" 을 붙였다(필수 점과 섞지 않는다). 결재 라인은 권한 그룹 기준 자동 매핑.",
         fields: [
-          { type: "input", label: "신청자", value: "김지원", helper: "근속 2년차 · 디자인본부", required: true, readonly: true },
+          { type: "input", label: "신청자", value: "김지원", helper: "근속 2년차 · 디자인본부", required: true, readonly: true, pair: true },
           { type: "select", label: "휴가 종류", value: "연차", options: ["연차", "반차(오전)", "반차(오후)", "병가", "특별휴가"], required: true },
-          { type: "input", label: "기간", value: "2026-05-12 ~ 2026-05-14", helper: "사용 일수 3일 / 잔여 연차 8.5일", required: true },
-          { type: "textarea", label: "사유", value: "가족 행사 참석으로 인한 연차 사용 요청드립니다.\n결재 후 인수인계 문서 공유드리겠습니다.", helper: "30 / 1000자", rows: 4 },
+          { type: "select", label: "기간", value: "2026-05-12 ~ 2026-05-14", helper: "사용 일수 3일 · 남은 연차 8.5일", required: true },
+          { type: "textarea", label: "사유", value: "가족 행사 참석으로 인한 연차 사용 요청드립니다.\n결재 후 인수인계 문서 공유드리겠습니다.", max: 1000 },
         ],
         primary: "결재 라인에 제출",
         secondary: "임시 저장",
@@ -397,11 +398,11 @@ export function brandProfile(brandName, tokens) {
         title: "거래 추가",
         sectionDescription: "가계부에 새 거래를 기록해요. 카테고리는 키워드 자동 추천.",
         fields: [
-          { type: "select", label: "거래 유형", value: "지출", options: ["수입", "지출", "이체"], required: true },
-          { type: "input", label: "금액", value: "₩28,500", helper: "최근 카페 평균 ₩6,800", required: true },
-          { type: "select", label: "카테고리", value: "식비 · 카페", options: ["식비 · 카페", "식비 · 외식", "교통", "취미", "고정비"], required: true },
-          { type: "input", label: "날짜", value: "2026-05-10", helper: "오늘", required: true },
-          { type: "textarea", label: "메모", value: "친구와 디자인 토픽 미팅 — 2시간 작업 후 마무리.", helper: "32 / 200자", rows: 3 },
+          { type: "select", label: "거래 유형", value: "지출", options: ["수입", "지출", "이체"], required: true, pair: true },
+          { type: "input", label: "금액", value: "28,500", suffix: "원", inputmode: "numeric", format: "amount", helper: "최근 카페 평균 6,800원", required: true },
+          { type: "select", label: "카테고리", value: "식비 · 카페", options: ["식비 · 카페", "식비 · 외식", "교통", "취미", "고정비"], required: true, pair: true },
+          { type: "select", label: "날짜", value: "2026-05-10", helper: "오늘", required: true },
+          { type: "textarea", label: "메모", value: "친구와 디자인 토픽 미팅 — 2시간 작업 후 마무리.", max: 200 },
         ],
         primary: "저장",
         secondary: "취소",
@@ -552,12 +553,12 @@ export function brandProfile(brandName, tokens) {
     ],
     form: {
       title: "Token submission form",
-      sectionDescription: "신규 토큰 제안 demo — Input / Select / Textarea / required 필드 baseline.",
+      sectionDescription: "신규 토큰 제안 demo — Field 로 감싼 Input · Select · Textarea. 칸의 2/3 이상이 필수라 선택 칸(근거)에만 \"선택\" 을 붙였다.",
       fields: [
-        { type: "input", label: "토큰 이름", value: "spacing-2xs", helper: "kebab-case · 의미 기반 명명", required: true },
+        { type: "input", label: "토큰 이름", value: "spacing-2xs", helper: "kebab-case · 의미 기반 명명", required: true, pair: true },
         { type: "select", label: "카테고리", value: "spacing", options: ["color", "typography", "spacing", "radius", "shadow", "motion"], required: true },
         { type: "input", label: "값", value: "2px", helper: "단위 포함 — px / rem / em", required: true },
-        { type: "textarea", label: "근거 (rationale)", value: "4px-grid 미만 hairline 용도. v6 이후 추가 검토 필요.", helper: "33 / 500자", rows: 3 },
+        { type: "textarea", label: "근거 (rationale)", value: "4px-grid 미만 hairline 용도. v6 이후 추가 검토 필요.", max: 500 },
       ],
       primary: "제안 등록",
       secondary: "초안 저장",
@@ -1849,8 +1850,8 @@ export function renderSelectBoxGallery(brand) {
         </div>`;
   };
   const icon = (name) => SELECT_BOX_ICON[name];
-  // 펼침의 내용 — Desk 반복 거래의 "총 · 회" 반복 횟수 칸. 입력칸은 Input 미리보기(.fv-input) 모양이다 — 펼침의 내용은 쓰는 쪽이 정한다
-  const countField = (value) => `<span class="psb-count">총 <input class="fv-input" type="text" inputmode="numeric" value="${escape(value)}" aria-label="반복 횟수"> 회</span>`;
+  // 펼침의 내용 — Desk 반복 거래의 "총 · 회" 반복 횟수 칸. 입력칸은 Text Field 갤러리의 textInput() — 상자형 medium(40) · 폭 80 이다. 펼침의 내용은 쓰는 쪽이 정한다
+  const countField = (value) => `<span class="psb-count">총 ${textInput({ size: "medium", value, inputmode: "numeric", label: "반복 횟수" })} 회</span>`;
 
   // 1. 하나 고르기 · 여럿 고르기 · 펼침 — 1열 가로형
   const ends = [
@@ -2033,6 +2034,335 @@ export function renderSelectBoxGallery(brand) {
   </section>`;
 }
 
+// Text Field — spec: specs/components/field.md · input.md · textarea.md · 수치 field.yaml · input.yaml · textarea.yaml. 구조는 SEED Field · Text Input · Textarea(2026-10-01).
+// Field .ptf-field(머리 · 입력 · 꼬리) · 입력칸 .ptf-input(Text Input) · 여러 줄 .ptf-textarea(Textarea). 짜임은 field.tsx · input.tsx · textarea.tsx 와 같다 —
+// 상자(div)가 테두리 · 바탕 · 모서리를 맡고 입력(<input> · <textarea>)이 그 안을 채운다. 상태는 상자의 data-invalid · data-disabled · data-readonly 다(레시피와 같은 이름).
+// 미리보기의 입력칸 · 여러 줄 입력칸 · 폼 칸 이름 · 설명 · 오류는 모두 이 도우미로 그린다 — 옛 회색 채운 칸(.fv-input · .form-input · .search-pill)은 걷었다.
+// 고르는 칸(Select 트리거 .form-select · Combobox · Date Picker) · Command 의 입력 · Input OTP · Chip 의 입력은 그 컴포넌트 차례에 맞춘다(input.md Migration notes).
+// 상자를 눌러 포커스 · 지우기 · 글자 수 · 자동 높이 · 금액 쉼표 · 제출 시 검증은 페이지 끝 스크립트(renderHtml)가 레시피처럼 맡는다.
+const TEXT_FIELD_ICON = {
+  search: listSvg('<path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/>'),
+  circleX: listSvg('<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>'),
+  circleAlert: listSvg('<circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/>'),
+  circleCheck: listSvg('<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>'),
+};
+// 지우기 버튼 — 이름 "지우기", Tab 순서 밖(input.tsx). 페이지 끝 스크립트도 이 모양으로 넣는다
+const TEXT_FIELD_CLEAR = `<button type="button" class="ptf-clear" aria-label="지우기" tabindex="-1">${TEXT_FIELD_ICON.circleX}</button>`;
+let textFieldSeq = 0;
+const nextTextFieldId = () => `ptf-${(textFieldSeq += 1)}`;
+// 글자 수는 자소 단위로 센다(field.tsx 의 countGraphemes — 국기 이모지도 한 글자)
+const textFieldSegmenter = new Intl.Segmenter("ko", { granularity: "grapheme" });
+const graphemeCount = (value) => [...textFieldSegmenter.segment(String(value))].length;
+const attrsOf = (pairs) => pairs.filter(Boolean).join(" ");
+
+// 입력칸 하나(Text Input) — 글(value · placeholder · prefix · suffix · label)은 여기서 escape 한다.
+//   variant      outline(상자 — 기본) · underline(밑줄 — 화면에 입력이 하나뿐일 때)
+//   size         large(52 · 밑줄 40) · medium(40 · 밑줄 34 — 1280 이상 데스크톱 웹) · responsive(웹 기본 — 1280 미만 large · 이상 medium)
+//   prefix · suffix          앞 · 뒤 글자(https:// · 원) — 입력의 설명으로도 잇는다(aria-describedby — 단위가 화면 읽기 프로그램에도 들린다)
+//   prefixIcon · suffixIcon  앞 · 뒤 아이콘 이름(TEXT_FIELD_ICON)
+//   clearable    지우기 — 값이 있고 막히지 않았을 때만 그린다. 값이 바뀌면 페이지 끝 스크립트가 넣고 뺀다(data-clearable)
+//   invalid · disabled · readonly  상태 — 상자에 data-invalid · data-disabled · data-readonly, 입력에 aria-invalid · disabled · readonly
+//   focus        그 순간을 멈춘 포커스(.ptf-input--focus) — 갤러리 전용. 칸은 실제 입력이라 눌러서 포커스해도 같은 모습이다
+//   format       amount — 쓰는 동안 천 단위 쉼표(페이지 끝 스크립트)
+//   label        이름(aria-label) — Field 밖에 둔 칸만. Field 안이면 Field 의 라벨이 <label for> 로 잇는다
+//   describedby  Field 가 넘기는 오류 · 설명 · 글자 수 id
+export function textInput({ variant = "outline", size = "responsive", id = nextTextFieldId(), value = "", placeholder = "", type = "text", inputmode = "", label = "", describedby = "", prefix = "", suffix = "", prefixIcon = "", suffixIcon = "", clearable = false, invalid = false, disabled = false, readonly = false, required = false, focus = false, format = "", rootClass = "" } = {}) {
+  const cls = ["ptf-input", variant === "underline" && "ptf-input--underline", `ptf-input--${size}`, focus && "ptf-input--focus", rootClass].filter(Boolean).join(" ");
+  const live = clearable && !disabled && !readonly;
+  const state = (invalid ? ' data-invalid=""' : "") + (disabled ? ' data-disabled=""' : "") + (readonly ? ' data-readonly=""' : "") + (live ? ' data-clearable=""' : "");
+  const prefixId = prefix ? `${id}-prefix` : "";
+  const suffixId = suffix ? `${id}-suffix` : "";
+  const desc = [prefixId, suffixId, describedby].filter(Boolean).join(" ");
+  const icon = (name) => (name ? `<span class="ptf-icon" aria-hidden="true">${TEXT_FIELD_ICON[name]}</span>` : "");
+  const affix = (text, affixId) => (text ? `<span class="ptf-affix" id="${affixId}">${escape(text)}</span>` : "");
+  const input = `<input ${attrsOf([
+    'class="ptf-input-value"',
+    `id="${escape(id)}"`,
+    `type="${escape(type)}"`,
+    value !== "" && `value="${escape(value)}"`,
+    placeholder && `placeholder="${escape(placeholder)}"`,
+    inputmode && `inputmode="${escape(inputmode)}"`,
+    label && `aria-label="${escape(label)}"`,
+    desc && `aria-describedby="${desc}"`,
+    invalid && 'aria-invalid="true"',
+    required && 'aria-required="true"',
+    disabled && "disabled",
+    readonly && "readonly",
+    format && `data-format="${escape(format)}"`,
+  ])}>`;
+  const clear = live && value !== "" ? TEXT_FIELD_CLEAR : "";
+  return `<div class="${cls}"${state}>${icon(prefixIcon)}${affix(prefix, prefixId)}${input}${affix(suffix, suffixId)}${icon(suffixIcon)}${clear}</div>`;
+}
+
+// 여러 줄 입력칸(Textarea) — 상자 · 상태는 입력칸 상자형과 같다. 글은 여기서 escape 한다.
+//   size         large(글자 16 · 모서리 12) · medium(14 · 8) · responsive(웹 기본)
+//   autoSize     true — 3줄(94 · 82)에서 쓴 만큼 자란다(기본, 페이지 끝 스크립트가 높이를 맞춘다) · false — 고정 높이(2줄 72 · 62 이상), 넘치면 칸 안에서 스크롤
+//   height       고정 높이(px) — autoSize false 일 때 자리마다 정한다. 없으면 2줄
+//   maxHeight    자동 높이의 최대(px) — 그 높이부터 칸 안에서 스크롤
+//   그 밖의 인자는 textInput 과 같다
+export function textArea({ size = "responsive", autoSize = true, height = 0, maxHeight = 0, id = nextTextFieldId(), value = "", placeholder = "", label = "", describedby = "", invalid = false, disabled = false, readonly = false, required = false, focus = false, rootClass = "" } = {}) {
+  const cls = ["ptf-textarea", `ptf-textarea--${size}`, !autoSize && "ptf-textarea--fixed", focus && "ptf-textarea--focus", rootClass].filter(Boolean).join(" ");
+  const state = (invalid ? ' data-invalid=""' : "") + (disabled ? ' data-disabled=""' : "") + (readonly ? ' data-readonly=""' : "");
+  // 줄 수 — 레시피는 3(자동) · 2(고정). 스크립트가 돌기 전에도 쓴 줄이 잘리지 않게 자동 높이는 쓴 줄 수만큼 연다
+  const rows = autoSize ? Math.max(3, String(value).split("\n").length) : 2;
+  const style = [!autoSize && height && `height:${height}px`, autoSize && maxHeight && `max-height:${maxHeight}px`].filter(Boolean).join(";");
+  const area = `<textarea ${attrsOf([
+    'class="ptf-textarea-value"',
+    `id="${escape(id)}"`,
+    `rows="${rows}"`,
+    style && `style="${style}"`,
+    placeholder && `placeholder="${escape(placeholder)}"`,
+    label && `aria-label="${escape(label)}"`,
+    describedby && `aria-describedby="${describedby}"`,
+    invalid && 'aria-invalid="true"',
+    required && 'aria-required="true"',
+    disabled && "disabled",
+    readonly && "readonly",
+  ])}>${escape(value)}</textarea>`;
+  return `<div class="${cls}"${state}>${area}</div>`;
+}
+
+// Select 트리거 — 고르는 칸(카테고리 · 기간)은 Select · Input Button 차례에 정한다(input.md). 그때까지 옛 Select 트리거(.form-select — select.tsx 와 같은 모양)를 그대로 쓴다
+const selectTrigger = ({ id, value, describedby = "" }) => `<button type="button" class="form-select" id="${escape(id)}" aria-haspopup="listbox"${describedby ? ` aria-describedby="${describedby}"` : ""}>
+        <span>${escape(value)}</span>
+        <svg class="form-select-caret" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>`;
+
+// Field — 머리(라벨 · 필수 점 또는 "선택" · 보조 액션) · 입력 · 꼬리(설명 또는 오류 · 글자 수)를 8 간격으로 쌓는다. 글은 여기서 escape 한다.
+//   label · labelWeight  칸 이름 — medium 500(기본) · bold 700(칸 하나를 크게 받는 단계 화면)
+//   required     필수 — 입력의 aria-required. 점 · "선택" 은 mark 로 따로 단다(2/3 규칙 — textFieldMarks)
+//   mark         dot(필수 점) · optional("선택") · ""(없음)
+//   action       머리 오른쪽 보조 액션 글 — Button ghost · neutralSubtle · xsmall · 오른쪽 flush
+//   description · descriptionIcon  설명(아이콘 이름은 TEXT_FIELD_ICON) — 오류가 있으면 오류가 대신한다
+//   invalid · error  오류 — 오류 글이 설명 자리를 대신하고 글자 수가 빨개진다. 라벨은 그대로다
+//   requiredMessage  폼 그림의 제출 시 검증 — 비운 채 제출하면 보일 오류(페이지 끝 스크립트)
+//   max          글자 수 최대 — 있으면 꼬리 오른쪽에 "쓴 수/최대"(자소 단위). 입력은 최대에서 멈춘다
+//   control      입력 — { kind: "input" | "textarea", ...textInput · textArea 인자 } · { kind: "select", value } (고르는 칸)
+//   disabled · readonly  Field 에 주면 입력이 받는다
+export function textField({ id = nextTextFieldId(), label = "", labelWeight = "medium", required = false, mark = "", action = "", description = "", descriptionIcon = "", invalid = false, error = "", requiredMessage = "", max = 0, control = {}, disabled = false, readonly = false, className = "" } = {}) {
+  const showError = invalid && error;
+  const ids = { label: `${id}-label`, desc: `${id}-desc`, error: `${id}-error`, count: `${id}-count` };
+  const describedby = [showError && ids.error, !showError && description && ids.desc, max && ids.count].filter(Boolean).join(" ");
+  const count = max ? graphemeCount(control.value ?? "") : 0;
+  const markHtml = mark === "dot" ? '<span class="ptf-required" aria-hidden="true"></span>' : mark === "optional" ? '<span class="ptf-optional">선택</span>' : "";
+  const labelEl = label ? `<label class="ptf-label${labelWeight === "bold" ? " ptf-label--bold" : ""}" id="${ids.label}" for="${id}">${escape(label)}${markHtml}</label>` : "";
+  const actionEl = action ? `<div class="ptf-field-action"><button class="btn btn-ghost btn-ghost-subtle btn-size-xsmall btn-flush-right" type="button"><span>${escape(action)}</span></button></div>` : "";
+  const header = labelEl || actionEl ? `<div class="ptf-field-header">${labelEl}${actionEl}</div>` : "";
+  const shared = { id, describedby, invalid, required, disabled: disabled || !!control.disabled, readonly: readonly || !!control.readonly };
+  const input = control.kind === "select" ? selectTrigger({ id, value: control.value, describedby })
+    : control.kind === "textarea" ? textArea({ ...control, ...shared })
+    : textInput({ ...control, ...shared });
+  // 설명은 오류가 있을 때도 숨겨 둔다(hidden) — 제출 시 검증으로 오류가 걷히면 스크립트가 다시 보인다
+  const errorEl = showError ? `<p class="ptf-error" id="${ids.error}" aria-hidden="true">${TEXT_FIELD_ICON.circleAlert}<span>${escape(error)}</span></p>` : "";
+  const descEl = description ? `<p class="ptf-desc" id="${ids.desc}"${showError ? " hidden" : ""}>${descriptionIcon ? TEXT_FIELD_ICON[descriptionIcon] : ""}<span>${escape(description)}</span></p>` : "";
+  const countEl = max ? `<p class="ptf-count${count === 0 ? " ptf-count--empty" : ""}" id="${ids.count}"><span class="ptf-count-value">${count}</span><span class="ptf-count-max">/${max}</span></p>` : "";
+  const footer = errorEl || descEl || countEl ? `<div class="ptf-field-footer">${errorEl}${descEl}${countEl}</div>` : "";
+  // 오류 글은 화면 밖 polite 알림 자리가 한 번 읽는다 — 보이는 오류 글은 두 번 읽히지 않게 aria-hidden(설명으로는 그대로 읽힌다 — field.tsx)
+  const liveEl = `<span class="ptf-sr-only ptf-live" aria-live="polite">${showError ? escape(error) : ""}</span>`;
+  const attrs = (invalid ? ' data-invalid=""' : "") + (shared.disabled ? ' data-disabled=""' : "") + (max ? ` data-max="${max}"` : "") + (requiredMessage ? ` data-required-message="${escape(requiredMessage)}"` : "");
+  return `<div class="ptf-field${className ? ` ${className}` : ""}" data-slot="field"${attrs}>${header}${input}${footer}${liveEl}</div>`;
+}
+
+// 필수 · 선택 표시(2/3 규칙 — field.md "필수 입력 표시하기") — 한 화면 칸의 2/3 이상이 필수면 선택 칸에만 "선택", 그렇지 않으면 필수 칸에만 점. 둘을 섞지 않고, 칸이 하나면 붙이지 않는다
+export function textFieldMarks(fields) {
+  if (fields.length < 2) return fields.map(() => "");
+  const required = fields.filter(f => f.required).length;
+  const optionalMode = required * 3 >= fields.length * 2;
+  return fields.map(f => (optionalMode ? (f.required ? "" : "optional") : (f.required ? "dot" : "")));
+}
+
+// Field · 입력칸 · 여러 줄 입력칸 일곱 판을 흰 표면(.vignette-card) 위에 그린다 — 상태 표는 Checkbox 갤러리의 .cb-* 를 쓴다.
+// 글은 Desk(카테고리 · 계좌 · 거래 · 메모 검색)와 HR(휴가 신청 · 아이디)에서 빌렸다 — field.md · input.md · textarea.md 코드 예와 같은 글이다.
+// 칸은 모두 실제 입력이다 — 써 보고 지우고 제출해 볼 수 있다(페이지 끝 스크립트). 포커스 칸만 그 순간을 멈춰 그렸다.
+export function renderTextFieldGallery(brand) {
+  const panel = (title, sub, body) => `
+    <div class="vignette-card cb-panel">
+      <div class="vignette-head">
+        <div class="vignette-title">${escape(title)}</div>
+        <div class="vignette-sub">${escape(sub)}</div>
+      </div>${body}
+    </div>`;
+  const samples = (items, cls = "ptf-samples") => `
+      <div class="${cls}">${items.join("")}
+      </div>`;
+  // 견본 하나 — 무엇을 보이는지(머리 글) · 그림
+  const sample = (cap, en, body) => `
+        <div class="ptf-sample">
+          <div class="ptf-cap">${escape(cap)}<span>${escape(en)}</span></div>
+          ${body}
+        </div>`;
+  // 화면 틀 — 폰(360) · 데스크톱 웹. 칸은 2/3 규칙으로 점 · "선택" 을 단다. 칸 둘을 나란히 두려면 [a, b] 로 묶는다
+  const screen = (title, rows, { desktop = false, actions = "" } = {}) => {
+    const flat = rows.flat();
+    const marks = textFieldMarks(flat);
+    const html = new Map(flat.map((f, i) => [f, textField({ ...f, mark: marks[i] })]));
+    const body = rows.map(r => (Array.isArray(r) ? `<div class="ptf-form-row">${r.map(f => html.get(f)).join("")}</div>` : html.get(r))).join("");
+    return `<div class="ptf-screen${desktop ? " ptf-screen--desktop" : " ptf-screen--phone"}">
+            <div class="ptf-screen-title">${escape(title)}</div>
+            <div class="ptf-form">${body}</div>${actions}
+          </div>`;
+  };
+
+  // 1. Field — 머리 · 입력 · 꼬리
+  const category = { label: "카테고리 이름", action: "예시 보기", description: "목록과 통계에 이 이름으로 보여요.", max: 12 };
+  const basicsPanel = panel(
+    "Field — 머리 · 입력 · 꼬리",
+    "Field 는 입력 하나를 감싼다 — 머리(라벨 · 필수 점 또는 \"선택\" · 오른쪽 보조 액션) · 입력 · 꼬리(왼쪽 설명 또는 오류 · 오른쪽 글자 수)를 8 간격으로 쌓고, 머리 · 꼬리는 좌우로 2 들어와 칸의 모서리와 글자 줄이 맞는다. 라벨은 16 · 500 · fg-neutral, 설명은 14 · fg-neutral-subtle 이다. 오류는 설명 자리를 대신한다 — 14 · fg-critical 에 circle-alert 16(사이 6)이고, 라벨은 빨개지지 않는다(테두리와 오류 글이 알린다). 글자 수는 최대가 있는 칸에만 \"쓴 수/최대\"(숫자 폭 고정)로 — 비면 쓴 수도 fg-neutral-subtle, 오류면 둘 다 fg-critical 이다. 보조 액션은 Button ghost · neutralSubtle · xsmall · 오른쪽 flush 이고 머리 높이 22 를 바꾸지 않게 위아래로 5 넘친다. 칸에 써 보면 글자 수가 따라 바뀌고 최대에서 멈춘다.",
+    samples([
+      sample("라벨 · 보조 액션 · 설명 · 글자 수", "Field label · headerAction · description · maxGraphemeCount", textField({ ...category, control: { kind: "input", size: "large", value: "반려동물", placeholder: "예: 반려동물, 부수입" } })),
+      sample("부위 — 머리 22 · 입력 52 · 꼬리 19, 사이 8", "점선은 머리 · 꼬리 — 좌우 2 들어온다. 빈 칸은 글자 수도 옅다", textField({ ...category, className: "ptf-anatomy", control: { kind: "input", size: "large", placeholder: "예: 반려동물, 부수입" } })),
+      sample("오류 — 설명 자리를 대신한다", "invalid · errorMessage — 라벨은 그대로", textField({ label: "아이디", description: "영문 · 숫자 20자까지", max: 20, invalid: true, error: "이미 쓰고 있는 아이디예요.", control: { kind: "input", size: "large", value: "porest" } })),
+    ]),
+  );
+
+  // 2. 필수 입력 표시 — 2/3 규칙. 같은 규칙(textFieldMarks)이 칸 수에서 점 · "선택" 을 고른다
+  const accountRows = [
+    { label: "계좌 이름", required: true, control: { kind: "input", size: "large", value: "생활비 통장" } },
+    { label: "계좌 번호", required: true, control: { kind: "input", size: "large", value: "110-123-456789", inputmode: "numeric" } },
+    { label: "시작 잔액", required: true, control: { kind: "input", size: "large", value: "1,250,000", suffix: "원", inputmode: "numeric", format: "amount" } },
+    { label: "메모", control: { kind: "input", size: "large", placeholder: "예: 월급 받는 통장", clearable: true } },
+  ];
+  const categoryRows = [
+    { label: "카테고리 이름", required: true, description: "목록과 통계에 이 이름으로 보여요.", max: 12, control: { kind: "input", size: "large", value: "반려동물" } },
+    { label: "한 달 예산", control: { kind: "input", size: "large", placeholder: "예: 200,000", suffix: "원", inputmode: "numeric", format: "amount" } },
+    { label: "메모", control: { kind: "input", size: "large", placeholder: "예: 사료 · 병원비", clearable: true } },
+  ];
+  const marksPanel = panel(
+    "필수 입력 표시 — 2/3 규칙",
+    "한 화면 칸의 2/3 이상이 필수면 선택 칸에만 \"선택\"(14 · fg-neutral-subtle, 라벨과 같은 줄 높이 22 · 왼쪽 4)을 붙이고, 그렇지 않으면 필수 칸에만 빨간 점(6 · fg-critical, 라벨 첫 줄 위쪽 — 위 4 · 왼쪽 2)을 붙인다. 한 폼에 둘을 섞지 않고, 칸이 하나뿐이면 아무것도 붙이지 않는다. 점은 화면 읽기 프로그램에 숨기고 필수는 칸의 aria-required 가 알린다 — \"선택\" 화면의 필수 칸도 aria-required 다. 두 화면 모두 휴대폰 폭이고 Field 사이 24 다.",
+    samples([
+      sample("필수 3 · 선택 1 — \"선택\" 만", "Desk 계좌 추가 — 3/4 ≥ 2/3", screen("계좌 추가", accountRows)),
+      sample("필수 1 · 선택 2 — 점만", "Desk 카테고리 추가 — 1/3 < 2/3", screen("카테고리 추가", categoryRows)),
+    ]),
+  );
+
+  // 3. 모양 × 크기 — 같은 칸을 크기마다. 반응형은 지금 폭을 아래 글로 알린다(CSS 가 1280 에서 바꾼다)
+  const titleField = (size) => textField({ label: "제목", description: "결재 목록에 이 제목으로 보여요.", control: { kind: "input", size, value: "개인 사유", placeholder: "예: 개인 사유" } });
+  const amountStep = (size) => textField({ label: "얼마를 썼나요?", labelWeight: "bold", control: { kind: "input", variant: "underline", size, value: "12,000", suffix: "원", inputmode: "numeric", format: "amount" } });
+  const variantsPanel = panel(
+    "모양 × 크기 — 상자 · 밑줄 × large · medium · 반응형",
+    "상자(outline)가 기본이다 — large 는 52 · 모서리 12 · 좌우 16 · 사이 10 · 글자 16/22 · 아이콘 20 · 지우기 22, medium 은 40 · 8 · 14 · 8 · 14/19 · 16 · 18. 밑줄(underline)은 화면에 입력이 하나뿐일 때(금액을 먼저 받는 단계 화면 · 목록 위 검색 · 초대 코드)만 쓴다 — 아래 1px 만 긋고 모서리 · 좌우 여백이 없으며 글자가 한 단계 크다(large 40 · 위아래 8 · 18/24 · 아이콘 24, medium 34 · 6 · 16/22 · 20). medium 은 1280 이상 데스크톱 웹(마우스)에서만 쓰고, 웹의 기본 responsive 는 1280 미만 large · 이상 medium 이다 — 앱은 늘 large. 한 폼 안에서 크기를 섞지 않는다. 칸 하나를 크게 받는 단계 화면은 라벨을 bold 700 으로 둔다.",
+    samples([
+      sample("상자 · large — 52", "variant=\"outline\" size=\"large\" — 폰 · 앱", titleField("large")),
+      sample("상자 · medium — 40", "size=\"medium\" — 1280 이상 데스크톱 웹만", titleField("medium")),
+      sample("상자 · 반응형 — 웹 기본", "size=\"responsive\" — 1280(--breakpoint-lg)에서 바뀐다", `${titleField("responsive")}
+          <p class="ptf-now" aria-hidden="true"></p>`),
+      sample("밑줄 · large — 40", "variant=\"underline\" — 금액을 먼저 받는 화면 · 라벨 bold", amountStep("large")),
+      sample("밑줄 · medium — 34", "variant=\"underline\" size=\"medium\"", amountStep("medium")),
+      sample("밑줄 · 목록 위 검색", "prefixIcon={<Search />} · clearable — 라벨 대신 aria-label", textInput({ variant: "underline", size: "large", label: "메모 검색", placeholder: "메모 검색", value: "회의", prefixIcon: "search", clearable: true })),
+    ]),
+  );
+
+  // 4. 상태 — 칸은 모두 실제 입력이고 포커스만 그 순간을 멈춰 그렸다(.ptf-input--focus)
+  const stateCols = [
+    { ko: "상자 · 빈 칸", en: "outline — placeholder", input: { placeholder: "예: 개인 사유" } },
+    { ko: "상자 · 값", en: "outline — value", input: { value: "개인 사유", placeholder: "예: 개인 사유" } },
+    { ko: "밑줄 · 값", en: "underline — value · suffix", input: { variant: "underline", value: "12,000", suffix: "원", inputmode: "numeric", format: "amount" } },
+  ];
+  const states = [
+    { ko: "기본", en: "enabled" },
+    { ko: "포커스", en: "focused", focus: true },
+    { ko: "오류", en: "invalid", invalid: true },
+    { ko: "오류 + 포커스", en: "invalid · focused", invalid: true, focus: true },
+    { ko: "비활성", en: "disabled", disabled: true },
+    { ko: "읽기 전용", en: "readonly", readonly: true },
+  ];
+  const stateHead = `<div class="cb-matrix-row cb-matrix-row--head"><div class="cb-matrix-head">상태</div>${
+    stateCols.map(c => `<div class="cb-matrix-head">${escape(c.ko)}<span>${escape(c.en)}</span></div>`).join("")
+  }</div>`;
+  const statePanel = panel(
+    "상태 — 기본 · 포커스 · 오류 · 비활성 · 읽기 전용",
+    "포커스 칸은 그 순간을 멈춰 그렸다 — 칸은 모두 실제 입력이라 눌러서 포커스해도 같은 모습이다. 포커스는 마우스 · 터치로 눌러도 보인다(캐럿과 함께 지금 쓰는 칸을 알린다). 포커스 · 오류의 2px 는 상자 안쪽에 덧그려(::after) 내용이 밀리지 않고, 색만 100ms(d2)로 나타난다 — 포커스 stroke-neutral-contrast, 오류 stroke-critical-solid. 오류는 포커스해도 빨간 2px 그대로다. 비활성은 bg-disabled 바탕에 글자 · 아이콘 fg-disabled, 읽기 전용은 bg-disabled 바탕에 값이 진한 그대로이고 포커스 테두리가 없다 — 둘 다 흐리게 하지 않는다. 밑줄형은 바탕이 없어 비활성은 글자로, 읽기 전용은 값 · placeholder 를 fg-neutral-muted 로 가른다.",
+    `
+      <div class="cb-matrix ptf-matrix" style="--cb-cols: ${stateCols.length};">
+        ${stateHead}${states.map(s => `
+        <div class="cb-matrix-row"><div class="cb-matrix-label">${escape(s.ko)}<span>${escape(s.en)}</span></div>${
+          stateCols.map(c => `<div class="cb-matrix-cell">${textInput({ size: "large", ...c.input, label: `${c.ko} — ${s.ko}`, invalid: !!s.invalid, disabled: !!s.disabled, readonly: !!s.readonly, focus: !!s.focus })}</div>`).join("")
+        }</div>`).join("")}
+      </div>`,
+  );
+
+  // 5. 붙이개 · 지우기
+  const search = (size, value = "") => textInput({ size, label: "메모 검색", placeholder: "메모 검색", value, prefixIcon: "search", clearable: true });
+  const affixPanel = panel(
+    "붙이개 · 지우기",
+    "칸 안 앞 · 뒤에 글자나 아이콘을 둔다 — 글자는 칸 글자와 같은 크기의 fg-neutral-subtle, 아이콘은 large 20 · medium 16 의 fg-neutral-muted 이고 칸과 사이 10 · 8 이다. 단위는 라벨에 \"(원)\" 으로 붙이지 않고 뒤 글자로 둔다 — 단위 글자는 칸의 설명으로도 읽힌다. 금액은 쓰는 동안 천 단위 쉼표를 넣는다(숫자 키보드 inputmode=\"numeric\"). 지우기는 lucide circle-x(large 22 · medium 18 · fg-neutral-subtle)이고 값이 있고 막히지 않았을 때만 있다 — 누르면 값을 비우고 입력에 포커스를 둔다. Tab 순서에는 없다. 붙이개 · 여백을 눌러도 입력으로 포커스가 간다. 써 보고 지워 볼 수 있다.",
+    samples([
+      sample("앞 글자 — https://", "prefix=\"https://\"", textField({ label: "웹사이트", control: { kind: "input", size: "large", prefix: "https://", value: "porest.app", inputmode: "url" } })),
+      sample("뒤 글자 — 원 · 쉼표", "suffix=\"원\" · inputMode=\"numeric\"", textField({ label: "금액", control: { kind: "input", size: "large", suffix: "원", value: "12,000", inputmode: "numeric", format: "amount" } })),
+      sample("앞 · 뒤 글자 — 만 ~ 세", "prefix=\"만\" · suffix=\"세\"", textField({ label: "나이", control: { kind: "input", size: "large", prefix: "만", suffix: "세", value: "32", inputmode: "numeric" } })),
+      sample("앞 아이콘 · 지우기 — 값이 있을 때", "prefixIcon={<Search />} · clearable", search("large", "회의")),
+      sample("지우기 — 값이 없으면 없다", "빈 칸 · clearable", search("large")),
+      sample("medium — 아이콘 16 · 지우기 18", "size=\"medium\" · 사이 8", search("medium", "회의")),
+    ]),
+  );
+
+  // 6. Textarea — 자동 높이 · 고정 높이 · 상태
+  const reason = "가족 행사 참석으로 연차를 씁니다.\n인수인계 문서는 결재 전에 팀 채널에 올려 두었습니다.\n급한 일은 비상 연락처로 연락 주세요.";
+  const notice = "10월 사내 시스템 점검 안내입니다.\n10월 12일(토) 오전 2시부터 6시까지 결재 · 근태 화면을 쓸 수 없습니다.\n점검 중 올린 신청은 저장되지 않으니 점검이 끝난 뒤에 다시 올려 주세요.\n문의는 경영지원팀으로 부탁드립니다.";
+  const rejection = "같은 기간에 팀 휴가가 겹쳐 반려합니다.";
+  const textareaPanel = panel(
+    "Textarea — 자동 높이 · 고정 높이",
+    "상자 · 테두리 · 상태는 입력칸의 상자형과 같고, 여백 · 높이는 입력(<textarea>)이 가진다 — large 위아래 14 · 좌우 16 · 글자 16/22 · 모서리 12, medium 12 · 14 · 14/19 · 8. 자동 높이(기본)는 3줄(94 · 82)에서 시작해 쓴 만큼 바로 자라고(움직임 없이), 최대 높이를 정하면 그 높이부터 칸 안에서 스크롤한다. 고정 높이는 자리마다 높이를 정하고(2줄 72 · 62 보다 낮게 두지 않는다) 넘치는 글은 칸 안에서 스크롤한다. 손잡이(resize)는 없다. 써 보면 칸이 자란다.",
+    samples([
+      sample("자동 높이 · large — 3줄 94 에서", "autoSize(기본) · maxGraphemeCount={1000}", textField({ label: "휴가 사유", max: 1000, control: { kind: "textarea", size: "large", placeholder: "예: 가족 행사 참석" } })),
+      sample("자동 높이 — 쓴 만큼 자란다", "글이 길면 상자가 자란다 — 움직임 없이", textField({ label: "휴가 사유", max: 1000, control: { kind: "textarea", size: "large", value: reason } })),
+      sample("고정 높이 · large — 2줄 72", "autoSize={false} — 넘치면 칸 안에서 스크롤", textField({ label: "공지 본문", control: { kind: "textarea", size: "large", autoSize: false, value: notice } })),
+      sample("medium — 3줄 82 에서", "size=\"medium\" — 1280 이상 데스크톱 웹만", textField({ label: "메모", max: 100, control: { kind: "textarea", size: "medium", value: "점심 · 김밥천국 강남점" } })),
+      sample("오류 — 비운 채 제출", "invalid · errorMessage — 글자 수도 빨갛다", textField({ label: "탈퇴 사유", max: 200, invalid: true, error: "탈퇴 사유를 입력해주세요.", control: { kind: "textarea", size: "large", placeholder: "예: 쓰지 않는 기능이 많아요" } })),
+      sample("읽기 전용", "readOnly — 바탕 bg-disabled · 값은 진한 그대로", textField({ label: "반려 사유", readonly: true, control: { kind: "textarea", size: "large", value: rejection } })),
+      sample("비활성", "disabled — 바탕 bg-disabled · 글자 fg-disabled", textField({ label: "반려 사유", disabled: true, control: { kind: "textarea", size: "large", value: rejection } })),
+    ]),
+  );
+
+  // 7. 폼 — Desk 거래 추가(폰 · large) · HR 휴가 신청(데스크톱 웹 · medium). 제출 버튼은 페이지 끝 스크립트가 비운 필수 칸을 검증한다
+  const deskRows = [
+    { label: "금액", required: true, requiredMessage: "금액을 입력해주세요.", control: { kind: "input", size: "large", value: "12,000", suffix: "원", inputmode: "numeric", format: "amount" } },
+    { label: "카테고리", required: true, control: { kind: "select", value: "식비 · 카페" } },
+    { label: "메모", max: 100, control: { kind: "textarea", size: "large", placeholder: "예: 친구와 점심" } },
+  ];
+  const hrHoliday = { label: "휴가지", control: { kind: "input", size: "medium", placeholder: "예: 제주", clearable: true } };
+  const hrPhone = { label: "비상 연락처", required: true, requiredMessage: "비상 연락처를 입력해주세요.", control: { kind: "input", size: "medium", value: "010-1234-5678", inputmode: "tel" } };
+  const hrRows = [
+    { label: "제목", required: true, requiredMessage: "제목을 입력해주세요.", description: "결재 목록에 이 제목으로 보여요.", control: { kind: "input", size: "medium", value: "개인 사유", placeholder: "예: 개인 사유" } },
+    [hrHoliday, hrPhone],
+    { label: "휴가 사유", required: true, requiredMessage: "휴가 사유를 입력해주세요.", max: 1000, control: { kind: "textarea", size: "medium", value: "가족 행사 참석으로 연차를 씁니다.\n인수인계 문서는 결재 전에 팀 채널에 올려 두었습니다." } },
+  ];
+  const formsPanel = panel(
+    "폼 — 거래 추가(폰) · 휴가 신청(데스크톱 웹)",
+    "Field 는 24 간격으로 쌓고, 라벨과 값이 짧은 두 칸만 16 간격으로 나란히 둔다(768 미만은 한 줄에 하나). 한 폼 안에서 크기를 섞지 않는다 — 폰은 large, 1280 이상 데스크톱 웹은 medium. 두 폼 모두 칸의 2/3 이상이 필수라 선택 칸에만 \"선택\" 을 붙였다. 저장 · 신청 버튼은 켜 둔다 — 필수 칸을 비우고 누르면 그 칸마다 오류가 설명 자리를 대신하고 첫 오류 칸으로 포커스가 간다. 다시 쓰면 오류가 걷힌다. 카테고리는 목록에서 고르는 칸이라 Select 트리거로 두었다 — Select · Input Button 은 그 차례에 정하므로(input.md) 아직 옛 모양이다.",
+    samples([
+      sample("Desk 거래 추가 — 폰 · large", "금액(뒤 글자 원) · 카테고리(Select) · 메모(선택 · 0/100)", screen("거래 추가", deskRows, {
+        actions: `
+            <div class="ptf-screen-actions"><button class="btn btn-neutral-solid btn-size-large ptf-form-cta" type="button" data-ptf-submit="">저장</button></div>`,
+      })),
+      sample("HR 휴가 신청 — 데스크톱 웹 · medium", "제목 · 휴가지(선택) | 비상 연락처 — 사이 16 · 휴가 사유", screen("휴가 신청", hrRows, {
+        desktop: true,
+        actions: `
+            <div class="ptf-screen-actions ptf-screen-actions--end"><button class="btn btn-neutral-weak" type="button">임시 저장</button><button class="btn btn-brand-solid" type="button" data-ptf-submit="">신청</button></div>`,
+      })),
+    ], "ptf-samples ptf-samples--forms"),
+  );
+
+  const lede = "SEED Text Field 구조 — Field 가 입력 하나를 감싸 라벨(16 · 500) · 필수 점 또는 \"선택\" · 설명 · 오류 · 글자 수를 한 모양으로 붙인다(사이 8). 입력칸(Text Input)은 투명 바탕에 안쪽 1px stroke-neutral-weak 이고, 포커스는 안쪽 2px stroke-neutral-contrast(마우스로 눌러도), 오류는 안쪽 2px stroke-critical-solid 다 — 포커스해도 빨갛다. 비활성 · 읽기 전용은 bg-disabled 바탕이고 흐리게 하지 않는다. 크기는 large 52(폰 · 앱) · medium 40(1280 이상 데스크톱 웹), 웹의 기본은 반응형이다. 화면에 입력이 하나뿐이면 밑줄형을 쓴다. Textarea 는 같은 상자에서 3줄부터 자란다. 브랜드 색은 쓰지 않는다 — 세 미리보기가 같은 모습이다. 옛 회색 채운 칸 · 브랜드 포커스 링 · 초록 맞음 테두리 · 빨간 별표는 없다.";
+
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">03g — Text Field</div>
+      <h2 class="section-title">Field · Input · Textarea — 머리 · 입력 · 꼬리 · 모양 2 × 크기 2 · 상태 5</h2>
+      <p class="section-lede">${escape(lede)}</p>
+    </header>
+    ${basicsPanel}
+    ${marksPanel}
+    ${variantsPanel}
+    ${statePanel}
+    ${affixPanel}
+    ${textareaPanel}
+    ${formsPanel}
+  </section>`;
+}
+
 export function renderVignettes(brand) {
   const tabs = `
     <div class="vignette-card">
@@ -2047,17 +2377,15 @@ export function renderVignettes(brand) {
       <div class="tabs-body">${escape(brand.tabs.labels[0])} 영역의 콘텐츠가 여기에 들어옵니다.</div>
     </div>`;
 
+  // 검색칸 — 옛 알약 검색(surface-input · radius-full · 안의 필터 버튼)은 걷었다. 검색칸은 Input 의 앞 아이콘 · 지우기다(input.md — 03g Text Field)
+  const searchScope = brand.key === "hr" ? { name: "직원 검색", value: "김지원" } : brand.key === "desk" ? { name: "메모 검색", value: "회의록" } : { name: "토큰 검색", value: "spacing" };
   const search = `
     <div class="vignette-card">
       <div class="vignette-head">
-        <div class="vignette-title">Search · pill input</div>
-        <div class="vignette-sub">surface-input + radius-full</div>
+        <div class="vignette-title">Search · 검색칸</div>
+        <div class="vignette-sub">Input — 앞 아이콘 검색 · 지우기(값이 있을 때만) · 웹 기본 반응형</div>
       </div>
-      <div class="search-pill">
-        <span class="search-icon" aria-hidden="true">⌕</span>
-        <input class="search-input" placeholder="검색어를 입력하세요" />
-        <button class="btn btn-primary btn-size-sm">필터</button>
-      </div>
+      ${textInput({ size: "responsive", label: searchScope.name, placeholder: searchScope.name, value: searchScope.value, prefixIcon: "search", clearable: true })}
     </div>`;
 
   const vignettes = brand.vignettes.map(v => {
@@ -2505,50 +2833,51 @@ export function renderSkeleton(brand) {
   </section>`;
 }
 
+// 폼 — brand.form 의 칸을 Field 로 쌓는다(field.md "Form 의 구성" — Field 사이 24, 짧은 두 칸은 16 간격으로 나란히 — 앞 칸에 pair).
+// 필수 표시는 2/3 규칙(textFieldMarks), 입력칸 · 여러 줄 입력칸은 웹 기본 반응형, 글자 수는 최대가 있는 칸(max)만. 고르는 칸(select — 휴가 종류 · 기간 · 카테고리 · 날짜)은
+// Select 트리거이고 아직 옛 모양이다(Select · Input Button 차례에). 저장 버튼은 켜 두고 누르면 비운 필수 입력칸에 오류를 보인다(제출 시 검증 — 페이지 끝 스크립트).
+// 폼 틀은 화면이 정한다 — 여기서는 데스크톱 웹 화면 틀(.ptf-screen)이다. 옛 그림자 카드 · 2열 그리드 · 경계선 버튼 줄 · 빨간 별표는 걷었다.
 export function renderForm(brand) {
   const f = brand.form;
   if (!f) return "";
-
-  const renderField = (field) => {
-    const reqMark = field.required ? `<span class="form-required" aria-hidden="true">*</span>` : "";
-    const helper = field.helper ? `<div class="form-helper">${escape(field.helper)}</div>` : "";
-    let control = "";
-    if (field.type === "input") {
-      control = `<div class="form-input${field.readonly ? " form-input--readonly" : ""}">${escape(field.value)}</div>`;
-    } else if (field.type === "select") {
-      // shadcn select.tsx와 동일 — lucide ChevronDown 16×16 SVG, text-tertiary.
-      control = `<div class="form-select">
-        <span>${escape(field.value)}</span>
-        <svg class="form-select-caret" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-      </div>`;
-    } else if (field.type === "textarea") {
-      const rows = field.rows || 4;
-      const minHeight = rows * 24 + 24;
-      const valueHtml = escape(field.value).replace(/\n/g, "<br>");
-      control = `<div class="form-textarea" style="min-height:${minHeight}px">${valueHtml}</div>`;
-    }
-    return `
-      <div class="form-group">
-        <div class="form-label">${escape(field.label)}${reqMark}</div>
-        ${control}
-        ${helper}
-      </div>`;
+  const marks = textFieldMarks(f.fields);
+  // 오류 글 — "{라벨}을(를) 입력해주세요"(행동 지시형). 받침이 있으면 을, 없으면 를
+  const objectOf = (word) => {
+    const code = word.charCodeAt(word.length - 1) - 0xac00;
+    return `${word}${code >= 0 && code < 11172 && code % 28 !== 0 ? "을" : "를"}`;
   };
-
-  const fields = f.fields.map(renderField).join("");
+  const toField = (field, i) => textField({
+    label: field.label,
+    required: !!field.required,
+    mark: marks[i],
+    description: field.helper || "",
+    max: field.max || 0,
+    readonly: !!field.readonly,
+    requiredMessage: field.required && !field.readonly && field.type !== "select" ? `${objectOf(field.label)} 입력해주세요.` : "",
+    control: field.type === "select" ? { kind: "select", value: field.value }
+      : field.type === "textarea" ? { kind: "textarea", size: "responsive", value: field.value }
+      : { kind: "input", size: "responsive", value: field.value, suffix: field.suffix || "", inputmode: field.inputmode || "", format: field.format || "" },
+  });
+  const rows = [];
+  for (let i = 0; i < f.fields.length; i += 1) {
+    if (f.fields[i].pair && f.fields[i + 1]) {
+      rows.push(`<div class="ptf-form-row">${toField(f.fields[i], i)}${toField(f.fields[i + 1], i + 1)}</div>`);
+      i += 1;
+    } else rows.push(toField(f.fields[i], i));
+  }
 
   return `
   <section class="section">
     <header class="section-head">
-      <div class="section-eyebrow">12 — Form layout</div>
+      <div class="section-eyebrow">12 — Form layout · Field</div>
       <h2 class="section-title">${escape(f.title)}</h2>
       <p class="section-lede">${escape(f.sectionDescription)}</p>
     </header>
-    <div class="form-card">
-      <div class="form-grid">${fields}</div>
-      <div class="form-actions">
-        <button class="btn btn-primary">${escape(f.primary)}</button>
-        <button class="btn btn-outline">${escape(f.secondary)}</button>
+    <div class="ptf-screen ptf-screen--desktop">
+      <div class="ptf-form">${rows.join("")}</div>
+      <div class="ptf-screen-actions ptf-screen-actions--end">
+        <button class="btn btn-neutral-weak" type="button">${escape(f.secondary)}</button>
+        <button class="btn btn-neutral-solid" type="button" data-ptf-submit="">${escape(f.primary)}</button>
       </div>
     </div>
   </section>`;
@@ -3061,9 +3390,9 @@ export function renderBatchV73V78(brand) {
   return `
   <section class="section">
     <header class="section-head">
-      <div class="section-eyebrow">20 — Extras-2 (v73) · Animation (v74) · Form validation (v75) · RTL (v76)</div>
-      <h2 class="section-title">Banner · Tag/Chip · Popover · File Upload · Treeview · Animation · Form states · RTL</h2>
-      <p class="section-lede">v73-v76 6 milestone 시각 데모 — shadcn 누락 5종 + 14 keyframe 라이브 + form 5 state + dir 토글.</p>
+      <div class="section-eyebrow">20 — Extras-2 (v73) · Animation (v74) · Field 검증(옛 v75) · RTL (v76)</div>
+      <h2 class="section-title">Banner · Tag/Chip · Popover · File Upload · Treeview · Animation · Field 검증 · RTL</h2>
+      <p class="section-lede">v73-v76 시각 데모 — shadcn 누락 5종 + 14 keyframe 라이브 + Field 검증 모습 5(옛 v75 form state 를 Field 로) + dir 토글.</p>
     </header>
 
     <!-- v73 Banner — 4 variant -->
@@ -3097,8 +3426,8 @@ export function renderBatchV73V78(brand) {
         <div class="sc-head">Popover — interactive</div>
         <div class="pop-anchor">
           <button class="pop-trigger" aria-expanded="true" aria-haspopup="dialog" type="button">${escape(popoverHead)} ▾</button>
-          <div class="pop" role="dialog">
-            <textarea rows="3" placeholder="의견을 입력하세요"></textarea>
+          <div class="pop" role="dialog" aria-label="${escape(popoverHead)}">
+            ${textField({ label: isHr ? "결재 의견" : isDesk ? "메모" : "의견", control: { kind: "textarea", size: "responsive", placeholder: isHr ? "예: 일정 확인했습니다" : isDesk ? "예: 점심 · 김밥천국" : "예: 검토 의견" } })}
             <div class="pop-actions"><button class="btn btn--ghost" type="button">취소</button><button class="btn btn--primary" type="button">제출</button></div>
           </div>
         </div>
@@ -3153,36 +3482,23 @@ export function renderBatchV73V78(brand) {
         <div class="anim-actions"><button class="btn btn--outline anim-replay" type="button">▶ 다시 재생</button></div>
       </div>
 
-      <!-- v75 Form validation states -->
+      <!-- Field 검증 — 옛 v75 의 5 상태(idle · focused · invalid · valid · validating)를 Field 로 옮겼다(field.md 제출과 검증).
+           맞음 · 확인 중은 테두리가 아니라 설명 자리의 글이다 — 초록 테두리 · 돌림 표시는 없다. 포커스는 그 순간을 멈춰 그렸다 -->
       <div class="sc-card sc-card--full">
-        <div class="sc-head">Form validation (v75) — 5 state machine</div>
-        <div class="fv-grid">
+        <div class="sc-head">Field 검증 — 기본 · 포커스 · 오류 · 맞음 · 확인 중</div>
+        <div class="fv-grid">${[
+          { ko: "기본", en: "enabled", field: { description: "영문 · 숫자 20자까지", control: { placeholder: "예: porest" } } },
+          { ko: "포커스", en: "focused — 안쪽 2px 짙은 테두리", field: { description: "영문 · 숫자 20자까지", control: { value: "porest", focus: true } } },
+          { ko: "오류", en: "invalid — 오류가 설명을 대신한다", field: { invalid: true, error: "이미 쓰고 있는 아이디예요.", description: "영문 · 숫자 20자까지", control: { value: "porest" } } },
+          { ko: "맞음 — 설명 글로", en: "테두리는 그대로 · 아이콘 16", field: { description: "쓸 수 있는 아이디예요.", descriptionIcon: "circleCheck", control: { value: "porest2026" } } },
+          { ko: "확인 중 — 설명 글로", en: "테두리는 그대로", field: { description: "확인하는 중", control: { value: "porest2026" } } },
+        ].map(c => `
           <div class="fv-cell">
-            <label class="fv-label">idle (default)</label>
-            <input class="fv-input" placeholder="이메일" />
-            <span class="fv-helper">로그인 시 사용됩니다</span>
-          </div>
-          <div class="fv-cell">
-            <label class="fv-label">focused</label>
-            <input class="fv-input fv-input--focused" placeholder="이메일" value="hello@porest" />
-            <span class="fv-helper">입력 중...</span>
-          </div>
-          <div class="fv-cell">
-            <label class="fv-label">invalid</label>
-            <input class="fv-input fv-input--invalid" value="hello@porest" aria-invalid="true" />
-            <span class="fv-error" role="alert">올바른 이메일 주소를 입력해주세요</span>
-          </div>
-          <div class="fv-cell">
-            <label class="fv-label">valid</label>
-            <input class="fv-input fv-input--valid" value="hello@porest.app" />
-            <span class="fv-success">사용 가능 ✓</span>
-          </div>
-          <div class="fv-cell">
-            <label class="fv-label">validating (async)</label>
-            <input class="fv-input" value="hello@porest.app" aria-busy="true" />
-            <span class="fv-helper"><span class="fv-spinner"></span> 중복 확인 중...</span>
-          </div>
+            <div class="ptf-cap">${escape(c.ko)}<span>${escape(c.en)}</span></div>
+            ${textField({ label: "아이디", max: 20, ...c.field, control: { kind: "input", size: "responsive", ...c.field.control } })}
+          </div>`).join("")}
         </div>
+        <div class="sc-note">오류는 칸 안쪽 2px stroke-critical-solid 와 꼬리의 오류 글(circle-alert)로 알리고, 맞음 · 확인 중은 설명 자리에 글로 쓴다 — 칸의 테두리를 초록으로 바꾸지 않는다(field.md). 검증은 제출 때 칸마다, 위험한 칸(보안 · 금융)만 칸을 떠날 때 바로 한다.</div>
       </div>
 
       <!-- v76 RTL toggle -->
@@ -3232,7 +3548,7 @@ export function renderBatchSpecs5(brand) {
   ).join("");
 
   // IconPicker — 도메인별 활성 아이콘 인덱스
-  const SEARCH_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
+  // 검색칸은 Input 의 앞 아이콘(textInput prefixIcon) — 아이콘을 절대 위치로 겹쳐 그리던 것을 걷었다(icon-picker.md · searchable-list.md 2026-10-01)
   const STAR = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
   const HEART = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
   const COFFEE = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 0 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>';
@@ -3294,14 +3610,11 @@ export function renderBatchSpecs5(brand) {
         <div style="display:flex; align-items:flex-start; gap: var(--spacing-md);">
           <button type="button" class="ipk-trigger" aria-haspopup="dialog" aria-expanded="true">${iconSet[activeIconIdx]}</button>
           <div class="ipk-content">
-            <div class="ipk-search">
-              <span class="ipk-search-icon">${SEARCH_SVG}</span>
-              <input placeholder="아이콘 검색..." value="" />
-            </div>
+            <div class="ipk-search">${textInput({ size: "responsive", label: "아이콘 검색", placeholder: "아이콘 검색...", prefixIcon: "search", clearable: true })}</div>
             <div class="ipk-grid">${iconCells}</div>
           </div>
         </div>
-        <div class="sc-note">2000+ Lucide 아이콘 중 매칭 상위 100건 limit. trigger 40×40 (input height 정합).</div>
+        <div class="sc-note">2000+ Lucide 아이콘 중 매칭 상위 100건 limit. trigger 40×40 — Input medium(데스크톱 웹)과 같은 높이(icon-picker.md).</div>
       </div>
 
       <!-- SearchableList -->
@@ -3311,10 +3624,7 @@ export function renderBatchSpecs5(brand) {
           <span class="sl-head-label">카드</span>
           <span class="sl-head-count">총 142개</span>
         </div>
-        <div class="sl-search">
-          <span class="sl-search-icon">${SEARCH_SVG}</span>
-          <input placeholder="카드명 또는 발급사 검색" value="" />
-        </div>
+        <div class="sl-search">${textInput({ size: "responsive", label: "검색", placeholder: "카드명 또는 발급사 검색", prefixIcon: "search", clearable: true })}</div>
         <div class="sl" style="max-height: 240px;">${slRows}</div>
         <div class="sc-note">대량 옵션 + 검색 필요 — 카드/은행/증권사/종목/도시. active row는 bg-brand-subtle + 주제목 primary-strong semi.</div>
       </div>
@@ -4916,15 +5226,370 @@ export function pageCss() {
     .psb-samples { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: var(--spacing-xl) var(--spacing-lg); align-items: start; }
     .psb-cap { margin-bottom: var(--spacing-sm); font-size: var(--text-caption); font-weight: 600; line-height: 1.4; color: var(--color-text-secondary); }
     .psb-cap span { display: block; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 400; color: var(--color-text-tertiary); }
-    /* 펼침의 반복 횟수 칸 — 입력칸은 Input 미리보기(.fv-input), 앞뒤 글자는 t4 */
+    /* 펼침의 반복 횟수 칸 — 입력칸은 아래 Text Field 블록의 .ptf-input(상자형 medium 40) · 폭 80, 앞뒤 글자는 t4 */
     .psb-count { display: flex; align-items: center; gap: var(--spacing-x2); font-family: var(--font-sans); font-size: var(--text-t4); line-height: var(--text-t4--line-height); color: var(--color-fg-neutral); }
-    .psb-count .fv-input { width: 80px; }
+    .psb-count .ptf-input { flex: none; width: 80px; }
     /* 상태 표 — 칸마다 상자 하나를 실제 폭(200 이상)으로 그리고, 한 줄의 상자는 같은 높이로 늘인다. 칸이 그보다 좁아지면 판(.cb-panel)이 가로로 밀린다 */
     .psb-matrix .cb-matrix-row { grid-template-columns: 168px repeat(var(--cb-cols), minmax(200px, 1fr)); }
     .psb-cell { align-self: stretch; align-items: stretch; }
     .psb-cell > .psb-group { flex: 1; min-width: 0; }
     @media (max-width: 900px) {
       .psb-matrix .cb-matrix-row { grid-template-columns: 120px repeat(var(--cb-cols), minmax(200px, 1fr)); }
+    }
+
+    /* === Text Field — specs/components/field.md · input.md · textarea.md(수치는 *.yaml) · field.tsx · input.tsx · textarea.tsx 와 같은 모양 ===
+       구조는 SEED Field · Text Input · Textarea(2026-10-01). Field .ptf-field 는 머리 .ptf-field-header(라벨 .ptf-label · 필수 점 .ptf-required 또는 "선택" .ptf-optional · 보조 액션 .ptf-field-action),
+       입력, 꼬리 .ptf-field-footer(설명 .ptf-desc 또는 오류 .ptf-error · 글자 수 .ptf-count)를 8 간격으로 쌓는다. 라벨은 오류여도 그대로다 — 오류는 칸의 테두리와 꼬리의 글이 알린다.
+       입력칸 .ptf-input 은 상자(div)가 테두리 · 바탕 · 모서리와 앞 · 뒤 붙이개(.ptf-icon · .ptf-affix) · 지우기(.ptf-clear)를 담고, 입력 .ptf-input-value(input)가 상자 높이를 채운다 —
+       맨 앞 · 맨 뒤 요소가 상자의 좌우 여백을 가진다(입력이면 안쪽 여백이라 그 자리를 눌러도 쓴다, 붙이개 · 지우기면 바깥 여백). 여러 줄 .ptf-textarea 는 같은 상자이고 입력 .ptf-textarea-value(textarea)가 여백 · 높이를 가진다.
+       테두리 1px 은 안쪽 그림자로 그리고, 포커스 · 오류의 2px 는 ::after 로 그 안쪽에 덧그린다 — 굵어져도 내용이 밀리지 않고 색만 d2(100ms)로 바뀐다(SEED).
+       포커스는 :focus 다(마우스 · 터치로 눌러도 — 버튼의 키보드 링과 다르다). 읽기 전용이면 포커스 테두리가 없고, 오류는 포커스해도 빨갛다. 비활성 · 읽기 전용은 bg-disabled 바탕이고 흐리게 하지 않는다(v106).
+       상태는 레시피처럼 상자의 [data-invalid] · [data-disabled] · [data-readonly] 에서 읽는다. .ptf-input--focus · .ptf-textarea--focus 는 갤러리에서 포커스를 고정해 보여 주는 클래스다.
+       반응형(웹 기본)은 1280(--breakpoint-lg — 미디어 쿼리는 변수를 못 써 수를 적었다) 미만 large · 이상 medium 이다. 브랜드 색은 쓰지 않는다. 다크 짝은 이 블록 끝의 [data-theme="dark"] 에서 바꾼다. */
+    .ptf-field {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-x2);
+      width: 100%;
+      min-width: 0;
+      font-family: var(--font-sans);
+    }
+    /* 머리 — 라벨 + 필수 · 선택 표시(왼쪽) · 보조 액션(오른쪽, 사이 10). 좌우 2 들어와 칸의 모서리와 글자 줄이 맞는다 */
+    .ptf-field-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--spacing-x2_5);
+      padding: 0 var(--spacing-x0_5);
+    }
+    /* 라벨 — t5 16/22 · 500 · fg-neutral(bold 700 — 칸 하나를 크게 받는 단계 화면). 한 폼 안에서 굵기를 섞지 않는다 */
+    .ptf-label {
+      min-width: 0;
+      font-size: var(--text-t5);
+      line-height: var(--text-t5--line-height);
+      font-weight: 500;
+      color: var(--color-fg-neutral);
+    }
+    .ptf-label--bold { font-weight: 700; }
+    /* 필수 점 — 6 · fg-critical, 라벨 첫 줄 위쪽(위 4 · 왼쪽 2). rem 이라 글자 크기 설정을 따라 커진다. 화면 읽기 프로그램에는 숨기고 필수는 칸의 aria-required 가 알린다 */
+    .ptf-required {
+      display: inline-block;
+      width: 0.375rem;
+      height: 0.375rem;
+      margin-top: 0.25rem;
+      margin-left: 0.125rem;
+      border-radius: var(--radius-full);
+      background: var(--color-fg-critical);
+      vertical-align: top;
+    }
+    /* "선택" — t4 14 · 400 · fg-neutral-subtle, 줄 높이는 라벨과 같은 22 · 왼쪽 4 */
+    .ptf-optional {
+      padding-left: 0.25rem;
+      font-size: var(--text-t4);
+      line-height: var(--text-t5--line-height);
+      font-weight: 400;
+      color: var(--color-fg-neutral-subtle);
+      vertical-align: bottom;
+    }
+    /* 보조 액션 — Button ghost · neutralSubtle · xsmall(32) · 오른쪽 flush. 머리 높이 22 를 바꾸지 않게 위아래로 5 넘친다(누르는 영역은 버튼 그대로 44) */
+    .ptf-field-action { display: flex; flex-shrink: 0; align-items: center; margin: -5px 0 -5px auto; }
+    /* 꼬리 — 설명 또는 오류(왼쪽) · 글자 수(오른쪽). 사이 8 · 좌우 2, 위로 맞춘다 */
+    .ptf-field-footer {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--spacing-x2);
+      padding: 0 var(--spacing-x0_5);
+    }
+    .ptf-desc, .ptf-error, .ptf-count {
+      margin: 0;
+      font-size: var(--text-t4);
+      line-height: var(--text-t4--line-height);
+      font-weight: 400;
+    }
+    /* 설명 — t4 14/19 · fg-neutral-subtle. 오류 — 설명 자리를 대신한다(둘을 함께 보이지 않는다) · fg-critical */
+    .ptf-desc, .ptf-error { display: flex; min-width: 0; }
+    .ptf-desc { color: var(--color-fg-neutral-subtle); }
+    .ptf-desc[hidden] { display: none; }
+    .ptf-error { color: var(--color-fg-critical); }
+    /* 설명 · 오류 앞 아이콘 16(오류는 늘 circle-alert — 색만으로 알리지 않는다) — 첫 줄 가운데(위 1.5) · 글과 6 */
+    .ptf-desc > svg, .ptf-error > svg {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      margin-top: calc((var(--text-t4--line-height) - 1rem) / 2);
+      margin-right: var(--spacing-x1_5);
+    }
+    /* 글자 수 — "쓴 수/최대", 숫자 폭 고정. 쓴 수 fg-neutral(비면 fg-neutral-subtle) · 최대 fg-neutral-subtle, 오류면 둘 다 fg-critical */
+    .ptf-count { flex-shrink: 0; margin-left: auto; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .ptf-count-value { color: var(--color-fg-neutral); }
+    .ptf-count--empty .ptf-count-value, .ptf-count-max { color: var(--color-fg-neutral-subtle); }
+    .ptf-field[data-invalid] :is(.ptf-count-value, .ptf-count-max) { color: var(--color-fg-critical); }
+    /* 오류 알림 자리 — 화면 밖 polite(field.tsx 의 sr-only) */
+    .ptf-sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+      border-width: 0;
+    }
+
+    /* 입력칸(Text Input) 상자 — 투명 바탕 · 안쪽 1px stroke-neutral-weak, 어디를 눌러도 입력으로(페이지 끝 스크립트).
+       크기 기본 = 상자형 large: 높이 52 · 모서리 12(r3) · 좌우 16 · 사이 10 · 글자 t5 16/22 · 아이콘 20 · 지우기 22 */
+    .ptf-input {
+      --ptf-px: var(--spacing-x4);
+      --ptf-icon: 20px;
+      --ptf-clear: 22px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-x2_5);
+      width: 100%;
+      min-width: 0;
+      min-height: 52px;
+      overflow: hidden;
+      border-radius: var(--radius-r3);
+      background: transparent;
+      box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-weak);
+      font-family: var(--font-sans);
+      font-size: var(--text-t5);
+      line-height: var(--text-t5--line-height);
+      font-weight: 400;
+      color: var(--color-fg-neutral);
+      cursor: text;
+    }
+    /* 포커스 · 오류 2px — 상자 안쪽에 덧그린다. 늘 2px 투명이고 색만 d2 로 나타난다(두께는 바로 바뀐다 — SEED) */
+    .ptf-input::after,
+    .ptf-textarea::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border: 2px solid transparent;
+      border-radius: inherit;
+      pointer-events: none;
+      transition: border-color var(--motion-duration-d2) var(--motion-ease-easing);
+    }
+    .ptf-input:has(.ptf-input-value:focus):not([data-invalid], [data-readonly])::after,
+    .ptf-input.ptf-input--focus:not([data-invalid], [data-readonly])::after,
+    .ptf-textarea:has(.ptf-textarea-value:focus):not([data-invalid], [data-readonly])::after,
+    .ptf-textarea.ptf-textarea--focus:not([data-invalid], [data-readonly])::after { border-color: var(--color-stroke-neutral-contrast); }
+    .ptf-input[data-invalid]::after,
+    .ptf-textarea[data-invalid]::after { border-color: var(--color-stroke-critical-solid); }
+    /* 비활성 · 읽기 전용(상자) — bg-disabled 바탕, 흐리게 하지 않는다. 비활성은 값 · placeholder · 붙이개 · 아이콘이 fg-disabled, 읽기 전용은 값이 진한 그대로 */
+    .ptf-input:not(.ptf-input--underline):is([data-disabled], [data-readonly]),
+    .ptf-textarea:is([data-disabled], [data-readonly]) { background: var(--color-bg-disabled); }
+    .ptf-input[data-disabled],
+    .ptf-textarea[data-disabled] { cursor: not-allowed; }
+    .ptf-input[data-disabled] :is(.ptf-input-value, .ptf-affix, .ptf-icon),
+    .ptf-textarea[data-disabled] .ptf-textarea-value { color: var(--color-fg-disabled); }
+    .ptf-input[data-disabled] .ptf-input-value::placeholder,
+    .ptf-textarea[data-disabled] .ptf-textarea-value::placeholder { color: var(--color-fg-disabled); }
+    /* 입력 — 상자 높이를 채운다(글자는 세로 가운데). 값 fg-neutral · 400, placeholder fg-placeholder */
+    .ptf-input-value {
+      flex: 1;
+      align-self: stretch;
+      min-width: 0;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      outline: none;
+      font: inherit;
+      color: var(--color-fg-neutral);
+    }
+    .ptf-input-value::placeholder,
+    .ptf-textarea-value::placeholder { color: var(--color-fg-placeholder); opacity: 1; }
+    .ptf-input-value:disabled,
+    .ptf-textarea-value:disabled { cursor: not-allowed; opacity: 1; }
+    /* 브라우저 자동 완성의 바탕색을 지운다 — 글자색은 칸 그대로(input.tsx) */
+    .ptf-input-value:-webkit-autofill { -webkit-text-fill-color: var(--color-fg-neutral); background-clip: text; transition: background-color 9999s 9999s; }
+    /* 맨 앞 · 맨 뒤 요소가 상자의 좌우 여백을 가진다 — 입력이면 안쪽 여백(그 자리를 눌러도 쓴다), 붙이개 · 지우기면 바깥 여백 */
+    .ptf-input > :first-child { margin-left: var(--ptf-px); }
+    .ptf-input > :last-child { margin-right: var(--ptf-px); }
+    .ptf-input > .ptf-input-value:first-child { margin-left: 0; padding-left: var(--ptf-px); }
+    .ptf-input > .ptf-input-value:last-child { margin-right: 0; padding-right: var(--ptf-px); }
+    /* 붙이개 — 글자는 칸 글자와 같은 크기의 fg-neutral-subtle · 400, 아이콘은 fg-neutral-muted(크기는 모양 · 크기마다) */
+    .ptf-affix { flex-shrink: 0; color: var(--color-fg-neutral-subtle); white-space: nowrap; }
+    .ptf-icon { display: flex; flex-shrink: 0; color: var(--color-fg-neutral-muted); }
+    .ptf-icon > svg { width: var(--ptf-icon); height: var(--ptf-icon); }
+    /* 지우기 — lucide circle-x · fg-neutral-subtle · 둥근 버튼(크기는 모양 · 크기마다). 값이 있고 막히지 않았을 때만 있고 Tab 순서 밖이다 */
+    .ptf-clear {
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border: 0;
+      border-radius: var(--radius-full);
+      background: transparent;
+      color: var(--color-fg-neutral-subtle);
+      cursor: pointer;
+    }
+    .ptf-clear > svg { width: var(--ptf-clear); height: var(--ptf-clear); }
+    /* 상자형 medium — 높이 40 · 모서리 8(r2) · 좌우 14 · 사이 8 · 글자 t4 14/19 · 아이콘 16 · 지우기 18. 1280 이상 데스크톱 웹(마우스)에서만 */
+    .ptf-input--medium {
+      --ptf-px: var(--spacing-x3_5);
+      --ptf-icon: 16px;
+      --ptf-clear: 18px;
+      gap: var(--spacing-x2);
+      min-height: 40px;
+      border-radius: var(--radius-r2);
+      font-size: var(--text-t4);
+      line-height: var(--text-t4--line-height);
+    }
+    /* 밑줄형 — 아래 1px 만(포커스 · 오류 2px), 모서리 · 좌우 여백 없음. large: 높이 40 · 위아래 8 · 사이 10 · 글자 t6 18/24 · 아이콘 24 · 지우기 22.
+       바탕이 없어 비활성 · 읽기 전용에도 바탕을 깔지 않는다 — 읽기 전용은 값 · placeholder 를 fg-neutral-muted 로 가른다 */
+    .ptf-input--underline {
+      --ptf-px: 0px;
+      --ptf-icon: 24px;
+      --ptf-clear: 22px;
+      gap: var(--spacing-x2_5);
+      min-height: 40px;
+      padding: var(--spacing-x2) 0;
+      border-radius: 0;
+      box-shadow: inset 0 -1px 0 0 var(--color-stroke-neutral-weak);
+      font-size: var(--text-t6);
+      line-height: var(--text-t6--line-height);
+    }
+    .ptf-input--underline::after { border-width: 0 0 2px; }
+    .ptf-input--underline[data-readonly] .ptf-input-value { color: var(--color-fg-neutral-muted); }
+    .ptf-input--underline[data-readonly] .ptf-input-value::placeholder { color: var(--color-fg-neutral-muted); }
+    /* 밑줄형 medium — 높이 34 · 위아래 6 · 사이 8 · 글자 t5 16/22 · 아이콘 20 · 지우기 18 */
+    .ptf-input--underline.ptf-input--medium {
+      --ptf-px: 0px;
+      --ptf-icon: 20px;
+      --ptf-clear: 18px;
+      gap: var(--spacing-x2);
+      min-height: 34px;
+      padding: var(--spacing-x1_5) 0;
+      border-radius: 0;
+      font-size: var(--text-t5);
+      line-height: var(--text-t5--line-height);
+    }
+
+    /* 여러 줄 입력칸(Textarea) — 상자 · 테두리 · 상태는 입력칸 상자형과 같다(위의 ::after · 비활성 · 읽기 전용 규칙을 함께 쓴다). 여백 · 높이는 입력이 가진다.
+       large: 모서리 12 · 위아래 14 · 좌우 16 · 글자 t5 16/22, 자동 높이 3줄 94(고정 높이 2줄 72). 손잡이는 두지 않는다 — 자동 높이가 대신한다 */
+    .ptf-textarea {
+      position: relative;
+      display: flex;
+      width: 100%;
+      min-width: 0;
+      overflow: hidden;
+      border-radius: var(--radius-r3);
+      background: transparent;
+      box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-weak);
+      font-family: var(--font-sans);
+      font-size: var(--text-t5);
+      line-height: var(--text-t5--line-height);
+      font-weight: 400;
+      cursor: text;
+    }
+    .ptf-textarea-value {
+      display: block;
+      width: 100%;
+      min-height: 94px;
+      margin: 0;
+      padding: var(--spacing-x3_5) var(--spacing-x4);
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      outline: none;
+      resize: none;
+      overflow-y: hidden;
+      font: inherit;
+      color: var(--color-fg-neutral);
+    }
+    /* 고정 높이 — 자리마다 정한 높이(2줄 72 이상), 넘치는 글은 칸 안에서 스크롤 */
+    .ptf-textarea--fixed .ptf-textarea-value { min-height: 72px; overflow-y: auto; }
+    /* medium — 모서리 8 · 위아래 12 · 좌우 14 · 글자 t4 14/19, 자동 높이 3줄 82(고정 높이 2줄 62). 1280 이상 데스크톱 웹에서만 */
+    .ptf-textarea--medium { border-radius: var(--radius-r2); font-size: var(--text-t4); line-height: var(--text-t4--line-height); }
+    .ptf-textarea--medium .ptf-textarea-value { min-height: 82px; padding: var(--spacing-x3) var(--spacing-x3_5); }
+    .ptf-textarea--medium.ptf-textarea--fixed .ptf-textarea-value { min-height: 62px; }
+
+    /* 반응형(웹 기본) — 1280 이상은 medium 의 값을 쓴다. 앱은 늘 large 다 */
+    @media (min-width: 1280px) {
+      .ptf-input--responsive {
+        --ptf-px: var(--spacing-x3_5);
+        --ptf-icon: 16px;
+        --ptf-clear: 18px;
+        gap: var(--spacing-x2);
+        min-height: 40px;
+        border-radius: var(--radius-r2);
+        font-size: var(--text-t4);
+        line-height: var(--text-t4--line-height);
+      }
+      .ptf-input--underline.ptf-input--responsive {
+        --ptf-px: 0px;
+        --ptf-icon: 20px;
+        --ptf-clear: 18px;
+        gap: var(--spacing-x2);
+        min-height: 34px;
+        padding: var(--spacing-x1_5) 0;
+        border-radius: 0;
+        font-size: var(--text-t5);
+        line-height: var(--text-t5--line-height);
+      }
+      .ptf-textarea--responsive { border-radius: var(--radius-r2); font-size: var(--text-t4); line-height: var(--text-t4--line-height); }
+      .ptf-textarea--responsive .ptf-textarea-value { min-height: 82px; padding: var(--spacing-x3) var(--spacing-x3_5); }
+      .ptf-textarea--responsive.ptf-textarea--fixed .ptf-textarea-value { min-height: 62px; }
+    }
+
+    /* 다크 — 역할 색을 Field · 칸 · 화면 틀 안에서만 다크 짝으로 바꾼다(.psb-group · .checkbox 와 같다 — 전역 다크 블록은 옛 이름만 바꾼다).
+       끼운 버튼(.btn)과 옛 Select 트리거(.form-select)는 저마다의 다크 규칙이 바꾼다 */
+    [data-theme="dark"] .ptf-field,
+    [data-theme="dark"] .ptf-input,
+    [data-theme="dark"] .ptf-textarea,
+    [data-theme="dark"] .ptf-screen {
+      --color-stroke-neutral-weak: var(--color-stroke-neutral-weak-dark);
+      --color-stroke-neutral-contrast: var(--color-stroke-neutral-contrast-dark);
+      --color-stroke-critical-solid: var(--color-stroke-critical-solid-dark);
+      --color-bg-disabled: var(--color-bg-disabled-dark);
+      --color-fg-disabled: var(--color-fg-disabled-dark);
+      --color-fg-placeholder: var(--color-fg-placeholder-dark);
+      --color-fg-neutral: var(--color-fg-neutral-dark);
+      --color-fg-neutral-muted: var(--color-fg-neutral-muted-dark);
+      --color-fg-neutral-subtle: var(--color-fg-neutral-subtle-dark);
+      --color-fg-critical: var(--color-fg-critical-dark);
+    }
+
+    /* Text Field 갤러리 — 칸은 흰 표면(.vignette-card) 위에 둔다. 페이지 바탕(bg-layer-basement)이 bg-disabled 와 같은 gray-200 이라 바탕에 바로 두면 비활성 · 읽기 전용 칸이 보이지 않는다.
+       견본은 휴대폰 화면 폭(320 이상)이다. 화면 틀 .ptf-screen 은 폰(360) · 데스크톱 웹 화면을 흉내 낸 갤러리 것이다 — 폰 좌우 24(spacing-global-gutter) · 데스크톱 32(layout-margin), Field 사이 24 */
+    .ptf-samples { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: var(--spacing-xl) var(--spacing-lg); align-items: start; }
+    .ptf-samples--forms { grid-template-columns: minmax(0, 360px) minmax(0, 1fr); }
+    .ptf-cap { margin-bottom: var(--spacing-sm); font-size: var(--text-caption); font-weight: 600; line-height: 1.4; color: var(--color-text-secondary); }
+    .ptf-cap span { display: block; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 400; color: var(--color-text-tertiary); }
+    /* 반응형 견본 아래 — 지금 폭에서 어느 크기로 그렸는지 */
+    .ptf-now { margin: var(--spacing-sm) 0 0; font-size: var(--text-caption); line-height: 1.4; color: var(--color-text-tertiary); }
+    .ptf-now::before { content: "지금 폭은 1280 미만 — large(52)로 그렸다"; }
+    @media (min-width: 1280px) {
+      .ptf-now::before { content: "지금 폭은 1280 이상 — medium(40)으로 그렸다"; }
+    }
+    /* 부위 보기 — 머리 · 꼬리를 점선으로 둘러 칸과의 사이 8 을 보인다 */
+    .ptf-anatomy > :is(.ptf-field-header, .ptf-field-footer) { outline: 1px dashed var(--color-fg-neutral-subtle); outline-offset: 0; }
+    .ptf-screen { padding: var(--spacing-x6) var(--spacing-global-gutter); border: 1px solid var(--color-border-default); border-radius: var(--radius-r4); background: var(--color-surface-default); }
+    .ptf-screen--phone { max-width: 360px; }
+    .ptf-screen--desktop { max-width: 640px; padding: var(--spacing-x8) var(--layout-margin); }
+    .ptf-screen-title { margin-bottom: var(--spacing-x6); font-family: var(--font-sans); font-size: var(--text-t7); line-height: var(--text-t7--line-height); font-weight: 700; color: var(--color-fg-neutral); }
+    /* 폼 — Field 사이 24, 라벨과 값이 짧은 두 칸만 16 간격으로 나란히(768 미만은 한 줄에 하나) */
+    .ptf-form { display: flex; flex-direction: column; gap: var(--spacing-x6); }
+    .ptf-form-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-x6) var(--spacing-x4); align-items: start; }
+    .ptf-screen-actions { display: flex; gap: var(--spacing-x2); margin-top: var(--spacing-x8); }
+    .ptf-screen-actions--end { justify-content: flex-end; }
+    .ptf-form-cta { width: 100%; }
+    /* 고르는 칸 — 옛 Select 트리거(.form-select)를 Field 안에서 칸 폭으로 편다(모양은 Select · Input Button 차례에) */
+    .ptf-field > .form-select { width: 100%; text-align: left; }
+    /* 상태 표 — 칸마다 입력칸 하나를 실제 폭(200 이상)으로. 칸이 그보다 좁아지면 판(.cb-panel)이 가로로 밀린다 */
+    .ptf-matrix .cb-matrix-row { grid-template-columns: 168px repeat(var(--cb-cols), minmax(200px, 1fr)); }
+    @media (max-width: 900px) {
+      .ptf-samples--forms { grid-template-columns: minmax(0, 1fr); }
+      .ptf-matrix .cb-matrix-row { grid-template-columns: 120px repeat(var(--cb-cols), minmax(200px, 1fr)); }
+    }
+    @media (max-width: 767px) {
+      .ptf-form-row { grid-template-columns: minmax(0, 1fr); }
     }
 
     /* todo-card */
@@ -4970,16 +5635,7 @@ export function pageCss() {
     .tabs-pills .tab--active { background: var(--color-primary, var(--color-text-primary)); color: var(--color-text-on-accent, #fff); font-weight: 600; }
     .tabs-body { font-size: var(--text-caption); color: var(--color-text-tertiary); padding: var(--spacing-sm) 0 0; }
 
-    /* search */
-    .search-pill {
-      display: flex; align-items: center; gap: var(--spacing-sm);
-      background: var(--color-surface-input);
-      border-radius: var(--radius-full);
-      padding: var(--spacing-xs) var(--spacing-xs) var(--spacing-xs) var(--spacing-md);
-    }
-    .search-icon { font-size: 18px; color: var(--color-text-tertiary); }
-    .search-input { flex: 1; background: transparent; border: none; outline: none; font-size: var(--text-body-md); color: var(--color-text-primary); padding: var(--spacing-xs) 0; font-family: inherit; }
-    .search-input::placeholder { color: var(--color-text-tertiary); }
+    /* search — 검색칸은 Text Field 블록의 .ptf-input(앞 아이콘 · 지우기)이다. 옛 알약 검색(.search-pill)은 걷었다 */
 
     /* === Listing detail === */
     .ld-gallery {
@@ -5308,34 +5964,10 @@ export function pageCss() {
     /* 닫기(×)는 정적 HTML 로 두지 않는다 — sonner 자체 dismiss UI 에 위임(sonner.md 규칙).
        flex-wrap 에서 × 가 content 옆 자리를 못 얻어 다음 줄로 떨어지기도 한다. */
 
-    /* === Form layout === */
-    .form-card {
-      background: var(--color-surface-default);
-      border-radius: var(--radius-lg);
-      padding: var(--spacing-2xl);
-      box-shadow: var(--shadow-sm);
-      max-width: 640px;
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-xl);
-    }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg) var(--spacing-xl); }
-    .form-group { display: flex; flex-direction: column; gap: var(--spacing-xs); }
-    .form-group:has(.form-textarea) { grid-column: 1 / -1; }
-    /* Label 컴포넌트 spec(label-md 14/500 + text-primary)과 통일. */
-    .form-label {
-      font-size: var(--text-label-md);
-      line-height: var(--text-label-md--line-height);
-      font-weight: 500;
-      color: var(--color-text-primary);
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-xs);
-    }
-    .form-required { color: var(--color-error); font-weight: 500; }
-    .form-input,
-    .form-select,
-    .form-textarea {
+    /* === Form layout === 폼은 Field 로 짠다 — 위 Text Field 블록의 .ptf-field · .ptf-form · .ptf-screen(field.md "Form 의 구성").
+       옛 그림자 카드(.form-card) · 2열 그리드 · 라벨 14 · 빨간 별표 · 회색 채운 칸(.form-input · .form-textarea) · 도움말 12 · 경계선 버튼 줄은 걷었다.
+       여기 남은 것은 고르는 칸의 옛 Select 트리거다 — select.tsx 가 이 모양을 따른다(Select · Input Button 차례에 바꾼다 — input.md Migration notes) */
+    .form-select {
       background: var(--color-surface-input);
       color: var(--color-text-primary);
       border: 1px solid var(--color-border-default);
@@ -5347,26 +5979,10 @@ export function pageCss() {
       min-height: 40px;
       display: flex;
       align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
     }
-    .form-input--readonly { color: var(--color-text-secondary); cursor: not-allowed; }
-    .form-select { justify-content: space-between; cursor: pointer; }
     .form-select-caret { color: var(--color-text-tertiary); flex-shrink: 0; }
-    .form-textarea {
-      align-items: flex-start;
-      white-space: pre-wrap;
-      line-height: 1.6;
-    }
-    .form-helper {
-      font-size: var(--text-caption);
-      color: var(--color-text-tertiary);
-    }
-    .form-actions {
-      display: flex;
-      gap: var(--spacing-md);
-      justify-content: flex-end;
-      padding-top: var(--spacing-lg);
-      border-top: 1px solid var(--color-border-default);
-    }
 
     /* === Skeleton / Loading === */
     .sk-card-wrap {
@@ -5720,7 +6336,7 @@ export function pageCss() {
     /* popover.md SoT — compact pill trigger + token padding */
     .pop-trigger { background: var(--color-surface-input); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); padding: var(--spacing-xs) var(--spacing-sm); cursor: pointer; font-size: var(--text-caption); color: var(--color-text-primary); }
     .pop { position: relative; margin-top: var(--spacing-xs); background: var(--color-surface-default); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); padding: var(--spacing-md); box-shadow: var(--shadow-md); display: flex; flex-direction: column; gap: var(--spacing-sm); }
-    .pop textarea { width: 100%; padding: var(--spacing-xs) var(--spacing-sm); border: 1px solid var(--color-border-default); border-radius: var(--radius-sm); background: var(--color-surface-input); font-family: inherit; font-size: var(--text-caption); color: var(--color-text-primary); resize: vertical; }
+    /* 안의 의견 칸은 Field + 여러 줄 입력칸(.ptf-textarea — 웹 기본 반응형)이다. 옛 caption 톤 회색 칸은 걷었다 */
     .pop-actions { display: flex; justify-content: flex-end; gap: var(--spacing-xs); }
 
     /* File Upload */
@@ -5762,18 +6378,9 @@ export function pageCss() {
       .anim-fade-in, .anim-slide-in-up, .anim-scale-in, .anim-bounce-in, .anim-shake, .anim-spin, .anim-pulse, .anim-shimmer::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
     }
 
-    /* Form validation (v75) */
-    .fv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--spacing-md); }
-    .fv-cell { display: flex; flex-direction: column; gap: 4px; }
-    .fv-label { font-size: var(--text-caption); color: var(--color-text-secondary); }
-    .fv-input { padding: var(--spacing-sm) var(--spacing-md); border: 1px solid var(--color-border-default); border-radius: var(--radius-sm); background: var(--color-surface-input); font-family: inherit; font-size: var(--text-body-md); color: var(--color-text-primary); }
-    .fv-input:focus, .fv-input--focused { border-color: var(--color-border-focus); outline: 2px solid color-mix(in srgb, var(--color-border-focus) 30%, transparent); outline-offset: 0; }
-    .fv-input--invalid { border-color: var(--color-error); }
-    .fv-input--valid { border-color: var(--color-success); }
-    .fv-helper { font-size: var(--text-caption); color: var(--color-text-tertiary); display: inline-flex; align-items: center; gap: 6px; }
-    .fv-error { font-size: var(--text-caption); color: var(--color-error); }
-    .fv-success { font-size: var(--text-caption); color: var(--color-success); }
-    .fv-spinner { width: 12px; height: 12px; border: 2px solid var(--color-border-default); border-top-color: var(--color-primary); border-radius: 50%; animation: spin var(--motion-duration-loop) linear infinite; }
+    /* Field 검증(옛 v75 Form validation) — 칸은 Text Field 블록의 Field · 입력칸이다. 맞음 · 확인 중은 설명 글로 쓰고 초록 테두리 · 돌림 표시는 두지 않는다(field.md) */
+    .fv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-lg); }
+    .fv-cell { display: flex; flex-direction: column; min-width: 0; }
 
     /* RTL toggle (v76) */
     .rtl-demo { display: flex; flex-direction: column; gap: var(--spacing-sm); }
@@ -5945,10 +6552,8 @@ export function pageCss() {
     .ipk-trigger { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 1px solid var(--color-border-default); background: var(--color-surface-default); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); cursor: pointer; color: var(--color-text-primary); font: inherit; }
     .ipk-trigger:hover { background: var(--color-surface-input); }
     .ipk-content { width: 320px; padding: var(--spacing-md); border: 1px solid var(--color-border-default); background: var(--color-surface-default); border-radius: var(--radius-md); box-shadow: var(--shadow-md); }
-    .ipk-search { position: relative; margin-bottom: var(--spacing-sm); }
-    .ipk-search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--color-text-tertiary); pointer-events: none; }
-    .ipk-search input { width: 100%; height: 36px; padding: 0 12px 0 36px; border: 1px solid var(--color-border-default); border-radius: var(--radius-md); background: var(--color-surface-default); color: var(--color-text-primary); font: inherit; font-size: var(--text-body-md); }
-    .ipk-search input::placeholder { color: var(--color-text-tertiary); }
+    /* 검색칸 — Input prefixIcon · clearable(.ptf-input, 웹 기본 반응형). 옛 36 칸 + 절대 위치 아이콘은 걷었다(icon-picker.md 2026-10-01) */
+    .ipk-search { margin-bottom: var(--spacing-sm); }
     .ipk-grid { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px; max-height: 240px; overflow-y: auto; }
     .ipk-cell { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--radius-sm); background: transparent; border: none; color: var(--color-text-secondary); cursor: pointer; transition: background-color var(--motion-duration-fast) var(--motion-ease-out), color var(--motion-duration-fast) var(--motion-ease-out); }
     .ipk-cell:hover { background: var(--color-surface-input); color: var(--color-text-primary); }
@@ -5959,10 +6564,8 @@ export function pageCss() {
     .sl-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--spacing-sm); }
     .sl-head-label { font-size: var(--text-caption); font-weight: 500; color: var(--color-text-secondary); }
     .sl-head-count { font-size: 11px; color: var(--color-text-tertiary); }
-    .sl-search { position: relative; margin-bottom: var(--spacing-sm); }
-    .sl-search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--color-text-tertiary); pointer-events: none; }
-    .sl-search input { width: 100%; height: 36px; padding: 0 12px 0 36px; border: 1px solid var(--color-border-default); border-radius: var(--radius-md); background: var(--color-surface-default); color: var(--color-text-primary); font: inherit; font-size: var(--text-body-md); }
-    .sl-search input::placeholder { color: var(--color-text-tertiary); }
+    /* 검색칸 — Input prefixIcon · clearable(.ptf-input, 웹 기본 반응형). 옛 36 칸 + 절대 위치 아이콘은 걷었다(searchable-list.md 2026-10-01) */
+    .sl-search { margin-bottom: var(--spacing-sm); }
     .sl { border: 1px solid var(--color-border-subtle, var(--color-border-default)); background: var(--color-surface-default); border-radius: var(--radius-md); overflow-y: auto; }
     .sl-row { width: 100%; display: flex; align-items: center; gap: var(--spacing-md); padding: 10px 12px; background: transparent; border: none; cursor: pointer; transition: background-color var(--motion-duration-fast) var(--motion-ease-out); text-align: left; font: inherit; color: inherit; }
     .sl-row + .sl-row { border-top: 1px solid var(--color-border-subtle, var(--color-border-default)); }
@@ -6030,7 +6633,6 @@ export function pageCss() {
     [data-theme="dark"] .empty-card,
     [data-theme="dark"] .modal-dialog,
     [data-theme="dark"] .toast,
-    [data-theme="dark"] .form-card,
     [data-theme="dark"] .ld-highlights,
     [data-theme="dark"] .ld-host,
     [data-theme="dark"] .sk-card-wrap,
@@ -6045,8 +6647,6 @@ export function pageCss() {
     [data-theme="dark"] .ipk-content,
     [data-theme="dark"] .ipk-trigger,
     [data-theme="dark"] .swatch { background: var(--color-surface-default-dark); }
-    [data-theme="dark"] .ipk-search input,
-    [data-theme="dark"] .sl-search input { background: var(--color-surface-default-dark); border-color: var(--color-border-default-dark); color: var(--color-text-primary-dark); }
     [data-theme="dark"] .sl,
     [data-theme="dark"] .ipk-content,
     [data-theme="dark"] .ipk-trigger { border-color: var(--color-border-default-dark); }
@@ -6120,11 +6720,7 @@ export function pageCss() {
     [data-theme="dark"] .sk-card .sk,
     [data-theme="dark"] .sk-demo-cell .sk { background-color: var(--color-surface-default-dark); background-image: linear-gradient(90deg, var(--color-surface-default-dark) 0%, var(--color-surface-input-dark) 50%, var(--color-surface-default-dark) 100%); }
     [data-theme="dark"] .sk-row { border-color: var(--color-border-default-dark); }
-    [data-theme="dark"] .form-input,
-    [data-theme="dark"] .form-select,
-    [data-theme="dark"] .form-textarea { background: var(--color-surface-input-dark); color: var(--color-text-primary-dark); border-color: var(--color-border-default-dark); }
-    [data-theme="dark"] .form-input--readonly { color: var(--color-text-secondary-dark); }
-    [data-theme="dark"] .form-actions { border-color: var(--color-border-default-dark); }
+    [data-theme="dark"] .form-select { background: var(--color-surface-input-dark); color: var(--color-text-primary-dark); border-color: var(--color-border-default-dark); }
     [data-theme="dark"] .modal-fields { background: var(--color-surface-input-dark); }
     [data-theme="dark"] .ld-rail-row,
     [data-theme="dark"] .cal-legend { border-color: var(--color-border-default-dark); }
@@ -6138,8 +6734,7 @@ export function pageCss() {
     [data-theme="dark"] .btn-row--head { border-color: var(--color-border-default-dark); }
     [data-theme="dark"] .catalog { border-color: var(--color-border-default-dark); }
     [data-theme="dark"] .kpi-cell,
-    [data-theme="dark"] .memo-row,
-    [data-theme="dark"] .search-pill { background: var(--color-surface-input-dark); }
+    [data-theme="dark"] .memo-row { background: var(--color-surface-input-dark); }
     /* Button — 역할 색을 버튼 안에서만 다크 짝으로 바꾼다(button.yaml: dark 가 없으면 토큰의 -dark 짝).
        전역으로 바꾸면 토큰 카탈로그 견본까지 바뀐다. 공유 토큰(DESIGN.md)에 없는 브랜드 짝은 비어서
        .btn 의 대체값(중립)으로 떨어진다. 채움 · 글자 · 테두리 · 링 · 로딩 원이 모두 이 값을 따른다. */
@@ -6266,7 +6861,6 @@ export function pageCss() {
       .ld-rail, .review-summary { position: static; }
       /* Card spec v4: mobile lg(16) padding (desktop xl(24) 은 기본). */
       .review-summary { padding: var(--spacing-lg); }
-      .form-grid { grid-template-columns: 1fr; }
       .ld-gallery {
         grid-template-columns: 1fr 1fr;
         grid-template-rows: 1fr 1fr 1fr;
@@ -6322,6 +6916,7 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     ${renderSwitchGallery(brand)}
     ${renderListGallery(brand)}
     ${renderSelectBoxGallery(brand)}
+    ${renderTextFieldGallery(brand)}
     ${renderVignettes(brand)}
     ${renderListingDetail(brand)}
     ${renderCalendar(brand)}
@@ -6381,6 +6976,172 @@ function renderHtml(brandName, css, tokens, sourceFile) {
         if (b) b.style.display = "none";
       });
     });
+    // Text Field (2026-10-01) — field.tsx · input.tsx · textarea.tsx 가 하는 일을 흉내 낸다(페이지의 모든 .ptf-field · .ptf-input · .ptf-textarea).
+    // 상자의 붙이개 · 여백을 눌러도 입력으로 포커스가 간다. 지우기는 값이 있고 막히지 않았을 때만 있고, 누르면 값을 비우고 입력에 포커스를 둔다.
+    // 글자 수는 자소 단위로 세고 최대에서 멈춘다(한글은 조합이 끝난 뒤 자른다). 자동 높이 칸은 쓴 만큼 바로 자란다(최대 높이를 넘으면 스크롤).
+    // 금액 칸(data-format="amount")은 쓰는 동안 천 단위 쉼표를 넣는다. 제출 버튼(data-ptf-submit)은 그 화면의 비운 필수 칸마다 오류를 보이고
+    // 첫 오류 칸으로 포커스를 옮긴다 — 다시 쓰면 오류가 걷힌다(react-hook-form 의 제출 시 검증 · 바뀔 때 다시 검증).
+    (function () {
+      var seg = window.Intl && Intl.Segmenter ? new Intl.Segmenter("ko", { granularity: "grapheme" }) : null;
+      function chars(v) { return seg ? Array.from(seg.segment(v), function (s) { return s.segment; }) : Array.from(v); }
+      var CLEAR = ${JSON.stringify(TEXT_FIELD_CLEAR)};
+      var ALERT = ${JSON.stringify(TEXT_FIELD_ICON.circleAlert)};
+      var VALUE = ".ptf-input-value, .ptf-textarea-value";
+      function isValue(el) { return !!(el && el.matches && el.matches(VALUE)); }
+      // 자동 높이 — 내용 높이에 맞추고, 최대 높이를 넘으면 그 높이에서 멈추고 스크롤한다(움직임 없이)
+      function fit(area) {
+        if (!area.matches(".ptf-textarea-value") || area.closest(".ptf-textarea--fixed")) return;
+        area.style.height = "auto";
+        var max = parseFloat(getComputedStyle(area).maxHeight);
+        var limit = isFinite(max) ? max : Infinity;
+        var full = area.scrollHeight;
+        area.style.height = Math.min(full, limit) + "px";
+        area.style.overflowY = full > limit ? "auto" : "hidden";
+      }
+      // 칸의 설명 — 붙이개 글자 · 꼬리의 오류 · 설명 · 글자 수(보이는 것만)
+      function describe(field) {
+        var el = field.querySelector(VALUE);
+        if (!el) return;
+        var ids = [];
+        var root = el.closest(".ptf-input");
+        if (root) root.querySelectorAll(".ptf-affix[id]").forEach(function (a) { ids.push(a.id); });
+        field.querySelectorAll(".ptf-field-footer > [id]:not([hidden])").forEach(function (p) { ids.push(p.id); });
+        if (ids.length) el.setAttribute("aria-describedby", ids.join(" ")); else el.removeAttribute("aria-describedby");
+      }
+      function setInvalid(field, message) {
+        var el = field.querySelector(VALUE);
+        var root = el.closest(".ptf-input, .ptf-textarea");
+        field.setAttribute("data-invalid", "");
+        root.setAttribute("data-invalid", "");
+        el.setAttribute("aria-invalid", "true");
+        var footer = field.querySelector(".ptf-field-footer");
+        if (!footer) {
+          footer = document.createElement("div");
+          footer.className = "ptf-field-footer";
+          root.insertAdjacentElement("afterend", footer);
+        }
+        var error = footer.querySelector(".ptf-error");
+        if (!error) {
+          error = document.createElement("p");
+          error.className = "ptf-error";
+          error.id = el.id + "-error";
+          error.setAttribute("aria-hidden", "true");
+          footer.insertBefore(error, footer.firstChild);
+        }
+        error.innerHTML = ALERT + "<span></span>";
+        error.lastChild.textContent = message;
+        var desc = footer.querySelector(".ptf-desc");
+        if (desc) desc.hidden = true;
+        var live = field.querySelector(".ptf-live");
+        if (live) live.textContent = message;
+        describe(field);
+      }
+      function clearInvalid(field) {
+        var el = field.querySelector(VALUE);
+        field.removeAttribute("data-invalid");
+        el.closest(".ptf-input, .ptf-textarea").removeAttribute("data-invalid");
+        el.removeAttribute("aria-invalid");
+        var footer = field.querySelector(".ptf-field-footer");
+        if (footer) {
+          var error = footer.querySelector(".ptf-error");
+          if (error) error.remove();
+          var desc = footer.querySelector(".ptf-desc");
+          if (desc) desc.hidden = false;
+          if (!footer.children.length) footer.remove();
+        }
+        var live = field.querySelector(".ptf-live");
+        if (live) live.textContent = "";
+        describe(field);
+      }
+      // 값이 바뀐 뒤 — 글자 수 · 지우기 · 높이 · 오류(제출 뒤 다시 쓰면 걷힌다)
+      function sync(el) {
+        var field = el.closest(".ptf-field");
+        var root = el.closest(".ptf-input");
+        if (field) {
+          var count = field.querySelector(".ptf-count");
+          if (count) {
+            var n = chars(el.value).length;
+            count.querySelector(".ptf-count-value").textContent = String(n);
+            count.classList.toggle("ptf-count--empty", n === 0);
+          }
+          if (field.hasAttribute("data-invalid") && field.hasAttribute("data-required-message") && el.value.trim()) clearInvalid(field);
+        }
+        if (root && root.hasAttribute("data-clearable")) {
+          var btn = root.querySelector(".ptf-clear");
+          if (el.value && !btn) root.insertAdjacentHTML("beforeend", CLEAR);
+          else if (!el.value && btn) btn.remove();
+        }
+        fit(el);
+      }
+      // 최대 글자 수에서 자른다 — 한글을 조합하는 동안에는 자르지 않는다(조합이 깨진다)
+      function clamp(el) {
+        var field = el.closest(".ptf-field");
+        var max = field ? Number(field.getAttribute("data-max")) : 0;
+        if (!max) return;
+        var all = chars(el.value);
+        if (all.length > max) el.value = all.slice(0, max).join("");
+      }
+      document.addEventListener("mousedown", function (e) {
+        var root = e.target.closest ? e.target.closest(".ptf-input, .ptf-textarea") : null;
+        if (!root || root.hasAttribute("data-disabled") || e.target.closest("input, textarea, button, a")) return;
+        e.preventDefault();
+        root.querySelector(VALUE).focus();
+      });
+      document.addEventListener("input", function (e) {
+        var el = e.target;
+        if (!isValue(el)) return;
+        if (!e.isComposing) {
+          if (el.getAttribute("data-format") === "amount") {
+            var digits = el.value.replace(/[^0-9]/g, "").replace(/^0+(?=[0-9])/, "").slice(0, 15);
+            var next = digits ? Number(digits).toLocaleString("ko-KR") : "";
+            if (next !== el.value) { el.value = next; el.setSelectionRange(next.length, next.length); }
+          }
+          clamp(el);
+        }
+        sync(el);
+      });
+      document.addEventListener("compositionend", function (e) {
+        if (!isValue(e.target)) return;
+        clamp(e.target);
+        sync(e.target);
+      });
+      document.addEventListener("click", function (e) {
+        var clear = e.target.closest ? e.target.closest(".ptf-clear") : null;
+        if (clear) {
+          var input = clear.closest(".ptf-input").querySelector(".ptf-input-value");
+          input.value = "";
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+          input.focus();
+          return;
+        }
+        var submit = e.target.closest ? e.target.closest("[data-ptf-submit]") : null;
+        if (!submit) return;
+        var first = null;
+        submit.closest(".ptf-screen").querySelectorAll(".ptf-field[data-required-message]").forEach(function (field) {
+          var el = field.querySelector(VALUE);
+          if (!el.value.trim()) {
+            setInvalid(field, field.getAttribute("data-required-message"));
+            if (!first) first = el;
+          } else if (field.hasAttribute("data-invalid")) clearInvalid(field);
+        });
+        if (first) first.focus();
+      });
+      var areas = document.querySelectorAll(".ptf-textarea-value");
+      areas.forEach(fit);
+      window.addEventListener("load", function () { areas.forEach(fit); });
+      // 폭이 바뀌어 줄이 다시 감기면 높이를 다시 맞춘다
+      if (window.ResizeObserver) {
+        var ro = new ResizeObserver(function (entries) {
+          entries.forEach(function (entry) {
+            var el = entry.target;
+            if (el.dataset.ptfWidth === String(el.offsetWidth)) return;
+            el.dataset.ptfWidth = String(el.offsetWidth);
+            fit(el);
+          });
+        });
+        areas.forEach(function (el) { ro.observe(el); });
+      }
+    })();
   </script>
 </body>
 </html>

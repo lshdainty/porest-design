@@ -36,7 +36,7 @@ Porest Sidebar는 **2 sides × 3 variants × 3 collapsible modes × menu item �
 | ⓗ SidebarFooter | `flex flex-col gap-[var(--spacing-sm)] p-[var(--spacing-sm)] border-t border-border-default mt-auto` — 사용자/설정 등. |
 | ⓘ SidebarInset | 메인 콘텐츠 영역 — `relative flex min-h-svh flex-1 flex-col bg-bg-page`. Sidebar 옆에 자리. variant=floating/inset 시 `m-[var(--spacing-sm)] rounded-md shadow`. |
 | ⓙ SidebarSeparator | `[`Separator`](separator.md)` 인용 — `-mx-[var(--spacing-xs)] my-[var(--spacing-xs)] h-px bg-border-default`. |
-| ⓚ SidebarInput | `[`Input`](input.md)` 인용 — sidebar 안 검색 input(`h-8 + body-md`). |
+| ⓚ SidebarInput | [Input](input.md) medium(40) — 데스크톱 사이드바 검색칸(2026-10-01 Input 이 SEED Text Input 이 되며 32 → 40). 앞 아이콘 · 지우기는 Input 의 `prefixIcon` · `clearable`. |
 | ⓛ SidebarMenuSkeleton | [`Skeleton`](skeleton.md) 인용 — 로딩 중 menu item placeholder(`h-8 + animate-pulse`). |
 
 **규칙**

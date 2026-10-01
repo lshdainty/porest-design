@@ -1,3 +1,4 @@
+# 걷음(2026-10-01) — Field(specs/components/field.yaml)의 머리로 옮겼다. 걷기 전 마지막 수치다.
 # Label 의 수치 원본 — 형식은 button.yaml 머리 주석, 규칙은 specs/CLAUDE.md.
 #
 # 크기 표는 #base.default, 상태 표는 #matrix 로 그린다(Input 과 같다). 크기 표의 peer-disabled

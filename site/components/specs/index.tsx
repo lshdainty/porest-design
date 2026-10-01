@@ -4,19 +4,25 @@ import type { ReactNode } from 'react';
 import { buttonFigures } from './button';
 import { buttonGuideFigures } from './button-guides';
 import { checkboxFigures } from './checkbox';
+import { fieldFigures } from './field';
+import { inputFigures } from './input';
 import { listFigures } from './list';
 import { radioGroupFigures } from './radio-group';
 import { selectBoxFigures } from './select-box';
 import { switchFigures } from './switch';
+import { textareaFigures } from './textarea';
 import { SpecSheet } from './spec-sheet';
 
 const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactNode>> = {
   button: { ...buttonFigures, ...buttonGuideFigures },
   checkbox: checkboxFigures,
+  field: fieldFigures,
+  input: inputFigures,
   list: listFigures,
   'radio-group': radioGroupFigures,
   'select-box': selectBoxFigures,
   switch: switchFigures,
+  textarea: textareaFigures,
 };
 
 export function SpecFigure({ name, id, caption }: { name: string; id: string; caption?: string }) {

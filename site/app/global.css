@@ -160,6 +160,7 @@ html > body[data-scroll-locked] {
   --psb-in-bg: var(--psb-in-bg-l);
   --psb-in-fg: var(--psb-in-fg-l);
   --psb-in-bd: var(--psb-in-bd-l);
+  --psb-in-focus: var(--psb-in-focus-l);
   --psb-nt-bg: var(--psb-nt-bg-l);
   --psb-nt-fg: var(--psb-nt-fg-l);
 }
@@ -173,6 +174,203 @@ html > body[data-scroll-locked] {
   --psb-in-bg: var(--psb-in-bg-d);
   --psb-in-fg: var(--psb-in-fg-d);
   --psb-in-bd: var(--psb-in-bd-d);
+  --psb-in-focus: var(--psb-in-focus-d);
   --psb-nt-bg: var(--psb-nt-bg-d);
   --psb-nt-fg: var(--psb-nt-fg-d);
+}
+/* Select Box 펼침 안의 입력칸 — input.yaml 의 상자형(안쪽 1px, 포커스는 안쪽 2px 짙은 색) */
+.psb-in {
+  box-shadow: inset 0 0 0 1px var(--psb-in-bd);
+  outline: none;
+  transition: box-shadow 100ms;
+}
+.psb-in:focus {
+  box-shadow: inset 0 0 0 2px var(--psb-in-focus);
+}
+/* Text Field 그림(text-field-view) — 치수 · 색은 field · input · textarea.yaml 에서 CSS 변수로 온다(색은 --p-* 토큰 변수라 사이트 모드를 따른다).
+   크기는 large(-l) · medium(-m) 두 벌을 싣고 1280 이상이면 -m 을 쓴다 — input.yaml 의 반응형 폭(text-field-look 이 1280 과 맞는지 확인한다).
+   크기를 정한 칸은 두 벌이 같다. 테두리는 안쪽 1px(box-shadow), 포커스 · 오류의 2px 는 ::after 로 덧그린다(내용이 밀리지 않는다) */
+.ptf {
+  --ptf-h: var(--ptf-h-l);
+  --ptf-r: var(--ptf-r-l);
+  --ptf-px: var(--ptf-px-l);
+  --ptf-py: var(--ptf-py-l);
+  --ptf-gap: var(--ptf-gap-l);
+  --ptf-fs: var(--ptf-fs-l);
+  --ptf-lh: var(--ptf-lh-l);
+  --ptf-icon: var(--ptf-icon-l);
+  --ptf-clear: var(--ptf-clear-l);
+}
+.ptt {
+  --ptt-r: var(--ptt-r-l);
+  --ptt-px: var(--ptt-px-l);
+  --ptt-py: var(--ptt-py-l);
+  --ptt-fs: var(--ptt-fs-l);
+  --ptt-lh: var(--ptt-lh-l);
+  --ptt-min: var(--ptt-min-l);
+}
+@media (min-width: 1280px) {
+  .ptf {
+    --ptf-h: var(--ptf-h-m);
+    --ptf-r: var(--ptf-r-m);
+    --ptf-px: var(--ptf-px-m);
+    --ptf-py: var(--ptf-py-m);
+    --ptf-gap: var(--ptf-gap-m);
+    --ptf-fs: var(--ptf-fs-m);
+    --ptf-lh: var(--ptf-lh-m);
+    --ptf-icon: var(--ptf-icon-m);
+    --ptf-clear: var(--ptf-clear-m);
+  }
+  .ptt {
+    --ptt-r: var(--ptt-r-m);
+    --ptt-px: var(--ptt-px-m);
+    --ptt-py: var(--ptt-py-m);
+    --ptt-fs: var(--ptt-fs-m);
+    --ptt-lh: var(--ptt-lh-m);
+    --ptt-min: var(--ptt-min-m);
+  }
+}
+.ptf-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-width: 0;
+  overflow: hidden;
+  min-height: var(--ptf-h);
+  gap: var(--ptf-gap);
+  padding-block: var(--ptf-py);
+  border-radius: var(--ptf-r);
+  font-family: 'Pretendard Variable', Pretendard, sans-serif;
+  font-size: var(--ptf-fs);
+  line-height: var(--ptf-lh);
+  font-weight: 400;
+  background: var(--ptf-bg);
+  box-shadow: inset 0 0 0 var(--ptf-base) var(--ptf-bd);
+  cursor: text;
+}
+.ptf-box[data-variant='underline'] {
+  border-radius: 0;
+  box-shadow: inset 0 calc(var(--ptf-base) * -1) 0 0 var(--ptf-bd);
+}
+.ptf-box[data-disabled] {
+  cursor: not-allowed;
+}
+.ptf-box::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: var(--ptf-active) solid transparent;
+  pointer-events: none;
+  transition: border-color var(--ptf-dur) var(--ptf-ease);
+}
+.ptf-box[data-variant='underline']::after {
+  border-width: 0 0 var(--ptf-active) 0;
+}
+.ptf-box[data-state='focused']:not([data-invalid])::after,
+.ptf-box[data-live]:not([data-invalid]):not([data-readonly]):has(input:focus, textarea:focus)::after {
+  border-color: var(--ptf-focus);
+}
+.ptf-box[data-invalid]::after {
+  border-color: var(--ptf-invalid);
+}
+.ptf-input {
+  flex: 1 1 0%;
+  min-width: 0;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  color: var(--ptf-value);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.ptf-input::placeholder {
+  color: var(--ptf-ph);
+  opacity: 1;
+}
+.ptf-input:disabled {
+  cursor: not-allowed;
+}
+.ptf-input:first-child {
+  padding-left: var(--ptf-px);
+}
+.ptf-input:last-child {
+  padding-right: var(--ptf-px);
+}
+.ptf-affix {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+}
+.ptf-affix:first-child {
+  margin-left: var(--ptf-px);
+}
+.ptf-affix:last-child {
+  margin-right: var(--ptf-px);
+}
+.ptf-text {
+  color: var(--ptf-affix);
+}
+.ptf-icon {
+  color: var(--ptf-icon-c);
+}
+.ptf-icon > svg {
+  width: var(--ptf-icon);
+  height: var(--ptf-icon);
+}
+.ptf-clear {
+  padding: 0;
+  border: 0;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--ptf-clear-c);
+  cursor: pointer;
+}
+.ptf-clear > svg {
+  width: var(--ptf-clear);
+  height: var(--ptf-clear);
+}
+/* 멈춘 그림의 캐럿 — 포커스 그림에서 지금 쓰는 칸임을 보인다 */
+.ptf-caret {
+  display: inline-block;
+  width: 1.5px;
+  height: 1.1em;
+  margin-left: 1px;
+  vertical-align: -0.15em;
+  background: var(--ptf-value);
+}
+/* 여러 줄 — 상자는 같고, 여백 · 높이는 입력(textarea)이 가진다 */
+.ptt-box {
+  align-items: stretch;
+  border-radius: var(--ptt-r);
+  font-size: var(--ptt-fs);
+  line-height: var(--ptt-lh);
+  min-height: 0;
+  padding-block: 0;
+}
+.ptt-value {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: var(--ptt-min);
+  margin: 0;
+  padding: var(--ptt-py) var(--ptt-px);
+  border: 0;
+  outline: none;
+  resize: none;
+  background: transparent;
+  font: inherit;
+  color: var(--ptf-value);
+  white-space: pre-wrap;
+}
+.ptt-value::placeholder {
+  color: var(--ptf-ph);
+  opacity: 1;
 }

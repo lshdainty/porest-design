@@ -338,13 +338,14 @@ export function FooterContent({ spec, look, mode }: { spec: SbFooter; look: SbLo
         aria-label={spec.aria}
         defaultValue={spec.value}
         inputMode="numeric"
+        className="psb-in"
         style={{
           width: spec.width ?? 72,
           height: i.height,
           padding: `0 ${i.padX}px`,
           boxSizing: 'border-box',
           borderRadius: i.radius,
-          border: '1px solid var(--psb-in-bd)',
+          border: 0,
           background: 'var(--psb-in-bg)',
           color: 'var(--psb-in-fg)',
           fontSize: i.fontSize,

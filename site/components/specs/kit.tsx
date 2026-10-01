@@ -3,6 +3,8 @@
 import type { CSSProperties, ReactNode } from 'react';
 import { ChevronLeft, ChevronRight, House, Wallet, CalendarDays, NotebookPen, Menu, Signal, Wifi, BatteryFull, X } from 'lucide-react';
 import { color, design, proseValue, type Brand } from '@/lib/design-tokens';
+import { textFieldLook } from './text-field-look';
+import { TfFieldView, TfInputView } from './text-field-view';
 
 // auto 면 사이트의 라이트 · 다크 전환을 따른다 — 색을 hex 대신 --p-* 변수로(tokens-style.tsx 가 깐다)
 export type Mode = 'light' | 'dark' | 'auto';
@@ -183,20 +185,13 @@ export function Line({ w = '60%', mode = 'auto', h = 10, tone = 'stroke-neutral-
   return <span className="block rounded-full" style={{ width: w, height: h, background: rc(tone, mode) }} />;
 }
 
-// 입력칸 — 라벨 · 값
-export function Field({ label, value, mode = 'auto', placeholder = false }: { label: string; value: string; mode?: Mode; placeholder?: boolean }) {
+// 입력칸 — 라벨 · 값. Field · Input 스펙(field · input.yaml)대로 — 휴대폰 화면 안은 large, 데스크톱 웹 창 안은 medium
+export function Field({ label, value, mode = 'auto', placeholder = false, size = 'large' }: { label: string; value: string; mode?: Mode; placeholder?: boolean; size?: 'large' | 'medium' }) {
+  const lk = textFieldLook('desk');
   return (
-    <div className="flex flex-col gap-1.5">
-      <span className="text-[13px] font-medium" style={{ color: rc('fg-neutral-muted', mode) }}>
-        {label}
-      </span>
-      <span
-        className="flex h-12 items-center rounded-xl px-4 text-[15px]"
-        style={{ background: rc('bg-layer-default', mode), border: `1px solid ${rc('stroke-neutral-weak', mode)}`, color: rc(placeholder ? 'fg-placeholder' : 'fg-neutral', mode) }}
-      >
-        {value}
-      </span>
-    </div>
+    <TfFieldView look={lk.field} mode={mode} label={label || undefined}>
+      <TfInputView look={lk.input} mode={mode} size={size} state="enabled" value={placeholder ? undefined : value} placeholder={placeholder ? value : undefined} />
+    </TfFieldView>
   );
 }
 

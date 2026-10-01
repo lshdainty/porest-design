@@ -65,7 +65,7 @@ Select는 **trigger variant 없음** — Input과 동일하게 시각 통일. �
 **Form integration**
 
 - form-grid 안에서 input/textarea와 같은 행에 자연 정렬 — `h-10` 동일 + `border-default` 동일.
-- Label은 `[Label](label.md)` 컴포넌트와 페어 — `flex flex-col gap-xs` + `Label` 위 + `Select` 아래.
+- 칸 이름 · 설명 · 오류는 [Field](field.md) 가 그린다(2026-10-01 — Label 스펙은 Field 로 합쳤다). Select 의 모양은 그 차례에 SEED 와 비교해 다시 정한다.
 - helper text는 아래 `text-caption text-tertiary`, error는 `text-error` + border-error.
 
 **Grouped options**

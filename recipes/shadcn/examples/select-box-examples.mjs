@@ -6,7 +6,8 @@
  * GROUP_* · CHECK_GROUP · BOX_BASE · TRIGGER_* · CONTENT_* · PREFIX_* · BODY_BASE · LABEL_* · DESCRIPTION_* · FOOTER_BASE · FOOTER_OPEN ·
  * FOOTER_CLIP · FOOTER_INNER · MARK_IN_BOX · GHOST_NO_BG · HIDDEN_CONTROL 은 recipes/shadcn/components/ui/select-box.tsx 의 cva 정의 · 상수 ·
  * 클래스와 글자 하나까지 같아야 한다 — 두 파일을 함께 고친다. 상자에 끼우는 컨트롤의 RADIOMARK_* · DOT_* · CHECKMARK_* · INDICATOR* ·
- * CHECK_ICON · MINUS_ICON 은 radio-group.tsx · checkbox.tsx 의 것(그 예제 파일의 것)과, 펼침 안 입력칸의 INPUT_BASE 는 input.tsx 의 것과 같다.
+ * CHECK_ICON · MINUS_ICON 은 radio-group.tsx · checkbox.tsx 의 것(그 예제 파일의 것)과, 펼침 안 입력칸의 INPUT_ROOT · INPUT_VALUE 는
+ * input.tsx 의 것(기본값 outline · responsive — input-examples.mjs 의 것)과 같다.
  * 규칙은 specs/components/select-box.md, 수치 원본은 specs/components/select-box.yaml.
  *
  * Preview 는 정적 HTML 이다 — 페이지의 Tailwind v4 browser CDN 이 클래스를 utility 로 만든다.
@@ -263,15 +264,29 @@ const INDICATOR_HIDDEN = "data-[state=unchecked]:invisible";
 const CHECK_ICON = "group-data-[state=indeterminate]/checkmark:hidden";
 const MINUS_ICON = "hidden group-data-[state=indeterminate]/checkmark:block";
 
-// ── input.tsx 의 클래스 — 펼침 안의 입력칸(<Input>) ──────────────────────
+// ── input.tsx 의 클래스 — 펼침 안의 입력칸(<Input>, 기본값 outline · responsive) ──
 
-const INPUT_BASE = [
-  "flex h-10 w-full min-w-0 rounded-sm border border-border-default bg-surface-input px-[var(--spacing-md)] py-[var(--spacing-sm)] font-sans text-body-lg text-text-primary placeholder:text-text-tertiary",
-  "file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-text-primary",
-  "transition-[color,box-shadow,border-color] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]",
-  "focus-visible:outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30",
-  "aria-invalid:border-error aria-invalid:ring-2 aria-invalid:ring-error/30",
-  "disabled:cursor-not-allowed disabled:opacity-50",
+// 상자(textInputVariants) — 공통 + outline + outline × responsive 조합. 테두리는 안쪽 1px, 포커스 · 오류의 2px 는 ::after
+const INPUT_ROOT = [
+  "relative flex w-full min-w-0 items-center overflow-hidden bg-transparent font-sans",
+  "cursor-text data-[disabled]:cursor-not-allowed",
+  "after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:border-solid after:border-transparent after:content-['']",
+  "after:[transition:border-color_var(--motion-duration-d2)_var(--motion-ease-easing)]",
+  "[&:has(input:focus):not([data-invalid]):not([data-readonly])]:after:border-stroke-neutral-contrast",
+  "data-[invalid]:after:border-stroke-critical-solid",
+  // outline
+  "shadow-[inset_0_0_0_1px_var(--color-stroke-neutral-weak)] after:border-2 data-[disabled]:bg-bg-disabled data-[readonly]:bg-bg-disabled",
+  // outline × responsive — 1280 미만 large(52) · 이상 medium(40)
+  "min-h-13 gap-x2_5 rounded-r3 text-t5 [--text-input-px:var(--spacing-x4)] [--text-input-icon:20px] [--text-input-clear:22px]",
+  "lg:min-h-10 lg:gap-x2 lg:rounded-r2 lg:text-t4 lg:[--text-input-px:var(--spacing-x3_5)] lg:[--text-input-icon:16px] lg:[--text-input-clear:18px]",
+].join(" ");
+
+// 입력(<input>) — 상자 높이를 채우고, 맨 앞 · 맨 뒤면 상자의 좌우 여백까지 차지한다. 끝은 값 · placeholder 색(막히지 않은 칸)
+const INPUT_VALUE = [
+  "min-w-0 flex-1 self-stretch border-0 bg-transparent p-0 outline-none [font:inherit]",
+  "first:pl-[var(--text-input-px)] last:pr-[var(--text-input-px)] disabled:cursor-not-allowed",
+  "[&:-webkit-autofill]:bg-clip-text [&:-webkit-autofill]:[-webkit-text-fill-color:var(--color-fg-neutral)] [&:-webkit-autofill]:[transition:background-color_9999s_9999s]",
+  "text-fg-neutral placeholder:text-fg-placeholder",
 ].join(" ");
 
 // ── cva · cn 풀이 ─────────────────────────────────────────────────────────
@@ -513,9 +528,10 @@ function checkSelectBoxGroup(items, { columns = 1, ariaLabel } = {}) {
   return `<fieldset ${attrs([`class="${merge(`${selectBoxGroupVariants({ columns })} ${CHECK_GROUP}`)}"`, ariaLabel && `aria-label="${ariaLabel}"`])}>${boxes.join("")}</fieldset>`;
 }
 
-// <Input> — input.tsx 그대로. type 이 없으면 그리지 않고, defaultValue 는 value 속성이 된다
+// <Input> — input.tsx 그대로. 상자 <div data-slot="text-input"> 안에 <input data-slot="text-input-value"> 하나(붙이개 · 지우기 없음).
+// type 은 레시피의 기본값 "text" 를 그리고, defaultValue 는 value 속성이 된다
 const input = ({ ariaLabel, value }) =>
-  `<input class="${merge(INPUT_BASE)}" aria-label="${ariaLabel}" value="${value}">`;
+  `<div data-slot="text-input" data-variant="outline" data-size="responsive" class="${merge(INPUT_ROOT)}"><input type="text" data-slot="text-input-value" class="${merge(INPUT_VALUE)}" aria-label="${ariaLabel}" value="${value}"></div>`;
 
 // 펼침 안의 안내 글 — 예제 코드의 <div className="text-t3 text-fg-neutral-muted">
 const NOTE = "text-t3 text-fg-neutral-muted";
