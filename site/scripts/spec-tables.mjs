@@ -11,7 +11,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { parse as parseYaml } from 'yaml';
 
-export const PLACEHOLDER = /^\[표: ([^\]]+)\]\(([a-z0-9-]+)\.yaml#([a-zA-Z0-9.@-]+)\)\s*$/;
+export const PLACEHOLDER = /^\[표: ([^\]]+)\]\(([a-z0-9-]+)\.yaml#([a-zA-Z0-9.@+-]+)\)\s*$/;
 
 // 표 머리글. `부위.속성` 이 먼저, 없으면 속성 이름으로 찾고, 그것도 없으면 키를 그대로 쓴다.
 // 순서가 곧 표의 칸 순서다(크기 → 여백 → 모양 → 색 → 글자 → 효과).
@@ -26,8 +26,8 @@ export const PROP_LABEL = {
   'suffixIcon.size': '뒤 아이콘',
   'prefixIcon.color': '앞 아이콘 색',
   'suffixIcon.color': '뒤 아이콘 색',
-  'value.typography': '입력 글자',
-  'value.foreground': '입력 글자색',
+  'value.typography': '값 글자',
+  'value.foreground': '값 글자색',
   'value.paddingY': '입력 상하 여백',
   'value.paddingX': '입력 좌우 여백',
   'value.minHeight': '최소 높이',
@@ -336,8 +336,11 @@ function orderKeys(spec, keys) {
   });
 }
 
-// @부위 로 고른 부위의 키만.
-const inSlot = (pick) => (key) => !pick || key.startsWith(`${pick}.`);
+// @부위 로 고른 부위의 키만 — `+` 로 여러 부위를 묶는다(`size@trigger+value+chevron`).
+const inSlot = (pick) => {
+  const picks = pick ? pick.split('+') : null;
+  return (key) => !picks || picks.some((p) => key.startsWith(`${p}.`));
+};
 
 function unionKeys(rows) {
   const keys = [];
@@ -589,11 +592,11 @@ function motionTable(spec, tokens) {
 //   matrix[.<축>.<값>…]     그 조합(나머지는 defaults)의 상태 매트릭스
 //   compound                두 축 이상을 건 규칙
 //   motion                  전환 시간 · 곡선
-// 뒤에 @<부위> 를 붙이면 그 부위만 그린다 — 예: matrix@input, base.default@palette.
+// 뒤에 @<부위> 를 붙이면 그 부위만 그린다 — 예: matrix@input, base.default@palette. 여러 부위는 + 로 묶는다(size@trigger+value).
 export function renderSection(spec, tokens, section) {
   const [name, pick, extra] = section.split('@');
   if (extra !== undefined) throw new SpecError(`구역 #${section} — @부위 는 하나만`);
-  if (pick !== undefined && !(pick in spec.slots)) throw new SpecError(`없는 부위 ${pick}`);
+  if (pick !== undefined) for (const p of pick.split('+')) if (!(p in spec.slots)) throw new SpecError(`없는 부위 ${p}`);
   const [head, ...rest] = name.split('.');
   if (head === 'base' && rest.length === 0) return baseTable(spec, tokens, undefined, pick);
   if (head === 'base' && rest.length === 1) {

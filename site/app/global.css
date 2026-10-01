@@ -374,3 +374,213 @@ html > body[data-scroll-locked] {
   color: var(--ptf-ph);
   opacity: 1;
 }
+/* Select · Input Button 그림(select-view) — 치수 · 색은 select.yaml · input-button.yaml 에서 CSS 변수로 온다(색은 --p-* 토큰 변수라 사이트 모드를 따른다).
+   크기는 large(-l) · medium(-m) 두 벌을 싣고 1280 이상이면 -m 을 쓴다 — 두 YAML 의 반응형 폭(select-look 이 1280 과 맞는지 확인한다).
+   크기를 정한 칸은 두 벌이 같다. 상자 테두리는 안쪽 1px(box-shadow), 오류의 2px 는 ::after 로 덧그리고, 키보드 포커스는 바깥 링(outline)이다 */
+.psel {
+  --psel-h: var(--psel-h-l);
+  --psel-r: var(--psel-r-l);
+  --psel-px: var(--psel-px-l);
+  --psel-gap: var(--psel-gap-l);
+  --psel-fs: var(--psel-fs-l);
+  --psel-lh: var(--psel-lh-l);
+  --psel-icon: var(--psel-icon-l);
+  --psel-end: var(--psel-end-l);
+  --psel-clear: var(--psel-clear-l);
+  --psel-ipy: var(--psel-ipy-l);
+  --psel-igap: var(--psel-igap-l);
+  --psel-iicon: var(--psel-iicon-l);
+  --psel-ifs: var(--psel-ifs-l);
+  --psel-ilh: var(--psel-ilh-l);
+  --psel-dfs: var(--psel-dfs-l);
+  --psel-dlh: var(--psel-dlh-l);
+  --psel-ind: var(--psel-ind-l);
+  --psel-gpy: var(--psel-gpy-l);
+  --psel-gfs: var(--psel-gfs-l);
+  --psel-glh: var(--psel-glh-l);
+  --psel-gfw: var(--psel-gfw-l);
+}
+@media (min-width: 1280px) {
+  .psel {
+    --psel-h: var(--psel-h-m);
+    --psel-r: var(--psel-r-m);
+    --psel-px: var(--psel-px-m);
+    --psel-gap: var(--psel-gap-m);
+    --psel-fs: var(--psel-fs-m);
+    --psel-lh: var(--psel-lh-m);
+    --psel-icon: var(--psel-icon-m);
+    --psel-end: var(--psel-end-m);
+    --psel-clear: var(--psel-clear-m);
+    --psel-ipy: var(--psel-ipy-m);
+    --psel-igap: var(--psel-igap-m);
+    --psel-iicon: var(--psel-iicon-m);
+    --psel-ifs: var(--psel-ifs-m);
+    --psel-ilh: var(--psel-ilh-m);
+    --psel-dfs: var(--psel-dfs-m);
+    --psel-dlh: var(--psel-dlh-m);
+    --psel-ind: var(--psel-ind-m);
+    --psel-gpy: var(--psel-gpy-m);
+    --psel-gfs: var(--psel-gfs-m);
+    --psel-glh: var(--psel-glh-m);
+    --psel-gfw: var(--psel-gfw-m);
+  }
+}
+.psel-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: var(--psel-h);
+  margin: 0;
+  padding: 0 var(--psel-px);
+  border: 0;
+  border-radius: var(--psel-r);
+  background: var(--psel-bg);
+  box-shadow: inset 0 0 0 var(--psel-base) var(--psel-bd);
+  font-family: 'Pretendard Variable', Pretendard, sans-serif;
+  font-size: var(--psel-fs);
+  line-height: var(--psel-lh);
+  font-weight: 400;
+  text-align: left;
+  color: var(--psel-value);
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--psel-bg-dur) var(--psel-bg-ease);
+}
+.psel-box[data-pressed] {
+  background: var(--psel-pressed);
+}
+.psel-box::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: var(--psel-active) solid transparent;
+  pointer-events: none;
+  transition: border-color var(--psel-inv-dur) var(--psel-inv-ease);
+}
+.psel-box[data-invalid]::after {
+  border-color: var(--psel-invalid);
+}
+.psel-box[data-ring],
+.psel-box[data-live]:focus-visible,
+.psel-box[data-live]:has(> .psel-hit:focus-visible) {
+  outline: var(--psel-ring-w) solid var(--psel-ring);
+  outline-offset: var(--psel-ring-o);
+}
+/* Input Button 의 누르는 층 — 상자 전체를 덮는 버튼(값 · 붙이개는 그 위에 얹고 누름을 지나 보낸다) */
+.psel-hit {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  cursor: inherit;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.psel-row {
+  position: relative;
+  display: flex;
+  flex: 1 1 0%;
+  min-width: 0;
+  align-items: center;
+  gap: var(--psel-gap);
+  pointer-events: none;
+  transform: scale(var(--psel-scale, 1));
+  transition: transform var(--psel-sc-dur) var(--psel-sc-ease);
+}
+.psel-val {
+  position: relative;
+  flex: 1 1 0%;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--psel-value);
+}
+.psel-val[data-ph] {
+  color: var(--psel-ph);
+}
+.psel-ic {
+  display: flex;
+  flex-shrink: 0;
+  color: var(--psel-icon-c);
+}
+.psel-ic > svg {
+  width: var(--psel-icon);
+  height: var(--psel-icon);
+}
+.psel-end {
+  display: flex;
+  flex-shrink: 0;
+  color: var(--psel-end-c);
+  transition: transform var(--psel-close-dur) var(--psel-close-ease);
+}
+.psel-end > svg {
+  width: var(--psel-end);
+  height: var(--psel-end);
+}
+/* 셰브론 — 열릴 때 180°(열 때 · 닫을 때 시간이 다르다: 바뀐 뒤 상태의 전환 값을 쓴다) */
+.psel-box[data-open] .psel-end[data-chevron] {
+  transform: rotate(var(--psel-rot));
+  transition-duration: var(--psel-open-dur);
+  transition-timing-function: var(--psel-open-ease);
+}
+.psel-txt {
+  flex-shrink: 0;
+  white-space: nowrap;
+  color: var(--psel-affix);
+}
+.psel-clear {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--psel-clear-c);
+  cursor: pointer;
+  pointer-events: auto;
+  outline: none;
+  transform: scale(var(--psel-clear-scale, 1));
+  transition: transform var(--psel-sc-dur) var(--psel-sc-ease);
+}
+.psel-clear > svg {
+  width: var(--psel-clear);
+  height: var(--psel-clear);
+}
+/* 지우기 — 보이는 원(22 · 18)보다 누르는 영역을 넓힌다(24 이상) */
+.psel-clear::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(24px, 100%);
+  height: max(24px, 100%);
+  transform: translate(-50%, -50%);
+}
+/* 목록의 선택지 — 콘텐츠(아이콘 · 글 · 체크)만 누르는 동안 준다. 알약은 그 뒤에 따로 그린다 */
+.psel-irow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--psel-igap);
+  transform: scale(var(--psel-iscale, 1));
+  transition: transform var(--psel-sc-dur) var(--psel-sc-ease);
+}
+@media (prefers-reduced-motion: reduce) {
+  .psel-row,
+  .psel-clear,
+  .psel-irow {
+    transform: none;
+  }
+}

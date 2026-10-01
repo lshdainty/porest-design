@@ -19,7 +19,7 @@
 [그림: Field 는 머리 · 입력 · 꼬리로 이뤄진다](../../site/components/specs/field.tsx#anatomy)
 
 | ⓐ Header | 머리 — 라벨, 필수 점 또는 "선택", 오른쪽의 보조 액션. |
-| ⓑ Input | 입력 — Text Input · Textarea(이 스펙), Checkbox · Radio · Select Box 묶음. 고르는 칸(Input Button · Select)은 그 차례에 더한다. |
+| ⓑ Input | 입력 — Text Input · Textarea · [Select](select.md) · [Input Button](input-button.md), Checkbox · Radio · Select Box 묶음. |
 | ⓒ Footer | 꼬리 — 왼쪽에 설명 또는 오류, 오른쪽에 글자 수. |
 
 머리 · 입력 · 꼬리는 8 간격으로 쌓는다. 머리와 꼬리는 좌우로 2 들어와 입력칸의 둥근 모서리와 글자 줄이 맞는다.
@@ -42,7 +42,7 @@
 
 ### Input
 
-Field 는 어떤 입력이든 감싼다 — 칸 이름 · 설명 · 오류를 입력마다 따로 짜지 않는다. 지금 들어가는 입력은 Text Input([Input](input.md)) · [Textarea](textarea.md) 와 Checkbox · Radio · Select Box 묶음이다. 고르는 칸(Input Button · Select)은 그 차례에 정한다.
+Field 는 어떤 입력이든 감싼다 — 칸 이름 · 설명 · 오류를 입력마다 따로 짜지 않는다. 지금 들어가는 입력은 Text Input([Input](input.md)) · [Textarea](textarea.md) · 고르는 칸([Select](select.md) · [Input Button](input-button.md))과 Checkbox · Radio · Select Box 묶음이다. 고르는 칸은 버튼이라 라벨을 눌러도 포커스만 옮긴다(목록 · 시트를 열지 않는다).
 
 [그림: 입력 — 한 줄 · 여러 줄 · 선택 상자 묶음을 같은 둘레로](../../site/components/specs/field.tsx#input-slot)
 
@@ -126,7 +126,8 @@ Field 는 24 간격으로 쌓는다. 라벨과 값이 짧은 두 칸은 16 간�
 |---|---|
 | 짧은 글 · 숫자를 직접 친다 | Text Input(Input) |
 | 여러 줄 글을 친다 | Textarea |
-| 값을 목록 · 달력 · 시트에서 고른다 | Input Button · Select(그 차례에) |
+| 짧은 선택지 5개 이상에서 값을 고른다 | [Select](select.md) |
+| 달력 · 시각 · 아이콘 격자 · 긴 목록에서 고른다 | [Input Button](input-button.md) |
 | 설명이 붙는 2 ~ 6개를 견줘 고른다 | Select Box |
 | 하나를 켜고 끈다 · 여럿을 고른다 | Checkbox(저장 때) · Switch(누르는 순간) |
 | 짧은 키워드로 거르거나 붙인다 | Chip(그 차례에) |

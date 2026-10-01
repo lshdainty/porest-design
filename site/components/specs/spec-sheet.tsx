@@ -66,7 +66,7 @@ function ScalarValue({ raw, omitWeight = false }: { raw: unknown; omitWeight?: b
   const v = String(raw).trim();
   const color = /^\$color-([a-z0-9-]+)(?:\s*\/\s*(\d+)%)?$/.exec(v);
   if (color) return <ColorValue name={color[1]} alpha={color[2] ? Number(color[2]) : undefined} />;
-  const m = /^\$(spacing|radius|text|font|motion)-(.+)$/.exec(v);
+  const m = /^\$(spacing|radius|text|font|motion|shadow)-(.+)$/.exec(v);
   if (m) {
     const front = design().front;
     let resolved: string | undefined;
@@ -78,6 +78,18 @@ function ScalarValue({ raw, omitWeight = false }: { raw: unknown; omitWeight?: b
     }
     if (m[1] === 'font') resolved = front.typography.t4?.fontFamily;
     if (m[1] === 'motion') resolved = proseValue(`motion-${m[2]}`);
+    // 그림자(v105) — 라이트 값과 다크 짝을 함께
+    if (m[1] === 'shadow') {
+      const prose = (n: string) => {
+        try {
+          return proseValue(n);
+        } catch {
+          return undefined;
+        }
+      };
+      const dark = prose(`shadow-${m[2]}-dark`);
+      resolved = [prose(`shadow-${m[2]}`), dark && `다크 ${dark}`].filter(Boolean).join(' · ');
+    }
     return (
       <span className="flex flex-col gap-0.5">
         <code className="text-[12.5px] text-fd-foreground">{v.slice(1)}</code>

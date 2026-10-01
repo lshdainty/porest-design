@@ -3441,6 +3441,16 @@ Desk 는 모바일에서 쓰는 일이 많다 — 화면 하단 CTA 는 `large` 
 - 금액을 먼저 받는 단계 화면 · 목록 위 검색은 밑줄형(화면에 입력이 하나뿐일 때) — 금액은 숫자 키보드 · 쓰는 동안 쉼표 · 뒤 글자 "원".
 - 메모 본문 · 거래 메모는 Textarea 자동 높이. 시트 안에서는 최대 높이를 정해 저장 버튼이 밀리지 않게 한다.
 
+### Select · Input Button
+
+공통 정의는 `DESIGN.md` 의 Select · Input Button 절, 원본은 `specs/components/select.md` · `input-button.md`(2026-10-01 SEED Select · Input Button). 고른 표시 · 누름 · 포커스 색은 브랜드와 관계없이 같다.
+
+#### Desk 쓰임
+
+- Desk 앱은 늘 large(트리거 52 · 선택지 46). 앱도 Select 목록은 칸 아래에 붙는다 — 시트로 바꾸지 않는다.
+- 거래 추가 — 결제 수단은 Select(카드 · 계좌 묶음, 맨 앞 "결제 수단 없음"), 카테고리 · 날짜는 Input Button(카테고리 격자 시트 — 누르면 바로, 날짜 · 시각은 "완료").
+- 계좌 종류(6) · 일정 반복(5) · 통화는 Select, 반복 요일은 여럿 고르는 Select. 기관(34 · 36) · 종목처럼 긴 목록은 Input Button + 검색 시트.
+
 ### Card
 
 Desk(B2C 친근감) — `default`/`interactive` variant 위주, 카드를 컨텐츠 단위(메모/할일/가계부 entry)로 적극 사용. shadow 강도 HR보다 강 (`md`/`lg` 적극).
@@ -3730,6 +3740,8 @@ Desk — 메모 view(전체/즐겨찾기/태그별), 가계부 view(수입/지�
 - bottom nav는 `<nav role="navigation">` wrap
 
 ### Dropdown (Menu / Select 공통 패턴)
+
+> Select(폼 값 고르기)는 2026-10-01 Select · Input Button 절로 옮겼다(SEED Select · Input Button) — 이 절의 select · multi-select · combobox 줄과 "모바일 select 는 native · bottom sheet picker" 는 옛 기준이고 쓰지 않는다. Menu 는 그 차례에 다시 정한다.
 
 Desk — 메모 카테고리 선택, 가계부 분류 선택, 할일 우선순위, 정렬 옵션. 모바일 우선이라 간단한 select는 native `<select>` 또는 bottom sheet picker 우선, 복잡한 menu는 dropdown panel.
 

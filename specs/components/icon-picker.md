@@ -30,7 +30,7 @@ trigger (closed)               popover (open)
 
 **규칙**
 
-- trigger 크기는 **40** — Input medium(데스크톱 웹)과 같은 높이. 폰 폼의 Input 은 large 52 다(2026-10-01) — 고르는 칸(Input Button) 차례에 트리거를 다시 맞춘다.
+- trigger 크기는 **40** — Input medium(데스크톱 웹)과 같은 높이. 폰 폼의 Input 은 large 52 다(2026-10-01). 트리거는 Input Button(2026-10-01 — 입력칸 모양의 버튼, 1280 미만 시트 · 이상 팝오버)으로 옮길 자리다 — Icon Picker 차례에 맞춘다.
 - popover 폭은 **w-80**(320) — 8-col × 32 + gap × 7 + padding 24 ≈ 312 → 최소 폭 보장.
 - grid는 `max-height` 제한 + ScrollArea — 2000+ 아이콘 중 매칭 매우 많을 수 있어 화면 넘침 방지.
 - 검색 매칭 표시는 **상위 100건 limit** — 성능 + 인지 부담. 그 이상은 검색어 추가 입력 유도.

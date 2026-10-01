@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 
 const Popover = PopoverPrimitive.Root;
 const PopoverTrigger = PopoverPrimitive.Trigger;
+const PopoverAnchor = PopoverPrimitive.Anchor;
 
 // preview `.pop` SoT 정합: radius-md + padding-md + shadow-md + flex-col gap-sm.
 const PopoverContent = React.forwardRef<
@@ -34,4 +35,4 @@ const PopoverContent = React.forwardRef<
 ));
 PopoverContent.displayName = PopoverPrimitive.Content.displayName;
 
-export { Popover, PopoverTrigger, PopoverContent };
+export { Popover, PopoverTrigger, PopoverAnchor, PopoverContent };

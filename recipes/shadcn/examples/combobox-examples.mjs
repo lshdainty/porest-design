@@ -1,13 +1,14 @@
 /*
  * shadcn Combobox 예제 — Command + Popover 조립. 별도 컴포넌트 없음.
  *
- * Trigger는 최신 Select(specs/components — select.tsx SelectTrigger와 동일 톤):
+ * Trigger는 옛 Select 트리거 모양이다(2026-10-01 이전 select.tsx). 검색해 고르는 긴 목록은 Combobox 를 두지 않고
+ * Input Button + 검색 시트 · 팝오버로 하기로 정했다(select.md · input-button.md) — 그 차례에 이 예제를 걷는다:
  *   bg-surface-input + text-body-md + px-[var(--spacing-md)] py-[var(--spacing-sm)] + font-sans
  *   + transition motion 토큰 직접 인용.
- * Popover content / 검색 input / item은 Select의 SelectContent / SelectItem과 통일.
+ * Popover content / 검색 input / item 도 옛 Select 목록 모양이다.
  */
 
-// select.tsx SelectTrigger와 1:1 동기 (combobox 폭은 200px 고정).
+// 옛 Select 트리거 모양(2026-10-01 이전) — 새 Select 와 같지 않다(combobox 폭은 200px 고정).
 const TRIGGER =
   "inline-flex items-center justify-between gap-[var(--spacing-sm)] whitespace-nowrap rounded-sm border border-border-default bg-surface-input px-[var(--spacing-md)] py-[var(--spacing-sm)] font-sans text-body-md text-text-primary hover:bg-surface-input focus:outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 transition-[color,background-color,border-color,box-shadow] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)] h-10 w-[200px]";
 
@@ -36,7 +37,7 @@ const CHECK =
 const CHECK_INVISIBLE =
   '<svg width="16" height="16" viewBox="0 0 24 24" style="opacity:0;"><path/></svg>';
 
-// select.tsx와 동일 — text-tertiary 토큰 직접 인용 (이전 opacity:0.5는 모호함).
+// 옛 select.tsx 와 같던 값 — text-tertiary 토큰 직접 인용 (이전 opacity:0.5는 모호함).
 const CHEVRON =
   '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--color-text-tertiary);"><polyline points="6 9 12 15 18 9"/></svg>';
 

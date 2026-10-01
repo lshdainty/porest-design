@@ -3633,6 +3633,57 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 - [ ] 포커스하면 테두리가 2px 로 짙어진다(키보드 · 마우스 모두)
 - [ ] 최대 글자 수는 자소 단위로 세고, 한글은 조합이 끝난 뒤 자른다
 
+### Select · Input Button
+
+수치 · 규칙의 원본은 `specs/components/select.md` · `select.yaml`(짧은 선택지를 칸 아래 목록으로 — SEED Select)과 `input-button.md` · `input-button.yaml`(입력칸 모양의 버튼 — 시트 · 팝오버를 연다, SEED Input Button)이다 — 2026-10-01 사용자 결정. 라벨 · 설명 · 오류는 Field(아래 Field 절)가 둘레에서 그린다. 이 절은 토큰과 닿는 자리만 모은다.
+
+#### 나누기
+
+| 이런 자리 | 컴포넌트 |
+|---|---|
+| 짧은 선택지 5개 이상(한 줄 설명까지)에서 폼 값을 고른다 | Select — 칸 아래 목록. 폰에서도 시트로 바꾸지 않는다 |
+| 달력 · 시각 · 아이콘 격자 · 검색해 고르는 긴 목록 | Input Button — 1280 미만 아래 시트 · 이상 칸 아래 팝오버 |
+| 설명 · 그림 · 딸린 입력이 붙는 2 ~ 6개를 견줘 고른다 | Select Box |
+| 2 ~ 4개 짧은 선택지 | Chip(그 차례에) — 글이 길면 Radio · Checkbox |
+
+#### 트리거 · 칸
+
+상자는 Input 의 상자형과 같다 — large 52 · medium 40 · 웹 기본 반응형(1280), 앱은 large. 모서리 `radius-r3` · `radius-r2`, 투명 바탕 + 안쪽 1px `stroke-neutral-weak`, 오류 안쪽 2px `stroke-critical-solid`, 비활성 · 읽기 전용 `bg-disabled`(흐림 없음 — 읽기 전용의 값은 진한 글자). 버튼이라 Input 과 다른 자리:
+
+| 요소 | 값 |
+|---|---|
+| 누름 · 호버 | 바탕 `bg-layer-default-pressed` + 값 · 아이콘만 2px 거리 축소(v104). 마우스는 호버에 같은 바탕 |
+| 포커스 | 키보드 포커스에만 바깥 링 2px · 띄움 2px `stroke-focus-ring` |
+| 셰브론(Select) | 20 · 16 `fg-neutral-muted`, 열리면 180°(열 때 `motion-duration-d3` · 닫을 때 `motion-duration-d2`) |
+| 뒤 아이콘(Input Button) | 무엇이 열리는지 — 달력 · 시계 · 아래 화살표 |
+| 지우기(Input Button) | 선택 사항인 칸에 값이 있을 때만, 22 · 18 `fg-neutral-subtle` — 값 뒤 · 뒤 붙이개 앞 |
+
+#### 목록(Select)
+
+| 요소 | 값 |
+|---|---|
+| 목록 | 트리거 폭 · 아래 8(모자라면 위) · 모서리 `radius-r5` · `bg-layer-floating` · `shadow-s3` · 위아래 8 · 높이 min(480, 남은 화면 — 200 은 둔다) |
+| 선택지 | large 46 · medium 39(설명이 있으면 66 · 57) · 좌우 16, 글 `t5` · `t4` `fg-neutral`, 설명 `t3` · `t2` `fg-neutral-subtle` |
+| 고른 표시 | 오른쪽 체크 14 · 12(선 2.5) `fg-neutral` — 바탕 · 굵기는 바꾸지 않는다 |
+| 누름 · 호버 · 키보드 위치 | 좌우 8 들인 알약(모서리 12) `bg-layer-floating-pressed` — 누르는 동안만 콘텐츠 2px 거리 축소 |
+| 묶음 | 제목 `t4` 500 · `t3` 400 `fg-neutral-subtle`, 묶음 사이 1px `stroke-neutral-subtle`(좌우 16 들임 — 8 + 1 + 8) |
+| 모션 | 열 때 `motion-duration-d3` · `motion-ease-enter`(0.95 → 1 · 투명 → 불투명), 닫을 때 `motion-duration-d2` · `motion-ease-exit` |
+
+#### 쓰는 규칙
+
+- 늘 Field 의 라벨과 함께. placeholder 는 "{값의 종류} 선택".
+- "없음" 이 답이면 "{칸 이름} 없음" 선택지를 맨 앞 따로 묶음에 — Select 에는 지우기 버튼이 없다. 꼭 골라야 하는 칸은 없음 없이 제출 때 오류, 늘 값이 있는 칸은 기본값을 골라 둔다.
+- 여럿 고르기는 열린 채 이어 고른다 — 칸에는 "식비, 교통", 넘치면 "식비 외 2개". 최대 개수는 Field 설명에, "전체 선택" 같은 선택지는 두지 않는다.
+- 선택지 글은 명사형으로 짧게 — 코드값(Y · N · ANNUAL)을 내지 않는다. 폼 값을 탭으로 고르지 않는다. 요일 7개도 여럿 고르는 Select.
+- Input Button 은 혼자 쓰지 않는다 — 늘 고르는 자리를 연다. 달력 · 시각은 "완료" 로 넣고(고르는 동안 칸의 값은 그대로), 목록은 누르면 바로 넣는다. 긴 목록은 검색 시트(Combobox 를 두지 않는다).
+
+#### Accessibility 체크리스트
+- [ ] 모든 칸에 라벨(Field) — placeholder 를 이름으로 쓰지 않는다. 라벨을 누르면 포커스만(열지 않는다)
+- [ ] Select 트리거 `role="combobox"` · `aria-expanded`, 목록 `role="listbox"` · 선택지 `role="option" aria-selected` · 짚은 선택지 `aria-activedescendant`
+- [ ] Input Button 이름은 라벨 + 고른 값, `aria-haspopup="dialog"` · `aria-expanded`, 필수는 설명으로 "필수"
+- [ ] 키보드 포커스 링 — 트리거 · 칸
+- [ ] large 52 · 선택지 46 은 AAA 44 ✓, medium 은 1280 이상 데스크톱(마우스)에서만
+
 ### Card
 
 콘텐츠 그룹화·elevation 표현의 기본 표면. dashboard 위젯·list item·detail panel 등 광범위 사용.
@@ -4148,6 +4199,8 @@ hover / focus 시 나타나는 작은 hint — 아이콘 only 버튼의 의미 �
 
 ### Dropdown (Menu / Select 공통 패턴)
 
+> Select(폼 값 고르기)는 2026-10-01 Select · Input Button 절로 옮겼다(SEED Select · Input Button) — 이 절의 select · multi-select · combobox 줄은 옛 기준이고 쓰지 않는다. Menu 는 그 차례에 다시 정한다.
+
 trigger 클릭/키보드로 펼쳐지는 옵션 list — context menu, action menu, select form control 모두 동일 패턴 베이스.
 
 #### Structure (신규 토큰 없음)
@@ -4485,7 +4538,7 @@ spec brand-neutral. brand 파일에서 사용 패턴 차이 prose — HR(휴가 
 
 #### 짜임
 
-Field 는 머리(라벨 · 필수 점 또는 "선택" · 보조 액션) · 입력 · 꼬리(설명 또는 오류 · 글자 수)를 8 간격으로 쌓는다. 머리 · 꼬리는 좌우로 2 들어온다. 입력은 Text Input · Textarea · Checkbox · Radio · Select Box 묶음(고르는 칸은 그 차례에)이다.
+Field 는 머리(라벨 · 필수 점 또는 "선택" · 보조 액션) · 입력 · 꼬리(설명 또는 오류 · 글자 수)를 8 간격으로 쌓는다. 머리 · 꼬리는 좌우로 2 들어온다. 입력은 Text Input · Textarea · Select · Input Button · Checkbox · Radio · Select Box 묶음이다.
 
 | 부위 | 값 |
 |---|---|
