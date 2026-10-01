@@ -28,6 +28,7 @@ import { switchExamples } from "../recipes/shadcn/examples/switch-examples.mjs";
 import { badgeExamples } from "../recipes/shadcn/examples/badge-examples.mjs";
 import { avatarExamples } from "../recipes/shadcn/examples/avatar-examples.mjs";
 import { cardExamples } from "../recipes/shadcn/examples/card-examples.mjs";
+import { listExamples } from "../recipes/shadcn/examples/list-examples.mjs";
 import { separatorExamples } from "../recipes/shadcn/examples/separator-examples.mjs";
 import { skeletonExamples } from "../recipes/shadcn/examples/skeleton-examples.mjs";
 import { aspectRatioExamples } from "../recipes/shadcn/examples/aspect-ratio-examples.mjs";
@@ -79,7 +80,6 @@ import { spinnerExamples } from "../recipes/shadcn/examples/spinner-examples.mjs
 import { colorSwatchExamples } from "../recipes/shadcn/examples/color-swatch-examples.mjs";
 import { iconPickerExamples } from "../recipes/shadcn/examples/icon-picker-examples.mjs";
 import { tileExamples } from "../recipes/shadcn/examples/tile-examples.mjs";
-import { radioListExamples } from "../recipes/shadcn/examples/radio-list-examples.mjs";
 import { searchableListExamples } from "../recipes/shadcn/examples/searchable-list-examples.mjs";
 
 import {
@@ -117,6 +117,7 @@ const SHADCN_EXAMPLES = {
   badge: badgeExamples,
   avatar: avatarExamples,
   card: cardExamples,
+  list: listExamples,
   separator: separatorExamples,
   skeleton: skeletonExamples,
   "aspect-ratio": aspectRatioExamples,
@@ -169,7 +170,6 @@ const SHADCN_EXAMPLES = {
   "color-swatch": colorSwatchExamples,
   "icon-picker": iconPickerExamples,
   tile: tileExamples,
-  "radio-list": radioListExamples,
   "searchable-list": searchableListExamples,
 };
 
@@ -385,8 +385,9 @@ function buildTokens() {
     "  --shadow-lg: var(--shadow-lg-dark);",
     "  --shadow-xl: var(--shadow-xl-dark);",
     "  /* v102 역할 색(bg · fg · stroke)도 다크 짝으로 — 위 옛 이름만 바꾸던 때는 역할을 쓰는 예제(Button)가 다크에서 라이트 값을 썼다 */",
+    "  /* 카테고리 색(chart-* · -weak · -subtle · -contrast, v110 · v111)도 — List 의 타일이 다크에서 라이트 옅은 바탕으로 남았다 */",
     ...[...new Set([...sharedDefs.keys(), ...brandOnly.map(([n]) => n)])]
-      .filter((n) => /^color-(bg|fg|stroke)-/.test(n) && !n.endsWith("-dark") && (sharedDefs.has(`${n}-dark`) || brandOnly.some(([b]) => b === `${n}-dark`)))
+      .filter((n) => /^color-(bg|fg|stroke|chart)-/.test(n) && !n.endsWith("-dark") && (sharedDefs.has(`${n}-dark`) || brandOnly.some(([b]) => b === `${n}-dark`)))
       .map((n) => `  --${n}: var(--${n}-dark);`),
     "}",
   ].join("\n");
@@ -1957,12 +1958,13 @@ const SHADCN_CATALOG = [
   { slug: "toggle", name: "Toggle", category: "Form", description: "on/off 버튼 (인라인)." },
   { slug: "toggle-group", name: "Toggle Group", category: "Form", description: "단일 또는 복수 선택 토글 그룹." },
 
-  // Display (11)
+  // Display (13)
   { slug: "aspect-ratio", name: "Aspect Ratio", category: "Display", description: "고정 비율 컨테이너 (16:9, 4:3 등)." },
   { slug: "avatar", name: "Avatar", category: "Display", description: "프로필 이미지 + fallback 텍스트." },
   { slug: "badge", name: "Badge", category: "Display", description: "상태·카테고리 마이크로 라벨." },
   { slug: "card", name: "Card", category: "Display", description: "콘텐츠 컨테이너 (header / content / footer)." },
   { slug: "carousel", name: "Carousel", category: "Display", description: "슬라이드 갤러리 — Embla 베이스." },
+  { slug: "list", name: "List", category: "Display", description: "설정 · 메뉴 · 선택 · 내용 줄을 세로로 잇는 목록 (SEED List 구조)." },
   { slug: "progress", name: "Progress", category: "Display", description: "진행률 막대 (determinate / indeterminate)." },
   { slug: "spinner", name: "Spinner", category: "Display", description: "원형 indeterminate 인디케이터 (shadcn 카탈로그 외, Porest 자체 정의)." },
   { slug: "resizable", name: "Resizable", category: "Display", description: "드래그로 크기 조절 가능 패널." },
@@ -2004,11 +2006,10 @@ const SHADCN_CATALOG = [
   { slug: "data-table", name: "Data Table", category: "Data", description: "정렬·필터·페이징 테이블 — TanStack Table 베이스." },
   { slug: "table", name: "Table", category: "Data", description: "기본 HTML 테이블 스타일." },
 
-  // Porest 도메인 spec (5) — shadcn 카탈로그 외, desk-front SoT 역방향 정합
+  // Porest 도메인 spec (4) — shadcn 카탈로그 외, desk-front SoT 역방향 정합
   { slug: "color-swatch", name: "Color Swatch", category: "Domain", description: "카테고리·라벨·태그 색 single-select 정사각형 grid (Porest 도메인 spec)." },
   { slug: "icon-picker", name: "Icon Picker", category: "Domain", description: "Lucide 2000+ 아이콘 popover + 8-col grid 단일 선택 (Porest 도메인 spec)." },
   { slug: "tile", name: "Tile", category: "Domain", description: "swatch + label + desc 의 큰 카드 single-select — 테마·표시 단위 (Porest 도메인 spec)." },
-  { slug: "radio-list", name: "Radio List", category: "Domain", description: "full-width row stack + divide-y single-select — 통화·언어·국가 (Porest 도메인 spec)." },
   { slug: "searchable-list", name: "Searchable List", category: "Domain", description: "search input + 카드 list — 카드·은행·증권사 카탈로그 (Porest 도메인 spec)." },
 ];
 

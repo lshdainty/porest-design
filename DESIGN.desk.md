@@ -3654,7 +3654,7 @@ Desk — 데이터 내보내기 · 카드 혜택 필터 checkbox, 메모 즐겨�
 
 #### Layout
 - 모바일 form 행: label + control 간격 `md` (12px), 행 간 `lg` (16px)
-- 목록 행에 칸(Checkmark)만 넣을 땐 행 전체가 누르는 영역(`specs/components/checkbox.md`)
+- 목록 줄은 List 의 체크 줄(`ListCheckItem`, `specs/components/list.md`) — 행 전체가 누르는 영역
 - touch hit area 44×44 필수 (모바일 우선)
 
 #### Motion
@@ -3664,8 +3664,23 @@ Desk — 데이터 내보내기 · 카드 혜택 필터 checkbox, 메모 즐겨�
 #### A11y
 - HTML native `<input>` + `<label for>` 우선
 - focus ring `border-focus` (`#0147AD`) 2px
-- Switch는 native `<input type="checkbox" role="switch">` + `aria-checked`. 스위치만 쓰는 설정 줄은 줄 전체가 누르는 영역이고 줄의 제목이 스위치의 이름이 된다 — 줄의 모양은 List 차례에 정한다
+- Switch는 native `<input type="checkbox" role="switch">` + `aria-checked`. 스위치만 쓰는 설정 줄은 줄 전체가 누르는 영역이고 줄의 제목이 스위치의 이름이 된다 — 줄의 모양은 List 의 스위치 줄(`ListSwitchItem`)
 - 키보드 Space, Radio arrow keys, group `role="radiogroup"`
+
+### List
+
+> 상세 spec(Anatomy / 줄의 종류 / 상태 / 모션 / Accessibility / Do-Don't)은 [`specs/components/list.md`](specs/components/list.md)가 단일 SoT, 수치는 `list.yaml` · `list-header.yaml`. 코드(`recipes/shadcn/components/ui/list.tsx`) · 예제(`recipes/shadcn/examples/list-examples.mjs`) · preview 4 source 동기.
+
+- 구조: 목록(List) · 한 줄(List Item) · 목록 제목(List Header) · 줄 사이 선(ListDivider) — SEED List(2026-10-01). 설정 · 메뉴 · 선택 · 키-값 줄과 거래 · 할 일 · 알림 같은 내용 줄을 모두 List 로 그린다. RadioList 는 걷었다 — 하나 고르기는 오른쪽 라디오 줄(`ListRadioItem`).
+- 한 줄: 위아래 `spacing-x3` (12) · 좌우 `spacing-global-gutter` (24) · 제목 `t5` 16 · 400 `fg-neutral` · 설명 `t3` 13 `fg-neutral-subtle`(제목 아래 2) — 한 줄 46 · 두 줄 66.
+- 앞: 설정 · 메뉴 줄은 아이콘 22(`fg-neutral`), 색이 뜻을 가진 내용 줄은 타일 40(모서리 `radius-r3` 12 · `chart-{색}-weak` 바탕 · 아이콘 20). 체크 · 라디오는 24, 스위치는 32.
+- 뒤: 값 글자(`t5` · `fg-neutral-subtle`) · 오른쪽 화살표 18(화면을 옮기는 줄에만) · 컨트롤 · 작은 버튼.
+- 누름 · 호버(웹): 바탕 층이 좌우 6 들어와 모서리 10 의 `bg-layer-default-pressed` 가 되고, 콘텐츠 층만 2px 거리로 준다(v104). 끼운 컨트롤은 따로 줄지 않는다. 포커스 링은 줄 안쪽 2px.
+- 강조: 바탕만 `bg-brand-weak`(누름 · 호버 `bg-brand-weak-pressed` — 그동안 설명 · 값 글자는 `fg-neutral-muted`, 4.5:1 을 지키려고).
+- 줄 사이 선은 기본 없음 — 필요할 때만 `ListDivider`(1px `stroke-neutral-subtle`, 줄 폭 또는 좌우 24 들임).
+- 목록 제목: `t4` 14 · 위아래 8 · 좌우 24 — `mediumWeak`(500 · `fg-neutral-subtle`, 기본) · `boldSolid`(700 · `fg-neutral`).
+- Desk — 오늘 앱 줄 모양 126가지 · 웹 95가지(2026-10-01 조사). 공용 줄 위젯(`PSwitchTile` · `PRadioTile`)은 쓰는 곳이 없고, 웹의 줄 전체를 누르는 59 가운데 18 은 키보드로 닿지 않는다. 앱 적용 단계에서 List 로 옮긴다. 알림의 안 읽음(왼쪽 막대 · 점)은 바탕만 남긴다.
+- 목록은 흰 바탕(`bg-layer-default`) · 시트(`bg-layer-floating`) 위에 둔다 — 회색 바탕(`bg-layer-basement`) 위에서는 누름 바탕이 보이지 않는다(카드에 담는다).
 
 ### Tabs
 

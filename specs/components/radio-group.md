@@ -131,6 +131,7 @@
 | 하나 — 선택지 2~5개, 라벨만, 저장해야 적용 | **Radio** |
 | 하나 — 설명 · 아이콘 · 딸린 입력이 붙는 선택지 | Select Box |
 | 하나 — 선택지 6개 이상, 또는 자리가 좁을 때 | Select |
+| 하나 — 화면 폭 목록에서(기본 통화처럼 그 화면이 고르기 하나) | List 의 라디오 줄(`ListRadioItem`) |
 | 하나 — 짧은 선택지를 한 줄에서, 바로 바뀌는 보기 전환 | Segmented · Chip |
 | 여러 개 | Checkbox |
 | 켜고 끄기 하나, 바로 적용 | Switch |
@@ -220,7 +221,7 @@ const [repeat, setRepeat] = useState("monthly")
 
 ### 동그라미만
 
-라벨을 따로 짤 때는 `Radiomark` 를 쓰고, 줄을 `<label>` 로 감싸 줄 어디를 눌러도 고르게 한다. `group/radio` 를 달면 줄을 누르거나 올려도 동그라미가 누름 색 · 축소로 반응한다. 직접 짠 줄은 묶음 폭을 다 쓴다(`Radio` 줄만 내용만큼 차지한다).
+화면 폭 목록의 줄은 List 의 `ListRadioItem` 을 쓴다 — 줄의 여백 · 글자 · 누름이 정해져 있다. 라벨을 따로 짜야 할 때만 `Radiomark` 를 쓰고, 줄을 `<label>` 로 감싸 줄 어디를 눌러도 고르게 한다. `group/radio` 를 달면 줄을 누르거나 올려도 동그라미가 누름 색 · 축소로 반응한다. 직접 짠 줄은 묶음 폭을 다 쓴다(`Radio` 줄만 내용만큼 차지한다).
 
 ```tsx
 import { Radiomark, RadioGroup } from "@/components/ui/radio-group"

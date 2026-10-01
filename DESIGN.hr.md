@@ -3639,7 +3639,22 @@ HR — 직원 정보 form(필수/선택 옵션), 권한 토글 switch, 평가 �
 - HTML native `<input>` + `<label for>` 우선
 - focus ring `border-focus` 2px, 키보드 Space (toggle/check), Radio arrow keys
 - error 상태: Checkbox · Radio 는 칸 · 동그라미를 바꾸지 않고 묶음 아래 글로 알린다(2026-09-30). Switch 에는 오류 상태가 없다 — 저장에 실패하면 스위치를 되돌리고 무엇이 안 됐는지 알린다
-- Switch 만 쓰는 설정 줄은 줄 전체가 누르는 영역이고, 줄의 제목이 스위치의 이름이 된다(`<label>` 또는 `aria-labelledby`) — 줄의 모양은 List 차례에 정한다
+- Switch 만 쓰는 설정 줄은 줄 전체가 누르는 영역이고, 줄의 제목이 스위치의 이름이 된다(`<label>` 또는 `aria-labelledby`) — 줄의 모양은 List 의 스위치 줄(`ListSwitchItem`)
+
+### List
+
+> 상세 spec(Anatomy / 줄의 종류 / 상태 / 모션 / Accessibility / Do-Don't)은 [`specs/components/list.md`](specs/components/list.md)가 단일 SoT, 수치는 `list.yaml` · `list-header.yaml`. 코드(`recipes/shadcn/components/ui/list.tsx`) · 예제(`recipes/shadcn/examples/list-examples.mjs`) · preview 4 source 동기.
+
+- 구조: 목록(List) · 한 줄(List Item) · 목록 제목(List Header) · 줄 사이 선(ListDivider) — SEED List(2026-10-01). 설정 · 메뉴 · 선택 · 키-값 줄과 거래 · 할 일 · 알림 같은 내용 줄을 모두 List 로 그린다. RadioList 는 걷었다 — 하나 고르기는 오른쪽 라디오 줄(`ListRadioItem`).
+- 한 줄: 위아래 `spacing-x3` (12) · 좌우 `spacing-global-gutter` (24) · 제목 `t5` 16 · 400 `fg-neutral` · 설명 `t3` 13 `fg-neutral-subtle`(제목 아래 2) — 한 줄 46 · 두 줄 66.
+- 앞: 설정 · 메뉴 줄은 아이콘 22(`fg-neutral`), 색이 뜻을 가진 내용 줄은 타일 40(모서리 `radius-r3` 12 · `chart-{색}-weak` 바탕 · 아이콘 20). 체크 · 라디오는 24, 스위치는 32.
+- 뒤: 값 글자(`t5` · `fg-neutral-subtle`) · 오른쪽 화살표 18(화면을 옮기는 줄에만) · 컨트롤 · 작은 버튼.
+- 누름 · 호버(웹): 바탕 층이 좌우 6 들어와 모서리 10 의 `bg-layer-default-pressed` 가 되고, 콘텐츠 층만 2px 거리로 준다(v104). 끼운 컨트롤은 따로 줄지 않는다. 포커스 링은 줄 안쪽 2px.
+- 강조: 바탕만 `bg-brand-weak`(누름 · 호버 `bg-brand-weak-pressed` — 그동안 설명 · 값 글자는 `fg-neutral-muted`, 4.5:1 을 지키려고).
+- 줄 사이 선은 기본 없음 — 필요할 때만 `ListDivider`(1px `stroke-neutral-subtle`, 줄 폭 또는 좌우 24 들임).
+- 목록 제목: `t4` 14 · 위아래 8 · 좌우 24 — `mediumWeak`(500 · `fg-neutral-subtle`, 기본) · `boldSolid`(700 · `fg-neutral`).
+- HR — 오늘 줄 모양 24가지 · 목록 33곳, 오른쪽 화살표 0, 줄 전체를 누르는 10 중 키보드로 닿는 것 3(2026-10-01 조사). 앱 적용 단계에서 List 로 옮긴다.
+- 목록은 흰 바탕(`bg-layer-default`) · 시트(`bg-layer-floating`) 위에 둔다 — 회색 바탕(`bg-layer-basement`) 위에서는 누름 바탕이 보이지 않는다(카드에 담는다).
 
 ### Tabs
 

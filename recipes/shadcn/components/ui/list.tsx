@@ -1,0 +1,473 @@
+import * as React from "react";
+import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
+import { Slot, Slottable } from "@radix-ui/react-slot";
+import { cva, type VariantProps } from "class-variance-authority";
+
+import { cn } from "@/lib/utils";
+import { Checkmark, type CheckmarkProps } from "@/components/ui/checkbox";
+import { Radiomark, type RadiomarkProps } from "@/components/ui/radio-group";
+import { Switchmark, type SwitchmarkProps } from "@/components/ui/switch";
+
+/*
+ * Porest List — 구조는 SEED List(2026-10-01). 수치 원본은 specs/components/list.yaml · list-header.yaml.
+ *
+ *   List · ListItem          목록(ul) · 보기만 하는 줄
+ *   ListButtonItem · ListLinkItem   줄 전체가 버튼 · 링크(뒤 붙이개의 작은 버튼은 따로 눌린다)
+ *   ListSwitchItem · ListCheckItem · ListRadioItem   줄 전체가 라벨 — 줄 어디를 눌러도 끼운 컨트롤이 바뀐다
+ *   ListRadioGroup · ListCheckGroup   하나 고르기(role=radiogroup) · 여럿 고르기(fieldset) 묶음 — 줄은 li 대신 div
+ *   itemRadius               목록 · 묶음의 누름 바탕 모서리(기본 radius-r2_5) — 카드 안에서는 카드 모서리 − 카드 가장자리에서 바탕까지 거리
+ *   ListDivider · ListHeader · ListTile   줄 사이 선(필요할 때만) · 목록 제목 · 내용 줄의 앞 타일
+ *
+ * 한 줄은 두 층이다 — 바탕 층(li::before: 누름 · 호버 · 강조 바탕, 줄지 않는다)과 콘텐츠 층(앞 · 본문 · 뒤).
+ * 누르면 바탕이 좌우 6 들어와 모서리 10 이 되고(SEED), 콘텐츠 층만 2px 거리로 준다(기초 Feedback v104) —
+ * 배율 = (기준 − 2) ÷ 기준, 기준 = max(높이, 폭 ÷ 4, 24). Button 과 같이 누르는 순간(포인터 · 키) 줄을 재서 --press-basis 로 넘긴다.
+ * 호버는 마우스 있는 기기에서만 누름과 같은 바탕(v106). 줄 안의 스위치 · 체크 · 라디오는 따로 줄지 않는다.
+ * 누르는 줄의 버튼 · 링크는 ::after 로 줄 전체를 덮어 줄 어디를 눌러도 눌리고(포커스 링도 그 안쪽 2px),
+ * 뒤 붙이개 안의 버튼 · 링크는 z-index 1 로 그 위에 올라 따로 눌린다(SEED 와 같은 짜임).
+ * 글자: 제목 t5 · 400, 설명 t3 · fg-neutral-subtle(사용자 결정 — SEED 그대로). 좌우 여백은 spacing-global-gutter(24).
+ */
+
+const listVariants = cva("flex w-full flex-col");
+
+// 줄(li) — 바탕 층과 컨테이너. 누르는 줄의 상태는 안쪽 [data-list-action](버튼 · 링크 · 라벨)에서 읽는다
+const listItemVariants = cva(
+  [
+    "group/list-item relative flex w-full",
+    "before:pointer-events-none before:absolute before:inset-y-0 before:inset-x-0 before:rounded-none before:bg-transparent before:content-['']",
+    "before:[transition:background-color_var(--motion-duration-color-transition)_var(--motion-ease-easing),inset_var(--motion-duration-color-transition)_var(--motion-ease-easing),border-radius_var(--motion-duration-color-transition)_var(--motion-ease-easing)]",
+    "[@media(hover:hover)]:has-[[data-list-action]:not([data-disabled]):hover]:before:inset-x-x1_5 [@media(hover:hover)]:has-[[data-list-action]:not([data-disabled]):hover]:before:rounded-[var(--list-item-radius,var(--radius-r2_5))] [@media(hover:hover)]:has-[[data-list-action]:not([data-disabled]):hover]:before:bg-bg-layer-default-pressed",
+    "has-[[data-list-action]:not([data-disabled]):active]:before:inset-x-x1_5 has-[[data-list-action]:not([data-disabled]):active]:before:rounded-[var(--list-item-radius,var(--radius-r2_5))] has-[[data-list-action]:not([data-disabled]):active]:before:bg-bg-layer-default-pressed",
+  ].join(" "),
+  {
+    variants: {
+      highlight: {
+        none: "",
+        highlighted:
+          "before:bg-bg-brand-weak [@media(hover:hover)]:has-[[data-list-action]:not([data-disabled]):hover]:before:bg-bg-brand-weak-pressed has-[[data-list-action]:not([data-disabled]):active]:before:bg-bg-brand-weak-pressed",
+      },
+    },
+    defaultVariants: { highlight: "none" },
+  },
+);
+
+// 콘텐츠 층 — 앞 · 본문 · 뒤. 누르면 이 층만 준다
+const listContentVariants = cva(
+  [
+    "relative flex w-full px-global-gutter py-x3",
+    "[transition:scale_var(--motion-duration-pressed-scale)_var(--motion-ease-pressed-scale)]",
+    "group-has-[[data-list-action]:not([data-disabled]):active]/list-item:[scale:calc(1-2/var(--press-basis))] motion-reduce:group-has-[[data-list-action]:not([data-disabled]):active]/list-item:[scale:1]",
+  ].join(" "),
+  {
+    variants: {
+      align: {
+        center: "items-center",
+        top: "items-start",
+      },
+    },
+    defaultVariants: { align: "center" },
+  },
+);
+
+// 앞 붙이개 — 아이콘 22(fg-neutral). 막히면 아이콘 · 타일 모두 비활성 색(타일은 부르는 쪽의 카테고리 색을 덮는다)
+const listPrefixVariants = cva("flex shrink-0 items-center pr-x3 text-fg-neutral [&>svg]:size-[22px]", {
+  variants: { disabled: { true: "text-fg-disabled [&_[data-list-tile]]:bg-bg-disabled [&_[data-list-tile]]:text-fg-disabled", false: "" } },
+  defaultVariants: { disabled: false },
+});
+
+const listBodyVariants = cva("flex min-w-0 flex-1 flex-col items-start gap-x0_5 pr-x2_5 text-left");
+
+const listTitleVariants = cva("font-sans text-t5 font-normal text-fg-neutral", {
+  variants: { disabled: { true: "text-fg-disabled", false: "" } },
+  defaultVariants: { disabled: false },
+});
+
+// 강조 줄을 올리거나 누르는 동안 — 짙은 강조 바탕 위라 설명 · 값 글자를 한 단계 짙게(fg-neutral-subtle 은 4.32:1 로 모자란다)
+const HIGHLIGHT_MUTED =
+  "[@media(hover:hover)]:group-has-[[data-list-action]:not([data-disabled]):hover]/list-item:text-fg-neutral-muted group-has-[[data-list-action]:not([data-disabled]):active]/list-item:text-fg-neutral-muted";
+
+const listDetailVariants = cva("font-sans text-t3 text-fg-neutral-subtle", {
+  variants: {
+    disabled: { true: "text-fg-disabled", false: "" },
+    highlighted: { true: HIGHLIGHT_MUTED, false: "" },
+  },
+  defaultVariants: { disabled: false, highlighted: false },
+});
+
+// 뒤 붙이개 — 값 글자(t5 · 옅은 색) · 화살표 18. 안의 버튼 · 링크는 줄의 ::after 위로 올라 따로 눌린다
+// 강조 줄을 올리거나 누르면 값 글자만 짙어진다 — 화살표는 그대로 옅은 색
+const listSuffixVariants = cva(
+  "flex shrink-0 items-center gap-x1 font-sans text-t5 text-fg-neutral-subtle [&>svg]:size-[18px] [&_a]:relative [&_a]:z-[1] [&_button]:relative [&_button]:z-[1]",
+  {
+    variants: {
+      disabled: { true: "text-fg-disabled", false: "" },
+      highlighted: { true: HIGHLIGHT_MUTED, false: "" },
+    },
+    compoundVariants: [{ disabled: false, highlighted: true, class: "[&>svg]:text-fg-neutral-subtle" }],
+    defaultVariants: { disabled: false, highlighted: false },
+  },
+);
+
+// 누르는 줄의 본문 버튼 · 링크 — ::after 가 줄 전체를 덮는다(누르는 영역 · 포커스 링)
+const listActionVariants = cva(
+  [
+    "cursor-pointer appearance-none border-0 bg-transparent p-0 font-[inherit] text-[inherit] no-underline outline-none",
+    "after:absolute after:inset-0 after:content-['']",
+    "focus-visible:after:outline-2 focus-visible:after:-outline-offset-2 focus-visible:after:outline-stroke-focus-ring",
+    "data-[disabled]:cursor-not-allowed",
+  ].join(" "),
+);
+
+// 컨트롤 줄 — 줄 전체가 라벨
+const listControlVariants = cva("cursor-pointer select-none data-[disabled]:cursor-not-allowed");
+
+// 줄 사이 선 — 필요할 때만. 기본은 줄 폭 전체, inset 이면 좌우 24 들인다
+const listDividerVariants = cva("h-px shrink-0 bg-stroke-neutral-subtle", {
+  variants: { inset: { true: "mx-global-gutter", false: "w-full" } },
+  defaultVariants: { inset: false },
+});
+
+const listHeaderVariants = cva("flex w-full items-center justify-between gap-x2_5 px-global-gutter py-x2 font-sans text-t4", {
+  variants: {
+    variant: {
+      mediumWeak: "font-medium text-fg-neutral-subtle",
+      boldSolid: "font-bold text-fg-neutral",
+    },
+  },
+  defaultVariants: { variant: "mediumWeak" },
+});
+
+// 내용 줄의 앞 타일 — 40 · 모서리 12(크기 × 0.3). 바탕 · 아이콘 색은 카테고리 색(chart-{색}-weak · chart-{색})
+const listTileVariants = cva("inline-grid size-10 shrink-0 place-items-center rounded-r3 [&>svg]:size-5");
+
+// 끼운 컨트롤은 따로 줄지 않는다 — 줄의 콘텐츠가 함께 준다(v104). 라벨의 누름이 컨트롤로 넘어오므로 축소만 끈다.
+// 컨트롤에도 data-list-action 을 단다 — 키보드(Space)로 누르면 :active 가 라벨이 아니라 컨트롤에 걸린다
+const MARK_NO_SCALE = "active:[scale:1]";
+
+type ItemBase = {
+  title: React.ReactNode;
+  detail?: React.ReactNode;
+  prefix?: React.ReactNode;
+  suffix?: React.ReactNode;
+  /** 새 알림처럼 주목이 필요한 줄 — 옅은 브랜드 바탕(list.yaml highlight) */
+  highlighted?: boolean;
+} & VariantProps<typeof listContentVariants>;
+
+const hl = (highlighted?: boolean) => (highlighted ? "highlighted" : "none");
+
+// 누르는 순간 기준 길이 max(높이, 폭 ÷ 4, 24) 를 --press-basis 로(Button 과 같은 식) — 줄은 폭 ÷ 4 가 커서 세로로는 2px 보다 덜 준다.
+// 키보드(Space)로 눌러도 :active 가 걸리므로 keydown 에서도 잰다. 줄(li)에 달고 콘텐츠 층이 물려받는다.
+function measurePress(el: HTMLElement) {
+  el.style.setProperty("--press-basis", String(Math.max(el.offsetHeight, el.offsetWidth / 4, 24)));
+}
+
+function withPress<P extends React.HTMLAttributes<HTMLElement>>(props: P): P {
+  return {
+    ...props,
+    onPointerDown: (e: React.PointerEvent<HTMLElement>) => {
+      measurePress(e.currentTarget);
+      // 누르는 동안 콘텐츠 층(누르는 영역)이 줄어 가장자리를 누른 포인터가 영역 밖에 남아도 click 이 그 줄로 가게 잡아 둔다.
+      // 마우스 · 펜만 — 터치는 브라우저가 처음 누른 요소에 이미 잡는다
+      const target = e.target as Element;
+      if (e.pointerType !== "touch" && target.closest("[data-list-action]")) target.setPointerCapture?.(e.pointerId);
+      props.onPointerDown?.(e);
+    },
+    onKeyDown: (e: React.KeyboardEvent<HTMLElement>) => {
+      measurePress(e.currentTarget);
+      props.onKeyDown?.(e);
+    },
+  };
+}
+
+function Body({ title, detail, disabled, highlighted }: { title: React.ReactNode; detail?: React.ReactNode; disabled?: boolean; highlighted?: boolean }) {
+  return (
+    <>
+      <span className={cn(listTitleVariants({ disabled }))}>{title}</span>
+      {detail && <span className={cn(listDetailVariants({ disabled, highlighted }))}>{detail}</span>}
+    </>
+  );
+}
+
+// 줄의 태그 — 목록(ul) 안에서는 li, 묶음(radiogroup · fieldset) 안에서는 div
+const ListRowTag = React.createContext<"li" | "div">("li");
+
+type ItemRadius = {
+  /** 누름 · 호버 바탕의 모서리(기본 radius-r2_5 10) — 카드 안에서는 카드 모서리 − 카드 가장자리에서 바탕까지 거리 */
+  itemRadius?: string;
+};
+const radiusStyle = (itemRadius: string | undefined, style: React.CSSProperties | undefined) =>
+  itemRadius ? ({ ...style, "--list-item-radius": itemRadius } as React.CSSProperties) : style;
+
+export interface ListProps extends React.HTMLAttributes<HTMLUListElement>, ItemRadius {}
+
+const List = React.forwardRef<HTMLUListElement, ListProps>(({ className, itemRadius, style, ...props }, ref) => (
+  <ul ref={ref} className={cn(listVariants(), className)} style={radiusStyle(itemRadius, style)} {...props} />
+));
+List.displayName = "List";
+
+export interface ListItemProps extends ItemBase, Omit<React.LiHTMLAttributes<HTMLLIElement>, "title" | "prefix"> {}
+
+// 보기만 하는 줄 — 누르지 않는다(호버 · 누름 바탕 없음)
+const ListItem = React.forwardRef<HTMLLIElement, ListItemProps>(
+  ({ className, title, detail, prefix, suffix, align, highlighted, ...props }, ref) => (
+    <li ref={ref} className={cn(listItemVariants({ highlight: hl(highlighted) }), className)} {...props}>
+      <div className={listContentVariants({ align })}>
+        {prefix && <span className={listPrefixVariants()}>{prefix}</span>}
+        <span className={listBodyVariants()}>
+          <Body title={title} detail={detail} />
+        </span>
+        {suffix && <span className={listSuffixVariants()}>{suffix}</span>}
+      </div>
+    </li>
+  ),
+);
+ListItem.displayName = "ListItem";
+
+export interface ListButtonItemProps extends ItemBase, Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "title" | "prefix"> {
+  rootProps?: React.LiHTMLAttributes<HTMLLIElement>;
+}
+
+// 누르는 줄 — 줄 전체가 버튼. 화면을 옮기면 suffix 에 오른쪽 화살표를 둔다
+const ListButtonItem = React.forwardRef<HTMLButtonElement, ListButtonItemProps>(
+  ({ className, title, detail, prefix, suffix, align, highlighted, disabled, rootProps: { className: rootClassName, ...rootRest } = {}, type = "button", ...props }, ref) => (
+    <li className={cn(listItemVariants({ highlight: hl(highlighted) }), rootClassName)} {...withPress(rootRest)}>
+      <div className={listContentVariants({ align })}>
+        {prefix && <span className={cn(listPrefixVariants({ disabled }))}>{prefix}</span>}
+        <button
+          ref={ref}
+          type={type}
+          disabled={disabled}
+          data-list-action=""
+          data-disabled={disabled ? "" : undefined}
+          className={cn(listActionVariants(), listBodyVariants(), className)}
+          {...props}
+        >
+          <Body title={title} detail={detail} disabled={disabled} highlighted={highlighted} />
+        </button>
+        {suffix && <span className={cn(listSuffixVariants({ disabled, highlighted }))}>{suffix}</span>}
+      </div>
+    </li>
+  ),
+);
+ListButtonItem.displayName = "ListButtonItem";
+
+export interface ListLinkItemProps extends ItemBase, Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "title" | "prefix"> {
+  asChild?: boolean;
+  rootProps?: React.LiHTMLAttributes<HTMLLIElement>;
+}
+
+// 링크 줄 — 줄 전체가 링크. asChild 면 라우터의 Link 를 자식으로 — 제목 · 설명은 그 안에 넣어 준다
+const ListLinkItem = React.forwardRef<HTMLAnchorElement, ListLinkItemProps>(
+  ({ className, title, detail, prefix, suffix, align, highlighted, asChild = false, rootProps: { className: rootClassName, ...rootRest } = {}, children, ...props }, ref) => {
+    const actionProps = { "data-list-action": "", className: cn(listActionVariants(), listBodyVariants(), className), ...props };
+    return (
+      <li className={cn(listItemVariants({ highlight: hl(highlighted) }), rootClassName)} {...withPress(rootRest)}>
+        <div className={listContentVariants({ align })}>
+          {prefix && <span className={listPrefixVariants()}>{prefix}</span>}
+          {asChild ? (
+            <Slot ref={ref} {...actionProps}>
+              <Slottable>{children}</Slottable>
+              <Body title={title} detail={detail} highlighted={highlighted} />
+            </Slot>
+          ) : (
+            <a ref={ref} {...actionProps}>
+              <Body title={title} detail={detail} highlighted={highlighted} />
+            </a>
+          )}
+          {suffix && <span className={cn(listSuffixVariants({ highlighted }))}>{suffix}</span>}
+        </div>
+      </li>
+    );
+  },
+);
+ListLinkItem.displayName = "ListLinkItem";
+
+type ControlRowProps = ItemBase & { rootProps?: React.HTMLAttributes<HTMLElement> };
+
+// 컨트롤 줄의 짜임 — li(묶음 안에서는 div) > label(콘텐츠 층 · 누르는 영역) > 앞 · 본문 · 뒤
+function ControlRow({
+  as,
+  title,
+  detail,
+  prefix,
+  suffix,
+  align,
+  highlighted,
+  disabled,
+  rootProps: { className: rootClassName, ...rootRest } = {},
+  htmlFor,
+}: ControlRowProps & { as?: "li" | "div"; disabled?: boolean; htmlFor?: string }) {
+  const tag = React.useContext(ListRowTag);
+  const Comp = (as ?? tag) as React.ElementType;
+  return (
+    <Comp className={cn(listItemVariants({ highlight: hl(highlighted) }), rootClassName)} {...withPress(rootRest)}>
+      <label
+        htmlFor={htmlFor}
+        data-list-action=""
+        data-disabled={disabled ? "" : undefined}
+        className={cn(listContentVariants({ align }), listControlVariants())}
+      >
+        {prefix && <span className={cn(listPrefixVariants({ disabled }))}>{prefix}</span>}
+        <span className={listBodyVariants()}>
+          <Body title={title} detail={detail} disabled={disabled} highlighted={highlighted} />
+        </span>
+        {suffix && <span className={cn(listSuffixVariants({ disabled, highlighted }))}>{suffix}</span>}
+      </label>
+    </Comp>
+  );
+}
+
+export interface ListSwitchItemProps extends Omit<SwitchmarkProps, "title" | "prefix">, Omit<ControlRowProps, "suffix"> {}
+
+// 스위치 줄 — 스위치는 뒤에, 제목 16 줄이라 32(Switch 스펙)
+const ListSwitchItem = React.forwardRef<React.ElementRef<typeof Switchmark>, ListSwitchItemProps>(
+  ({ title, detail, prefix, align, highlighted, rootProps, size = "32", className, id, disabled, ...props }, ref) => {
+    const autoId = React.useId();
+    const sid = id ?? autoId;
+    return (
+      <ControlRow
+        title={title}
+        detail={detail}
+        prefix={prefix}
+        align={align}
+        highlighted={highlighted}
+        rootProps={rootProps}
+        disabled={disabled}
+        htmlFor={sid}
+        suffix={<Switchmark ref={ref} id={sid} data-list-action="" size={size} disabled={disabled} className={cn(MARK_NO_SCALE, className)} {...props} />}
+      />
+    );
+  },
+);
+ListSwitchItem.displayName = "ListSwitchItem";
+
+export interface ListCheckItemProps extends Omit<CheckmarkProps, "title" | "prefix">, Omit<ControlRowProps, "suffix"> {
+  /** 체크를 앞(기본) · 뒤 어디에 둘지 */
+  markPosition?: "prefix" | "suffix";
+}
+
+// 체크 줄 — 여럿 고르기. 체크 24 를 앞(기본)이나 뒤에
+const ListCheckItem = React.forwardRef<React.ElementRef<typeof Checkmark>, ListCheckItemProps>(
+  ({ title, detail, prefix, align, highlighted, rootProps, markPosition = "prefix", size = "large", className, id, disabled, ...props }, ref) => {
+    const autoId = React.useId();
+    const cid = id ?? autoId;
+    const mark = <Checkmark ref={ref} id={cid} data-list-action="" size={size} disabled={disabled} className={cn(MARK_NO_SCALE, className)} {...props} />;
+    return (
+      <ControlRow
+        title={title}
+        detail={detail}
+        prefix={markPosition === "prefix" ? mark : prefix}
+        suffix={markPosition === "suffix" ? mark : undefined}
+        align={align}
+        highlighted={highlighted}
+        rootProps={rootProps}
+        disabled={disabled}
+        htmlFor={cid}
+      />
+    );
+  },
+);
+ListCheckItem.displayName = "ListCheckItem";
+
+// 하나 고르기 목록 — 라디오 묶음(role=radiogroup, aria-label · aria-labelledby 필수)
+const ListRadioGroup = React.forwardRef<
+  React.ElementRef<typeof RadioGroupPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Root> & ItemRadius
+>(({ className, itemRadius, style, ...props }, ref) => (
+  <ListRowTag.Provider value="div">
+    <RadioGroupPrimitive.Root ref={ref} className={cn(listVariants(), className)} style={radiusStyle(itemRadius, style)} {...props} />
+  </ListRowTag.Provider>
+));
+ListRadioGroup.displayName = "ListRadioGroup";
+
+export interface ListCheckGroupProps extends React.FieldsetHTMLAttributes<HTMLFieldSetElement>, ItemRadius {}
+
+// 여럿 고르기 묶음 — fieldset(role=group, aria-label · aria-labelledby 필수). 체크 줄을 담는다(SEED 와 같다)
+const ListCheckGroup = React.forwardRef<HTMLFieldSetElement, ListCheckGroupProps>(({ className, itemRadius, style, ...props }, ref) => (
+  <ListRowTag.Provider value="div">
+    <fieldset ref={ref} className={cn(listVariants(), "m-0 min-w-0 border-0 p-0", className)} style={radiusStyle(itemRadius, style)} {...props} />
+  </ListRowTag.Provider>
+));
+ListCheckGroup.displayName = "ListCheckGroup";
+
+export interface ListRadioItemProps extends Omit<RadiomarkProps, "title" | "prefix">, Omit<ControlRowProps, "suffix" | "rootProps"> {
+  /** 라디오를 뒤(기본) · 앞 어디에 둘지 */
+  markPosition?: "prefix" | "suffix";
+  rootProps?: React.HTMLAttributes<HTMLDivElement>;
+}
+
+// 라디오 줄 — 하나 고르기. 라디오 24 를 뒤(기본)에. ListRadioGroup 안에 둔다
+const ListRadioItem = React.forwardRef<React.ElementRef<typeof Radiomark>, ListRadioItemProps>(
+  ({ title, detail, prefix, align, highlighted, rootProps, markPosition = "suffix", size = "large", className, id, disabled, ...props }, ref) => {
+    const autoId = React.useId();
+    const rid = id ?? autoId;
+    const mark = <Radiomark ref={ref} id={rid} data-list-action="" size={size} disabled={disabled} className={cn(MARK_NO_SCALE, className)} {...props} />;
+    return (
+      <ControlRow
+        title={title}
+        detail={detail}
+        prefix={markPosition === "prefix" ? mark : prefix}
+        suffix={markPosition === "suffix" ? mark : undefined}
+        align={align}
+        highlighted={highlighted}
+        rootProps={rootProps}
+        disabled={disabled}
+        htmlFor={rid}
+      />
+    );
+  },
+);
+ListRadioItem.displayName = "ListRadioItem";
+
+export interface ListDividerProps extends React.HTMLAttributes<HTMLElement>, VariantProps<typeof listDividerVariants> {}
+
+// 줄 사이 선 — 필요할 때만(기본은 선 없음). 목록 안에서는 li, 묶음 안에서는 div
+const ListDivider = React.forwardRef<HTMLElement, ListDividerProps>(({ className, inset, ...props }, ref) => {
+  const Comp = React.useContext(ListRowTag) as React.ElementType;
+  return <Comp ref={ref} aria-hidden className={cn(listDividerVariants({ inset }), className)} {...props} />;
+});
+ListDivider.displayName = "ListDivider";
+
+export interface ListHeaderProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof listHeaderVariants> {
+  asChild?: boolean;
+}
+
+// 목록 제목 — 목록 밖, 바로 위. 오른쪽에 작은 버튼을 둘 수 있다
+const ListHeader = React.forwardRef<HTMLDivElement, ListHeaderProps>(({ className, variant, asChild = false, ...props }, ref) => {
+  const Comp = asChild ? Slot : "div";
+  return <Comp ref={ref} className={cn(listHeaderVariants({ variant }), className)} {...props} />;
+});
+ListHeader.displayName = "ListHeader";
+
+// 내용 줄의 앞 타일 — 바탕 · 아이콘 색은 부르는 쪽이(카테고리 색)
+const ListTile = React.forwardRef<HTMLSpanElement, React.HTMLAttributes<HTMLSpanElement>>(({ className, ...props }, ref) => (
+  <span ref={ref} data-list-tile="" className={cn(listTileVariants(), className)} {...props} />
+));
+ListTile.displayName = "ListTile";
+
+export {
+  List,
+  ListItem,
+  ListButtonItem,
+  ListLinkItem,
+  ListSwitchItem,
+  ListCheckItem,
+  ListRadioGroup,
+  ListRadioItem,
+  ListCheckGroup,
+  ListDivider,
+  ListHeader,
+  ListTile,
+  listVariants,
+  listItemVariants,
+  listContentVariants,
+  listPrefixVariants,
+  listBodyVariants,
+  listTitleVariants,
+  listDetailVariants,
+  listSuffixVariants,
+  listActionVariants,
+  listControlVariants,
+  listDividerVariants,
+  listHeaderVariants,
+  listTileVariants,
+};

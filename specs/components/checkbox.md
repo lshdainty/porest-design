@@ -212,7 +212,7 @@ const parent = picked.length === all.length ? true : picked.length ? "indetermin
 
 ### 칸만(목록 행)
 
-행을 `<label>` 로 감싸 행 어디를 눌러도 선택되게 하고, `group/checkbox` 를 달아 행을 누르거나 올려도 칸이 누름 색 · 축소로 반응하게 한다.
+목록 줄은 List 의 `ListCheckItem` 을 쓴다 — 줄의 여백 · 글자 · 누름이 정해져 있다. 표처럼 행을 따로 짜야 할 때만 아래처럼 행을 `<label>` 로 감싸 행 어디를 눌러도 선택되게 하고, `group/checkbox` 를 달아 행을 누르거나 올려도 칸이 누름 색 · 축소로 반응하게 한다.
 
 [그림: 칸만 — 행 전체가 누르는 영역](../../site/components/specs/checkbox.tsx#ex-checkmark)
 

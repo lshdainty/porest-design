@@ -1,15 +1,17 @@
 // Switch 페이지의 그림 — specs/components/switch.md 의 `[그림: …](../../site/components/specs/switch.tsx#<id>)` 자리.
 // 스위치 · 라벨은 switch.yaml 을 푼 값(switchLook)으로, 화면 예시는 kit 의 Desk 화면 조각으로 그린다.
-// 예시는 누르는 순간 적용되는 제품 화면 — Desk 알림 설정 · 일정의 "종일". 설정 줄의 값은 List 차례에 정한다.
+// 예시는 누르는 순간 적용되는 제품 화면 — Desk 알림 설정 · 일정의 "종일". 설정 줄은 List(list.yaml)의 스위치 줄로 그린다.
 import type { CSSProperties, ReactNode } from 'react';
 import { Figure, Panel, MARK, MARK_LINE } from '../foundations/ui';
 import { axisValues, loadComponentSpec } from '@/lib/component-spec';
 import { switchLook, switchParts, SWITCH_CHECKED, SWITCH_STATES, type SwitchChecked, type SwitchCombo, type SwitchState } from './switch-look';
-import { SwitchRowDemo, SwitchView } from './switch-view';
+import { SwitchView } from './switch-view';
 import { SwitchPlayground } from './switch-playground';
 import { buttonLook } from './button-look';
 import { ButtonView } from './button-view';
 import { Card, Phone, Sheet, Verdict, rc, type Mode } from './kit';
+import { listLook, type RowSpec } from './list-look';
+import { ListView } from './list-view';
 
 type Fig = (p: { caption?: string }) => ReactNode;
 const spec = () => loadComponentSpec('switch');
@@ -41,23 +43,21 @@ function Surface({ mode = 'auto', children, className = '' }: { mode?: Mode; chi
 const KO: Record<SwitchChecked, string> = { unchecked: '끔', checked: '켬' };
 const STATE_KO: Record<SwitchState, string> = { enabled: '기본', hovered: '호버', focused: '포커스', pressed: '누름', disabled: '비활성' };
 
-// 설정 줄 — 제목 · 설명 왼쪽, 스위치만 오른쪽(멈춘 그림). 줄의 값은 List 차례에 정한다
-function SettingRow({ title, desc, on, disabled = false, dimLabel = disabled, tone, size, mode = 'auto' }: { title: string; desc?: string; on: boolean; disabled?: boolean; dimLabel?: boolean; tone?: string; size?: string; mode?: Mode }) {
-  return (
-    <div className="flex items-center gap-3 py-2.5">
-      <span className="flex min-w-0 flex-1 flex-col">
-        <span className="text-[15px] font-medium leading-[22px]" style={{ color: rc(dimLabel ? 'fg-disabled' : 'fg-neutral', mode) }}>
-          {title}
-        </span>
-        {desc && (
-          <span className="text-[13px] leading-[18px]" style={{ color: rc(dimLabel ? 'fg-disabled' : 'fg-neutral-subtle', mode) }}>
-            {desc}
-          </span>
-        )}
-      </span>
-      <S on={on} tone={tone} size={size} mode={mode} state={disabled ? 'disabled' : 'enabled'} ariaLabel={title} passive />
-    </div>
-  );
+// 설정 줄 — List 의 스위치 줄(제목 · 설명 왼쪽, 스위치 32 오른쪽, 줄 전체가 누르는 영역)
+type Setting = { title: string; desc?: string; on: boolean; disabled?: boolean; dimLabel?: boolean };
+function SettingRows({ rows, tone, live = false, mode = 'auto' }: { rows: Setting[]; tone?: string; live?: boolean; mode?: Mode }) {
+  const lk = listLook();
+  // 브랜드 톤 — 줄에 끼우는 스위치만 바꿔 그린다(List 는 톤을 정하지 않는다)
+  const look = tone && tone !== 'neutral' ? { ...lk, marks: { ...lk.marks, switch: switchLook({ size: '32', tone }) } } : lk;
+  const spec: RowSpec[] = rows.map(({ title, desc, on, disabled = false, dimLabel = disabled }) => ({
+    kind: 'switch',
+    title,
+    detail: desc,
+    checked: on,
+    disabled: disabled && dimLabel,
+    markDisabled: disabled && !dimLabel,
+  }));
+  return <ListView look={look} rows={spec} mode={mode} live={live} />;
 }
 const NOTI: [string, string, boolean][] = [
   ['결제 알림', '결제 예정일 D-1, 결제일 당일 알림', true],
@@ -252,7 +252,6 @@ const States: Fig = ({ caption }) => (
   </Panel>
 );
 
-const ROW_COLOR = { title: rc('fg-neutral'), desc: rc('fg-neutral-subtle'), disabled: rc('fg-disabled') };
 const Live: Fig = ({ caption }) => (
   <Figure caption={caption}>
     <div className="flex flex-wrap items-start gap-12 rounded-xl pk-surface px-12 py-8">
@@ -262,11 +261,9 @@ const Live: Fig = ({ caption }) => (
         <S state="disabled" on label="켜진 채 막힘" />
         <S state="disabled" label="꺼진 채 막힘" />
       </div>
-      <div className="w-[280px]">
-        {NOTI.map(([t, d, on]) => (
-          <SwitchRowDemo key={t} look={switchLook({})} title={t} desc={d} defaultChecked={on} color={ROW_COLOR} />
-        ))}
-        <span className="mt-1 block text-[12px] pk-muted">설정 줄 — 줄 어디를 눌러도 바뀐다</span>
+      <div className="w-[320px]">
+        <SettingRows rows={NOTI.map(([title, desc, on]) => ({ title, desc, on }))} live />
+        <span className="mt-1 block text-[12px] pk-muted">설정 줄(List) — 줄 어디를 눌러도 바뀐다</span>
       </div>
     </div>
   </Figure>
@@ -275,8 +272,8 @@ const Live: Fig = ({ caption }) => (
 // ── Guidelines ────────────────────────────────────────────
 const TouchTarget: Fig = ({ caption }) => (
   <Figure caption={caption}>
-    <div className="flex items-start gap-8">
-      <div className="flex flex-col items-center gap-3 rounded-xl pk-surface px-10 py-7">
+    <div className="flex items-start gap-6">
+      <div className="flex flex-col items-center gap-3 rounded-xl pk-surface px-6 py-7">
         <span className="relative inline-flex">
           <span className="absolute -inset-x-2 top-1/2 z-0 h-11 -translate-y-1/2 rounded-md" style={{ background: MARK, outline: `1px dashed ${MARK_LINE}` }} />
           <S label="종일" on style={{ position: 'relative', zIndex: 1 }} />
@@ -284,13 +281,11 @@ const TouchTarget: Fig = ({ caption }) => (
         <Cap strong="Switch">스위치 + 라벨이 한 영역 — 높이 44 까지</Cap>
       </div>
       <div className="flex flex-col items-center gap-3">
-        <div className="w-[300px] overflow-hidden rounded-xl pk-surface">
-          {NOTI.map(([t, d, on], i) => (
-            <div key={t} className="relative px-5" style={{ borderTop: i ? `1px solid ${rc('stroke-neutral-weak')}` : undefined }}>
-              {i === 0 && <span className="absolute inset-0 z-0" style={{ background: MARK, outline: `1px dashed ${MARK_LINE}` }} />}
-              <div className="relative z-[1]">
-                <SettingRow title={t} desc={d} on={on} />
-              </div>
+        <div className="w-[340px] overflow-hidden rounded-xl pk-surface py-2">
+          {NOTI.map(([title, desc, on], i) => (
+            <div key={title} className="relative">
+              {i === 0 && <span className="pointer-events-none absolute inset-0 z-[1]" style={{ background: MARK, outline: `1px dashed ${MARK_LINE}` }} />}
+              <SettingRows rows={[{ title, desc, on }]} />
             </div>
           ))}
         </div>
@@ -306,13 +301,11 @@ function NotiPhone({ tone, masterOn = true, forceOff = false }: { tone?: string;
   return (
     <Phone title="알림 설정" h={500} scale={0.68}>
       <div className="flex flex-col gap-3 p-5">
-        <Card>
-          <SettingRow title="푸시 알림" desc={masterOn ? '모든 알림이 활성화되어 있어요' : '알림이 꺼져 있어요'} on={masterOn} tone={tone} />
+        <Card pad={0} style={{ paddingBlock: 8 }}>
+          <SettingRows rows={[{ title: '푸시 알림', desc: masterOn ? '모든 알림이 활성화되어 있어요' : '알림이 꺼져 있어요', on: masterOn }]} tone={tone} />
         </Card>
-        <Card>
-          {NOTI.map(([t, d, on]) => (
-            <SettingRow key={t} title={t} desc={d} on={forceOff ? false : on} disabled={!masterOn && !forceOff} tone={tone} />
-          ))}
+        <Card pad={0} style={{ paddingBlock: 8 }}>
+          <SettingRows rows={NOTI.map(([title, desc, on]) => ({ title, desc, on: forceOff ? false : on, disabled: !masterOn && !forceOff }))} tone={tone} />
         </Card>
       </div>
     </Phone>
@@ -331,8 +324,14 @@ const ImmediateGuide: Fig = ({ caption }) => (
           scale={0.68}
           overlay={
             <Sheet title="자산 추가" footer={<ButtonView look={buttonLook({ variant: 'neutralSolid', size: 'large' })} label="저장" fill />}>
-              <SettingRow title="전체 자산 합계에 포함" desc="순자산·총자산 계산에 반영됩니다" on />
-              <SettingRow title="금액 숨기기" desc="이 자산의 금액만 가려요" on={false} />
+              <div className="-mx-6">
+                <SettingRows
+                  rows={[
+                    { title: '전체 자산 합계에 포함', desc: '순자산·총자산 계산에 반영됩니다', on: true },
+                    { title: '금액 숨기기', desc: '이 자산의 금액만 가려요', on: false },
+                  ]}
+                />
+              </div>
             </Sheet>
           }
         >
@@ -360,13 +359,13 @@ const DisabledGuide: Fig = ({ caption }) => (
   <Panel caption={caption}>
     <Pair>
       <Verdict ok note="스위치와 함께 제목 · 설명도 비활성 색 — 줄 전체가 막힌 것으로 읽힌다">
-        <div className="w-[250px]">
-          <SettingRow title="주간 리포트" desc="매주 월요일 오전 9시" on disabled />
+        <div className="w-[280px]">
+          <SettingRows rows={[{ title: '주간 리포트', desc: '매주 월요일 오전 9시', on: true, disabled: true }]} />
         </div>
       </Verdict>
       <Verdict ok={false} note="스위치만 회색 — 줄은 눌릴 것처럼 보인다">
-        <div className="w-[250px]">
-          <SettingRow title="주간 리포트" desc="매주 월요일 오전 9시" on disabled dimLabel={false} />
+        <div className="w-[280px]">
+          <SettingRows rows={[{ title: '주간 리포트', desc: '매주 월요일 오전 9시', on: true, disabled: true, dimLabel: false }]} />
         </div>
       </Verdict>
     </Pair>
@@ -424,8 +423,8 @@ const ExControlled: Fig = ({ caption }) => (
 );
 const ExSwitchmark: Fig = ({ caption }) => (
   <Preview caption={caption}>
-    <div className="w-[320px] overflow-hidden rounded-xl border border-fd-border px-6">
-      <SwitchRowDemo look={switchLook({})} title="결제 알림" defaultChecked color={ROW_COLOR} />
+    <div className="w-[340px] overflow-hidden rounded-xl border border-fd-border">
+      <SettingRows rows={[{ title: '결제 알림', on: true }]} live />
     </div>
   </Preview>
 );

@@ -110,7 +110,7 @@ SearchableList는 **variant 없음** — 단일 시각 spec. 의미 분기는 �
 
 ### ❌ Don't
 
-- 옵션 5건 이하 — search input 없이 RadioList / ToggleGroup이 적합.
+- 옵션 5건 이하 — search input 없이 List 의 라디오 줄 / ToggleGroup이 적합.
 - thumbnail 없이 텍스트만 — 식별 어려움. 최소 brand-color swatch + 글자 fallback.
 - 검색 결과 100건+ 무제한 렌더 — 성능 + 인지 부담. virtualization 또는 결과 limit 안내.
 - row 안 옵션 5개+ — 텍스트 잘림 + 시각 답답. 핵심 2–3개로 압축.
