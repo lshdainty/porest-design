@@ -3464,13 +3464,16 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 |---|---|---|---|
 | **Form / Action** | | | |
 | `button` | `r2` · `r3` · `full` | 8px · 12px · 9999px | small · medium 8, large 12, xsmall 알약 — 2026-09-30 SEED Action Button 구조(v112, `specs/components/button.yaml`) |
-| `input` / `textarea` | `sm` | 4px | |
-| `select` / `combobox` / `date-picker` | `sm` | 4px | popover trigger 포함 |
+| `input` / `textarea` | `r3` · `r2` | 12px · 8px | large · medium — 2026-10-01 SEED Text Input · Textarea(`specs/components/input.yaml` · `textarea.yaml`) |
+| `select` 트리거 · Input Button | `r3` · `r2` | 12px · 8px | Input 과 같다 — 2026-10-01 SEED Select · Input Button(`select.yaml` · `input-button.yaml`) |
+| `select` 목록 | `r5` | 20px | 칸 아래 뜨는 목록 |
+| `select-box` | `r3` | 12px | 2026-09-30 SEED Select Box(`select-box.yaml`) |
 | `slider` (track) | `full` | 9999px | |
 | `toggle` / `toggle-group` item | `sm` | 4px | |
 | `checkbox` (칸) | `r1` | 4px | SEED Checkmark(2026-09-30, `specs/components/checkbox.yaml`). 이 표는 2px 이었지만 스펙 · 코드는 4px 이었다 |
 | `radio-group` (동그라미 · 점) | `full` | 9999px | 원형 — SEED Radiomark(2026-09-30, `specs/components/radio-group.yaml`) |
 | `switch` (track + thumb) | `full` | 9999px | 알약 |
+| `list` 줄 바탕 · 타일 | `r2_5` · `r3` | 10px · 12px | 누르면 들어오는 바탕 · 앞 타일 — 카드 안 바탕은 동심 모서리(itemRadius). 2026-09-30 SEED List(`list.yaml`) |
 | **Display** | | | |
 | `badge` | `full` | 9999px | pill (Tag/Chip 대체) |
 | `avatar` | `full` | 9999px | 원형 |
