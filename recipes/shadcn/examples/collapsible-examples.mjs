@@ -73,26 +73,23 @@ export const collapsibleExamples = [
 
   {
     title: "고급 옵션 (form 패턴)",
-    description: "필수 필드(`label-md` Label + Input)는 항상 가시. `▸ 고급 옵션 (선택)` Trigger — 평균 사용자는 접힌 상태로 진입, power user만 펼쳐서 추가 input 그룹 노출. 본문 form 흐름 그대로 유지.",
+    description: "필수 필드(Field 로 감싼 Input)는 항상 가시. `▸ 고급 옵션 (선택)` Trigger — 평균 사용자는 접힌 상태로 진입, power user만 펼쳐서 추가 input 그룹 노출. 본문 form 흐름 그대로 유지.",
     jsx: `<form className="flex flex-col gap-[var(--spacing-md)] max-w-md">
-  <div className="flex flex-col gap-[var(--spacing-xs)]">
-    <Label htmlFor="title">제목</Label>
-    <Input id="title" placeholder="할일 제목" />
-  </div>
+  <Field label="제목">
+    <Input placeholder="예: 장보기" />
+  </Field>
   <Collapsible>
     <CollapsibleTrigger className="flex items-center gap-[var(--spacing-xs)] text-label-md font-medium text-text-secondary hover:text-text-primary transition-colors duration-[var(--motion-duration-fast)] [&[data-state=open]>svg]:rotate-90">
       <ChevronRight className="h-4 w-4 transition-transform duration-[var(--motion-duration-base)] ease-[var(--motion-ease-out)]" />
       고급 옵션 (선택)
     </CollapsibleTrigger>
     <CollapsibleContent className="flex flex-col gap-[var(--spacing-md)] pt-[var(--spacing-md)]">
-      <div className="flex flex-col gap-[var(--spacing-xs)]">
-        <Label htmlFor="priority">우선순위</Label>
-        <Select id="priority">{/* ... */}</Select>
-      </div>
-      <div className="flex flex-col gap-[var(--spacing-xs)]">
-        <Label htmlFor="tags">태그</Label>
-        <Input id="tags" placeholder="쉼표로 구분" />
-      </div>
+      <Field label="통화">
+        <Select placeholder="통화 선택">{/* ... */}</Select>
+      </Field>
+      <Field label="태그">
+        <Input placeholder="예: 업무, 개인" />
+      </Field>
     </CollapsibleContent>
   </Collapsible>
 </form>`,

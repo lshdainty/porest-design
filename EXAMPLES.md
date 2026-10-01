@@ -87,6 +87,8 @@ States — Loading (`aria-busy`), Disabled, With icon. Touch target: `lg` 권장
 
 ## Input / Textarea
 
+> 2026-10-01 SEED Text Input · Textarea · Field 로 다시 정했다 — 원본은 `specs/components/input.md` · `textarea.md` · `field.md`, 코드는 레시피 `input.tsx` · `textarea.tsx` · `field.tsx`. 아래 예시는 옛 모양(채운 바탕 · 브랜드 포커스 링)이라 그대로 따르지 않는다.
+
 ```html
 <div class="flex flex-col gap-1 max-w-md">
   <label for="email" class="text-caption text-secondary">이메일 <span class="text-error">*</span></label>
@@ -142,33 +144,24 @@ Textarea — max-length + counter (Desk 메모 550자 제한 등).
 
 ## Select / Combobox
 
-```html
-<!-- Native Select -->
-<div class="flex flex-col gap-1">
-  <label for="cat" class="text-caption text-secondary">카테고리</label>
-  <select id="cat" class="px-3 py-2 rounded-md border border-default bg-surface-input text-text-primary text-body-lg">
-    <option value="">선택하세요</option>
-    <option value="food">식비</option>
-    <option value="transport">교통</option>
-  </select>
-</div>
+> 2026-10-01 SEED Select · Input Button 으로 다시 정했다 — 원본은 `specs/components/select.md` · `input-button.md`, 코드는 레시피 `select.tsx` · `input-button.tsx`(Field 안에 둔다). 짧은 선택지 5개 이상은 Select(칸 아래 목록), 달력 · 시각 · 아이콘 격자 · 긴 목록은 Input Button(1280 미만 시트 · 이상 팝오버). Combobox 는 두지 않는다 — 검색해 고르는 긴 목록은 Input Button + 검색 시트. 옛 네이티브 select · 콤보박스 예시는 걷었다.
 
-<!-- Combobox (custom, ARIA) -->
-<div class="flex flex-col gap-1 relative">
-  <label for="cb" class="text-caption text-secondary">검색</label>
-  <input
-    id="cb"
-    role="combobox"
-    aria-expanded="true"
-    aria-controls="cb-list"
-    aria-autocomplete="list"
-    class="px-3 py-2 rounded-md border border-default bg-surface-input"
-  />
-  <ul id="cb-list" role="listbox" class="absolute top-full mt-1 w-full bg-surface-default border border-default rounded-md shadow-md py-1 z-dropdown">
-    <li role="option" aria-selected="true" class="px-3 py-2 text-body-lg bg-surface-default-hover">홍길동 (HR-2026-0001)</li>
-    <li role="option" class="px-3 py-2 text-body-lg hover:bg-surface-default-hover">김철수 (HR-2026-0002)</li>
-  </ul>
-</div>
+```tsx
+<Field label="결제 수단">
+  <Select placeholder="결제 수단 선택" value={asset} onValueChange={setAsset}>
+    <SelectGroup>
+      <SelectItem value="none" label="결제 수단 없음" />
+    </SelectGroup>
+    <SelectGroup label="카드">
+      <SelectItem value="hyundai-m" label="현대카드 M" />
+      <SelectItem value="shinhan-deep" label="신한카드 Deep" />
+    </SelectGroup>
+  </Select>
+</Field>
+
+<Field label="날짜">
+  <InputButton placeholder="날짜 선택" value={date ? formatDate(date) : undefined} suffixIcon={<CalendarDays />} aria-haspopup="dialog" aria-expanded={open} onClick={() => setOpen(true)} />
+</Field>
 ```
 
 ---

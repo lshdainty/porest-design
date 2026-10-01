@@ -3418,6 +3418,16 @@ HR 은 데이터 밀도가 높은 화면이 많다 — 표 · 툴바의 인라�
 - 결재 · 평가처럼 칸이 많은 폼도 크기를 섞지 않는다. 표(엑셀 셀) 안의 칸은 표 컴포넌트 차례에 정한다.
 - 읽기 전용 값은 입력처럼 생긴 상자를 흉내 내지 않고 읽기 전용 칸(`bg-disabled` 바탕 · 진한 값)으로 둔다.
 
+### Select · Input Button
+
+공통 정의는 `DESIGN.md` 의 Select · Input Button 절, 원본은 `specs/components/select.md` · `input-button.md`(2026-10-01 SEED Select · Input Button). 고른 표시 · 누름 · 포커스 색은 브랜드와 관계없이 같다.
+
+#### HR 쓰임
+
+- HR 웹은 데스크톱이 대부분 — 반응형 기본(1280 이상 트리거 40 · 선택지 39), Input Button 은 칸 아래 팝오버로 연다(1280 미만은 시트).
+- 휴가 신청 — 휴가 정책은 Select(설명 한 줄에 남은 일수), 날짜 · 기간은 Input Button(달력 팝오버 — "완료").
+- 결재자 · 사람 고르기는 Input Button + 검색 팝오버(위 검색칸 · 아래 목록). 예 / 아니오를 받는 Select 는 Checkbox 로, 2 ~ 4개 폼 값은 Chip(그 차례에).
+
 ### Card
 
 HR(B2B 데이터 밀도) — `default`/`outline` variant 위주, dashboard widget·data list 적극. `interactive`는 row click 행 단위.
@@ -3699,6 +3709,8 @@ HR — 직원 detail page(기본정보/근태/평가/급여 등 섹션 전환), 
 - manual activation default (focus ≠ activation) — HR은 form 화면 많아 자동 전환 시 입력 손실 가능
 
 ### Dropdown (Menu / Select 공통 패턴)
+
+> Select(폼 값 고르기)는 2026-10-01 Select · Input Button 절로 옮겼다(SEED Select · Input Button) — 이 절의 select · multi-select · combobox 줄은 옛 기준이고 쓰지 않는다. Menu 는 그 차례에 다시 정한다.
 
 HR — 직원 선택, 부서 선택, 결재 액션 메뉴(승인/반려/위임), 평가 등급 선택, 필터 옵션 등에서 광범위 사용.
 

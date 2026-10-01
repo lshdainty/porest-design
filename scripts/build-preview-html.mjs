@@ -230,14 +230,15 @@ export function brandProfile(brandName, tokens) {
         { kind: "warning", title: "기한 임박", body: "이번 분기 평가 작성이 D-3 남았어요." },
         { kind: "info", title: "신규 공고", body: "디자인 시스템 디자이너 공고가 등록됐어요." },
       ],
-      // 폼 칸 — renderForm 이 Field 로 그린다. pair 는 다음 칸과 나란히(짧은 두 칸), max 는 글자 수 최대, 고르는 칸(기간 포함)은 select
+      // 폼 칸 — renderForm 이 Field 로 그린다. pair 는 다음 칸과 나란히(짧은 두 칸), max 는 글자 수 최대.
+      // 고르는 칸은 select(짧은 선택지 5개 이상 — 칸 아래 목록) · inputButton(달력 · 격자를 여는 칸 — 기간 · 날짜 · 카테고리)이다(select.md "고르는 컴포넌트 고르기")
       form: {
         title: "휴가 신청 폼",
         sectionDescription: "칸의 2/3 이상이 필수라 선택 칸(사유)에만 \"선택\" 을 붙였다(필수 점과 섞지 않는다). 결재 라인은 권한 그룹 기준 자동 매핑.",
         fields: [
           { type: "input", label: "신청자", value: "김지원", helper: "근속 2년차 · 디자인본부", required: true, readonly: true, pair: true },
-          { type: "select", label: "휴가 종류", value: "연차", options: ["연차", "반차(오전)", "반차(오후)", "병가", "특별휴가"], required: true },
-          { type: "select", label: "기간", value: "2026-05-12 ~ 2026-05-14", helper: "사용 일수 3일 · 남은 연차 8.5일", required: true },
+          { type: "select", label: "휴가 정책", value: "연차", options: ["연차", "반차(오전)", "반차(오후)", "병가", "특별휴가"], required: true },
+          { type: "inputButton", label: "기간", value: "5월 12일 (화)~5월 14일 (목)", suffixIcon: "calendarDays", helper: "사용 일수 3일 · 남은 연차 8.5일", required: true },
           { type: "textarea", label: "사유", value: "가족 행사 참석으로 인한 연차 사용 요청드립니다.\n결재 후 인수인계 문서 공유드리겠습니다.", max: 1000 },
         ],
         primary: "결재 라인에 제출",
@@ -398,10 +399,11 @@ export function brandProfile(brandName, tokens) {
         title: "거래 추가",
         sectionDescription: "가계부에 새 거래를 기록해요. 카테고리는 키워드 자동 추천.",
         fields: [
-          { type: "select", label: "거래 유형", value: "지출", options: ["수입", "지출", "이체"], required: true, pair: true },
-          { type: "input", label: "금액", value: "28,500", suffix: "원", inputmode: "numeric", format: "amount", helper: "최근 카페 평균 6,800원", required: true },
-          { type: "select", label: "카테고리", value: "식비 · 카페", options: ["식비 · 카페", "식비 · 외식", "교통", "취미", "고정비"], required: true, pair: true },
-          { type: "select", label: "날짜", value: "2026-05-10", helper: "오늘", required: true },
+          // 거래 유형(수입 · 지출 · 이체 — 짧은 선택지 3개)은 Chip 자리라(select.md "고르는 컴포넌트 고르기") 그 차례까지 폼에서 뺐다 — Select 로 숨기지 않는다
+          { type: "input", label: "금액", value: "28,500", suffix: "원", inputmode: "numeric", format: "amount", helper: "최근 카페 평균 6,800원", required: true, pair: true },
+          { type: "select", label: "결제 수단", value: "현대카드 M", prefixIcon: "creditCard", options: ["결제 수단 없음", "현대카드 M", "신한카드 Deep", "국민 주계좌", "현금"], required: true },
+          { type: "inputButton", label: "카테고리", value: "식비 · 카페", prefixIcon: "coffee", suffixIcon: "chevronDown", options: ["식비 · 카페", "식비 · 외식", "교통", "취미", "고정비"], required: true, pair: true },
+          { type: "inputButton", label: "날짜", value: "5월 10일 (일)", suffixIcon: "calendarDays", helper: "오늘", required: true },
           { type: "textarea", label: "메모", value: "친구와 디자인 토픽 미팅 — 2시간 작업 후 마무리.", max: 200 },
         ],
         primary: "저장",
@@ -2038,7 +2040,7 @@ export function renderSelectBoxGallery(brand) {
 // Field .ptf-field(머리 · 입력 · 꼬리) · 입력칸 .ptf-input(Text Input) · 여러 줄 .ptf-textarea(Textarea). 짜임은 field.tsx · input.tsx · textarea.tsx 와 같다 —
 // 상자(div)가 테두리 · 바탕 · 모서리를 맡고 입력(<input> · <textarea>)이 그 안을 채운다. 상태는 상자의 data-invalid · data-disabled · data-readonly 다(레시피와 같은 이름).
 // 미리보기의 입력칸 · 여러 줄 입력칸 · 폼 칸 이름 · 설명 · 오류는 모두 이 도우미로 그린다 — 옛 회색 채운 칸(.fv-input · .form-input · .search-pill)은 걷었다.
-// 고르는 칸(Select 트리거 .form-select · Combobox · Date Picker) · Command 의 입력 · Input OTP · Chip 의 입력은 그 컴포넌트 차례에 맞춘다(input.md Migration notes).
+// 고르는 칸은 아래 Select · Input Button 도우미(selectTrigger · inputButton — 03h)로 그린다. Command 의 입력 · Input OTP · Chip 의 입력은 그 컴포넌트 차례에 맞춘다(input.md Migration notes).
 // 상자를 눌러 포커스 · 지우기 · 글자 수 · 자동 높이 · 금액 쉼표 · 제출 시 검증은 페이지 끝 스크립트(renderHtml)가 레시피처럼 맡는다.
 const TEXT_FIELD_ICON = {
   search: listSvg('<path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/>'),
@@ -2122,11 +2124,153 @@ export function textArea({ size = "responsive", autoSize = true, height = 0, max
   return `<div class="${cls}"${state}>${area}</div>`;
 }
 
-// Select 트리거 — 고르는 칸(카테고리 · 기간)은 Select · Input Button 차례에 정한다(input.md). 그때까지 옛 Select 트리거(.form-select — select.tsx 와 같은 모양)를 그대로 쓴다
-const selectTrigger = ({ id, value, describedby = "" }) => `<button type="button" class="form-select" id="${escape(id)}" aria-haspopup="listbox"${describedby ? ` aria-describedby="${describedby}"` : ""}>
-        <span>${escape(value)}</span>
-        <svg class="form-select-caret" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-      </button>`;
+// Select · Input Button — spec: specs/components/select.md · input-button.md · 수치 select.yaml · input-button.yaml. 구조는 SEED Select · Input Button(2026-10-01).
+// 고르는 칸은 둘이다 — Select(.psel-*)는 짧은 선택지 5개 이상을 칸 아래 목록으로 열고, Input Button(.pib-*)은 달력 · 시각 · 아이콘 격자 · 긴 목록을
+// 시트(1280 미만) · 팝오버(1280 이상)로 연다. 트리거는 둘 다 Text Input 의 상자형과 같은 상자다(52 · 40). 미리보기의 고르는 칸은 모두 이 도우미로 그린다 —
+// 옛 회색 채운 40 칸(.form-select)은 걷었다. 칸은 실제 버튼이라 올리고 눌러 보면 바탕 · 축소가 보인다(여는 자리는 그리지 않는다 — 03h 의 그림 참고).
+// 아이콘은 lucide(선 2) — 고른 표시 check 만 선 2.5 다(select.yaml indicator). 크기는 놓인 자리가 정한다
+const PICK_ICON = {
+  chevronDown: listSvg('<path d="m6 9 6 6 6-6"/>'),
+  chevronLeft: listSvg('<path d="m15 18-6-6 6-6"/>'),
+  chevronRight: listSvg('<path d="m9 18 6-6-6-6"/>'),
+  calendarDays: listSvg('<path d="M8 2v3"/><path d="M16 2v3"/><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M8 13h.01"/><path d="M12 13h.01"/><path d="M16 13h.01"/><path d="M8 17h.01"/><path d="M12 17h.01"/><path d="M16 17h.01"/>'),
+  clock: listSvg('<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>'),
+  creditCard: listSvg('<rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/><path d="M6 14h2"/>'),
+  banknote: listSvg('<rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/>'),
+  landmark: SELECT_BOX_ICON.landmark,
+  circleSlash: listSvg('<circle cx="12" cy="12" r="10"/><line x1="9" x2="15" y1="15" y2="9"/>'),
+  coffee: listSvg('<path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/><path d="M6 2v2"/>'),
+  utensils: LIST_ICON.utensils,
+  bus: LIST_ICON.bus,
+  shoppingBag: listSvg('<path d="M16 10a4 4 0 0 1-8 0"/><path d="M3.103 6.034h17.794"/><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"/>'),
+  house: listSvg('<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>'),
+  tag: listSvg('<path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/>'),
+  user: LIST_ICON.user,
+};
+const PICK_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+// 그 순간을 멈춘 칸 — 트리거 · 칸은 pressed · focus, 선택지는 pressed · hover · focus(키보드로 짚은 선택지)
+const PICK_INTERACTIONS = ["pressed", "focus"];
+const PICK_ITEM_INTERACTIONS = ["pressed", "hover", "focus"];
+let pickSeq = 0;
+const nextPickId = (prefix) => `${prefix}-${(pickSeq += 1)}`;
+const pickIcon = (cls, name) => (name ? `<span class="${cls}" aria-hidden="true">${PICK_ICON[name]}</span>` : "");
+
+// Select 트리거 — role=combobox 버튼 하나가 상자다. 글(value · placeholder · label)은 여기서 escape 한다.
+//   size         large(52) · medium(40 — 1280 이상 데스크톱 웹) · responsive(웹 기본 — 1280 미만 large · 이상 medium)
+//   value        고른 값 — 여럿 고르기는 values(고른 순서의 배열)를 준다. 트리거 글은 "식비, 교통" 이고 칸 폭을 넘으면 "식비 외 2개"(페이지 끝 스크립트가 폭에 맞춘다)
+//   placeholder  고르기 전의 글 — "{값의 종류} 선택"
+//   prefixIcon   앞 아이콘 이름(PICK_ICON) — 하나를 고르면 그 선택지의 아이콘, 둘 이상이면 트리거에 준 아이콘을 넘긴다
+//   open         열림 — aria-expanded · 셰브론 180°
+//   invalid · disabled · readonly · required  상태 — 트리거에 data-invalid · data-readonly · disabled, aria-invalid · aria-readonly · aria-required
+//   interaction  pressed · focus — 그 순간을 멈춘 칸(갤러리 전용). 칸은 실제 버튼이라 눌러 보면 같은 모습이다
+//   label        이름(aria-label) — Field 밖에 둔 칸만. Field 안이면 Field 의 라벨이 <label for> 로 잇는다
+//   controls · describedby  목록 id(aria-controls) · Field 가 넘기는 오류 · 설명 id
+export function selectTrigger({ size = "responsive", id = nextPickId("psel"), value = "", values = null, placeholder = "", prefixIcon = "", open = false, invalid = false, disabled = false, readonly = false, required = false, interaction = "", label = "", controls = "", describedby = "" } = {}) {
+  const cls = ["psel-trigger", `psel-trigger--${size}`, PICK_INTERACTIONS.includes(interaction) && `psel-trigger--${interaction}`].filter(Boolean).join(" ");
+  const many = Array.isArray(values) && values.length ? values : null;
+  const text = many ? many.join(", ") : value;
+  const attrs = attrsOf([
+    'type="button"',
+    `class="${cls}"`,
+    `id="${escape(id)}"`,
+    'role="combobox"',
+    'aria-haspopup="listbox"',
+    `aria-expanded="${open ? "true" : "false"}"`,
+    controls && `aria-controls="${escape(controls)}"`,
+    label && `aria-label="${escape(label)}"`,
+    describedby && `aria-describedby="${describedby}"`,
+    invalid && 'aria-invalid="true"',
+    required && 'aria-required="true"',
+    readonly && 'aria-readonly="true"',
+    invalid && 'data-invalid=""',
+    readonly && 'data-readonly=""',
+    disabled && "disabled",
+  ]);
+  const shown = text !== ""
+    ? `<span class="psel-value"${many ? ` data-psel-values="${escape(JSON.stringify(many))}"` : ""}>${escape(text)}</span>`
+    : `<span class="psel-placeholder">${escape(placeholder)}</span>`;
+  return `<button ${attrs}><span class="psel-trigger-content">${pickIcon("psel-icon", prefixIcon)}${shown}${pickIcon("psel-chevron", "chevronDown")}</span></button>`;
+}
+
+// Select 목록(Content) — 묶음(Group)마다 선택지(Item)를 쌓는다. 글(묶음 제목 · label · description)은 여기서 escape 한다.
+//   size      large(선택지 46) · medium(39) · responsive — 트리거와 같은 크기를 준다
+//   groups    [{ label, items: [{ label, description, icon, selected, disabled, interaction }] }] — 둘째 묶음부터 위에 선(Divider)을 저절로 긋는다
+//   multiple  여럿 고르기 — aria-multiselectable
+//   interaction(선택지)  pressed · hover · focus — 그 순간을 멈춘 선택지(갤러리 전용). focus 는 키보드로 짚은 선택지 — 목록의 aria-activedescendant 가 가리킨다
+//   고른 표시(체크)는 고른 선택지에만 그린다 — 고르지 않은 선택지에는 자리도 없다
+export function selectList({ size = "responsive", id = nextPickId("psel-list"), labelledby = "", label = "", multiple = false, groups = [] } = {}) {
+  const base = escape(id);
+  let active = "";
+  const body = groups.map((group, gi) => {
+    const headId = group.label ? `${base}-g${gi}` : "";
+    const items = group.items.map((item, ii) => {
+      const itemId = `${base}-o${gi}-${ii}`;
+      if (item.interaction === "focus") active = itemId;
+      const cls = ["psel-item", PICK_ITEM_INTERACTIONS.includes(item.interaction) && `psel-item--${item.interaction}`].filter(Boolean).join(" ");
+      const desc = item.description ? `<span class="psel-item-desc">${escape(item.description)}</span>` : "";
+      const mark = item.selected ? `<span class="psel-indicator" aria-hidden="true">${PICK_CHECK}</span>` : "";
+      return `<div class="${cls}" role="option" id="${itemId}" aria-selected="${item.selected ? "true" : "false"}"${item.disabled ? ' aria-disabled="true"' : ""}><span class="psel-item-content">${pickIcon("psel-item-icon", item.icon)}<span class="psel-item-body"><span class="psel-item-label">${escape(item.label)}</span>${desc}</span>${mark}</span></div>`;
+    }).join("");
+    const divider = gi > 0 ? '<div class="psel-divider" aria-hidden="true"></div>' : "";
+    const head = group.label ? `<div class="psel-group-label" id="${headId}" role="presentation">${escape(group.label)}</div>` : "";
+    return `<div class="psel-group" role="group"${headId ? ` aria-labelledby="${headId}"` : ""}>${divider}${head}${items}</div>`;
+  }).join("");
+  const attrs = attrsOf([
+    `class="psel-list psel-list--${size}"`,
+    'role="listbox"',
+    `id="${base}"`,
+    'tabindex="-1"',
+    labelledby ? `aria-labelledby="${escape(labelledby)}"` : label && `aria-label="${escape(label)}"`,
+    multiple && 'aria-multiselectable="true"',
+    active && `aria-activedescendant="${active}"`,
+  ]);
+  return `<div ${attrs}>${body}</div>`;
+}
+
+// 열린 Select — 트리거 + 목록(그 순간을 멈춘 모습). 목록은 트리거 폭 그대로 아래 8 에 붙는다. 실제로는 떠서 뒤를 덮지만, 갤러리에서는 견본 끝에 두어 흐름 안에 그린다
+export function selectOpen({ trigger = {}, list = {} } = {}) {
+  const listId = list.id || nextPickId("psel-list");
+  return `<div class="psel">${selectTrigger({ ...trigger, open: true, controls: listId })}${selectList({ size: trigger.size, ...list, id: listId })}</div>`;
+}
+
+// Input Button 칸 하나 — 상자(div)가 테두리 · 바탕 · 모서리를 맡고, 그 안의 배경 층 버튼(.pib-button)이 누르는 영역 전체 · 키보드 포커스다.
+// 값 · 붙이개 · 지우기는 그 위에 얹는다(.pib-content — 누름을 지나 보낸다). 지우기는 그 위의 따로 누르는 버튼이다(버튼 안에 버튼을 두지 않는다). 글은 여기서 escape 한다.
+//   size · invalid · disabled · readonly · interaction · label · describedby  Select 트리거와 같다
+//   value · placeholder      고른 값 · 고르기 전의 글("{값의 종류} 선택") — 이름은 Field 의 라벨 + 값(aria-labelledby, 비었으면 라벨 + placeholder)
+//   prefix · suffix          앞 · 뒤 글자(단위)
+//   prefixIcon · suffixIcon  앞 · 뒤 아이콘 이름 — 뒤 아이콘은 무엇이 열리는지 알린다(calendarDays · clock · chevronDown)
+//   clearable    지우기 — 선택 사항인 칸에 값이 있고 막히지 않았을 때만 그린다. 값 바로 뒤 · 뒤 붙이개 앞
+//   labelledby   Field 의 라벨 id
+//   expanded     여는 자리가 열려 있다 — aria-expanded(모습은 그대로다)
+export function inputButton({ size = "responsive", id = nextPickId("pib"), value = "", placeholder = "", prefix = "", suffix = "", prefixIcon = "", suffixIcon = "", clearable = false, invalid = false, disabled = false, readonly = false, interaction = "", label = "", labelledby = "", describedby = "", expanded = false } = {}) {
+  const cls = ["pib", `pib--${size}`, PICK_INTERACTIONS.includes(interaction) && `pib--${interaction}`].filter(Boolean).join(" ");
+  const state = (invalid ? ' data-invalid=""' : "") + (disabled ? ' data-disabled=""' : "") + (readonly ? ' data-readonly=""' : "");
+  const base = escape(id);
+  const valueId = `${base}-value`;
+  const prefixId = prefix ? `${base}-prefix` : "";
+  const suffixId = suffix ? `${base}-suffix` : "";
+  // 이름 = 라벨 + 값(비면 placeholder). Field 밖이면 aria-label 을 자기 id 로 다시 이어(aria-labelledby="자기 값") 값이 뒤에 이어 읽힌다.
+  // 붙이개 글은 설명으로 읽힌다(단위가 화면 읽기 프로그램에도 들리게). 읽기 전용은 포커스는 되고 열리지 않는다 — aria-disabled(input-button.tsx 와 같다)
+  const button = `<button ${attrsOf([
+    'type="button"',
+    'class="pib-button"',
+    `id="${base}"`,
+    !labelledby && label && `aria-label="${escape(label)}"`,
+    labelledby ? `aria-labelledby="${escape(labelledby)} ${valueId}"` : label && `aria-labelledby="${base} ${valueId}"`,
+    (prefixId || suffixId || describedby) && `aria-describedby="${[prefixId, suffixId, describedby].filter(Boolean).join(" ")}"`,
+    'aria-haspopup="dialog"',
+    `aria-expanded="${expanded ? "true" : "false"}"`,
+    invalid && 'aria-invalid="true"',
+    readonly && 'aria-disabled="true"',
+    disabled && "disabled",
+  ])}></button>`;
+  const affix = (text, affixId) => (text ? `<span class="pib-affix" id="${affixId}" aria-hidden="true">${escape(text)}</span>` : "");
+  const shown = value !== ""
+    ? `<span class="pib-value" id="${valueId}" aria-hidden="true">${escape(value)}</span>`
+    : `<span class="pib-placeholder" id="${valueId}" aria-hidden="true">${escape(placeholder)}</span>`;
+  const clear = clearable && value !== "" && !disabled && !readonly ? `<button type="button" class="pib-clear" aria-label="지우기" tabindex="-1">${TEXT_FIELD_ICON.circleX}</button>` : "";
+  return `<div class="${cls}"${state}>${button}<span class="pib-content">${pickIcon("pib-icon", prefixIcon)}${affix(prefix, prefixId)}${shown}${clear}${affix(suffix, suffixId)}${pickIcon("pib-icon", suffixIcon)}</span></div>`;
+}
 
 // Field — 머리(라벨 · 필수 점 또는 "선택" · 보조 액션) · 입력 · 꼬리(설명 또는 오류 · 글자 수)를 8 간격으로 쌓는다. 글은 여기서 escape 한다.
 //   label · labelWeight  칸 이름 — medium 500(기본) · bold 700(칸 하나를 크게 받는 단계 화면)
@@ -2137,7 +2281,8 @@ const selectTrigger = ({ id, value, describedby = "" }) => `<button type="button
 //   invalid · error  오류 — 오류 글이 설명 자리를 대신하고 글자 수가 빨개진다. 라벨은 그대로다
 //   requiredMessage  폼 그림의 제출 시 검증 — 비운 채 제출하면 보일 오류(페이지 끝 스크립트)
 //   max          글자 수 최대 — 있으면 꼬리 오른쪽에 "쓴 수/최대"(자소 단위). 입력은 최대에서 멈춘다
-//   control      입력 — { kind: "input" | "textarea", ...textInput · textArea 인자 } · { kind: "select", value } (고르는 칸)
+//   control      입력 — { kind: "input" | "textarea", ...textInput · textArea 인자 } · 고르는 칸 { kind: "select", ...selectTrigger 인자, groups · multiple }(groups 를 주면 열린 목록까지) ·
+//                { kind: "inputButton", ...inputButton 인자 }. 고르는 칸의 오류는 제출 시 검증(requiredMessage)이 아니라 invalid · error 로 그린다
 //   disabled · readonly  Field 에 주면 입력이 받는다
 export function textField({ id = nextTextFieldId(), label = "", labelWeight = "medium", required = false, mark = "", action = "", description = "", descriptionIcon = "", invalid = false, error = "", requiredMessage = "", max = 0, control = {}, disabled = false, readonly = false, className = "" } = {}) {
   const showError = invalid && error;
@@ -2149,7 +2294,14 @@ export function textField({ id = nextTextFieldId(), label = "", labelWeight = "m
   const actionEl = action ? `<div class="ptf-field-action"><button class="btn btn-ghost btn-ghost-subtle btn-size-xsmall btn-flush-right" type="button"><span>${escape(action)}</span></button></div>` : "";
   const header = labelEl || actionEl ? `<div class="ptf-field-header">${labelEl}${actionEl}</div>` : "";
   const shared = { id, describedby, invalid, required, disabled: disabled || !!control.disabled, readonly: readonly || !!control.readonly };
-  const input = control.kind === "select" ? selectTrigger({ id, value: control.value, describedby })
+  // 고르는 칸 — Select 는 <label for> 가 트리거(combobox)의 이름이고, 열린 목록은 그 라벨을 이름으로 쓴다. Input Button 은 라벨 + 값이 이름이다(aria-labelledby)
+  const pick = () => {
+    if (!control.groups) return selectTrigger({ ...control, ...shared });
+    const { groups, multiple, ...trigger } = control;
+    return selectOpen({ trigger: { ...trigger, ...shared }, list: { id: `${id}-list`, labelledby: label ? ids.label : "", multiple, groups } });
+  };
+  const input = control.kind === "select" ? pick()
+    : control.kind === "inputButton" ? inputButton({ ...control, ...shared, labelledby: label ? ids.label : "" })
     : control.kind === "textarea" ? textArea({ ...control, ...shared })
     : textInput({ ...control, ...shared });
   // 설명은 오류가 있을 때도 숨겨 둔다(hidden) — 제출 시 검증으로 오류가 걷히면 스크립트가 다시 보인다
@@ -2315,28 +2467,34 @@ export function renderTextFieldGallery(brand) {
     ]),
   );
 
-  // 7. 폼 — Desk 거래 추가(폰 · large) · HR 휴가 신청(데스크톱 웹 · medium). 제출 버튼은 페이지 끝 스크립트가 비운 필수 칸을 검증한다
+  // 7. 폼 — Desk 거래 추가(폰 · large) · HR 휴가 신청(데스크톱 웹 · medium). 제출 버튼은 페이지 끝 스크립트가 비운 필수 입력칸을 검증한다.
+  // 고르는 칸은 03h 의 Select · Input Button 이다(비교 페이지 결정 — 카테고리 · 날짜 · 기간은 Input Button, 결제 수단 · 휴가 정책은 Select). 값이 있어 제출 시 검증에 들지 않는다
   const deskRows = [
     { label: "금액", required: true, requiredMessage: "금액을 입력해주세요.", control: { kind: "input", size: "large", value: "12,000", suffix: "원", inputmode: "numeric", format: "amount" } },
-    { label: "카테고리", required: true, control: { kind: "select", value: "식비 · 카페" } },
+    { label: "카테고리", required: true, control: { kind: "inputButton", size: "large", value: "식비 · 카페", prefixIcon: "coffee", suffixIcon: "chevronDown" } },
+    { label: "날짜", required: true, control: { kind: "inputButton", size: "large", value: "10월 1일 (목)", suffixIcon: "calendarDays" } },
+    { label: "결제 수단", required: true, control: { kind: "select", size: "large", value: "현대카드 M", prefixIcon: "creditCard" } },
     { label: "메모", max: 100, control: { kind: "textarea", size: "large", placeholder: "예: 친구와 점심" } },
   ];
+  const hrPolicy = { label: "휴가 정책", required: true, control: { kind: "select", size: "medium", value: "연차" } };
+  const hrPeriod = { label: "기간", required: true, control: { kind: "inputButton", size: "medium", value: "10월 12일 (월)~10월 14일 (수)", suffixIcon: "calendarDays" } };
   const hrHoliday = { label: "휴가지", control: { kind: "input", size: "medium", placeholder: "예: 제주", clearable: true } };
   const hrPhone = { label: "비상 연락처", required: true, requiredMessage: "비상 연락처를 입력해주세요.", control: { kind: "input", size: "medium", value: "010-1234-5678", inputmode: "tel" } };
   const hrRows = [
     { label: "제목", required: true, requiredMessage: "제목을 입력해주세요.", description: "결재 목록에 이 제목으로 보여요.", control: { kind: "input", size: "medium", value: "개인 사유", placeholder: "예: 개인 사유" } },
+    [hrPolicy, hrPeriod],
     [hrHoliday, hrPhone],
     { label: "휴가 사유", required: true, requiredMessage: "휴가 사유를 입력해주세요.", max: 1000, control: { kind: "textarea", size: "medium", value: "가족 행사 참석으로 연차를 씁니다.\n인수인계 문서는 결재 전에 팀 채널에 올려 두었습니다." } },
   ];
   const formsPanel = panel(
     "폼 — 거래 추가(폰) · 휴가 신청(데스크톱 웹)",
-    "Field 는 24 간격으로 쌓고, 라벨과 값이 짧은 두 칸만 16 간격으로 나란히 둔다(768 미만은 한 줄에 하나). 한 폼 안에서 크기를 섞지 않는다 — 폰은 large, 1280 이상 데스크톱 웹은 medium. 두 폼 모두 칸의 2/3 이상이 필수라 선택 칸에만 \"선택\" 을 붙였다. 저장 · 신청 버튼은 켜 둔다 — 필수 칸을 비우고 누르면 그 칸마다 오류가 설명 자리를 대신하고 첫 오류 칸으로 포커스가 간다. 다시 쓰면 오류가 걷힌다. 카테고리는 목록에서 고르는 칸이라 Select 트리거로 두었다 — Select · Input Button 은 그 차례에 정하므로(input.md) 아직 옛 모양이다.",
+    "Field 는 24 간격으로 쌓고, 라벨과 값이 짧은 두 칸만 16 간격으로 나란히 둔다(768 미만은 한 줄에 하나). 한 폼 안에서 크기를 섞지 않는다 — 폰은 large, 1280 이상 데스크톱 웹은 medium. 두 폼 모두 칸의 2/3 이상이 필수라 선택 칸에만 \"선택\" 을 붙였다. 저장 · 신청 버튼은 켜 둔다 — 필수 칸을 비우고 누르면 그 칸마다 오류가 설명 자리를 대신하고 첫 오류 칸으로 포커스가 간다. 다시 쓰면 오류가 걷힌다. 고르는 칸은 03h 의 두 컴포넌트다 — 카테고리 · 날짜 · 기간은 격자 · 달력을 여는 Input Button, 결제 수단 · 휴가 정책은 칸 아래 목록을 여는 Select 다. 상자가 입력칸과 같아 한 폼에 섞여도 줄이 맞는다.",
     samples([
-      sample("Desk 거래 추가 — 폰 · large", "금액(뒤 글자 원) · 카테고리(Select) · 메모(선택 · 0/100)", screen("거래 추가", deskRows, {
+      sample("Desk 거래 추가 — 폰 · large", "금액(뒤 글자 원) · 카테고리 · 날짜(Input Button) · 결제 수단(Select) · 메모(선택 · 0/100)", screen("거래 추가", deskRows, {
         actions: `
             <div class="ptf-screen-actions"><button class="btn btn-neutral-solid btn-size-large ptf-form-cta" type="button" data-ptf-submit="">저장</button></div>`,
       })),
-      sample("HR 휴가 신청 — 데스크톱 웹 · medium", "제목 · 휴가지(선택) | 비상 연락처 — 사이 16 · 휴가 사유", screen("휴가 신청", hrRows, {
+      sample("HR 휴가 신청 — 데스크톱 웹 · medium", "제목 · 휴가 정책(Select) | 기간(Input Button) · 휴가지(선택) | 비상 연락처 — 사이 16 · 휴가 사유", screen("휴가 신청", hrRows, {
         desktop: true,
         actions: `
             <div class="ptf-screen-actions ptf-screen-actions--end"><button class="btn btn-neutral-weak" type="button">임시 저장</button><button class="btn btn-brand-solid" type="button" data-ptf-submit="">신청</button></div>`,
@@ -2360,6 +2518,221 @@ export function renderTextFieldGallery(brand) {
     ${affixPanel}
     ${textareaPanel}
     ${formsPanel}
+  </section>`;
+}
+
+// Select · Input Button 갤러리 — 트리거 · 크기 · 상태 · 목록 · 여럿 고르기 · 붙이개 · 여는 자리 일곱 판을 흰 표면(.vignette-card) 위에 그린다.
+// 견본 틀(.ptf-samples · .ptf-cap · .ptf-now)과 상태 표(.cb-matrix · .ptf-matrix)는 Text Field 갤러리 것을 그대로 쓴다.
+// 글은 Desk(거래 추가 · 예산 · 할부 · 알림)와 HR(휴가 신청 · 결재)에서 빌렸다 — select.md · input-button.md 코드 예와 같은 글이다.
+// 열린 목록 · 누름 · 포커스 · 시트 · 팝오버는 그 순간을 멈춰 그렸다 — 칸은 실제 버튼이라 올리고 눌러 보면 바탕 · 축소가 보인다(여는 자리는 열지 않는다).
+export function renderPickGallery(brand) {
+  const panel = (title, sub, body) => `
+    <div class="vignette-card cb-panel">
+      <div class="vignette-head">
+        <div class="vignette-title">${escape(title)}</div>
+        <div class="vignette-sub">${escape(sub)}</div>
+      </div>${body}
+    </div>`;
+  const samples = (items, cls = "ptf-samples") => `
+      <div class="${cls}">${items.join("")}
+      </div>`;
+  const sample = (cap, en, body) => `
+        <div class="ptf-sample">
+          <div class="ptf-cap">${escape(cap)}<span>${escape(en)}</span></div>
+          ${body}
+        </div>`;
+  const select = (label, control, field = {}) => textField({ label, ...field, control: { kind: "select", size: "large", ...control } });
+  const pickButton = (label, control, field = {}) => textField({ label, ...field, control: { kind: "inputButton", size: "large", ...control } });
+  const date = { value: "10월 1일 (목)", suffixIcon: "calendarDays" };
+
+  // 1. 트리거 — 같은 상자 · 셰브론 · 뒤 아이콘
+  const triggerPanel = panel(
+    "트리거 — 같은 상자 · 셰브론 · 뒤 아이콘",
+    "Select 와 Input Button 은 같은 상자다 — Text Input 의 상자형과 높이 · 모서리 · 여백 · 글자가 같아 한 폼에 섞여도 줄이 맞는다. 값은 16 · 400 · fg-neutral, 고르기 전의 글은 \"{값의 종류} 선택\" 꼴의 fg-placeholder 다 — 라벨만 그대로 두지 않는다. Select 는 오른쪽 셰브론(chevron-down 20 · fg-neutral-muted)이 칸 아래 목록이 열리는 것을 알리고, 열리면 180° 돈다. Input Button 은 뒤 아이콘이 무엇이 열리는지 알린다 — 달력 · 시계 · 목록이나 격자는 아래 화살표. 앞 아이콘(20 · fg-neutral-muted)은 값의 종류를 함께 알릴 때 두고, Select 는 하나를 고르면 그 선택지의 아이콘이 트리거로 온다. 칸은 늘 Field 의 라벨과 함께 쓰고, 오류는 칸 안쪽 2px stroke-critical-solid 와 칸 아래 Field 의 오류 글이 알린다.",
+    samples([
+      sample("Select — 고른 값 · 앞 아이콘", "Select · 고른 선택지의 prefixIcon", select("결제 수단", { value: "현대카드 M", prefixIcon: "creditCard" })),
+      sample("Select — 고르기 전", "placeholder=\"휴가 정책 선택\"", select("휴가 정책", { placeholder: "휴가 정책 선택" })),
+      sample("Input Button — 달력을 연다", "suffixIcon={<CalendarDays />}", pickButton("날짜", date)),
+      sample("Input Button — 고르기 전", "placeholder=\"날짜 선택\"", pickButton("날짜", { placeholder: "날짜 선택", suffixIcon: "calendarDays" })),
+      sample("오류 — Select", "invalid · errorMessage — 오류 글은 Field 가 칸 아래에", select("휴가 정책", { placeholder: "휴가 정책 선택" }, { invalid: true, error: "휴가 정책을 골라주세요." })),
+      sample("오류 — Input Button", "invalid · errorMessage", pickButton("날짜", { placeholder: "날짜 선택", suffixIcon: "calendarDays" }, { invalid: true, error: "날짜를 골라주세요." })),
+    ]),
+  );
+
+  // 2. 크기 — large · medium · 반응형. 목록은 크기마다 바뀌는 값(묶음 제목 · 앞 아이콘 · 한 줄 · 설명 · 체크)을 다 담게 짧게 짰다.
+  // 반응형은 지금 폭을 아래 글로 알린다(CSS 가 1280 에서 바꾼다)
+  const payShort = [
+    { label: "카드", items: [{ label: "현대카드 M", icon: "creditCard", selected: true }, { label: "신한카드 Deep", icon: "creditCard" }] },
+    { label: "계좌", items: [{ label: "국민 주계좌", description: "123-45-6789", icon: "landmark" }] },
+  ];
+  const sizePanel = panel(
+    "크기 — large · medium · 반응형",
+    "large 는 폰 · 앱에서 쓴다 — 트리거 52 · 모서리 12 · 좌우 16 · 사이 10 · 글자 16/22 · 아이콘 20, 선택지 46(위아래 12 · 사이 12 · 앞 아이콘 22 · 체크 14) · 묶음 제목 14 · 500. medium 은 1280 이상 데스크톱 웹(마우스)에서만 쓴다 — 트리거 40 · 8 · 14 · 8 · 14/19 · 16, 선택지 39(10 · 8 · 18 · 12) · 묶음 제목 13 · 400. 한 줄 설명이 붙은 선택지는 66 · 57 이다(설명 13 · 12). 웹의 기본 responsive 는 1280 미만 large · 이상 medium 이고 앱은 늘 large 다. 트리거와 목록은 같은 크기를 쓰고, 한 폼 안에서 크기를 섞지 않는다.",
+    samples([
+      sample("Select · large — 트리거 52 · 선택지 46 · 설명 66", "size=\"large\" — 폰 · 앱", select("결제 수단", { value: "현대카드 M", prefixIcon: "creditCard", groups: payShort })),
+      sample("Select · medium — 트리거 40 · 선택지 39 · 설명 57", "size=\"medium\" — 1280 이상 데스크톱 웹만", select("결제 수단", { size: "medium", value: "현대카드 M", prefixIcon: "creditCard", groups: payShort })),
+      sample("Input Button · large — 52", "size=\"large\" — 아이콘 20", pickButton("날짜", date)),
+      sample("Input Button · medium — 40", "size=\"medium\" — 아이콘 16", pickButton("날짜", { ...date, size: "medium" })),
+      sample("반응형 — 웹 기본", "size=\"responsive\" — 1280(--breakpoint-lg)에서 바뀐다", `<div class="ptf-form">${select("결제 수단", { size: "responsive", value: "현대카드 M", prefixIcon: "creditCard" })}${pickButton("날짜", { ...date, size: "responsive" })}</div>
+          <p class="ptf-now" aria-hidden="true"></p>`),
+    ]),
+  );
+
+  // 3. 상태 — 누름 · 포커스 · 열림은 그 순간을 멈춰 그렸다(--pressed · --focus · aria-expanded)
+  const stateCols = [
+    { ko: "Select · 값", en: "Select — value · prefixIcon", kind: "select", args: { value: "현대카드 M", prefixIcon: "creditCard" } },
+    { ko: "Select · 빈 칸", en: "Select — placeholder", kind: "select", args: { placeholder: "결제 수단 선택" } },
+    { ko: "Input Button · 값", en: "InputButton — value · suffixIcon", kind: "inputButton", args: date },
+    { ko: "Input Button · 빈 칸", en: "InputButton — placeholder", kind: "inputButton", args: { placeholder: "날짜 선택", suffixIcon: "calendarDays" } },
+  ];
+  const states = [
+    { ko: "기본", en: "enabled" },
+    { ko: "누름", en: "pressed — 호버는 바탕만", interaction: "pressed" },
+    { ko: "포커스", en: "focused — 키보드만", interaction: "focus" },
+    { ko: "열림", en: "open", open: true },
+    { ko: "오류", en: "invalid", invalid: true },
+    { ko: "비활성", en: "disabled", disabled: true },
+    { ko: "읽기 전용", en: "readonly", readonly: true },
+  ];
+  const stateCell = (c, s) => {
+    const args = { size: "large", ...c.args, label: `${c.ko} — ${s.ko}`, interaction: s.interaction || "", invalid: !!s.invalid, disabled: !!s.disabled, readonly: !!s.readonly };
+    if (c.kind === "select") return selectTrigger({ ...args, open: !!s.open });
+    // Input Button 은 열려도 모습이 그대로다 — 열린 시트 · 팝오버가 알린다
+    return s.open ? '<span class="psel-na">모습 그대로 — 열린 시트 · 팝오버가 알린다</span>' : inputButton(args);
+  };
+  const stateHead = `<div class="cb-matrix-row cb-matrix-row--head"><div class="cb-matrix-head">상태</div>${
+    stateCols.map(c => `<div class="cb-matrix-head">${escape(c.ko)}<span>${escape(c.en)}</span></div>`).join("")
+  }</div>`;
+  const statePanel = panel(
+    "상태 — 기본 · 누름 · 포커스 · 열림 · 오류 · 비활성 · 읽기 전용",
+    "누름 · 포커스 · 열림은 그 순간을 멈춰 그렸다 — 칸은 실제 버튼이라 올리고 눌러 보면 같은 모습이다. 누르면 바탕이 bg-layer-default-pressed 로 칠해지고 값 · 아이콘만 2px 거리로 준다(기준 길이 max(높이, 폭 ÷ 4, 24)) — 테두리 · 바탕은 줄지 않는다. 마우스를 올리면 같은 바탕이고 축소는 없다. 포커스는 키보드로 왔을 때만 바깥 링 2px · 띄움 2px stroke-focus-ring 이다 — 마우스 · 터치로 눌러서는 링이 없고, 입력 중임을 알리는 Text Input 의 안쪽 2px 테두리와도 다르다. Select 는 열리면 셰브론이 180° 돈다(열 때 150ms · 닫을 때 100ms). Input Button 은 열려도 모습이 그대로다. 오류는 안쪽 2px stroke-critical-solid 이고 눌러도 그대로다. 비활성은 bg-disabled 바탕에 글자 · 아이콘 fg-disabled, 읽기 전용은 bg-disabled 바탕에 값이 진한 그대로다 — 포커스는 되고 열리지 않아 누름 · 호버가 없다. 둘 다 흐리게 하지 않는다.",
+    `
+      <div class="cb-matrix ptf-matrix" style="--cb-cols: ${stateCols.length};">
+        ${stateHead}${states.map(s => `
+        <div class="cb-matrix-row"><div class="cb-matrix-label">${escape(s.ko)}<span>${escape(s.en)}</span></div>${
+          stateCols.map(c => `<div class="cb-matrix-cell">${stateCell(c, s)}</div>`).join("")
+        }</div>`).join("")}
+      </div>`,
+  );
+
+  // 4. 목록 — 묶음 · 선 · 설명 · 고름 · 알약 · 비활성. "없음" 은 맨 앞 따로 묶음(select.md "없음" 을 답으로 받기)
+  const payGroups = (picked, active = "") => [
+    { items: [{ label: "결제 수단 없음", icon: "circleSlash" }] },
+    { label: "카드", items: [{ label: "현대카드 M", icon: "creditCard" }, { label: "신한카드 Deep", icon: "creditCard" }] },
+    { label: "계좌 · 현금", items: [
+      { label: "국민 주계좌", description: "123-45-6789", icon: "landmark" },
+      { label: "현금", icon: "banknote" },
+      { label: "우리 적금", description: "만기 전에는 쓸 수 없는 계좌", icon: "landmark", disabled: true },
+    ] },
+  ].map(g => ({ ...g, items: g.items.map(i => ({ ...i, selected: i.label === picked, interaction: i.label === active ? "focus" : "" })) }));
+  const itemStates = [{ items: [
+    { label: "기본", description: "바탕 없음" },
+    { label: "누름", description: "좌우 8 들어온 알약 + 콘텐츠 2px 거리 축소", interaction: "pressed" },
+    { label: "호버 · 키보드 위치", description: "같은 알약 — 축소 없음", interaction: "focus" },
+    { label: "고름", description: "오른쪽 체크만 — 바탕 · 굵기는 그대로", selected: true },
+    { label: "비활성", description: "글 · 설명 · 아이콘 · 체크 fg-disabled — 알약 없음", disabled: true },
+    { label: "비활성 · 고름", description: "고른 채 막힌 선택지 — 체크도 fg-disabled", disabled: true, selected: true },
+  ] }];
+  const listPanel = panel(
+    "목록 — 묶음 · 선 · 설명 · 고른 표시 · 알약",
+    "목록은 트리거 폭 그대로 아래 8 에 붙어 열린다(아래가 모자라면 위로) — 폰에서도 시트로 바꾸지 않는다. 모서리 20 · bg-layer-floating · shadow-s3 · 위아래 8 이고, 높이는 480 까지다(넘치면 목록 안에서 스크롤). 묶음이 둘 이상이면 사이에 1px stroke-neutral-subtle 선을 좌우 16 들여 저절로 긋는다 — 묶음 사이는 8 + 1 + 8 이고 선택지 사이에는 선이 없다. 묶음 제목은 14 · 500 · fg-neutral-subtle 이다. 선택지 글은 16 · 400 · fg-neutral 이고 목록 안에서는 줄바꿈된다 — 한 줄 설명은 13 · fg-neutral-subtle. 고른 선택지는 오른쪽 체크(lucide check 14 · 선 2.5 · fg-neutral)만이다 — 바탕 · 굵기는 바꾸지 않는다. 누르면 좌우 8 들어온 알약(모서리 12 · bg-layer-floating-pressed)에 콘텐츠가 2px 거리로 주고, 마우스를 올리거나 키보드로 짚은 선택지는 같은 알약이다(축소 없음 — 링은 더하지 않는다, SEED 그대로). 막힌 선택지는 글 · 설명 · 아이콘 · 체크가 fg-disabled 이고 알약이 생기지 않는다. \"없음\" 이 답이 될 수 있는 칸은 \"결제 수단 없음\" 처럼 \"{칸 이름} 없음\" 을 맨 앞 따로 묶음에 둔다.",
+    samples([
+      sample("열린 목록 — 묶음 · 선 · 설명 · 고름 · 키보드 위치 · 비활성", "SelectGroup label · SelectItem description · aria-activedescendant", select("결제 수단", { value: "현대카드 M", prefixIcon: "creditCard", groups: payGroups("현대카드 M", "신한카드 Deep") })),
+      sample("선택지 상태 — 그 순간을 멈춰 그렸다", "SelectItem — pressed · hover · focus · selected · disabled", selectList({ size: "large", label: "선택지 상태", groups: itemStates })),
+    ]),
+  );
+
+  // 5. 여럿 고르기 · 앞 아이콘 · "없음". 여럿 고른 값의 "외 N개" 는 페이지 끝 스크립트가 칸 폭에 맞춰 고른다
+  const budget = (picked) => [{ items: [
+    { label: "식비", icon: "utensils" }, { label: "교통", icon: "bus" }, { label: "쇼핑", icon: "shoppingBag" }, { label: "카페", icon: "coffee" }, { label: "주거", icon: "house" },
+  ].map(i => ({ ...i, selected: picked.includes(i.label) })) }];
+  const multiPanel = panel(
+    "여럿 고르기 · 앞 아이콘 · \"없음\"",
+    "여럿 고르기는 목록이 열린 채 남아 이어서 고르고, 고른 선택지를 다시 누르면 풀린다 — 고른 선택지마다 오른쪽 체크다. 트리거에는 고른 순서대로 쉼표로 잇고(\"식비, 교통\"), 칸 폭을 넘으면 가장 먼저 고른 값을 남기고 나머지 개수를 붙인다(\"식비 외 2개\" — \"외\" 는 앞의 값을 뺀 개수다). 아래 견본은 칸 폭에 맞춰 글이 바뀐다. 최대 개수는 Field 설명에 적는다. 트리거의 앞 아이콘은 고른 개수로 정한다 — 하나면 그 선택지의 아이콘, 둘 이상이면 트리거에 준 아이콘이다. \"없음\" 을 고르면 값을 고른 것으로 친다 — 트리거에 그 글과 아이콘이 들어가고, 필수 칸이어도 검증을 통과한다. Select 에는 지우기 버튼이 없다.",
+    samples([
+      sample("여럿 고르기 — 열린 채 이어서 고른다", "multiple · aria-multiselectable — 고른 순서대로", select("포함할 카테고리", { multiple: true, values: ["식비", "교통"], prefixIcon: "tag", groups: budget(["식비", "교통"]) })),
+      sample("칸 폭을 넘으면 — 첫 값 외 N개", "formatValue 기본 — 좁은 칸(200)", `<div class="psel-narrow">${select("포함할 카테고리", { values: ["식비", "교통", "쇼핑"], prefixIcon: "tag" }, { description: "최대 3개까지 고를 수 있어요." })}</div>`),
+      sample("\"없음\" — 맨 앞 따로 묶음", "고르면 값을 고른 것으로 친다 — 그 글 · 아이콘이 트리거로", select("결제 수단", { value: "결제 수단 없음", prefixIcon: "circleSlash", groups: payGroups("결제 수단 없음") })),
+    ]),
+  );
+
+  // 6. Input Button — 붙이개 · 지우기
+  const cc = (size, value) => pickButton("참조자", { size, value, placeholder: "참조자 선택", prefixIcon: "user", suffixIcon: "chevronDown", clearable: true }, { mark: "optional" });
+  const affixPanel = panel(
+    "Input Button — 붙이개 · 지우기",
+    "칸 안 앞 · 뒤에 글자나 아이콘을 둔다 — 글자는 값과 같은 크기의 fg-neutral-subtle, 아이콘은 large 20 · medium 16 의 fg-neutral-muted 이고 사이는 10 · 8 이다. 뒤 아이콘은 누르면 무엇이 열리는지 알린다 — 달력(calendar) · 시계(clock) · 목록이나 격자(chevron-down). 한 폼 안에서 같은 것을 여는 칸은 같은 아이콘을 쓴다. 값의 종류를 아이콘으로 함께 알리려면 앞 아이콘을 쓴다 — 고른 카테고리의 아이콘처럼 값에 딸린 아이콘도 된다. 지우기는 선택 사항인 칸에 값이 있을 때만 있다 — lucide circle-x(large 22 · medium 18 · fg-neutral-subtle)이고, 값 바로 뒤 · 뒤 붙이개 앞에 놓여 뒤 아이콘이 늘 오른쪽 끝에 있다. 누르면 값만 비우고 아무것도 열지 않는다 — 누름도 지우기만 준다. Tab 순서에는 없고, 누르는 영역은 24 이상이다.",
+    samples([
+      sample("뒤 아이콘 — 달력", "suffixIcon={<CalendarDays />}", pickButton("날짜", date)),
+      sample("뒤 아이콘 — 시계", "suffixIcon={<Clock />}", pickButton("알림 시각", { value: "오후 9:00", suffixIcon: "clock" })),
+      sample("앞 아이콘 · 아래 화살표 — 격자", "고른 카테고리의 prefixIcon · suffixIcon={<ChevronDown />}", pickButton("카테고리", { value: "식비 · 카페", prefixIcon: "coffee", suffixIcon: "chevronDown" })),
+      sample("뒤 글자 — 단위", "suffix=\"개월\" — 휠을 연다", pickButton("할부 기간", { value: "3", suffix: "개월" })),
+      sample("지우기 — 선택 사항인 칸에 값이 있을 때", "onClear — 값 바로 뒤 · 뒤 아이콘 앞", cc("large", "김지원")),
+      sample("지우기 — 값이 없으면 없다", "빈 칸 · onClear", cc("large", "")),
+      sample("medium — 아이콘 16 · 지우기 18", "size=\"medium\" · 사이 8", cc("medium", "김지원")),
+    ]),
+  );
+
+  // 7. 여는 자리 — 폰의 시트 · 데스크톱 웹의 팝오버. 달력은 자리만 그린 것이다(Date Picker 차례에 정한다) — 2026년 10월 1일은 목요일이라 앞 4칸이 빈다
+  const calendar = ({ picked = [], range = [] } = {}) => {
+    const days = Array.from({ length: 31 }, (_, i) => i + 1).map((d) => {
+      const cls = ["pib-cal-day", picked.includes(d) && "pib-cal-day--picked", range.includes(d) && "pib-cal-day--range"].filter(Boolean).join(" ");
+      return `<span class="${cls}"><span>${d}</span></span>`;
+    });
+    const blanks = Array.from({ length: 4 }, () => '<span class="pib-cal-day" aria-hidden="true"></span>');
+    const nav = (icon, name) => `<button class="btn btn-ghost btn-ghost-subtle btn-icon-only btn-size-small" type="button" aria-label="${name}">${PICK_ICON[icon]}</button>`;
+    return `<div class="pib-cal">
+            <div class="pib-cal-head">${nav("chevronLeft", "이전 달")}<span class="pib-cal-month">2026년 10월</span>${nav("chevronRight", "다음 달")}</div>
+            <div class="pib-cal-grid">${["일", "월", "화", "수", "목", "금", "토"].map(d => `<span class="pib-cal-dow">${d}</span>`).join("")}${blanks.join("")}${days.join("")}</div>
+          </div>`;
+  };
+  const phoneMock = `<div class="pib-mock pib-mock--phone">
+          <div class="pib-mock-screen">
+            <div class="ptf-screen-title">거래 추가</div>
+            ${pickButton("날짜", { ...date, expanded: true })}
+          </div>
+          <div class="pib-dim" aria-hidden="true"></div>
+          <div class="pib-sheet" role="group" aria-label="날짜 고르기">
+            <div class="pib-sheet-title">날짜</div>
+            ${calendar({ picked: [8] })}
+            <button class="btn btn-neutral-solid btn-size-large pib-done" type="button">완료</button>
+          </div>
+        </div>`;
+  const desktopMock = `<div class="pib-mock pib-mock--desktop">
+          <div class="ptf-screen-title">휴가 신청</div>
+          <div class="pib-anchor">
+            ${pickButton("기간", { size: "medium", value: "10월 12일 (월)~10월 14일 (수)", suffixIcon: "calendarDays", expanded: true })}
+            <div class="pib-popover" role="group" aria-label="기간 고르기">
+              ${calendar({ picked: [12, 14], range: [13] })}
+              <div class="pib-popover-actions"><button class="btn btn-neutral-solid" type="button">완료</button></div>
+            </div>
+          </div>
+        </div>`;
+  const surfacePanel = panel(
+    "여는 자리 — 1280 미만 시트 · 이상 팝오버 · \"완료\"",
+    "여는 자리는 화면 폭으로 정한다 — 칸 크기가 바뀌는 폭(1280)과 같다. 1280 미만(폰 · 태블릿 · 앱)은 아래에서 올라오는 시트로, 위에 고를 값의 종류를 제목으로 둔다. 1280 이상(데스크톱 웹)은 칸 아래 8 에 붙고 칸 왼쪽에 맞춘 팝오버다(아래가 모자라면 위로). 달력 · 시각은 고르는 동안 칸의 값이 바뀌지 않는다 — 고른 날은 시트 · 팝오버 안에만 있다가 \"완료\" 를 누를 때 칸에 들어가고(그림의 8일은 아직 칸에 없다), 바깥을 누르거나 끌어내리거나 Esc 로 닫으면 버린다. 열 때는 칸의 값에서 시작한다. 기간처럼 두 번 고르는 것은 둘을 다 고르기 전에는 \"완료\" 를 막는다. 목록 · 격자는 누르는 순간 고르고 닫혀 \"완료\" 가 없다. 시트 · 팝오버 · 달력의 모양(크기 · 모서리 · 그림자 · 고른 날)은 Bottom Sheet · Popover · Date Picker 차례에 정한다 — 여기서는 자리만 그렸다.",
+    samples([
+      sample("폰 — 시트", "useInputButtonSurface() → \"sheet\" · 위에 제목 · 아래 완료", phoneMock),
+      sample("데스크톱 웹 — 팝오버", "useInputButtonSurface() → \"popover\" · 칸 아래 8 · 왼쪽 맞춤", desktopMock),
+    ], "ptf-samples ptf-samples--forms"),
+  );
+
+  const lede = "SEED Select · Input Button 구조 — 고르는 칸은 둘이다. Select 는 짧은 선택지 5개 이상을 칸 아래 8 에 붙는 목록으로 열고(폰에서도 시트로 바꾸지 않는다), Input Button 은 달력 · 시각 · 아이콘 격자 · 긴 목록을 1280 미만은 시트, 이상은 팝오버로 연다. 트리거는 둘 다 Text Input 의 상자형과 같은 상자다 — large 52 · medium 40, 투명 바탕에 안쪽 1px stroke-neutral-weak. 누르면 바탕이 bg-layer-default-pressed 로 칠해지고 값 · 아이콘만 2px 거리로 준다. 포커스는 키보드에만 바깥 링 2px 이다. 목록은 모서리 20 · bg-layer-floating · shadow-s3 이고, 고른 선택지는 오른쪽 체크만 — 누르거나 짚은 선택지는 좌우 8 들어온 알약이다. 옛 회색 채운 40 칸 · 왼쪽 체크 · 채운 줄은 없다."
+    + (brand.key === "shared" ? " 공유 토큰에는 브랜드 역할 색이 없어 포커스 링이 여기서는 중립(fg-neutral)으로 보인다 — HR · Desk 미리보기에서 브랜드 색이다." : "");
+
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">03h — Select · Input Button</div>
+      <h2 class="section-title">Select · Input Button — 같은 상자 · 크기&nbsp;2 · 상태&nbsp;7 · 목록 · 시트 · 팝오버</h2>
+      <p class="section-lede">${escape(lede)}</p>
+    </header>
+    ${triggerPanel}
+    ${sizePanel}
+    ${statePanel}
+    ${listPanel}
+    ${multiPanel}
+    ${affixPanel}
+    ${surfacePanel}
   </section>`;
 }
 
@@ -2834,8 +3207,9 @@ export function renderSkeleton(brand) {
 }
 
 // 폼 — brand.form 의 칸을 Field 로 쌓는다(field.md "Form 의 구성" — Field 사이 24, 짧은 두 칸은 16 간격으로 나란히 — 앞 칸에 pair).
-// 필수 표시는 2/3 규칙(textFieldMarks), 입력칸 · 여러 줄 입력칸은 웹 기본 반응형, 글자 수는 최대가 있는 칸(max)만. 고르는 칸(select — 휴가 종류 · 기간 · 카테고리 · 날짜)은
-// Select 트리거이고 아직 옛 모양이다(Select · Input Button 차례에). 저장 버튼은 켜 두고 누르면 비운 필수 입력칸에 오류를 보인다(제출 시 검증 — 페이지 끝 스크립트).
+// 필수 표시는 2/3 규칙(textFieldMarks), 칸은 모두 웹 기본 반응형, 글자 수는 최대가 있는 칸(max)만. 고르는 칸은 03h 의 두 컴포넌트다 —
+// select(휴가 정책 · 결제 수단 · 토큰 카테고리 — 칸 아래 목록)는 Select 트리거, inputButton(기간 · 날짜 · Desk 카테고리 — 달력 · 격자)은 Input Button.
+// 저장 버튼은 켜 두고 누르면 비운 필수 입력칸에 오류를 보인다(제출 시 검증 — 페이지 끝 스크립트. 고르는 칸은 값이 있어 검증에 들지 않는다).
 // 폼 틀은 화면이 정한다 — 여기서는 데스크톱 웹 화면 틀(.ptf-screen)이다. 옛 그림자 카드 · 2열 그리드 · 경계선 버튼 줄 · 빨간 별표는 걷었다.
 export function renderForm(brand) {
   const f = brand.form;
@@ -2853,8 +3227,9 @@ export function renderForm(brand) {
     description: field.helper || "",
     max: field.max || 0,
     readonly: !!field.readonly,
-    requiredMessage: field.required && !field.readonly && field.type !== "select" ? `${objectOf(field.label)} 입력해주세요.` : "",
-    control: field.type === "select" ? { kind: "select", value: field.value }
+    requiredMessage: field.required && !field.readonly && field.type !== "select" && field.type !== "inputButton" ? `${objectOf(field.label)} 입력해주세요.` : "",
+    control: field.type === "select" ? { kind: "select", size: "responsive", value: field.value, prefixIcon: field.prefixIcon || "" }
+      : field.type === "inputButton" ? { kind: "inputButton", size: "responsive", value: field.value, prefixIcon: field.prefixIcon || "", suffixIcon: field.suffixIcon || "" }
       : field.type === "textarea" ? { kind: "textarea", size: "responsive", value: field.value }
       : { kind: "input", size: "responsive", value: field.value, suffix: field.suffix || "", inputmode: field.inputmode || "", format: field.format || "" },
   });
@@ -5539,7 +5914,7 @@ export function pageCss() {
     }
 
     /* 다크 — 역할 색을 Field · 칸 · 화면 틀 안에서만 다크 짝으로 바꾼다(.psb-group · .checkbox 와 같다 — 전역 다크 블록은 옛 이름만 바꾼다).
-       끼운 버튼(.btn)과 옛 Select 트리거(.form-select)는 저마다의 다크 규칙이 바꾼다 */
+       끼운 버튼(.btn)과 고르는 칸(Select 트리거 .psel-trigger · Input Button .pib)은 저마다의 다크 규칙이 바꾼다 */
     [data-theme="dark"] .ptf-field,
     [data-theme="dark"] .ptf-input,
     [data-theme="dark"] .ptf-textarea,
@@ -5580,8 +5955,6 @@ export function pageCss() {
     .ptf-screen-actions { display: flex; gap: var(--spacing-x2); margin-top: var(--spacing-x8); }
     .ptf-screen-actions--end { justify-content: flex-end; }
     .ptf-form-cta { width: 100%; }
-    /* 고르는 칸 — 옛 Select 트리거(.form-select)를 Field 안에서 칸 폭으로 편다(모양은 Select · Input Button 차례에) */
-    .ptf-field > .form-select { width: 100%; text-align: left; }
     /* 상태 표 — 칸마다 입력칸 하나를 실제 폭(200 이상)으로. 칸이 그보다 좁아지면 판(.cb-panel)이 가로로 밀린다 */
     .ptf-matrix .cb-matrix-row { grid-template-columns: 168px repeat(var(--cb-cols), minmax(200px, 1fr)); }
     @media (max-width: 900px) {
@@ -5591,6 +5964,402 @@ export function pageCss() {
     @media (max-width: 767px) {
       .ptf-form-row { grid-template-columns: minmax(0, 1fr); }
     }
+
+    /* === Select · Input Button — specs/components/select.md · input-button.md(수치는 select.yaml · input-button.yaml) ===
+       구조는 SEED Select · Input Button(2026-10-01). 트리거는 둘 다 Text Input 의 상자형과 같은 상자다 — large 52 · 모서리 12 · 좌우 16 · 사이 10 · 글자 t5 16/22 · 아이콘 20,
+       medium 40 · 8 · 14 · 8 · t4 14/19 · 16. 투명 바탕 · 안쪽 1px stroke-neutral-weak(안쪽 그림자), 오류 2px 는 ::after 로 그 안쪽에 덧그린다(색만 d2).
+       Select 트리거 .psel-trigger 는 role=combobox 버튼 하나가 상자이고, 콘텐츠 .psel-trigger-content(앞 .psel-icon · 값 .psel-value 또는 .psel-placeholder · 셰브론 .psel-chevron)를 담는다.
+       Input Button .pib 은 상자(div)이고 그 안의 배경 층 버튼 .pib-button 이 누르는 영역 전체 · 키보드 포커스다. 콘텐츠 .pib-content(앞 .pib-icon · .pib-affix · 값 · 지우기 .pib-clear · 뒤)는
+       그 위에 얹고 누름을 지나 보낸다(pointer-events none) — 지우기만 따로 눌린다.
+       누르면 바탕이 bg-layer-default-pressed 로 칠해지고 콘텐츠만 2px 거리로 준다 — 테두리 · 바탕은 그대로다. 배율 = (기준 − 2) ÷ 기준, 기준 = max(상자 높이, 폭 ÷ 4, 24) 을
+       페이지 끝 스크립트가 누르는 순간 재서 --press-basis 로 넘긴다(재기 전에는 상자 높이). 호버는 같은 바탕이고 축소가 없다(마우스 있는 기기에서만).
+       포커스는 키보드에만 바깥 링 2px · 띄움 2px stroke-focus-ring 이다 — 입력 중임을 알리는 Text Input 의 안쪽 2px 테두리와 다르다.
+       비활성 · 읽기 전용은 bg-disabled 바탕이고 흐리게 하지 않는다 — 비활성은 글자 · 아이콘 fg-disabled, 읽기 전용은 값이 진한 그대로이고 열리지 않아 누름 · 호버가 없다.
+       --pressed · --focus 는 갤러리에서 그 순간을 고정해 보여 주는 클래스다. 반응형(웹 기본)은 1280(--breakpoint-lg — 미디어 쿼리는 변수를 못 써 수를 적었다) 미만 large · 이상 medium 이다.
+       다크 짝은 이 블록 끝의 [data-theme="dark"] 에서 바꾼다. */
+    .psel-trigger,
+    .pib {
+      --pick-px: var(--spacing-x4);
+      --pick-gap: var(--spacing-x2_5);
+      --pick-icon: 20px;
+      --pick-clear: 22px;
+      /* 포커스 링 — 공유 토큰(DESIGN.md)에는 브랜드 역할 색이 없어 중립으로 떨어진다(.psb-group · .plst 와 같은 대체 사슬) */
+      --pick-focus-ring: var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral)));
+      --press-basis: 52;
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      min-width: 0;
+      min-height: 52px;
+      margin: 0;
+      padding: 0 var(--pick-px);
+      border: 0;
+      border-radius: var(--radius-r3);
+      background: transparent;
+      box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-weak);
+      font-family: var(--font-sans);
+      font-size: var(--text-t5);
+      line-height: var(--text-t5--line-height);
+      font-weight: 400;
+      color: var(--color-fg-neutral);
+      text-align: left;
+      cursor: pointer;
+      transition: background-color var(--motion-duration-color-transition) var(--motion-ease-easing);
+    }
+    /* 오류 2px — 상자 안쪽에 덧그린다. 늘 2px 투명이고 색만 d2 로 나타난다(SEED strokeDuration 0.1s) */
+    .psel-trigger::after,
+    .pib::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border: 2px solid transparent;
+      border-radius: inherit;
+      pointer-events: none;
+      transition: border-color var(--motion-duration-d2) var(--motion-ease-easing);
+    }
+    .psel-trigger[data-invalid]::after,
+    .pib[data-invalid]::after { border-color: var(--color-stroke-critical-solid); }
+    /* 호버 = 누름과 같은 바탕(축소 없음) — Input Button 은 상자 어디에 올려도(지우기 위에서도) 상자의 호버를 잇는다.
+       누름 = 바탕 + 콘텐츠 2px 거리 축소 — Input Button 은 배경 층 버튼을 누를 때만(지우기를 누르면 지우기만 준다). 비활성 · 읽기 전용은 열리지 않아 둘 다 없다 */
+    @media (hover: hover) {
+      .psel-trigger:not(:disabled, [data-readonly]):hover,
+      .pib:not([data-disabled], [data-readonly]):hover { background: var(--color-bg-layer-default-pressed); }
+    }
+    .psel-trigger:not(:disabled, [data-readonly]):active,
+    .pib:not([data-disabled], [data-readonly]):has(> .pib-button:active),
+    .psel-trigger.psel-trigger--pressed,
+    .pib.pib--pressed { background: var(--color-bg-layer-default-pressed); }
+    .psel-trigger:not(:disabled, [data-readonly]):active > .psel-trigger-content,
+    .pib:not([data-disabled], [data-readonly]):has(> .pib-button:active) > .pib-content,
+    .psel-trigger.psel-trigger--pressed > .psel-trigger-content,
+    .pib.pib--pressed > .pib-content { scale: calc(1 - 2 / var(--press-basis)); }
+    /* 모션 줄이기 — 콘텐츠 축소를 뺀다. 바탕 전환은 그대로다(기초 Motion) */
+    @media (prefers-reduced-motion: reduce) {
+      .psel-trigger:not(:disabled, [data-readonly]):active > .psel-trigger-content,
+      .pib:not([data-disabled], [data-readonly]):has(> .pib-button:active) > .pib-content,
+      .psel-trigger.psel-trigger--pressed > .psel-trigger-content,
+      .pib.pib--pressed > .pib-content { scale: 1; }
+    }
+    /* 포커스 — 키보드 포커스에만 상자 바깥 링 2px · 띄움 2px. Input Button 은 배경 층 버튼이 포커스를 받고 링은 상자가 그린다 */
+    .psel-trigger:focus-visible,
+    .psel-trigger.psel-trigger--focus,
+    .pib:has(> .pib-button:focus-visible),
+    .pib.pib--focus { outline: 2px solid var(--pick-focus-ring); outline-offset: 2px; }
+    /* 비활성 — bg-disabled 바탕 · 글자 · 아이콘 fg-disabled. 읽기 전용 — bg-disabled 바탕 · 값은 진한 그대로. 흐리게 하지 않는다(v106) */
+    .psel-trigger:disabled,
+    .pib[data-disabled] { background: var(--color-bg-disabled); cursor: not-allowed; }
+    .psel-trigger[data-readonly],
+    .pib[data-readonly] { background: var(--color-bg-disabled); cursor: default; }
+    .psel-trigger:disabled :is(.psel-value, .psel-placeholder, .psel-icon, .psel-chevron),
+    .pib[data-disabled] :is(.pib-value, .pib-placeholder, .pib-icon, .pib-affix) { color: var(--color-fg-disabled); }
+    /* 콘텐츠 — 앞 · 값 · (지우기) · 뒤가 한 줄(사이 10). 누르면 이 층만 준다 */
+    .psel-trigger-content,
+    .pib-content {
+      display: flex;
+      flex: 1;
+      align-items: center;
+      gap: var(--pick-gap);
+      min-width: 0;
+      transition: scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    .pib-content { position: relative; pointer-events: none; }
+    /* 값 — 한 줄 · 넘치면 말줄임, fg-neutral · 400. 고르기 전의 글은 fg-placeholder */
+    .psel-value,
+    .psel-placeholder,
+    .pib-value,
+    .pib-placeholder {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .psel-placeholder,
+    .pib-placeholder { color: var(--color-fg-placeholder); }
+    /* 앞 · 뒤 아이콘 · 셰브론 — fg-neutral-muted(크기는 크기마다). 붙이개 글자 — 값과 같은 크기의 fg-neutral-subtle */
+    .psel-icon,
+    .psel-chevron,
+    .pib-icon { display: flex; flex-shrink: 0; color: var(--color-fg-neutral-muted); }
+    :is(.psel-icon, .psel-chevron, .pib-icon) > svg { width: var(--pick-icon); height: var(--pick-icon); }
+    .pib-affix { flex-shrink: 0; color: var(--color-fg-neutral-subtle); white-space: nowrap; }
+    /* 셰브론 — 열리면 180°(열 때 d3 150ms · 닫을 때 d2 100ms) */
+    .psel-chevron { transition: rotate var(--motion-duration-d2) var(--motion-ease-easing); }
+    .psel-trigger[aria-expanded="true"] .psel-chevron { rotate: 180deg; transition-duration: var(--motion-duration-d3); }
+    /* 배경 층 버튼 — 상자 전체를 덮는 누르는 영역. 바탕 · 링은 상자가 그린다 */
+    .pib-button {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: inherit;
+      background: transparent;
+      font: inherit;
+      color: inherit;
+      cursor: inherit;
+      appearance: none;
+    }
+    .pib-button:focus-visible { outline: none; }
+    /* 지우기 — lucide circle-x · fg-neutral-subtle · 둥근 버튼(large 22 · medium 18). 누르는 영역은 24 이상으로 넓히고, 누르면 지우기만 준다(SEED scaleScope self — 기준 24) */
+    .pib-clear {
+      --press-basis: 24;
+      position: relative;
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: var(--radius-full);
+      background: transparent;
+      color: var(--color-fg-neutral-subtle);
+      cursor: pointer;
+      pointer-events: auto;
+      transition: scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    .pib-clear::before { content: ""; position: absolute; left: 50%; top: 50%; width: 100%; height: 100%; min-width: 24px; min-height: 24px; translate: -50% -50%; }
+    .pib-clear > svg { width: var(--pick-clear); height: var(--pick-clear); }
+    .pib-clear:active { scale: calc(1 - 2 / var(--press-basis)); }
+    @media (prefers-reduced-motion: reduce) {
+      .pib-clear:active { scale: 1; }
+    }
+    /* medium — 40 · 모서리 8 · 좌우 14 · 사이 8 · 글자 t4 14/19 · 아이콘 16 · 지우기 18. 1280 이상 데스크톱 웹(마우스)에서만 */
+    .psel-trigger--medium,
+    .pib--medium {
+      --pick-px: var(--spacing-x3_5);
+      --pick-gap: var(--spacing-x2);
+      --pick-icon: 16px;
+      --pick-clear: 18px;
+      --press-basis: 40;
+      min-height: 40px;
+      border-radius: var(--radius-r2);
+      font-size: var(--text-t4);
+      line-height: var(--text-t4--line-height);
+    }
+
+    /* 목록 — .psel 이 트리거와 열린 목록을 묶는다. 목록 .psel-list(role=listbox)은 트리거 폭 그대로 아래 8 에 붙는다 — 모서리 20 · bg-layer-floating · shadow-s3 · 위아래 8,
+       높이는 480 까지(넘치면 안에서 스크롤). 갤러리에서는 견본 끝에 두어 흐름 안에 그렸다 — 실제로는 떠서 뒤를 덮는다.
+       묶음 .psel-group 사이는 8 + 1 + 8 — 목록의 사이 8 에, 둘째 묶음부터 위의 선 .psel-divider(1px stroke-neutral-subtle · 좌우 16 들임)와 그 아래 8 을 더한다. 선택지 사이에는 선이 없다.
+       묶음 제목 .psel-group-label 은 위아래 10 · 좌우 16 · t4 14 · 500 · fg-neutral-subtle.
+       선택지 .psel-item(role=option)은 위아래 12 · 좌우 16, 콘텐츠 .psel-item-content(앞 아이콘 22 · 글 · 오른쪽 체크 14)는 사이 12 — 한 줄 46 · 한 줄 설명이 붙으면 66.
+       글 .psel-item-label 은 t5 · 400 · fg-neutral(목록 안에서는 줄바꿈된다 — 자르지 않는다), 설명 .psel-item-desc 는 t3 · fg-neutral-subtle(사이 2).
+       알약 — 누름 · 호버 · 키보드로 짚은 선택지(.psel-item--focus · aria-activedescendant)는 ::before 가 좌우 8 들어와 모서리 12 · bg-layer-floating-pressed 로 칠한다.
+       글은 그대로 16 에서 시작한다(알약 안쪽 8). 누르는 동안만 콘텐츠가 2px 거리로 준다 — 호버 · 키보드 위치는 축소가 없고 링도 없다(SEED 그대로, 2026-10-01 사용자 결정).
+       고른 선택지는 오른쪽 체크 .psel-indicator(lucide check · 선 2.5 · fg-neutral)만 — 바탕 · 굵기는 그대로다. 막힌 선택지(aria-disabled)는 글 · 설명 · 아이콘 · 체크가 fg-disabled 이고 알약이 생기지 않는다.
+       크기 값은 목록의 --pick-* 가 정하고 medium · 반응형이 바꾼다. */
+    .psel { display: flex; flex-direction: column; width: 100%; min-width: 0; }
+    .psel-list {
+      --pick-item-py: var(--spacing-x3);
+      --pick-item-gap: var(--spacing-x3);
+      --pick-item-icon: 22px;
+      --pick-indicator: 14px;
+      --pick-item-basis: 46;
+      --pick-label: var(--text-t5);
+      --pick-label-lh: var(--text-t5--line-height);
+      --pick-desc: var(--text-t3);
+      --pick-desc-lh: var(--text-t3--line-height);
+      --pick-group: var(--text-t4);
+      --pick-group-lh: var(--text-t4--line-height);
+      --pick-group-weight: 500;
+      --pick-group-py: var(--spacing-x2_5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-x2);
+      width: 100%;
+      min-width: 0;
+      max-height: 480px;
+      overflow-y: auto;
+      padding: var(--spacing-x2) 0;
+      border-radius: var(--radius-r5);
+      background: var(--color-bg-layer-floating);
+      box-shadow: var(--shadow-s3);
+      font-family: var(--font-sans);
+      outline: none;
+    }
+    .psel > .psel-list { margin-top: var(--spacing-x2); }
+    .psel-group { display: flex; flex-direction: column; }
+    .psel-group-label {
+      padding: var(--pick-group-py) var(--spacing-x4);
+      font-size: var(--pick-group);
+      line-height: var(--pick-group-lh);
+      font-weight: var(--pick-group-weight);
+      color: var(--color-fg-neutral-subtle);
+    }
+    .psel-divider { flex-shrink: 0; height: 1px; margin: 0 var(--spacing-x4) var(--spacing-x2); background: var(--color-stroke-neutral-subtle); }
+    .psel-item {
+      --press-basis: var(--pick-item-basis);
+      position: relative;
+      display: flex;
+      padding: var(--pick-item-py) var(--spacing-x4);
+      cursor: pointer;
+      user-select: none;
+    }
+    .psel-item::before {
+      content: "";
+      position: absolute;
+      inset-block: 0;
+      inset-inline: 0;
+      border-radius: var(--radius-r3);
+      background: transparent;
+      pointer-events: none;
+      transition:
+        background-color var(--motion-duration-color-transition) var(--motion-ease-easing),
+        inset var(--motion-duration-color-transition) var(--motion-ease-easing);
+    }
+    @media (hover: hover) {
+      .psel-item:not([aria-disabled="true"]):hover::before { inset-inline: var(--spacing-x2); background: var(--color-bg-layer-floating-pressed); }
+    }
+    .psel-item:not([aria-disabled="true"]):active::before,
+    .psel-item.psel-item--pressed::before,
+    .psel-item.psel-item--hover::before,
+    .psel-item.psel-item--focus::before { inset-inline: var(--spacing-x2); background: var(--color-bg-layer-floating-pressed); }
+    .psel-item-content {
+      position: relative;
+      display: flex;
+      flex: 1;
+      align-items: center;
+      gap: var(--pick-item-gap);
+      min-width: 0;
+      transition: scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    .psel-item:not([aria-disabled="true"]):active > .psel-item-content,
+    .psel-item.psel-item--pressed > .psel-item-content { scale: calc(1 - 2 / var(--press-basis)); }
+    @media (prefers-reduced-motion: reduce) {
+      .psel-item:not([aria-disabled="true"]):active > .psel-item-content,
+      .psel-item.psel-item--pressed > .psel-item-content { scale: 1; }
+    }
+    .psel-item-icon { display: flex; flex-shrink: 0; color: var(--color-fg-neutral); }
+    .psel-item-icon > svg { width: var(--pick-item-icon); height: var(--pick-item-icon); }
+    .psel-item-body { display: flex; flex: 1; flex-direction: column; gap: var(--spacing-x0_5); min-width: 0; }
+    .psel-item-label { font-size: var(--pick-label); line-height: var(--pick-label-lh); font-weight: 400; color: var(--color-fg-neutral); }
+    .psel-item-desc { font-size: var(--pick-desc); line-height: var(--pick-desc-lh); font-weight: 400; color: var(--color-fg-neutral-subtle); }
+    .psel-indicator { display: flex; flex-shrink: 0; color: var(--color-fg-neutral); }
+    .psel-indicator > svg { width: var(--pick-indicator); height: var(--pick-indicator); }
+    .psel-item[aria-disabled="true"] { cursor: not-allowed; }
+    .psel-item[aria-disabled="true"] :is(.psel-item-icon, .psel-item-label, .psel-item-desc, .psel-indicator) { color: var(--color-fg-disabled); }
+    /* 목록 medium — 선택지 39(위아래 10 · 사이 8 · 앞 아이콘 18 · 체크 12 · 글 t4 · 설명 t2 — 설명이 붙으면 57), 묶음 제목 위아래 8 · t3 13 · 400 */
+    .psel-list--medium {
+      --pick-item-py: var(--spacing-x2_5);
+      --pick-item-gap: var(--spacing-x2);
+      --pick-item-icon: 18px;
+      --pick-indicator: 12px;
+      --pick-item-basis: 39;
+      --pick-label: var(--text-t4);
+      --pick-label-lh: var(--text-t4--line-height);
+      --pick-desc: var(--text-t2);
+      --pick-desc-lh: var(--text-t2--line-height);
+      --pick-group: var(--text-t3);
+      --pick-group-lh: var(--text-t3--line-height);
+      --pick-group-weight: 400;
+      --pick-group-py: var(--spacing-x2);
+    }
+
+    /* 반응형(웹 기본) — 1280 이상은 medium 의 값을 쓴다. 앱은 늘 large 다 */
+    @media (min-width: 1280px) {
+      .psel-trigger--responsive,
+      .pib--responsive {
+        --pick-px: var(--spacing-x3_5);
+        --pick-gap: var(--spacing-x2);
+        --pick-icon: 16px;
+        --pick-clear: 18px;
+        --press-basis: 40;
+        min-height: 40px;
+        border-radius: var(--radius-r2);
+        font-size: var(--text-t4);
+        line-height: var(--text-t4--line-height);
+      }
+      .psel-list--responsive {
+        --pick-item-py: var(--spacing-x2_5);
+        --pick-item-gap: var(--spacing-x2);
+        --pick-item-icon: 18px;
+        --pick-indicator: 12px;
+        --pick-item-basis: 39;
+        --pick-label: var(--text-t4);
+        --pick-label-lh: var(--text-t4--line-height);
+        --pick-desc: var(--text-t2);
+        --pick-desc-lh: var(--text-t2--line-height);
+        --pick-group: var(--text-t3);
+        --pick-group-lh: var(--text-t3--line-height);
+        --pick-group-weight: 400;
+        --pick-group-py: var(--spacing-x2);
+      }
+    }
+
+    /* 여는 자리 그림(03h) — 폰(360)의 시트 · 데스크톱 웹의 팝오버. 갤러리 것이다 — 시트 · 팝오버 · 달력의 모양(크기 · 모서리 · 그림자 · 고른 날)은
+       Bottom Sheet · Popover · Date Picker 차례에 정한다. 여기서는 자리만 그렸다(떠 있는 표면 bg-layer-floating · 고른 날 bg-neutral-inverted 원은 임시다).
+       팝오버는 칸 아래 8 · 칸 왼쪽에 맞춘다(갤러리에서는 흐름 안에 그렸다). */
+    .pib-mock {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--color-border-default);
+      border-radius: var(--radius-r4);
+      background: var(--color-bg-layer-default);
+      font-family: var(--font-sans);
+    }
+    .pib-mock--phone { max-width: 360px; height: 600px; }
+    .pib-mock--desktop { max-width: 640px; padding: var(--spacing-x8) var(--layout-margin); }
+    .pib-mock-screen { padding: var(--spacing-x6) var(--spacing-global-gutter); }
+    .pib-dim { position: absolute; inset: 0; background: var(--overlay-dim-light); }
+    .pib-sheet {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      padding: var(--spacing-x6) var(--spacing-global-gutter);
+      border-radius: var(--radius-r5) var(--radius-r5) 0 0;
+      background: var(--color-bg-layer-floating);
+    }
+    .pib-sheet-title { margin-bottom: var(--spacing-x3); font-size: var(--text-t6); line-height: var(--text-t6--line-height); font-weight: 700; color: var(--color-fg-neutral); }
+    .pib-done { width: 100%; margin-top: var(--spacing-x4); }
+    .pib-anchor { display: flex; flex-direction: column; align-items: flex-start; }
+    .pib-popover {
+      width: min(300px, 100%);
+      margin-top: var(--spacing-x2);
+      padding: var(--spacing-x3) var(--spacing-x4) var(--spacing-x4);
+      border-radius: var(--radius-r5);
+      background: var(--color-bg-layer-floating);
+      box-shadow: var(--shadow-s3);
+    }
+    .pib-popover-actions { display: flex; justify-content: flex-end; margin-top: var(--spacing-x3); }
+    .pib-cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--spacing-x1); }
+    .pib-cal-month { font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 700; color: var(--color-fg-neutral); }
+    .pib-cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); row-gap: var(--spacing-x1); text-align: center; }
+    .pib-cal-dow { padding: var(--spacing-x1) 0; font-size: var(--text-t3); line-height: var(--text-t3--line-height); color: var(--color-fg-neutral-subtle); }
+    .pib-cal-day { display: grid; place-items: center; height: 36px; font-size: var(--text-t4); line-height: var(--text-t4--line-height); color: var(--color-fg-neutral); }
+    .pib-cal-day > span { display: grid; place-items: center; width: min(32px, 100%); aspect-ratio: 1; border-radius: var(--radius-full); }
+    .pib-cal-day--picked > span { background: var(--color-bg-neutral-inverted); color: var(--color-fg-neutral-inverted); font-weight: 700; }
+    .pib-cal-day--range > span { background: var(--color-bg-neutral-weak); }
+    /* 갤러리 — 상태 표에서 Input Button 의 열림 칸은 모습이 그대로라 글로 둔다. 여럿 고른 값의 줄임을 보이는 좁은 칸(200) */
+    .psel-na { font-size: var(--text-caption); line-height: 1.4; color: var(--color-text-tertiary); }
+    .psel-narrow { max-width: 200px; }
+
+    /* 다크 — 역할 색을 고르는 칸 · 목록 · 여는 자리 그림 안에서만 다크 짝으로 바꾼다(.ptf-field · .psb-group 과 같다 — 전역 다크 블록은 옛 이름만 바꾼다).
+       끼운 .btn 은 제 다크 블록이 다시 바꾼다. 공유 토큰(DESIGN.md)에 없는 브랜드 짝(포커스 링)은 비어서 위 대체값(중립)으로 떨어진다. */
+    [data-theme="dark"] :is(.psel-trigger, .psel-list, .pib, .pib-mock) {
+      --color-stroke-neutral-weak: var(--color-stroke-neutral-weak-dark);
+      --color-stroke-neutral-subtle: var(--color-stroke-neutral-subtle-dark);
+      --color-stroke-critical-solid: var(--color-stroke-critical-solid-dark);
+      --color-stroke-focus-ring: var(--color-stroke-focus-ring-dark);
+      --color-bg-layer-default: var(--color-bg-layer-default-dark);
+      --color-bg-layer-default-pressed: var(--color-bg-layer-default-pressed-dark);
+      --color-bg-layer-floating: var(--color-bg-layer-floating-dark);
+      --color-bg-layer-floating-pressed: var(--color-bg-layer-floating-pressed-dark);
+      --color-bg-disabled: var(--color-bg-disabled-dark);
+      --color-bg-neutral-inverted: var(--color-bg-neutral-inverted-dark);
+      --color-bg-neutral-weak: var(--color-bg-neutral-weak-dark);
+      --color-fg-disabled: var(--color-fg-disabled-dark);
+      --color-fg-placeholder: var(--color-fg-placeholder-dark);
+      --color-fg-neutral: var(--color-fg-neutral-dark);
+      --color-fg-neutral-inverted: var(--color-fg-neutral-inverted-dark);
+      --color-fg-neutral-muted: var(--color-fg-neutral-muted-dark);
+      --color-fg-neutral-subtle: var(--color-fg-neutral-subtle-dark);
+      --shadow-s3: var(--shadow-s3-dark);
+    }
+    [data-theme="dark"] .pib-dim { background: var(--overlay-dim-dark); }
 
     /* todo-card */
     .todo-list { display: flex; flex-direction: column; gap: 2px; }
@@ -5965,24 +6734,8 @@ export function pageCss() {
        flex-wrap 에서 × 가 content 옆 자리를 못 얻어 다음 줄로 떨어지기도 한다. */
 
     /* === Form layout === 폼은 Field 로 짠다 — 위 Text Field 블록의 .ptf-field · .ptf-form · .ptf-screen(field.md "Form 의 구성").
-       옛 그림자 카드(.form-card) · 2열 그리드 · 라벨 14 · 빨간 별표 · 회색 채운 칸(.form-input · .form-textarea) · 도움말 12 · 경계선 버튼 줄은 걷었다.
-       여기 남은 것은 고르는 칸의 옛 Select 트리거다 — select.tsx 가 이 모양을 따른다(Select · Input Button 차례에 바꾼다 — input.md Migration notes) */
-    .form-select {
-      background: var(--color-surface-input);
-      color: var(--color-text-primary);
-      border: 1px solid var(--color-border-default);
-      border-radius: var(--radius-sm);
-      padding: var(--spacing-sm) var(--spacing-md);
-      font-size: var(--text-body-md);
-      font-family: inherit;
-      line-height: 1.6;
-      min-height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-    }
-    .form-select-caret { color: var(--color-text-tertiary); flex-shrink: 0; }
+       옛 그림자 카드(.form-card) · 2열 그리드 · 라벨 14 · 빨간 별표 · 회색 채운 칸(.form-input · .form-textarea · .form-select) · 도움말 12 · 경계선 버튼 줄은 걷었다.
+       고르는 칸은 위 Select · Input Button 블록의 .psel-trigger · .pib 다(select.md · input-button.md). */
 
     /* === Skeleton / Loading === */
     .sk-card-wrap {
@@ -6720,7 +7473,6 @@ export function pageCss() {
     [data-theme="dark"] .sk-card .sk,
     [data-theme="dark"] .sk-demo-cell .sk { background-color: var(--color-surface-default-dark); background-image: linear-gradient(90deg, var(--color-surface-default-dark) 0%, var(--color-surface-input-dark) 50%, var(--color-surface-default-dark) 100%); }
     [data-theme="dark"] .sk-row { border-color: var(--color-border-default-dark); }
-    [data-theme="dark"] .form-select { background: var(--color-surface-input-dark); color: var(--color-text-primary-dark); border-color: var(--color-border-default-dark); }
     [data-theme="dark"] .modal-fields { background: var(--color-surface-input-dark); }
     [data-theme="dark"] .ld-rail-row,
     [data-theme="dark"] .cal-legend { border-color: var(--color-border-default-dark); }
@@ -6917,6 +7669,7 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     ${renderListGallery(brand)}
     ${renderSelectBoxGallery(brand)}
     ${renderTextFieldGallery(brand)}
+    ${renderPickGallery(brand)}
     ${renderVignettes(brand)}
     ${renderListingDetail(brand)}
     ${renderCalendar(brand)}
@@ -7119,6 +7872,7 @@ function renderHtml(brandName, css, tokens, sourceFile) {
         var first = null;
         submit.closest(".ptf-screen").querySelectorAll(".ptf-field[data-required-message]").forEach(function (field) {
           var el = field.querySelector(VALUE);
+          if (!el) return; // 고르는 칸(Select · Input Button)은 값을 입력으로 받지 않는다 — 오류는 그 칸의 invalid 로 그린다
           if (!el.value.trim()) {
             setInvalid(field, field.getAttribute("data-required-message"));
             if (!first) first = el;
@@ -7140,6 +7894,38 @@ function renderHtml(brandName, css, tokens, sourceFile) {
           });
         });
         areas.forEach(function (el) { ro.observe(el); });
+      }
+    })();
+    // Select · Input Button (2026-10-01) — select.tsx · input-button.tsx 가 하는 일 가운데 그림에 필요한 둘을 흉내 낸다(페이지의 모든 .psel-trigger · .pib · .psel-item).
+    // 누름 배율의 기준 = max(높이, 폭 ÷ 4, 24) — 놓인 자리마다 폭이 달라 누르는 순간(포인터 · 키) 재서 --press-basis 로 넘긴다. 그 순간을 멈춘 누름 칸은 그릴 때와 크기가 바뀔 때 잰다.
+    // 여럿 고른 값은 고른 순서대로 쉼표로 잇고, 칸 폭을 넘으면 "첫 값 외 N개" 로 줄인다(formatValue 기본) — 폭이 바뀌면 다시 맞춘다.
+    (function () {
+      var PRESS = ".psel-trigger, .pib, .psel-item";
+      function measure(el) { el.style.setProperty("--press-basis", String(Math.max(el.offsetHeight, el.offsetWidth / 4, 24))); }
+      function pressed(e) { return e.target && e.target.closest ? e.target.closest(PRESS) : null; }
+      document.addEventListener("pointerdown", function (e) { var el = pressed(e); if (el) measure(el); }, true);
+      document.addEventListener("keydown", function (e) { var el = pressed(e); if (el) measure(el); }, true);
+      function summarize(value) {
+        var values;
+        try { values = JSON.parse(value.getAttribute("data-psel-values")); } catch (err) { return; }
+        if (!values || !values.length) return;
+        value.textContent = values.join(", ");
+        if (values.length > 1 && value.scrollWidth > value.clientWidth) value.textContent = values[0] + " 외 " + (values.length - 1) + "개";
+      }
+      var frozen = document.querySelectorAll(".psel-trigger--pressed, .pib--pressed, .psel-item--pressed");
+      var many = document.querySelectorAll(".psel-value[data-psel-values]");
+      frozen.forEach(measure);
+      many.forEach(summarize);
+      window.addEventListener("load", function () { many.forEach(summarize); });
+      if (window.ResizeObserver) {
+        var ro = new ResizeObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.target.matches(".psel-value")) summarize(entry.target);
+            else measure(entry.target);
+          });
+        });
+        frozen.forEach(function (el) { ro.observe(el); });
+        many.forEach(function (el) { ro.observe(el); });
       }
     })();
   </script>

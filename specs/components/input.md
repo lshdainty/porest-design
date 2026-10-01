@@ -1,6 +1,6 @@
 # Input
 
-> 한 줄 글 · 숫자를 직접 치는 입력칸(Text Input). 이름 · 금액 · 제목 · 아이디 · 검색어처럼 짧은 값을 받는다. 여러 줄은 [Textarea](textarea.md), 목록 · 달력에서 고르는 값은 Input Button · Select(그 차례에)다.
+> 한 줄 글 · 숫자를 직접 치는 입력칸(Text Input). 이름 · 금액 · 제목 · 아이디 · 검색어처럼 짧은 값을 받는다. 여러 줄은 [Textarea](textarea.md), 짧은 목록에서 고르는 값은 [Select](select.md), 달력 · 시트 · 긴 목록에서 고르는 값은 [Input Button](input-button.md)이다.
 
 구조는 당근 [SEED Text Input](https://seed-design.io/components/text-input)(Apache-2.0)을 따른다 — 상자(Container) · 입력 · 앞 · 뒤 붙이개 · 지우기 버튼. 라벨 · 설명 · 오류 · 글자 수는 [Field](field.md)가 둘레에서 그린다. 값은 porest 토큰이고, SEED 와 다른 자리는 맨 아래 "SEED 와 다른 점" 에 적었다(2026-10-01 사용자 결정).
 
@@ -104,13 +104,14 @@
 
 ### 고르는 값은 치게 하지 않는다
 
-날짜 · 시각 · 카테고리 · 자산처럼 정해진 값 중에서 고르는 것은 Input(타이핑)으로 받지 않는다 — 입력칸 모양의 버튼(Input Button)으로 달력 · 시트 · 목록을 연다(그 차례에 정한다).
+날짜 · 시각 · 카테고리 · 자산처럼 정해진 값 중에서 고르는 것은 Input(타이핑)으로 받지 않는다 — 짧은 선택지는 [Select](select.md) 의 칸 아래 목록으로, 달력 · 시트 · 긴 목록은 입력칸 모양의 버튼 [Input Button](input-button.md)으로 연다.
 
 | 이런 자리 | 컴포넌트 |
 |---|---|
 | 짧은 글 · 숫자를 직접 친다 | **Input** |
 | 여러 줄 글을 친다 | Textarea |
-| 값을 목록 · 달력 · 시트에서 고른다 | Input Button · Select(그 차례에) |
+| 짧은 선택지 5개 이상에서 값을 고른다 | Select |
+| 달력 · 시각 · 시트 · 긴 목록에서 고른다 | Input Button |
 | 설명이 붙는 2 ~ 6개를 견줘 고른다 | Select Box |
 
 ## 코드
@@ -244,7 +245,7 @@ import { Search } from "lucide-react"
 | 아이콘은 쓰는 쪽이 절대 위치로(`pl-9`) | `prefixIcon` · `suffixIcon` · `prefix` · `suffix` · `clearable` |
 | 상태 6(default · focused · filled · error · disabled · readonly) | 상태 5(enabled · focused · invalid · disabled · readonly) — 값이 있는지(filled)는 모습이 같다 |
 
-레시피는 `<input>` 하나에서 상자(div) + 입력으로 바뀌었다 — `className` 은 입력에, 상자에는 `rootClassName`. 쓰던 곳(Sidebar · Searchable List · Icon Picker)의 검색칸은 `prefixIcon` 으로 옮겼다. Select 의 트리거 · Command 의 입력 · Input OTP 는 아직 옛 모양이다 — 그 컴포넌트 차례에 맞춘다.
+레시피는 `<input>` 하나에서 상자(div) + 입력으로 바뀌었다 — `className` 은 입력에, 상자에는 `rootClassName`. 쓰던 곳(Sidebar · Searchable List · Icon Picker)의 검색칸은 `prefixIcon` 으로 옮겼다. Select 의 트리거는 Select · Input Button 차례(2026-10-01)에 같은 상자로 맞췄다. Command 의 입력 · Input OTP 는 아직 옛 모양이다 — 그 컴포넌트 차례에 맞춘다.
 
 제품은 앱 적용 단계에서 옮긴다(2026-10-01 조사).
 

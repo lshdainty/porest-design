@@ -6,8 +6,10 @@ import { buttonGuideFigures } from './button-guides';
 import { checkboxFigures } from './checkbox';
 import { fieldFigures } from './field';
 import { inputFigures } from './input';
+import { inputButtonFigures } from './input-button';
 import { listFigures } from './list';
 import { radioGroupFigures } from './radio-group';
+import { selectFigures } from './select';
 import { selectBoxFigures } from './select-box';
 import { switchFigures } from './switch';
 import { textareaFigures } from './textarea';
@@ -18,8 +20,10 @@ const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactN
   checkbox: checkboxFigures,
   field: fieldFigures,
   input: inputFigures,
+  'input-button': inputButtonFigures,
   list: listFigures,
   'radio-group': radioGroupFigures,
+  select: selectFigures,
   'select-box': selectBoxFigures,
   switch: switchFigures,
   textarea: textareaFigures,

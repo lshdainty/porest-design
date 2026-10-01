@@ -22,6 +22,7 @@ import { buttonExamples } from "../recipes/shadcn/examples/button-examples.mjs";
 import { inputExamples } from "../recipes/shadcn/examples/input-examples.mjs";
 import { textareaExamples } from "../recipes/shadcn/examples/textarea-examples.mjs";
 import { fieldExamples } from "../recipes/shadcn/examples/field-examples.mjs";
+import { inputButtonExamples } from "../recipes/shadcn/examples/input-button-examples.mjs";
 import { checkboxExamples } from "../recipes/shadcn/examples/checkbox-examples.mjs";
 import { radioGroupExamples } from "../recipes/shadcn/examples/radio-group-examples.mjs";
 import { selectBoxExamples } from "../recipes/shadcn/examples/select-box-examples.mjs";
@@ -109,6 +110,7 @@ const SHADCN_EXAMPLES = {
   input: inputExamples,
   textarea: textareaExamples,
   field: fieldExamples,
+  "input-button": inputButtonExamples,
   checkbox: checkboxExamples,
   "radio-group": radioGroupExamples,
   "select-box": selectBoxExamples,
@@ -382,6 +384,11 @@ function buildTokens() {
     "  --shadow-md: var(--shadow-md-dark);",
     "  --shadow-lg: var(--shadow-lg-dark);",
     "  --shadow-xl: var(--shadow-xl-dark);",
+    "  /* v105 고도 그림자(s1 ~ s4)도 다크 짝으로 — Select 목록(s3)이 다크에서 라이트 그림자로 남았다 */",
+    "  --shadow-s1: var(--shadow-s1-dark);",
+    "  --shadow-s2: var(--shadow-s2-dark);",
+    "  --shadow-s3: var(--shadow-s3-dark);",
+    "  --shadow-s4: var(--shadow-s4-dark);",
     "  /* v102 역할 색(bg · fg · stroke)도 다크 짝으로 — 위 옛 이름만 바꾸던 때는 역할을 쓰는 예제(Button)가 다크에서 라이트 값을 썼다 */",
     "  /* 카테고리 색(chart-* · -weak · -subtle · -contrast, v110 · v111)도 — List 의 타일이 다크에서 라이트 옅은 바탕으로 남았다 */",
     ...[...new Set([...sharedDefs.keys(), ...brandOnly.map(([n]) => n)])]
@@ -1939,17 +1946,18 @@ function parseExamplesMd() {
 // 각 항목: slug, name, category, description.
 // 페이지 1대1 매핑: 묶지 않음 (input-textarea 같은 묶음 폐기).
 const SHADCN_CATALOG = [
-  // Form (15)
+  // Form (16)
   { slug: "button", name: "Button", category: "Form", description: "액션을 실행하는 버튼. 변형 7 × 크기 4 × 배치 2(SEED Action Button 구조)." },
   { slug: "checkbox", name: "Checkbox", category: "Form", description: "여러 선택 가능한 박스." },
   { slug: "combobox", name: "Combobox", category: "Form", description: "검색·필터 가능한 select." },
   { slug: "date-picker", name: "Date Picker", category: "Form", description: "calendar + popover 조합 날짜 선택." },
   { slug: "field", name: "Field", category: "Form", description: "칸 이름 · 필수 표시 · 설명 · 오류 · 글자 수를 입력 하나에 붙이는 둘레 (SEED Field 구조)." },
   { slug: "input", name: "Input", category: "Form", description: "한 줄 글 · 숫자를 직접 치는 입력칸. 상자 · 밑줄 × large · medium · 반응형, 앞 · 뒤 붙이개 · 지우기 (SEED Text Input 구조)." },
+  { slug: "input-button", name: "Input Button", category: "Form", description: "입력칸 모양의 버튼. 누르면 달력 · 시각 · 아이콘 격자 · 긴 목록을 1280 미만 시트 · 이상 팝오버로 열고 고른 값이 칸에 들어간다 (SEED Input Button 구조)." },
   { slug: "input-otp", name: "Input OTP", category: "Form", description: "OTP / 인증 코드 입력." },
   { slug: "radio-group", name: "Radio Group", category: "Form", description: "여러 옵션 중 하나만 선택." },
   { slug: "select-box", name: "Select Box", category: "Form", description: "제목 · 설명이 붙은 선택지를 상자로 비교해 하나 · 여럿을 고른다 (SEED Select Box 구조)." },
-  { slug: "select", name: "Select", category: "Form", description: "옵션 드롭다운 — Radix Select 베이스." },
+  { slug: "select", name: "Select", category: "Form", description: "짧은 선택지 5개 이상에서 폼 값을 고르는 칸. 칸 아래 목록 · 묶음 · 하나 · 여럿 고르기 × large · medium · 반응형 (SEED Select 구조)." },
   { slug: "slider", name: "Slider", category: "Form", description: "범위 값 선택 슬라이더." },
   { slug: "switch", name: "Switch", category: "Form", description: "on/off 토글." },
   { slug: "textarea", name: "Textarea", category: "Form", description: "여러 줄 글을 받는 입력칸. 3줄에서 쓴 만큼 자라고 최대 · 고정 높이를 정할 수 있다 (SEED Textarea 구조)." },

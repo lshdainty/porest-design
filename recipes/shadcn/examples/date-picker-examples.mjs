@@ -1,12 +1,13 @@
 /*
  * shadcn DatePicker 예제 — Calendar + Popover 조립. 별도 컴포넌트 없음.
  *
- * Trigger는 최신 Select(select.tsx SelectTrigger) 톤과 통일:
+ * Trigger는 옛 Select 트리거 모양이다(2026-10-01 이전 select.tsx) — 날짜 칸은 Input Button(input-button.md)으로 열고
+ * "완료" 로 넣기로 정했다. Date Picker 차례에 Input Button + 시트 · 팝오버로 옮긴다:
  *   bg-surface-input + text-body-md + px-[var(--spacing-md)] py-[var(--spacing-sm)] + font-sans
  *   + transition motion 토큰 직접 인용.
  */
 
-// select.tsx SelectTrigger와 1:1 동기 (date-picker trigger 폭은 280px 고정).
+// 옛 Select 트리거 모양(2026-10-01 이전) — Date Picker 차례에 Input Button 으로 옮긴다(trigger 폭은 280px 고정).
 const TRIGGER =
   "inline-flex items-center justify-start gap-[var(--spacing-sm)] whitespace-nowrap rounded-sm border border-border-default bg-surface-input px-[var(--spacing-md)] py-[var(--spacing-sm)] font-sans text-body-md text-text-primary hover:bg-surface-input focus:outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 transition-[color,background-color,border-color,box-shadow] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)] h-10 w-[280px]";
 

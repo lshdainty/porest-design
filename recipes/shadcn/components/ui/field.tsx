@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
  *   useTextControl   입력 · 여러 줄 입력의 글자 수 — 자소 단위로 세고 최대에서 자른다(한글 조합이 끝난 뒤)
  *
  * 라벨은 칸과 잇는다 — 입력이면 <label for>, 묶음이면 묶음의 aria-labelledby(라벨은 <span>).
+ * 칸이 버튼(Input Button · Select 의 트리거)이면 라벨을 눌러도 포커스만 옮긴다 — 누르지 않는다(시트 · 목록을 열지 않는다, SEED).
  * 필수 점은 화면 읽기 프로그램에 숨기고 필수는 칸의 aria-required 가 알린다 — required 속성은 쓰지 않는다
  * (브라우저 기본 말풍선이 오류 글 대신 뜨지 않게). 필수 점 · "선택" 은 한 화면에서 섞지 않는다(2/3 규칙 — field.md).
  * 오류 글(invalid + errorMessage)은 설명 자리를 대신하고 칸의 aria-describedby 로 이어진다. 바뀔 때는 화면 밖의
@@ -240,6 +241,13 @@ const Field = React.forwardRef<HTMLDivElement, FieldProps>(
     );
 
     const labelClass = cn("min-w-0 font-sans text-t5 text-fg-neutral", labelWeight === "bold" ? "font-bold" : "font-medium");
+    // 칸이 버튼이면 라벨의 기본 동작(칸을 누르기)을 막고 포커스만 옮긴다 — 입력칸은 그대로(포커스 · 커서)
+    const onLabelClick = (e: React.MouseEvent<HTMLLabelElement>) => {
+      const control = e.currentTarget.ownerDocument.getElementById(controlId);
+      if (control?.tagName !== "BUTTON") return;
+      e.preventDefault();
+      control.focus();
+    };
     const labelContent = (
       <>
         {label}
@@ -268,7 +276,7 @@ const Field = React.forwardRef<HTMLDivElement, FieldProps>(
                     {labelContent}
                   </span>
                 ) : (
-                  <label id={labelId} htmlFor={controlId} className={labelClass}>
+                  <label id={labelId} htmlFor={controlId} className={labelClass} onClick={onLabelClick}>
                     {labelContent}
                   </label>
                 ))}
