@@ -351,6 +351,7 @@
 ### Fixed
 - **v9**: 매 batch마다 lint 결과를 손계산만 하던 방식 발견 → 16 sparse component를 매핑해 lint contrastCheck 자동 검증 활성. 이후 모든 토큰 추가는 components 매핑 동반.
 - **v49**: outdated prose token references 정리 (P2-F follow-up). v17 file split 후 brand-specific token reference 잔재 제거 + spec과 비동기 표현 cleanup. `scripts/lint-prose.mjs`가 prose token reference 정합성 자동 검증.
+- **문서 사이트 스펙 사이 링크 (2026-10-02)**: 스펙 md 끼리 건 링크(`[Field](field.md)` · `specs/components/list.md` · `../z-index.md`)가 사이트에서 `x.md` 로 남아 눌러도 · 미리 받아도 404 였다(컴포넌트 페이지에서 230여 개). 사이트를 만들 때 `/docs/components/<이름>` · `/docs/foundations/z-index` 로 바꾸고, 사이트에 없는 스펙은 GitHub 원본으로 보낸다(`site/scripts/gen-content.mjs`).
 
 ### Tooling
 - **v29**: `scripts/sync-shared-tokens.mjs` 추가 — `typography`/`rounded`/`spacing` 블록 자동 sync (DESIGN.md → HR/Desk), colors 47 공유 토큰 drift detection. `npm run sync` / `sync:check` / `verify` (sync:check + lint:all 통합).

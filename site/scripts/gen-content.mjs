@@ -135,7 +135,18 @@ function splitSpec(text) {
 const GEN_MARK = '{/* gen-content 가 만든 페이지';
 const isGeneratedMdx = (p) => existsSync(p) && readFileSync(p, 'utf8').includes(GEN_MARK);
 
+// 원본의 md 사이 링크(`[Field](field.md)` · `[…](specs/components/list.md)` · `../z-index.md`)를 사이트 주소로 바꾼다 —
+// 그대로 두면 브라우저가 `/docs/components/field.md` 를 찾아 404 다. 사이트에 없는 스펙은 GitHub 원본으로 보낸다.
+function siteLinks(body) {
+  const component = (name, frag = '') =>
+    existsSync(join(REPO, 'specs/components', `${name}.md`)) ? `](/docs/components/${name}${frag})` : `](${REPO_BLOB}/specs/components/${name}.md${frag})`;
+  return body
+    .replace(/\]\((?:\.\.\/|specs\/)z-index\.md(#[^)\s]*)?\)/g, (_, frag = '') => `](/docs/foundations/z-index${frag})`)
+    .replace(/\]\((?:\.\/)?(?:specs\/components\/|components\/)?([a-z0-9-]+)\.md(#[^)\s]*)?\)/g, (_, name, frag) => component(name, frag));
+}
+
 function write(relPath, { title, description, source }, body) {
+  body = siteLinks(body);
   const out = join(DOCS, relPath);
   const handMdx = out.replace(/\.mdx?$/, '.mdx');
   if (existsSync(handMdx) && !isGeneratedMdx(handMdx)) return; // 손으로 쓴 페이지가 이긴다
@@ -416,11 +427,8 @@ for (const name of readdirSync(specDir).filter((n) => n.endsWith('.md')).sort())
   const spec = splitSpec(read(source));
   // 수치 표 자리(`[표: …](<이름>.yaml#…)`)는 YAML 로 그린 표로 바꾼다.
   const withTables = fillSpecTables(addMissingTableHeaders(spec.body), { specDir, tokens, source });
-  // 스펙 폴더 밖의 기초 스펙은 사이트에선 foundations 아래에 있다.
   // 스펙 옆 YAML 로 가는 링크(`[button.yaml](button.yaml)`)는 사이트에 그 페이지가 없다 — GitHub 의 원본 파일로 보낸다.
-  const body = withTables
-    .replace(/\]\(\.\.\/z-index\.md/g, '](../foundations/z-index.md')
-    .replace(/\]\(([a-z0-9-]+\.yaml)\)/g, `](${REPO_BLOB}/specs/components/$1)`);
+  const body = withTables.replace(/\]\(([a-z0-9-]+\.yaml)\)/g, `](${REPO_BLOB}/specs/components/$1)`);
   // 그림 자리가 있으면 .mdx — 그림은 site/components/specs/<이름>.tsx 가 그린다
   if (body.split('\n').some((l) => FIGURE.test(l))) write(`components/${name.replace(/\.md$/, '.mdx')}`, { ...spec, source }, toMdx(body, source));
   else write(`components/${name}`, { ...spec, source }, body);
