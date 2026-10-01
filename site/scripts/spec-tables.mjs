@@ -59,6 +59,8 @@ export const PROP_LABEL = {
   columnGap: '칸 간격',
   columns: '칸 수',
   alignSelf: '줄 맞춤',
+  alignItems: '세로 맞춤',
+  insetX: '바탕 들임',
   radius: '모서리',
   background: '배경',
   foreground: '글자·아이콘',

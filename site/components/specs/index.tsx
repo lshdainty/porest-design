@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { buttonFigures } from './button';
 import { buttonGuideFigures } from './button-guides';
 import { checkboxFigures } from './checkbox';
+import { listFigures } from './list';
 import { radioGroupFigures } from './radio-group';
 import { switchFigures } from './switch';
 import { SpecSheet } from './spec-sheet';
@@ -11,6 +12,7 @@ import { SpecSheet } from './spec-sheet';
 const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactNode>> = {
   button: { ...buttonFigures, ...buttonGuideFigures },
   checkbox: checkboxFigures,
+  list: listFigures,
   'radio-group': radioGroupFigures,
   switch: switchFigures,
 };

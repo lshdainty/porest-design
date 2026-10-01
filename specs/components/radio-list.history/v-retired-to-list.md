@@ -1,3 +1,5 @@
+> **걷음(2026-10-01)** — 하나를 고르는 목록은 List 의 `ListRadioItem`(오른쪽 라디오 24)으로 그린다. 새 스펙은 [`../list.md`](../list.md). 아래는 걷기 전 마지막 스펙이다(수치는 같은 폴더의 `v-retired-to-list.yaml`).
+
 # RadioList
 
 > 전체 폭 row 리스트에서 single-select 하는 도메인 컴포넌트. 좌측 icon/symbol pill + 텍스트(label + sub) + 우측 active 시 check. 통화·언어·국가 등 **목록형 선택지**에 사용. shadcn에는 없는 Porest 도메인 spec — desk-front AppearanceSection "기본 통화" 영역 SoT.

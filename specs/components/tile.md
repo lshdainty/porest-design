@@ -25,7 +25,7 @@ inactive                              active
 
 **규칙**
 
-- swatch는 **반드시 시각 미리보기** — 라벨만 텍스트면 RadioList 사용 (Tile은 swatch가 의미).
+- swatch는 **반드시 시각 미리보기** — 라벨만 텍스트면 List 의 라디오 줄(`ListRadioItem`) 사용 (Tile은 swatch가 의미).
 - swatch 크기 40×40 고정 — tile 폭 변해도 swatch 동일. 인지 무게 균일.
 - 텍스트 2줄(label + desc) — 1줄만이면 단순 ToggleGroup이 적합.
 - active 시 색 + check 두 단서 동시(WCAG 1.4.1).
@@ -58,7 +58,7 @@ Tile은 **variant 없음** — 단일 시각 spec. 의미 분기는 호출처가
 **선택 옵션 수**
 
 - 2–4 개 권장 — Tile은 **시각 비교가 핵심**이라 옵션 수가 많아지면 매트릭스 폭 증가 + 인지 부담↑.
-- 5+ 옵션이면 RadioList(세로 stack) 또는 Select가 적합.
+- 5+ 옵션이면 List 의 라디오 줄(세로) 또는 Select가 적합.
 
 ## Behavior
 
@@ -95,7 +95,7 @@ Tile은 single-select만 — multi-select는 별 컴포넌트(`MultiTile` 등, �
 
 ### ❌ Don't
 
-- 라벨만 의미인 옵션 (예: 정렬 순서·필터 카테고리) — 그건 RadioList / Select 영역.
+- 라벨만 의미인 옵션 (예: 정렬 순서·필터 카테고리) — 그건 List 의 라디오 줄 / Select 영역.
 - 5+ 옵션 grid — 매트릭스 폭 증가, swatch 비교 인지 부담↑.
 - swatch 없이 텍스트만 — 시각 미리보기 손실. ToggleGroup·Select 사용.
 - description 2줄 이상 — 카드 높이 들쭉날쭉 + 비교 어려움.

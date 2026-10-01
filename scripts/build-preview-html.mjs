@@ -1367,6 +1367,401 @@ export function renderSwitchGallery(brand) {
   </section>`;
 }
 
+// List — spec: specs/components/list.md · 수치 list.yaml · list-header.yaml. 구조는 SEED List(2026-10-01).
+// 목록 .plst(List · ListRadioGroup · ListCheckGroup) · 한 줄 .plst-row(List Item) · 목록 제목 .plst-header(ListHeader) · 줄 사이 선 .plst-divider(ListDivider) · 앞 타일 .plst-tile(ListTile).
+// 목록(ul) 안의 줄 · 선은 li, 묶음(radiogroup · fieldset) 안의 줄 · 선은 div 다(list.tsx 의 ListRowTag).
+// 줄의 짜임은 list.tsx 와 같다 — .plst-row(바탕 층 ::before) > .plst-content(콘텐츠 층) > .plst-prefix · .plst-body(.plst-title · .plst-detail) · .plst-suffix.
+// 누르는 줄 · 링크 줄은 본문이 button · a(.plst-action), 컨트롤 줄은 콘텐츠 층이 label(.plst-control) — 모두 [data-list-action] 을 달고(컨트롤 줄은 끼운 컨트롤도),
+// 막히면 [data-disabled] 를 단다.
+const LIST_INTERACTIONS = ["hover", "focus", "pressed"];
+const listSvg = (body) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
+// 아이콘은 lucide 그림(선 2)이다 — 크기는 놓인 자리가 정한다(앞 22 · 타일 안 20 · 뒤 18)
+const LIST_ICON = {
+  user: listSvg('<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>'),
+  globe: listSvg('<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>'),
+  bell: listSvg('<path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/>'),
+  lock: listSvg('<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>'),
+  moon: listSvg('<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>'),
+  book: listSvg('<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>'),
+  shield: listSvg('<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>'),
+  wallet: listSvg('<path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>'),
+  calendar: listSvg('<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>'),
+  card: listSvg('<rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>'),
+  receipt: listSvg('<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/>'),
+  utensils: listSvg('<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>'),
+  bus: listSvg('<path d="M8 6v6"/><path d="M15 6v6"/><path d="M2 12h19.6"/><path d="M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3"/><circle cx="7" cy="18" r="2"/><path d="M9 18h5"/><circle cx="16" cy="18" r="2"/>'),
+  bag: listSvg('<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>'),
+  more: listSvg('<circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>'),
+  chevron: listSvg('<path d="m9 18 6-6-6-6"/>'),
+};
+
+// 한 줄(List Item) — 글(title · detail)은 여기서 escape 하고, prefix · suffix 는 HTML 조각(아이콘 · 타일 · 값 글자 · 컨트롤 · 작은 버튼)으로 받는다.
+//   kind         item(보기만 하는 줄 — 기본) · button(누르는 줄) · link(링크 줄) · control(컨트롤 줄 — 끼운 컨트롤은 prefix · suffix 로 넘긴다)
+//   align        center(기본) · top
+//   highlighted  강조 — 옅은 브랜드 바탕(강조 축)
+//   disabled     누르는 줄 · 컨트롤 줄만(list.tsx 의 ListItem · ListLinkItem 에는 disabled 가 없다). 컨트롤 줄은 끼운 컨트롤도 막아서 넘긴다
+//   interaction  hover · focus · pressed — 갤러리에서 그 순간을 고정해 보여 줄 때만(.btn-state-* 와 같은 역할).
+//                컨트롤 줄의 포커스는 끼운 컨트롤이 받으니 그 컨트롤의 고정 클래스(.switch--focus …)로 그린다
+//   as           li(기본) · div(묶음 안의 줄 — ListRadioGroup · ListCheckGroup 안)
+export function listRow({ kind = "item", title, detail = "", prefix = "", suffix = "", align = "center", highlighted = false, disabled = false, interaction = "", as = "li" } = {}) {
+  const rowCls = ["plst-row", highlighted && "plst-row--hl", LIST_INTERACTIONS.includes(interaction) && `plst-row--${interaction}`].filter(Boolean).join(" ");
+  const contentCls = ["plst-content", align === "top" && "plst-content--top", kind === "control" && "plst-control"].filter(Boolean).join(" ");
+  const off = disabled && (kind === "button" || kind === "control");
+  const body = `<span class="plst-title">${escape(title)}</span>${detail ? `<span class="plst-detail">${escape(detail)}</span>` : ""}`;
+  const pre = prefix ? `<span class="plst-prefix">${prefix}</span>` : "";
+  const suf = suffix ? `<span class="plst-suffix">${suffix}</span>` : "";
+  let inner;
+  if (kind === "button") inner = `<div class="${contentCls}">${pre}<button type="button" class="plst-body plst-action" data-list-action=""${off ? ' disabled data-disabled=""' : ""}>${body}</button>${suf}</div>`;
+  // 링크는 미리보기라 옮기지 않는다 — 섹션 끝 스크립트가 누름을 막는다
+  else if (kind === "link") inner = `<div class="${contentCls}">${pre}<a href="#" class="plst-body plst-action" data-list-action="">${body}</a>${suf}</div>`;
+  else if (kind === "control") inner = `<label class="${contentCls}" data-list-action=""${off ? ' data-disabled=""' : ""}>${pre}<span class="plst-body">${body}</span>${suf}</label>`;
+  else inner = `<div class="${contentCls}">${pre}<span class="plst-body">${body}</span>${suf}</div>`;
+  return `<${as} class="${rowCls}">${inner}</${as}>`;
+}
+
+// 목록 제목(ListHeader) — 글은 span 에 담아 목록의 aria-labelledby 가 오른쪽 버튼 글까지 이름으로 읽지 않게 한다
+export function listHeader({ text, variant = "mediumWeak", id = "", action = "" } = {}) {
+  return `<div class="plst-header${variant === "boldSolid" ? " plst-header--bold-solid" : ""}"><span${id ? ` id="${id}"` : ""}>${escape(text)}</span>${action}</div>`;
+}
+
+// 앞 · 뒤 · 목록 · 선 · 그림 틀
+const listTile = (color, icon) => `<span class="plst-tile plst-tile--${color}">${LIST_ICON[icon]}</span>`;
+const listChevron = (value = "") => `${value ? escape(value) : ""}${LIST_ICON.chevron}`;
+const listOf = (rows, attrs = "") => `<ul class="plst"${attrs}>${rows.join("")}</ul>`;
+// 묶음 — 하나 고르기(ListRadioGroup · role=radiogroup) · 여럿 고르기(ListCheckGroup · fieldset). 이름(aria-label · aria-labelledby)을 꼭 달고, 안의 줄은 as: "div" 로 그린다
+const radioGroup = (rows, attrs) => `<div class="plst" role="radiogroup"${attrs}>${rows.join("")}</div>`;
+const checkGroup = (rows, attrs) => `<fieldset class="plst"${attrs}>${rows.join("")}</fieldset>`;
+const listDivider = (inset = false, as = "li") => `<${as} class="plst-divider${inset ? " plst-divider--inset" : ""}" aria-hidden="true"></${as}>`;
+// 줄은 실제 화면처럼 흰 바탕(bg-layer-default)의 틀 안에 둔다 — 틀은 갤러리 것이고 List 의 일부가 아니다
+const listFrame = (cap, en, body) => `
+        <div class="plst-sample">
+          <div class="plst-cap">${escape(cap)}<span>${escape(en)}</span></div>
+          <div class="plst-frame">${body}</div>
+        </div>`;
+
+// 줄 종류 · 앞 · 뒤 · 설명과 맞춤 · 강조 · 상태 · 직접 눌러 보기 · 목록 제목 · 줄 사이 선 아홉 판을 흰 표면(.vignette-card) 위에 그린다 — 상태 표는 Checkbox 갤러리의 .cb-* 를 쓴다.
+// 글은 Desk 설정 · 가계부 · 알림에서 빌렸다(list.md 코드 예와 같은 줄). 끼운 컨트롤은 Switch · Checkbox · Radio 갤러리의 sw() · cbox() · radio() 그대로다.
+export function renderListGallery(brand) {
+  const panel = (title, sub, body) => `
+    <div class="vignette-card cb-panel">
+      <div class="vignette-head">
+        <div class="vignette-title">${escape(title)}</div>
+        <div class="vignette-sub">${escape(sub)}</div>
+      </div>${body}
+    </div>`;
+  const frames = (items) => `
+      <div class="plst-frames">${items.join("")}
+      </div>`;
+  const icon = (name) => LIST_ICON[name];
+  // 끼운 컨트롤도 줄의 누르는 것이다(data-list-action, list.tsx 와 같다) — 키보드(Space)로 누르면 :active 가 라벨이 아니라 컨트롤에 걸린다.
+  // 막힌 컨트롤에는 data-disabled 도 단다(Radix 가 그리는 것과 같다) — 막힌 컨트롤에 올려도 줄의 호버 바탕이 생기지 않게
+  const asRowAction = (html, disabled) => html.replace("<button ", `<button data-list-action=""${disabled ? ' data-disabled=""' : ""} `);
+  const switch32 = (args = {}) => asRowAction(sw({ size: "32", ...args }), args.disabled);
+  const check24 = (args = {}) => asRowAction(cbox({ size: "large", ...args }), args.disabled);
+  const radio24 = (args = {}) => asRowAction(radio({ size: "large", ...args }), args.disabled);
+  // 가계부 금액은 그 화면이 정한 자리다(list.md Suffix — 16 · 700) — List 의 값 글자가 아니다
+  const amount = (v) => `<span class="plst-amount">${escape(v)}</span>`;
+  // 작은 버튼 — Button 갤러리의 xsmall 32. 글자는 neutralWeak, 아이콘만은 ghost · neutralSubtle 에 이름(aria-label)을 단다
+  const smallButton = (label) => `<button class="btn btn-neutral-weak btn-size-xsmall" type="button"><span>${escape(label)}</span></button>`;
+  const iconButton = (name, label) => `<button class="btn btn-ghost btn-ghost-subtle btn-icon-only btn-size-xsmall" type="button" aria-label="${escape(label)}" title="${escape(label)}">${icon(name)}</button>`;
+
+  // 1. 줄의 종류 넷
+  const kindsPanel = panel(
+    "줄의 종류 넷",
+    "같은 모양이 하는 일에 따라 넷으로 나뉜다. 보기만 하는 줄은 누르지 않아 호버 · 누름 바탕이 생기지 않는다. 누르는 줄 · 링크 줄은 본문의 버튼 · 링크가 줄 전체를 덮어 줄 어디를 눌러도 눌리고, 컨트롤 줄은 줄 전체가 라벨이라 줄 어디를 눌러도 끼운 스위치가 눌린다. 모두 실제로 올리고 눌러 볼 수 있다 — 값은 바뀌지 않는다(정적 미리보기).",
+    frames([
+      listFrame("보기만 하는 줄", "ListItem", listOf([
+        listRow({ title: "가입일", suffix: escape("2026년 3월 2일") }),
+        listRow({ title: "이메일", suffix: escape("porest@example.com") }),
+      ])),
+      listFrame("누르는 줄", "ListButtonItem", listOf([
+        listRow({ kind: "button", prefix: icon("user"), title: "계정", suffix: listChevron() }),
+        listRow({ kind: "button", prefix: icon("globe"), title: "기본 통화", suffix: listChevron("대한민국 원") }),
+      ])),
+      listFrame("링크 줄", "ListLinkItem", listOf([
+        listRow({ kind: "link", prefix: icon("book"), title: "설명서", suffix: listChevron() }),
+        listRow({ kind: "link", prefix: icon("shield"), title: "개인정보 처리방침", suffix: listChevron() }),
+      ])),
+      listFrame("컨트롤 줄", "ListSwitchItem", listOf([
+        listRow({ kind: "control", prefix: icon("bell"), title: "결제 알림", detail: "결제 예정일 D-1, 결제일 당일 알림", suffix: switch32({ checked: true }) }),
+        listRow({ kind: "control", prefix: icon("wallet"), title: "예산 알림", detail: "카테고리 예산 80%·100% 도달", suffix: switch32() }),
+      ])),
+    ]),
+  );
+
+  // 2. 앞 붙이개 — 아이콘 22 · 타일 40 · 체크 24
+  const prefixPanel = panel(
+    "앞 붙이개 — 아이콘 22 · 타일 40 · 체크 24",
+    "앞 붙이개는 줄이 무엇인지 먼저 알리고 본문과 12 떨어진다. 설정 · 메뉴 줄은 아이콘 22(fg-neutral), 색이 뜻을 가진 내용 줄은 타일 40 — 모서리 12, 카테고리 색의 옅은 바탕(chart-{색}-weak) 위에 그 색의 아이콘 20. 여럿 고르기는 체크 24 를 앞에 둔다. 한 목록 안에서 섞지 않는다. 오른쪽 금액(16 · 700)은 가계부 화면이 정한 자리다.",
+    frames([
+      listFrame("아이콘 22 · 설정 줄", "prefix icon", listOf([
+        listRow({ kind: "button", prefix: icon("user"), title: "계정", suffix: listChevron() }),
+        listRow({ kind: "button", prefix: icon("lock"), title: "보안", suffix: listChevron() }),
+        listRow({ kind: "button", prefix: icon("bell"), title: "알림", suffix: listChevron() }),
+      ])),
+      listFrame("타일 40 · 내용 줄", "ListTile — chart-{색}-weak · chart-{색}", listOf([
+        listRow({ prefix: listTile("orange", "utensils"), title: "점심", detail: "식비 · 신한카드", suffix: amount("12,000원") }),
+        listRow({ prefix: listTile("blue", "bus"), title: "버스", detail: "교통 · 체크카드", suffix: amount("1,500원") }),
+        listRow({ prefix: listTile("violet", "bag"), title: "생활용품", detail: "쇼핑 · 현금", suffix: amount("23,400원") }),
+      ])),
+      listFrame("체크 24 · 여럿 고르기", "ListCheckGroup(fieldset) · ListCheckItem — 앞(기본)", checkGroup([
+        listRow({ kind: "control", as: "div", prefix: check24({ state: "checked" }), title: "거래 내역" }),
+        listRow({ kind: "control", as: "div", prefix: check24({ state: "checked" }), title: "예산" }),
+        listRow({ kind: "control", as: "div", prefix: check24(), title: "메모" }),
+      ], ' aria-label="내보낼 항목"')),
+    ]),
+  );
+
+  // 3. 뒤 붙이개 — 값 글자 · 화살표 · 작은 버튼 · 스위치 32 · 체크 24 · 라디오 24
+  const currencies = [["대한민국 원", "KRW"], ["미국 달러", "USD"], ["일본 엔", "JPY"], ["유로", "EUR"]];
+  const suffixPanel = panel(
+    "뒤 붙이개 — 값 글자 · 화살표 · 작은 버튼 · 스위치 · 체크 · 라디오",
+    "값 글자는 16 · fg-neutral-subtle, 오른쪽 화살표는 18 · fg-neutral-subtle 이고 화면을 옮기는 줄에만 단다. 작은 버튼은 줄 위에 올라 따로 눌린다 — 버튼을 눌러도 줄은 눌리지 않는다. 스위치는 제목 16 줄이라 32, 체크 · 라디오는 24 이고 줄을 눌러도 따로 줄지 않는다. 하나 고르기는 라디오를 뒤에 두고 두 줄 이상이어야 한다.",
+    frames([
+      listFrame("값 글자 · 화살표", "suffix text · chevron 18", listOf([
+        listRow({ kind: "button", prefix: icon("globe"), title: "기본 통화", suffix: listChevron("대한민국 원") }),
+        listRow({ kind: "button", prefix: icon("moon"), title: "테마", suffix: listChevron("시스템") }),
+        listRow({ kind: "button", prefix: icon("user"), title: "계정", suffix: listChevron() }),
+      ])),
+      listFrame("작은 버튼 — 따로 눌린다", "suffix button", listOf([
+        listRow({ kind: "button", prefix: listTile("indigo", "card"), title: "신한카드", detail: "이번 달 452,300원", suffix: smallButton("결제") + listChevron() }),
+        listRow({ prefix: listTile("gray", "receipt"), title: "월세", detail: "매월 25일 반복 이체", suffix: iconButton("more", "더보기") }),
+      ])),
+      listFrame("스위치 32", "ListSwitchItem", listOf([
+        listRow({ kind: "control", prefix: icon("bell"), title: "결제 알림", detail: "결제 예정일 D-1, 결제일 당일 알림", suffix: switch32({ checked: true }) }),
+        listRow({ kind: "control", prefix: icon("wallet"), title: "예산 알림", detail: "카테고리 예산 80%·100% 도달", suffix: switch32({ checked: true }) }),
+        listRow({ kind: "control", prefix: icon("calendar"), title: "주간 리포트", detail: "매주 월요일 오전 9시", suffix: switch32() }),
+      ])),
+      listFrame("체크 24 · 뒤", "ListCheckGroup(fieldset) · ListCheckItem markPosition=suffix", checkGroup([
+        listRow({ kind: "control", as: "div", prefix: listTile("indigo", "card"), title: "신한카드", suffix: check24({ state: "checked" }) }),
+        listRow({ kind: "control", as: "div", prefix: listTile("blue", "card"), title: "현대카드", suffix: check24({ state: "checked" }) }),
+        listRow({ kind: "control", as: "div", prefix: listTile("gray", "card"), title: "삼성카드", suffix: check24() }),
+      ], ' aria-label="결제 알림을 받을 카드"')),
+      listFrame("라디오 24 · 하나 고르기", "ListRadioGroup · ListRadioItem", radioGroup(
+        currencies.map(([title, code], i) => listRow({ kind: "control", as: "div", title, detail: code, suffix: radio24({ checked: i === 0 }) })),
+        ' aria-label="기본 통화"',
+      )),
+    ]),
+  );
+
+  // 4. 설명 · 맞춤
+  const detailPanel = panel(
+    "설명 · 맞춤",
+    "설명은 제목 아래 2 떨어져 13 · fg-neutral-subtle 로 쓰고, 제목만으로 알 수 있으면 두지 않는다. 길어지면 두 줄까지 — 그 이상이거나 제목이 두 줄을 넘으면 맞춤을 위(top)로 바꿔 앞 · 뒤를 위에 맞춘다. 한 목록 안에서는 줄마다 맞춤을 섞지 않는다.",
+    frames([
+      listFrame("가운데 맞춤 — 설명 없음 · 한 줄 · 두 줄", "align center(기본)", listOf([
+        listRow({ kind: "control", prefix: icon("bell"), title: "푸시 알림", suffix: switch32({ checked: true }) }),
+        listRow({ kind: "control", prefix: icon("wallet"), title: "예산 알림", detail: "카테고리 예산 80%·100% 도달", suffix: switch32({ checked: true }) }),
+        listRow({ kind: "control", prefix: icon("calendar"), title: "주간 리포트", detail: "매주 월요일 오전 9시에 지난주 지출과 예산 사용을 정리해 보내요", suffix: switch32() }),
+      ])),
+      listFrame("위 맞춤 — 제목이 두 줄을 넘거나 설명이 길 때", "align top", listOf([
+        listRow({ kind: "control", align: "top", prefix: icon("card"), title: "카드 결제일 하루 전과 당일 아침에 결제 금액을 알림으로 받기", detail: "결제 예정 금액은 알림을 보내는 날까지 쓴 금액이에요", suffix: switch32({ checked: true }) }),
+        listRow({ kind: "control", align: "top", prefix: icon("wallet"), title: "예산 미리 알림", detail: "카테고리 예산의 80%와 100%에 닿으면 알려요. 예산을 정하지 않은 카테고리는 알리지 않고, 달이 바뀌면 다시 0%부터 세요", suffix: switch32() }),
+      ])),
+    ]),
+  );
+
+  // 5. 강조 — 안 읽은 알림 둘 · 읽은 알림 하나. 안 읽음은 목록 제목의 글로도 알린다(WCAG 1.4.1)
+  const highlightPanel = panel(
+    "강조",
+    "새 알림처럼 주목이 필요한 줄은 바탕만 옅은 브랜드 색(bg-brand-weak)으로 바꾼다 — 점 · 왼쪽 막대는 두지 않는다. 올리거나 누르면 바탕이 bg-brand-weak-pressed 로 짙어지고 그동안만 설명 · 값 글자가 fg-neutral-muted 로 짙어진다(fg-neutral-subtle 은 그 바탕 위 4.32:1 로 모자란다). 제목 · 화살표는 그대로다. 안 읽음은 바탕 색만으로 알리지 않는다 — 여기서는 목록 제목이 글로 알린다."
+      + (brand.key === "shared" ? " 공유 토큰에는 브랜드 역할 색이 없어 강조 바탕이 여기서는 중립(bg-neutral-weak · bg-neutral-weak-pressed)으로 보인다." : ""),
+    frames([
+      listFrame("알림", "highlighted — 안 읽은 줄 둘 · 읽은 줄 하나", [
+        listHeader({ text: "새 알림 2", id: "plst-h-unread" }),
+        listOf([
+          listRow({ kind: "button", highlighted: true, prefix: listTile("orange", "wallet"), title: "예산 80% 도달", detail: "식비 예산의 80%를 썼어요", suffix: listChevron("10분 전") }),
+          listRow({ kind: "button", highlighted: true, prefix: listTile("indigo", "card"), title: "내일 카드 결제일", detail: "신한카드 452,300원이 결제돼요", suffix: listChevron("1시간 전") }),
+        ], ' aria-labelledby="plst-h-unread"'),
+        listHeader({ text: "읽은 알림", id: "plst-h-read" }),
+        listOf([
+          listRow({ kind: "button", prefix: listTile("gray", "receipt"), title: "지난주 리포트", detail: "지출 312,000원 · 예산의 64%", suffix: listChevron("어제") }),
+        ], ' aria-labelledby="plst-h-read"'),
+      ].join("")),
+    ]),
+  );
+
+  // 6. 줄 종류 × 상태 — 그 순간을 멈춰 그린다. 누름 칸의 배율 기준은 섹션 끝 스크립트가 잰다
+  const stateCols = [
+    { ko: "누르는 줄", en: "ListButtonItem — 아이콘 · 값 · 화살표" },
+    { ko: "강조 줄", en: "highlighted — 타일 · 설명 · 값 · 화살표" },
+    { ko: "컨트롤 줄", en: "ListSwitchItem — 아이콘 · 설명 · 스위치 32" },
+  ];
+  const states = [
+    { ko: "기본", en: "enabled" },
+    { ko: "호버", en: "hovered", interaction: "hover" },
+    { ko: "포커스", en: "focused", interaction: "focus" },
+    { ko: "누름", en: "pressed", interaction: "pressed" },
+    { ko: "비활성", en: "disabled", disabled: true },
+  ];
+  const stateCell = (col, s) => {
+    const one = (args) => `<div class="plst-frame">${listOf([listRow({ interaction: s.interaction, disabled: s.disabled, ...args })])}</div>`;
+    if (col === 0) return one({ kind: "button", prefix: icon("globe"), title: "기본 통화", suffix: listChevron("대한민국 원") });
+    if (col === 1) return one({ kind: "button", highlighted: true, prefix: listTile("orange", "wallet"), title: "예산 80% 도달", detail: "식비 예산의 80%를 썼어요", suffix: listChevron("10분 전") });
+    // 컨트롤 줄의 포커스는 스위치가 받는다 — 줄은 그대로, 스위치에 링
+    return `<div class="plst-frame">${listOf([listRow({
+      kind: "control", interaction: s.interaction === "focus" ? "" : s.interaction, disabled: s.disabled,
+      prefix: icon("bell"), title: "결제 알림", detail: "결제 예정일 D-1, 결제일 당일 알림",
+      suffix: switch32({ checked: true, disabled: s.disabled, interaction: s.interaction === "focus" ? "focus" : "" }),
+    })])}</div>`;
+  };
+  const stateHead = `<div class="cb-matrix-row cb-matrix-row--head"><div class="cb-matrix-head">상태</div>${
+    stateCols.map(c => `<div class="cb-matrix-head">${escape(c.ko)}<span>${escape(c.en)}</span></div>`).join("")
+  }</div>`;
+  const statePanel = panel(
+    "줄 종류 × 상태",
+    "호버 · 포커스 · 누름은 그 순간을 멈춰 그렸다. 호버는 누름과 같은 바탕 — 좌우 6 들어온 bg-layer-default-pressed, 모서리 10(강조 줄은 bg-brand-weak-pressed). 누름은 그 바탕에 콘텐츠 층만 2px 거리 축소다 — 기준이 max(높이, 폭 ÷ 4, 24) 라 줄은 세로로 1px 남짓 준다. 끼운 스위치는 따로 줄지 않는다. 포커스는 키보드에만 — 누르는 줄은 줄 안쪽 링 2px, 컨트롤 줄은 스위치의 링이다. 비활성은 전용 색(fg-disabled · 타일 bg-disabled)이고 흐리게 하지 않는다.",
+    `
+      <div class="cb-matrix plst-matrix" style="--cb-cols: ${stateCols.length};">
+        ${stateHead}${states.map(s => `
+        <div class="cb-matrix-row"><div class="cb-matrix-label">${escape(s.ko)}<span>${escape(s.en)}</span></div>${
+          stateCols.map((c, i) => `<div class="cb-matrix-cell plst-cell">${stateCell(i, s)}</div>`).join("")
+        }</div>`).join("")}
+      </div>`,
+  );
+
+  // 7. 직접 눌러 보기 — 종류 · 강조 · 막힘을 한 화면에 섞었다
+  const livePanel = panel(
+    "직접 눌러 보기",
+    "마우스를 올리고 눌러 보고, Tab 으로 옮겨 Space 로 눌러 본다. 보기만 하는 줄과 막힌 줄은 바탕이 바뀌지 않고, 막힌 줄은 커서가 not-allowed 다. Tab 은 보기만 하는 줄 · 막힌 줄을 건너뛰고, 컨트롤 줄에서는 끼운 컨트롤이 포커스를 받는다. 모션 줄이기면 콘텐츠는 줄지 않고 바탕만 바뀐다. 값은 바뀌지 않는다(정적 미리보기).",
+    frames([
+      listFrame("설정", "누르는 줄 · 링크 줄 · 보기만 하는 줄 · 막힌 줄", [
+        listHeader({ text: "일반", id: "plst-h-live-general" }),
+        listOf([
+          listRow({ kind: "button", prefix: icon("user"), title: "계정", suffix: listChevron() }),
+          listRow({ kind: "button", prefix: icon("globe"), title: "기본 통화", suffix: listChevron("대한민국 원") }),
+          listRow({ kind: "link", prefix: icon("book"), title: "설명서", suffix: listChevron() }),
+          listRow({ prefix: icon("calendar"), title: "가입일", suffix: escape("2026년 3월 2일") }),
+          listRow({ kind: "button", disabled: true, prefix: icon("lock"), title: "로그인 기록", detail: "준비 중이에요" }),
+        ], ' aria-labelledby="plst-h-live-general"'),
+        listHeader({ text: "알림", id: "plst-h-live-alert" }),
+        listOf([
+          listRow({ kind: "control", prefix: icon("bell"), title: "결제 알림", detail: "결제 예정일 D-1, 결제일 당일 알림", suffix: switch32({ checked: true }) }),
+          listRow({ kind: "control", disabled: true, prefix: icon("calendar"), title: "주간 리포트", detail: "푸시 알림이 꺼져 있어요", suffix: switch32({ disabled: true }) }),
+        ], ' aria-labelledby="plst-h-live-alert"'),
+      ].join("")),
+      listFrame("고르기 · 강조", "라디오 · 체크 · 강조 줄", [
+        listHeader({ text: "기본 통화", id: "plst-h-live-currency" }),
+        radioGroup(
+          currencies.slice(0, 3).map(([title, code], i) => listRow({ kind: "control", as: "div", title, detail: code, suffix: radio24({ checked: i === 0 }) })),
+          ' aria-labelledby="plst-h-live-currency"',
+        ),
+        listHeader({ text: "내보낼 항목", id: "plst-h-live-export" }),
+        checkGroup([
+          listRow({ kind: "control", as: "div", prefix: check24({ state: "checked" }), title: "거래 내역" }),
+          listRow({ kind: "control", as: "div", prefix: check24(), title: "예산" }),
+        ], ' aria-labelledby="plst-h-live-export"'),
+        listHeader({ text: "새 알림 1", id: "plst-h-live-unread" }),
+        listOf([
+          listRow({ kind: "button", highlighted: true, prefix: listTile("orange", "wallet"), title: "예산 80% 도달", detail: "식비 예산의 80%를 썼어요", suffix: listChevron("10분 전") }),
+        ], ' aria-labelledby="plst-h-live-unread"'),
+      ].join("")),
+    ]),
+  );
+
+  // 8. 목록 제목(List Header)
+  const headerPanel = panel(
+    "목록 제목(List Header) — mediumWeak · boldSolid",
+    "목록 밖, 바로 위에 둔다. mediumWeak(기본)는 14 · 500 · fg-neutral-subtle 로 줄보다 앞서지 않고, boldSolid 는 14 · 700 · fg-neutral 로 화면을 크게 나누는 묶음에만 쓴다. 위아래 8 · 좌우 24 — 줄과 같은 24 라 제목과 줄의 왼쪽이 맞는다. 오른쪽에 작은 버튼(도움말 · 전체 보기)을 둘 수 있고 제목과 10 떨어진다. 목록은 aria-labelledby 로 제목을 이름으로 단다.",
+    frames([
+      listFrame("mediumWeak", "기본 — 14 · 500 · fg-neutral-subtle", [
+        listHeader({ text: "일반", id: "plst-h-medium-general" }),
+        listOf([
+          listRow({ kind: "button", prefix: icon("user"), title: "계정", suffix: listChevron() }),
+          listRow({ kind: "button", prefix: icon("globe"), title: "기본 통화", suffix: listChevron("대한민국 원") }),
+        ], ' aria-labelledby="plst-h-medium-general"'),
+        listHeader({ text: "알림", id: "plst-h-medium-alert" }),
+        listOf([
+          listRow({ kind: "button", prefix: icon("bell"), title: "알림 설정", suffix: listChevron() }),
+        ], ' aria-labelledby="plst-h-medium-alert"'),
+      ].join("")),
+      listFrame("boldSolid · 오른쪽 작은 버튼", "14 · 700 · fg-neutral — ghost · neutralSubtle · xsmall", [
+        listHeader({ text: "카테고리별 예산", variant: "boldSolid", id: "plst-h-bold-budget", action: `<button class="btn btn-ghost btn-ghost-subtle btn-size-xsmall" type="button"><span>전체 보기</span></button>` }),
+        listOf([
+          listRow({ kind: "button", prefix: listTile("orange", "utensils"), title: "식비", detail: "40만 원 중 32만 원", suffix: listChevron("80%") }),
+          listRow({ kind: "button", prefix: listTile("blue", "bus"), title: "교통", detail: "10만 원 중 4만 원", suffix: listChevron("40%") }),
+        ], ' aria-labelledby="plst-h-bold-budget"'),
+      ].join("")),
+    ]),
+  );
+
+  // 9. 줄 사이 선(ListDivider) — 없음 · 줄 폭 · 들임
+  const dividerRows = (divider) => {
+    const rows = [
+      listRow({ kind: "button", prefix: icon("user"), title: "계정", suffix: listChevron() }),
+      listRow({ kind: "button", prefix: icon("lock"), title: "보안", suffix: listChevron() }),
+      listRow({ kind: "button", prefix: icon("bell"), title: "알림", suffix: listChevron() }),
+    ];
+    return listOf(divider === null ? rows : rows.flatMap((r, i) => (i ? [listDivider(divider), r] : [r])));
+  };
+  const dividerPanel = panel(
+    "줄 사이 선(ListDivider) — 없음 · 줄 폭 · 들임",
+    "기본은 선 없음 — 줄의 위아래 여백이 줄을 가른다. 촘촘한 목록 · 설명 없는 긴 목록처럼 구분이 필요할 때만 1px stroke-neutral-subtle 을 넣는다. 줄 폭 전체가 기본이고, 앞 붙이개가 있는 목록은 좌우 24 들일 수 있다. 선은 aria-hidden 이라 줄 수에 들지 않는다.",
+    frames([
+      listFrame("없음", "기본", dividerRows(null)),
+      listFrame("줄 폭", "ListDivider", dividerRows(false)),
+      listFrame("들임", "ListDivider inset — 좌우 24", dividerRows(true)),
+    ]),
+  );
+
+  const lede = "SEED List 구조 — 목록(List) · 한 줄(List Item) · 목록 제목(List Header) · 줄 사이 선(ListDivider). 한 줄은 바탕 층과 콘텐츠 층 둘이다 — 올리거나 누르면 바탕이 좌우 6 들어와 모서리 10 으로 둥글어지고, 누르면 콘텐츠 층만 2px 거리로 준다. 제목 16 · 400, 설명 13, 위아래 12 · 좌우 24. 하나 고르기 목록(옛 RadioList)은 라디오 줄로 그린다."
+    + (brand.key === "shared" ? " 공유 토큰에는 브랜드 역할 색이 없어 강조 바탕이 여기서는 중립으로 보인다 — HR · Desk 미리보기에서 브랜드 색이다." : "");
+
+  // 누름 배율의 기준 = max(높이, 폭 ÷ 4, 24) — 줄 폭이 화면마다 달라 누르는 순간(포인터 · 키) 줄에서 재서 --press-basis 로 넘긴다(list.tsx 의 measurePress).
+  // 누르는 동안 콘텐츠 층(누르는 영역)이 줄어 가장자리를 누른 포인터가 영역 밖에 남아도 click 이 그 줄로 가게, 마우스 · 펜으로 누르면
+  // 누른 요소에 포인터를 잡아 둔다(list.tsx 의 withPress — 터치는 브라우저가 처음 누른 요소에 이미 잡는다).
+  // 그 순간을 멈춘 누름 칸(.plst-row--pressed)은 누르지 않으니 그릴 때와 크기가 바뀔 때 잰다. 링크 줄은 미리보기라 옮기지 않는다.
+  const script = `
+    <script>
+      (function () {
+        var section = document.currentScript.closest("section");
+        function measure(row) { row.style.setProperty("--press-basis", String(Math.max(row.offsetHeight, row.offsetWidth / 4, 24))); }
+        function rowOf(e) {
+          var row = e.target && e.target.closest ? e.target.closest(".plst-row") : null;
+          return row && section.contains(row) ? row : null;
+        }
+        section.addEventListener("pointerdown", function (e) {
+          var row = rowOf(e);
+          if (!row) return;
+          measure(row);
+          if (e.pointerType !== "touch" && e.target.closest("[data-list-action]") && e.target.setPointerCapture) e.target.setPointerCapture(e.pointerId);
+        }, true);
+        section.addEventListener("keydown", function (e) {
+          var row = rowOf(e);
+          if (row) measure(row);
+        }, true);
+        section.addEventListener("click", function (e) {
+          var link = e.target && e.target.closest ? e.target.closest("a.plst-action") : null;
+          if (link) e.preventDefault();
+        });
+        var frozen = section.querySelectorAll(".plst-row--pressed");
+        frozen.forEach(measure);
+        if (window.ResizeObserver) {
+          var ro = new ResizeObserver(function (entries) { entries.forEach(function (entry) { measure(entry.target); }); });
+          frozen.forEach(function (row) { ro.observe(row); });
+        }
+      })();
+    </script>`;
+
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">03e — List</div>
+      <h2 class="section-title">줄 종류 4 · 앞 · 뒤 · 강조 · 상태 5</h2>
+      <p class="section-lede">${escape(lede)}</p>
+    </header>
+    ${kindsPanel}
+    ${prefixPanel}
+    ${suffixPanel}
+    ${detailPanel}
+    ${highlightPanel}
+    ${statePanel}
+    ${livePanel}
+    ${headerPanel}
+    ${dividerPanel}${script}
+  </section>`;
+}
+
 export function renderVignettes(brand) {
   const tabs = `
     <div class="vignette-card">
@@ -2540,8 +2935,8 @@ export function renderBatchV73V78(brand) {
 }
 
 export function renderBatchSpecs5(brand) {
-  // 5 신규 spec (2026-05-15) — color-swatch / icon-picker / tile / radio-list / searchable-list
-  // 도메인 시나리오: 카테고리 색/아이콘, 테마, 기본 통화, 카드 카탈로그.
+  // 신규 spec (2026-05-15) — color-swatch / icon-picker / tile / searchable-list
+  // 도메인 시나리오: 카테고리 색/아이콘, 테마, 카드 카탈로그. 기본 통화(옛 radio-list)는 List 의 라디오 줄로 옮겼다(2026-10-01 — renderListGallery).
   const isHr = brand.key === "hr";
   const isDesk = brand.key === "desk";
 
@@ -2602,23 +2997,6 @@ export function renderBatchSpecs5(brand) {
     ${tile("dark", "oklch(0.205 0.022 110)", "#fff", MOON, "다크", "어두운 배경")}
     ${tile("system", "linear-gradient(135deg, #fff 50%, oklch(0.205 0.022 110) 50%)", "var(--color-text-primary)", MONITOR, "시스템", "OS 설정 따라가기")}`;
 
-  // RadioList (통화)
-  const currencyActive = isDesk ? "USD" : "KRW";
-  const currencies = [
-    { k: "KRW", pill: "₩", label: "대한민국 원", sub: "KRW" },
-    { k: "USD", pill: "$", label: "미국 달러", sub: "USD" },
-    { k: "EUR", pill: "€", label: "유로", sub: "EUR" },
-    { k: "JPY", pill: "¥", label: "일본 엔", sub: "JPY" },
-  ];
-  const rlRows = currencies.map((c) => {
-    const active = c.k === currencyActive;
-    return `<button type="button" role="radio" aria-checked="${active}" class="rl-row">
-      <span class="rl-pill">${c.pill}</span>
-      <span class="rl-body"><span class="rl-label">${c.label}</span><span class="rl-sub">${c.sub}</span></span>
-      ${active ? `<span class="rl-check">${CHECK16}</span>` : ""}
-    </button>`;
-  }).join("");
-
   // SearchableList (카드 카탈로그)
   const cards = [
     { name: "신한 SOL 트래블 카드", company: "신한카드", type: "체크", fee: 0, color: "#0046FF", discontinued: false, initial: "신" },
@@ -2642,9 +3020,9 @@ export function renderBatchSpecs5(brand) {
   return `
   <section class="section">
     <header class="section-head">
-      <div class="section-eyebrow">21 — Domain selectors (2026-05-15 5 신규 spec)</div>
-      <h2 class="section-title">ColorSwatch · IconPicker · Tile · RadioList · SearchableList</h2>
-      <p class="section-lede">desk-front 도메인에서 spec으로 끌어올린 5개 단일-선택 패턴 — 카테고리 색/아이콘, 테마 선택, 기본 통화, 카드 카탈로그.</p>
+      <div class="section-eyebrow">21 — Domain selectors (2026-05-15 신규 spec)</div>
+      <h2 class="section-title">ColorSwatch · IconPicker · Tile · SearchableList</h2>
+      <p class="section-lede">desk-front 도메인에서 spec으로 끌어올린 4개 단일-선택 패턴 — 카테고리 색/아이콘, 테마 선택, 카드 카탈로그. 기본 통화(옛 RadioList)는 03e — List 의 라디오 줄로 옮겼다.</p>
     </header>
 
     <div class="sc-grid">
@@ -2680,13 +3058,6 @@ export function renderBatchSpecs5(brand) {
           ${tileGrid}
         </div>
         <div class="sc-note">grid 3-col + radius-lg. active 시 border-primary 1.5px + bg 8% tint + ✓. mobile은 columns=1 stack 권장.</div>
-      </div>
-
-      <!-- RadioList -->
-      <div class="sc-card">
-        <div class="sc-head">RadioList — 기본 통화 (full-width row + pill + check)</div>
-        <div class="rl" role="radiogroup">${rlRows}</div>
-        <div class="sc-note">목록형 (통화/언어/국가/지역). row bg 변화 없음 — check 단서만으로 active 식별.</div>
       </div>
 
       <!-- SearchableList -->
@@ -3864,6 +4235,251 @@ export function pageCss() {
        가로 축 칸에서는 줄(.switch-row)의 align-self: flex-start 가 줄을 칸 위쪽에 붙여, 줄 높이가 다른 크기(24 · 32)가 한 줄에서 어긋난다. */
     .sw-cell { flex-direction: column; align-items: flex-start; justify-content: center; }
 
+    /* === List — specs/components/list.md · list.yaml · list-header.yaml(수치 원본) · list.tsx 와 같은 모양 ===
+       구조는 SEED List(2026-10-01) — 목록 .plst(List · ListRadioGroup · ListCheckGroup) · 한 줄 .plst-row(List Item) · 목록 제목 .plst-header(ListHeader) ·
+       줄 사이 선 .plst-divider(ListDivider) · 앞 타일 .plst-tile(ListTile).
+       한 줄은 두 층이다 — 바탕 층(.plst-row::before: 호버 · 누름 · 강조 바탕, 줄지 않는다)과 콘텐츠 층(.plst-content: 앞 · 본문 · 뒤, 누르면 이 층만 준다).
+       누르는 줄 · 링크 줄은 본문 .plst-action(button · a)의 ::after 가 줄 전체를 덮어 줄 어디를 눌러도 눌리고, 포커스 링도 그 안쪽 2px 에 그린다.
+       뒤 붙이개 안의 버튼 · 링크는 z-index 1 로 그 위에 올라 따로 눌린다. 컨트롤 줄은 콘텐츠 층이 <label> 이라 줄 어디를 눌러도 끼운 .switch · .checkbox · .radio 가 눌린다.
+       호버 · 누름은 [data-list-action](버튼 · 링크 · 라벨 · 끼운 컨트롤)에서 읽고 [data-disabled] 면 없다(list.tsx 와 같은 짜임). 호버는 마우스 있는 기기에서만이다.
+       누름 배율 = (기준 − 2) ÷ 기준, 기준 = max(높이, 폭 ÷ 4, 24) — 줄 폭이 놓인 자리마다 달라 섹션 끝 스크립트가 재서 --press-basis 로 넘긴다.
+       그 스크립트는 마우스 · 펜으로 누르면 누른 요소에 포인터를 잡아 둔다 — 콘텐츠 층이 줄어 가장자리에서 놓아도 click 이 그 줄로 간다.
+       .plst-row--hover · --focus · --pressed 는 갤러리에서 그 순간을 고정해 보여 주는 클래스다. 다크 짝은 이 블록 끝의 [data-theme="dark"] .plst 에서 바꾼다. */
+    .plst {
+      /* 브랜드 역할 색 — 공유 토큰(DESIGN.md)에는 없어 중립으로 떨어진다(.btn · .checkbox · .switch 와 같은 대체 사슬) */
+      --plst-hl: var(--color-bg-brand-weak, var(--color-bg-neutral-weak));
+      --plst-hl-pressed: var(--color-bg-brand-weak-pressed, var(--color-bg-neutral-weak-pressed));
+      --plst-focus-ring: var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral)));
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    /* 여럿 고르기 묶음(ListCheckGroup)은 fieldset 이다 — 기본 테두리 · 최소 폭을 지운다(list.tsx 의 m-0 min-w-0 border-0 p-0) */
+    fieldset.plst { min-width: 0; border: 0; }
+    /* 한 줄 — 바탕 층(::before)을 깔고 콘텐츠 층을 담는다. 바탕은 줄 폭 전체 · 모서리 0 · 투명에서 시작한다 */
+    .plst-row {
+      position: relative;
+      display: flex;
+      width: 100%;
+    }
+    .plst-row::before {
+      content: "";
+      position: absolute;
+      inset-block: 0;
+      inset-inline: 0;
+      border-radius: 0;
+      background: transparent;
+      pointer-events: none;
+      transition:
+        background-color var(--motion-duration-color-transition) var(--motion-ease-easing),
+        inset var(--motion-duration-color-transition) var(--motion-ease-easing),
+        border-radius var(--motion-duration-color-transition) var(--motion-ease-easing);
+    }
+    /* 강조 — 바탕만 옅은 브랜드 색(점 · 막대는 없다) */
+    .plst-row--hl::before { background: var(--plst-hl); }
+    /* 호버 = 누름과 같은 바탕(v106, 마우스 있는 기기에서만) — 좌우 6 들어와 모서리 10. 강조 줄은 짙은 강조 바탕.
+       모서리는 목록 · 묶음의 --list-item-radius(list.tsx 의 itemRadius — 카드 안의 동심 모서리)가 있으면 그 값이다 */
+    @media (hover: hover) {
+      .plst-row:has([data-list-action]:not([data-disabled]):hover)::before {
+        inset-inline: var(--spacing-x1_5);
+        border-radius: var(--list-item-radius, var(--radius-r2_5));
+        background: var(--color-bg-layer-default-pressed);
+      }
+      .plst-row--hl:has([data-list-action]:not([data-disabled]):hover)::before { background: var(--plst-hl-pressed); }
+    }
+    .plst-row:has([data-list-action]:not([data-disabled]):active)::before,
+    .plst-row.plst-row--hover::before,
+    .plst-row.plst-row--pressed::before {
+      inset-inline: var(--spacing-x1_5);
+      border-radius: var(--list-item-radius, var(--radius-r2_5));
+      background: var(--color-bg-layer-default-pressed);
+    }
+    .plst-row--hl:has([data-list-action]:not([data-disabled]):active)::before,
+    .plst-row--hl.plst-row--hover::before,
+    .plst-row--hl.plst-row--pressed::before { background: var(--plst-hl-pressed); }
+
+    /* 콘텐츠 층 — 앞 · 본문 · 뒤. 위아래 12 · 좌우 24(화면 가장자리 규칙), 맞춤은 가운데(기본) · 위 */
+    .plst-content {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: var(--spacing-x3) var(--spacing-global-gutter);
+      transition: scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    .plst-content--top { align-items: flex-start; }
+    /* 누름 — 콘텐츠 층만 2px 거리 축소(v104 — 기준이 폭 ÷ 4 라 줄은 세로로 1px 남짓). 끼운 컨트롤은 따로 줄지 않는다 — 라벨을 누르면 브라우저가 그 컨트롤도
+       :active 로 보고, 키보드(Space)로 누르면 컨트롤만 :active 다(그래서 컨트롤에도 data-list-action 을 단다). 둘 다 축소만 끈다
+       (list.tsx 의 active:[scale:1]). 컨트롤의 누름 색은 그대로다 */
+    .plst-row:has([data-list-action]:not([data-disabled]):active) > .plst-content,
+    .plst-row.plst-row--pressed > .plst-content { scale: calc(1 - 2 / var(--press-basis)); }
+    .plst-row :is(.switch, .checkbox, .radio):active { scale: 1; }
+    /* 모션 줄이기 — 콘텐츠 축소를 뺀다. 바탕 전환은 그대로다(기초 Motion) */
+    @media (prefers-reduced-motion: reduce) {
+      .plst-row:has([data-list-action]:not([data-disabled]):active) > .plst-content,
+      .plst-row.plst-row--pressed > .plst-content { scale: 1; }
+    }
+    /* 컨트롤 줄 — 콘텐츠 층이 라벨이라 줄 전체가 누르는 영역이다 */
+    .plst-control { cursor: pointer; user-select: none; }
+    .plst-control[data-disabled] { cursor: not-allowed; }
+
+    /* 앞 붙이개 — 본문과 12. 아이콘 22 · fg-neutral(설정 · 메뉴 줄) · 타일 40(내용 줄) · 체크 · 라디오 24 */
+    .plst-prefix { display: flex; flex-shrink: 0; align-items: center; padding-right: var(--spacing-x3); color: var(--color-fg-neutral); }
+    .plst-prefix > svg { width: 22px; height: 22px; }
+    /* 앞 타일 — 40 · 모서리 12(크기 × 0.3). 바탕 · 아이콘 색은 카테고리 색(chart-{색}-weak · chart-{색}), 아이콘 20 */
+    .plst-tile {
+      display: inline-grid;
+      flex-shrink: 0;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-r3);
+      background: var(--plst-tile-bg);
+      color: var(--plst-tile-fg);
+    }
+    .plst-tile > svg { width: 20px; height: 20px; }
+    .plst-tile--orange { --plst-tile-bg: var(--color-chart-orange-weak); --plst-tile-fg: var(--color-chart-orange); }
+    .plst-tile--blue { --plst-tile-bg: var(--color-chart-blue-weak); --plst-tile-fg: var(--color-chart-blue); }
+    .plst-tile--indigo { --plst-tile-bg: var(--color-chart-indigo-weak); --plst-tile-fg: var(--color-chart-indigo); }
+    .plst-tile--violet { --plst-tile-bg: var(--color-chart-violet-weak); --plst-tile-fg: var(--color-chart-violet); }
+    .plst-tile--gray { --plst-tile-bg: var(--color-chart-gray-weak); --plst-tile-fg: var(--color-chart-gray); }
+    /* 본문 — 제목 + 설명(사이 2), 뒤 붙이개와 10 */
+    .plst-body {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--spacing-x0_5);
+      min-width: 0;
+      padding-right: var(--spacing-x2_5);
+      text-align: left;
+    }
+    /* 누르는 줄 · 링크 줄의 본문 — 버튼 · 링크 모양을 지우고(본문의 오른쪽 10 은 남긴다), ::after 가 줄 전체를 덮는다(누르는 영역 · 포커스 링) */
+    .plst-action {
+      margin: 0;
+      padding-block: 0;
+      padding-left: 0;
+      appearance: none;
+      border: 0;
+      background: transparent;
+      font: inherit;
+      color: inherit;
+      text-decoration: none;
+      outline: none;
+      cursor: pointer;
+    }
+    .plst-action::after { content: ""; position: absolute; inset: 0; }
+    /* 포커스 — 키보드 포커스에만 줄 안쪽 링 2px(화면 폭 줄은 바깥 링이 잘린다). 컨트롤 줄은 끼운 컨트롤의 링이 보인다 */
+    .plst-action:focus-visible::after,
+    .plst-row--focus .plst-action::after { outline: 2px solid var(--plst-focus-ring); outline-offset: -2px; }
+    .plst-action[data-disabled] { cursor: not-allowed; }
+    /* 제목 t5 · 400 · fg-neutral, 설명 t3 · fg-neutral-subtle(SEED 그대로) */
+    .plst-title {
+      font-family: var(--font-sans);
+      font-size: var(--text-t5);
+      line-height: var(--text-t5--line-height);
+      font-weight: 400;
+      color: var(--color-fg-neutral);
+    }
+    .plst-detail {
+      font-family: var(--font-sans);
+      font-size: var(--text-t3);
+      line-height: var(--text-t3--line-height);
+      font-weight: var(--text-t3--font-weight);
+      color: var(--color-fg-neutral-subtle);
+    }
+    /* 뒤 붙이개 — 값 글자 t5 · fg-neutral-subtle, 화살표 18(같은 색), 사이 4. 안의 버튼 · 링크는 줄의 ::after 위로 올라 따로 눌린다 */
+    .plst-suffix {
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      gap: var(--spacing-x1);
+      font-family: var(--font-sans);
+      font-size: var(--text-t5);
+      line-height: var(--text-t5--line-height);
+      font-weight: var(--text-t5--font-weight);
+      color: var(--color-fg-neutral-subtle);
+    }
+    .plst-suffix > svg { width: 18px; height: 18px; }
+    .plst-suffix :is(a, button) { position: relative; z-index: 1; }
+    /* 가계부 금액 — List 의 값 글자가 아니라 그 화면이 정한 자리다(list.md Suffix — 16 · 700) */
+    .plst-amount { font-weight: 700; color: var(--color-fg-neutral); }
+    /* 강조 줄을 올리거나 누르는 동안 — 설명 · 값 글자를 fg-neutral-muted 로 짙게(fg-neutral-subtle 은 짙은 강조 바탕 위 4.32:1). 제목 · 화살표는 그대로다 */
+    @media (hover: hover) {
+      .plst-row--hl:has([data-list-action]:not([data-disabled]):hover) :is(.plst-detail, .plst-suffix) { color: var(--color-fg-neutral-muted); }
+    }
+    .plst-row--hl:has([data-list-action]:not([data-disabled]):active) :is(.plst-detail, .plst-suffix),
+    .plst-row--hl.plst-row--hover :is(.plst-detail, .plst-suffix),
+    .plst-row--hl.plst-row--pressed :is(.plst-detail, .plst-suffix) { color: var(--color-fg-neutral-muted); }
+    .plst-row--hl .plst-suffix > svg { color: var(--color-fg-neutral-subtle); }
+    /* 비활성 — 전용 색(v106)이고 불투명도로 흐리게 하지 않는다. 호버 · 누름은 위 규칙의 :not([data-disabled]) 가 뺀다 */
+    .plst-row:has([data-list-action][data-disabled]) :is(.plst-prefix, .plst-title, .plst-detail, .plst-suffix, .plst-suffix > svg) { color: var(--color-fg-disabled); }
+    .plst-row:has([data-list-action][data-disabled]) .plst-tile { background: var(--color-bg-disabled); color: var(--color-fg-disabled); }
+
+    /* 줄 사이 선 — 필요할 때만(기본은 선 없음). 1px stroke-neutral-subtle, 줄 폭 전체 · 들이면 좌우 24 */
+    .plst-divider { flex-shrink: 0; width: 100%; height: 1px; background: var(--color-stroke-neutral-subtle); }
+    .plst-divider--inset { width: auto; margin-inline: var(--spacing-global-gutter); }
+    /* 목록 제목 — 목록 밖 바로 위. 위아래 8 · 좌우 24, t4. mediumWeak(기본) 500 · fg-neutral-subtle, boldSolid 700 · fg-neutral. 오른쪽 작은 버튼과 10 */
+    .plst-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--spacing-x2_5);
+      width: 100%;
+      padding: var(--spacing-x2) var(--spacing-global-gutter);
+      font-family: var(--font-sans);
+      font-size: var(--text-t4);
+      line-height: var(--text-t4--line-height);
+      font-weight: 500;
+      color: var(--color-fg-neutral-subtle);
+    }
+    .plst-header--bold-solid { font-weight: 700; color: var(--color-fg-neutral); }
+
+    /* 다크 — 역할 색을 목록 · 목록 제목 안에서만 다크 짝으로 바꾼다(.btn · .checkbox · .switch 와 같다 — 전역 다크 블록은 옛 이름만 바꾼다).
+       끼운 .switch · .checkbox · .radio · .btn 은 저마다의 다크 블록이 다시 바꾼다. 공유 토큰(DESIGN.md)에 없는 브랜드 짝은 비어서 위 대체값(중립)으로 떨어진다. */
+    [data-theme="dark"] .plst,
+    [data-theme="dark"] .plst-header {
+      --color-bg-brand-weak: var(--color-bg-brand-weak-dark);
+      --color-bg-brand-weak-pressed: var(--color-bg-brand-weak-pressed-dark);
+      --color-stroke-focus-ring: var(--color-stroke-focus-ring-dark);
+      --color-bg-neutral-weak: var(--color-bg-neutral-weak-dark);
+      --color-bg-neutral-weak-pressed: var(--color-bg-neutral-weak-pressed-dark);
+      --color-bg-layer-default-pressed: var(--color-bg-layer-default-pressed-dark);
+      --color-fg-neutral: var(--color-fg-neutral-dark);
+      --color-fg-neutral-muted: var(--color-fg-neutral-muted-dark);
+      --color-fg-neutral-subtle: var(--color-fg-neutral-subtle-dark);
+      --color-stroke-neutral-subtle: var(--color-stroke-neutral-subtle-dark);
+      --color-bg-disabled: var(--color-bg-disabled-dark);
+      --color-fg-disabled: var(--color-fg-disabled-dark);
+      --color-chart-orange: var(--color-chart-orange-dark);
+      --color-chart-orange-weak: var(--color-chart-orange-weak-dark);
+      --color-chart-blue: var(--color-chart-blue-dark);
+      --color-chart-blue-weak: var(--color-chart-blue-weak-dark);
+      --color-chart-indigo: var(--color-chart-indigo-dark);
+      --color-chart-indigo-weak: var(--color-chart-indigo-weak-dark);
+      --color-chart-violet: var(--color-chart-violet-dark);
+      --color-chart-violet-weak: var(--color-chart-violet-weak-dark);
+      --color-chart-gray: var(--color-chart-gray-dark);
+      --color-chart-gray-weak: var(--color-chart-gray-weak-dark);
+    }
+
+    /* List 갤러리 — 줄은 흰 바탕(bg-layer-default)의 틀(.plst-frame) 안에 둔다. 틀의 테두리는 줄의 끝을 보이려고 그린 갤러리 것이다.
+       틀 모서리 16 은 누름 바탕(좌우 6 들어온 모서리 10)과 동심이다(list.md "카드 안의 목록" — 16 − 6). 강조 바탕이 모서리 밖으로 나오지 않게 자른다. */
+    .plst-frames { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: var(--spacing-lg); align-items: start; }
+    .plst-cap { margin-bottom: var(--spacing-xs); font-size: var(--text-caption); font-weight: 600; line-height: 1.4; color: var(--color-text-secondary); }
+    .plst-cap span { display: block; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 400; color: var(--color-text-tertiary); }
+    .plst-frame { overflow: hidden; border: 1px solid var(--color-border-default); border-radius: var(--radius-r4); background: var(--color-surface-default); }
+    /* 상태 표 — 칸마다 줄 하나를 실제 폭(280 이상)으로 그린다. 칸이 그보다 좁아지면 판(.cb-panel)이 가로로 밀린다 */
+    .plst-matrix .cb-matrix-row { grid-template-columns: 168px repeat(var(--cb-cols), minmax(280px, 1fr)); }
+    .plst-cell { align-items: stretch; }
+    .plst-cell > .plst-frame { flex: 1; min-width: 0; }
+    @media (max-width: 900px) {
+      .plst-matrix .cb-matrix-row { grid-template-columns: 120px repeat(var(--cb-cols), minmax(280px, 1fr)); }
+    }
+
     /* todo-card */
     .todo-list { display: flex; flex-direction: column; gap: 2px; }
     .todo-row {
@@ -4903,17 +5519,6 @@ export function pageCss() {
     .tile-desc { display: block; margin-top: 2px; font-size: var(--text-caption); color: var(--color-text-tertiary); }
     .tile-check { flex-shrink: 0; color: var(--color-primary, var(--color-text-primary)); }
 
-    /* RadioList — radio-list.md SoT (full-width row stack + divide-y single-select) */
-    .rl { border: 1px solid var(--color-border-subtle, var(--color-border-default)); background: var(--color-surface-default); border-radius: var(--radius-lg); overflow: hidden; }
-    .rl-row { width: 100%; display: flex; align-items: center; gap: var(--spacing-md); padding: 14px 16px; background: transparent; border: none; cursor: pointer; transition: background-color var(--motion-duration-fast) var(--motion-ease-out); text-align: left; font: inherit; color: inherit; }
-    .rl-row + .rl-row { border-top: 1px solid var(--color-border-subtle, var(--color-border-default)); }
-    .rl-row:hover { background: var(--color-surface-input); }
-    .rl-pill { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--radius-md); background: var(--color-bg-page); font-size: var(--text-body-lg); font-weight: 700; color: var(--color-text-primary); flex-shrink: 0; }
-    .rl-body { flex: 1; min-width: 0; }
-    .rl-label { display: block; font-size: var(--text-body-md); font-weight: 600; color: var(--color-text-primary); }
-    .rl-sub { display: block; margin-top: 2px; font-size: var(--text-caption); color: var(--color-text-tertiary); }
-    .rl-check { flex-shrink: 0; color: var(--color-primary, var(--color-text-primary)); }
-
     /* SearchableList — searchable-list.md SoT (search + thumbnail list single-select) */
     .sl-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--spacing-sm); }
     .sl-head-label { font-size: var(--text-caption); font-weight: 500; color: var(--color-text-secondary); }
@@ -5001,26 +5606,20 @@ export function pageCss() {
     [data-theme="dark"] .car-arrow,
     [data-theme="dark"] .son-toast,
     [data-theme="dark"] .tile,
-    [data-theme="dark"] .rl,
     [data-theme="dark"] .sl,
     [data-theme="dark"] .ipk-content,
     [data-theme="dark"] .ipk-trigger,
     [data-theme="dark"] .swatch { background: var(--color-surface-default-dark); }
     [data-theme="dark"] .ipk-search input,
     [data-theme="dark"] .sl-search input { background: var(--color-surface-default-dark); border-color: var(--color-border-default-dark); color: var(--color-text-primary-dark); }
-    [data-theme="dark"] .rl-pill { background: var(--color-bg-page-dark); color: var(--color-text-primary-dark); }
     [data-theme="dark"] .tile,
-    [data-theme="dark"] .rl,
     [data-theme="dark"] .sl,
     [data-theme="dark"] .ipk-content,
     [data-theme="dark"] .ipk-trigger { border-color: var(--color-border-default-dark); }
-    [data-theme="dark"] .rl-row + .rl-row,
     [data-theme="dark"] .sl-row + .sl-row,
     [data-theme="dark"] .ipk-footer { border-color: var(--color-border-default-dark); }
     [data-theme="dark"] .tile-label,
-    [data-theme="dark"] .rl-label,
     [data-theme="dark"] .sl-title { color: var(--color-text-primary-dark); }
-    [data-theme="dark"] .rl-row:hover,
     [data-theme="dark"] .sl-row:hover,
     [data-theme="dark"] .ipk-cell:hover { background: var(--color-surface-input-dark); }
     [data-theme="dark"] .sb,
@@ -5288,6 +5887,7 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     ${renderCheckboxGallery(brand)}
     ${renderRadioGallery(brand)}
     ${renderSwitchGallery(brand)}
+    ${renderListGallery(brand)}
     ${renderVignettes(brand)}
     ${renderListingDetail(brand)}
     ${renderCalendar(brand)}

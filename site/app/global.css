@@ -119,3 +119,30 @@ html > body[data-scroll-locked] {
   --ps-lb: var(--ps-lb-d);
   --ps-ring: var(--ps-ring-d);
 }
+/* List 그림(list-view) — .pswt 와 같은 방식. 줄 · 목록 · 목록 제목마다 라이트 · 다크 값을 싣는다 */
+.plst {
+  --pl-bg: var(--pl-bg-l);
+  --pl-title: var(--pl-title-l);
+  --pl-detail: var(--pl-detail-l);
+  --pl-stext: var(--pl-stext-l);
+  --pl-sicon: var(--pl-sicon-l);
+  --pl-icon: var(--pl-icon-l);
+  --pl-ring: var(--pl-ring-l);
+  --pl-tile-bg: var(--pl-tile-bg-l);
+  --pl-tile-fg: var(--pl-tile-fg-l);
+  --pl-div: var(--pl-div-l);
+  --pl-hd: var(--pl-hd-l);
+}
+.dark .plst[data-mode='auto'] {
+  --pl-bg: var(--pl-bg-d);
+  --pl-title: var(--pl-title-d);
+  --pl-detail: var(--pl-detail-d);
+  --pl-stext: var(--pl-stext-d);
+  --pl-sicon: var(--pl-sicon-d);
+  --pl-icon: var(--pl-icon-d);
+  --pl-ring: var(--pl-ring-d);
+  --pl-tile-bg: var(--pl-tile-bg-d);
+  --pl-tile-fg: var(--pl-tile-fg-d);
+  --pl-div: var(--pl-div-d);
+  --pl-hd: var(--pl-hd-d);
+}

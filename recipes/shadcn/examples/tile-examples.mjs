@@ -89,7 +89,7 @@ export const tileExamples = [
 
   {
     title: "Description 생략",
-    description: "label만 의미면 desc 생략 가능. 그래도 Tile은 swatch가 핵심 — 텍스트만이면 ToggleGroup / RadioList 사용 권장.",
+    description: "label만 의미면 desc 생략 가능. 그래도 Tile은 swatch가 핵심 — 텍스트만이면 ToggleGroup / List(라디오 줄) 사용 권장.",
     jsx: `<TileItem swatch={<Sun />} label="라이트" />`,
     render: () => `<div role="radiogroup" style="display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--spacing-sm);">
   <button type="button" role="radio" aria-checked="true" class="${TILE_BASE} ${TILE_ACTIVE}">

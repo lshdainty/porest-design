@@ -4264,7 +4264,7 @@ binary on/off 상태 또는 group 선택을 표현하는 form control 3종. 공�
 - 톤: `neutral`(짙은 회색, 기본) · `brand`.
 - 모션: 엄지의 이동 · 크기 `motion-duration-d3` (150ms), 색은 20ms 뒤에 `motion-duration-d1` (50ms) — 둘 다 `motion-ease-easing`. 누르면 스위치만 세로 2px 거리 축소(색은 그대로).
 - 누르는 순간 적용되는 설정에만 쓴다 — 저장해야 적용되는 값은 Checkbox.
-- "라벨 왼쪽 · 스위치 오른쪽" 설정 줄(제목 · 설명 · 아이콘)은 List 가 정한다(List 차례). 그 줄에는 스위치만(Switchmark) 끼우고 줄 전체가 누르는 영역이다.
+- "라벨 왼쪽 · 스위치 오른쪽" 설정 줄(제목 · 설명 · 아이콘)은 List 의 스위치 줄(`ListSwitchItem` — 아래 List)이다. 그 줄에는 스위치 32 만(Switchmark) 끼우고 줄 전체가 누르는 영역이다 — 줄을 누르면 콘텐츠가 함께 줄고 스위치는 따로 줄지 않는다.
 - 터치 타겟은 스위치 단독으론 작음(높이 16 · 24 · 32). **반드시 라벨까지 묶어 44** 확보(WCAG 2.5.5 AAA) — 설정 줄에 스위치만 넣으면 줄 전체.
 
 #### Checkbox
@@ -4312,6 +4312,20 @@ binary on/off 상태 또는 group 선택을 표현하는 form control 3종. 공�
   - Tab으로 group 진입 → 첫 번째 또는 현재 선택값으로 focus
 - [ ] **disabled 상태**: control + label 모두 disabled 표시 + 1.4.3 incidental
 - [ ] **error 상태** (form validation 실패): Checkbox · Radio 는 칸 · 동그라미를 바꾸지 않고 묶음 아래 글로(2026-09-30). Switch 에는 오류 상태가 없다 — 누르는 순간 적용되므로 검증할 값이 없고, 저장에 실패하면 스위치를 되돌리고 무엇이 안 됐는지 알린다
+
+### List
+
+> 상세 spec(Anatomy / 줄의 종류 / 상태 / 모션 / Accessibility / Do-Don't)은 [`specs/components/list.md`](specs/components/list.md)가 단일 SoT, 수치는 `list.yaml` · `list-header.yaml`. 코드(`recipes/shadcn/components/ui/list.tsx`) · 예제(`recipes/shadcn/examples/list-examples.mjs`) · preview 4 source 동기.
+
+- 구조: 목록(List) · 한 줄(List Item) · 목록 제목(List Header) · 줄 사이 선(ListDivider) — SEED List(2026-10-01). 설정 · 메뉴 · 선택 · 키-값 줄과 거래 · 할 일 · 알림 같은 내용 줄을 모두 List 로 그린다. RadioList 는 걷었다 — 하나 고르기는 오른쪽 라디오 줄(`ListRadioItem`).
+- 한 줄: 위아래 `spacing-x3` (12) · 좌우 `spacing-global-gutter` (24) · 제목 `t5` 16 · 400 `fg-neutral` · 설명 `t3` 13 `fg-neutral-subtle`(제목 아래 2) — 한 줄 46 · 두 줄 66.
+- 앞: 설정 · 메뉴 줄은 아이콘 22(`fg-neutral`), 색이 뜻을 가진 내용 줄은 타일 40(모서리 `radius-r3` 12 · `chart-{색}-weak` 바탕 · 아이콘 20). 체크 · 라디오는 24, 스위치는 32.
+- 뒤: 값 글자(`t5` · `fg-neutral-subtle`) · 오른쪽 화살표 18(화면을 옮기는 줄에만) · 컨트롤 · 작은 버튼.
+- 누름 · 호버(웹): 바탕 층이 좌우 6 들어와 모서리 10 의 `bg-layer-default-pressed` 가 되고, 콘텐츠 층만 2px 거리로 준다(v104). 끼운 컨트롤은 따로 줄지 않는다. 포커스 링은 줄 안쪽 2px.
+- 강조: 바탕만 옅은 브랜드 색(브랜드 파일의 brand-weak 역할 색 — 누름 · 호버는 한 단계 짙은 짝, 그동안 설명 · 값 글자는 `fg-neutral-muted` 로 4.5:1 을 지킨다).
+- 줄 사이 선은 기본 없음 — 필요할 때만 `ListDivider`(1px `stroke-neutral-subtle`, 줄 폭 또는 좌우 24 들임).
+- 목록 제목: `t4` 14 · 위아래 8 · 좌우 24 — `mediumWeak`(500 · `fg-neutral-subtle`, 기본) · `boldSolid`(700 · `fg-neutral`).
+- 목록은 흰 바탕(`bg-layer-default`) · 시트(`bg-layer-floating`) 위에 둔다 — 회색 바탕(`bg-layer-basement`) 위에서는 누름 바탕이 보이지 않는다(카드에 담는다).
 
 ### Avatar (v58 추가)
 
