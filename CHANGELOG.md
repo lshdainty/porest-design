@@ -354,6 +354,7 @@
 - **v49**: outdated prose token references 정리 (P2-F follow-up). v17 file split 후 brand-specific token reference 잔재 제거 + spec과 비동기 표현 cleanup. `scripts/lint-prose.mjs`가 prose token reference 정합성 자동 검증.
 - **문서 사이트 스펙 사이 링크 (2026-10-02)**: 스펙 md 끼리 건 링크(`[Field](field.md)` · `specs/components/list.md` · `../z-index.md`)가 사이트에서 `x.md` 로 남아 눌러도 · 미리 받아도 404 였다(컴포넌트 페이지에서 230여 개). 사이트를 만들 때 `/docs/components/<이름>` · `/docs/foundations/z-index` 로 바꾸고, 사이트에 없는 스펙은 GitHub 원본으로 보낸다(`site/scripts/gen-content.mjs`).
 - **Radius 컴포넌트 매핑 표 (2026-10-02)**: Text Field · Select 를 SEED 로 바꾸면서 이 표를 안 고쳐, Radius 페이지가 Input · Textarea · Select 를 여전히 4px 로 보였다(실제 12 · 8, 목록 20). 지운 Combobox · Date Picker 줄도 남아 있었다. 스펙 YAML 값으로 고치고, 빠져 있던 Select Box · List 줄을 더했다.
+- **사이트 버튼 그림 좌우 여백 (2026-10-02)**: 다른 페이지에서 링크로 들어오면 컴포넌트 페이지의 버튼 그림이 좌우 여백 없이 글자만큼 좁아졌다(새로고침하면 정상). 버튼 그림이 인라인 스타일에 `padding` 과 `paddingLeft: undefined` · `paddingRight: undefined` 를 같이 넘겨, 서버 HTML 에서는 빠지던 값을 브라우저 렌더에서 React 가 빈 값으로 지웠다. 여백을 `padding` 한 속성으로 끝까지 적는다(`site/components/specs/button-view.tsx`). 79쪽 전부 바로 열기 · 링크로 들어오기 계산값이 같다.
 
 ### Tooling
 - **v29**: `scripts/sync-shared-tokens.mjs` 추가 — `typography`/`rounded`/`spacing` 블록 자동 sync (DESIGN.md → HR/Desk), colors 47 공유 토큰 drift detection. `npm run sync` / `sync:check` / `verify` (sync:check + lint:all 통합).
