@@ -113,7 +113,7 @@ Badge는 **size variant 없음** — 단일 spec. micro 라벨이라 사이즈 �
 ### ❌ Don't
 
 - 한 list 안에서 style 섞기 — solid(승인) + soft(대기) + destructive(반려) + outline(완료)처럼 strength가 들쑥날쑥하면 의미 분기와 style 분기가 충돌. **같은 카테고리는 한 style**, 다른 카테고리(상태 vs 우선순위)면 style 분리 가능.
-- 긴 문장(5단어 이상)을 badge로 — pill 시각 무너짐. 긴 라벨은 inline text 또는 [`Alert`](alert.md).
+- 긴 문장(5단어 이상)을 badge로 — pill 시각 무너짐. 긴 라벨은 inline text 또는 [`Callout`](callout.md).
 - 한 row에 5+ badge — 시각 노이즈. 압축 또는 카테고리 분리.
 - uppercase + 한국어 조합 — `letter-spacing: 0.04em` + 한글은 의미 없음(자모 분리 안 됨). uppercase는 영문 약어 전용.
 - semantic 색을 의미 없이 변형 — 정보성 라벨에 `error` 톤 사용 금지(사용자 혼란).

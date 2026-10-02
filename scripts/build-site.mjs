@@ -40,7 +40,9 @@ import { scrollAreaExamples } from "../recipes/shadcn/examples/scroll-area-examp
 import { typographyExamples } from "../recipes/shadcn/examples/typography-examples.mjs";
 import { carouselExamples } from "../recipes/shadcn/examples/carousel-examples.mjs";
 import { resizableExamples } from "../recipes/shadcn/examples/resizable-examples.mjs";
-import { alertExamples } from "../recipes/shadcn/examples/alert-examples.mjs";
+import { calloutExamples } from "../recipes/shadcn/examples/callout-examples.mjs";
+import { pageBannerExamples } from "../recipes/shadcn/examples/page-banner-examples.mjs";
+import { resultSectionExamples } from "../recipes/shadcn/examples/result-section-examples.mjs";
 import { tooltipExamples } from "../recipes/shadcn/examples/tooltip-examples.mjs";
 import { dialogExamples } from "../recipes/shadcn/examples/dialog-examples.mjs";
 import { alertDialogExamples } from "../recipes/shadcn/examples/alert-dialog-examples.mjs";
@@ -48,7 +50,7 @@ import { popoverExamples } from "../recipes/shadcn/examples/popover-examples.mjs
 import { hoverCardExamples } from "../recipes/shadcn/examples/hover-card-examples.mjs";
 import { sheetExamples } from "../recipes/shadcn/examples/sheet-examples.mjs";
 import { bottomSheetExamples } from "../recipes/shadcn/examples/bottom-sheet-examples.mjs";
-import { sonnerExamples } from "../recipes/shadcn/examples/sonner-examples.mjs";
+import { snackbarExamples } from "../recipes/shadcn/examples/snackbar-examples.mjs";
 import { swipeActionsExamples } from "../recipes/shadcn/examples/swipe-actions-examples.mjs";
 // Phase 4 Navigation
 import { tabsExamples } from "../recipes/shadcn/examples/tabs-examples.mjs";
@@ -92,7 +94,7 @@ import {
   renderListingDetail,
   renderCalendar,
   renderEmptyState,
-  renderToasts,
+  renderSnackbars,
   renderSkeleton,
   renderForm,
   renderBatchV67,
@@ -130,8 +132,10 @@ const SHADCN_EXAMPLES = {
   typography: typographyExamples,
   carousel: carouselExamples,
   resizable: resizableExamples,
+  callout: calloutExamples,
+  "page-banner": pageBannerExamples,
+  "result-section": resultSectionExamples,
   // Overlay (Phase 3)
-  alert: alertExamples,
   tooltip: tooltipExamples,
   dialog: dialogExamples,
   "alert-dialog": alertDialogExamples,
@@ -139,7 +143,7 @@ const SHADCN_EXAMPLES = {
   "hover-card": hoverCardExamples,
   sheet: sheetExamples,
   "bottom-sheet": bottomSheetExamples,
-  sonner: sonnerExamples,
+  snackbar: snackbarExamples,
   "swipe-actions": swipeActionsExamples,
   // Phase 4 Navigation
   tabs: tabsExamples,
@@ -1971,30 +1975,32 @@ const SHADCN_CATALOG = [
   { slug: "toggle", name: "Toggle", category: "Form", description: "on/off 버튼 (인라인)." },
   { slug: "toggle-group", name: "Toggle Group", category: "Form", description: "단일 또는 복수 선택 토글 그룹." },
 
-  // Display (13)
+  // Display (16)
   { slug: "aspect-ratio", name: "Aspect Ratio", category: "Display", description: "고정 비율 컨테이너 (16:9, 4:3 등)." },
   { slug: "avatar", name: "Avatar", category: "Display", description: "프로필 이미지 + fallback 텍스트." },
   { slug: "badge", name: "Badge", category: "Display", description: "상태·카테고리 마이크로 라벨." },
+  { slug: "callout", name: "Callout", category: "Display", description: "화면 안, 그 기능 · 내용 가까이에 늘 보이는 안내 상자 — 팁 · 제약 · 주의와 그 자리에서 난 오류(저장 실패)를 알린다 (SEED Callout 구조)." },
   { slug: "card", name: "Card", category: "Display", description: "콘텐츠 컨테이너 (header / content / footer)." },
   { slug: "carousel", name: "Carousel", category: "Display", description: "슬라이드 갤러리 — Embla 베이스." },
   { slug: "list", name: "List", category: "Display", description: "설정 · 메뉴 · 선택 · 내용 줄을 세로로 잇는 목록 (SEED List 구조)." },
+  { slug: "page-banner", name: "Page Banner", category: "Display", description: "페이지 머리 바로 아래 화면 폭 전체로 놓여 그 페이지 전체의 상태(연결 끊김 · 만료 예정 · 새 버전)를 알리는 띠 — 한 화면에 하나 (SEED Page Banner 구조)." },
   { slug: "progress", name: "Progress", category: "Display", description: "진행률 막대 (determinate / indeterminate)." },
   { slug: "spinner", name: "Spinner", category: "Display", description: "원형 indeterminate 인디케이터 (shadcn 카탈로그 외, Porest 자체 정의)." },
   { slug: "resizable", name: "Resizable", category: "Display", description: "드래그로 크기 조절 가능 패널." },
+  { slug: "result-section", name: "Result Section", category: "Display", description: "화면이나 그 영역 가운데에 놓는 결과 — 비어 있음 · 불러오기 실패 · 완료 · 찾을 수 없는 페이지 · 화면 오류를 한 틀로 그린다 (SEED Result Section 구조)." },
   { slug: "scroll-area", name: "Scroll Area", category: "Display", description: "스타일된 스크롤 컨테이너." },
   { slug: "separator", name: "Separator", category: "Display", description: "콘텐츠 사이 구분선." },
   { slug: "skeleton", name: "Skeleton", category: "Display", description: "로딩 placeholder (shimmer)." },
   { slug: "typography", name: "Typography", category: "Display", description: "텍스트 위계 (h1~h4, p, blockquote, code)." },
 
   // Overlay (9)
-  { slug: "alert", name: "Alert", category: "Overlay", description: "인라인 정보·경고 메시지." },
   { slug: "alert-dialog", name: "Alert Dialog", category: "Overlay", description: "되돌릴 수 없는 일을 하기 전에 묻거나 꼭 알아야 할 일을 알리는 화면 정중앙의 확인창 (SEED Alert Dialog 구조)." },
   { slug: "bottom-sheet", name: "Bottom Sheet", category: "Overlay", description: "1280 미만에서 폼 · 상세 · 고르기를 띄우는 화면 아래의 모달 시트 (SEED Bottom Sheet 구조)." },
   { slug: "dialog", name: "Dialog", category: "Overlay", description: "1280 이상에서 입력 폼 · 상세를 화면 정중앙에 띄우고 1280 미만에서는 Bottom Sheet 로 바뀌는 대화상자 (SEED Dialog 구조)." },
   { slug: "hover-card", name: "Hover Card", category: "Overlay", description: "호버 시 표시되는 카드 (프로필 미리보기 등)." },
   { slug: "popover", name: "Popover", category: "Overlay", description: "1280 이상에서 트리거에 붙어 부가 정보 · 고르는 패널을 띄우는 비모달 표면 (SEED Popover 구조)." },
   { slug: "sheet", name: "Sheet", category: "Overlay", description: "사이드 슬라이드 패널." },
-  { slug: "sonner", name: "Sonner", category: "Overlay", description: "토스트 알림 (shadcn 권장)." },
+  { slug: "snackbar", name: "Snackbar", category: "Overlay", description: "화면 아래에 잠깐 떴다 사라지는 띠(토스트) — 방금 한 일의 결과 · 뒤에서 끝난 일 · 다시 하면 되는 가벼운 실패를 한 번에 하나 알린다 (SEED Snackbar 구조)." },
   { slug: "swipe-actions", name: "Swipe Actions", category: "Data Display", description: "리스트 행을 밀어 편집·삭제에 바로 닿는 모바일 패턴." },
   { slug: "tooltip", name: "Tooltip", category: "Overlay", description: "호버 시 짧은 설명." },
 
@@ -2043,7 +2049,7 @@ function getDemoFunctions(slug) {
     case "select-combobox": return [renderShadcnInput];
     case "checkbox-radio-switch": return [renderShadcnInput];
     case "drawer-sheet": return [renderBatchV67];
-    case "toast-sonner": return [renderToasts, renderShadcnExtras];
+    case "toast-sonner": return [renderSnackbars, renderShadcnExtras];
     case "skeleton-spinner-progress": return [renderSkeleton, renderBatchV67];
     case "empty-state": return [renderEmptyState];
     case "calendar-date-range-picker": return [renderCalendar, renderShadcnExtras];

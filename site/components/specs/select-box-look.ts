@@ -4,6 +4,7 @@ import { loadComponentSpec, num, resolveState, tokenValue, type TypeValue } from
 import type { Mode } from '@/lib/component-spec';
 import { color, design, pressScale, reducedMotion, type Brand } from '@/lib/design-tokens';
 import { checkLook } from './checkbox-look';
+import { snackbarLook } from './feedback-look';
 import { radioLook } from './radio-group-look';
 import { SB_LAYOUTS, SB_SELECTED, SB_STATES, type SbFace, type SbLayoutFace, type SbLook, type SbMotion, type SbState, type SbType } from './select-box-shared';
 export * from './select-box-shared';
@@ -122,7 +123,7 @@ export function selectBoxLook(brand: Brand = 'desk'): SbLook {
       focus: { light: must(str(tokenValue(ivFocus['root.borderColor'], 'light', brand)), 'input focused root.borderColor'), dark: must(str(tokenValue(ivFocus['root.borderColor'], 'dark', brand)), 'input focused root.borderColor') },
     },
     surface: { default: pick('bg-layer-default'), basement: pick('bg-layer-basement'), floating: pick('bg-layer-floating') },
-    notice: { bg: pick('bg-neutral-inverted'), fg: pick('fg-neutral-inverted') },
+    snackbar: snackbarLook(brand),
   };
   cache.set(brand, look);
   return look;

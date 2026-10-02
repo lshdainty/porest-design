@@ -394,6 +394,9 @@ colors:
   fg-brand-dark: "{colors.brand-900-dark}"
   fg-brand-contrast: "{colors.brand-700}"
   fg-brand-contrast-dark: "{colors.brand-900-dark}"
+  # v115 — 반전 표면(bg-neutral-inverted — 스낵바 액션) 위의 브랜드 글자. 라이트는 fg-brand 의 다크 값, 다크는 라이트 값
+  fg-brand-inverted: "{colors.brand-900-dark}"
+  fg-brand-inverted-dark: "{colors.brand-600}"
   # 배경 (bg)
   bg-brand-solid: "{colors.brand-600}"
   bg-brand-solid-dark: "{colors.brand-500-dark}"
@@ -444,6 +447,11 @@ colors:
   fg-warning-contrast-dark: "{colors.orange-900-dark}"
   fg-informative-contrast: "{colors.blue-800}"
   fg-informative-contrast-dark: "{colors.blue-900-dark}"
+  # v115 — 반전 표면(bg-neutral-inverted — 스낵바) 위의 상태 아이콘. 라이트는 그 역할의 다크 값, 다크는 라이트 값(사용자 결정 2026-10-02)
+  fg-positive-inverted: "{colors.green-800-dark}"
+  fg-positive-inverted-dark: "{colors.green-700}"
+  fg-critical-inverted: "{colors.red-800-dark}"
+  fg-critical-inverted-dark: "{colors.red-700}"
   # 배경 (bg)
   bg-layer-basement: "{colors.gray-200}"
   bg-layer-basement-dark: "{colors.gray-00-dark}"
@@ -1103,6 +1111,24 @@ components:
   role-inverted-pressed-dark:
     backgroundColor: "{colors.bg-neutral-inverted-pressed-dark}"
     textColor: "{colors.fg-neutral-inverted-dark}"
+  role-positive-on-inverted-light:
+    backgroundColor: "{colors.bg-neutral-inverted}"
+    textColor: "{colors.fg-positive-inverted}"
+  role-positive-on-inverted-dark:
+    backgroundColor: "{colors.bg-neutral-inverted-dark}"
+    textColor: "{colors.fg-positive-inverted-dark}"
+  role-critical-on-inverted-light:
+    backgroundColor: "{colors.bg-neutral-inverted}"
+    textColor: "{colors.fg-critical-inverted}"
+  role-critical-on-inverted-dark:
+    backgroundColor: "{colors.bg-neutral-inverted-dark}"
+    textColor: "{colors.fg-critical-inverted-dark}"
+  role-brand-on-inverted-light:
+    backgroundColor: "{colors.bg-neutral-inverted}"
+    textColor: "{colors.fg-brand-inverted}"
+  role-brand-on-inverted-dark:
+    backgroundColor: "{colors.bg-neutral-inverted-dark}"
+    textColor: "{colors.fg-brand-inverted-dark}"
   role-critical-on-layer-light:
     backgroundColor: "{colors.bg-layer-default}"
     textColor: "{colors.fg-critical}"
@@ -1875,6 +1901,8 @@ v108 로 크게 바뀐 색을 지금 제품 값(Desk 웹 `porest-tokens.css` · 
 | `fg-placeholder` | gray-700 | gray-700 | gray-600 / gray-600 |
 | `fg-disabled` | gray-500 | gray-600 | gray-500 / gray-500 (v109) |
 | `fg-neutral-inverted` | gray-00 | gray-100 | — |
+| `fg-positive-inverted` | green-800(다크 팔레트) | green-700 | — (v115, SEED 에 없음 — 스낵바 아이콘) |
+| `fg-critical-inverted` | red-800(다크 팔레트) | red-700 | — (v115, SEED 에 없음 — 스낵바 아이콘) |
 | `stroke-neutral-subtle` | gray-300 | gray-300 | 투명도 있는 검정 · 흰색 |
 | `stroke-neutral-weak` | gray-400 | gray-400 | — |
 | `stroke-neutral-solid` | gray-600 | gray-600 | gray-800 / gray-800 (v109) |
@@ -1902,6 +1930,7 @@ SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채�
 | bg-brand-weak-pressed | 200 / 300 | 200 / 300 | 200 / 200 |
 | fg-brand | 600 / 900 | 600 / 900 | 600 / 700 |
 | fg-brand-contrast | 700 / 900 | 700 / 900 | 700 / 700 |
+| fg-brand-inverted | 900(다크 팔레트) / 600 | 900(다크 팔레트) / 600 | — (v115) |
 | stroke-brand-solid | 600 / 900 | 600 / 900 | 700 / 700 |
 | stroke-brand-weak | 300 / 800 | 400 / 800 | 300 / 300 |
 | stroke-focus-ring | 600 / 900 | 600 / 900 | blue-600 / blue-600 |
@@ -1964,6 +1993,8 @@ SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채�
 | `fg-positive-contrast` | `#026E33` | `#AED6B6` | — | — |
 | `fg-warning-contrast` | `#A53E0A` | `#F9BFA9` | — | — |
 | `fg-informative-contrast` | `#0F5FB3` | `#ACCEFB` | — | — |
+| `fg-positive-inverted` | `#25C062` | `#167F3F` | — | — |
+| `fg-critical-inverted` | `#FF8477` | `#D72323` | — | — |
 
 #### 배경 (bg)
 
@@ -2016,6 +2047,7 @@ SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채�
 |---|---|---|---|---|
 | `fg-brand` | `#0147AD` | `#7AA9F6` | primary · primary-light | fg-brand · fg-link |
 | `fg-brand-contrast` | `#013D96` | `#7AA9F6` | — | fg-brand-strong |
+| `fg-brand-inverted` | `#7AA9F6` | `#0147AD` | — | — |
 | `bg-brand-solid` | `#0147AD` | `#1049A4` | primary | bg-brand |
 | `bg-brand-solid-pressed` | `#013D96` | `#1A5AC2` | — | bg-brand-press · bg-brand-hover |
 | `bg-brand-weak` | `#E8F1FE` | `#20314E` | — | bg-brand-subtle |
@@ -3766,30 +3798,14 @@ Desk — 모바일 우선이라 hover-driven tooltip 사용 제한. 주로 deskt
 - 모바일은 (i) icon button → expand inline panel 또는 sheet가 더 적합
 - icon-only button은 항상 `aria-label` 필수
 
-### Toast
+### 알림 메시지 — Snackbar · Callout · Page Banner · Result Section
 
-Desk — 메모/할일/가계부 저장 완료, 동기화 상태, 작업 취소 등 짧은 알림. 모바일 우선이라 top-center 또는 bottom-center 사용.
+> 모양 · 쓰는 규칙은 DESIGN.md 의 같은 이름 절(2026-10-02 SEED). Desk 의 쓰는 자리만 적는다.
 
-#### Structure (신규 토큰 없음)
-- 표면: `surface-default` + `shadow-md` + `radius-md` (Desk는 친근감 톤이라 `radius-lg` 12px 옵션도 가능)
-- semantic 4 좌측 4px stroke + icon
-
-#### Position
-- 모바일 default: top-center (status bar 아래) — 콘텐츠 차단 최소화
-- desktop: top-right (24px 여백)
-- 가계부 입력 후 짧은 confirmation은 bottom-center (action 가까운 곳)
-
-#### Layout
-- max-width 모바일 viewport - `xl` (24px) 좌우 여백, padding `lg` (16px)
-- 중첩 시 stack, `xs` 간격
-
-#### Motion
-- 모바일 등장: 위에서 슬라이드 + fade (`motion-duration-base`), bottom은 아래에서
-- swipe-to-dismiss (모바일): horizontal swipe 시 `motion-duration-fast` 따라감
-- 자동 닫힘: 위와 동일 (success/info 4s, warning 6s, error 8s)
-
-#### A11y
-- HR과 동일 — role/aria-live, focus 안 받음, swipe 키보드 fallback (close button)
+- **오류** — 전역 오류 토스트(웹 · 앱)를 걷는다. 대시보드 · 거래 · 자산 · 예산 · 통계 · 할 일 · 메모를 불러오지 못하면 그 자리 Result Section(실패 + 다시 시도) — "없어요" 로 보이지 않는다. 거래 추가 시트의 저장 실패는 시트 맨 위 Callout `critical`.
+- **토스트** — 거래 저장 · 삭제(되돌리기) · 옮김, 환불 뒤 "잔액 고치기"(6초)처럼 방금 한 일의 결과만. 탭 바 · 플로팅 버튼 위 8. 시트 안에서 한 일은 시트가 닫힌 뒤에.
+- **안내 상자** — 예산 한도 초과 · 분할 합계 · 가져오기 안내는 Callout 톤으로(정의 없는 색 토큰 · 일곱 가지 경고 모양을 걷는다). 화면 소개 카드는 머리와 같은 말이면 걷는다.
+- **페이지 배너** — 증권 연결 끊김(연결 게이트 대신) · Pro 만료 예정 · 웹 새 버전.
 
 ### 시트 · 대화상자 · 확인창 · 팝오버
 
@@ -4058,10 +4074,8 @@ Desk(B2C) 5 data display 컴포넌트 — 모바일 우선 + 친근 톤.
 Desk(B2C) 5 추가 컴포넌트 — 모바일 우선.
 
 #### Sonner — Desk
-- **bottom-center position** 모바일 default — safe-area-inset-bottom 고려, 한 손 조작 시 시야 안.
-- 메모 저장 / 동기화 / 백업 stack — 동시 다수 등장 가능.
-- "실행 취소" action: 메모 삭제 후 5초 안에 클릭으로 복구.
-- 데스크탑은 bottom-right 변경 (모바일 ↔ 데스크탑 position 분기).
+
+> 2026-10-02 걷었다 — Snackbar("알림 메시지 — Snackbar · Callout · Page Banner · Result Section" 절).
 
 #### Aspect Ratio — Desk
 - **16:9** 메모 attachment image preview
@@ -4094,11 +4108,8 @@ Desk(B2C) 5 추가 컴포넌트 — 모바일 우선.
 Desk(B2C) 5 추가 shadcn 누락 컴포넌트 — 모바일 우선.
 
 #### Banner — Desk
-- **시스템 점검 안내** info variant — "오늘 23:00-24:00 동기화 중단" 미리 알림, dismiss 가능.
-- **신규 기능 안내** info variant — "가계부 카테고리 자동 분류 기능 추가" 한 번만 표시 (dismiss 후 재표시 안 함).
-- **백업 실패 경고** error variant — "최근 7일간 백업 실패. 재시도해주세요" sticky 유지.
-- 모바일 — header 아래 fullwidth, dismiss 후 자리 차지 안 함.
-- 사용자가 직접 dismiss 전엔 유지 — localStorage `desk-banner-dismissed-{id}`.
+
+> 2026-10-02 걷었다 — 화면 안 안내는 Callout, 페이지 맨 위 띠는 Page Banner("알림 메시지 — Snackbar · Callout · Page Banner · Result Section" 절).
 
 #### Chip — Desk
 공통 정의는 `DESIGN.md` 의 Chip 절, 원본은 `specs/components/chip.md`(2026-10-02 SEED Chip). 고른 칩은 중립색이라 브랜드와 관계없이 같다.

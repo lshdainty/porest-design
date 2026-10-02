@@ -163,8 +163,9 @@ export function LocalLevelsFigure() {
   const fab = (style?: CSSProperties) => (
     <span className="absolute bottom-4 right-3 flex h-9 w-9 items-center justify-center rounded-full text-[16px]" style={{ background: rc('bg-brand-solid'), color: rc('static-white'), boxShadow: shadow(2), ...style }}>＋</span>
   );
+  // 스낵바 — 그림자 없이 면 색으로 뜬다(snackbar.yaml root.shadow none · 아래 "고도를 드러내는 세 가지" 의 표면 색)
   const toast = (style?: CSSProperties) => (
-    <div className="absolute inset-x-2.5 bottom-3 flex h-8 items-center rounded-lg px-2.5" style={{ background: rc('bg-neutral-inverted'), boxShadow: shadow(3), ...style }}>
+    <div className="absolute inset-x-2.5 bottom-3 flex h-8 items-center rounded-lg px-2.5" style={{ background: rc('bg-neutral-inverted'), ...style }}>
       <span className="block h-1.5 w-16 rounded" style={{ background: rc('fg-neutral-inverted') }} />
     </div>
   );
