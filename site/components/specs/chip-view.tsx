@@ -166,8 +166,9 @@ export type ChipViewProps = {
   // 아이콘만 있는 칩 — 이름(ariaLabel) 필수
   icon?: ChipIcon;
   ariaLabel?: string;
-  // 실제 칩의 뜻 — 버튼(제안 · 여는 칩) · 라디오(하나 고르기) · 체크박스(여럿 고르기)
-  role?: 'button' | 'radio' | 'checkbox';
+  // 실제 칩의 뜻 — 버튼(제안 · 여는 칩) · 라디오(하나 고르기) · 체크박스(여럿 고르기) · 탭(Chip Tabs — 고름은 aria-selected)
+  role?: 'button' | 'radio' | 'checkbox' | 'tab';
+  id?: string;
   haspopup?: 'dialog';
   expanded?: boolean;
   controls?: string;
@@ -199,6 +200,7 @@ export function ChipView({
   icon,
   ariaLabel,
   role = 'button',
+  id,
   haspopup,
   expanded,
   controls,
@@ -286,8 +288,10 @@ export function ChipView({
         setRef(buttonRef, el);
       }}
       type="button"
+      id={id}
       role={role === 'button' ? undefined : role}
       aria-checked={checkable ? selected : undefined}
+      aria-selected={role === 'tab' ? selected : undefined}
       aria-haspopup={haspopup}
       aria-expanded={haspopup ? !!expanded : undefined}
       aria-controls={controls}

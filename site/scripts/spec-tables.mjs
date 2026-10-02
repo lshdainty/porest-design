@@ -49,6 +49,9 @@ export const PROP_LABEL = {
   'focusRing.width': '링 두께',
   'focusRing.offset': '링 간격',
   'focusRing.color': '링 색',
+  'indicator.insetX': '막대 들임',
+  'indicator.inset': '알약 들임',
+  'trigger.chip': '칩',
   height: '높이',
   minHeight: '최소 높이',
   maxHeight: '최대 높이',
@@ -130,6 +133,8 @@ export const PROP_LABEL = {
   thickness: '두께',
   overflowX: '넘칠 때',
   scrollPadding: '스크롤 여유',
+  textAlign: '글 맞춤',
+  shrink: '줄어듦',
 };
 export const PROP_ORDER = Object.keys(PROP_LABEL);
 

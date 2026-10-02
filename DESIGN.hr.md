@@ -3683,30 +3683,14 @@ HR — 직원 정보 form(필수/선택 옵션), 권한 토글 switch, 평가 �
 - 누르는 순간 바뀌는 고르기(테마 같은)는 List 의 라디오 줄, 누르면 바로 무언가를 하는 자리는 버튼이다.
 - HR — 상자 4 패턴 · 5곳이 모두 손으로 짠 여럿 고르기(권한 · 역할 할당 · 플랜 정책 · 시스템 데일리 체크)다(2026-10-01 조사). 하나 고르기는 지금 모두 드롭다운이다 — 휴가 정책의 부여 방법 · 가변 부여 여부처럼 설명이 붙는 고르기는 앱 적용 단계에서 Select Box 로 옮긴다.
 
-### Tabs
+### Tabs · Segmented Control
 
-HR — 직원 detail page(기본정보/근태/평가/급여 등 섹션 전환), dashboard 카테고리(전체/내 부서/필터된 view), 설정 페이지 grouping.
+공통 정의는 `DESIGN.md` 의 Tabs · Segmented Control 절, 원본은 `specs/components/tabs.md` · `segmented-control.md`(2026-10-02 SEED). 고른 표시는 중립색이라 브랜드와 관계없이 같고, 알림 점만 브랜드 색(`bg-brand-solid`)이다.
 
-#### Variant
-- **underline** (default): bottom border 2px `border-focus` (`#357B5F`, primary alias) + `text-primary` active
-- **vertical** (sidebar): 좌측 border 2px + `surface-input` 배경 — HR sidebar nav 친화
-
-#### Size
-- 데이터 화면 default: `md` (44px) — `body-lg` 15/600
-- 빈도 높은 sub-tab: `sm` (36px) — `caption` 12/400
-
-#### Layout
-- tab list 하단 `divider-light` 1px line, active tab 2px border가 line 덮음
-- tab panel padding `lg` (16px)
-
-#### Motion
-- underline indicator slide: `motion-duration-fast`
-- panel 전환: instant (HR은 데이터 표시 우선이라 fade animation 없이 즉시)
-
-#### A11y
-- role tablist/tab/tabpanel + aria-selected/aria-controls/aria-labelledby
-- 키보드: ←→/Home/End/Enter/Space, vertical은 ↑↓
-- manual activation default (focus ≠ activation) — HR은 form 화면 많아 자동 전환 시 입력 손실 가능
+- **구역 이동** — 휴가 내역(사용 내역 · 부여 내역) · 휴가 신청(신청 내역 · 승인 내역) · 업무 코드(업무 파트 · 업무 구분) · 권한(역할 · 사용자)은 Line. 데스크톱 카드 · 페이지는 칸이 지나치게 넓어지므로 Hug 로 둔다. 탭이 하나뿐이면 탭 줄을 두지 않는다.
+- **승인할 것이 있으면** 승인 내역 탭에 알림 점 — 개수는 탭 글이 아니라 내용에 보인다.
+- **같은 내용 조작**(캘린더 보기 전환 등 2 ~ 4개)은 Segmented Control.
+- 앱 적용 때 정할 자리 — 회사(모바일) 부서 관리 · 조직도, 캘린더 필터 팝오버의 사용자 · 유형.
 
 ### Dropdown (Menu / Select 공통 패턴)
 

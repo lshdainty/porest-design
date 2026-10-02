@@ -105,7 +105,17 @@ export function brandProfile(brandName, tokens) {
         { k: "기준일", v: "2026-05-10" },
         { k: "변동", v: "전월 대비 +1.2pt" },
       ],
-      tabs: { variant: "underline", labels: ["기본정보", "근태", "평가", "급여"] },
+      // 직원 상세의 구역 — 다른 내용으로 옮기는 1차 탭(Line · Fill · small, tabs.md)
+      tabs: {
+        kind: "line",
+        label: "직원 상세",
+        items: [
+          { label: "기본정보", body: "이름 · 소속 · 직무 · 입사일" },
+          { label: "근태", body: "이번 달 출근 · 퇴근 · 지각 기록" },
+          { label: "평가", body: "분기 평가와 동료 피드백" },
+          { label: "급여", body: "지급 내역과 급여 명세서" },
+        ],
+      },
       vignettes: [
         {
           kind: "approval-row",
@@ -271,7 +281,23 @@ export function brandProfile(brandName, tokens) {
         { k: "수입", v: "₩2,100,000" },
         { k: "지출", v: "₩815,500" },
       ],
-      tabs: { variant: "pills", labels: ["전체", "즐겨찾기", "오늘", "보관함"] },
+      // 같은 메모를 거르는 자리 — 탭이 아니라 Segmented Control 이다(segmented-control.md). 메모마다 보일 칸의 값(tags)을 단다
+      tabs: {
+        kind: "segmented",
+        label: "메모 보기",
+        items: [
+          { label: "전체", value: "all" },
+          { label: "즐겨찾기", value: "fav" },
+          { label: "오늘", value: "today" },
+          { label: "보관함", value: "archive" },
+        ],
+        memos: [
+          { title: "Porest 브랜드 톤", excerpt: "절제 · 신뢰감 — 토스 레퍼런스. 두 브랜드 듀얼 톤…", tags: "all fav" },
+          { title: "이번 주 회고", excerpt: "월요일 스프린트 시작 정리. 핵심 액션 3가지…", tags: "all today" },
+          { title: "10월 고정비 정리", excerpt: "통신 · 구독 해지할 것 — 가계부에 옮기기", tags: "all fav today" },
+          { title: "지난 프로젝트 정리", excerpt: "9월 회고 자료 — 보관함으로 옮긴 메모", tags: "archive" },
+        ],
+      },
       vignettes: [
         {
           kind: "todo-card",
@@ -438,7 +464,17 @@ export function brandProfile(brandName, tokens) {
       { k: "샘플", v: "type rendering 검증" },
       { k: "노트", v: "primary 없는 baseline 톤" },
     ],
-    tabs: { variant: "underline", labels: ["Tokens", "Components", "Patterns", "Brand"] },
+    // 문서의 구역 — 다른 내용으로 옮기는 1차 탭(Line · Fill · small, tabs.md)
+    tabs: {
+      kind: "line",
+      label: "문서",
+      items: [
+        { label: "Tokens", body: "색 · 글자 · 간격 · 모서리 · 모션 토큰" },
+        { label: "Components", body: "버튼 · 입력칸 · 칩 · 탭 같은 컴포넌트 스펙" },
+        { label: "Patterns", body: "폼 · 목록 · 빈 화면 같은 화면 짜임" },
+        { label: "Brand", body: "HR · Desk 브랜드 색과 쓰임" },
+      ],
+    },
     vignettes: [
       {
         kind: "kpi-card",
@@ -3029,18 +3065,448 @@ export function renderChipGallery(brand) {
   </section>`;
 }
 
-export function renderVignettes(brand) {
-  const tabs = `
-    <div class="vignette-card">
+// Tabs · Segmented Control — spec: specs/components/tabs.md · 수치 tabs.yaml(Line) · chip-tabs.yaml(Chip Tabs — 칩 하나는 chip.yaml) ·
+// specs/components/segmented-control.md · 수치 segmented-control.yaml. 구조는 SEED Tabs · Segmented Control(2026-10-02).
+// Line 탭 — 목록 .ptab-list(role=tablist · --fill · --hug × --small · --medium) > 탭 .ptab(role=tab) > 글 .ptab-label(+ 알림 점 .ptab-dot) · 막대 .ptab-indicator(목록에 하나).
+// Chip Tabs — 목록 .ptab-chips(role=tablist) > 탭 .pchip(role=tab — 03i 의 칩 그대로) > 글 .pchip-label + 알림 점 .ptab-chip-dot. 칩의 고른 모습은 data-selected 가 칠한다.
+// Segmented — 트랙 .pseg(role=radiogroup) > 고른 알약 .pseg-indicator · 칸 .pseg-item(role=radio) > 글 .pseg-label(+ 알림 점 .pseg-dot).
+// 고름은 aria-selected(탭) · aria-checked(칸)에서 읽고, Tab 은 고른 탭 · 칸 하나에만 선다(로빙 tabindex). 알림 점은 보조 기술에 "새 소식" · "새 내용" 을 덧붙인다(.ptab-sr-only).
+// data-ptab-live 목록 · data-pseg-live 트랙은 페이지 끝 스크립트가 누름 · 화살표로 고르기(막대 · 알약이 미끄러진다) · Hug 스크롤 · 내용 칸 바꾸기 · 거르기를 흉내 낸다 —
+// 그 순간을 멈춘 표의 탭 · 칸(.ptab--pressed · --focus, .pseg-item--hover · --pressed · --focus)은 바뀌지 않는다.
+let ptabSeq = 0;
+const nextPtabId = () => `ptab-${(ptabSeq += 1)}`;
+const PTAB_INTERACTIONS = ["pressed", "focus"];
+const PSEG_INTERACTIONS = ["hover", "pressed", "focus"];
+// 할 일 줄의 앞 아이콘 — lucide circle · circle-check(선 2)
+const TODO_ICON = {
+  open: listSvg('<circle cx="12" cy="12" r="10"/>'),
+  done: listSvg('<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>'),
+};
+
+// Line 탭 하나 — 글(label)은 여기서 escape 한다.
+//   selected     고름 — aria-selected="true" · Tab 자리(tabindex 0)
+//   dot          알림 점(글 오른쪽 위 — 탭 폭을 넓히지 않는다). 보조 기술에는 "새 소식" 을 덧붙인다. 고른 탭에는 그리지 않는다(내용을 보면 사라진다 —
+//                직접 눌러 보는 목록에서는 페이지 끝 스크립트가 고른 탭의 점을 지운다)
+//   disabled     막힌 탭 — 누를 수 없고 화살표 이동에서 건너뛴다
+//   interaction  pressed · focus — 그 순간을 멈춘 탭(갤러리 전용)
+//   id · controls  탭 id · 이어진 내용 칸(tabpanel) id
+export function lineTab({ label = "", selected = false, dot = false, disabled = false, interaction = "", id = "", controls = "" } = {}) {
+  const showDot = dot && !selected;
+  const cls = ["ptab", PTAB_INTERACTIONS.includes(interaction) && `ptab--${interaction}`].filter(Boolean).join(" ");
+  const attrs = attrsOf([
+    'type="button"',
+    'role="tab"',
+    id && `id="${id}"`,
+    `aria-selected="${selected ? "true" : "false"}"`,
+    controls && `aria-controls="${controls}"`,
+    `tabindex="${selected ? 0 : -1}"`,
+    `class="${cls}"`,
+    disabled && "disabled",
+  ]);
+  const dotHtml = showDot ? '<span class="ptab-dot" aria-hidden="true"></span>' : "";
+  return `<button ${attrs}><span class="ptab-label">${escape(label)}${dotHtml}</span>${showDot ? '<span class="ptab-sr-only"> 새 소식</span>' : ""}</button>`;
+}
+
+// Line 목록 — 막대 하나와 탭 HTML 목록(tabs)을 담는다. 이름은 label(aria-label) 또는 labelledby(보이는 제목)
+//   layout  fill(칸을 똑같이 나눈다 — 5개까지 · 기본) · hug(글 + 좌우 10 — 6개부터 · 긴 글, 넘치면 가로 스크롤)
+//   size    small 40 · 글 14(기본) · medium 44 · 글 16
+//   live    페이지 끝 스크립트가 누름 · 화살표로 고르고 내용 칸을 바꾼다
+// 막대는 목록의 첫 자식이다(tabs.tsx 와 같다) — 탭(relative)이 그 위에 그려져 키보드 포커스 링이 막대에 가리지 않는다
+export function lineTabs({ layout = "fill", size = "small", label = "", labelledby = "", live = false, tabs = [] } = {}) {
+  return `<div ${attrsOf([
+    `class="ptab-list ptab-list--${layout} ptab-list--${size}"`,
+    'role="tablist"',
+    labelledby ? `aria-labelledby="${escape(labelledby)}"` : label && `aria-label="${escape(label)}"`,
+    live && "data-ptab-live",
+  ])}><span class="ptab-indicator" aria-hidden="true"></span>${tabs.join("")}</div>`;
+}
+
+// Chip Tabs 의 탭 하나 — 03i 의 칩(.pchip) 그대로다. variant solid = Chip Solid · outline = Chip Outline Strong, size medium 36(기본) · large 40.
+// 고르면 aria-selected 와 함께 data-selected 를 달아 칩의 고른 모습(짙은 채움 — Outline 은 테두리를 지운다)을 칠한다. 알림 점은 글 뒤 6(칩 안 사이) · 세로 가운데이고
+// 고른 칩에는 그리지 않는다
+export function chipTab({ label = "", variant = "solid", size = "medium", selected = false, dot = false, disabled = false, id = "", controls = "" } = {}) {
+  const attrs = attrsOf([
+    'type="button"',
+    'role="tab"',
+    id && `id="${id}"`,
+    `aria-selected="${selected ? "true" : "false"}"`,
+    controls && `aria-controls="${controls}"`,
+    `tabindex="${selected ? 0 : -1}"`,
+    `class="pchip pchip--${variant === "outline" ? "outline-strong" : "solid"} pchip--${size}"`,
+    selected && 'data-selected=""',
+    disabled && "disabled",
+  ]);
+  const mark = dot && !selected ? '<span class="ptab-chip-dot" aria-hidden="true"></span><span class="ptab-sr-only"> 새 소식</span>' : "";
+  return `<button ${attrs}><span class="pchip-label">${escape(label)}</span>${mark}</button>`;
+}
+
+// Chip Tabs 목록 — 바탕 · 바닥 선 없이 한 줄 가로 스크롤. 칩 사이 8 · 좌우 화면 여백 24 · 위아래 8
+export function chipTabs({ label = "", live = false, tabs = [] } = {}) {
+  return `<div ${attrsOf([
+    'class="ptab-chips"',
+    'role="tablist"',
+    label && `aria-label="${escape(label)}"`,
+    live && "data-ptab-live",
+  ])}>${tabs.join("")}</div>`;
+}
+
+// Segmented Control — 트랙 하나에 칸 2 ~ 4개. 칸이 트랙 폭을 칸 수(--pseg-n)로 똑같이 나누고, 고른 알약이 고른 칸 번호(--pseg-i)로 미끄러진다. 늘 하나를 골라 둔다.
+//   items     [{ label, value, dot, disabled }] — value 는 filter 목록에서 이 칸을 고르면 보일 줄의 표식. 알림 점(dot)은 고른 칸에는 그리지 않는다
+//   selected  고른 칸 번호
+//   disabled  트랙 전체를 막는다(칸마다 disabled)
+//   state     { at, interaction } — at 번째 칸을 그 순간(hover · pressed · focus)으로 멈춘다(갤러리 전용)
+//   filter    고르면 거를 목록의 id — 그 목록의 [data-pseg-tags] 줄 가운데 고른 칸의 value 가 없는 줄을 숨긴다
+export function segmented({ label = "", items = [], selected = 0, disabled = false, live = false, state = null, filter = "" } = {}) {
+  const cells = items.map((it, i) => {
+    const frozen = state && state.at === i && PSEG_INTERACTIONS.includes(state.interaction) && `pseg-item--${state.interaction}`;
+    const attrs = attrsOf([
+      'type="button"',
+      'role="radio"',
+      `aria-checked="${i === selected ? "true" : "false"}"`,
+      `tabindex="${i === selected ? 0 : -1}"`,
+      `class="${["pseg-item", frozen].filter(Boolean).join(" ")}"`,
+      it.value && `data-pseg-value="${escape(it.value)}"`,
+      (disabled || it.disabled) && "disabled",
+    ]);
+    const dot = it.dot && i !== selected;
+    const mark = dot ? '<span class="pseg-dot" aria-hidden="true"></span>' : "";
+    return `<button ${attrs}><span class="pseg-label">${escape(it.label)}${mark}</span>${dot ? '<span class="ptab-sr-only"> 새 내용</span>' : ""}</button>`;
+  });
+  return `<div ${attrsOf([
+    'class="pseg"',
+    'role="radiogroup"',
+    label && `aria-label="${escape(label)}"`,
+    disabled && 'aria-disabled="true"',
+    live && "data-pseg-live",
+    filter && `data-pseg-filter="${escape(filter)}"`,
+    `style="--pseg-n: ${items.length}; --pseg-i: ${selected};"`,
+  ])}><span class="pseg-indicator" aria-hidden="true"></span>${cells.join("")}</div>`;
+}
+
+// Tabs · Segmented Control 갤러리 — Line(폭 × 크기 · 상태) · Chip Tabs · Segmented(칸 수 · 상태 · 알림 점과 긴 글과 막힘) · 화면 여섯 판을 흰 표면(.vignette-card) 위에 그린다.
+// 견본 틀(.ptf-samples · .ptf-cap)과 상태 표(.cb-matrix)는 Text Field 갤러리 것을 그대로 쓴다. 글은 tabs.md · segmented-control.md 의 코드 예(통계 · 금액 가리기 · 휴가 신청 ·
+// 증권 두 단 · 할 일)와 Desk · HR 화면에서 빌렸다. 누름 · 호버 · 포커스는 표에서 그 순간을 멈춰 그렸고, 나머지 목록 · 트랙은 직접 누르고 화살표로 옮겨 볼 수 있다(페이지 끝 스크립트)
+export function renderTabsGallery(brand) {
+  const panel = (title, sub, body) => `
+    <div class="vignette-card cb-panel">
       <div class="vignette-head">
-        <div class="vignette-title">Tabs · ${brand.tabs.variant === "pills" ? "pills (Desk 모바일친화)" : "underline (HR/shared 절제)"}</div>
-        <div class="vignette-sub">activeIndex = 0</div>
+        <div class="vignette-title">${escape(title)}</div>
+        <div class="vignette-sub">${escape(sub)}</div>
+      </div>${body}
+    </div>`;
+  // 견본 칸은 폰 틀(안쪽 360 + 테두리)이 줄지 않는 폭부터 — Text Field 갤러리의 320 칸이면 틀이 354 로 줄어 Fill · Segmented 칸 폭이 스펙과 달라진다
+  const samples = (items, cls = "ptab-samples") => `
+      <div class="${cls}">${items.join("")}
+      </div>`;
+  const sample = (cap, en, body, cls = "") => `
+        <div class="ptf-sample${cls}">
+          <div class="ptf-cap">${escape(cap)}<span>${escape(en)}</span></div>
+          ${body}
+        </div>`;
+  // 상태 표 — 줄(머리 글 · 영문) × 칸. 칸마다 목록 · 트랙을 실제 크기로 그린다. 칸이 좁아지면 판(.cb-panel)이 가로로 밀린다
+  const matrix = (cls, first, cols, rows, cell) => `
+      <div class="cb-matrix ${cls}" style="--cb-cols: ${cols.length};">
+        <div class="cb-matrix-row cb-matrix-row--head"><div class="cb-matrix-head">${escape(first)}</div>${
+          cols.map(c => `<div class="cb-matrix-head">${escape(c.ko)}<span>${escape(c.en)}</span></div>`).join("")
+        }</div>${rows.map(r => `
+        <div class="cb-matrix-row"><div class="cb-matrix-label">${escape(r.ko)}<span>${escape(r.en)}</span></div>${
+          cols.map(c => `<div class="cb-matrix-cell ptab-cell">${cell(r, c)}</div>`).join("")
+        }</div>`).join("")}
+      </div>`;
+  // 폰(안쪽 360) 틀 — 흰 바탕. 탭 목록은 틀 끝까지 가고(좌우 여백은 목록이 가진다), Segmented 는 화면 여백 24 안(.ptab-pad)에 둔다
+  const phone = (body) => `<div class="ptab-phone">${body}</div>`;
+  const pad = (body) => `<div class="ptab-pad">${body}</div>`;
+  const head = (title) => `<div class="ptab-phone-head"><div class="ptf-screen-title">${escape(title)}</div></div>`;
+  // 직접 눌러 보는 Line 목록 — 내용 칸 없이 목록만
+  const liveLine = (layout, size, label, labels, { selected = 0, dot = -1 } = {}) =>
+    lineTabs({ layout, size, label, live: true, tabs: labels.map((l, i) => lineTab({ label: l, selected: i === selected, dot: i === dot })) });
+  // 탭 + 내용 칸 — 칸은 고른 탭 것만 보이고 나머지는 hidden 으로 남는다(탭마다 상태를 지킨다). chip 을 주면 Chip Tabs 다
+  const tabsWithPanels = ({ layout = "fill", size = "small", label, items, selected = 0, chip = null }) => {
+    const base = nextPtabId();
+    const tabs = items.map((it, i) => {
+      const args = { label: it.label, selected: i === selected, dot: !!it.dot, disabled: !!it.disabled, id: `${base}-tab-${i}`, controls: `${base}-panel-${i}` };
+      return chip ? chipTab({ ...args, ...chip }) : lineTab(args);
+    });
+    const list = chip ? chipTabs({ label, live: true, tabs }) : lineTabs({ layout, size, label, live: true, tabs });
+    const panels = items.map((it, i) => `<div class="ptab-panel" role="tabpanel" id="${base}-panel-${i}" aria-labelledby="${base}-tab-${i}" tabindex="0"${i === selected ? "" : " hidden"}>${it.body}</div>`).join("");
+    return { list, panels };
+  };
+  const tile = (color, icon) => `<span class="plst-tile plst-tile--${color}">${LIST_ICON[icon]}</span>`;
+  const won = (v) => `<span class="plst-amount">${escape(v)}</span>`;
+
+  // 1. Line — 폭 × 크기. 모두 직접 눌러 볼 수 있다. Fill 2 ~ 5개는 360 폰에서 막대 폭을 견준다(tabs.yaml layout.fill 의 note)
+  const fillSets = [
+    { note: "2개 — 탭 180 · 막대 148", label: "휴가 신청", labels: ["신청 내역", "승인 내역"] },
+    { note: "3개 — 탭 120 · 막대 88", label: "통계", labels: ["카테고리", "추이", "비교"] },
+    { note: "4개 — 탭 90 · 막대 58", label: "직원 상세", labels: ["기본 정보", "근태", "평가", "급여"] },
+    { note: "5개 — 탭 72 · 막대 40", label: "팀", labels: ["개요", "구성원", "일정", "문서", "설정"] },
+  ];
+  const fillStack = `<div class="ptab-stack">${fillSets.map(s => `<div><p class="ptab-note">${escape(s.note)}</p>${liveLine("fill", "small", s.label, s.labels)}</div>`).join("")}</div>`;
+  const hide = ["전체", "홈", "자산", "가계부", "통계", "예산", "증권", "더치페이", "기타"];
+  const layoutPanel = panel(
+    "Line — 폭 Fill · Hug × 크기 small · medium",
+    "Fill 은 칸을 똑같이 나눠 목록을 꽉 채우고, 막대는 칸에서 좌우 16 씩 들인다(막대 = 탭 폭 − 32 — 360 폰 2 · 3 · 4 · 5개면 148 · 88 · 58 · 40). 5개까지 · 짧은 글에 쓴다. Hug 는 탭이 글 + 좌우 10 이고 목록 좌우 16 · 막대는 탭 폭 그대로다 — 6개 이상이거나 글이 길면 쓰고, 넘치면 가로로 스크롤한다(스크롤바는 숨긴다). 화면 밖 탭을 고르면 16 여유를 두고 그쪽으로 스크롤한다. small 은 40 · 글 14/19(기본), medium 은 44 · 글 16/22 — 탭 위아래 · 좌우 10 이고 글을 아래로 붙여 막대와 글 사이가 크기와 관계없이 10 이다. 글은 고르든 안 고르든 700 이고, 고르면 글자색만 fg-neutral-subtle 에서 fg-neutral 로 바로 바뀌며 2px fg-neutral 막대가 200ms(d4 · easing)로 미끄러진다. 목록 바탕은 불투명한 bg-layer-default, 바닥은 안쪽 1px stroke-neutral-subtle 구획 선이다. 글은 줄바꿈 · 말줄임하지 않는다 — Fill 에서 칸을 넘으면 Hug 로 바꾼다. 모두 누르고 ← → · Home · End 로 옮겨 볼 수 있다 — 화살표로 옮기면 바로 고르고, 끝에서 처음으로 돈다.",
+    samples([
+      sample("Fill · small 40 — 통계 3개", "layout=\"fill\" · size=\"small\"(기본) — 막대 = 탭 폭 − 32", phone(liveLine("fill", "small", "통계", ["카테고리", "추이", "비교"]))),
+      sample("Fill · medium 44 — 증권 2개", "layout=\"fill\" · size=\"medium\" — 글 16/22", phone(liveLine("fill", "medium", "증권사", ["나무증권", "토스증권"]))),
+      sample("Hug · small 40 — 금액 가리기 9개", "layout=\"hug\" — 글 + 좌우 10 · 목록 좌우 16 · 넘치면 스크롤", phone(liveLine("hug", "small", "금액 가리기", hide))),
+      sample("Hug · medium 44 — 직원 상세 7개", "layout=\"hug\" · size=\"medium\" — 막대 = 탭 폭", phone(liveLine("hug", "medium", "직원 상세", ["기본 정보", "근태", "휴가", "평가", "급여", "교육", "문서"]))),
+      sample("Fill — 360 폰에서 2 · 3 · 4 · 5개", "칸을 똑같이 나눈다 — 막대 148 · 88 · 58 · 40", phone(fillStack)),
+    ]),
+  );
+
+  // 2. Line — 상태. 둘째 탭(예산)을 곁에 둬 막대 · 링이 이웃에 걸리지 않는 것을 보인다. 누름 · 포커스는 그 순간을 멈췄다(.ptab--pressed · --focus)
+  const lineCols = [
+    { ko: "기본", en: "enabled" },
+    { ko: "누름", en: "pressed — 2px 축소 · 색 그대로", interaction: "pressed" },
+    { ko: "포커스", en: "focused — 키보드만 · 안쪽 링 2px", interaction: "focus" },
+    { ko: "비활성", en: "disabled — fg-disabled · 축소 없음 · 고른 탭은 막대도", disabled: true },
+  ];
+  const lineRows = [
+    { ko: "안 고름", en: "fg-neutral-subtle — 막대는 옆 탭", selected: false },
+    { ko: "고름", en: "fg-neutral + 2px 막대 fg-neutral", selected: true },
+    { ko: "알림 점", en: "6 · fg-brand — 글 끝에서 2 · 글 위쪽 · 안 고른 탭에만", selected: false, dot: true },
+  ];
+  const lineCell = (r, c) => lineTabs({
+    layout: "hug",
+    label: `${r.ko} — ${c.ko}`,
+    tabs: [
+      lineTab({ label: "통계", selected: r.selected, dot: !!r.dot, disabled: !!c.disabled, interaction: c.interaction || "" }),
+      lineTab({ label: "예산", selected: !r.selected }),
+    ],
+  });
+  const lineStatePanel = panel(
+    "Line — 상태 · 알림 점",
+    "누르면 탭 전체가 2px 거리로 줄기만 한다 — 배율 (기준 − 2) ÷ 기준, 기준 = max(높이, 폭 ÷ 4, 24) 이고 150ms(pressed-scale)다. 색은 그대로다 — 글자색이 이미 고름을 말하므로, 누르는 동안 색이 바뀌면 손을 떼기 전에 고른 것처럼 보인다. 마우스 호버 모양도 없다. 포커스는 키보드로 왔을 때만 탭 안쪽 링 2px stroke-focus-ring(띄움 −2 · 모서리 각짐)이라 이웃 탭 · 바닥 선에 걸리지 않는다. 막힌 탭은 글 fg-disabled · 커서 not-allowed 이고 줄지 않으며 화살표 이동에서 건너뛴다 — 고른 채 막히면(목록 전체가 막혔을 때) 막대도 fg-disabled 다. 막대는 목록에 하나라 탭이 줄어도 그대로다. 알림 점은 6 · fg-brand(브랜드 글자색)이고 글 끝에서 2, 글 위쪽에 맞춘다 — 탭 폭을 넓히지 않는다. 새 소식이 있는 탭 하나에만 달고 보조 기술에 \"새 소식\" 을 덧붙인다. 고른 탭에는 그리지 않는다 — 탭을 열어 내용을 보면 사라진다. 탭 글에는 개수를 붙이지 않는다. 표는 그 순간을 멈춰 그렸다(Hug · small).",
+    matrix("ptab-matrix", "고름 · 점", lineCols, lineRows, lineCell),
+  );
+
+  // 3. Chip Tabs — Solid · Outline × medium · large, 두 단(증권). 모두 직접 눌러 볼 수 있다
+  const chipSets = [
+    { cap: "Solid · medium 36", en: "variant=\"solid\"(기본) — 화면 전체 내용 · 좁은 자리", variant: "solid", size: "medium", label: "나무증권 보기", labels: ["보유", "관심", "발견"], dot: 2 },
+    { cap: "Solid · large 40", en: "variant=\"solid\" · size=\"large\" — 화면 전체를 바꾸는 탭", variant: "solid", size: "large", label: "나무증권 보기", labels: ["보유", "관심", "발견"], dot: -1 },
+    { cap: "Outline · medium 36", en: "variant=\"outline\" — 일부 내용만 바꾸는 탭 · 넘치면 가로 스크롤", variant: "outline", size: "medium", label: "자산 종류", labels: ["계좌", "카드", "증권", "대출", "현금", "포인트"], dot: -1 },
+    { cap: "Outline · large 40", en: "variant=\"outline\" · size=\"large\" — 넘치면 가로 스크롤", variant: "outline", size: "large", label: "자산 종류", labels: ["계좌", "카드", "증권", "대출", "현금", "포인트"], dot: -1 },
+  ];
+  const stock = (name, detail, value) => listRow({ title: name, detail, suffix: won(value) });
+  const brokerTabs = (broker, rows, dot) => {
+    const t = tabsWithPanels({
+      label: `${broker} 보기`,
+      chip: { variant: "solid", size: "medium" },
+      items: [
+        { label: "보유", body: listOf(rows.hold) },
+        { label: "관심", body: listOf(rows.watch) },
+        { label: "발견", dot, body: listOf(rows.find) },
+      ],
+    });
+    return `${t.list}${t.panels}`;
+  };
+  const brokers = tabsWithPanels({
+    layout: "fill",
+    size: "medium",
+    label: "증권사",
+    items: [
+      { label: "나무증권", body: brokerTabs("나무증권", {
+        hold: [stock("삼성전자", "12주 · 평균 71,200원", "+4.2%"), stock("카카오", "5주 · 평균 48,900원", "−1.8%")],
+        watch: [stock("SK하이닉스", "반도체", "212,500원"), stock("NAVER", "인터넷", "181,300원")],
+        find: [stock("오늘 많이 산 종목", "나무증권 이용자 기준", "10개")],
+      }, true) },
+      { label: "토스증권", body: brokerTabs("토스증권", {
+        hold: [stock("애플", "3주 · 평균 $189.40", "+12.4%")],
+        watch: [stock("엔비디아", "반도체", "$118.20")],
+        find: [stock("급상승 종목", "토스증권 이용자 기준", "10개")],
+      }, false) },
+    ],
+  });
+  const twoTier = phone(`${head("증권")}${brokers.list}${brokers.panels}`);
+  const chipPanel = panel(
+    "Chip Tabs — Solid · Outline × medium · large · 두 단",
+    "1차 Line 탭 안의 2차 탭이다. 칩 하나는 03i 의 Chip 그대로다 — solid 는 Chip Solid(안 고름 bg-neutral-weak), outline 은 Chip Outline Strong(안 고름 투명 + 안쪽 1px stroke-neutral-weak)이고, 고르면 짙은 채움(bg-neutral-inverted · fg-neutral-inverted — Outline 은 테두리를 지운다)이다. 크기는 Chip medium 36(기본) · large 40, 글 14 · 500 이고 누름 · 호버 · 포커스 · 비활성도 Chip 과 같다. 목록은 바탕 · 바닥 선 없이 한 줄 가로 스크롤이고 칩 사이 8 · 좌우 화면 여백 24 · 위아래 8 이다. 화면 전체 내용을 바꾸면 Solid, 일부 내용만 바꾸면 Outline — large 는 화면 전체를 바꾸는 탭, medium 은 좁은 자리 · 스크롤 중간의 서브 내용이다. 알림 점은 칩 안이라 글 뒤 6 · 세로 가운데에 두고 칩이 그만큼 넓어진다 — 색은 fg-brand 이고, 고른 칩(짙은 채움)에는 그리지 않는다(열어 내용을 보면 사라진다). 두 단이면 1차는 Line, 2차는 Chip Tabs 다 — 화면에 필터 바(거르는 칩)가 함께 있으면 2차도 Line 으로 둔다(같은 모양이면 무엇이 탭인지 알 수 없다). 모두 누르고 ← → 로 옮겨 볼 수 있다.",
+    samples([
+      ...chipSets.map(s => sample(s.cap, s.en, phone(chipTabs({ label: s.label, live: true, tabs: s.labels.map((l, i) => chipTab({ label: l, variant: s.variant, size: s.size, selected: i === 0, dot: i === s.dot })) })))),
+      sample("두 단 — 증권", "1차 Line Fill · medium(나무증권 · 토스증권) · 2차 Chip Tabs Solid(보유 · 관심 · 발견)", twoTier),
+    ]),
+  );
+
+  // 4. Segmented — 칸 수 · 폭. 폰 콘텐츠 폭(360 − 좌우 24 = 312)에서 2 · 3 · 4개. 모두 직접 눌러 볼 수 있다
+  const segSets = [
+    { cap: "2개 — 칸 152", en: "트랙 312(폰 360 − 좌우 24) · 칸 = (312 − 8) ÷ 2", label: "통계 보기", items: ["지출", "수입"] },
+    { cap: "3개 — 칸 101.3", en: "칸 = (312 − 8) ÷ 3", label: "거래 거르기", items: ["전체", "지출", "수입"] },
+    { cap: "4개 — 칸 76", en: "칸 = (312 − 8) ÷ 4 — 폰에서도 4개가 들어간다", label: "할 일 보기", items: ["오늘", "이번 주", "전체", "완료"] },
+  ];
+  const segWidthPanel = panel(
+    "Segmented Control — 폰에서 2 · 3 · 4개",
+    "크기 · 변형이 하나다 — 트랙 안쪽 4 + 칸 34 = 42, 글 16 · 700(고르든 안 고르든), 칸 위아래 6 · 좌우 12. 트랙(bg-neutral-weak · 모서리 full)이 놓인 자리 폭을 채우고 칸이 그 폭을 칸 수로 똑같이 나눈다 — 최소 폭이 없어 폰 콘텐츠 폭 312(360 − 좌우 24)에서도 4개가 들어간다(칸 76). 고른 칸은 흰 알약(bg-layer-default + 안쪽 짙은 1px stroke-neutral-contrast) 위 fg-neutral 이고, 다른 칸을 고르면 알약이 200ms(d4 · easing)로 미끄러진다. 넓은 화면에서는 트랙이 자리를 채우므로 놓는 자리를 좁혀 둔다. 같은 내용을 바로 거르거나 · 정렬하거나 · 다르게 보는 조작이라 그 내용 바로 위에, 한 화면에 하나만 둔다. 모두 누르고 화살표(← → ↑ ↓)로 옮겨 볼 수 있다 — 옮기면 바로 고르고, 고른 칸을 다시 눌러도 그대로다.",
+    samples(segSets.map(s => sample(s.cap, s.en, phone(pad(segmented({ label: s.label, live: true, items: s.items.map(l => ({ label: l })) })))))),
+  );
+
+  // 5. Segmented — 상태. 첫 칸(지출)이 그 상태이고, 안 고름 줄은 둘째 칸(수입)을 골랐다. 호버 · 누름 · 포커스는 그 순간을 멈췄다(.pseg-item--hover · --pressed · --focus)
+  const segCols = [
+    { ko: "기본", en: "enabled" },
+    { ko: "호버", en: "hovered — 웹 · 누름 바탕 · 축소 없음", interaction: "hover" },
+    { ko: "누름", en: "pressed — 누름 바탕 + 글 2px 축소", interaction: "pressed" },
+    { ko: "포커스", en: "focused — 키보드만 · 바깥 링 2px", interaction: "focus" },
+    { ko: "비활성", en: "disabled — 고른 칸은 고른 채 막힘", disabled: true },
+  ];
+  const segRows = [
+    { ko: "안 고름", en: "fg-neutral-subtle — 누름 bg-neutral-weak-pressed · 1px stroke-neutral-weak · fg-neutral-muted", selected: false },
+    { ko: "고름", en: "흰 알약 + 짙은 1px · fg-neutral — 누름 bg-layer-default-pressed", selected: true },
+  ];
+  const segCell = (r, c) => segmented({
+    label: `${r.ko} — ${c.ko}`,
+    selected: r.selected ? 0 : 1,
+    state: c.interaction ? { at: 0, interaction: c.interaction } : null,
+    items: [{ label: "지출", disabled: !!c.disabled }, { label: "수입" }],
+  });
+  const segStatePanel = panel(
+    "Segmented Control — 상태",
+    "마우스를 올리면(웹) 누름과 같은 바탕이고 축소가 없다. 안 고른 칸은 bg-neutral-weak-pressed + 안쪽 1px stroke-neutral-weak 에 글이 fg-neutral-muted 로 한 단계 짙어지고(fg-neutral-subtle 이면 다크 3.91:1), 고른 칸은 bg-layer-default-pressed 를 칸에 칠해 알약을 덮고 짙은 1px 는 그대로다. 누르면 그 바탕에 칸은 그대로 두고 안의 글만 2px 거리로 준다(기준 = 칸의 max(높이, 폭 ÷ 4, 24) · 150ms pressed-scale — 모션 줄이기면 줄지 않는다). 포커스는 키보드에만 칸 바깥 링 2px · 띄움 2px stroke-focus-ring 이고 알약을 따라 둥글다. 막힌 칸은 글 fg-disabled · 커서 not-allowed 이고 흐리게 하지 않는다 — 고른 채 막히면 칸에 bg-disabled + 짙은 1px stroke-neutral-solid 를 남겨 무엇을 골랐는지 보인다. 바탕 · 글자색 · 테두리는 150ms(color-transition)로 바뀐다. 표는 그 순간을 멈춰 그렸다.",
+    matrix("pseg-matrix", "고름", segCols, segRows, segCell),
+  );
+
+  // 6. Segmented — 알림 점 · 긴 글 · 막힘
+  const todoSet = (disabledAt = -1) => ["오늘", "이번 주", "전체", "완료"].map((l, i) => ({ label: l, disabled: i === disabledAt }));
+  const segMorePanel = panel(
+    "Segmented Control — 알림 점 · 긴 글 · 막힘",
+    "알림 점은 새 내용이 있는 칸에만 단다 — 6 · fg-brand(브랜드 글자색), 글 끝에서 2 · 글 위쪽에 맞추고 보조 기술에 \"새 내용\" 을 덧붙인다. 고른 칸에는 그리지 않는다 — 고르면 사라진다. 글은 짧게 쓴다(\"이름순\" · \"최근 사용\") — 칸에 비해 길면 단어 단위로 줄을 바꾸고(v114 — keep-all · break-word) 모든 칸이 가장 높은 칸에 맞춰 높아진다. 그러면 다른 컴포넌트(Chip 하나 고르기 · Select)를 쓴다. 칸 하나 또는 트랙 전체를 막을 수 있다 — 막힌 칸은 누를 수 없고 화살표 이동에서 건너뛴다. 늘 하나가 골라져 있어 트랙을 막아도 고른 칸이 보인다.",
+    samples([
+      sample("알림 점 — 받을 돈에 새 요청", "6 · fg-brand · 보조 기술에 \"새 내용\" — 고르면 사라진다", phone(pad(segmented({ label: "더치페이 보기", live: true, selected: 1, items: [{ label: "받을 돈", dot: true }, { label: "보낼 돈" }] })))),
+      sample("긴 글 — 줄이 바뀌면 칸이 모두 높아진다(피한다)", "단어 단위 줄바꿈 · 가장 높은 칸에 맞춘다", phone(pad(segmented({ label: "프리셋 정렬", live: true, items: [{ label: "많이 쓴 순" }, { label: "최근에 사용한 순" }, { label: "이름 가나다순" }] })))),
+      sample("칸 하나 막힘 — 완료", "SegmentedControlItem disabled — 화살표가 건너뛴다", phone(pad(segmented({ label: "할 일 보기", live: true, items: todoSet(3) })))),
+      sample("트랙 전체 막힘", "SegmentedControl disabled — 고른 칸은 bg-disabled + 1px stroke-neutral-solid", phone(pad(segmented({ label: "할 일 보기", disabled: true, items: todoSet() })))),
+    ]),
+  );
+
+  // 7. 화면 — 통계(Line Fill · 내용 칸) · 할 일(Segmented 로 목록 거르기) · HR 휴가 신청(데스크톱 Hug medium · 알림 점). 2026년 10월 1일(목)이 오늘이다
+  const stats = tabsWithPanels({
+    layout: "fill",
+    size: "small",
+    label: "통계",
+    items: [
+      { label: "카테고리", body: `<p class="ptab-lead">9월 지출 <strong>905,200원</strong></p>${listOf([
+        listRow({ prefix: tile("orange", "utensils"), title: "식비", detail: "38%", suffix: won("348,000원") }),
+        listRow({ prefix: tile("violet", "bag"), title: "쇼핑", detail: "26%", suffix: won("236,200원") }),
+        listRow({ prefix: tile("gray", "more"), title: "기타", detail: "25%", suffix: won("223,000원") }),
+        listRow({ prefix: tile("blue", "bus"), title: "교통", detail: "11%", suffix: won("98,000원") }),
+      ])}` },
+      { label: "추이", body: `<p class="ptab-lead">한 달 지출 — 최근 4개월</p>${listOf([
+        listRow({ title: "9월", detail: "9월 1일 ~ 30일", suffix: won("905,200원") }),
+        listRow({ title: "8월", detail: "8월 1일 ~ 31일", suffix: won("876,000원") }),
+        listRow({ title: "7월", detail: "7월 1일 ~ 31일", suffix: won("790,400원") }),
+        listRow({ title: "6월", detail: "6월 1일 ~ 30일", suffix: won("842,100원") }),
+      ])}` },
+      { label: "비교", body: `<p class="ptab-lead">8월보다 <strong>29,200원</strong> 더 썼어요</p>${listOf([
+        listRow({ prefix: tile("orange", "utensils"), title: "식비", detail: "8월 336,000원", suffix: won("+12,000원") }),
+        listRow({ prefix: tile("violet", "bag"), title: "쇼핑", detail: "8월 251,000원", suffix: won("−14,800원") }),
+        listRow({ prefix: tile("gray", "more"), title: "기타", detail: "8월 213,000원", suffix: won("+10,000원") }),
+        listRow({ prefix: tile("blue", "bus"), title: "교통", detail: "8월 76,000원", suffix: won("+22,000원") }),
+      ])}` },
+    ],
+  });
+  const statsScreen = phone(`${head("통계")}${stats.list}<div class="ptab-phone-body">${stats.panels}</div>`);
+  // 할 일 — 고른 칸의 값(today · week · all · done)이 없는 줄은 숨긴다. 처음은 "오늘"
+  const todoId = nextPtabId();
+  const todos = [
+    { title: "디자인 시스템 리뷰", detail: "오늘 오후 2:00", tags: "today week all" },
+    { title: "10월 예산 정하기", detail: "오늘", tags: "today week all" },
+    { title: "병원 예약", detail: "10월 2일 (금)", tags: "week all" },
+    { title: "여권 갱신", detail: "10월 20일 (화)", tags: "all" },
+    { title: "아침 스트레칭", detail: "완료 · 오늘 오전 7:00", tags: "done", done: true },
+    { title: "9월 회고 쓰기", detail: "완료 · 9월 30일 (수)", tags: "done", done: true },
+  ];
+  const todoRow = (t) => listRow({ prefix: t.done ? TODO_ICON.done : TODO_ICON.open, title: t.title, detail: t.detail })
+    .replace('<li class="plst-row"', `<li class="plst-row" data-pseg-tags="${t.tags}"${t.tags.split(" ").includes("today") ? "" : " hidden"}`);
+  const todoScreen = phone(`${head("할 일")}${pad(segmented({
+    label: "할 일 보기",
+    live: true,
+    filter: todoId,
+    items: [{ label: "오늘", value: "today" }, { label: "이번 주", value: "week" }, { label: "전체", value: "all" }, { label: "완료", value: "done" }],
+  }))}${listOf(todos.map(todoRow), ` id="${todoId}" aria-label="할 일"`)}`);
+  // HR 휴가 신청 — 데스크톱 웹의 넓은 카드라 둘이어도 Hug medium. 승인 내역에 대기 중인 신청이 있어 알림 점, 열면 지운다
+  const leave = tabsWithPanels({
+    layout: "hug",
+    size: "medium",
+    label: "휴가 신청",
+    items: [
+      { label: "신청 내역", body: listOf([
+        listRow({ title: "연차 3일", detail: "10월 12일 (월) ~ 14일 (수) · 승인 대기" }),
+        listRow({ title: "반차 · 오후", detail: "9월 25일 (금) · 승인됨" }),
+        listRow({ title: "연차 1일", detail: "9월 4일 (금) · 승인됨" }),
+      ]) },
+      { label: "승인 내역", dot: true, body: listOf([
+        listRow({ title: "김지원 · 연차 3일", detail: "디자인 본부 · 10월 20일 (화) ~ 22일 (목) · 대기" }),
+        listRow({ title: "박서연 · 반차", detail: "프로덕트 본부 · 10월 16일 (금) 오전 · 대기" }),
+        listRow({ title: "이도현 · 연차 1일", detail: "운영 본부 · 9월 30일 (수) · 승인함" }),
+      ]) },
+    ],
+  });
+  const leaveScreen = `<div class="ptab-desk">
+            <div class="ptab-desk-head"><div class="ptf-screen-title">휴가 신청</div></div>
+            ${leave.list}
+            <div class="ptab-desk-body">${leave.panels}</div>
+          </div>`;
+  const screensPanel = panel(
+    "화면 — 통계 · 할 일 · 휴가 신청",
+    "탭은 화면 · 구역 맨 위에서 다른 구역으로 옮긴다 — 통계의 카테고리 · 추이 · 비교는 서로 다른 내용이라 탭이고, 셋이라 Fill small 이다. 고르면 내용 칸이 애니메이션 없이 바로 바뀌고(막대만 미끄러진다) 다른 칸은 그대로 남아 다녀와도 상태가 그대로다. 폰 1차 탭은 내용을 옆으로 밀어 넘길 수 있고, 웹은 1차 탭을 주소에 남긴다(그림에는 없다). Segmented Control 은 자기가 바꾸는 내용 바로 위에 하나만 둔다 — 할 일 목록을 오늘 · 이번 주 · 전체 · 완료로 바로 거른다. 데스크톱 HR 휴가 신청은 넓은 카드라 둘이어도 Hug medium 이다 — 칸을 나누면 탭이 지나치게 넓어진다. 승인 내역에 대기 중인 신청이 있어 알림 점을 달았고, 그 탭을 열어 내용을 보면 점이 사라진다. 모두 직접 눌러 볼 수 있다.",
+    `
+      <div class="ptab-screens">
+        ${sample("Desk 통계 — 폰 · Line Fill small", "TabsList aria-label=\"통계\" · TabsContent 셋", statsScreen)}
+        ${sample("Desk 할 일 — 폰 · Segmented Control", "SegmentedControl aria-label=\"할 일 보기\" — 목록 바로 위", todoScreen)}
+        ${sample("HR 휴가 신청 — 데스크톱 웹 · Line Hug medium", "TabsList layout=\"hug\" size=\"medium\" · TabsTrigger notification", leaveScreen, " ptab-wide")}
+      </div>`,
+  );
+
+  const lede = "SEED Tabs · Segmented Control 구조 — 다른 구역으로 옮기는 탭과, 같은 내용을 바로 거르거나 · 정렬하거나 · 다르게 보는 Segmented Control 을 나눈다. 1차 탭은 Line(밑줄 막대)이다 — small 40 · medium 44, 글 14 · 16 · 700 고정이고 고르면 글자색만 fg-neutral-subtle 에서 fg-neutral 로 짙어지며 2px 중립색 막대가 미끄러진다. 누르면 탭이 2px 거리로 줄기만 하고 색은 그대로다. 5개까지 Fill(칸을 나눈다), 6개부터 · 긴 글은 Hug(넘치면 가로 스크롤). 탭 안에서 다시 나누는 2차 탭은 Chip Tabs(Chip Solid · Outline Strong — 36 · 40)다. Segmented Control 은 트랙 42(안쪽 4 + 칸 34) · 글 16 · 700 이고 칸이 트랙 폭을 똑같이 나눈다 — 고른 칸은 흰 알약 + 안쪽 짙은 1px 다. 고른 표시는 브랜드 색이 아니라 중립색이라 세 미리보기가 같고, 알림 점(6 · fg-brand)만 브랜드 색이다 — 고른 탭 · 칸에는 점이 없다. 화살표로 옮기면 바로 고른다. 옛 Tabs 의 container · underline · pills 모양과 수동 활성화는 없다."
+    + (brand.key === "shared" ? " 공유 토큰에는 브랜드 역할 색이 없어 포커스 링 · 알림 점이 여기서는 중립으로 보인다 — HR · Desk 미리보기에서 브랜드 색이다." : "");
+
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">03j — Tabs · Segmented Control</div>
+      <h2 class="section-title">Tabs · Segmented Control — Line&nbsp;2 × 크기&nbsp;2 · Chip&nbsp;Tabs · Segmented · 상태 · 화면</h2>
+      <p class="section-lede">${escape(lede)}</p>
+    </header>
+    ${layoutPanel}
+    ${lineStatePanel}
+    ${chipPanel}
+    ${segWidthPanel}
+    ${segStatePanel}
+    ${segMorePanel}
+    ${screensPanel}
+  </section>`;
+}
+
+export function renderVignettes(brand) {
+  // 탭 — 옛 underline · pills 그림(브랜드 색 밑줄 · 채움)은 걷었다(tabs.md 2026-10-02). 다른 구역으로 옮기는 자리(HR 직원 상세 · 공유 문서)는 Line 탭,
+  // 같은 메모를 거르는 자리(Desk 의 전체 · 즐겨찾기 · 오늘 · 보관함)는 Segmented Control 이다 — 모양 · 동작은 03j 의 도우미 그대로다
+  const t = brand.tabs;
+  let tabsBody;
+  if (t.kind === "segmented") {
+    const memoId = nextPtabId();
+    const first = t.items[0].value;
+    const memos = t.memos.map(m => `<div class="memo-row" data-pseg-tags="${escape(m.tags)}"${m.tags.split(" ").includes(first) ? "" : " hidden"}>
+          <div class="memo-title">${escape(m.title)}</div>
+          <div class="memo-excerpt">${escape(m.excerpt)}</div>
+        </div>`).join("");
+    tabsBody = `${segmented({ label: t.label, live: true, filter: memoId, items: t.items })}
+      <div class="ptab-memos" id="${memoId}">${memos}</div>`;
+  } else {
+    const base = nextPtabId();
+    const list = lineTabs({
+      label: t.label,
+      live: true,
+      tabs: t.items.map((it, i) => lineTab({ label: it.label, selected: i === 0, id: `${base}-tab-${i}`, controls: `${base}-panel-${i}` })),
+    });
+    const panels = t.items.map((it, i) => `<div class="ptab-panel ptab-vignette-panel" role="tabpanel" id="${base}-panel-${i}" aria-labelledby="${base}-tab-${i}" tabindex="0"${i === 0 ? "" : " hidden"}>${escape(it.body)}</div>`).join("");
+    tabsBody = `${list}${panels}`;
+  }
+  const tabs = `
+    <div class="vignette-card ptab-vignette">
+      <div class="vignette-head">
+        <div class="vignette-title">${t.kind === "segmented" ? "Segmented Control — 메모 거르기" : `Tabs · Line — ${escape(t.label)}`}</div>
+        <div class="vignette-sub">${t.kind === "segmented" ? "같은 메모를 바로 거른다 — 칸이 트랙을 똑같이 나누고 고른 칸은 흰 알약" : "Fill · small 40 — 고르면 글자색만 짙어지고 2px 막대가 미끄러진다"}</div>
       </div>
-      <div class="tabs tabs-${brand.tabs.variant}">
-        ${brand.tabs.labels.map((l, i) => `
-          <div class="tab ${i === 0 ? "tab--active" : ""}">${escape(l)}</div>`).join("")}
-      </div>
-      <div class="tabs-body">${escape(brand.tabs.labels[0])} 영역의 콘텐츠가 여기에 들어옵니다.</div>
+      ${tabsBody}
     </div>`;
 
   // 검색칸 — 옛 알약 검색(surface-input · radius-full · 안의 필터 버튼)은 걷었다. 검색칸은 Input 의 앞 아이콘 · 지우기다(input.md — 03g Text Field)
@@ -6870,6 +7336,288 @@ export function pageCss() {
     .pchip-phone-bar { padding: 0 var(--spacing-global-gutter); }
     .pchip-phone-list { padding: var(--spacing-x3) 0 var(--spacing-x4); }
 
+    /* === Tabs · Segmented Control — specs/components/tabs.md · tabs.yaml · chip-tabs.yaml · segmented-control.md · segmented-control.yaml(수치 원본) ===
+       구조는 SEED Tabs · Segmented Control(2026-10-02). 고른 표시는 브랜드 색이 아니라 중립색이다 — 세 미리보기가 같다(알림 점 · 포커스 링만 브랜드 색).
+       Line 탭 — 목록 .ptab-list(role=tablist) > 탭 .ptab(role=tab) > 글 .ptab-label(+ 알림 점 .ptab-dot) · 막대 .ptab-indicator(목록에 하나).
+       목록은 놓인 화면 · 구역 폭을 채우고 바탕은 불투명한 bg-layer-default, 바닥은 안쪽 1px stroke-neutral-subtle 구획 선이다(안쪽 그림자 — 선이 탭 높이를 밀지 않는다).
+       탭은 위아래 · 좌우 10 이고 글을 아래로 붙인다(small 40 · 글 t4 → 위 11, medium 44 · 글 t5 → 위 12). 글은 고르든 안 고르든 700, 고르면 글자색만 짙어진다(전환 없이 바로).
+       막대는 2px fg-neutral · 모서리 0 이고 고른 탭의 자리 · 폭으로 미끄러진다(left · width — d4 · easing). 자리는 페이지 끝 스크립트가 고른 탭을 재서 --ptab-x · --ptab-w 로 넘기고
+       목록에 [data-ptab-ready] 를 단다 — 그 전에는 고른 탭이 ::after 로 막대를 그린다. Fill 은 막대를 탭에서 좌우 --ptab-inset(16) 들이고, Hug 는 탭 폭 그대로다.
+       누름 = 탭 전체 2px 거리 축소(배율 = (기준 − 2) ÷ 기준, 기준 = max(높이, 폭 ÷ 4, 24) — 스크립트가 누르는 순간 재서 --press-basis 로 넘긴다) · 색은 그대로 · 호버 모양 없음.
+       포커스 = 키보드에만 탭 안쪽 링 2px(띄움 −2 · 모서리 각짐) stroke-focus-ring. 비활성 = 글 fg-disabled · 커서 not-allowed · 축소 없음.
+       알림 점은 6 · fg-brand(브랜드 글자색), 글 끝에서 2 · 글 위쪽(탭 폭을 넓히지 않는다)이고 고른 탭에는 그리지 않는다. 고른 채 막힌 탭은 막대도 fg-disabled 다.
+       .ptab--pressed · --focus 는 갤러리에서 그 순간을 고정해 보여 주는 클래스다.
+       다크 짝은 이 블록 끝의 [data-theme="dark"] 에서 바꾼다. */
+    .ptab-list {
+      /* 포커스 링 · 알림 점 — 공유 토큰(DESIGN.md)에는 브랜드 역할 색이 없어 중립으로 떨어진다(.pchip · .plst 와 같은 대체 사슬) */
+      --ptab-focus-ring: var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral)));
+      --ptab-dot: var(--color-fg-brand, var(--color-primary, var(--color-fg-neutral)));
+      --ptab-inset: 0px;
+      position: relative;
+      display: flex;
+      width: 100%;
+      min-height: 40px;
+      margin: 0;
+      padding: 0;
+      background: var(--color-bg-layer-default);
+      box-shadow: inset 0 -1px 0 var(--color-stroke-neutral-subtle);
+    }
+    .ptab-list--medium { min-height: 44px; }
+    /* Fill — 칸을 똑같이 나눈다(글이 칸보다 길면 그 탭만 넓어진다 — 그러면 Hug 로). 막대는 탭에서 좌우 16 들인다 */
+    .ptab-list--fill { --ptab-inset: var(--spacing-x4); }
+    /* Hug — 목록 좌우 16, 넘치면 가로 스크롤(스크롤바 숨김). 고른 탭이 화면 밖이면 16 여유를 두고 스크롤한다(scroll-padding) */
+    .ptab-list--hug { padding-inline: var(--spacing-x4); overflow-x: auto; scroll-padding-inline: var(--spacing-x4); scrollbar-width: none; }
+    .ptab-list--hug::-webkit-scrollbar { display: none; }
+    .ptab {
+      --press-basis: 40;
+      position: relative;
+      display: flex;
+      flex: 0 0 auto;
+      align-items: flex-end;
+      justify-content: center;
+      min-height: 40px;
+      margin: 0;
+      padding: var(--spacing-x2_5);
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: var(--color-fg-neutral-subtle);
+      font-family: var(--font-sans);
+      font-size: var(--text-t4);
+      line-height: var(--text-t4--line-height);
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    .ptab-list--medium > .ptab { --press-basis: 44; min-height: 44px; font-size: var(--text-t5); line-height: var(--text-t5--line-height); }
+    .ptab-list--fill > .ptab { flex: 1 1 0; }
+    .ptab[aria-selected="true"] { color: var(--color-fg-neutral); }
+    .ptab:not(:disabled):active,
+    .ptab.ptab--pressed { scale: calc(1 - 2 / var(--press-basis)); }
+    @media (prefers-reduced-motion: reduce) {
+      .ptab:not(:disabled):active,
+      .ptab.ptab--pressed { scale: 1; }
+    }
+    .ptab:focus-visible,
+    .ptab.ptab--focus { outline: 2px solid var(--ptab-focus-ring); outline-offset: -2px; }
+    .ptab:disabled { color: var(--color-fg-disabled); cursor: not-allowed; }
+    .ptab-label { position: relative; display: block; }
+    .ptab-dot { position: absolute; top: 0; left: calc(100% + 2px); width: 6px; height: 6px; border-radius: var(--radius-full); background: var(--ptab-dot); }
+    .ptab-indicator {
+      position: absolute;
+      bottom: 0;
+      left: var(--ptab-x, 0px);
+      width: var(--ptab-w, 0px);
+      height: 2px;
+      border-radius: 0;
+      background: var(--color-fg-neutral);
+      pointer-events: none;
+    }
+    .ptab-list:not([data-ptab-ready]) > .ptab-indicator { display: none; }
+    .ptab-list[data-ptab-ready] > .ptab-indicator {
+      transition:
+        left var(--motion-duration-d4) var(--motion-ease-easing),
+        width var(--motion-duration-d4) var(--motion-ease-easing);
+    }
+    .ptab-list:not([data-ptab-ready]) > .ptab[aria-selected="true"]::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: var(--ptab-inset);
+      right: var(--ptab-inset);
+      height: 2px;
+      background: var(--color-fg-neutral);
+    }
+    /* 고른 채 막힌 탭(목록 전체가 막혔을 때) — 막대도 전용 색 fg-disabled(tabs.yaml 고름 × disabled) */
+    .ptab-list:has(> .ptab[aria-selected="true"]:disabled) > .ptab-indicator,
+    .ptab-list:not([data-ptab-ready]) > .ptab[aria-selected="true"]:disabled::after { background: var(--color-fg-disabled); }
+    /* 보조 기술에만 — 알림 점의 "새 소식" · "새 내용"(Tailwind sr-only) */
+    .ptab-sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+    /* 내용 칸 — 고른 탭 것만 보인다. 포커스할 것이 없는 칸은 칸이 Tab 을 받는다(tabindex 0) — 키보드에만 안쪽 링 */
+    .ptab-panel[hidden] { display: none; }
+    .ptab-panel:focus { outline: none; }
+    .ptab-panel:focus-visible { outline: 2px solid var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral))); outline-offset: -2px; }
+
+    /* Chip Tabs — 목록 .ptab-chips(role=tablist) > 03i 의 칩 .pchip(role=tab). 칩 하나는 Chip 그대로(solid = Solid · outline = Outline Strong, medium 36 · large 40)이고
+       고름은 aria-selected 와 함께 data-selected 로 칩의 고른 모습(짙은 채움)을 칠한다. 목록은 바탕 · 바닥 선 없이 한 줄 가로 스크롤 —
+       칩 사이 8(between-chips) · 좌우 화면 여백 24 · 위아래 8(칩의 누르는 영역 44 · 바깥 포커스 링이 잘리지 않는다), 고른 칩이 화면 밖이면 화면 여백 24 를 두고 스크롤한다(Chip 의 가로 스크롤 줄과 같다).
+       알림 점은 칩 안이라 글 뒤 6(칩의 사이) · 세로 가운데이고 칩이 그만큼 넓어진다. 고른 칩(짙은 채움)에는 그리지 않는다 */
+    .ptab-chips {
+      --ptab-dot: var(--color-fg-brand, var(--color-primary, var(--color-fg-neutral)));
+      position: relative;
+      display: flex;
+      gap: var(--spacing-between-chips);
+      width: 100%;
+      margin: 0;
+      padding: var(--spacing-x2) var(--spacing-global-gutter);
+      overflow-x: auto;
+      scroll-padding-inline: var(--spacing-global-gutter);
+      scrollbar-width: none;
+    }
+    .ptab-chips::-webkit-scrollbar { display: none; }
+    .ptab-chip-dot { flex-shrink: 0; width: 6px; height: 6px; border-radius: var(--radius-full); background: var(--ptab-dot); }
+
+    /* Segmented Control — 트랙 .pseg(role=radiogroup) > 고른 알약 .pseg-indicator · 칸 .pseg-item(role=radio) > 글 .pseg-label(+ 알림 점 .pseg-dot).
+       트랙은 안쪽 4 · 모서리 full · bg-neutral-weak 이고 놓인 자리 폭을 채운다 — 칸이 그 폭을 칸 수(--pseg-n)로 똑같이 나눈다(최소 폭 없음). 모든 칸이 같은 폭 · 같은 높이다(가장 높은 칸에 맞춘다).
+       칸은 34 이상 · 위아래 6 · 좌우 12 · 모서리 full, 글 t5 16/22 · 700 · 가운데 — 길면 단어 단위로 줄을 바꾼다(v114).
+       고른 알약은 트랙에 하나다 — bg-layer-default + 안쪽 짙은 1px stroke-neutral-contrast, 폭 = (트랙 − 8) ÷ 칸 수이고 고른 칸 번호(--pseg-i)만큼 옮긴다(transform · d4 · easing).
+       안 고른 칸을 올리거나(웹) 누르면 bg-neutral-weak-pressed + 안쪽 1px stroke-neutral-weak · 글 fg-neutral-muted, 고른 칸은 bg-layer-default-pressed + 짙은 1px 그대로 — 칸에 칠해 알약을 덮는다.
+       누름은 칸 바탕은 그대로 두고 글만 2px 거리로 준다(기준 = 칸의 max(높이, 폭 ÷ 4, 24) — 스크립트가 누르는 순간 재서 --press-basis 로 넘긴다). 모션 줄이기면 줄지 않는다.
+       포커스 = 키보드에만 칸 바깥 링 2px · 띄움 2px(알약을 따라 둥글다). 비활성 = 글 fg-disabled · 커서 not-allowed(흐리게 하지 않는다 — v106) — 고른 채 막히면 칸에 bg-disabled + 짙은 1px stroke-neutral-solid.
+       .pseg-item--hover · --pressed · --focus 는 갤러리에서 그 순간을 고정해 보여 주는 클래스다 */
+    .pseg {
+      --pseg-focus-ring: var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral)));
+      --pseg-dot: var(--color-fg-brand, var(--color-primary, var(--color-fg-neutral)));
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(var(--pseg-n, 2), minmax(0, 1fr));
+      width: 100%;
+      margin: 0;
+      padding: var(--spacing-x1);
+      border-radius: var(--radius-full);
+      background: var(--color-bg-neutral-weak);
+      isolation: isolate;
+    }
+    .pseg-indicator {
+      position: absolute;
+      top: var(--spacing-x1);
+      bottom: var(--spacing-x1);
+      left: var(--spacing-x1);
+      width: calc((100% - 2 * var(--spacing-x1)) / var(--pseg-n, 2));
+      border-radius: var(--radius-full);
+      background: var(--color-bg-layer-default);
+      box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-contrast);
+      transform: translateX(calc(var(--pseg-i, 0) * 100%));
+      transition: transform var(--motion-duration-d4) var(--motion-ease-easing);
+      pointer-events: none;
+    }
+    .pseg-item {
+      --press-basis: 34;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+      min-height: 34px;
+      margin: 0;
+      padding: var(--spacing-x1_5) var(--spacing-x3);
+      border: 0;
+      border-radius: var(--radius-full);
+      background: transparent;
+      box-shadow: inset 0 0 0 1px transparent;
+      color: var(--color-fg-neutral-subtle);
+      font-family: var(--font-sans);
+      font-size: var(--text-t5);
+      line-height: var(--text-t5--line-height);
+      font-weight: 700;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      transition:
+        background-color var(--motion-duration-color-transition) var(--motion-ease-easing),
+        color var(--motion-duration-color-transition) var(--motion-ease-easing),
+        box-shadow var(--motion-duration-color-transition) var(--motion-ease-easing);
+    }
+    .pseg-label {
+      position: relative;
+      min-width: 0;
+      word-break: keep-all;
+      overflow-wrap: break-word;
+      transition: scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    .pseg-item[aria-checked="true"] { color: var(--color-fg-neutral); }
+    /* 호버(마우스 있는 기기에서만) = 누름 바탕, 축소 없음 */
+    @media (hover: hover) {
+      .pseg-item:not(:disabled, [aria-checked="true"]):hover {
+        background: var(--color-bg-neutral-weak-pressed);
+        box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-weak);
+        color: var(--color-fg-neutral-muted);
+      }
+      .pseg-item[aria-checked="true"]:not(:disabled):hover {
+        background: var(--color-bg-layer-default-pressed);
+        box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-contrast);
+      }
+    }
+    .pseg-item:not(:disabled, [aria-checked="true"]):active,
+    .pseg-item:not([aria-checked="true"]):is(.pseg-item--hover, .pseg-item--pressed) {
+      background: var(--color-bg-neutral-weak-pressed);
+      box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-weak);
+      color: var(--color-fg-neutral-muted);
+    }
+    .pseg-item[aria-checked="true"]:not(:disabled):active,
+    .pseg-item[aria-checked="true"]:is(.pseg-item--hover, .pseg-item--pressed) {
+      background: var(--color-bg-layer-default-pressed);
+      box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-contrast);
+    }
+    .pseg-item:not(:disabled):active > .pseg-label,
+    .pseg-item.pseg-item--pressed > .pseg-label { scale: calc(1 - 2 / var(--press-basis)); }
+    @media (prefers-reduced-motion: reduce) {
+      .pseg-item:not(:disabled):active > .pseg-label,
+      .pseg-item.pseg-item--pressed > .pseg-label { scale: 1; }
+    }
+    .pseg-item:focus-visible,
+    .pseg-item.pseg-item--focus { outline: 2px solid var(--pseg-focus-ring); outline-offset: 2px; }
+    .pseg-item:disabled { color: var(--color-fg-disabled); cursor: not-allowed; }
+    .pseg-item[aria-checked="true"]:disabled { background: var(--color-bg-disabled); box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-solid); }
+    .pseg-dot { position: absolute; top: 0; left: calc(100% + 2px); width: 6px; height: 6px; border-radius: var(--radius-full); background: var(--pseg-dot); }
+    /* 거르는 목록 — 고른 칸의 값이 없는 줄은 숨긴다(.plst-row · .memo-row 의 display 를 이긴다) */
+    [data-pseg-tags][hidden] { display: none; }
+
+    /* 다크 — 역할 색을 탭 · 칸 · 갤러리 틀 안에서만 다크 짝으로 바꾼다(.pchip · .plst 와 같다 — 전역 다크 블록은 옛 이름만 바꾼다).
+       Chip Tabs 의 칩 색은 .pchip 의 다크 블록이 바꾼다. 공유 토큰(DESIGN.md)에 없는 브랜드 짝(포커스 링 · 알림 점)은 비어서 위 대체값(중립)으로 떨어진다 */
+    [data-theme="dark"] :is(.ptab-list, .ptab-chips, .pseg, .ptab-phone, .ptab-desk, .ptab-vignette) {
+      --color-stroke-focus-ring: var(--color-stroke-focus-ring-dark);
+      --color-fg-brand: var(--color-fg-brand-dark);
+      --color-bg-layer-default: var(--color-bg-layer-default-dark);
+      --color-bg-layer-default-pressed: var(--color-bg-layer-default-pressed-dark);
+      --color-bg-neutral-weak: var(--color-bg-neutral-weak-dark);
+      --color-bg-neutral-weak-pressed: var(--color-bg-neutral-weak-pressed-dark);
+      --color-bg-neutral-inverted: var(--color-bg-neutral-inverted-dark);
+      --color-bg-disabled: var(--color-bg-disabled-dark);
+      --color-stroke-neutral-subtle: var(--color-stroke-neutral-subtle-dark);
+      --color-stroke-neutral-weak: var(--color-stroke-neutral-weak-dark);
+      --color-stroke-neutral-solid: var(--color-stroke-neutral-solid-dark);
+      --color-stroke-neutral-contrast: var(--color-stroke-neutral-contrast-dark);
+      --color-fg-neutral: var(--color-fg-neutral-dark);
+      --color-fg-neutral-muted: var(--color-fg-neutral-muted-dark);
+      --color-fg-neutral-subtle: var(--color-fg-neutral-subtle-dark);
+      --color-fg-disabled: var(--color-fg-disabled-dark);
+    }
+
+    /* Tabs 갤러리 — 탭 · 칸은 흰 표면(.vignette-card) 위에 둔다(Segmented 트랙 bg-neutral-weak 가 페이지 바탕 bg-layer-basement 와 같은 gray-200 이다).
+       견본 틀(.ptf-samples · .ptf-cap)과 상태 표(.cb-matrix)는 Text Field 갤러리 것이다. .ptab-phone 은 폰 화면 틀(안쪽 360) — 탭 목록은 틀 끝까지 가고
+       Segmented 는 화면 여백 24 안(.ptab-pad)에 둔다. .ptab-desk 는 데스크톱 웹 카드 틀이다. 모두 갤러리 것이고 Tabs · Segmented Control 의 일부가 아니다 */
+    .ptab-matrix .cb-matrix-row { grid-template-columns: 168px repeat(var(--cb-cols), minmax(150px, 1fr)); }
+    .pseg-matrix .cb-matrix-row { grid-template-columns: 168px repeat(var(--cb-cols), minmax(176px, 1fr)); }
+    @media (max-width: 900px) {
+      .ptab-matrix .cb-matrix-row { grid-template-columns: 120px repeat(var(--cb-cols), minmax(150px, 1fr)); }
+      .pseg-matrix .cb-matrix-row { grid-template-columns: 120px repeat(var(--cb-cols), minmax(176px, 1fr)); }
+    }
+    .ptab-cell { min-width: 0; padding: var(--spacing-x1_5) 0; }
+    .ptab-samples { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 362px), 1fr)); gap: var(--spacing-xl) var(--spacing-lg); align-items: start; }
+    .ptab-phone { box-sizing: content-box; max-width: 360px; overflow: hidden; border: 1px solid var(--color-border-default); border-radius: var(--radius-r4); background: var(--color-bg-layer-default); font-family: var(--font-sans); }
+    .ptab-phone-head { padding: var(--spacing-x6) var(--spacing-global-gutter) var(--spacing-x2); }
+    .ptab-phone-head > .ptf-screen-title { margin-bottom: 0; }
+    .ptab-phone-body { padding-bottom: var(--spacing-x2); }
+    .ptab-pad { padding: var(--spacing-x4) var(--spacing-global-gutter); }
+    .ptab-stack { display: flex; flex-direction: column; gap: var(--spacing-x4); padding: var(--spacing-x4) 0; }
+    .ptab-note { margin: 0 0 var(--spacing-x1); padding: 0 var(--spacing-global-gutter); font-size: var(--text-caption); line-height: 1.4; color: var(--color-text-tertiary); }
+    .ptab-lead { margin: 0; padding: var(--spacing-x4) var(--spacing-global-gutter) var(--spacing-x1); font-size: var(--text-t5); line-height: var(--text-t5--line-height); color: var(--color-fg-neutral); }
+    .ptab-lead strong { font-weight: 700; }
+    .ptab-screens { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 362px), 1fr)); gap: var(--spacing-xl) var(--spacing-lg); align-items: start; }
+    .ptab-screens > .ptab-wide { grid-column: 1 / -1; }
+    .ptab-desk { max-width: 720px; overflow: hidden; border: 1px solid var(--color-border-default); border-radius: var(--radius-r4); background: var(--color-bg-layer-default); font-family: var(--font-sans); }
+    .ptab-desk-head { padding: var(--spacing-x8) var(--spacing-x6) var(--spacing-x4); }
+    .ptab-desk-head > .ptf-screen-title { margin-bottom: 0; }
+    .ptab-desk-body { padding: var(--spacing-x2) 0 var(--spacing-x4); }
+    /* 도메인 비뇨트(04) — 내용 칸 글 · 거르는 메모 */
+    .ptab-vignette-panel { padding-top: var(--spacing-x4); font-size: var(--text-t4); line-height: var(--text-t4--line-height); color: var(--color-fg-neutral-subtle); }
+    .ptab-memos { display: flex; flex-direction: column; gap: var(--spacing-x2); margin-top: var(--spacing-x4); }
+
     /* todo-card */
     .todo-list { display: flex; flex-direction: column; gap: 2px; }
     .todo-row {
@@ -6903,15 +7651,7 @@ export function pageCss() {
     .memo-tags { display: flex; gap: var(--spacing-xs); flex-wrap: wrap; }
     .memo-tag { font-size: 11px; color: var(--color-primary, var(--color-text-secondary)); }
 
-    /* tabs — tabs.md SoT 3 variants (container/underline/pills) */
-    .tabs { display: flex; gap: var(--spacing-sm); border-bottom: 1px solid var(--color-border-default); margin-bottom: var(--spacing-md); }
-    .tabs-pills { border-bottom: none; gap: var(--spacing-xs); }
-    .tab { padding: var(--spacing-sm) var(--spacing-md); font-size: var(--text-label-md); font-weight: 500; color: var(--color-text-secondary); cursor: pointer; }
-    .tabs-underline .tab--active { color: var(--color-primary, var(--color-text-primary)); border-bottom: 2px solid var(--color-primary, var(--color-text-primary)); margin-bottom: -1px; font-weight: 600; }
-    /* pills — radius-md soft rectangle(토스 톤) + primary fill */
-    .tabs-pills .tab { border-radius: var(--radius-md); }
-    .tabs-pills .tab--active { background: var(--color-primary, var(--color-text-primary)); color: var(--color-text-on-accent, #fff); font-weight: 600; }
-    .tabs-body { font-size: var(--text-caption); color: var(--color-text-tertiary); padding: var(--spacing-sm) 0 0; }
+    /* 옛 tabs(.tabs · .tab — container · underline · pills, 브랜드 색 밑줄 · 채움)는 걷었다. 탭은 위 Tabs · Segmented Control 블록의 .ptab-list · .ptab-chips · .pseg 다(tabs.md, 2026-10-02) */
 
     /* search — 검색칸은 Text Field 블록의 .ptf-input(앞 아이콘 · 지우기)이다. 옛 알약 검색(.search-pill)은 걷었다 */
 
@@ -7988,7 +8728,6 @@ export function pageCss() {
     [data-theme="dark"] .text-row,
     [data-theme="dark"] .motion-row,
     [data-theme="dark"] .typo-scale-row,
-    [data-theme="dark"] .tabs,
     [data-theme="dark"] .btn-row--head { border-color: var(--color-border-default-dark); }
     [data-theme="dark"] .catalog { border-color: var(--color-border-default-dark); }
     [data-theme="dark"] .kpi-cell,
@@ -8024,10 +8763,6 @@ export function pageCss() {
     /* 채움(fill)은 primary 유지 — primary-light fill 위 흰 텍스트는 대비 미달.
        비채움(text/border/outline/tint/small-dot)만 primary-light로 전환. */
     [data-theme="dark"] .memo-tag { color: var(--color-primary-light, var(--color-text-secondary-dark)); }
-    [data-theme="dark"] .tabs-underline .tab--active {
-      color: var(--color-primary-light, var(--color-text-primary-dark));
-      border-bottom-color: var(--color-primary-light, var(--color-text-primary-dark));
-    }
     [data-theme="dark"] .cal-cell--scheduled {
       background: color-mix(in srgb, var(--color-primary-light, var(--color-text-primary-dark)) 18%, transparent);
     }
@@ -8177,6 +8912,7 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     ${renderTextFieldGallery(brand)}
     ${renderPickGallery(brand)}
     ${renderChipGallery(brand)}
+    ${renderTabsGallery(brand)}
     ${renderVignettes(brand)}
     ${renderListingDetail(brand)}
     ${renderCalendar(brand)}
@@ -8516,6 +9252,129 @@ function renderHtml(brandName, css, tokens, sourceFile) {
         var next = open[(open.indexOf(chip) + step + open.length) % open.length];
         next.focus();
         pick(next);
+      });
+    })();
+    // Tabs · Segmented Control (2026-10-02) — tabs.tsx · segmented-control.tsx 가 하는 일 가운데 그림에 필요한 것을 흉내 낸다(페이지의 모든 .ptab-list · .ptab-chips · .pseg).
+    // 막대 — 목록마다 고른 탭을 재서 자리(--ptab-x)와 폭(--ptab-w)을 넘긴다. Fill 은 탭에서 좌우 --ptab-inset(16)을 들이고 Hug 는 탭 폭 그대로다.
+    // 처음 자리를 잡은 뒤에 [data-ptab-ready] 를 달아 그때부터 미끄러진다. 목록 폭이 바뀌거나(화면 폭 · 숨었던 내용 칸이 열림) 글꼴이 들어오면 다시 잰다.
+    // 누름 배율의 기준 = max(높이, 폭 ÷ 4, 24) — 탭 · 칸 폭이 놓인 자리마다 달라 누르는 순간(포인터 · 키) 재서 --press-basis 로 넘긴다. 그 순간을 멈춘 누름 탭 · 칸은 그릴 때 잰다.
+    // data-ptab-live 목록 — 누르면 그 탭을 고르고 이어진 내용 칸(aria-controls)을 바로 바꾼다(다른 칸은 hidden 으로 남아 상태를 지킨다). ← → 로 옮기며 바로 고르고
+    // (끝에서 처음으로 돈다) Home · End 는 첫 · 마지막 탭이다. 막힌 탭은 건너뛴다. 고른 탭이 목록 밖이면(Hug · Chip Tabs) scroll-padding(16)만큼 여유를 두고 스크롤한다.
+    // 고른 탭 · 칩의 알림 점은 지운다 — 고른 것에는 점이 없고, 열어 내용을 봤으니 사라진다. Chip Tabs 의 칩은 data-selected 로 고른 모습을 칠한다.
+    // data-pseg-live 트랙 — 누르면 그 칸을 고르고(다시 눌러도 그대로) 고른 알약을 옮긴다(--pseg-i). ← → ↑ ↓ 로 옮기며 바로 고르고(끝에서 처음으로 돈다) 막힌 칸은 건너뛴다.
+    // Enter 로는 고르지 않는다(Radix 라디오와 같다). 고른 칸의 알림 점은 지운다. data-pseg-filter 가 가리키는 목록은 고른 칸의 값(data-pseg-value)이 없는 줄([data-pseg-tags])을 숨긴다.
+    (function () {
+      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var PRESS = ".ptab, .pseg-item";
+      function measure(el) { el.style.setProperty("--press-basis", String(Math.max(el.offsetHeight, el.offsetWidth / 4, 24))); }
+      function closest(e, selector) { return e.target && e.target.closest ? e.target.closest(selector) : null; }
+      function tabsOf(list) { return Array.prototype.filter.call(list.children, function (el) { return el.getAttribute("role") === "tab"; }); }
+      function itemsOf(track) { return Array.prototype.filter.call(track.children, function (el) { return el.classList.contains("pseg-item"); }); }
+      function place(list) {
+        var bar = list.querySelector(":scope > .ptab-indicator");
+        if (!bar) return;
+        var tab = tabsOf(list).filter(function (t) { return t.getAttribute("aria-selected") === "true"; })[0];
+        var inset = parseFloat(getComputedStyle(list).getPropertyValue("--ptab-inset")) || 0;
+        bar.style.setProperty("--ptab-x", (tab ? tab.offsetLeft + inset : 0) + "px");
+        bar.style.setProperty("--ptab-w", (tab ? Math.max(0, tab.offsetWidth - inset * 2) : 0) + "px");
+        if (!list.hasAttribute("data-ptab-ready") && list.offsetWidth) {
+          void bar.offsetWidth;
+          list.setAttribute("data-ptab-ready", "");
+        }
+      }
+      function reveal(list, tab) {
+        if (list.scrollWidth <= list.clientWidth) return;
+        var cs = getComputedStyle(list);
+        var before = parseFloat(cs.scrollPaddingLeft) || 0;
+        var after = parseFloat(cs.scrollPaddingRight) || 0;
+        var x = list.scrollLeft;
+        if (tab.offsetLeft - before < x) x = tab.offsetLeft - before;
+        else if (tab.offsetLeft + tab.offsetWidth + after > x + list.clientWidth) x = tab.offsetLeft + tab.offsetWidth + after - list.clientWidth;
+        if (x !== list.scrollLeft) list.scrollTo({ left: x, behavior: reduce ? "auto" : "smooth" });
+      }
+      function select(tab, focus) {
+        var list = tab.parentElement;
+        tabsOf(list).forEach(function (t) {
+          var on = t === tab;
+          t.setAttribute("aria-selected", on ? "true" : "false");
+          t.tabIndex = on ? 0 : -1;
+          if (t.classList.contains("pchip")) { if (on) t.setAttribute("data-selected", ""); else t.removeAttribute("data-selected"); }
+          var id = t.getAttribute("aria-controls");
+          var panel = id ? document.getElementById(id) : null;
+          if (panel) panel.hidden = !on;
+        });
+        tab.querySelectorAll(".ptab-dot, .ptab-chip-dot, .ptab-sr-only").forEach(function (el) { el.remove(); });
+        if (focus) tab.focus({ preventScroll: true });
+        place(list);
+        reveal(list, tab);
+      }
+      function pick(item) {
+        var track = item.parentElement;
+        itemsOf(track).forEach(function (it, i) {
+          var on = it === item;
+          it.setAttribute("aria-checked", on ? "true" : "false");
+          it.tabIndex = on ? 0 : -1;
+          if (on) track.style.setProperty("--pseg-i", String(i));
+        });
+        item.querySelectorAll(".pseg-dot, .ptab-sr-only").forEach(function (el) { el.remove(); });
+        var target = track.getAttribute("data-pseg-filter");
+        var box = target ? document.getElementById(target) : null;
+        var value = item.getAttribute("data-pseg-value");
+        if (box && value) box.querySelectorAll("[data-pseg-tags]").forEach(function (row) {
+          row.hidden = (" " + row.getAttribute("data-pseg-tags") + " ").indexOf(" " + value + " ") < 0;
+        });
+      }
+      var lists = document.querySelectorAll(".ptab-list");
+      function placeAll() { lists.forEach(place); }
+      document.addEventListener("pointerdown", function (e) { var el = closest(e, PRESS); if (el) measure(el); }, true);
+      document.addEventListener("keydown", function (e) { var el = closest(e, PRESS); if (el) measure(el); }, true);
+      var frozen = document.querySelectorAll(".ptab--pressed, .pseg-item--pressed");
+      frozen.forEach(measure);
+      placeAll();
+      window.addEventListener("load", function () { frozen.forEach(measure); placeAll(); });
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(placeAll);
+      if (window.ResizeObserver) {
+        var ro = new ResizeObserver(function (entries) {
+          entries.forEach(function (entry) {
+            var el = entry.target;
+            if (el.classList.contains("ptab-list")) place(el);
+            else measure(el);
+          });
+        });
+        lists.forEach(function (list) { ro.observe(list); });
+        frozen.forEach(function (el) { ro.observe(el); });
+      }
+      document.addEventListener("click", function (e) {
+        var tab = closest(e, '[data-ptab-live] > [role="tab"]');
+        if (tab) { if (!tab.disabled) select(tab, false); return; }
+        var item = closest(e, "[data-pseg-live] > .pseg-item");
+        if (item && !item.disabled) pick(item);
+      });
+      document.addEventListener("keydown", function (e) {
+        var tab = closest(e, '[data-ptab-live] > [role="tab"]');
+        if (tab) {
+          var open = tabsOf(tab.parentElement).filter(function (t) { return !t.disabled; });
+          var at = open.indexOf(tab);
+          var next = e.key === "ArrowRight" ? open[(at + 1) % open.length]
+            : e.key === "ArrowLeft" ? open[(at - 1 + open.length) % open.length]
+            : e.key === "Home" ? open[0]
+            : e.key === "End" ? open[open.length - 1]
+            : null;
+          if (!next) return;
+          e.preventDefault();
+          select(next, true);
+          return;
+        }
+        var item = closest(e, "[data-pseg-live] > .pseg-item");
+        if (!item) return;
+        if (e.key === "Enter") { e.preventDefault(); return; }
+        var step = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 : e.key === "ArrowLeft" || e.key === "ArrowUp" ? -1 : 0;
+        if (!step) return;
+        e.preventDefault();
+        var items = itemsOf(item.parentElement).filter(function (it) { return !it.disabled; });
+        var nextItem = items[(items.indexOf(item) + step + items.length) % items.length];
+        nextItem.focus();
+        pick(nextItem);
       });
     })();
   </script>
