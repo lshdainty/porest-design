@@ -12,7 +12,7 @@
 3. [Select / Combobox](#select--combobox)
 4. [Checkbox / Radio / Switch](#checkbox--radio--switch)
 5. [Card](#card)
-6. [Badge / Tag / Chip](#badge--tag--chip)
+6. [Badge / Chip](#badge--chip)
 7. [Banner](#banner)
 8. [Toast / Sonner](#toast--sonner)
 9. [Modal / Dialog](#modal--dialog)
@@ -242,27 +242,29 @@ Card grid — 3열 그리드, hover 시 `shadow-md` lift. Desk 카드 list 톤.
 
 ---
 
-## Badge / Tag / Chip
+## Badge / Chip
+
+> Chip 은 2026-10-02 SEED Chip 으로 다시 정했다 — 원본은 `specs/components/chip.md`, 코드는 레시피 `chip.tsx`(고르기 묶음은 Field 안에 둔다). 칩이 맡는 일은 넷(고르기 · 제안 · 필터 바 · 입력값)이고, 고른 칩은 브랜드 색이 아니라 중립색이다. 옛 Tag / Chip 예시(지우기 × · 태그 입력칸)는 걷었다 — 넣은 값은 입력값 칩(`InputChip`)으로 보인다. Badge 는 아직 옛 모양이다.
 
 ```html
 <!-- Badge (정적, status indicator) -->
 <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-label-sm bg-success/10 text-success">완료</span>
 <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-label-sm bg-warning/10 text-warning">대기</span>
 <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-label-sm bg-error/10 text-error">반려</span>
+```
 
-<!-- Tag / Chip (closeable) -->
-<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-caption bg-surface-default-hover text-text-primary">
-  #업무
-  <button aria-label="태그 제거" class="w-4 h-4 rounded-full hover:bg-surface-input flex items-center justify-center">×</button>
-</span>
+```tsx
+<Field label="거래 종류">
+  <ChipRadioGroup value={type} onValueChange={setType}>
+    <ChipRadio value="expense">지출</ChipRadio>
+    <ChipRadio value="income">수입</ChipRadio>
+    <ChipRadio value="transfer">이체</ChipRadio>
+  </ChipRadioGroup>
+</Field>
 
-<!-- Tag input (multi) -->
-<div class="flex flex-wrap items-center gap-1.5 px-2 py-1.5 rounded-md border border-default bg-surface-input min-h-9 focus-within:border-focus focus-within:ring-2 focus-within:ring-focus/20">
-  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption bg-primary/10 text-primary">
-    #2026 <button aria-label="제거">×</button>
-  </span>
-  <input type="text" class="flex-1 bg-transparent border-0 outline-none text-body-lg min-w-32" placeholder="태그 입력 후 Enter" />
-</div>
+<ChipGroup aria-label="참여자">
+  {people.map((p) => <InputChip key={p.id} onRemove={() => removePerson(p.id)}>{p.name}</InputChip>)}
+</ChipGroup>
 ```
 
 ---

@@ -39,6 +39,8 @@ export const PROP_LABEL = {
   'suffixText.foreground': '뒤 글자색',
   'clearButton.size': '지우기 버튼',
   'clearButton.color': '지우기 색',
+  'removeButton.size': '지우기 버튼',
+  'removeButton.color': '지우기 색',
   'progressCircle.size': '로딩 원',
   'progressCircle.thickness': '로딩 원 두께',
   'progressCircle.track': '로딩 원 트랙',
@@ -126,6 +128,8 @@ export const PROP_LABEL = {
   track: '트랙',
   range: '채움',
   thickness: '두께',
+  overflowX: '넘칠 때',
+  scrollPadding: '스크롤 여유',
 };
 export const PROP_ORDER = Object.keys(PROP_LABEL);
 

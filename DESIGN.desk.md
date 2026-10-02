@@ -4145,12 +4145,13 @@ Desk(B2C) 5 추가 shadcn 누락 컴포넌트 — 모바일 우선.
 - 모바일 — header 아래 fullwidth, dismiss 후 자리 차지 안 함.
 - 사용자가 직접 dismiss 전엔 유지 — localStorage `desk-banner-dismissed-{id}`.
 
-#### Tag / Chip — Desk
-- **메모 태그 input** — "#할일 #업무 #2026" multi-tag input, enter로 추가.
-- **가계부 카테고리 chip** — 거래 입력 시 categories chip 단일 선택.
-- **할일 priority chip** — "긴급 / 보통 / 미루기" 3개 chip toggle.
-- input variant 우선 — 메모 태그 자유 입력 핵심.
-- 자동완성 dropdown 결합 — 기존 tag list 제안 (recently used).
+#### Chip — Desk
+공통 정의는 `DESIGN.md` 의 Chip 절, 원본은 `specs/components/chip.md`(2026-10-02 SEED Chip). 고른 칩은 중립색이라 브랜드와 관계없이 같다.
+- **거래 추가 거래 종류** — 지출 · 수입 · 이체 하나 고르기(Outline Strong — 고른 값이 곧 화면의 갈래). 수정에서 종류를 못 바꾸면 고르지 않은 칩만 막는다(지금 동작).
+- **가계부 필터 바** — 목록 위 한 줄에 기간 · 카테고리 · 결제 수단 · 금액 칩(▾), 걸린 조건은 짙은 채움 + "식비 외 2개", 맨 앞 지우기(↺). 카테고리 · 계좌의 "빼고" 는 "고른 것만 · 고른 것 빼고" 를 먼저 고른다(3상태 칩 없음).
+- **예산 빠른 금액 · 통계 빠른 기간 · 프리셋** — 제안 칩(고른 표시 없음).
+- **메모 태그 · 더치페이 참여자** — 입력값 칩(× 로 뺀다).
+- 할 일 우선순위 · 반복 주기처럼 2 ~ 4개 폼 값은 칩, 요일 7개 · 계좌 종류 6개는 Select.
 
 #### Popover — Desk
 - **카테고리 quick edit** — 가계부 거래 row의 카테고리 클릭으로 popover, 다른 카테고리 선택 후 자동 닫기.

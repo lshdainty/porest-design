@@ -3470,12 +3470,13 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 | `select-box` | `r3` | 12px | 2026-09-30 SEED Select Box(`select-box.yaml`) |
 | `slider` (track) | `full` | 9999px | |
 | `toggle` / `toggle-group` item | `sm` | 4px | |
+| `chip` | `full` | 9999px | 알약 — 2026-10-02 SEED Chip(`specs/components/chip.yaml`) |
 | `checkbox` (칸) | `r1` | 4px | SEED Checkmark(2026-09-30, `specs/components/checkbox.yaml`). 이 표는 2px 이었지만 스펙 · 코드는 4px 이었다 |
 | `radio-group` (동그라미 · 점) | `full` | 9999px | 원형 — SEED Radiomark(2026-09-30, `specs/components/radio-group.yaml`) |
 | `switch` (track + thumb) | `full` | 9999px | 알약 |
 | `list` 줄 바탕 · 타일 | `r2_5` · `r3` | 10px · 12px | 누르면 들어오는 바탕 · 앞 타일 — 카드 안 바탕은 동심 모서리(itemRadius). 2026-09-30 SEED List(`list.yaml`) |
 | **Display** | | | |
-| `badge` | `full` | 9999px | pill (Tag/Chip 대체) |
+| `badge` | `full` | 9999px | pill |
 | `avatar` | `full` | 9999px | 원형 |
 | `card` | `md` | 8px | 콘텐츠 컨테이너 — 살짝 부드럽게 |
 | `progress` (track + indicator) | `full` | 9999px | |
@@ -3647,7 +3648,7 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 | 짧은 선택지 5개 이상(한 줄 설명까지)에서 폼 값을 고른다 | Select — 칸 아래 목록. 폰에서도 시트로 바꾸지 않는다 |
 | 달력 · 시각 · 아이콘 격자 · 검색해 고르는 긴 목록 | Input Button — 1280 미만 아래 시트 · 이상 칸 아래 팝오버 |
 | 설명 · 그림 · 딸린 입력이 붙는 2 ~ 6개를 견줘 고른다 | Select Box |
-| 2 ~ 4개 짧은 선택지 | Chip(그 차례에) — 글이 길면 Radio · Checkbox |
+| 2 ~ 4개 짧은 선택지 | Chip — 글이 길면 Radio · Checkbox |
 
 #### 트리거 · 칸
 
@@ -5645,41 +5646,46 @@ spec brand-neutral. brand 파일 — HR(Sonner top-right 결재 알림 stack / C
 - **Banner**: 영구 또는 명시적 dismiss, 시스템/페이지 레벨 안내
 - **Alert Dialog**: blocking modal, 사용자 응답 필수
 
-### Tag / Chip (v73 추가)
+### Chip
 
-closeable label — multi-select 결과, 필터 active 표시, 메모 태그 등. Badge(v37)와 다름 — Tag는 user-actionable(close 가능), Badge는 status/count 시각만. **새 토큰 0**.
+수치 · 규칙의 원본은 `specs/components/chip.md` · `chip.yaml` 이다 — 2026-10-02 SEED Chip 구조로 새로 정했다(옛 v73 Tag / Chip 을 대신한다). 고르거나 넣은 값을 보이는 작은 알약이고, 누를 수 없는 표시(상태 · 분류)는 Badge · Tag Group(그 차례에)이다. 이 절은 토큰과 닿는 자리만 모은다.
 
-#### Variant
-| Variant | 형태 |
+#### 쓰임
+
+| 쓰임 | 의미 | 고른 모습 |
+|---|---|---|
+| 고르기 — 하나(2 ~ 4개 짧은 폼 값 · 거르기의 한 축) | 라디오 — 다시 눌러도 풀리지 않는다, "전체" 는 맨 앞 선택지 | 있다 |
+| 고르기 — 여럿 | 체크박스 — 다시 누르면 풀린다, "전체 선택" 칩은 두지 않는다 | 있다 |
+| 제안(빠른 금액 · 빠른 기간 · 프리셋) | 버튼 — 누르면 칸에 값을 넣는다 | 없다 |
+| 필터 바(목록 위, 조건마다 칩 · 뒤 아래 화살표) | 버튼 — 그 조건만 시트 · 팝오버로 연다 | 걸린 조건은 짙은 채움 + 값 요약("식비 외 2개") |
+| 입력값 | 글 + "{글} 지우기" 버튼 | Outline Weak 고른 모습 |
+
+#### 모양과 색
+
+| 요소 | 값 |
 |---|---|
-| **filled** | `surface-input` 배경 + `text-primary` (default) |
-| **outline** | transparent + 1px `border-default` |
-| **brand** | `primary` 8% tint + `text-primary` 또는 `primary` 채움 + `text-on-accent` (강조) |
-| **semantic** | success/error/warning/info tint + 해당 색 텍스트 |
+| 크기 | `small` 32 · `medium` 36(기본) · `large` 40, 모서리 `radius-full`, 글 `t4` 14 · 500(세 크기 같다), 좌우 12 · 14 · 16, 앞 아이콘 14 · 16 · 16 과 글 사이 6 |
+| Solid | 안 고름 `bg-neutral-weak` · 고름 `bg-neutral-inverted` + `fg-neutral-inverted` — 흰 표면 위에서만(회색 바탕 `bg-layer-basement` 과 같은 색) |
+| Outline Strong | 안 고름 투명 + 안쪽 1px `stroke-neutral-weak` · 고름 `bg-neutral-inverted`(테두리 없음) |
+| Outline Weak(기본) | 안 고름 투명 + 1px `stroke-neutral-weak` · 고름 `bg-neutral-weak` + 1px `stroke-neutral-contrast`(글자 그대로) |
+| 누름 · 호버 | `bg-neutral-weak-pressed` · `bg-layer-default-pressed` · `bg-neutral-inverted-pressed`, 칩 전체 2px 거리 축소(v104) |
+| 비활성 | `bg-disabled` · `fg-disabled`(흐림 없음 — v106). 고른 채 막히면 1px `stroke-neutral-solid` 를 남긴다 |
+| 묶음 | 칩 사이 `spacing-between-chips`(8). 폼 · 시트 안은 줄바꿈(줄 사이 8), 목록 위 줄은 가로 스크롤(안쪽 여백 `spacing-global-gutter`) |
 
-#### Anatomy
-- container: pill shape (`radius-full`), padding `xs` 4px V / `sm` 8px H
-- label: `caption` (12/400) 또는 `body-sm` (14/400) (밀도 ↑)
-- (옵션) 좌측 icon — 16×16, `text-tertiary`
-- (옵션) 우측 ✕ close button — 14×14, hover `surface-default`
+고른 칩은 브랜드 색이 아니라 중립색이다 — Desk · HR 이 같고, 고른 칩이 여럿 보여도 브랜드 버튼과 다투지 않는다(사용자 결정 2026-10-02).
 
-#### Use cases
-- multi-select Combobox 선택 결과 (`#brand` `#design` ✕)
-- 필터 active chips (Search bar 위에 "카테고리: 식비 ✕")
-- 메모 태그 input (`<input>` + 입력 즉시 chip 변환)
-- 사용자 role badge ("관리자" / "팀장" — closeable로 권한 회수)
+#### 쓰는 규칙
 
-#### State
-- default: 정상
-- hover: `surface-default` 배경 강조
-- active (선택 중): brand variant 강조
-- closing: ✕ 클릭 시 fade-out + slide-left
+- 2 ~ 4개 짧은 폼 값은 Chip, 5개 이상은 Select, 글이 긴 2 ~ 4개는 Radio · Checkbox.
+- 3상태 칩(고름 → 빼고 → 해제)은 두지 않는다 — 빼는 조건은 "고른 것만 · 고른 것 빼고" 를 먼저 고른다.
+- 제안 칩은 고른 모습으로 남기지 않는다. 필터 바는 걸린 조건 칩의 글이 곧 조건이라 "필터 2" 같은 개수를 따로 두지 않는다.
+- 칩 모양 탭(Tabs 의 Chip Tabs)과 필터 칩을 한 화면에 같은 모양으로 두지 않는다 — 탭을 Line 으로.
 
-#### Accessibility
-- 단순 표시 Tag: `<span>` (시맨틱 없음)
-- closeable Tag: `role="button"` 또는 `<button>` wrapper + `aria-label="태그 'brand' 제거"`
-- multi-select group: `role="list"` + 각 Tag `role="listitem"`
-- 키보드: Tab으로 Tag focus → Backspace/Delete로 제거
+#### Accessibility 체크리스트
+- [ ] 하나 고르기 `radiogroup`(화살표로 옮기면 고른다) · 여럿 체크박스 · 제안 · 여는 칩은 버튼(여는 칩 `aria-haspopup="dialog"`) — `aria-pressed` 는 쓰지 않는다
+- [ ] 묶음 이름은 Field 라벨 · `aria-label`, 아이콘만 있는 칩은 `aria-label`
+- [ ] 키보드 포커스에만 링 2px · 띄움 2px, 누르는 영역은 가로 · 세로 44 까지(아이콘만 있는 칩도)
+- [ ] 입력값 지우기 이름 "{글} 지우기", 지운 뒤 포커스는 다음 칩
 
 ### Popover (v73 추가)
 
@@ -5801,4 +5807,4 @@ drag-drop area + click 업로드 button. **새 토큰 0** — surface + border +
   - Enter/Space: 선택 또는 활성
 
 #### HR / Desk 듀얼 브랜드 (v73 5종 공통)
-spec brand-neutral. brand 파일 — HR(Banner 약관 변경 / Tag 결재라인 chip / Popover 결재 의견 입력 / File Upload 평가 첨부 / Treeview 조직도), Desk(Banner 시스템 점검 / Tag 메모 태그 input / Popover 카테고리 quick edit / File Upload 영수증 다중 업로드 / Treeview 가계부 카테고리 tree).
+spec brand-neutral. brand 파일 — HR(Banner 약관 변경 / Chip 결재라인 입력값 칩 / Popover 결재 의견 입력 / File Upload 평가 첨부 / Treeview 조직도), Desk(Banner 시스템 점검 / Chip 메모 태그 입력값 칩 / Popover 카테고리 quick edit / File Upload 영수증 다중 업로드 / Treeview 가계부 카테고리 tree).
