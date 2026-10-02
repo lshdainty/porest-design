@@ -27,6 +27,7 @@ import { checkboxExamples } from "../recipes/shadcn/examples/checkbox-examples.m
 import { radioGroupExamples } from "../recipes/shadcn/examples/radio-group-examples.mjs";
 import { selectBoxExamples } from "../recipes/shadcn/examples/select-box-examples.mjs";
 import { switchExamples } from "../recipes/shadcn/examples/switch-examples.mjs";
+import { chipExamples } from "../recipes/shadcn/examples/chip-examples.mjs";
 import { badgeExamples } from "../recipes/shadcn/examples/badge-examples.mjs";
 import { avatarExamples } from "../recipes/shadcn/examples/avatar-examples.mjs";
 import { cardExamples } from "../recipes/shadcn/examples/card-examples.mjs";
@@ -115,6 +116,7 @@ const SHADCN_EXAMPLES = {
   "radio-group": radioGroupExamples,
   "select-box": selectBoxExamples,
   switch: switchExamples,
+  chip: chipExamples,
   // Display (Phase 2)
   badge: badgeExamples,
   avatar: avatarExamples,
@@ -1946,9 +1948,10 @@ function parseExamplesMd() {
 // 각 항목: slug, name, category, description.
 // 페이지 1대1 매핑: 묶지 않음 (input-textarea 같은 묶음 폐기).
 const SHADCN_CATALOG = [
-  // Form (16)
+  // Form (17)
   { slug: "button", name: "Button", category: "Form", description: "액션을 실행하는 버튼. 변형 7 × 크기 4 × 배치 2(SEED Action Button 구조)." },
   { slug: "checkbox", name: "Checkbox", category: "Form", description: "여러 선택 가능한 박스." },
+  { slug: "chip", name: "Chip", category: "Form", description: "2 ~ 4개 짧은 폼 값 고르기 · 누르면 값을 채우는 제안 · 목록 위 필터 바 · 지우기로 빼는 넣은 값을 맡는 작은 알약 (SEED Chip 구조)." },
   { slug: "combobox", name: "Combobox", category: "Form", description: "검색·필터 가능한 select." },
   { slug: "date-picker", name: "Date Picker", category: "Form", description: "calendar + popover 조합 날짜 선택." },
   { slug: "field", name: "Field", category: "Form", description: "칸 이름 · 필수 표시 · 설명 · 오류 · 글자 수를 입력 하나에 붙이는 둘레 (SEED Field 구조)." },

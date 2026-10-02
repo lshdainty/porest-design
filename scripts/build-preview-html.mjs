@@ -399,7 +399,9 @@ export function brandProfile(brandName, tokens) {
         title: "거래 추가",
         sectionDescription: "가계부에 새 거래를 기록해요. 카테고리는 키워드 자동 추천.",
         fields: [
-          // 거래 유형(수입 · 지출 · 이체 — 짧은 선택지 3개)은 Chip 자리라(select.md "고르는 컴포넌트 고르기") 그 차례까지 폼에서 뺐다 — Select 로 숨기지 않는다
+          // 거래 종류(지출 · 수입 · 이체 — 짧은 선택지 셋)는 Chip 하나 고르기다(select.md "고르는 컴포넌트 고르기" · chip.md) — Select 로 숨기지 않는다.
+          // 고른 값이 곧 폼의 갈래라 Outline Strong(chip.md Variant). renderForm 이 chipField 로 그린다(03i)
+          { type: "chips", label: "거래 종류", value: "지출", options: ["지출", "수입", "이체"], variant: "outlineStrong", required: true },
           { type: "input", label: "금액", value: "28,500", suffix: "원", inputmode: "numeric", format: "amount", helper: "최근 카페 평균 6,800원", required: true, pair: true },
           { type: "select", label: "결제 수단", value: "현대카드 M", prefixIcon: "creditCard", options: ["결제 수단 없음", "현대카드 M", "신한카드 Deep", "국민 주계좌", "현금"], required: true },
           { type: "inputButton", label: "카테고리", value: "식비 · 카페", prefixIcon: "coffee", suffixIcon: "chevronDown", options: ["식비 · 카페", "식비 · 외식", "교통", "취미", "고정비"], required: true, pair: true },
@@ -2040,7 +2042,8 @@ export function renderSelectBoxGallery(brand) {
 // Field .ptf-field(머리 · 입력 · 꼬리) · 입력칸 .ptf-input(Text Input) · 여러 줄 .ptf-textarea(Textarea). 짜임은 field.tsx · input.tsx · textarea.tsx 와 같다 —
 // 상자(div)가 테두리 · 바탕 · 모서리를 맡고 입력(<input> · <textarea>)이 그 안을 채운다. 상태는 상자의 data-invalid · data-disabled · data-readonly 다(레시피와 같은 이름).
 // 미리보기의 입력칸 · 여러 줄 입력칸 · 폼 칸 이름 · 설명 · 오류는 모두 이 도우미로 그린다 — 옛 회색 채운 칸(.fv-input · .form-input · .search-pill)은 걷었다.
-// 고르는 칸은 아래 Select · Input Button 도우미(selectTrigger · inputButton — 03h)로 그린다. Command 의 입력 · Input OTP · Chip 의 입력은 그 컴포넌트 차례에 맞춘다(input.md Migration notes).
+// 고르는 칸은 아래 Select · Input Button 도우미(selectTrigger · inputButton — 03h)로 그린다. Command 의 입력 · Input OTP 는 그 컴포넌트 차례에 맞춘다(input.md Migration notes).
+// 옛 칩 안의 입력칸(.chip--input)은 걷었다 — 입력값 칩(03i — chipField · chip kind "input")은 넣은 값만 보이고, 값을 넣는 칸은 이 Text Input 이다.
 // 상자를 눌러 포커스 · 지우기 · 글자 수 · 자동 높이 · 금액 쉼표 · 제출 시 검증은 페이지 끝 스크립트(renderHtml)가 레시피처럼 맡는다.
 const TEXT_FIELD_ICON = {
   search: listSvg('<path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/>'),
@@ -2736,6 +2739,296 @@ export function renderPickGallery(brand) {
   </section>`;
 }
 
+// Chip — spec: specs/components/chip.md · 수치 chip.yaml. 구조는 SEED Chip(2026-10-02).
+// 칩 .pchip 은 알약 하나다 — 앞 아이콘 .pchip-prefix · 글 .pchip-label · 뒤 아이콘 .pchip-suffix(아이콘만이면 .pchip-icon). 묶음은 .pchip-group 이다.
+// 요소는 쓰임이 정한다(chip.md 쓰임 넷) — 하나 고르기 role=radio(묶음 role=radiogroup) · 여럿 고르기 role=checkbox · 제안 · 여는 칩 <button>(여는 칩 aria-haspopup="dialog") ·
+// 입력값 .pchip--input 은 칩이 버튼이 아니고(span) 안의 지우기 .pchip-remove(이름 "{글} 지우기")만 버튼이다. aria-pressed 는 쓰지 않는다.
+// 고름은 aria-checked(라디오 · 체크박스) · data-selected(걸린 조건의 여는 칩 · 입력값)에서 읽는다. 칩은 실제 버튼이라 올리고 눌러 볼 수 있고,
+// data-pchip-live 묶음에서는 고르기 · 제안 · 필터 지우기 · 입력값 지우기를 페이지 끝 스크립트가 흉내 낸다(그 순간을 멈춘 표의 칩은 바뀌지 않는다).
+// 아이콘은 lucide(선 2) — 여는 칩 chevron-down · 지우기 x · 필터 지우기 rotate-ccw(chip.md "SEED 와 다른 점"). 크기는 칩 크기가 정한다
+const CHIP_ICON = {
+  chevronDown: PICK_ICON.chevronDown,
+  rotateCcw: listSvg('<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>'),
+  x: listSvg('<path d="M18 6 6 18"/><path d="m6 6 12 12"/>'),
+  coffee: PICK_ICON.coffee,
+};
+const CHIP_VARIANT = { solid: "solid", outlineStrong: "outline-strong", outlineWeak: "outline-weak" };
+const CHIP_INTERACTIONS = ["hover", "pressed", "focus"];
+let chipSeq = 0;
+const nextChipId = () => `pchip-${(chipSeq += 1)}`;
+
+// 칩 하나 — 글(label)은 여기서 escape 한다.
+//   kind         button(제안 · 여는 칩 — 기본) · radio(하나 고르기 — chipGroup role=radiogroup 안에서) · check(여럿 고르기) · input(입력값 — 글 + 지우기)
+//   variant      solid · outlineStrong · outlineWeak(기본)
+//   size         small 32 · medium 36(기본) · large 40
+//   selected     고름 — radio · check 는 aria-checked, button 은 data-selected. 입력값은 늘 Outline Weak 고른 모습이다
+//   iconOnly     아이콘만(CHIP_ICON 이름) — label 이 이름(aria-label)이 된다
+//   prefixIcon · suffixIcon  앞 · 뒤 아이콘(CHIP_ICON 이름) — 뒤 아이콘은 여는 칩의 아래 화살표
+//   haspopup     여는 칩 — aria-haspopup="dialog"(그 조건만 시트 · 팝오버로 연다)
+//   interaction  hover · pressed · focus — 그 순간을 멈춘 칩(갤러리 전용)
+//   tabindex     하나 고르기 묶음의 Tab 자리(고른 칩 0 · 나머지 -1 — chipRadios 가 정한다)
+//   data         그 밖의 속성(페이지 끝 스크립트가 읽는 data-* · hidden) · className  갤러리 전용 클래스
+export function chip({ kind = "button", variant = "outlineWeak", size = "medium", label = "", selected = false, iconOnly = "", prefixIcon = "", suffixIcon = "", haspopup = false, disabled = false, interaction = "", tabindex = null, data = "", className = "" } = {}) {
+  const cls = ["pchip", `pchip--${CHIP_VARIANT[variant]}`, `pchip--${size}`, iconOnly && "pchip--icon-only", kind === "input" && "pchip--input", CHIP_INTERACTIONS.includes(interaction) && `pchip--${interaction}`, className].filter(Boolean).join(" ");
+  const icon = (slot, name) => (name ? `<span class="pchip-${slot}" aria-hidden="true">${CHIP_ICON[name]}</span>` : "");
+  const text = `<span class="pchip-label">${escape(label)}</span>`;
+  // 입력값 — 칩은 span 이고 지우기만 버튼이다(버튼 안에 버튼을 두지 않는다). 막히면 지우기도 막는다
+  if (kind === "input") {
+    return `<span class="${cls}" data-selected=""${disabled ? ' data-disabled=""' : ""}>${icon("prefix", prefixIcon)}${text}<button type="button" class="pchip-remove" aria-label="${escape(label)} 지우기"${disabled ? " disabled" : ""}>${CHIP_ICON.x}</button></span>`;
+  }
+  const checkable = kind === "radio" || kind === "check";
+  const attrs = attrsOf([
+    'type="button"',
+    `class="${cls}"`,
+    kind === "radio" && 'role="radio"',
+    kind === "check" && 'role="checkbox"',
+    checkable && `aria-checked="${selected ? "true" : "false"}"`,
+    !checkable && selected && 'data-selected=""',
+    iconOnly && `aria-label="${escape(label)}"`,
+    haspopup && 'aria-haspopup="dialog"',
+    tabindex !== null && `tabindex="${tabindex}"`,
+    disabled && "disabled",
+    data,
+  ]);
+  return `<button ${attrs}>${iconOnly ? icon("icon", iconOnly) : `${icon("prefix", prefixIcon)}${text}${icon("suffix", suffixIcon)}`}</button>`;
+}
+
+// 칩 묶음(Chip Group) — 칩 사이 8(spacing-between-chips).
+//   role       radiogroup(하나 고르기) · group(여럿 고르기 · 제안 · 필터 바 · 입력값 — 기본). 이름은 labelledby(Field 라벨) 또는 label(aria-label) — 꼭 단다
+//   layout     wrap(줄바꿈 — 폼 · 시트 안, 줄 사이 8 — 기본) · scroll(한 줄 가로 스크롤 — 목록 위 필터 바 · 제안 줄)
+//   gutter     스크롤 줄을 화면 끝까지 내고 안쪽 여백을 화면 여백(24)만큼 둔다 — 좌우 24 여백이 있는 틀 안에서만
+//   live       페이지 끝 스크립트가 고르기 · 지우기를 흉내 낸다 · fillTarget  제안 칩이 값을 넣을 입력의 id
+export function chipGroup({ role = "group", layout = "wrap", gutter = false, label = "", labelledby = "", describedby = "", required = false, live = false, fillTarget = "", items = [] } = {}) {
+  const cls = ["pchip-group", layout === "scroll" && "pchip-group--scroll scrollbar-hide", gutter && "pchip-group--gutter"].filter(Boolean).join(" ");
+  return `<div ${attrsOf([
+    `class="${cls}"`,
+    `role="${role}"`,
+    labelledby ? `aria-labelledby="${escape(labelledby)}"` : label && `aria-label="${escape(label)}"`,
+    describedby && `aria-describedby="${escape(describedby)}"`,
+    required && role === "radiogroup" && 'aria-required="true"',
+    live && 'data-pchip-live=""',
+    fillTarget && `data-pchip-fill-target="${escape(fillTarget)}"`,
+  ])}>${items.join("")}</div>`;
+}
+
+// 칩 묶음 Field — 라벨이 묶음의 이름이다(aria-labelledby — 칩 묶음에는 <label for> 가 닿지 않는다). 머리 · 꼬리 · 사이 8 은 Text Field 의 Field(.ptf-field) 그대로다.
+//   mark         dot(필수 점) · optional("선택") · ""(없음) — 2/3 규칙은 textFieldMarks 가 정한다
+//   description  설명 — 묶음의 aria-describedby
+//   group        chipGroup 인자(role · layout · live · items …)
+export function chipField({ id = nextChipId(), label = "", mark = "", description = "", group = {} } = {}) {
+  const labelId = `${id}-label`;
+  const descId = description ? `${id}-desc` : "";
+  const markHtml = mark === "dot" ? '<span class="ptf-required" aria-hidden="true"></span>' : mark === "optional" ? '<span class="ptf-optional">선택</span>' : "";
+  const head = `<div class="ptf-field-header"><span class="ptf-label" id="${labelId}">${escape(label)}${markHtml}</span></div>`;
+  const foot = description ? `<div class="ptf-field-footer"><p class="ptf-desc" id="${descId}"><span>${escape(description)}</span></p></div>` : "";
+  return `<div class="ptf-field" data-slot="field">${head}${chipGroup({ ...group, labelledby: labelId, describedby: descId })}${foot}</div>`;
+}
+
+// 하나 고르기 칩 — 고른 칩 하나만 Tab 자리(0)이고 나머지는 -1 이다(고른 칩이 없으면 첫 칩). 여럿 고르기 칩은 칩마다 Tab 이 선다
+const chipRadios = (options, picked, args = {}) => {
+  const tabAt = options.includes(picked) ? picked : options[0];
+  return options.map(label => chip({ ...args, kind: "radio", label, selected: label === picked, tabindex: label === tabAt ? 0 : -1 }));
+};
+const chipToggles = (options, picked, args = {}) => options.map(label => chip({ ...args, kind: "check", label, selected: picked.includes(label) }));
+
+// 필터 바 — 걸린 조건이 하나라도 있으면 맨 앞에 필터 지우기(↺ · 아이콘만 · 기본 변형 — chip.md 코드), 조건마다 Solid 여는 칩(뒤 아래 화살표).
+// 걸린 조건은 고른 모습에 값을 요약한다("식비 외 2개"). data-pchip-default · data-pchip-value 는 페이지 끝 스크립트가 풀고 거는 글이다(그림은 시트를 열지 않는다)
+const chipFilterBar = (conditions) => {
+  const active = conditions.some(c => c.on);
+  const reset = chip({ iconOnly: "rotateCcw", label: "필터 지우기", data: `data-pchip-reset=""${active ? "" : " hidden"}` });
+  return [reset, ...conditions.map(c => chip({
+    variant: "solid",
+    label: c.on ? c.value : c.label,
+    selected: !!c.on,
+    suffixIcon: "chevronDown",
+    haspopup: true,
+    data: `data-pchip-default="${escape(c.label)}" data-pchip-value="${escape(c.value)}"`,
+  }))];
+};
+
+// 입력값 칩의 글 — 사람 이름(chip.md 코드 예 "더치페이 참여자"). HR 은 결재라인의 결재자다
+const chipPeople = (brand) => ({
+  label: brand.key === "hr" ? "결재라인" : "참여자",
+  description: brand.key === "hr" ? "넣은 순서대로 결재해요." : "",
+  names: ["김민지", "박서준", "이도윤"],
+});
+
+// Chip 갤러리 — 변형 × 고름 × 상태 · 크기 · 쓰임 넷 · 표면과 묶음 · 화면 다섯 판을 흰 표면(.vignette-card) 위에 그린다.
+// 견본 틀(.ptf-samples · .ptf-cap)과 상태 표(.cb-matrix)는 Text Field 갤러리 것을 그대로 쓴다. 글은 Desk(가계부 · 거래 추가 · 예산 · 알림 · 더치페이)와 HR(결재라인)에서 빌렸다 —
+// chip.md 코드 예와 같은 글이다. 호버 · 누름 · 포커스 칩은 그 순간을 멈춰 그렸다. 쓰임 · 표면 · 화면의 묶음은 직접 고르고 지워 볼 수 있다(페이지 끝 스크립트).
+export function renderChipGallery(brand) {
+  const panel = (title, sub, body) => `
+    <div class="vignette-card cb-panel">
+      <div class="vignette-head">
+        <div class="vignette-title">${escape(title)}</div>
+        <div class="vignette-sub">${escape(sub)}</div>
+      </div>${body}
+    </div>`;
+  const samples = (items) => `
+      <div class="ptf-samples">${items.join("")}
+      </div>`;
+  const sample = (cap, en, body) => `
+        <div class="ptf-sample">
+          <div class="ptf-cap">${escape(cap)}<span>${escape(en)}</span></div>
+          ${body}
+        </div>`;
+  // 상태 표 — 줄(머리 글 · 영문) × 칸. 칸마다 칩을 실제 크기로 그린다. 칸이 좁아지면 판(.cb-panel)이 가로로 밀린다
+  const matrix = (first, cols, rows, cell) => `
+      <div class="cb-matrix pchip-matrix" style="--cb-cols: ${cols.length};">
+        <div class="cb-matrix-row cb-matrix-row--head"><div class="cb-matrix-head">${escape(first)}</div>${
+          cols.map(c => `<div class="cb-matrix-head">${escape(c.ko)}<span>${escape(c.en)}</span></div>`).join("")
+        }</div>${rows.map(r => `
+        <div class="cb-matrix-row"><div class="cb-matrix-label">${escape(r.ko)}<span>${escape(r.en)}</span></div>${
+          cols.map(c => `<div class="cb-matrix-cell pchip-cell">${cell(r, c)}</div>`).join("")
+        }</div>`).join("")}
+      </div>`;
+  // 틀 — 실제 화면처럼 흰 바탕 · 좌우 24(갤러리 것). --basement 는 회색 바탕, --narrow 는 줄바꿈을 보이는 좁은 칸
+  const frame = (body, mod = "") => `<div class="pchip-frame${mod}">${body}</div>`;
+  const people = chipPeople(brand);
+
+  // 1. 변형 × 고름 × 상태 — 호버 · 누름 · 포커스는 그 순간을 멈췄다(.pchip--hover · --pressed · --focus). 비활성 칸의 고른 줄은 고른 채 막힌 칩이다.
+  // 하나 고르기 칩(라디오)은 묶음 밖에 홀로 둘 수 없어 표의 Outline 칩은 체크박스로 그렸다 — 모습은 같다
+  const variantRows = [
+    { ko: "Solid · 안 고름", en: "bg-neutral-weak — 누름 bg-neutral-weak-pressed", args: { variant: "solid", label: "카테고리", suffixIcon: "chevronDown", haspopup: true } },
+    { ko: "Solid · 고름", en: "bg-neutral-inverted · fg-neutral-inverted — 누름 bg-neutral-inverted-pressed", args: { variant: "solid", label: "식비 외 2개", suffixIcon: "chevronDown", haspopup: true, selected: true } },
+    { ko: "Outline Strong · 안 고름", en: "투명 + 안쪽 1px stroke-neutral-weak — 누름 bg-layer-default-pressed", args: { variant: "outlineStrong", kind: "check", label: "지출" } },
+    { ko: "Outline Strong · 고름", en: "bg-neutral-inverted · 테두리 없음 — 누름 bg-neutral-inverted-pressed", args: { variant: "outlineStrong", kind: "check", label: "지출", selected: true } },
+    { ko: "Outline Weak · 안 고름", en: "기본 — 안 고른 Outline Strong 과 같다", args: { kind: "check", label: "1일 전" } },
+    { ko: "Outline Weak · 고름", en: "bg-neutral-weak + 1px stroke-neutral-contrast — 누름 bg-neutral-weak-pressed", args: { kind: "check", label: "1일 전", selected: true } },
+  ];
+  const stateCols = [
+    { ko: "기본", en: "enabled" },
+    { ko: "호버", en: "hovered — 누름 바탕 · 축소 없음", interaction: "hover" },
+    { ko: "누름", en: "pressed — 누름 바탕 + 2px 축소", interaction: "pressed" },
+    { ko: "포커스", en: "focused — 키보드만 · 링 2px", interaction: "focus" },
+    { ko: "비활성", en: "disabled — 고른 줄은 고른 채 막힘", disabled: true },
+  ];
+  const variantPanel = panel(
+    "변형 × 고름 × 상태",
+    "Solid 는 옅은 회색 채움(bg-neutral-weak)이고 고르면 짙은 채움(bg-neutral-inverted · fg-neutral-inverted)이다 — 제안 · 필터 바에 쓰고 흰 표면 위에만 둔다. 안 고른 Outline Strong · Outline Weak 는 똑같다 — 투명 바탕에 안쪽 1px stroke-neutral-weak. 고르면 Outline Strong 은 짙은 채움(테두리 없음), Outline Weak(기본)는 옅은 바탕 bg-neutral-weak 에 짙은 1px stroke-neutral-contrast 이고 글자는 그대로다. 마우스를 올리면 누름과 같은 바탕이고(축소 없음), 누르면 그 바탕에 칩 전체가 2px 거리로 준다 — Solid bg-neutral-weak-pressed · Outline bg-layer-default-pressed · 고른 짙은 채움 bg-neutral-inverted-pressed · 고른 Outline Weak bg-neutral-weak-pressed. 포커스는 키보드로 왔을 때만 바깥 링 2px · 띄움 2px stroke-focus-ring 이다. 비활성은 bg-disabled 바탕에 글자 fg-disabled 이고 흐리게 하지 않는다 — 고른 채 막히면 짙은 1px stroke-neutral-solid 가 남아 무엇을 골랐는지 보인다. 호버 · 누름 · 포커스는 그 순간을 멈춰 그렸다 — 칩은 실제 버튼이라 올리고 눌러 보면 같은 모습이다. 고른 칩은 브랜드 색이 아니라 중립색이다.",
+    matrix("변형 · 고름", stateCols, variantRows, (r, c) => chip({ ...r.args, interaction: c.interaction || "", disabled: !!c.disabled })),
+  );
+
+  // 2. 크기 — 줄마다 배치 하나를 크기 셋으로. 누르는 영역 줄은 ::before(가로 · 세로 44 까지 — 아이콘만 있는 칩은 44 × 44)와 지우기의 24 × 24 를 점선으로 보인다(.pchip-target — 갤러리 전용)
+  const sizeCols = [
+    { ko: "small", en: "32 · 좌우 12 · 최소 폭 44", size: "small" },
+    { ko: "medium", en: "36 · 좌우 14 · 최소 폭 48 — 기본", size: "medium" },
+    { ko: "large", en: "40 · 좌우 16 · 최소 폭 52", size: "large" },
+  ];
+  const sizeRows = [
+    { ko: "글자", en: "withText — 14 · 500", make: size => chip({ size, kind: "check", label: "1일 전" }) },
+    { ko: "최소 폭 — 글이 짧을 때", en: "minWidth 44 · 48 · 52", make: size => chip({ size, kind: "check", label: "월" }) },
+    { ko: "앞 아이콘 + 글자", en: "prefixIcon 14 · 16 · 16 — 글과 6", make: size => chip({ size, kind: "check", label: "카페", prefixIcon: "coffee" }) },
+    { ko: "글자 + 뒤 아이콘", en: "suffixIcon 14 · 14 · 16 — 여는 칩", make: size => chip({ size, variant: "solid", label: "기간", suffixIcon: "chevronDown", haspopup: true }) },
+    { ko: "아이콘만", en: "iconOnly — 원 32 · 36 · 40 · 아이콘 14 · 16 · 16", make: size => chip({ size, iconOnly: "rotateCcw", label: "필터 지우기" }) },
+    { ko: "입력값", en: "지우기 x 14 · 14 · 16 — 글과 6", make: size => chip({ size, kind: "input", label: people.names[0] }) },
+    { ko: "누르는 영역 — 점선", en: "칩 44 × 44 까지 · 아이콘만 가로도 44 · 지우기 24 × 24", make: size => `${chip({ size, kind: "check", label: "1일 전", className: "pchip-target" })}${chip({ size, iconOnly: "rotateCcw", label: "필터 지우기", className: "pchip-target" })}${chip({ size, kind: "input", label: people.names[0], className: "pchip-target" })}` },
+  ];
+  const sizePanel = panel(
+    "크기 — small 32 · medium 36 · large 40",
+    "크기는 이름이 아니라 높이로 고른다 — small 32 · medium 36(기본) · large 40, 모서리는 full 이다. 글은 세 크기 모두 14 · 500(t4)이고 가장자리와 글 사이는 12 · 14 · 16, 글이 짧아도 폭은 44 · 48 · 52 아래로 줄지 않는다. 앞 아이콘은 14 · 16 · 16, 뒤 아이콘(여는 칩의 아래 화살표)은 14 · 14 · 16, 입력값 칩의 지우기는 14 · 14 · 16 이고 모두 글과 6 떨어진다. 아이콘만 있는 칩은 원(32 · 36 · 40)이고 이름(aria-label)을 단다. 칩은 줄바꿈 · 말줄임하지 않고 글만큼 넓어진다. 누르는 영역은 보이는 칩과 따로 가로 · 세로 44 까지 넓힌다(Button 과 같다) — 글이 있는 칩은 최소 폭이 이미 44 이상이고, 아이콘만 있는 칩은 가로도 44 다. 입력값 칩은 칩이 아니라 지우기만 24 × 24 로 눌린다(점선) — 지우기는 호버 바탕이 없고, 누르면 지우기만 2px 거리로 준다(기준 24). 기본은 폰 폼에서도 medium 이고, small 은 1280 이상 데스크톱의 촘촘한 줄(필터 · 표 위), large 는 화면의 주인공 고르기에만 쓴다.",
+    matrix("배치", sizeCols, sizeRows, (r, c) => r.make(c.size)),
+  );
+
+  // 3. 쓰임 넷 — 모두 직접 눌러 볼 수 있다(data-pchip-live). 제안 칩은 위 칸에 값을 넣고, 필터 바는 안 걸린 조건을 누르면 예시 값이 걸린다
+  const budgetId = nextChipId();
+  const quick = [["10만원", 100000], ["30만원", 300000], ["50만원", 500000]];
+  const suggestion = `<div class="pchip-stack">${textField({ id: budgetId, label: "한 달 예산", control: { kind: "input", size: "large", value: "300,000", suffix: "원", inputmode: "numeric", format: "amount" } })}${chipGroup({
+    layout: "scroll", label: "빠른 금액", live: true, fillTarget: budgetId,
+    items: quick.map(([label, v]) => chip({ variant: "solid", label, data: `data-pchip-fill="${v}"` })),
+  })}</div>`;
+  const filterConds = (on) => [
+    { label: "기간", value: "9월" },
+    { label: "카테고리", value: "식비 외 2개", on },
+    { label: "결제 수단", value: "현대카드 M", on },
+    { label: "금액", value: "1만원 이상" },
+  ];
+  const filterRow = (on) => frame(chipGroup({ layout: "scroll", gutter: true, label: "거래 거르기", live: true, items: chipFilterBar(filterConds(on)) }));
+  const usesPanel = panel(
+    "쓰임 넷 — 고르기 · 제안 · 필터 바 · 입력값",
+    "쓰임마다 요소가 다르다. 하나 고르기는 라디오 묶음(radiogroup)이다 — 고른 칩을 다시 눌러도 풀리지 않고, Tab 은 고른 칩 하나에 서고 화살표로 옮기며 고른다. 거르기의 \"전체\" 는 맨 앞 선택지로 둔다. 여럿 고르기는 체크박스라 다시 누르면 풀리고 칩마다 Tab 이 선다 — \"전체 선택\" 같은 칩은 두지 않는다. 제안은 누르면 칸에 값을 넣는 버튼이라 고른 모습이 없다 — 지금 값은 칸이 보인다. 필터 바는 조건마다 여는 칩(뒤 아래 화살표 · aria-haspopup=\"dialog\")을 두고, 걸린 조건은 짙은 채움에 값을 요약한다(\"식비 외 2개\"). 하나라도 걸리면 맨 앞에 필터 지우기(↺ · 아이콘만)를 둔다 — 그림은 시트를 열지 않아, 안 걸린 조건을 누르면 예시 값이 걸리고 ↺ 로 모두 푼다. 입력값은 Outline Weak 고른 모습에 지우기(lucide x)를 붙인다 — 칩은 버튼이 아니고 지우기만 따로 눌리며 이름은 \"{글} 지우기\" 다. 지우기는 호버 바탕이 없고 누르면 지우기만 2px 거리로 주며, 키보드로 오면 링은 칩 둘레에 그린다. 지우면 포커스가 다음 칩의 지우기(없으면 앞 칩의 지우기)로 간다. aria-pressed 는 쓰지 않는다. 모두 직접 눌러 볼 수 있다.",
+    samples([
+      sample("하나 고르기 — 라디오", "ChipRadioGroup · outlineStrong — 고른 값이 곧 폼의 갈래", chipField({ label: "거래 종류", group: { role: "radiogroup", required: true, live: true, items: chipRadios(["지출", "수입", "이체"], "지출", { variant: "outlineStrong" }) } })),
+      sample("하나 고르기 — \"전체\" 는 맨 앞", "ChipRadioGroup · outlineWeak — 시트 안 거르기", chipField({ label: "기간", group: { role: "radiogroup", live: true, items: chipRadios(["전체", "이번 달", "지난달", "3개월"], "전체") } })),
+      sample("여럿 고르기 — 체크박스", "ChipToggle · outlineWeak — 다시 누르면 풀린다", chipField({ label: "알림", description: "고른 때마다 알려줘요.", group: { live: true, items: chipToggles(["당일", "1일 전", "3일 전", "1주 전"], ["당일", "1일 전"]) } })),
+      sample("제안 — 누르면 칸에 값을 넣는다", "Chip · solid — 고른 모습이 없다 · 지금 값은 칸이 보인다", suggestion),
+      sample("필터 바 — 걸린 조건 없음", "Chip · solid · aria-haspopup=\"dialog\" — 조건마다 칩 · 한 줄 가로 스크롤", filterRow(false)),
+      sample("필터 바 — 두 조건이 걸림", "걸린 조건은 짙은 채움 + 값 요약 · 맨 앞 ↺(필터 지우기)", filterRow(true)),
+      sample(brand.key === "hr" ? "입력값 — 결재라인" : "입력값 — 더치페이 참여자", "InputChip — Outline Weak 고른 모습 + 지우기 \"{글} 지우기\"", chipField({ label: people.label, description: people.description, group: { live: true, items: people.names.map(name => chip({ kind: "input", label: name })) } })),
+    ]),
+  );
+
+  // 4. 표면 · 묶음 — Solid 는 흰 표면 위에서만(회색 바탕 위에서는 바탕과 같은 색이다). 줄바꿈은 좁은 칸(220)에서 보인다
+  const amounts = () => quick.map(([label]) => chip({ variant: "solid", label }));
+  const surfacePanel = panel(
+    "표면 · 묶음",
+    "Solid 의 옅은 바탕(bg-neutral-weak)은 흰 표면(bg-layer-default) 위에서만 보인다 — 라이트의 회색 바탕(bg-layer-basement)과 같은 gray-200 이라 거기서는 칩이 사라진다. 회색 바탕 위 줄은 Outline Strong · Outline Weak 를 쓴다(다크는 두 색이 달라 보이지만 규칙은 같다). 칩 사이는 8(spacing-between-chips)이다 — 폼 · 시트 안의 고르기 묶음은 줄바꿈하고 줄 사이도 8 이다. 목록 위 필터 바 · 제안 줄은 한 줄 가로 스크롤이고(쓰임의 필터 바 · 화면의 가계부), 줄을 화면 끝까지 내고 안쪽 여백을 화면 여백(spacing-global-gutter 24)만큼 둬 스크롤해도 첫 칩이 여백에서 시작한다. 끝 흐림은 Scroll Fog 차례에 정한다.",
+    samples([
+      sample("흰 표면 위 — Solid", "bg-layer-default — 옅은 회색 채움이 보인다", frame(chipGroup({ label: "빠른 금액", items: amounts() }))),
+      sample("회색 바탕 위 — Solid(하지 않는다)", "bg-layer-basement — 라이트에서 bg-neutral-weak 와 같은 gray-200", frame(chipGroup({ label: "빠른 금액", items: amounts() }), " pchip-frame--basement")),
+      sample("회색 바탕 위 — Outline", "outlineStrong · outlineWeak — 테두리 · 짙은 채움이 칩을 알린다", frame(`<div class="pchip-rows">${chipGroup({ role: "radiogroup", label: "거래 종류", live: true, items: chipRadios(["지출", "수입", "이체"], "지출", { variant: "outlineStrong" }) })}${chipGroup({ label: "알림", live: true, items: chipToggles(["당일", "1일 전", "3일 전"], ["당일"]) })}</div>`, " pchip-frame--basement")),
+      sample("줄바꿈 — 폼 · 시트 안", "칩 사이 8 · 줄 사이 8 — 좁은 칸(220)", frame(chipGroup({ label: "알림", live: true, items: chipToggles(["당일", "1일 전", "3일 전", "1주 전"], ["당일", "1일 전"]) }), " pchip-frame--narrow")),
+    ]),
+  );
+
+  // 5. 화면 — Desk 가계부(목록 위 필터 바) · 거래 추가(거래 종류 칩). 2026년 10월 1일은 목요일이다
+  const tile = (color, svg) => `<span class="plst-tile plst-tile--${color}">${svg}</span>`;
+  const won = (v) => `<span class="plst-amount">${escape(v)}</span>`;
+  const day = (text, rows) => {
+    const id = nextChipId();
+    return `${listHeader({ text, id })}${listOf(rows.map(r => listRow({ prefix: tile(r.color, r.icon), title: r.title, detail: r.detail, suffix: won(r.amount) })), ` aria-labelledby="${id}"`)}`;
+  };
+  const ledger = `<div class="pchip-phone">
+            <div class="pchip-phone-head"><div class="ptf-screen-title">가계부</div></div>
+            <div class="pchip-phone-bar">${chipGroup({ layout: "scroll", gutter: true, label: "거래 거르기", live: true, items: chipFilterBar(filterConds(true)) })}</div>
+            <div class="pchip-phone-list">${day("10월 1일 (목)", [
+              { color: "orange", icon: LIST_ICON.utensils, title: "김밥천국", detail: "식비 · 현대카드 M", amount: "8,000원" },
+              { color: "blue", icon: LIST_ICON.bus, title: "버스", detail: "교통 · 현대카드 M", amount: "1,500원" },
+            ])}${day("9월 30일 (수)", [
+              { color: "violet", icon: LIST_ICON.bag, title: "다이소", detail: "쇼핑 · 현대카드 M", amount: "12,300원" },
+            ])}</div>
+          </div>`;
+  // 거래 추가 — 칸이 모두 필수라 2/3 규칙으로 점 · "선택" 이 붙지 않는다(textFieldMarks). 저장을 누르면 비운 필수 입력칸에 오류가 보인다
+  const addFields = [
+    { required: true, html: mark => chipField({ label: "거래 종류", mark, group: { role: "radiogroup", required: true, live: true, items: chipRadios(["지출", "수입", "이체"], "지출", { variant: "outlineStrong" }) } }) },
+    { required: true, html: mark => textField({ label: "금액", mark, required: true, requiredMessage: "금액을 입력해주세요.", control: { kind: "input", size: "large", value: "8,000", suffix: "원", inputmode: "numeric", format: "amount" } }) },
+    { required: true, html: mark => textField({ label: "카테고리", mark, required: true, control: { kind: "inputButton", size: "large", value: "식비", prefixIcon: "utensils", suffixIcon: "chevronDown" } }) },
+    { required: true, html: mark => textField({ label: "날짜", mark, required: true, control: { kind: "inputButton", size: "large", value: "10월 1일 (목)", suffixIcon: "calendarDays" } }) },
+    { required: true, html: mark => textField({ label: "결제 수단", mark, required: true, control: { kind: "select", size: "large", value: "현대카드 M", prefixIcon: "creditCard" } }) },
+  ];
+  const addMarks = textFieldMarks(addFields);
+  const addForm = `<div class="ptf-screen ptf-screen--phone">
+            <div class="ptf-screen-title">거래 추가</div>
+            <div class="ptf-form">${addFields.map((f, i) => f.html(addMarks[i])).join("")}</div>
+            <div class="ptf-screen-actions"><button class="btn btn-neutral-solid btn-size-large ptf-form-cta" type="button" data-ptf-submit="">저장</button></div>
+          </div>`;
+  const screensPanel = panel(
+    "화면 — 가계부 필터 바 · 거래 추가",
+    "가계부는 목록 위 한 줄에 조건마다 Solid 여는 칩을 두고, 걸린 조건(카테고리 · 결제 수단)은 짙은 채움에 값을 요약한다 — 하나라도 걸려 맨 앞에 필터 지우기(↺)가 있다. 걸린 조건 칩의 글이 곧 지금 조건이라 \"필터 2\" 같은 개수는 따로 두지 않는다. 필터 바는 흰 화면 위라 Solid 를 쓴다. 거래 추가는 거래 종류(지출 · 수입 · 이체 — 짧은 선택지 셋)를 Select 로 숨기지 않고 하나 고르기 칩으로 맨 위에 둔다 — 고른 값이 곧 폼의 갈래라 Outline Strong 이다. 칩 묶음은 Field 로 감싸 라벨이 묶음의 이름이 되고, 칩은 폰 폼에서도 medium 36 이다. 저장을 누르면 비운 필수 칸에 오류가 보인다.",
+    samples([
+      sample("Desk 가계부 — 폰", "ChipGroup layout=\"scroll\" — 화면 끝까지 · 안쪽 여백 24", ledger),
+      sample("Desk 거래 추가 — 폰 · large", "거래 종류(ChipRadioGroup · outlineStrong) · 금액 · 카테고리 · 날짜 · 결제 수단", addForm),
+    ]),
+  );
+
+  const lede = "SEED Chip 구조 — 고르거나 넣은 값을 보이는 작은 알약이다. 하나 고르기(라디오) · 여럿 고르기(체크박스) · 제안(누르면 칸에 값을 넣는 버튼) · 필터 바(조건마다 여는 칩) · 입력값(글 + 지우기)을 맡는다 — 2 ~ 4개 짧은 폼 값이 칩이고, 5개 이상은 Select 다. 크기는 small 32 · medium 36(기본) · large 40, 모서리 full, 글 14 · 500. 변형은 Solid(옅은 회색 채움 — 흰 표면 위에서만) · Outline Strong · Outline Weak(기본) 셋이고, 고른 칩은 브랜드 색이 아니라 중립색이다 — 세 미리보기가 같은 모습이다. 누르면 누름 바탕에 칩 전체가 2px 거리로 준다. 포커스는 키보드에만 바깥 링 2px 이다. 옛 Tag / Chip(브랜드 10% 바탕 · 칩 안의 입력칸)은 없다."
+    + (brand.key === "shared" ? " 공유 토큰에는 브랜드 역할 색이 없어 포커스 링이 여기서는 중립(fg-neutral)으로 보인다 — HR · Desk 미리보기에서 브랜드 색이다." : "");
+
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">03i — Chip</div>
+      <h2 class="section-title">Chip — 변형&nbsp;3 · 크기&nbsp;3 · 상태&nbsp;5 · 쓰임&nbsp;넷</h2>
+      <p class="section-lede">${escape(lede)}</p>
+    </header>
+    ${variantPanel}
+    ${sizePanel}
+    ${usesPanel}
+    ${surfacePanel}
+    ${screensPanel}
+  </section>`;
+}
+
 export function renderVignettes(brand) {
   const tabs = `
     <div class="vignette-card">
@@ -3209,7 +3502,8 @@ export function renderSkeleton(brand) {
 // 폼 — brand.form 의 칸을 Field 로 쌓는다(field.md "Form 의 구성" — Field 사이 24, 짧은 두 칸은 16 간격으로 나란히 — 앞 칸에 pair).
 // 필수 표시는 2/3 규칙(textFieldMarks), 칸은 모두 웹 기본 반응형, 글자 수는 최대가 있는 칸(max)만. 고르는 칸은 03h 의 두 컴포넌트다 —
 // select(휴가 정책 · 결제 수단 · 토큰 카테고리 — 칸 아래 목록)는 Select 트리거, inputButton(기간 · 날짜 · Desk 카테고리 — 달력 · 격자)은 Input Button.
-// 저장 버튼은 켜 두고 누르면 비운 필수 입력칸에 오류를 보인다(제출 시 검증 — 페이지 끝 스크립트. 고르는 칸은 값이 있어 검증에 들지 않는다).
+// chips(Desk 거래 종류 — 짧은 선택지 2 ~ 4개)는 03i 의 Chip 하나 고르기 묶음이다(Field 라벨이 묶음의 이름, 칩은 반응형 없이 medium 36).
+// 저장 버튼은 켜 두고 누르면 비운 필수 입력칸에 오류를 보인다(제출 시 검증 — 페이지 끝 스크립트. 고르는 칸 · 칩은 값이 있어 검증에 들지 않는다).
 // 폼 틀은 화면이 정한다 — 여기서는 데스크톱 웹 화면 틀(.ptf-screen)이다. 옛 그림자 카드 · 2열 그리드 · 경계선 버튼 줄 · 빨간 별표는 걷었다.
 export function renderForm(brand) {
   const f = brand.form;
@@ -3220,7 +3514,12 @@ export function renderForm(brand) {
     const code = word.charCodeAt(word.length - 1) - 0xac00;
     return `${word}${code >= 0 && code < 11172 && code % 28 !== 0 ? "을" : "를"}`;
   };
-  const toField = (field, i) => textField({
+  const toField = (field, i) => field.type === "chips" ? chipField({
+    label: field.label,
+    mark: marks[i],
+    description: field.helper || "",
+    group: { role: "radiogroup", required: !!field.required, live: true, items: chipRadios(field.options, field.value, { variant: field.variant || "outlineWeak" }) },
+  }) : textField({
     label: field.label,
     required: !!field.required,
     mark: marks[i],
@@ -3750,14 +4049,13 @@ export function renderShadcnExtras(brand) {
 
 export function renderBatchV73V78(brand) {
   // v73(Banner/Tag/Popover/File Upload/Treeview) + v74(Animation) + v75(Form validation) + v76(RTL)
+  // 옛 v73 Tag / Chip(브랜드 10% 바탕 · 칩 안의 입력칸 · "제거" ×)은 걷고 03i 의 입력값 칩(chip.md — Outline Weak 고른 모습 + "{글} 지우기")으로 옮겼다(2026-10-02)
   const isHr = brand.key === "hr";
   const isDesk = brand.key === "desk";
   const bannerWarn = isHr ? "2026-06-01부터 개인정보 처리방침이 변경됩니다."
                           : isDesk ? "2026-05-15 23:00 ~ 24:00 동기화 일시 중단됩니다."
                                    : "약관 변경 예정 — sticky banner.";
-  const tagSamples = isHr ? ["관리자", "HR-only", "협력자"]
-                          : isDesk ? ["#업무", "#2026", "#회의록"]
-                                   : ["sample-1", "sample-2", "sample-3"];
+  const people = chipPeople(brand);
   const popoverHead = isHr ? "결재 의견" : isDesk ? "카테고리 빠른 변경" : "Popover (formal)";
   const treeRoot = isHr ? ["개발본부", "백엔드팀", "프론트팀"]
                         : isDesk ? ["식비", "외식", "마트"]
@@ -3766,7 +4064,7 @@ export function renderBatchV73V78(brand) {
   <section class="section">
     <header class="section-head">
       <div class="section-eyebrow">20 — Extras-2 (v73) · Animation (v74) · Field 검증(옛 v75) · RTL (v76)</div>
-      <h2 class="section-title">Banner · Tag/Chip · Popover · File Upload · Treeview · Animation · Field 검증 · RTL</h2>
+      <h2 class="section-title">Banner · Chip 입력값 · Popover · File Upload · Treeview · Animation · Field 검증 · RTL</h2>
       <p class="section-lede">v73-v76 시각 데모 — shadcn 누락 5종 + 14 keyframe 라이브 + Field 검증 모습 5(옛 v75 form state 를 Field 로) + dir 토글.</p>
     </header>
 
@@ -3786,14 +4084,11 @@ export function renderBatchV73V78(brand) {
     </div>
 
     <div class="sc-grid">
-      <!-- Tag / Chip -->
+      <!-- Chip 입력값 — 옛 Tag / Chip 을 03i 의 입력값 칩으로. 지우면 포커스가 다음 칩의 지우기로 간다(페이지 끝 스크립트) -->
       <div class="sc-card">
-        <div class="sc-head">Tag / Chip — closeable + input</div>
-        <div class="chip-row">
-          ${tagSamples.map(t => `<span class="chip"><span>${escape(t)}</span><button aria-label="제거" class="chip-x">×</button></span>`).join("")}
-          <span class="chip chip--input"><input placeholder="추가" /></span>
-        </div>
-        <div class="sc-note">closeable + multi-tag input. ${isHr ? "결재라인 / 권한" : isDesk ? "메모 태그 multi" : "기본"}</div>
+        <div class="sc-head">Chip — 입력값 · 지우기</div>
+        ${chipField({ label: people.label, description: people.description, group: { live: true, items: people.names.map(name => chip({ kind: "input", label: name })) } })}
+        <div class="sc-note">Outline Weak 고른 모습(bg-neutral-weak + 1px stroke-neutral-contrast)에 지우기(lucide x · 이름 "{글} 지우기")를 붙인다 — 칩은 버튼이 아니고 지우기만 따로 눌린다. 모양 · 쓰임은 03i — Chip. 옛 Tag / Chip(브랜드 10% 바탕 · 칩 안의 입력칸)은 걷었다.</div>
       </div>
 
       <!-- Popover -->
@@ -3882,8 +4177,8 @@ export function renderBatchV73V78(brand) {
         <div class="rtl-demo" id="rtl-demo">
           <div class="rtl-row">
             <button class="btn btn--primary rtl-btn"><span class="rtl-icon">→</span> ${isHr ? "결재 진행" : isDesk ? "거래 추가" : "Action"}</button>
-            <span class="chip chip--input"><input placeholder="검색" /></span>
-            <span class="chip">tag</span>
+            <div class="rtl-search">${textInput({ size: "medium", label: "검색", placeholder: "검색", prefixIcon: "search" })}</div>
+            ${chipGroup({ label: people.label, live: true, items: [chip({ kind: "input", label: people.names[0] })] })}
           </div>
           <div class="rtl-row">
             <span>방향: <code id="rtl-dir-label">ltr</code></span>
@@ -6361,6 +6656,220 @@ export function pageCss() {
     }
     [data-theme="dark"] .pib-dim { background: var(--overlay-dim-dark); }
 
+    /* === Chip — specs/components/chip.md · chip.yaml(수치 원본) ===
+       구조는 SEED Chip(2026-10-02). 칩 .pchip 은 알약 하나다 — 앞 아이콘 .pchip-prefix · 글 .pchip-label · 뒤 아이콘 .pchip-suffix(아이콘만이면 .pchip-icon).
+       입력값 칩 .pchip--input 은 칩이 버튼이 아니고(span) 안의 지우기 .pchip-remove 만 따로 눌린다. 묶음 .pchip-group 은 줄바꿈(기본) · 한 줄 가로 스크롤(--scroll)이다.
+       변형 · 고름은 색을 --pchip-* 변수에 담기만 하고, 상태(호버 · 누름 · 비활성)가 그 변수를 골라 칠한다(.btn 과 같은 짜임). 기본은 outlineWeak · medium 이다(chip.yaml defaults).
+       테두리 1px 은 안쪽 그림자로 그린다 — 고르거나 막혀 0 ↔ 1px 로 바뀌어도 칩 크기가 그대로다. 고름은 [aria-checked="true"](라디오 · 체크박스) · [data-selected](걸린 조건의 여는 칩 · 입력값)에서 읽는다.
+       호버 = 누름 바탕(마우스 있는 기기에서만, 축소 없음). 누름 = 누름 바탕 + 칩 전체 2px 거리 축소 — 배율 = (기준 − 2) ÷ 기준, 기준 = max(높이, 폭 ÷ 4, 24) 를
+       페이지 끝 스크립트가 누르는 순간 재서 --press-basis 로 넘긴다(재기 전에는 높이). 모션 줄이기면 축소하지 않는다.
+       포커스는 키보드에만 바깥 링 2px · 띄움 2px stroke-focus-ring 이다(입력값 칩은 지우기에 포커스가 오면 칩 둘레에). 비활성은 bg-disabled · fg-disabled 이고 흐리게 하지 않는다 —
+       고른 채 막히면 1px stroke-neutral-solid 를 남긴다. 누르는 영역은 ::before 로 가로 · 세로 44 까지 넓힌다(보이는 칩은 그대로 — chip.yaml touchTarget).
+       고른 칩은 브랜드 색이 아니다 — 세 미리보기가 같다(포커스 링만 브랜드 색). .pchip--hover · --pressed · --focus 는 갤러리에서 그 순간을 고정해 보여 주는 클래스다.
+       다크 짝은 이 블록 끝의 [data-theme="dark"] 에서 바꾼다. */
+    .pchip {
+      /* 크기 기본 = medium — 36 · 좌우 14 · 최소 폭 48 · 앞 아이콘 16 · 뒤 아이콘 14 · 지우기 14 · 아이콘만 16 */
+      --pchip-h: 36px;
+      --pchip-px: var(--spacing-x3_5);
+      --pchip-min-w: 48px;
+      --pchip-prefix: 16px;
+      --pchip-suffix: 14px;
+      --pchip-remove: 14px;
+      --pchip-icon: 16px;
+      --press-basis: 36;
+      /* 포커스 링 — 공유 토큰(DESIGN.md)에는 브랜드 역할 색이 없어 중립으로 떨어진다(.psb-group · .plst · .pib 와 같은 대체 사슬) */
+      --pchip-focus-ring: var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral)));
+      /* 변형 기본 = outlineWeak 안 고름 — 투명 + 안쪽 1px stroke-neutral-weak · 글자 fg-neutral, 누름 bg-layer-default-pressed. 막히면 bg-disabled 에 테두리는 그대로 */
+      --pchip-bg: transparent;
+      --pchip-fg: var(--color-fg-neutral);
+      --pchip-stroke: var(--color-stroke-neutral-weak);
+      --pchip-stroke-w: 1px;
+      --pchip-bg-pressed: var(--color-bg-layer-default-pressed);
+      --pchip-stroke-off: var(--color-stroke-neutral-weak);
+      --pchip-stroke-w-off: 1px;
+      position: relative;
+      display: inline-flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-x1_5);
+      box-sizing: border-box;
+      height: var(--pchip-h);
+      min-width: var(--pchip-min-w);
+      margin: 0;
+      padding: 0 var(--pchip-px);
+      border: 0;
+      border-radius: var(--radius-full);
+      background: var(--pchip-bg);
+      box-shadow: inset 0 0 0 var(--pchip-stroke-w) var(--pchip-stroke);
+      color: var(--pchip-fg);
+      font-family: var(--font-sans);
+      font-size: var(--text-t4);
+      line-height: var(--text-t4--line-height);
+      font-weight: 500;
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      transition:
+        background-color var(--motion-duration-color-transition) var(--motion-ease-easing),
+        color var(--motion-duration-color-transition) var(--motion-ease-easing),
+        box-shadow var(--motion-duration-color-transition) var(--motion-ease-easing),
+        scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    .pchip[hidden] { display: none; }
+    /* 누르는 영역 — 보이는 칩과 따로 가로 · 세로 44 까지(Button 과 같다). 글이 있는 칩은 최소 폭 44 · 48 · 52 라 가로는 이미 넘고,
+       아이콘만 있는 칩(32 · 36 · 40)은 가로도 44 로 넓힌다 */
+    .pchip::before { content: ""; position: absolute; left: 50%; top: 50%; width: 100%; height: 100%; min-width: 44px; min-height: 44px; translate: -50% -50%; }
+    .pchip-prefix, .pchip-suffix, .pchip-icon { display: flex; flex-shrink: 0; }
+    .pchip-prefix > svg { width: var(--pchip-prefix); height: var(--pchip-prefix); }
+    .pchip-suffix > svg { width: var(--pchip-suffix); height: var(--pchip-suffix); }
+    .pchip-icon > svg { width: var(--pchip-icon); height: var(--pchip-icon); }
+    /* 크기 — small 32 · 좌우 12 · 최소 폭 44 · 아이콘 14 / large 40 · 좌우 16 · 최소 폭 52 · 아이콘 16. 글은 세 크기 모두 t4 14 · 500 */
+    .pchip--small { --pchip-h: 32px; --pchip-px: var(--spacing-x3); --pchip-min-w: 44px; --pchip-prefix: 14px; --pchip-suffix: 14px; --pchip-remove: 14px; --pchip-icon: 14px; --press-basis: 32; }
+    .pchip--large { --pchip-h: 40px; --pchip-px: var(--spacing-x4); --pchip-min-w: 52px; --pchip-prefix: 16px; --pchip-suffix: 16px; --pchip-remove: 16px; --pchip-icon: 16px; --press-basis: 40; }
+    /* 아이콘만 — 원(폭 = 높이 32 · 36 · 40), 좌우 여백 0. 이름(aria-label)은 칩이 단다 */
+    .pchip--icon-only { width: var(--pchip-h); min-width: 0; padding: 0; }
+    /* Solid — 안 고름 bg-neutral-weak(흰 표면 위에서만 — 회색 바탕 bg-layer-basement 와 같은 색) · 누름 bg-neutral-weak-pressed, 테두리 없음 */
+    .pchip--solid {
+      --pchip-bg: var(--color-bg-neutral-weak);
+      --pchip-stroke-w: 0px;
+      --pchip-bg-pressed: var(--color-bg-neutral-weak-pressed);
+      --pchip-stroke-w-off: 0px;
+    }
+    /* 고름 — Solid · Outline Strong: 짙은 채움 bg-neutral-inverted · fg-neutral-inverted, 테두리 없음(Outline Strong 도 지운다), 누름 bg-neutral-inverted-pressed.
+       고른 채 막히면 bg-disabled 에 1px stroke-neutral-solid */
+    .pchip--solid:is([aria-checked="true"], [data-selected]),
+    .pchip--outline-strong:is([aria-checked="true"], [data-selected]) {
+      --pchip-bg: var(--color-bg-neutral-inverted);
+      --pchip-fg: var(--color-fg-neutral-inverted);
+      --pchip-stroke-w: 0px;
+      --pchip-bg-pressed: var(--color-bg-neutral-inverted-pressed);
+      --pchip-stroke-off: var(--color-stroke-neutral-solid);
+      --pchip-stroke-w-off: 1px;
+    }
+    /* 고름 — Outline Weak: 옅은 바탕 bg-neutral-weak + 짙은 1px stroke-neutral-contrast(글자 그대로), 누름 bg-neutral-weak-pressed. 고른 채 막히면 1px stroke-neutral-solid */
+    .pchip--outline-weak:is([aria-checked="true"], [data-selected]) {
+      --pchip-bg: var(--color-bg-neutral-weak);
+      --pchip-stroke: var(--color-stroke-neutral-contrast);
+      --pchip-bg-pressed: var(--color-bg-neutral-weak-pressed);
+      --pchip-stroke-off: var(--color-stroke-neutral-solid);
+    }
+    /* 호버 = 누름 바탕(축소 없음, 마우스 있는 기기에서만). 누름 = 누름 바탕 + 칩 전체 축소. 입력값 칩은 칩이 눌리지 않아 둘 다 없다 */
+    @media (hover: hover) {
+      .pchip:not(.pchip--input, :disabled):hover { background: var(--pchip-bg-pressed); }
+    }
+    .pchip.pchip--hover { background: var(--pchip-bg-pressed); }
+    .pchip:not(.pchip--input, :disabled):active,
+    .pchip.pchip--pressed { background: var(--pchip-bg-pressed); scale: calc(1 - 2 / var(--press-basis)); }
+    @media (prefers-reduced-motion: reduce) {
+      .pchip:not(.pchip--input, :disabled):active,
+      .pchip.pchip--pressed { scale: 1; }
+    }
+    /* 포커스 — 키보드 포커스에만 바깥 링 2px · 띄움 2px. 입력값 칩은 지우기가 포커스를 받고 링은 칩이 그린다 */
+    .pchip:focus-visible,
+    .pchip.pchip--focus,
+    .pchip--input:has(> .pchip-remove:focus-visible) { outline: 2px solid var(--pchip-focus-ring); outline-offset: 2px; }
+    /* 비활성 — bg-disabled · fg-disabled(흐리게 하지 않는다 — v106), 테두리는 변형 · 고름이 정한 막힘 값. 누를 수 없고 Tab 이 서지 않는다(disabled) */
+    .pchip:disabled,
+    .pchip[data-disabled] {
+      background: var(--color-bg-disabled);
+      box-shadow: inset 0 0 0 var(--pchip-stroke-w-off) var(--pchip-stroke-off);
+      color: var(--color-fg-disabled);
+      cursor: not-allowed;
+    }
+    /* 입력값 칩 — 글 + 지우기(lucide x · 14 · 14 · 16 · 글자색 그대로 — 사이 6). 지우기는 누르는 영역 24 × 24 이고 이름은 "{글} 지우기" 다.
+       지우기는 호버 바탕이 없고, 누르면 지우기만 2px 거리로 준다(기준 24 — SEED scaleScope self, Input Button 의 지우기 .pib-clear 와 같다). 칩은 누름이 아니다.
+       키보드 링은 지우기가 아니라 칩 둘레에 그린다(위 포커스 규칙) */
+    .pchip--input { cursor: default; }
+    .pchip--input::before { content: none; }
+    .pchip-remove {
+      --press-basis: 24;
+      position: relative;
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: var(--radius-full);
+      background: transparent;
+      color: currentColor;
+      cursor: pointer;
+      transition: scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    .pchip-remove::before { content: ""; position: absolute; left: 50%; top: 50%; width: 24px; height: 24px; translate: -50% -50%; }
+    .pchip-remove > svg { width: var(--pchip-remove); height: var(--pchip-remove); }
+    .pchip-remove:not(:disabled):active { scale: calc(1 - 2 / var(--press-basis)); }
+    @media (prefers-reduced-motion: reduce) {
+      .pchip-remove:not(:disabled):active { scale: 1; }
+    }
+    .pchip-remove:focus-visible { outline: none; }
+    .pchip-remove:disabled { cursor: not-allowed; }
+    /* 묶음 — 칩 사이 8(spacing-between-chips). 기본은 줄바꿈(폼 · 시트 안 — 줄 사이도 8), --scroll 은 한 줄 가로 스크롤(목록 위 필터 바 · 제안 줄).
+       스크롤 줄은 넘친 것을 자르므로 사방 6 을 더 열고 그만큼 바깥으로 당긴다 — 누르는 영역(가장 작은 small 32 의 44 — (44 − 32) ÷ 2, 아이콘만 있는 칩은 가로도)과
+       포커스 링(2 + 2)이 잘리지 않고 칩 자리는 그대로다(위아래 6 은 사이트 그림과 같은 값 — chip.yaml 에는 없다).
+       --gutter 는 줄을 화면 끝까지 내고 안쪽 여백을 화면 여백(spacing-global-gutter 24)만큼 둔다 — 좌우 24 인 틀 안에서 쓰고, 스크롤해도 · 키보드로 옮겨도 첫 칩이 여백에서 시작한다.
+       끝 흐림은 Scroll Fog 차례에 정한다. 입력값 칩을 다 지우면 포커스가 묶음으로 오므로 묶음도 키보드 링을 그린다 */
+    .pchip-group {
+      --pchip-focus-ring: var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral)));
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--spacing-between-chips);
+      min-width: 0;
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+    .pchip-group:focus-visible { outline: 2px solid var(--pchip-focus-ring); outline-offset: 2px; }
+    .pchip-group--scroll { flex-wrap: nowrap; overflow-x: auto; padding: var(--spacing-x1_5); margin: calc(-1 * var(--spacing-x1_5)); }
+    .pchip-group--gutter { padding-inline: var(--spacing-global-gutter); margin-inline: calc(-1 * var(--spacing-global-gutter)); scroll-padding-inline: var(--spacing-global-gutter); }
+
+    /* 다크 — 역할 색을 칩 · 갤러리 틀 안에서만 다크 짝으로 바꾼다(.btn · .psb-group · .pib 와 같다 — 전역 다크 블록은 옛 이름만 바꾼다).
+       공유 토큰(DESIGN.md)에 없는 브랜드 짝(포커스 링)은 비어서 위 대체값(중립)으로 떨어진다 */
+    [data-theme="dark"] :is(.pchip, .pchip-group, .pchip-frame, .pchip-phone) {
+      --color-stroke-focus-ring: var(--color-stroke-focus-ring-dark);
+      --color-stroke-neutral-weak: var(--color-stroke-neutral-weak-dark);
+      --color-stroke-neutral-solid: var(--color-stroke-neutral-solid-dark);
+      --color-stroke-neutral-contrast: var(--color-stroke-neutral-contrast-dark);
+      --color-bg-neutral-weak: var(--color-bg-neutral-weak-dark);
+      --color-bg-neutral-weak-pressed: var(--color-bg-neutral-weak-pressed-dark);
+      --color-bg-neutral-inverted: var(--color-bg-neutral-inverted-dark);
+      --color-bg-neutral-inverted-pressed: var(--color-bg-neutral-inverted-pressed-dark);
+      --color-bg-layer-default: var(--color-bg-layer-default-dark);
+      --color-bg-layer-default-pressed: var(--color-bg-layer-default-pressed-dark);
+      --color-bg-layer-basement: var(--color-bg-layer-basement-dark);
+      --color-bg-disabled: var(--color-bg-disabled-dark);
+      --color-fg-neutral: var(--color-fg-neutral-dark);
+      --color-fg-neutral-inverted: var(--color-fg-neutral-inverted-dark);
+      --color-fg-neutral-subtle: var(--color-fg-neutral-subtle-dark);
+      --color-fg-disabled: var(--color-fg-disabled-dark);
+    }
+
+    /* Chip 갤러리 — 칩은 흰 표면(.vignette-card) 위에 둔다. 페이지 바탕(bg-layer-basement)이 Solid · 비활성 바탕(bg-neutral-weak · bg-disabled)과 같은 gray-200 이라
+       바탕에 바로 두면 그 칩이 보이지 않는다. 견본 틀(.ptf-samples · .ptf-cap)과 상태 표(.cb-matrix)는 Text Field 갤러리 것이다.
+       .pchip-frame 은 실제 화면처럼 흰 바탕(bg-layer-default) · 좌우 24 인 틀, --basement 는 회색 바탕(bg-layer-basement), --narrow 는 줄바꿈을 보이는 좁은 칸(220)이다.
+       .pchip-phone 은 폰(360) 화면 틀이다 — 목록 줄이 화면 끝까지 가고(좌우 24 는 줄이 가진다) 필터 바가 그 여백에서 시작한다. .pchip-target 은 누르는 영역을 점선으로 보인다.
+       모두 갤러리 것이고 Chip 의 일부가 아니다 */
+    .pchip-matrix .cb-matrix-row { grid-template-columns: 168px repeat(var(--cb-cols), minmax(136px, 1fr)); }
+    .pchip-cell { flex-wrap: wrap; gap: var(--spacing-x2); }
+    @media (max-width: 900px) {
+      .pchip-matrix .cb-matrix-row { grid-template-columns: 120px repeat(var(--cb-cols), minmax(136px, 1fr)); }
+    }
+    .pchip-target::before,
+    .pchip-target .pchip-remove::before { outline: 1px dashed var(--color-fg-neutral-subtle); outline-offset: -1px; }
+    .pchip-frame { padding: var(--spacing-x4) var(--spacing-global-gutter); border: 1px solid var(--color-border-default); border-radius: var(--radius-r4); background: var(--color-bg-layer-default); }
+    .pchip-frame--basement { background: var(--color-bg-layer-basement); }
+    .pchip-frame--narrow { max-width: 220px; }
+    .pchip-rows, .pchip-stack { display: flex; flex-direction: column; gap: var(--spacing-x3); }
+    .pchip-phone { max-width: 360px; overflow: hidden; border: 1px solid var(--color-border-default); border-radius: var(--radius-r4); background: var(--color-bg-layer-default); font-family: var(--font-sans); }
+    .pchip-phone-head { padding: var(--spacing-x6) var(--spacing-global-gutter) var(--spacing-x4); }
+    .pchip-phone-head > .ptf-screen-title { margin-bottom: 0; }
+    .pchip-phone-bar { padding: 0 var(--spacing-global-gutter); }
+    .pchip-phone-list { padding: var(--spacing-x3) 0 var(--spacing-x4); }
+
     /* todo-card */
     .todo-list { display: flex; flex-direction: column; gap: 2px; }
     .todo-row {
@@ -7077,12 +7586,7 @@ export function pageCss() {
     .banner-body strong { font-size: var(--text-body-md); font-weight: 600; color: var(--color-text-primary); }
     .banner-close { width: 28px; height: 28px; border: 0; background: transparent; cursor: pointer; border-radius: var(--radius-sm); color: var(--color-text-tertiary); }
 
-    /* Tag / Chip */
-    .chip-row { display: flex; flex-wrap: wrap; gap: var(--spacing-xs); align-items: center; }
-    .chip { display: inline-flex; align-items: center; gap: var(--spacing-xs); padding-inline: var(--spacing-sm); padding-block: 4px; border-radius: var(--radius-full); background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface-default)); color: var(--color-primary); font-size: var(--text-caption); }
-    .chip-x { width: 16px; height: 16px; border: 0; background: transparent; cursor: pointer; color: inherit; padding: 0; }
-    .chip--input { background: var(--color-surface-input); padding: 2px 6px 2px 10px; }
-    .chip--input input { background: transparent; border: 0; outline: none; font-size: var(--text-caption); width: 80px; color: inherit; }
+    /* 옛 Tag / Chip(.chip · .chip-x · .chip--input — 브랜드 10% 바탕 · 칩 안의 입력칸)은 걷었다. 칩은 위 Chip 블록의 .pchip 이다(chip.md, 2026-10-02) */
 
     /* Popover */
     .pop-anchor { position: relative; }
@@ -7139,6 +7643,8 @@ export function pageCss() {
     .rtl-demo { display: flex; flex-direction: column; gap: var(--spacing-sm); }
     .rtl-row { display: flex; align-items: center; gap: var(--spacing-sm); flex-wrap: wrap; }
     .rtl-btn { display: inline-flex; align-items: center; gap: var(--spacing-xs); }
+    /* 검색칸은 Text Field 블록의 .ptf-input(medium · 앞 아이콘) — 줄 안에서 폭을 정해 둔다 */
+    .rtl-search { width: min(220px, 100%); }
     .rtl-icon { transition: transform var(--motion-duration-base) var(--motion-ease-out); }
     [dir="rtl"] .rtl-icon { transform: scaleX(-1); }
 
@@ -7670,6 +8176,7 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     ${renderSelectBoxGallery(brand)}
     ${renderTextFieldGallery(brand)}
     ${renderPickGallery(brand)}
+    ${renderChipGallery(brand)}
     ${renderVignettes(brand)}
     ${renderListingDetail(brand)}
     ${renderCalendar(brand)}
@@ -7927,6 +8434,89 @@ function renderHtml(brandName, css, tokens, sourceFile) {
         frozen.forEach(function (el) { ro.observe(el); });
         many.forEach(function (el) { ro.observe(el); });
       }
+    })();
+    // Chip (2026-10-02) — chip.tsx 가 하는 일 가운데 그림에 필요한 것을 흉내 낸다(페이지의 모든 .pchip).
+    // 누름 배율의 기준 = max(높이, 폭 ÷ 4, 24) — 칩 폭이 글마다 달라 누르는 순간(포인터 · 키) 재서 --press-basis 로 넘긴다. 그 순간을 멈춘 누름 칩은 그릴 때 잰다.
+    // 고르기 · 제안 · 필터 지우기 · 입력값 지우기는 data-pchip-live 묶음에서만 한다(그 순간을 멈춘 표의 칩은 바뀌지 않는다) —
+    // 하나 고르기는 그 칩만 고르고(다시 눌러도 그대로) Tab 자리를 고른 칩으로 옮긴다. 화살표로 옮기며 고르고 막힌 칩은 건너뛴다. 여럿 고르기는 켜고 끈다.
+    // 라디오 · 체크박스 칩은 Enter 로 고르지 않는다(Radix 와 같다). 제안은 이어진 칸(data-pchip-fill-target)에 값을 넣고 고른 모습을 남기지 않는다.
+    // 필터 바는 시트를 열지 않는 그림이라, 안 걸린 조건을 누르면 예시 값(data-pchip-value)이 걸리고 ↺ 가 나타난다. ↺ 는 모든 조건을 풀고 숨는다(포커스는 첫 조건으로).
+    // 입력값 지우기는 그 칩을 빼고 포커스를 다음 칩의 지우기(없으면 앞 칩의 지우기, 그것도 없으면 묶음)로 옮긴다.
+    (function () {
+      var PRESS = ".pchip:not(.pchip--input)";
+      function measure(el) { el.style.setProperty("--press-basis", String(Math.max(el.offsetHeight, el.offsetWidth / 4, 24))); }
+      function closest(e, selector) { return e.target && e.target.closest ? e.target.closest(selector) : null; }
+      function live(el) { return el.closest("[data-pchip-live]"); }
+      function radios(group) { return Array.prototype.slice.call(group.querySelectorAll('.pchip[role="radio"]')); }
+      function pick(chip) {
+        radios(live(chip)).forEach(function (c) {
+          var on = c === chip;
+          c.setAttribute("aria-checked", on ? "true" : "false");
+          c.tabIndex = on ? 0 : -1;
+        });
+      }
+      function setLabel(chip, text) { var label = chip.querySelector(".pchip-label"); if (label) label.textContent = text; }
+      document.addEventListener("pointerdown", function (e) { var el = closest(e, PRESS); if (el) measure(el); }, true);
+      document.addEventListener("keydown", function (e) { var el = closest(e, PRESS); if (el) measure(el); }, true);
+      var frozen = document.querySelectorAll(".pchip--pressed");
+      frozen.forEach(measure);
+      window.addEventListener("load", function () { frozen.forEach(measure); });
+      document.addEventListener("click", function (e) {
+        var remove = closest(e, ".pchip-remove");
+        if (remove) {
+          var list = live(remove);
+          if (!list || remove.disabled) return;
+          var all = Array.prototype.slice.call(list.querySelectorAll(".pchip-remove:not(:disabled)"));
+          var at = all.indexOf(remove);
+          var next = all[at + 1] || all[at - 1];
+          remove.closest(".pchip").remove();
+          if (next) next.focus();
+          else { list.setAttribute("tabindex", "-1"); list.focus(); }
+          return;
+        }
+        var chip = closest(e, ".pchip");
+        var group = chip ? live(chip) : null;
+        if (!group || chip.disabled) return;
+        var role = chip.getAttribute("role");
+        if (role === "radio") { pick(chip); return; }
+        if (role === "checkbox") { chip.setAttribute("aria-checked", chip.getAttribute("aria-checked") === "true" ? "false" : "true"); return; }
+        if (chip.hasAttribute("data-pchip-fill")) {
+          var input = document.getElementById(group.getAttribute("data-pchip-fill-target"));
+          if (!input) return;
+          input.value = Number(chip.getAttribute("data-pchip-fill")).toLocaleString("ko-KR");
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+          return;
+        }
+        var reset = group.querySelector("[data-pchip-reset]");
+        if (chip === reset) {
+          group.querySelectorAll("[data-pchip-default]").forEach(function (c) {
+            c.removeAttribute("data-selected");
+            setLabel(c, c.getAttribute("data-pchip-default"));
+          });
+          reset.hidden = true;
+          var first = group.querySelector("[data-pchip-default]");
+          if (first) first.focus();
+          return;
+        }
+        if (chip.hasAttribute("data-pchip-default") && !chip.hasAttribute("data-selected")) {
+          chip.setAttribute("data-selected", "");
+          setLabel(chip, chip.getAttribute("data-pchip-value"));
+          if (reset) reset.hidden = false;
+        }
+      });
+      document.addEventListener("keydown", function (e) {
+        var chip = closest(e, '.pchip[role="radio"], .pchip[role="checkbox"]');
+        if (!chip) return;
+        if (e.key === "Enter") { e.preventDefault(); return; }
+        var group = chip.getAttribute("role") === "radio" ? live(chip) : null;
+        var step = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 : e.key === "ArrowLeft" || e.key === "ArrowUp" ? -1 : 0;
+        if (!group || !step) return;
+        e.preventDefault();
+        var open = radios(group).filter(function (c) { return !c.disabled; });
+        var next = open[(open.indexOf(chip) + step + open.length) % open.length];
+        next.focus();
+        pick(next);
+      });
     })();
   </script>
 </body>

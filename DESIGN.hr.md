@@ -3426,7 +3426,7 @@ HR 은 데이터 밀도가 높은 화면이 많다 — 표 · 툴바의 인라�
 
 - HR 웹은 데스크톱이 대부분 — 반응형 기본(1280 이상 트리거 40 · 선택지 39), Input Button 은 칸 아래 팝오버로 연다(1280 미만은 시트).
 - 휴가 신청 — 휴가 정책은 Select(설명 한 줄에 남은 일수), 날짜 · 기간은 Input Button(달력 팝오버 — "완료").
-- 결재자 · 사람 고르기는 Input Button + 검색 팝오버(위 검색칸 · 아래 목록). 예 / 아니오를 받는 Select 는 Checkbox 로, 2 ~ 4개 폼 값은 Chip(그 차례에).
+- 결재자 · 사람 고르기는 Input Button + 검색 팝오버(위 검색칸 · 아래 목록). 예 / 아니오를 받는 Select 는 Checkbox 로, 2 ~ 4개 폼 값은 Chip.
 
 ### Card
 
@@ -4100,12 +4100,12 @@ HR(B2B) 5 추가 shadcn 누락 컴포넌트.
 - error variant — 결재 시스템 일시 장애, 휴가 신청 불가 등 critical 알림.
 - 본인이 직접 dismiss 전엔 유지 — 새로고침 후에도 표시 (localStorage `dismissed-banner-{id}`).
 
-#### Tag / Chip — HR
-- **결재라인 chip** — 결재자 추가 시 "[홍길동 ×]" multi-chip 표시, X 클릭으로 제거.
-- **권한 그룹 chip** — 직원 권한 편집 시 "관리자 / HR-only / 일반" multi-select chip.
-- **부서 / 직급 multi-filter** — 직원 검색 결과 좁히는 chip group.
-- closeable variant 우선 — 결재라인 / 권한 변경 가능성 높음.
-- input variant 함께 쓸 때 enter로 chip 추가 — 이메일 초대 multi-input과 같은 패턴.
+#### Chip — HR
+공통 정의는 `DESIGN.md` 의 Chip 절, 원본은 `specs/components/chip.md`(2026-10-02 SEED Chip). 고른 칩은 중립색이라 브랜드와 관계없이 같다.
+- **2 ~ 4개 폼 값** — 지금 Select 인 16칸(분 0 · 30 · 공지 유형 · 유연근무시간 · 공휴일 구분 · 양력 · 음력 …)은 하나 고르는 칩으로(폼은 기본 medium 36 — small 32 는 데스크톱의 촘촘한 필터 · 표 위 줄).
+- **결재라인 · 배정된 역할** — 입력값 칩("홍길동" + × — 이름 "홍길동 지우기").
+- **캘린더 · 업무 보고 필터** — 차원마다 필터 칩(사용자 ▾ · 유형 ▾), 걸린 조건은 짙은 채움 + 값 요약, 맨 앞 지우기.
+- 예 / 아니오 하나는 Checkbox, 설명이 붙는 선택은 Select Box.
 
 #### Popover — HR
 - **결재 의견 입력** — 승인/반려 옆 작은 댓글 아이콘 클릭으로 popover 열림. textarea + 첨부 + 확인 button.
