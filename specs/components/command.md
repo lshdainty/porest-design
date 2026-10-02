@@ -2,7 +2,7 @@
 
 > `⌘K` 명령어 팔레트 — 검색 input + 필터링 가능 리스트(그룹/separator/shortcut). 빠른 네비게이션·액션 실행에 사용. `cmdk` 베이스 + 옵션으로 [`Dialog`](dialog.md) wrapping(전역 `CommandDialog`). Combobox 패턴([`Popover`](popover.md) + Command)의 베이스 컴포넌트.
 
-Porest Command는 **단일 spec × 5 sub-components(Input/List/Group/Item/Separator)** 매트릭스로 정의됩니다. Input은 [`Input`](input.md) md spec과 시각 통일(`h-10` + `body-md` + token padding). Item은 [`Dropdown Menu`](dropdown-menu.md)/[`Context Menu`](context-menu.md) item과 동일(`rounded-sm` + `body-md` + `padding-sm/md`). Group heading은 menu label과 동일(`text-label-sm` + 500 + secondary). 다른 menu 계열과 시각 응집 우선.
+Porest Command는 **단일 spec × 5 sub-components(Input/List/Group/Item/Separator)** 매트릭스로 정의됩니다. Input은 [`Input`](input.md) md spec과 시각 통일(`h-10` + `body-md` + token padding). Item은 옛 Dropdown Menu item과 같은 모양이었다(`rounded-sm` + `body-md` + `padding-sm/md`) — 2026-10-02 [`Menu`](menu.md) 는 SEED 모양으로 바뀌었고, Command 는 그 차례에 다시 정한다. Group heading은 menu label과 동일(`text-label-sm` + 500 + secondary). 다른 menu 계열과 시각 응집 우선.
 
 ## Anatomy
 
@@ -125,6 +125,8 @@ cmdk는 keyboard-first — 마우스 hover는 selection 변경 안 함(키보드
 | **ARIA** | cmdk가 `role="combobox"`(Input) + `role="listbox"`(List) + `role="option"` + `aria-selected` 자동 부여. |
 
 ## Command vs DropdownMenu vs Combobox
+
+> 2026-10-02 — Dropdown Menu 는 [Menu](menu.md)(실행만 · 고른 표시 없음)로 바뀌었다. 아래 표는 옛 비교다 — Command 차례에 다시 쓴다.
 
 | 항목 | DropdownMenu | Combobox(Popover+Command) | CommandDialog |
 |---|---|---|---|

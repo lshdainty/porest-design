@@ -140,7 +140,7 @@ function boxLook(component: Spec, brand: Brand): SelBoxLook {
   };
 }
 
-// 목록의 쌓임 — select.yaml 에는 없고 specs/z-index.md 의 L3(popover · select · dropdown-menu) 줄이 정한다
+// 목록의 쌓임 — select.yaml 에는 없고 specs/z-index.md 의 L3(popover · select · menu) 줄이 정한다
 function floatingZ() {
   const md = readFileSync(join(process.cwd(), '..', 'specs/z-index.md'), 'utf8');
   const m = /\*\*L3[^|]*\|\s*`z-\[(\d+)\]`\s*\|[^|]*select/.exec(md);

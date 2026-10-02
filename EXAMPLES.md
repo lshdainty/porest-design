@@ -483,6 +483,8 @@ Bottom sheet (Desk — 거래 입력) — 하단 슬라이드 업. 모바일 친
 
 ## Tooltip / Popover / Hover Card
 
+> 2026-10-02 — 툴팁 · 도움말 말풍선은 `specs/components/tooltip.md` · `help-bubble.md`(SEED Help Bubble), 팝오버는 `popover.md` 가 원본이다. Hover Card 는 걷었다. 아래 마크업은 옛 모양이다.
+
 ```html
 <div class="flex items-start gap-12 p-6">
   <div class="relative inline-block">
@@ -533,6 +535,8 @@ Hover Card — non-interactive preview. delay 700ms hover, link/avatar에 mentio
 ---
 
 ## Dropdown / Context Menu
+
+> 2026-10-02 — 메뉴는 `specs/components/menu.md` · `menu-sheet.md`(SEED Menu · Menu Sheet)가 원본이다. Context Menu 는 걷었다. 아래 마크업은 옛 모양이다.
 
 ```html
 <div class="relative inline-block">

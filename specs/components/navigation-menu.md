@@ -1,6 +1,6 @@
 # Navigation Menu
 
-> 데스크탑 헤더의 메인 네비게이션 — 카테고리 trigger + hover/focus 시 풍부한 viewport 콘텐츠(grid 카드 layout, sub-link) 노출. shadcn `NavigationMenu` 베이스(Radix). [`Dropdown Menu`](dropdown-menu.md)가 짧은 액션 list라면 NavigationMenu는 **카테고리 hub** — viewport에 콘텐츠 카드(타이틀 + 설명) + 프로모션 panel 등 마케팅성 메뉴.
+> 데스크탑 헤더의 메인 네비게이션 — 카테고리 trigger + hover/focus 시 풍부한 viewport 콘텐츠(grid 카드 layout, sub-link) 노출. shadcn `NavigationMenu` 베이스(Radix). [`Menu`](menu.md)가 짧은 액션 list라면 NavigationMenu는 **카테고리 hub** — viewport에 콘텐츠 카드(타이틀 + 설명) + 프로모션 panel 등 마케팅성 메뉴.
 
 Porest Navigation Menu는 **단일 spec × 3 trigger patterns(text-only / icon-only / text + icon) × viewport content 자유** 매트릭스로 정의됩니다. Trigger는 `h-10` + `px-lg py-sm` + `body-md` + medium + chevron 16. Viewport는 `surface-default` + border 1px + `radius-md` + `shadow-lg` inline + min-width 사용처 결정. Trigger의 콘텐츠 패턴(글씨/아이콘/혼합)으로 시각 분기, [`Button`](button.md) variant와 동일한 hover/focus state.
 

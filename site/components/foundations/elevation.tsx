@@ -1,5 +1,6 @@
 // Elevation 페이지 — 층 색은 역할 색(bg-layer-*), 그림자 · 딤은 DESIGN.md 의 prose 토큰, 층 이름은 "쌓임 맥락" 표에서 온다
 import type { CSSProperties, ReactNode } from 'react';
+import { Check, ChevronDown } from 'lucide-react';
 import { color, proseValue, roleAliases, roleColors, sectionTable, type Brand } from '@/lib/design-tokens';
 import { Figure, Swatch, Table, Token } from './ui';
 
@@ -117,35 +118,43 @@ export function GlobalLevelsFigure() {
   );
 }
 
+// 시트 안에서 연 목록 — 폰의 줄 동작은 Menu Sheet 라, 시트 위에 뜨는 Local 의 예는 칸 아래로 열린 Select 목록(폰에서도 떠 있는 목록)
 export function PageOverPageFigure() {
-  const menu = (
-    <div className="absolute right-3 top-[112px] w-[84px] rounded-lg py-1" style={{ background: rc('bg-layer-floating'), boxShadow: shadow(2), ...HL }}>
-      {['수정', '복사', '삭제'].map((t) => (
-        <div key={t} className="px-2 py-1 text-[9px]" style={{ color: rc('fg-neutral') }}>{t}</div>
+  const list = (
+    <div className="absolute left-[10px] right-[10px] top-[154px] rounded-lg py-1" style={{ background: rc('bg-layer-floating'), boxShadow: shadow(3), ...HL }}>
+      {['식비', '교통', '카페'].map((t, i) => (
+        <div key={t} className="flex items-center justify-between px-2 py-1 text-[9px] leading-none" style={{ color: rc('fg-neutral') }}>
+          {t}
+          {i === 0 && <Check aria-hidden size={9} strokeWidth={2.5} />}
+        </div>
       ))}
     </div>
   );
   return (
-    <Figure caption="시트가 덮이면 시트가 새 바닥이 된다 — 그 안에서 연 메뉴는 시트 위에 쌓인다">
+    <Figure caption="시트가 덮이면 시트가 새 바닥이 된다 — 그 안에서 연 목록(Select)은 시트 위에 쌓인다">
       <div className="flex items-center gap-6">
         <Phone w={150} h={270}>
           <Nav />
           <Cards />
           <Dim />
           <Sheet h={170}>
-            {[0, 1, 2, 3].map((i) => (
-              <div key={i} className="mt-2 flex items-center justify-between rounded-md px-1.5 py-1" style={{ background: i === 1 ? rc('bg-layer-floating-pressed') : undefined }}>
-                <span className="block h-1.5 w-14 rounded" style={{ background: rc('fg-neutral-muted') }} />
-                <span className="text-[9px] leading-none" style={{ color: rc('fg-neutral-subtle') }}>⋯</span>
-              </div>
+            <span className="mt-2.5 block text-[8px] font-semibold leading-[8px]" style={{ color: rc('fg-neutral') }}>
+              카테고리
+            </span>
+            <span className="mt-1.5 flex h-4 items-center justify-between rounded px-1.5 text-[9px] leading-none" style={{ boxShadow: `inset 0 0 0 1px ${rc('stroke-neutral-weak')}`, color: rc('fg-neutral') }}>
+              식비
+              <ChevronDown aria-hidden size={9} strokeWidth={2.5} style={{ color: rc('fg-neutral-subtle') }} />
+            </span>
+            {[0, 1].map((i) => (
+              <span key={i} className="mt-2.5 block h-1.5 rounded" style={{ width: 70 - i * 18, background: rc('fg-neutral-muted') }} />
             ))}
           </Sheet>
-          {menu}
+          {list}
         </Phone>
         <ol className="flex flex-col gap-2 text-[12px] leading-5 text-[#1A1F2E]">
           <li><b>페이지</b> — Global 1</li>
           <li><b>시트</b> — Global 2 · 새 쌓임 맥락</li>
-          <li><b>시트 안의 메뉴</b> — 시트를 바닥으로 한 Local</li>
+          <li><b>시트 안의 목록(Select)</b> — 시트를 바닥으로 한 Local</li>
         </ol>
       </div>
     </Figure>

@@ -4,9 +4,10 @@
  *
  * 시각 정합:
  * - Input: input.md md spec (h-10 + body-md + token padding + font-sans)
- * - Item: dropdown-menu/context-menu item과 동일 (rounded-sm + body-md +
- *         padding-sm/md, selected: surface-input)
- * - Group heading: dropdown-menu Label과 동일
+ * - Item: 옛 Dropdown Menu · Context Menu 의 줄 모양 (rounded-sm + body-md +
+ *         padding-sm/md, selected: surface-input). 2026-10-02 Menu(menu.tsx)가 SEED 모양(좌우 8 들인 알약 · t4)으로
+ *         바뀌어 지금은 같지 않다 — Command 를 SEED 로 옮길 때 맞춘다(command.tsx 머리 주석과 같다 · Context Menu 는 걷었다)
+ * - Group heading: 옛 Dropdown Menu 의 Label 패턴
  * - shadow는 inline style로 var(--shadow-lg) (palette form)
  */
 

@@ -1,128 +1,171 @@
 # Tooltip
 
-> trigger 요소(button/icon/link 등)에 hover/focus 시 떠오르는 짧은 부가 정보. icon button의 의미 ("설정 열기"), 단축키 안내 ("⌘N 새 메모"), 약어 풀이 등 **시각 단서를 보조하는 인라인 hint**. modal/popover와 달리 인터랙티브 콘텐츠 없음. Radix `Tooltip` 베이스.
+> 마우스를 올리거나 키보드 초점이 오면 트리거 옆에 뜨는 짧은 설명 — 아이콘 버튼 · 줄인 글이 무엇인지 보여 주는 **보조**다. 손가락으로 누르면 열리지 않으므로 이름 · 막힌 이유처럼 꼭 알아야 하는 것은 툴팁에만 두지 않는다. 폰에서도 읽어야 하는 설명은 같은 모양의 [Help Bubble](help-bubble.md)(눌러서)이다.
 
-Porest Tooltip은 **단일 spec × 4 sides(top/right/bottom/left)** 매트릭스로 정의됩니다. **True inverted tooltip** — 페이지 surface와 항상 반대 톤을 유지: light 모드는 dark 배경(#1A1F2E) + 흰 텍스트, dark 모드는 light 배경(#F5F6FA) + 검정 텍스트. bg `var(--color-text-primary)` + text `var(--color-surface-default)` 조합은 두 토큰이 자동 swap이라 양방향 inverse가 자연스럽게 성립. 페이지와의 강한 대비(16:1+)로 즉시 식별, border 없이도 시각 분리 충분. 가벼운 `shadow-sm`으로 절제된 elevation.
+구조는 당근 [SEED Help Bubble Tooltip](https://seed-design.io/react/components/help-bubble-tooltip)(Apache-2.0)을 따른다 — [Help Bubble](help-bubble.md) 과 같은 말풍선(짙은 바탕 · 13 · 모서리 12 · 화살표 · 최대 280)을 마우스 · 키보드로 여는 것이다. 값은 porest 토큰이고, SEED 와 다른 자리는 맨 아래 "SEED 와 다른 점" 에 적었다(2026-10-02 사용자 결정).
+
+수치 원본은 [`help-bubble.yaml`](help-bubble.yaml)의 `opens: hover` 다 — 모양은 Help Bubble 과 한 벌이다. 수치 표 자리(`[표: …]`)와 그림 자리(`[그림: …]`)는 사이트가 그 파일로 그린다 — GitHub 에서는 그 파일 · 그림 코드로 가는 링크로 보인다.
+
+[그림: 아이콘 버튼 · 접힌 사이드바의 툴팁 — 라이트 · 다크](../../site/components/specs/tooltip.tsx#hero)
+
+### 직접 골라 보기
+
+글 길이 · 위치를 고르면 스펙대로 그린 툴팁과 그 코드가 바뀐다. 마우스를 올리거나 `Tab` 으로 초점을 옮겨 열 수 있다.
+
+[그림: 플레이그라운드](../../site/components/specs/tooltip.tsx#playground)
 
 ## Anatomy
 
+[그림: 툴팁은 말풍선 · 화살표 · 글 하나](../../site/components/specs/tooltip.tsx#anatomy)
+
+| ⓐ Container | 말풍선 — [Help Bubble](help-bubble.md) 과 같다. 누를 것이 없다. |
+| ⓑ Arrow | 화살표 — 늘 트리거 가운데를 가리킨다. |
+| ⓒ Title | 글 — 한 줄로 짧게. |
+
+## Properties
+
+### 말풍선
+
+모양 · 여백 · 위치는 [Help Bubble](help-bubble.md) 과 같다 — 위아래 10 · 좌우 12, 모서리 12, 글 13 / 18, 최대 280, 화살표 끝과 트리거 사이 4. 툴팁은 글 하나만 둔다(굵게 — Help Bubble 의 제목 자리).
+
+[표: 말풍선](help-bubble.yaml#base.enabled)
+
+### 여는 방식
+
+마우스를 올리면 200ms 뒤에 열고, 트리거와 말풍선을 모두 벗어나면 100ms 뒤에 닫는다 — 말풍선 위로 포인터를 옮겨도 닫히지 않는다. 키보드 초점이 오면 바로 연다. 하나가 열린 뒤 옆 트리거로 옮기면 기다리지 않고 모션 없이 바로 바꿔 연다. 손가락으로 누르면 열지 않는다.
+
+[그림: 마우스 200ms · 키보드 바로 · 이어서 옮기면 바로](../../site/components/specs/tooltip.tsx#timing)
+
+[표: 여는 방식](help-bubble.yaml#opens)
+
+[표: 모션](help-bubble.yaml#motion)
+
+## Guidelines
+
+### 툴팁은 보조다
+
+툴팁은 마우스 · 키보드에서만 열린다. 그래서 툴팁에만 있는 정보는 손가락으로 쓰는 사람에게 없다.
+
+- **이름은 `aria-label`** — 아이콘 버튼의 이름은 늘 `aria-label` 에 둔다. 툴팁은 그 이름을 마우스 · 키보드 사용자에게 **보여 주는** 것이지 이름을 대신하지 않는다.
+- **막힌 이유는 가까운 글로** — 막힌 버튼은 초점을 받지 못해 키보드로 툴팁을 열 수 없다. 왜 안 되는지는 버튼 가까이 글로 보인다("복사할 지난달 예산이 없어요.").
+- **폰에서도 읽어야 하면 [Help Bubble](help-bubble.md)** — ⓘ 를 눌러 여는 말풍선.
+- **네이티브 `title` 은 쓰지 않는다** — 터치 · 키보드에서 뜨지 않고 모양도 브라우저마다 다르다. 이름은 `aria-label`, 설명은 툴팁 · 보이는 글.
+
+[그림: 이름은 aria-label · 막힌 이유는 가까운 글 · 툴팁에만 두지 않는다](../../site/components/specs/tooltip.tsx#assist-guide)
+
+### 어디에 쓰나
+
+| 자리 | 툴팁 |
+|---|---|
+| 아이콘만 있는 버튼(툴바 · 머리) | 이름을 보여 준다 — `aria-label` 과 같은 글 |
+| 접힌 사이드바의 아이콘 | 메뉴 이름을 보여 준다 |
+| 줄여 보인 글(말줄임) | 다 보여 준다 |
+| 글자가 이미 보이는 버튼 | 두지 않는다 — 같은 말을 두 번 |
+| 막힌 버튼의 이유 | 두지 않는다 — 가까운 글로 |
+| 링크 · 버튼이 든 설명 | 두지 않는다 — [Popover](popover.md) |
+
+### 짧게
+
+한 줄이 원칙이다 — "검색" · "금액 가리기" · "필터 초기화". 최대 280 을 넘기면 줄을 바꾸지만, 두 줄이 넘는 설명은 [Help Bubble](help-bubble.md) 로 옮긴다. 이름이면 명사 · 동사구 그대로, 문장이면 해요체에 마침표.
+
+## 코드
+
+레시피 `recipes/shadcn/components/ui/tooltip.tsx` 를 쓴다(Radix Tooltip 위 — 모양은 Help Bubble 과 같은 클래스). 화면에 `TooltipProvider` 를 한 번 두면 이어서 여는 툴팁이 기다리지 않는다. 아래 미리보기는 스펙 값으로 그린 모습이다.
+
+### 아이콘 버튼의 이름
+
+[그림: 아이콘 버튼 툴팁](../../site/components/specs/tooltip.tsx#ex-icon)
+
+```tsx
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+
+<Tooltip>
+  <TooltipTrigger asChild>
+    {/* 이름은 aria-label — 툴팁은 그 이름을 마우스 · 키보드 사용자에게 보여 준다 */}
+    <Button variant="ghost" layout="iconOnly" aria-label="금액 가리기">
+      <EyeOff />
+    </Button>
+  </TooltipTrigger>
+  <TooltipContent>금액 가리기</TooltipContent>
+</Tooltip>
 ```
-        ▼ trigger (hover/focus)
-   ┌──────────────┐
-   │ Hover me     │
-   └──────┬───────┘
-          │
-          ▼  (sideOffset 4)
-   ┌──────────────┐
-   │ 도움말 텍스트 │   ← bg `text-primary`(swap·항상 inverse) + text `surface-default`(swap)
-   └──────────────┘   ← shadow-sm 가볍게 (border 불필요 — 16:1 대비)
-       caption / label-sm
+
+### 막힌 버튼 — 이유는 툴팁이 아니라 가까운 글
+
+[그림: 막힌 버튼과 이유](../../site/components/specs/tooltip.tsx#ex-disabled)
+
+```tsx
+<div className="flex flex-col gap-1.5">
+  <Button variant="neutralWeak" disabled={!hasLastMonth} aria-describedby="copy-reason">
+    지난달 예산 복사
+  </Button>
+  {!hasLastMonth && (
+    <p id="copy-reason" className="text-t3 text-fg-neutral-subtle">복사할 지난달 예산이 없어요.</p>
+  )}
+</div>
 ```
-
-| ⓐ content | `z-[210] overflow-hidden rounded-xs px-[var(--spacing-md)] py-[var(--spacing-xs)] text-label-sm` + `style={{ backgroundColor: "var(--color-text-primary)", color: "var(--color-surface-default)", boxShadow: "var(--shadow-sm)" }}`. z-index 정책은 [`z-index.md`](../z-index.md) L4 modal-aware tooltip(210) — popover(L3=200) 위로 살짝 떠야 함. |
-| ⓑ animation | `data-[state=open]:animate-in fade-in-0 zoom-in-95` + `data-[side=*]:slide-in-from-*-2` |
-| ⓒ side offset | 4px (Radix 기본) — trigger와 content 사이 간격 |
-
-**규칙**
-
-- 배경/텍스트 색은 **`background-color`/`color` inline style 직접 인용** — `var(--color-text-primary)` + `var(--color-surface-default)` 조합은 light/dark 자동 swap이라 양방향 inverse가 자연스럽게 성립.
-- box-shadow도 inline style — Tailwind v4 `shadow-sm` utility의 `--tw-shadow-*` 분해 처리 우회 (Card/Dialog/Drawer/Popover/Sonner와 동일 패턴).
-- **border 불필요** — 페이지 surface와 16:1+ 강한 대비라 시각 식별 충분.
-- 폰트는 `text-label-sm` (13/500) — 본문보다 작아 부가 정보 위계 명확.
-
-## Variants
-
-Tooltip은 **variant 없음** — 모든 tooltip이 동일 시각. 의미 분기(positive/warning)는 텍스트 자체로.
-
-## Sizes
-
-Tooltip은 **size variant 없음** — 단일 spec. 콘텐츠 길이에 따라 자연 wrap(`max-width` 사용처 className).
-
-[표: 크기와 색](tooltip.yaml#base.closed)
-
-## States
-
-[표: 상태](tooltip.yaml#matrix)
-
-Provider `delayDuration` 기본 200ms (Radix). `skipDelayDuration` 300ms (연속 tooltip 시 delay 생략).
-
-## Layout
-
-**Sides**
-
-- `top` *(default)*: trigger 위에 표시 (가장 흔한 패턴 — 손가락/마우스 가림 최소화).
-- `bottom`: trigger 아래 — 화면 상단 trigger 또는 콘텐츠가 위에서 가리지 않을 때.
-- `left` / `right`: 측면 — toolbar 같은 가로 배치에서.
-
-Radix `collisionPadding` 기본으로 viewport 경계 회피 — 자동 반전.
-
-**Icon button with tooltip**
-
-- icon-only button은 **tooltip 필수** (의미 전달 — WCAG 1.1.1).
-- icon button의 aria-label과 tooltip 텍스트는 동일하게 — screen reader와 시각 사용자 일치.
-
-**Multi-line tooltip**
-
-- 2줄 이상은 popover로 — tooltip은 1줄 단문이 원칙. 긴 설명은 더 많은 인지 비용.
-- 어쩔 수 없는 경우 `max-width: 240px` + `white-space: normal` 명시.
 
 ## Behavior
 
 | 인터랙션 | 동작 |
 |---|---|
-| Hover (mouse) | 200ms 후 open. mouse leave 시 close. |
-| Focus (keyboard `Tab`) | 즉시 open. blur 시 close. |
-| `Escape` (focus 상태) | 즉시 dismiss. focus는 유지. |
-| Touch (mobile) | tap 시 short-open(약 1.5초 후 자동 close). 모바일에선 tooltip 신뢰성 낮음 — 핵심 정보는 visible label로. |
-| Provider delay | 첫 tooltip은 200ms 대기, 연속 시 즉시 (`skipDelayDuration`). |
-
-**WCAG 1.4.13 — Content on Hover or Focus**:
-- Dismissable: `Escape`로 즉시 dismiss ✓
-- Hoverable: tooltip 영역에 마우스 옮길 수 있음(Radix 기본 — pointer 영역 grace period 제공)
-- Persistent: hover/focus 유지 동안 노출 ✓ (timeout 자동 close 없음)
+| 마우스를 올림 | 200ms 뒤 연다 |
+| 마우스가 트리거 · 말풍선을 벗어남 | 100ms 뒤 닫는다 — 말풍선 위로 옮기는 동안은 열어 둔다 |
+| 키보드 초점(`Tab`) | 바로 연다. 초점이 떠나면 닫는다 — 그동안 포인터가 지나가도 닫지 않는다 |
+| `Esc` | 닫는다. 초점은 트리거에 그대로 |
+| 트리거 누르기 | 툴팁을 열지도 닫지도 않는다 — 누름은 트리거의 동작이다. 마우스를 올려 기다리던 열기는 거둔다 |
+| 손가락으로 누르기 | 열지 않는다 |
+| 이어서 옆 트리거로 | 하나가 열려 있거나 닫힌 지 300ms 안에 다른 트리거로 옮기면 기다리지 않고 모션 없이 바로(`help-bubble.yaml` 의 `skipDelay`) |
+| 스크롤 | 트리거를 따라간다 |
 
 ## Accessibility
 
 | 기준 | 검증 |
 |---|---|
-| **WCAG 1.1.1** Non-text Content | icon-only button은 tooltip + `aria-label` 필수 — 시각/screen reader 모두 의미 전달. |
-| **WCAG 1.4.3** Color contrast (light: text `surface-default` #FFFFFF × bg `text-primary` #1A1F2E) | 18.4:1 ✓ (AAA 본문 7:1 초과) |
-| **WCAG 1.4.3** Color contrast (dark: text `surface-default-dark` #242938 × bg `text-primary-dark` #F5F6FA) | 14:1+ ✓ (AAA 충족) |
-| **WCAG 1.4.11** Non-text contrast (light: tooltip bg #1A1F2E × bg-page #F5F6FA) | 16:1+ ✓ — 매우 강한 대비, border 불필요 |
-| **WCAG 1.4.11** Non-text contrast (dark: tooltip bg #F5F6FA × bg-page #1A1F2E) | 16:1+ ✓ — 동일 강한 대비(inverse) |
-| **WCAG 1.4.13** Content on Hover or Focus | dismissable(`Escape`) + hoverable(grace period) + persistent ✓ |
-| **WCAG 2.1.1** Keyboard | `Tab`으로 trigger focus 시 자동 open. `Escape`로 dismiss. ✓ |
-| **WCAG 2.4.7** Focus Visible | trigger focus-visible ring 표시. tooltip 자체는 focusable 아님(`role="tooltip"`). |
-| **WCAG 2.5.5** Target Size (AAA, 44×44) | tooltip은 hit area가 trigger임. trigger의 사이즈 가이드 따름(button.md). |
-| **ARIA** | Radix가 `role="tooltip"` + `aria-describedby` 자동 wire. trigger는 native button/link semantic 보존. |
+| **WCAG 1.1.1** Non-text Content | 아이콘 버튼의 이름은 `aria-label` — 툴팁이 없어도 이름이 있다 |
+| **WCAG 1.4.3** Color contrast(글자 ≥ 4.5:1) | 글 `fg-neutral-inverted` 말풍선(`bg-neutral-inverted`) 위 16.41 · 다크 13.42 ✓ |
+| **WCAG 1.4.11** Non-text contrast(≥ 3:1) | 말풍선 면 페이지 위 16.41 · 다크 13.42 ✓ |
+| **WCAG 1.4.13** Content on Hover or Focus | 닫을 수 있다(`Esc`) · 말풍선 위로 옮겨도 남는다 · 벗어나기 전까지 사라지지 않는다 ✓ |
+| **WCAG 2.1.1** Keyboard | 키보드 초점으로 바로 열린다 ✓ — 막힌 버튼은 초점을 받지 못하므로 이유는 가까운 글로 |
+| **ARIA** | 말풍선 `role="tooltip"`, 트리거에 `aria-describedby`. 트리거의 이름은 툴팁이 아니라 `aria-label` · 보이는 글 |
 
 ## Do / Don't
 
 ### ✅ Do
 
-- icon-only button은 **tooltip 필수** + `aria-label` 동일 텍스트로.
-- 1줄 단문 — "도움말 텍스트" / "설정 열기" / "Ctrl + S".
-- 단축키 안내 — "저장 (⌘S)" 같이 hint와 함께.
-- Provider 한 번 마운트 + 안에 Tooltip 여러 개 — delay/skipDelay 일관성.
+- 아이콘 버튼에는 `aria-label` 과 같은 글의 툴팁.
+- 한 줄로 짧게.
+- 막힌 이유는 버튼 가까이 글로.
+- 화면에 `TooltipProvider` 한 번.
 
 ### ❌ Don't
 
-- 2줄+ 긴 설명 — popover로 (인터랙티브 콘텐츠 가능 + 명시적 dismiss).
-- 핵심 정보를 tooltip에만 의존 — 모바일/터치에서 신뢰성 낮음. visible label 우선.
-- tooltip 안에 button/link — 인터랙티브 콘텐츠는 popover/dropdown으로.
-- 다른 surface(Card/Popover/Dialog)와 같은 톤(`surface-default`) — 페이지와 구분 안 됨. tooltip은 페이지 위 "임시 hint"라 inverse 톤 유지.
-- shadow-md/lg 같은 강한 그림자 — tooltip은 부가 hint라 절제 톤. shadow-sm 권장.
+- 이름 · 막힌 이유 · 꼭 알아야 하는 정보를 툴팁에만.
+- 네이티브 `title`.
+- 툴팁 안에 링크 · 버튼.
+- 글자가 이미 보이는 버튼에 같은 말의 툴팁.
+
+## Specification
+
+툴팁은 [Help Bubble](help-bubble.md) 과 같은 `help-bubble.yaml` 을 쓴다 — `opens: hover` 의 규칙이 툴팁이다.
+
+[그림: Specification — help-bubble.yaml 의 규칙 전부](../../site/components/specs/spec-sheet.tsx#help-bubble)
+
+## SEED 와 다른 점
+
+- **말풍선 위로 포인터를 옮겨도 닫히지 않는다**(WCAG 1.4.13) — SEED 는 기본으로 닫히고 `keepOpenOnContentHover` 를 켜야 남는다.
+- **바탕은 porest `bg-neutral-inverted`** — Help Bubble 과 같다.
+- **z-index 는 specs/z-index.md 의 L4**(210) — SEED 는 포털 없이 99.
 
 ## Migration notes
 
-- **디자인 변천 (3단계 결정 과정)**:
-  1. 초기: `bg-text-primary` Tailwind utility — 다크 모드에서 `--color-text-primary`가 #F5F6FA로 swap되며 흰 텍스트와 invisible 충돌.
-  2. v1 fix: `bg-bg-page-dark`(stable #1A1F2E) + `text-on-accent` — Toss/Apple stable-dark 패턴. 양 모드 동일 시각.
-  3. v2 fix: `surface-default` + `text-primary` — 페이지 surface와 같은 톤. 사용자 피드백 반영.
-  4. **현재(v3)**: `text-primary` bg + `surface-default` text — **true inverted 패턴**. 두 토큰 모두 자동 swap이라 양방향 inverse 자연 성립. light는 dark tooltip, dark는 light tooltip. 사용자 피드백("light는 dark, dark는 light") 반영.
-- 결정 근거: tooltip은 페이지 위 "임시 hint"라 페이지 surface와 inverse 톤이 즉시 식별 가능. 두 모드 모두 16:1+ 강한 대비로 border 불필요. WCAG 1.4.3 두 방향 모두 14:1+ AAA 충족.
-- `px-3 py-1.5` Tailwind 기본 spacing → `px-[var(--spacing-md)] py-[var(--spacing-xs)]`(12/4) 토큰 직접 인용.
-- shadow는 `shadow-md` → `shadow-sm`로 가볍게 — tooltip은 부가 hint라 절제 톤.
-- box-shadow는 Tailwind utility(`shadow-sm`) 대신 inline `style={{ boxShadow: "var(--shadow-sm)" }}` 사용 — Card/Dialog/Drawer/Popover/Sonner와 동일 fix 패턴 (Tailwind v4 `--tw-shadow-*` 분해 처리 우회).
-- tooltip-examples.mjs BTN 상수의 `transition-colors` Tailwind 기본 → motion 토큰 직접 인용(`duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]`). `text-title-sm` → `text-body-md`(Button md spec 정합). `gap-2 h-10 px-4` → 토큰.
-- preview-html에 `.tt` / `.tooltip` CSS 없음 — site (tsx + examples)가 단일 SoT.
+### 2026-10-02 — SEED Help Bubble Tooltip 으로 바꾼다
+
+사용자가 [비교 페이지](https://claude.ai/artifact/QoxJ7ZmQCedRWfPQrDvFgA)에서 정했다 — 툴팁 모양은 SEED Help Bubble(짙은 바탕 · 13 · 모서리 12 · 화살표 · 최대 280, 옛 반전 13 · 모서리 2 · 화살표 없음 · 그림자에서), 쓰임은 SEED(마우스 200 / 100ms · 키보드 바로 · 터치에 기대지 않음 · 이름은 aria-label · 막힌 이유는 가까운 글 · `title` 걷음). 옛 스펙은 `tooltip.history/v-pre-seed-tooltip.*` — 수치 파일(`tooltip.yaml`)은 `help-bubble.yaml` 로 합쳤다.
+
+제품은 앱 적용 단계에서 옮긴다(2026-10-02 조사).
+
+- **Desk 웹** — 툴팁은 접힌 사이드바 하나(지연 0ms, 태블릿 터치로 탭하면 안 뜬다). 네이티브 `title` 29곳 — 아이콘 버튼의 유일한 이름 7곳, 막힌 버튼의 이유 2곳(예산 "복사할 지난달 예산이 없어요"), 키보드로 못 닿는 설명 4곳. 데스크톱 줄의 아이콘 6개는 이름도 툴팁도 없다.
+- **Desk 앱** — PTooltip 17(반전 13 · 모서리 2) · Material 기본 툴팁 9(회색 14 · 모서리 4), 길게 누르면 뜬다. 아이콘 버튼 37 중 20 이 이름이 없다.
+- **HR 웹** — 툴팁은 브랜드 파랑 12 · 모서리 6 · 화살표(바탕 대비 4.95 · 4.73), 지연 늘 0(Provider 가 겹친다). 네이티브 `title` 11곳.
+- 차트 · 데이터 툴팁(웹 7 · 앱 8 · HR 2)은 이 스펙이 아니다 — porest 차트 부품으로 따로 정하고 말풍선 모양만 맞춘다.

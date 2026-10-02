@@ -10,9 +10,12 @@ import { checkboxFigures } from './checkbox';
 import { chipFigures } from './chip';
 import { dialogFigures } from './dialog';
 import { fieldFigures } from './field';
+import { helpBubbleFigures } from './help-bubble';
 import { inputFigures } from './input';
 import { inputButtonFigures } from './input-button';
 import { listFigures } from './list';
+import { menuFigures } from './menu';
+import { menuSheetFigures } from './menu-sheet';
 import { popoverFigures } from './popover';
 import { pageBannerFigures } from './page-banner';
 import { radioGroupFigures } from './radio-group';
@@ -24,6 +27,7 @@ import { snackbarFigures } from './snackbar';
 import { switchFigures } from './switch';
 import { tabsFigures } from './tabs';
 import { textareaFigures } from './textarea';
+import { tooltipFigures } from './tooltip';
 import { SpecSheet } from './spec-sheet';
 
 const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactNode>> = {
@@ -35,9 +39,12 @@ const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactN
   chip: chipFigures,
   dialog: dialogFigures,
   field: fieldFigures,
+  'help-bubble': helpBubbleFigures,
   input: inputFigures,
   'input-button': inputButtonFigures,
   list: listFigures,
+  menu: menuFigures,
+  'menu-sheet': menuSheetFigures,
   popover: popoverFigures,
   'page-banner': pageBannerFigures,
   'radio-group': radioGroupFigures,
@@ -49,6 +56,7 @@ const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactN
   switch: switchFigures,
   tabs: tabsFigures,
   textarea: textareaFigures,
+  tooltip: tooltipFigures,
 };
 
 export function SpecFigure({ name, id, caption }: { name: string; id: string; caption?: string }) {

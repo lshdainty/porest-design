@@ -1,7 +1,7 @@
 'use client';
 // 스펙대로 그린 버튼 — ButtonLook(button.yaml 을 푼 값)만 받아 그린다.
 // state 를 주면 그 상태로 고정해 보여 주고, 'live' 면 실제로 호버 · 누름 · 키보드 포커스에 반응한다.
-import { useState, type CSSProperties, type ReactNode } from 'react';
+import { useState, type ButtonHTMLAttributes, type CSSProperties, type ReactNode, type Ref } from 'react';
 import {
   ArrowRight,
   Bell,
@@ -12,10 +12,16 @@ import {
   ChevronRight,
   Download,
   Ellipsis,
+  EllipsisVertical,
+  Eye,
+  EyeOff,
   Filter,
   Heart,
+  Info,
+  Moon,
   Pencil,
   Plus,
+  RotateCcw,
   Search,
   Settings,
   Share2,
@@ -47,6 +53,12 @@ const ICONS = {
   settings: Settings,
   star: Star,
   calendar: Calendar,
+  'more-vertical': EllipsisVertical,
+  info: Info,
+  eye: Eye,
+  'eye-off': EyeOff,
+  'rotate-ccw': RotateCcw,
+  moon: Moon,
 };
 export type IconName = keyof typeof ICONS;
 
@@ -72,9 +84,12 @@ export type ButtonViewProps = {
   ariaLabel?: string;
   onClick?: () => void;
   style?: CSSProperties;
+  // 메뉴 · 말풍선 · 툴팁을 여는 트리거 — 버튼 요소와 aria · 키 · 포인터 처리를 넘긴다(버튼의 호버 · 누름 · 링은 그대로)
+  buttonRef?: Ref<HTMLButtonElement>;
+  rootProps?: ButtonHTMLAttributes<HTMLButtonElement>;
 };
 
-export function ButtonView({ look, mode = 'auto', state = 'live', label, prefix, suffix, icon, fill, width, flush, truncate, ariaLabel, onClick, style }: ButtonViewProps) {
+export function ButtonView({ look, mode = 'auto', state = 'live', label, prefix, suffix, icon, fill, width, flush, truncate, ariaLabel, onClick, style, buttonRef, rootProps }: ButtonViewProps) {
   const [hover, setHover] = useState(false);
   const [press, setPress] = useState(false);
   const [focusRing, setFocusRing] = useState(false);
@@ -153,6 +168,8 @@ export function ButtonView({ look, mode = 'auto', state = 'live', label, prefix,
 
   return (
     <button
+      {...rootProps}
+      ref={buttonRef}
       type="button"
       aria-label={ariaLabel}
       aria-busy={loading || undefined}
@@ -161,21 +178,65 @@ export function ButtonView({ look, mode = 'auto', state = 'live', label, prefix,
       className="pbtn"
       data-mode={mode}
       style={box}
-      onPointerEnter={live ? () => setHover(true) : undefined}
-      onPointerLeave={live ? () => (setHover(false), setPress(false)) : undefined}
+      onPointerEnter={
+        live
+          ? (e) => {
+              rootProps?.onPointerEnter?.(e);
+              setHover(true);
+            }
+          : rootProps?.onPointerEnter
+      }
+      onPointerLeave={
+        live
+          ? (e) => {
+              rootProps?.onPointerLeave?.(e);
+              setHover(false);
+              setPress(false);
+            }
+          : rootProps?.onPointerLeave
+      }
       onPointerDown={
         live
           ? (e) => {
+              rootProps?.onPointerDown?.(e);
               const r = e.currentTarget.getBoundingClientRect();
               setSize({ w: r.width, h: r.height });
               setPress(true);
             }
+          : rootProps?.onPointerDown
+      }
+      onPointerUp={
+        live
+          ? (e) => {
+              rootProps?.onPointerUp?.(e);
+              setPress(false);
+            }
+          : rootProps?.onPointerUp
+      }
+      onFocus={
+        live
+          ? (e) => {
+              rootProps?.onFocus?.(e);
+              setFocusRing(e.currentTarget.matches(':focus-visible'));
+            }
+          : rootProps?.onFocus
+      }
+      onBlur={
+        live
+          ? (e) => {
+              rootProps?.onBlur?.(e);
+              setFocusRing(false);
+            }
+          : rootProps?.onBlur
+      }
+      onClick={
+        live
+          ? (e) => {
+              rootProps?.onClick?.(e);
+              onClick?.();
+            }
           : undefined
       }
-      onPointerUp={live ? () => setPress(false) : undefined}
-      onFocus={live ? (e) => setFocusRing(e.currentTarget.matches(':focus-visible')) : undefined}
-      onBlur={live ? () => setFocusRing(false) : undefined}
-      onClick={live ? onClick : undefined}
     >
       {prefix && !iconOnly && <Icon name={prefix} size={f.icon} color={inner} />}
       {iconOnly && icon ? (

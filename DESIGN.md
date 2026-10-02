@@ -3510,15 +3510,17 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 | `scroll-area` / `resizable` | — | — | 부모 컨테이너에 따름 |
 | `typography` | — | — | 텍스트, radius 무관 |
 | **Overlay** | | | |
-| `dialog` / `alert-dialog` | `md` | 8px | 모달 콘텐츠 |
-| `drawer` (top corners) | `lg` | 12px | 하단 슬라이드, 위 모서리만 |
+| `dialog` / `alert-dialog` | `r5` | 20px | 2026-10-02 SEED Dialog · Alert Dialog(`dialog.yaml` · `alert-dialog.yaml`) |
+| `bottom-sheet` (위 모서리) | `r6` | 24px | 위 두 모서리만 — 2026-10-02 SEED Bottom Sheet(`bottom-sheet.yaml`) |
+| `menu-sheet` (위 모서리 · 묶음) | `r5` · `r4` | 20px · 16px | 2026-10-02 SEED Menu Sheet(`menu-sheet.yaml`) |
 | `sheet` | `sm` | 4px | 사이드 패널 |
-| `popover` / `hover-card` | `sm` | 4px | floating |
-| `tooltip` | `xs` | 2px | 작은 floating |
+| `popover` · `menu` | `r5` | 20px | 떠 있는 표면 — 2026-10-02 SEED Popover · Menu(`popover.yaml` · `menu.yaml`). 메뉴 줄의 알약은 `r3` 12px |
+| `help-bubble` · `tooltip` | `r3` | 12px | 말풍선 — 2026-10-02 SEED Help Bubble(`help-bubble.yaml`) |
 | `snackbar` | `r2` | 8px | 2026-10-02 SEED Snackbar(`snackbar.yaml`) |
 | **Navigation** | | | |
-| `tabs` trigger | `sm` | 4px | pills variant도 동일 |
-| `dropdown-menu` / `context-menu` / `menubar` content | `sm` | 4px | |
+| `tabs` (Line) | — | 0 | 각진 막대 — 2026-10-02 SEED Tabs(`tabs.yaml`). Chip Tabs 는 `chip` |
+| `segmented-control` (트랙 · 알약) | `full` | 9999px | 2026-10-02 SEED Segmented Control(`segmented-control.yaml`) |
+| `menu` 줄 바탕(알약) | `r3` | 12px | 좌우 8 들인 알약 — 표면은 위 Overlay 의 `menu` |
 | `command` palette | `sm` | 4px | |
 | `pagination` button | `sm` | 4px | |
 | `breadcrumb` / `navigation-menu` / `sidebar` | — | — | 인라인, radius 무관 |
@@ -4194,108 +4196,45 @@ red → orange → yellow → green → blue → indigo → violet → pink → 
 - Snackbar: 자리 `aria-live="polite"` · 띠 `role="status"` + `aria-atomic`, 초점을 옮기지 않는다. 보조 기술용 닫기는 키보드 초점이 오면 보인다.
 - 나중에 나타나는 경고 · 위험(Callout · Page Banner)은 `role="alert"`. Result Section 은 결과로 바뀌면 `role="status"`, 제목은 제목 태그.
 
-### Tooltip
+### 메뉴 · 메뉴 시트 · 도움말 말풍선 · 툴팁
 
-hover / focus 시 나타나는 작은 hint — 아이콘 only 버튼의 의미 설명, truncated 텍스트 전체 보기, 키보드 단축키 안내 등.
+> 2026-10-02 SEED Menu · Menu Sheet · Help Bubble · Help Bubble Tooltip 구조로 다시 정했다(사용자 결정 — 비교 페이지 https://claude.ai/artifact/QoxJ7ZmQCedRWfPQrDvFgA, 여덟 다 SEED 쪽). 수치 원본은 `specs/components/menu.yaml` · `menu-sheet.yaml` · `help-bubble.yaml`(툴팁도 이 파일), 쓰는 규칙은 각 스펙 md 다. 옛 Tooltip 절(반전 · 모서리 4 · 240 · hover 500ms)과 Dropdown 절(테두리 1px · 모서리 8 · 줄 36 · menu · select · multi-select · combobox 변형)은 걷었다 — 값 고르기는 Select · Input Button 절, 메뉴는 여기. Menubar · Hover Card · Context Menu 는 세 제품 모두 쓰는 곳이 없어 걷었다.
 
-#### Structure (신규 토큰 없음)
-- 표면: `surface-default-dark` (`#242938`) — 라이트 모드에서도 다크 surface 사용 (시각적 강조 + Toss/Material 패턴)
-- 텍스트: `text-primary-dark` (`#F5F6FA`) — `surface-default-dark` 위 11.40:1 ✅ AAA
-- shadow: `shadow-sm` (light variant — tooltip은 다크 표면이지만 페이지 배경에 대한 elevation은 light shadow로)
-- radius: `radius-sm` (4px) — 작은 컴포넌트 톤
-- 다크 모드 페이지에서: 동일하게 `surface-default-dark` 사용 (페이지 자체가 어둡지만 카드/표면이 한 단 밝아 tooltip은 별도 색조 필요 — 또는 `bg-page-dark`보다 한 단 더 어둡게? 일관성 위해 `surface-default-dark` 유지)
+#### 나누기
 
-#### Layout
-- padding: `xs` 4px (V) / `sm` 8px (H)
-- text: `caption` (12/400) — 짧은 한 줄 권장, 최대 2줄
-- max-width: 240px (그 이상 길면 popover/dialog로 격상 권장)
-- arrow: optional 6px 삼각형 (anchor 방향)
-- offset from anchor: `xs` (4px) gap + (선택) arrow
+| 이런 일 | 1280 미만 | 1280 이상 |
+|---|---|---|
+| 줄 · 화면의 동작(수정 · 복사 · 삭제 · 내보내기) | Menu Sheet | Menu |
+| 값 고르기(테마 · 정렬 · 보기) | Segmented Control · Select — 메뉴가 아니다 | 같다 |
+| 아이콘 버튼 · 줄인 글의 짧은 설명 | — (툴팁은 터치에서 안 열린다 — 이름은 `aria-label`) | Tooltip |
+| 몰라도 일은 할 수 있는 설명(규정 · 계산 방법) | Help Bubble(ⓘ 를 눌러서) | Help Bubble |
+| 버튼 · 입력이 있는 내용 | Bottom Sheet | Popover |
 
-#### Position
-| Position | 사용 |
-|---|---|
-| top (default) | 일반 — anchor 위쪽 |
-| right | sidebar nav item, 좌측 정렬 inline 요소 |
-| bottom | 화면 상단 anchor (header icon 등) |
-| left | 우측 정렬 inline 요소 |
+#### 모양
 
-자동 flip: viewport 경계 초과 시 반대 방향으로 자동 전환 (e.g. top → bottom).
+| | Menu | Menu Sheet | Help Bubble · Tooltip |
+|---|---|---|---|
+| 표면 | `bg-layer-floating` · 모서리 20 · `shadow-s3` · 폭 200 · 위아래 8 | `bg-layer-floating` · 위 모서리 20 · 최대 480 · 손잡이 늘 · 딤 | `bg-neutral-inverted` · 모서리 12 · 최대 280 · 화살표 12×8 · 그림자 없음 |
+| 줄 · 글 | 39(설명 있으면 57) · `t4` 14 · 아이콘 18 · 좌우 16 | 52 · `t5` 16 · 아이콘 22 · 묶음 `bg-neutral-weak` 모서리 16 | `t3` 13(제목 700) · 위아래 10 좌우 12 |
+| 누름 · 호버 | 좌우 8 들인 알약 `bg-layer-floating-pressed` · 내용만 축소 | 줄 `bg-neutral-weak-pressed` · 내용만 축소 — 설명은 `fg-neutral-muted` · 위험 글자는 `fg-critical-contrast` 로(누름 바탕 위 4.5:1) | 닫기 버튼만 축소 |
+| 키보드 | 알약 자리 2px 링(호버와 따로) · ↑↓ 순환 · 한 글자 찾기 | 줄 안쪽 링 · `Tab` | 닫기 버튼 안쪽 링(말풍선 글자색) |
+| 묶음 · 위험 | 묶음 사이에만 선 · 위험은 맨 아래 묶음 `fg-critical` | 묶음 사이는 간격 · 위험은 맨 아래 묶음 | — |
+| z-index | L3 200 | L2 100 / 101 | L4 210 |
 
-#### Motion
-- 등장: fade-in (`motion-duration-fast` 150ms × `motion-ease-out`) — scale 효과 X (작은 hint는 빠른 fade가 자연)
-- 사라짐: fade-out (`motion-duration-fast`)
-- delay 정책:
-  - **hover**: 500ms 지연 후 표시 (의도하지 않은 hover로 깜박임 방지)
-  - **focus**: 0ms 즉시 표시 (키보드 사용자는 즉시 정보 필요)
-  - 다른 tooltip이 이미 보이는 상태에서 인접 anchor로 이동 시: 0ms 즉시 (사용자가 tooltip을 적극 탐색 중)
+#### 쓰는 규칙
 
-#### Accessibility
-- [ ] **role="tooltip"** 또는 anchor에 **aria-describedby="tooltip-id"** (둘 중 하나)
-- [ ] **anchor focusable**: tooltip은 hover만으로는 키보드 사용자에게 보이지 않음 — anchor가 `<button>`/`<a>`/focusable 또는 `tabindex="0"` 필수
-- [ ] **WCAG 1.4.13 Content on Hover or Focus** (AA 2.1):
-  - **Dismissible**: `Esc` 키로 tooltip 닫기 가능
-  - **Hoverable**: tooltip 자체에 hover 가능 (사용자가 텍스트 읽으려 mouse 이동해도 사라지지 않음)
-  - **Persistent**: trigger를 유지하는 동안(hover/focus 유지) tooltip 유지
-- [ ] **icon-only button**: tooltip 외에도 `aria-label` 필수 (tooltip 안 보일 때 screen reader가 의미 알 수 있어야)
-- [ ] **touch device**: tooltip은 hover 의존이라 모바일에서 미작동 — 모바일은 tap → tooltip 표시(2번째 tap으로 동작) 또는 별도 (i) 정보 아이콘 사용
+- **메뉴는 실행만** — 누르면 바로 실행하고 닫힌다. 고른 표시(체크 · 라디오) · 단축키 · 하위 메뉴가 없다.
+- **데스크톱 줄의 동작은 줄 끝 ⋮ 하나 + Menu** — 이름 "{줄 이름} 더보기". 줄을 누르면 상세 · 수정. 수정 · 삭제 아이콘을 줄마다 늘 늘어놓지 않는다.
+- **폰 스와이프는 지름길** — 같은 동작을 줄 끝 ⋮ → Menu Sheet 로도 연다(키보드 · 스크린리더의 길).
+- **비모달 Menu** — 뒤 화면을 숨기지 않는다. `Tab` · 바깥 누르기로 나가면 닫히고, 고르면 실행하고 닫혀 초점은 트리거로.
+- **툴팁은 마우스(200 / 100ms) · 키보드(바로)의 보조** — 이름은 `aria-label`, 막힌 이유는 가까운 글, 네이티브 `title` 은 쓰지 않는다. 폰에서도 읽어야 하는 설명은 Help Bubble.
+- **글** — 메뉴 줄은 동사로 짧게(2 ~ 6자), 툴팁 · 말풍선은 해요체 · 문장이면 마침표.
 
-### Dropdown (Menu / Select 공통 패턴)
+#### 접근성
 
-> Select(폼 값 고르기)는 2026-10-01 Select · Input Button 절로 옮겼다(SEED Select · Input Button) — 이 절의 select · multi-select · combobox 줄은 옛 기준이고 쓰지 않는다. Menu 는 그 차례에 다시 정한다.
-
-trigger 클릭/키보드로 펼쳐지는 옵션 list — context menu, action menu, select form control 모두 동일 패턴 베이스.
-
-#### Structure (신규 토큰 없음)
-- trigger: button 또는 Input variant 사용
-- panel(floating menu):
-  - 표면: `surface-default` + `outline-strong-light` 1px + `shadow-md` (light) / dark variant
-  - radius: `radius-md` (8px)
-  - padding: `xs` (4px) 4면 (item 간 간격용)
-- item:
-  - height: 36px (touch 권장 44px → `lg` size variant 옵션)
-  - padding: `sm` 8px / `md` 12px (V/H)
-  - text: `body-md` (15/400)
-  - hover: `surface-input` 배경
-  - selected: `primary` 좌측 stroke 또는 우측 ✓ icon (brand 파일 참조)
-  - disabled: `text-disabled` + cursor:not-allowed (1.4.3 incidental)
-
-#### Variant
-| Variant | 사용 |
-|---|---|
-| **menu** (default) | action menu — 클릭 시 액션 실행, 토글 panel |
-| **select** | form control — 선택 후 panel 닫힘 + trigger에 선택값 표시 |
-| **multi-select** | 다중 선택 — checkbox item, panel 닫힘 manual (밖 클릭/Esc) |
-| **combobox** | search input + dropdown — typeahead로 필터링 |
-
-#### Layout
-- panel max-height: 400px → 초과 시 내부 scroll (overflow-y: auto)
-- panel min-width: trigger width 또는 `lg` (16rem)
-- panel offset from trigger: `xs` (4px) gap
-- 자동 flip: viewport 하단 초과 시 위쪽으로 (Tooltip과 동일 패턴)
-
-#### Motion
-- 등장: panel scale(0.96 → 1) + fade-in (`motion-duration-fast` 150ms × `motion-ease-out`) — Modal보다 짧은 duration (작은 크기 + 인라인 인터랙션)
-- 사라짐: 역순 (`motion-duration-fast`)
-- `prefers-reduced-motion: reduce` 시 즉시
-
-#### Accessibility
-- [ ] **role 적절히**:
-  - menu: `role="menu"` + items `role="menuitem"`
-  - select: `<select>` HTML 또는 `role="combobox"` + `role="listbox"` + items `role="option"`
-- [ ] **aria 상태**: trigger `aria-expanded="true|false"` + `aria-haspopup="menu|listbox"`
-- [ ] **focus management**:
-  - 열릴 때: 첫 번째 item으로 focus (또는 select의 경우 현재 선택값)
-  - 닫힐 때: trigger로 return focus
-  - panel focus trap 비활성 (밖 클릭/Esc로 자연 닫힘)
-- [ ] **키보드 네비게이션**:
-  - `↑`/`↓` arrow: items 사이 이동
-  - `Home`/`End`: 첫/마지막 item
-  - `Enter`/`Space`: 선택
-  - `Esc`: 닫기 + return focus
-  - 글자 입력(typeahead): 해당 글자로 시작하는 item으로 jump (combobox / 일부 select에서)
-- [ ] **2.4.11**: panel 외곽선(`outline-strong`) 충분한 대비 + item focus state visible
-- [ ] **dismiss**: panel 외부 클릭, Esc 키, trigger 재클릭 모두 닫음
+- Menu: 트리거 `aria-haspopup="menu"` · `aria-expanded`, `role="menu"` · `menuitem` · `group`. 키보드 위치는 링으로(바탕색만으로 알리지 않는다).
+- Menu Sheet: `role="dialog"` + `aria-modal`, 줄은 `<button>`. 보이지 않는 "닫기" 는 키보드 초점이 오면 보인다.
+- Help Bubble: `role="dialog"`(비모달) + 제목 `aria-labelledby`. Tooltip: `role="tooltip"` + 트리거 `aria-describedby`, WCAG 1.4.13(말풍선 위로 옮겨도 남는다 · `Esc`).
 
 ### Tabs · Segmented Control
 
@@ -4880,30 +4819,7 @@ spec brand-neutral. brand 파일 — HR(결재 단계 horizontal, sequential), D
 
 ### Menubar (v68 추가)
 
-데스크탑 application 상단 menu bar — 파일/편집/보기 같은 데스크탑 metaphor. **새 토큰 0** — Dropdown 합성.
-
-#### Anatomy
-- bar: 가로 button list (메뉴 group)
-- 각 button: 클릭/Alt+key shortcut으로 dropdown panel 등장
-- panel: Dropdown(v45) menu variant — items + separator + submenu
-
-#### Differences vs Navigation Menu
-- Menubar: Application metaphor (Windows/macOS app bar) — File / Edit / View / Help
-- Navigation Menu: Website metaphor — Products / Pricing / Docs / Blog
-- Menubar는 **keyboard-first** (Alt+F → File 메뉴), Navigation Menu는 mouse-first (hover 활성)
-
-#### Layout
-- bar height: `touch-nav-h` (32px) precision desktop, `touch-min` (44px) standard
-- button padding: `sm` (8px) V / `md` (12px) H
-- separator (group 구분): vertical 1px `border-default`
-
-#### Accessibility
-- `role="menubar"` + items `role="menuitem"` + `aria-haspopup="menu"`
-- 키보드:
-  - Alt + 첫 글자: 메뉴 열기 (예: `Alt+F` → File)
-  - 좌/우 arrow: menubar 이동
-  - 위/아래 arrow: dropdown 내부
-  - Esc: 닫기, return focus
+> 2026-10-02 걷었다 — 세 제품 모두 쓰는 곳이 없다(메뉴 · 툴팁 결정 6). 옛 스펙은 `specs/components/menubar.history/v-pre-seed-menu.*`. 줄 · 화면의 동작은 "메뉴 · 메뉴 시트 · 도움말 말풍선 · 툴팁" 절.
 
 ### Command (Cmd+K menu, v68 추가)
 
@@ -5156,59 +5072,11 @@ spec brand-neutral. brand 파일 — HR(Combobox 직원 검색 / Toggle Group �
 
 ### Hover Card (v70 추가)
 
-hover로 등장하는 preview card — Tooltip보다 풍부한 콘텐츠 (title + description + image + actions). **새 토큰 0** — Tooltip + Card 합성.
-
-#### Anatomy
-- trigger: 일반 link 또는 avatar/image — hover 가능 요소
-- card: `surface-default` + `radius-md` + `shadow-md`, max-width 320-400px
-- 내용: title (`title-sm`) + description + 작은 image + meta + 옵션 actions
-
-#### Use cases
-- 사용자 hover → mini profile (이름, 직급, avatar, 빠른 message 버튼)
-- 링크 hover → 페이지 preview (title, description, og:image)
-- 태그 hover → 태그 정의 + 사용 횟수
-
-#### Differences vs Tooltip
-- **Tooltip**: 단순 1줄 hint, 작음, decoration 톤
-- **Hover Card**: 풍부한 카드, interactive (클릭 가능 요소 포함), Tooltip보다 큰 사이즈
-
-#### Motion
-- 등장: fade-in + scale(0.95→1) `motion-duration-base` (200ms), 200-300ms hover delay (실수 hover 회피)
-- 사라짐: hover 종료 100-200ms 후 (사용자가 card로 마우스 이동 시간 확보)
-
-#### Accessibility
-- `aria-describedby` (간단) 또는 `aria-haspopup="dialog"` (interactive content)
-- 키보드 사용자: focus로 동일 트리거 가능 (`focus-visible` + `:focus-within`)
-- screen reader: hover card 내용은 별도 link/button으로 직접 접근 가능해야 — hover에만 의존 금지
-- 모바일: hover 없음 — long-press 또는 tap으로 대체
+> 2026-10-02 걷었다 — 쓰는 곳이 없다(메뉴 · 툴팁 결정 6). 옛 스펙은 `specs/components/hover-card.history/v-pre-seed-menu.*`. 짧은 설명은 Tooltip · Help Bubble, 버튼이 있는 내용은 Popover.
 
 ### Context Menu (v70 추가)
 
-right-click(데스크탑) / long-press(모바일) 메뉴. **새 토큰 0** — Dropdown menu variant.
-
-#### Anatomy
-- trigger: 임의 요소 (table row, file icon, message)
-- panel: Dropdown menu 패턴 — items + separator + submenu(옵션)
-- items: 일반 action ("복사", "삭제") + destructive ("삭제하기" `error` 색)
-
-#### Trigger
-- 데스크탑: `oncontextmenu` event (right-click)
-- 모바일: long-press (500ms)
-- 키보드: `Shift + F10` 또는 `Menu` key
-
-#### State
-- panel 위치: 클릭 좌표 기준 — viewport 우/하단 초과 시 자동 flip (panel이 viewport 안)
-- destructive 항목: 우측 아래 또는 separator로 분리 + `error` 색
-
-#### Accessibility
-- `role="menu"` + items `role="menuitem"`
-- 키보드: 방향키로 item 이동, Enter 활성화, Esc 닫기
-- screen reader: trigger에 "context menu 사용 가능" 안내 (`aria-haspopup="menu"`)
-
-#### Differences vs Dropdown
-- **Dropdown** (v45): 명시적 trigger button (펼치기 의도)
-- **Context Menu**: hidden trigger — right-click으로 등장 (조건부 액션)
-- 모바일에서 dropdown은 button click, context menu는 long-press — UX metaphor 차이
+> 2026-10-02 걷었다 — 쓰는 곳이 없다(메뉴 · 툴팁 결정 6). 옛 스펙은 `specs/components/context-menu.history/v-pre-seed-menu.*`. 우클릭 · 길게 누르기로만 열리는 메뉴는 두지 않는다 — 줄의 동작은 줄 끝 ⋮.
 
 ### Alert Dialog (v70 추가)
 

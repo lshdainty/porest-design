@@ -11,8 +11,8 @@ Porest 는 Bootstrap 식 **명시적 z-index 계층 분기** 정책을 채택. s
 | **L0 — base** | `auto` | 일반 콘텐츠 | document 기본 flow |
 | **L1 — page sticky/fixed** | `z-50` | sticky header, FAB(`speed-dial`), env 표시 등 | 페이지 위 고정 UI |
 | **L2 — modal** | `z-[100]` overlay · `z-[101]` content | `dialog` / `bottom-sheet` / `sheet` | modal layer — overlay + content 분리 |
-| **L3 — modal-aware floating** | `z-[200]` | `popover` / `select` / `dropdown-menu` / `color-picker` (popover 패턴) | page 와 modal 안 어디서든 사용. modal(L2) 위에 떠야 하므로 200. page 에서도 동일 값 — sticky/FAB(L1=50) 위 자연스러움 |
-| **L4 — modal-aware tooltip** | `z-[210]` | `tooltip` | popover 위에 살짝 떠야 함 (hover 잠깐 뜨고 사라지는 참고 정보) |
+| **L3 — modal-aware floating** | `z-[200]` | `popover` / `select` / `menu` / `color-picker` (popover 패턴) | page 와 modal 안 어디서든 사용. modal(L2) 위에 떠야 하므로 200. page 에서도 동일 값 — sticky/FAB(L1=50) 위 자연스러움 |
+| **L4 — modal-aware tooltip** | `z-[210]` | `help-bubble` · `tooltip` | popover 위에 살짝 떠야 함 (hover 잠깐 뜨고 사라지는 참고 정보) |
 | **L5 — alert-dialog** | `z-[300]` overlay · `z-[301]` content | `alert-dialog` | 비가역 결정 강제. dialog(L2) 위로 명시 — dialog 안에서 삭제 확인 같은 alert 띄우는 케이스 보존 |
 | **L6 — snackbar** | `z-[400]` | `snackbar` | 모든 시트 · 대화상자 · 확인창 위의 잠깐 알림(2026-10-02 — 옛 sonner 라이브러리 기본 99999+ 를 명시 값으로) |
 | **L9 — dev** | `z-[9999]` | `env-watermark` | dev only 시각 표시 (production 비활성) |
@@ -31,7 +31,7 @@ Porest 는 Bootstrap 식 **명시적 z-index 계층 분기** 정책을 채택. s
 
 ## L3 의 "modal-aware" 의미
 
-L3 컴포넌트(popover/select/dropdown-menu) 는 **page 와 modal 안 두 컨텍스트에서 같은 값(z-200) 사용**. 호출처별 변경 없이 한 컴포넌트 = 한 z-index — `inModal` prop 같은 분기 불필요. 호출처는 modal 안 사용 시 추가 className override 안 해도 정상.
+L3 컴포넌트(popover/select/menu) 는 **page 와 modal 안 두 컨텍스트에서 같은 값(z-200) 사용**. 호출처별 변경 없이 한 컴포넌트 = 한 z-index — `inModal` prop 같은 분기 불필요. 호출처는 modal 안 사용 시 추가 className override 안 해도 정상.
 
 근거 — page 에는 L2(modal=100) layer 자체가 페이지 표면엔 없으므로 L3(200) 가 page sticky(L1=50) 위로 자연스럽게 떠도 어색하지 않다.
 
@@ -42,6 +42,8 @@ alert-dialog(L5=300/301) 안에서 popover/select 띄우는 케이스는 매우 
 ## Known issues (Radix portal + 다중 modal)
 
 ### Issue 1 — `pointer-events: none` 잠금 풀림 안 됨
+
+> 2026-10-02 — Menu 는 비모달(`modal={false}`)이라 이 잠금을 걸지 않는다. 메뉴 줄이 확인창 · 대화상자를 열 때는 메뉴가 닫힌 뒤 연다(menu.md Behavior). 아래는 모달 메뉴 시절의 기록이다.
 
 Radix DropdownMenu / Dialog 가 열릴 때 `body { pointer-events: none }` 박는다. **dropdown-menu 안 item 클릭 → 그 onSelect 콜백에서 dialog open** 같은 빠른 연쇄 transition 시 풀림 순서가 꼬여 dialog 내부 클릭이 안 먹는 버그가 Radix 의 잘 알려진 이슈.
 
@@ -57,7 +59,7 @@ dropdown(modal pattern) 과 dialog 가 동시에 focus trap active 면 Tab 흐�
 
 dropdown 닫힐 때 `aria-hidden="true"` 가 body 에 남아 screen reader 가 dialog 인식 못 함. Radix 최신 버전에서 대부분 해결됐으나 발생 시 dropdown close → 한 프레임 후 dialog open 패턴이 안전.
 
-→ **위 3 이슈는 z-index 정책과 무관 — Radix 동작 자체의 한계**. 컴포넌트 spec (dropdown-menu.md / dialog.md / alert-dialog.md) 의 Behavior 섹션에 해당 가이드 표시.
+→ **위 3 이슈는 z-index 정책과 무관 — Radix 동작 자체의 한계**. 컴포넌트 spec (menu.md / dialog.md / alert-dialog.md) 의 Behavior 섹션에 해당 가이드 표시.
 
 ## 컴포넌트 spec 의 z-index 명시 규칙
 

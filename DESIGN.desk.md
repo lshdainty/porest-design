@@ -3752,51 +3752,13 @@ Desk — 데이터 내보내기 · 카드 혜택 필터 checkbox, 메모 즐겨�
 - **탭 아닌 자리로** — 폼 값 탭(거래 종류 · 반복 주기 · 언어 · 이메일 주기 …)은 Chip · Select, 메모 태그 · 카드 혜택 · 반복 거래 거르기는 Chip 필터 바.
 - 앱 적용 때 정할 자리 — 더치페이(진행 중 · 완료 · 친구) · 관심 그룹 · 호가 · 체결 · 달력 · 목록 · 차트 기간 5 · 캘린더 보기 5.
 
-### Dropdown (Menu / Select 공통 패턴)
+### 메뉴 · 메뉴 시트 · 도움말 말풍선 · 툴팁
 
-> Select(폼 값 고르기)는 2026-10-01 Select · Input Button 절로 옮겼다(SEED Select · Input Button) — 이 절의 select · multi-select · combobox 줄과 "모바일 select 는 native · bottom sheet picker" 는 옛 기준이고 쓰지 않는다. Menu 는 그 차례에 다시 정한다.
+> 모양 · 쓰는 규칙은 DESIGN.md 의 같은 이름 절(2026-10-02 SEED). Desk 의 쓰는 자리만 적는다.
 
-Desk — 메모 카테고리 선택, 가계부 분류 선택, 할일 우선순위, 정렬 옵션. 모바일 우선이라 간단한 select는 native `<select>` 또는 bottom sheet picker 우선, 복잡한 menu는 dropdown panel.
-
-#### Structure (신규 토큰 없음)
-- panel: `surface-default` + `outline-strong-light` 1px + `shadow-md` + `radius-md` (Desk는 `radius-lg` 12px 옵션 — 친근감)
-- item: height 44px (모바일 touch 우선) — desktop은 36px 옵션
-- hover/active `surface-input`, selected primary `#0147AD` 강조
-
-#### Variant
-- menu(action sheet 대체 desktop), select, multi-select, combobox(search 가계부 카테고리 등)
-
-#### Layout
-- 모바일 select: 시스템 native `<select>` 또는 bottom sheet picker 권장 (스크롤 가능, 큰 hit area)
-- desktop panel: max-height 400px, min-width trigger width
-
-#### Motion
-- 모바일 sheet: 하단 슬라이드 `motion-duration-slow`
-- desktop panel: scale+fade `motion-duration-fast`
-
-#### A11y
-- HR과 동일 — role 분류, aria-expanded/haspopup, 키보드 nav, focus return
-- 모바일은 native control fallback 적극 — 시스템 a11y 자동 활용
-
-### Tooltip
-
-Desk — 모바일 우선이라 hover-driven tooltip 사용 제한. 주로 desktop 사용 사례(메모/가계부 desktop view) + (i) 정보 아이콘 보조.
-
-#### Structure (신규 토큰 없음)
-- 표면: `surface-default-dark` + `text-primary-dark`
-- shadow `shadow-sm`, radius `radius-sm`
-
-#### Layout
-- text: `caption` (12/400), max-width 200px (모바일 viewport 고려 좁게)
-
-#### Motion
-- desktop: hover 500ms / focus 0ms, fade-in `motion-duration-fast`
-- 모바일: tap → 짧은 토스트 또는 inline expand로 대체 (tooltip 미사용 권장)
-
-#### A11y
-- WCAG 1.4.13 (desktop tooltip): dismissible/hoverable/persistent
-- 모바일은 (i) icon button → expand inline panel 또는 sheet가 더 적합
-- icon-only button은 항상 `aria-label` 필수
+- **목록 줄의 동작** — 폰은 스와이프(고정 · 수정 · 삭제) 지름길 + 줄 끝 ⋮ → Menu Sheet, 데스크톱 관리 화면은 ⋮ + Menu(늘 보이는 수정 · 삭제 아이콘 걷음).
+- **테마** — 상단 바 테마 메뉴는 걷고 설정의 Segmented Control 로만 바꾼다.
+- **도움말** — 금액 가리기 · 자동 기록 같은 설명은 Help Bubble(ⓘ), 막힌 버튼의 이유("복사할 지난달 예산이 없어요.")는 버튼 가까운 글.
 
 ### 알림 메시지 — Snackbar · Callout · Page Banner · Result Section
 
@@ -3977,8 +3939,8 @@ Desk(B2C) 5 navigation 컴포넌트 — 모바일 우선 + 단순한 페이지 �
 - B2C라 mega menu는 부적합 (data app 톤이지 marketing 사이트 아님).
 
 #### Menubar — Desk
-- 모바일 우선이라 menubar 거의 사용 안 함 — 데스크탑 web에서만 옵션.
-- File / Edit / View 같은 application 메뉴 비활성 — Desk는 네이티브 app 톤이 아닌 web/PWA.
+
+> 2026-10-02 걷었다 — 쓰는 곳이 없다("메뉴 · 메뉴 시트 · 도움말 말풍선 · 툴팁" 절).
 
 #### Command (Cmd+K) — Desk
 - 메모/할일 빠른 검색 핵심 — typing 즉시 fuzzy match (제목 + 본문).
@@ -4028,14 +3990,12 @@ Desk(B2C) 5 disclosure/overlay 컴포넌트.
 - **할일 detail "자세히"**: 짧은 제목 + collapsed 본문 (긴 메모형 할일).
 
 #### Hover Card — Desk
-- **태그 hover**: 태그 클릭 전 hover → 태그 정의 + 사용 횟수 + 색.
-- **링크 hover**: 메모 안 외부 링크 → og:image preview + title (시간 절약).
-- 모바일은 long-press tap으로 동일 효과.
+
+> 2026-10-02 걷었다 — 쓰는 곳이 없다("메뉴 · 메뉴 시트 · 도움말 말풍선 · 툴팁" 절).
 
 #### Context Menu — Desk
-- **메모 long-press**: 즐겨찾기 / 보관 / 공유 / 삭제 — 모바일 long-press가 일반.
-- **할일 long-press**: 완료 / 우선순위 변경 / 메모 변환 / 삭제.
-- 데스크탑 web에서는 right-click 동일 메뉴.
+
+> 2026-10-02 걷었다 — 쓰는 곳이 없다("메뉴 · 메뉴 시트 · 도움말 말풍선 · 툴팁" 절).
 
 #### Alert Dialog — Desk
 2026-10-02 SEED Alert Dialog 로 다시 정했다 — 위 "시트 · 대화상자 · 확인창 · 팝오버" 절.

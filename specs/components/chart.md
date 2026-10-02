@@ -42,7 +42,7 @@ Porest Chart는 **단일 컴포넌트 spec × Recharts chart 종류 다양화** 
 - 다크 모드는 `chart-{name}-dark` 짝(v110 — 팔레트 800-dark, 옛 `-light` 는 별칭) — `ChartConfig.theme: { light: "var(--color-chart-red)", dark: "var(--color-chart-red-dark)" }` 패턴.
 - categorical 차트(`Bar`/`Pie`)는 색을 고르지 않은 시리즈에 순서대로 색을 준다(v110 — 제품 순서): blue → green → orange → violet → pink → indigo → red → yellow → brown → gray. 10개가 넘으면 상위 9개 + 회색 "기타" 로 묶는다 — 회색은 기타 전용.
 - 추세 차트(`Line`/`Area`)는 시리즈 1–3개 — 단일 시리즈는 `chart-blue`/`chart-green` 기본, 비교 시리즈는 보색 분리(`chart-blue` + `chart-orange`).
-- ChartTooltipContent box-shadow는 inline `style={{ boxShadow: "var(--shadow-md)" }}` — [`Popover`](popover.md) / [`Dropdown Menu`](dropdown-menu.md)와 동일 다크 모드 fix 패턴.
+- ChartTooltipContent box-shadow는 inline `style={{ boxShadow: "var(--shadow-md)" }}` — [`Popover`](popover.md) / [`Menu`](menu.md)와 동일 다크 모드 fix 패턴.
 
 ## Variants
 
