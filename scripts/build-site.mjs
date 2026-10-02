@@ -47,7 +47,7 @@ import { alertDialogExamples } from "../recipes/shadcn/examples/alert-dialog-exa
 import { popoverExamples } from "../recipes/shadcn/examples/popover-examples.mjs";
 import { hoverCardExamples } from "../recipes/shadcn/examples/hover-card-examples.mjs";
 import { sheetExamples } from "../recipes/shadcn/examples/sheet-examples.mjs";
-import { drawerExamples } from "../recipes/shadcn/examples/drawer-examples.mjs";
+import { bottomSheetExamples } from "../recipes/shadcn/examples/bottom-sheet-examples.mjs";
 import { sonnerExamples } from "../recipes/shadcn/examples/sonner-examples.mjs";
 import { swipeActionsExamples } from "../recipes/shadcn/examples/swipe-actions-examples.mjs";
 // Phase 4 Navigation
@@ -92,7 +92,6 @@ import {
   renderListingDetail,
   renderCalendar,
   renderEmptyState,
-  renderModal,
   renderToasts,
   renderSkeleton,
   renderForm,
@@ -139,7 +138,7 @@ const SHADCN_EXAMPLES = {
   popover: popoverExamples,
   "hover-card": hoverCardExamples,
   sheet: sheetExamples,
-  drawer: drawerExamples,
+  "bottom-sheet": bottomSheetExamples,
   sonner: sonnerExamples,
   "swipe-actions": swipeActionsExamples,
   // Phase 4 Navigation
@@ -430,6 +429,9 @@ function buildTokens() {
   // brand override / dark mode block도 같이 포함 — Tailwind가 인라인 style 안에서 모두 인식.
   const tailwindBlock = [
     defaultWithFallback,  // @theme {} 블록 그대로
+    "",
+    // 레시피의 dark: 변형이 OS 설정이 아니라 사이트 테마(data-theme)를 따르게 한다 — 딤 0.50 · 0.65 같은 값
+    "@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));",
     "",
     brandOverride(hr, "hr"),
     "",
@@ -1986,11 +1988,11 @@ const SHADCN_CATALOG = [
 
   // Overlay (9)
   { slug: "alert", name: "Alert", category: "Overlay", description: "인라인 정보·경고 메시지." },
-  { slug: "alert-dialog", name: "Alert Dialog", category: "Overlay", description: "확인이 필요한 위험 액션 다이얼로그." },
-  { slug: "dialog", name: "Dialog", category: "Overlay", description: "모달 다이얼로그." },
-  { slug: "drawer", name: "Drawer", category: "Overlay", description: "하단 슬라이드 패널 (모바일 친화)." },
+  { slug: "alert-dialog", name: "Alert Dialog", category: "Overlay", description: "되돌릴 수 없는 일을 하기 전에 묻거나 꼭 알아야 할 일을 알리는 화면 정중앙의 확인창 (SEED Alert Dialog 구조)." },
+  { slug: "bottom-sheet", name: "Bottom Sheet", category: "Overlay", description: "1280 미만에서 폼 · 상세 · 고르기를 띄우는 화면 아래의 모달 시트 (SEED Bottom Sheet 구조)." },
+  { slug: "dialog", name: "Dialog", category: "Overlay", description: "1280 이상에서 입력 폼 · 상세를 화면 정중앙에 띄우고 1280 미만에서는 Bottom Sheet 로 바뀌는 대화상자 (SEED Dialog 구조)." },
   { slug: "hover-card", name: "Hover Card", category: "Overlay", description: "호버 시 표시되는 카드 (프로필 미리보기 등)." },
-  { slug: "popover", name: "Popover", category: "Overlay", description: "트리거 클릭 시 떠오르는 패널." },
+  { slug: "popover", name: "Popover", category: "Overlay", description: "1280 이상에서 트리거에 붙어 부가 정보 · 고르는 패널을 띄우는 비모달 표면 (SEED Popover 구조)." },
   { slug: "sheet", name: "Sheet", category: "Overlay", description: "사이드 슬라이드 패널." },
   { slug: "sonner", name: "Sonner", category: "Overlay", description: "토스트 알림 (shadcn 권장)." },
   { slug: "swipe-actions", name: "Swipe Actions", category: "Data Display", description: "리스트 행을 밀어 편집·삭제에 바로 닿는 모바일 패턴." },
@@ -2040,7 +2042,6 @@ function getDemoFunctions(slug) {
     case "form-layout-validation": return [renderForm, renderBatchV73V78];
     case "select-combobox": return [renderShadcnInput];
     case "checkbox-radio-switch": return [renderShadcnInput];
-    case "modal-dialog": return [renderModal];
     case "drawer-sheet": return [renderBatchV67];
     case "toast-sonner": return [renderToasts, renderShadcnExtras];
     case "skeleton-spinner-progress": return [renderSkeleton, renderBatchV67];

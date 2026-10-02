@@ -61,9 +61,8 @@ export type ChipLook = {
   scrollRow: { padX: number; padY: number; marginY: number; scrollPadding: number; overflowX: string };
   motion: { color: ChipMotion; scale: ChipMotion };
   press: { distance: number; widthDivisor: number; minBasis: number };
-  // 그림 속 화면 · 시트 · 팝오버가 쓰는 역할 색(시트 · 팝오버 · 스크롤 끝 흐림은 아직 스펙이 없다 — 토큰으로 간단히)
+  // 그림 속 화면이 쓰는 역할 색(스크롤 끝 흐림은 아직 스펙이 없다 — 토큰으로 간단히). 시트 · 팝오버는 overlay-look
   tone: Record<ChipTone, ChipColor>;
-  overlay: { dim: { light: string; dark: string }; sheetRadius: number; popoverRadius: number; shadow: ChipColor };
 };
 
 export const CHIP_TONES = [

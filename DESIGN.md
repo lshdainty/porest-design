@@ -4091,20 +4091,43 @@ red → orange → yellow → green → blue → indigo → violet → pink → 
 }
 ```
 
-### Modal (Dialog / AlertDialog)
+### 시트 · 대화상자 · 확인창 · 팝오버
 
-> 상세 spec(Anatomy / Sizes / States / Motion / Accessibility / Do-Don't)은 [`specs/components/dialog.md`](specs/components/dialog.md) (일반 modal) · [`specs/components/alert-dialog.md`](specs/components/alert-dialog.md) (비가역 결정 확정)가 단일 SoT. 코드(`recipes/shadcn/components/ui/dialog.tsx`, `alert-dialog.tsx`) · 예제 · preview-html `.modal-*` 4 source 동기.
+수치 · 규칙의 원본은 `specs/components/bottom-sheet.md` · `dialog.md` · `alert-dialog.md` · `popover.md` 와 각 `.yaml` 이다 — 2026-10-02 SEED Bottom Sheet · Dialog · Responsive Dialog · Alert Dialog · Popover 구조로 새로 정했다(옛 Modal · Drawer · Alert Dialog · Popover 절을 대신한다). 이 절은 토큰과 닿는 자리만 모은다.
 
-**시각 토큰 요약** — preview-html `.modal-*` 톤 정합:
-- container: `surface-default` + `radius-lg` (12px) + `shadow-xl` + padding `spacing-2xl` (32px)
-- title: `display-sm` (24/700) · description: `body-md` + `text-secondary`
-- overlay: `overlay-dim-light` rgba(0,0,0,0.50) (다크는 `-dark` 자동 alias)
-- size: `sm` 384 / `md` 480 (default) / `lg` 640
-- motion: overlay fade-in `motion-duration-base` + container scale 0.96→1 + fade-in `motion-duration-slow`
+#### 나누기
 
-**Dialog vs AlertDialog 의미 분기**:
-- **Dialog**: form / 정보 표시 / 콘텐츠 편집. overlay click + Escape + 우상단 X로 close 가능.
-- **AlertDialog**: 비가역 위험 액션 확정(삭제/회수/결제). overlay click 무시 + close button 없음 + default focus = Cancel.
+| 일 | 1280 미만 | 1280 이상 |
+|---|---|---|
+| 입력 폼 · 상세(지금 화면을 떠나지 않고) | Bottom Sheet | Dialog — 한 부품(Responsive Dialog)이 폭으로 바꾼다 |
+| 날짜 · 시각 · 아이콘 격자 · 긴 목록 고르기 | Bottom Sheet(Input Button) | Popover |
+| 되돌릴 수 없는 확인 · 꼭 알릴 일 | Alert Dialog | Alert Dialog |
+| 줄의 동작 목록 | Menu Sheet(그 차례에) | Menu(그 차례에) |
+| 화면 높이 90% 를 넘는 내용 | 페이지 | 페이지 |
+
+#### 모양
+
+| 표면 | 값 |
+|---|---|
+| 공통 | 표면 `bg-layer-floating`, 딤 `overlay-dim-light` · `overlay-dim-dark`(Popover 는 딤 없음), 시트 · 대화상자 · 확인창은 그림자 없음 |
+| Bottom Sheet | 최대 480 · 위 모서리 `radius-r6` · 머리 위 24 · 제목 `t8` 22 · 700 · 설명 `t5` `fg-neutral-muted` · 좌우 `spacing-global-gutter` · 닫기 28 원(`bg-neutral-weak`, 누르는 영역 44) · 손잡이는 스냅 높이를 둘 때만 · 바닥 버튼 large 48 + 안전 영역 · `motion-duration-d6` `motion-ease-enter-expressive` 로 올라오고 `d4` `exit` 로 내려간다 |
+| Dialog | medium 480 · large 800 · 최대 높이 80% · `radius-r5` · 머리 24 · 제목 `t8` · 본문만 스크롤(넘치면 아래 48 흐림, 위로 스크롤하면 머리 아래 1px `stroke-neutral-subtle`) · 바닥 버튼 small 36 오른쪽 · `d4` `enter-expressive` 로 1.3 배에서 줄며 나타남 |
+| Alert Dialog | 최대 272 · `radius-r5` · 안쪽 20 · 제목 `t7` 20 · 700 · 설명 `t5` `fg-neutral`(짙은 글자) · 버튼 둘 나란히(길면 세로 · 확정 위) — 1280 미만 medium 40 · 이상 small 36 |
+| Popover | 폭 320 ~ 480 · 최대 높이 600 · `radius-r5` · `shadow-s3` · 트리거와 8 · 머리 제목 `t7` + 닫기 · `d3` `enter` 로 0.95 배에서 커진다 |
+| 쌓임 | specs/z-index.md — 시트 · 대화상자 L2(100 · 101) · Popover L3(200) · Alert Dialog L5(300 · 301) |
+
+#### 쓰는 규칙
+
+- 입력 폼은 바깥 누르기 · 끌어내리기로 닫지 않는다 — 닫기 버튼 · 취소 · `Esc` · 뒤로 가기로 닫고, 바뀐 값이 있으면 "작성한 내용이 사라져요" 를 묻는다(Field).
+- 닫기 버튼과 바닥 취소를 함께 두지 않는다 — 대화상자의 입력 폼은 바닥 [취소] [저장], 시트의 입력 폼은 위 닫기 + 바닥 [저장], 조회 · 안내 · 고르기는 위 닫기.
+- 확인창은 닫기 버튼이 없고 바깥 누르기를 무시한다. `Esc` 는 취소. 확인창 안에 입력칸을 두지 않는다.
+- 버튼 글은 동작 이름("삭제" · "저장" · "그룹 삭제") — "확인" 으로 뭉뚱그리지 않는다.
+
+#### Accessibility 체크리스트
+- [ ] 모달(시트 · 대화상자 · 확인창) — `role="dialog"` · 확인창 `role="alertdialog"`, `aria-modal="true"`, 제목 `aria-labelledby` · 설명 `aria-describedby`, 열면 표면으로 초점 · 닫으면 연 자리로, 열린 동안 초점을 가두고 뒤 화면을 숨기고 스크롤을 잠근다
+- [ ] Popover — `role="dialog"`(aria-modal 없음), 초점은 안으로 · 가두지 않음 · Tab 으로 나가면 닫힘, 트리거 `aria-haspopup="dialog"` · `aria-expanded`
+- [ ] 닫기 버튼 이름 "닫기", 시트 닫기 누르는 영역 44
+- [ ] 대화상자 높이 80% 상한 — 머리 · 바닥이 화면 밖으로 나가지 않는다
 
 ### Toast
 
@@ -4682,52 +4705,11 @@ spec brand-neutral — skeleton은 색상 자체가 neutral surface. brand 파�
 #### HR / Desk 듀얼 브랜드
 spec brand-neutral. brand 파일에서 사용 패턴 차이 — HR(numbered 데이터 그리드 위주), Desk(load-more 모바일 우선).
 
-### Drawer / Sheet (v67 추가)
+### Sheet — 옆 패널 (v67 추가)
 
-페이지 위로 슬라이드 인/아웃하는 panel. **새 토큰 추가 0** — `z-drawer` (v65) + `motion-duration-slow` + `overlay-dim` + 기존 surface/radius 합성.
+> 아래에서 올라오는 Drawer 는 2026-10-02 Bottom Sheet 로 바뀌었다(위 "시트 · 대화상자 · 확인창 · 팝오버" 절, `specs/components/bottom-sheet.md`). 이 절의 옆 패널(Sheet — 오른쪽 · 왼쪽)은 Side Panel 차례에 다시 정한다.
 
-#### Variant
-| Variant | 방향 | 사용 |
-|---|---|---|
-| **side** (right) | 우→좌 슬라이드 인 | 데스크탑 detail panel (HR 직원 detail, 권한 설정) |
-| **side** (left) | 좌→우 슬라이드 인 | navigation drawer (Desk hamburger menu) |
-| **bottom** | 하→상 슬라이드 인 | mobile 액션 (Desk 거래 입력, 메모 attachments) |
-| **top** | 상→하 슬라이드 인 (드물게) | 알림 센터 (notification feed) |
-
-#### Layout
-- 너비/높이: side는 `min(80vw, 480px)`, bottom은 `max-height: 75vh`
-- radius: side는 좌/우 외곽만 `radius-2xl` (20px), bottom은 상단만 `radius-2xl`
-- padding: `xl` (24px) 4면, header/footer는 `lg` (16px)
-- background: `surface-default`, shadow: `shadow-xl`
-- 함께: overlay-dim (`overlay-dim-light` 또는 prose-token 동일 alpha)
-
-#### Anatomy
-- header: 제목(`title-sm`) + 닫기 버튼(`✕` 24×24 button, `text-tertiary`)
-- body-lg: scroll 가능 (overflow-y: auto), main content
-- footer (선택): primary action button + secondary
-- bottom drawer는 상단에 swipe handle (8×40 `surface-input` rounded bar) 표시 — gesture hint
-
-#### Motion
-- 등장: slide + overlay fade (`motion-duration-slow` 300ms × `motion-ease-out`)
-- 사라짐: 역순 (`motion-duration-base` 200ms — 닫기는 빠르게)
-- bottom drawer swipe-down: 사용자 finger 따라 transform translate, threshold 30% 또는 velocity 기준 닫기
-- `prefers-reduced-motion: reduce`: fade-only (slide 비활성)
-
-#### Z-index
-- `z-drawer` (1200) — modal(1300)보다 아래, sticky(1100)보다 위
-- modal이 drawer 위에서 등장 가능 (modal에 confirm)
-
-#### Accessibility
-- [ ] **focus trap**: drawer 열린 동안 tab focus가 drawer 내부에 갇힘 (escape 또는 close 버튼으로 해제)
-- [ ] **return focus**: drawer 닫힐 때 trigger 요소로 focus 복귀
-- [ ] `role="dialog"` + `aria-modal="true"` (focus trap 명시)
-- [ ] `aria-labelledby="drawer-title-id"` — 제목과 연결
-- [ ] **Esc**: drawer 닫기 (단, 본문 텍스트 입력 중에는 입력 우선)
-- [ ] **overlay click**: 외부 클릭으로 닫기 (단, 폼 입력 중이면 confirmation prompt)
-- [ ] **scroll lock**: drawer 열린 동안 body-lg scroll 차단 (`overflow: hidden`)
-
-#### HR / Desk 듀얼 브랜드
-spec brand-neutral. brand 파일 — HR(side drawer 데스크탑 detail), Desk(bottom sheet 모바일).
+페이지 옆에서 들어오는 패널. 너비 `min(80vw, 480px)`, 바깥쪽 모서리만 `radius-2xl`, 여백 `xl` 24 · 머리 · 바닥 `lg` 16, `surface-default` · `shadow-xl`, `overlay-dim`. 열린 동안 초점을 가두고 닫히면 트리거로 돌려준다(`role="dialog"` + `aria-modal="true"`).
 
 ### Spinner / Progress (v67 추가)
 
@@ -5214,38 +5196,7 @@ right-click(데스크탑) / long-press(모바일) 메뉴. **새 토큰 0** — D
 
 ### Alert Dialog (v70 추가)
 
-destructive confirmation modal — Modal(v43)의 강조 변형. 데이터 삭제, 영구 액션 등. **새 토큰 0**.
-
-#### Differences vs Modal
-- **Modal**: 일반 confirmation (저장, 신청 등) — primary action 강조
-- **Alert Dialog**: destructive (삭제, 취소 등) — primary `error` 색 + 추가 경고 톤
-
-#### Anatomy
-- overlay: `overlay-dim-light` (Modal과 동일)
-- card: `surface-default` + `radius-lg` + `shadow-xl` (Modal과 동일 또는 약간 작음)
-- icon (옵션): destructive 의미 강조 — `error` 또는 `warning` 24-32px
-- title: `title-sm`, 강한 wording ("정말 삭제하시겠어요?")
-- description: `body-lg`, 결과 명시 ("이 메모는 영구 삭제됩니다", "취소할 수 없어요")
-- actions: primary `btn-primary` `error` 색 배경 + `text-on-accent` ("삭제") + secondary outline ("취소")
-- 액션 순서: 모바일은 destructive를 먼저(상단/좌측), 데스크탑은 우측 (플랫폼 관행)
-
-#### State
-- 강조: title + icon이 시각 무게중심
-- focus initial: secondary("취소") — destructive 자동 진행 회피
-
-#### Motion
-- Modal과 동일 (`motion-duration-base` 200ms × `motion-ease-out`)
-- destructive emphasis: 등장 시 작은 scale bounce(1.0 → 1.02 → 1.0) 옵션 — `prefers-reduced-motion` 시 비활성
-
-#### Accessibility
-- `role="alertdialog"` (단순 dialog 대신 — alert 의미 강조) + `aria-modal="true"`
-- `aria-labelledby="title-id"` + `aria-describedby="desc-id"`
-- focus trap (Modal 동일)
-- **Esc**: 취소(secondary)와 동일 동작 — destructive 자동 진행 안 함
-- 키보드: Tab으로 actions 이동, focus는 secondary부터 시작
-
-#### HR / Desk 듀얼 브랜드 (v70 5종 공통)
-spec brand-neutral. brand 파일 — HR(Accordion 결재 detail 그룹 / Hover Card 직원 mini profile / Alert Dialog 결재 반려 confirm / Context Menu 데이터 그리드 row), Desk(Accordion FAQ 설정 / Collapsible 메모 attachments / Hover Card 태그 정의 / Alert Dialog 메모 영구 삭제).
+> 2026-10-02 SEED Alert Dialog 로 다시 정했다 — 위 "시트 · 대화상자 · 확인창 · 팝오버" 절과 `specs/components/alert-dialog.md` 를 따른다.
 
 ### Table (v71 추가)
 
@@ -5689,42 +5640,7 @@ spec brand-neutral. brand 파일 — HR(Sonner top-right 결재 알림 stack / C
 
 ### Popover (v73 추가)
 
-trigger 클릭 시 등장하는 작은 카드 — Tooltip(v44)보다 풍부, Dropdown(v45)보다 자유 콘텐츠. **새 토큰 0** — Tooltip + Card 합성, Dropdown spec과 분리.
-
-#### Differences
-- **Tooltip (v44)**: hover 즉시 등장, 1줄 hint, decoration
-- **Popover**: 클릭 trigger, interactive 콘텐츠 (form/list/액션 가능)
-- **Dropdown (v45)**: 정형 menu/select pattern (items list)
-- **Hover Card (v70)**: hover 등장, 정보 preview (read-only)
-
-#### Anatomy
-- trigger: button 또는 link
-- panel: `surface-default` + `radius-md` + `shadow-md` + 1px `border-default`
-- arrow (옵션): trigger 방향 가리키는 8px triangle
-- 콘텐츠: 자유 — form / list / 메타정보 / 작은 액션
-
-#### Layout
-- panel max-width: 320-400px
-- panel offset from trigger: `xs` (4px)
-- 자동 flip: viewport 초과 시 위/아래/좌/우 자동 reposition
-- close on outside click + Esc
-
-#### Motion
-- 등장: scale(0.96→1) + fade-in `motion-duration-fast` (150ms) `motion-ease-out`
-- 사라짐: 역순
-
-#### State
-- closed (default): trigger 단독
-- open: panel 표시 + trigger `border-focus` outline (현재 활성 표시)
-
-#### Accessibility
-- trigger: `aria-expanded="true|false"` + `aria-haspopup="dialog"` (interactive content)
-- panel: `role="dialog"` + `aria-label="..."` (interactive면) 또는 단순 popover (`aria-labelledby="trigger-id"`)
-- focus 관리:
-  - 등장 시: panel 안 첫 focusable 요소로 focus 이동
-  - 닫힐 때: trigger로 return focus
-  - focus trap 옵션 (form 같은 interactive content)
-- 키보드: Esc 닫기, 외부 클릭 닫기, Tab으로 panel 안 이동
+> 2026-10-02 SEED Popover 로 다시 정했다 — 위 "시트 · 대화상자 · 확인창 · 팝오버" 절과 `specs/components/popover.md` 를 따른다.
 
 ### File Upload (v73 추가)
 

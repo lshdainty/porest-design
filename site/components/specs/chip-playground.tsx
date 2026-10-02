@@ -3,6 +3,7 @@
 // 코드는 chip.md 의 "코드" 절과 같은 API(Chip · ChipToggle · ChipRadioGroup · ChipRadio · InputChip · ChipGroup)로 쓴다.
 import { useMemo, useState } from 'react';
 import type { ButtonLook } from './button-look';
+import type { OvKit } from './overlay-shared';
 import { ccv, type ChipLook, type ChipSize, type ChipVariant } from './chip-shared';
 import { AMOUNTS, BudgetField, CONDS, FilterBarDemo, PEOPLE, PeopleField, TX_TYPES } from './chip-demos';
 import { ChipField, ChipRadioGroupLive, ChipToggleGroupLive, type ChipItem } from './chip-view';
@@ -94,7 +95,7 @@ function codeOf(kind: Kind, o: { variant: ChipVariant; size: ChipSize; icons: bo
   return `${imports(lucide(['user']), ['ChipGroup', 'InputChip'], true)}<Field label="참여자" description="지우기로 한 명씩 빼요.">\n  <ChipGroup>\n    {people.map((p) => (\n      ${jsx('InputChip', ['key={p.id}', ...attr(o.size !== o.defSize, `size="${o.size}"`), ...icon('user'), ...dis, 'onRemove={() => removePerson(p.id)}'], '{p.name}')}\n    ))}\n  </ChipGroup>\n</Field>`;
 }
 
-export function ChipPlayground({ looks, field, input, cta }: { looks: Record<'desk' | 'hr', ChipLook>; field: TfFieldLook; input: TfInputLook; cta: Record<'desk' | 'hr', ButtonLook> }) {
+export function ChipPlayground({ looks, field, input, cta, kits }: { looks: Record<'desk' | 'hr', ChipLook>; field: TfFieldLook; input: TfInputLook; cta: Record<'desk' | 'hr', ButtonLook>; kits: Record<'desk' | 'hr', OvKit> }) {
   const base = looks.desk;
   const [kind, setKindRaw] = useState<Kind>('single');
   const [variant, setVariant] = useState<ChipVariant>(KIND_VARIANT.single);
@@ -128,7 +129,7 @@ export function ChipPlayground({ looks, field, input, cta }: { looks: Record<'de
     ) : kind === 'filter' ? (
       // 필터 바는 줄을 화면 끝까지 낸다 — 무대(360) 자체를 화면으로 쓰고 시트도 그 안에서 연다
       <div className="-mx-4 sm:mx-0">
-        <FilterBarDemo key={key} look={look} cta={cta[brand]} mode={mode} variant={variant} size={size} icons={withIcons} disabled={dis} list={false} height={300} keys={['period', 'category', 'pay']} />
+        <FilterBarDemo key={key} look={look} kit={kits[brand]} cta={cta[brand]} mode={mode} variant={variant} size={size} icons={withIcons} disabled={dis} list={false} height={300} keys={['period', 'category', 'pay']} />
       </div>
     ) : (
       <PeopleField key={key} look={look} field={field} mode={mode} size={size} icons={withIcons} disabled={dis} />

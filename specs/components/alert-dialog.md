@@ -1,170 +1,186 @@
-# AlertDialog
+# Alert Dialog
 
-> 비가역(되돌릴 수 없는) 사용자 결정 확정용 modal. 일반 form/정보 표시는 [`dialog.md`](dialog.md). overlay/Escape로 닫히지 않고 명시적 button 선택만 받음.
+> 되돌릴 수 없는 일을 하기 전에 묻는 확인창 — 지우기 · 나가기처럼 둘 중 하나를 골라야 할 때(액션 둘 이하), 또는 꼭 알아야 할 일을 알릴 때(버튼 하나). 폰 · 데스크톱 모두 화면 정중앙에 같은 모양으로 뜬다. 입력 · 조회는 [Dialog](dialog.md) · [Bottom Sheet](bottom-sheet.md), 여러 동작 목록은 Menu Sheet(그 차례에), 지나가는 알림은 Snackbar(그 차례에)다.
 
-Porest AlertDialog는 시각적으로는 `Dialog`와 **완전히 동일** (같은 토큰 · 같은 사이즈 · 같은 모션)이지만 **의미 · 동작 · 행동 가이드가 다름**. 메시지 강도와 close 경로 제한이 차이의 핵심.
+구조는 당근 [SEED Alert Dialog](https://seed-design.io/components/alert-dialog)(Apache-2.0)를 따른다 — 딤 · 확인창 · 제목 · 설명 · 버튼, 닫기 버튼 없음. 값은 porest 토큰이고, SEED 와 다른 자리는 맨 아래 "SEED 와 다른 점" 에 적었다(2026-10-02 사용자 결정).
 
-| 구분 | Dialog | AlertDialog |
-|---|---|---|
-| 시각 | 동일 | 동일 |
-| Overlay click | close | **무시 (close 안 됨)** |
-| Escape | close | **무시 (옵션, 위험도 따라)** |
-| Close button (X) | 있음 | **없음** (명시적 button만) |
-| Default focus | 첫 focusable | **Cancel button**(실수로 Enter 누름 방지) |
-| 사용처 | form, 정보 확인, 콘텐츠 편집 | 삭제 확정, 권한 회수, 결제 확정 등 비가역 |
+수치 원본은 [`alert-dialog.yaml`](alert-dialog.yaml)이다. 수치 표 자리(`[표: …]`)와 그림 자리(`[그림: …]`)는 사이트가 그 파일로 그린다 — GitHub 에서는 그 파일 · 그림 코드로 가는 링크로 보인다.
+
+[그림: 거래 삭제 · 작성 중 나가기 · 그룹 삭제 — 라이트 · 다크](../../site/components/specs/alert-dialog.tsx#hero)
+
+### 직접 골라 보기
+
+버튼 배치(나란히 · 세로 · 하나) · 확정 버튼의 무게(Critical · Neutral) · 제목 · 글 길이 · 창 폭을 고르면 스펙대로 그린 확인창과 그 코드가 바뀐다. 실제로 열고 `Esc` 로 닫을 수 있다.
+
+[그림: 플레이그라운드](../../site/components/specs/alert-dialog.tsx#playground)
 
 ## Anatomy
 
+[그림: 확인창은 딤 · 확인창 · 제목 · 설명 · 버튼으로 — 닫기 버튼이 없다](../../site/components/specs/alert-dialog.tsx#anatomy)
+
+| ⓐ Overlay | 딤 — 눌러도 닫히지 않는다. |
+| ⓑ Container | 확인창 — 화면 정중앙, 최대 272. |
+| ⓒ Title | 제목 — 묻는 말. 없어도 된다. |
+| ⓓ Description | 설명 — 무엇이 어떻게 되는지 · 되돌릴 수 없다는 사실. 늘 있다. |
+| ⓔ Actions | 버튼 — [취소] [확정] 을 반씩, 또는 하나. |
+
+[표: 부위](alert-dialog.yaml#slots)
+
+## Properties
+
+### Layout
+
+| 배치 | 언제 |
+|---|---|
+| `horizontal` *(기본)* | 버튼 둘을 나란히 반씩 — 취소 왼쪽 · 확정 오른쪽 |
+| `vertical` | 한쪽 글이 반 폭을 넘을 때 — 세로로 쌓고 **확정이 위**. 레시피가 저절로 바꾼다 |
+| `single` | 알리기만 할 때 — 버튼 하나, 폭 전체 |
+
+[그림: 배치 — 나란히 · 세로 · 하나](../../site/components/specs/alert-dialog.tsx#layout)
+
+[표: 배치](alert-dialog.yaml#layout)
+
+### 크기 · 글
+
+최대 272 에 좌우 32 를 남긴다(화면이 336 보다 좁으면 화면 폭 − 64). 안쪽 20 · 모서리 20, 제목 20 / 27 · 700, 설명 16 / 22 — 설명은 다른 떠 있는 표면과 달리 짙은 `fg-neutral` 이다(꼭 읽어야 할 말이다). 버튼은 1280 미만 Button medium 40, 1280 이상 small 36 이다.
+
+[표: 공통](alert-dialog.yaml#base.enabled)
+
+[표: 모션](alert-dialog.yaml#motion)
+
+## Guidelines
+
+### 되돌릴 수 없을 때만
+
+지우기 · 작성 중 나가기 · 설정 초기화처럼 되돌릴 수 없는 일 앞에서 묻는다. 둘 중 하나를 고르는 자리다 — 동작이 셋 이상이면 Menu Sheet · Menu(그 차례에), 입력이 필요하면 [Dialog](dialog.md) · [Bottom Sheet](bottom-sheet.md) 다. 확인창 안에 입력칸을 넣지 않는다.
+
+| 이런 일 | 컴포넌트 |
+|---|---|
+| 되돌릴 수 없는 일의 확인 · 작성 중 나가기 | **Alert Dialog** |
+| 꼭 알아야 할 일을 알리기(한 버튼) | **Alert Dialog**(`single`) |
+| 입력이 필요한 확인(환불 날짜 · 잠금 해제) | [Dialog](dialog.md) · [Bottom Sheet](bottom-sheet.md) |
+| 동작 셋 이상 | Menu Sheet · Menu(그 차례에) |
+| 지나가는 결과 알림 | Snackbar(그 차례에) |
+
+[그림: 쓰임 — 되돌릴 수 없는 확인 · 확인창 안의 입력칸](../../site/components/specs/alert-dialog.tsx#role-guide)
+
+### 확정 버튼 — 되돌릴 수 없으면 Critical
+
+지우는 · 잃는 확정은 `criticalSolid`, 그 밖의 확정은 `neutralSolid`, 취소는 `neutralWeak`. Critical 은 확정에만 — 취소를 빨갛게 칠하지 않는다.
+
+[그림: 확정 — 지우기는 Critical · 취소를 Critical 로](../../site/components/specs/alert-dialog.tsx#tone-guide)
+
+### 닫는 길
+
+닫기 버튼이 없다. 바깥(딤)을 눌러도 닫히지 않는다 — 고르지 않고 지나가지 못하게. `Esc` · 뒤로 가기는 취소와 같다. 버튼을 누르면 닫히고, 확정이 끝날 때까지 닫지 않으려면(서버 응답을 기다릴 때) 확정 버튼에 로딩을 건다.
+
+[그림: 닫기 — 바깥을 눌러도 그대로 · Esc 는 취소](../../site/components/specs/alert-dialog.tsx#dismiss-guide)
+
+### 글
+
+- **제목** — 묻는 말("거래를 삭제할까요?"). 설명으로 충분하면 빼도 된다.
+- **설명** — 무엇이 어떻게 되는지 · 되돌릴 수 없다는 사실("삭제한 거래는 되돌릴 수 없어요."). 해요체 · 마침표.
+- **버튼** — 동작 이름("삭제" · "나가기" · "그룹 삭제"). "확인" · "예" 로 뭉뚱그리지 않는다. 취소는 "취소"(작성 중 나가기는 "계속 작성").
+- "정말 … 하시겠습니까?" 같은 합니다체 · 겁주는 말을 쓰지 않는다.
+
+[그림: 글 — 동작 이름 · "확인" 과 합니다체](../../site/components/specs/alert-dialog.tsx#writing-guide)
+
+## 코드
+
+레시피 `recipes/shadcn/components/ui/alert-dialog.tsx` 를 쓴다(Radix AlertDialog 위). 버튼 배치는 `AlertDialogFooter` 가 글 길이로 정한다. 아래 미리보기는 스펙 값으로 그린 모습이다.
+
+### 지우기
+
+[그림: 거래 삭제](../../site/components/specs/alert-dialog.tsx#ex-delete)
+
+```tsx
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogTitle } from "@/components/ui/alert-dialog"
+
+<AlertDialog open={open} onOpenChange={setOpen}>
+  <AlertDialogContent>
+    <AlertDialogTitle>거래를 삭제할까요?</AlertDialogTitle>
+    <AlertDialogDescription>삭제한 거래는 되돌릴 수 없어요.</AlertDialogDescription>
+    <AlertDialogFooter>
+      <AlertDialogCancel>취소</AlertDialogCancel>
+      <AlertDialogAction variant="criticalSolid" onClick={remove}>삭제</AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
 ```
-┌────────────────────────────────────────────────────────┐
-│ ⓐ overlay (page-wide dim · click 무시)                 │
-│       ┌─────────────────────────────────────┐          │
-│       │ ⓑ container                         │          │
-│       │                                     │          │
-│       │ ⓒ title (title-md)                  │          │
-│       │ ⓓ description (body-md, secondary)  │          │
-│       │   "이 작업은 되돌릴 수 없습니다."    │          │
-│       │                                     │          │
-│       │ ⓔ footer                            │          │
-│       │              [Cancel] [Destructive] │          │
-│       └─────────────────────────────────────┘          │
-└────────────────────────────────────────────────────────┘
+
+### 작성 중 나가기
+
+[그림: 작성한 내용이 사라져요](../../site/components/specs/alert-dialog.tsx#ex-leave)
+
+```tsx
+<AlertDialogContent>
+  <AlertDialogTitle>작성한 내용이 사라져요</AlertDialogTitle>
+  <AlertDialogDescription>나가면 입력한 금액과 날짜가 저장되지 않아요.</AlertDialogDescription>
+  <AlertDialogFooter>
+    <AlertDialogCancel>계속 작성</AlertDialogCancel>
+    <AlertDialogAction variant="criticalSolid" onClick={leave}>나가기</AlertDialogAction>
+  </AlertDialogFooter>
+</AlertDialogContent>
 ```
-
-| ⓐ overlay | dialog와 동일하나 **click 무시**. |
-| ⓑ container | dialog와 동일 — preview `.modal-dialog` 그대로 (`background:var(--color-surface-default); border-radius:var(--radius-lg); box-shadow:var(--shadow-xl); width:min(90%, <max-w>); max-height:86vh; display:flex; flex-direction:column; overflow:hidden;`). **padding 0** — 여백은 header·body·footer 가 갖는다([`dialog`](dialog.md) Layout). close button(X) **없음**. |
-| ⓒ title | preview `.modal-title` 그대로 — `font-size:var(--text-title-md); font-weight:600; line-height:var(--text-title-md--line-height); color:var(--color-text-primary); letter-spacing:-0.01em;`. **결정 또는 결과**를 짧은 명사구로. 질문형 아님 — 질문은 ⓓ 가 맡는다. |
-| ⓓ description | preview `.modal-description` 그대로 — `font-size:var(--text-body-md); color:var(--color-text-secondary); line-height:1.6;`. **상세 내역** — 무엇이 어떻게 되는지(결과·영향)와 확인 질문. 파괴적 액션이면 **대상을 이름으로** 짚는다. |
-| ⓔ footer (모바일 < 480px) | 각 button `flex-1` 균등 분배 + `size="large"`(48). 취소는 `neutralWeak`(옅은 회색 채움). [`dialog`](dialog.md) footer 규칙과 동일. |
-| ⓔ footer | preview `.modal-actions` 그대로 — `display:flex; gap:var(--spacing-sm); justify-content:flex-end; padding:18px 22px;`. 여백·버튼 모두 [`dialog`](dialog.md) Layout 과 **같은 값**이다 — container 는 padding 0 이고 header `18 22` · body `22` · footer `18 22`, 버튼은 `small`(36 · 좌우 14 · 14px), 모바일만 `large`(48). Cancel(좌, `neutralWeak`) + Action(우, `criticalSolid`). focus default = Cancel. |
-
-**규칙**
-
-- close button (X) 두지 말 것 — 사용자가 결정을 회피하지 못하게 함.
-- description은 **결과** 명시 필수 ("되돌릴 수 없음", "영구 삭제", "권한 회수") — 질문만 두지 않는다.
-- 파괴적 액션의 description 은 **대상을 이름으로** 짚는다 — "이 계좌를" 이 아니라 `"급여통장"을(를)`.
-- 같은 동작이면 **어디서 불렀든 제목·설명이 같다** — 진입 경로도, 플랫폼도.
-- Action label은 결정 행위를 직접 표현 ("삭제", "회수", "결제") — 모호한 "확인" 금지. 단 결정이 없는 acknowledge 는 예외(`확인` 하나).
-
-## Variants
-
-본체 시각 variant 없음 — `Dialog`와 동일. **action variant**(destructive vs primary)는 footer button으로 표현.
-
-| Action variant | Button variant | 사용 |
-|---|---|---|
-| `destructive` (default) | `criticalSolid` (빨강 채움) | 삭제, 회수, 영구 비활성 등 비가역 위험 액션. |
-| `primary` | `neutralSolid` (짙은 회색 채움) | 발행, 결제 같이 비가역이지만 위험은 아닌 액션. |
-
-### acknowledge (단일 액션)
-
-결정이 없는 **결과 통지** — 전제 조건이 안 맞아 액션이 아예 차단된 경우("하위 카테고리가 남아 있어 삭제할 수 없음"). 사용자가 고를 것이 없으므로 footer 는 `확인` 하나(`neutralSolid`)만 두고 **취소를 두지 않는다**. title 은 결과 명사구(`삭제 불가` · `해지 불가`), description 은 이유와 다음 행동.
-
-취소를 나란히 두면 두 버튼이 같은 일(닫기)을 한다 — 무엇을 고르는 자리인지 없는데 고르라고 내미는 꼴이다. 파괴적 액션을 그대로 두면 더 나쁘다: 눌러도 아무 일이 없는 빨간 버튼이 남는다.
-
-이 변형에서는 spec 곳곳의 "Cancel button" 자리(Default focus · Behavior · WCAG 2.1.2 탈출 경로)를 그 `확인` 버튼이 대신한다 — 실행될 destructive action 이 없어 Enter 사고가 성립하지 않는다. **액션이 둘 이상이면 acknowledge 가 아니다**(취소 필수).
-
-## Sizes
-
-`Dialog`와 동일 — `sm` 420 / `md` 520(default) / `lg` 720. 여백도 Dialog 와 같다(container 0, 구역별). 본문이 짧으면 `sm` 권장 (확정 dialog는 정보 압축).
-
-**z-index** — [`z-index.md`](../z-index.md) L5 alert-dialog. **Dialog(L2=100/101) 위로 명시** — dialog 안에서 삭제 확인 같은 alert를 띄우는 케이스를 보존하기 위해 분리된 layer.
-
-[표: z-index](alert-dialog.yaml#base)
-
-## States
-
-| State | Overlay | Container | Body scroll | Default focus |
-|---|---|---|---|---|
-| `closed` | 미렌더 | 미렌더 | 정상 | trigger |
-| `open` | dim 활성 | 화면 가운데 | lock | **Cancel button** |
-| transitioning | dialog와 동일 | dialog와 동일 | — | — |
-
-Default focus가 Cancel인 것이 핵심 — Enter를 무심코 눌렀을 때 destructive action이 실행되는 사고 방지(특히 form 안에서 trigger를 누르고 바로 Enter 누르는 패턴).
 
 ## Behavior
 
 | 인터랙션 | 동작 |
 |---|---|
-| Trigger click | open. trigger element 기억(닫힘 시 focus 복귀). |
-| Overlay click | **무시 (close 안 됨)** — 명시적 선택 강제. |
-| `Escape` | 무시 (위험도 낮으면 옵션으로 cancel 동등 처리 가능, 기본은 무시). |
-| Cancel button click | close. trigger로 focus 복귀. action 미실행. |
-| Action button click | action 실행 + close. trigger로 focus 복귀. |
-| `Tab` / `Shift+Tab` | container 안에서만 순환 (focus trap). |
-| Body scroll | dialog 열림 동안 `overflow: hidden`. |
-
-### Known issue — dropdown item → alert-dialog 연쇄
-
-[`Dialog`](dialog.md) / [`Dropdown Menu`](dropdown-menu.md) Behavior와 동일 패턴 — DropdownMenu의 `onSelect` 콜백에서 직접 AlertDialog를 열면 `body { pointer-events: none }` 잠금 해제 순서가 꼬인다([`z-index.md`](../z-index.md) Known issues 참조). `e.preventDefault() + setTimeout(fn, 0)`로 한 프레임 분리하거나, dropdown 외부 trigger로 alert-dialog를 직접 열기.
+| 열기 | 200ms 로 크게 나타나며 줄어든다(1.3 → 1). 처음 초점은 확인창에 간다. |
+| 버튼 | 누르면 닫힌다. 확정이 끝날 때까지 기다리려면 확정 버튼의 로딩으로 막는다. |
+| `Esc` · 뒤로 가기(1280 미만) | 취소와 같다 — 닫는다. |
+| 바깥(딤) 누르기 | 무시한다. |
+| 닫힌 뒤 | 100ms 로 사라지고, 초점은 연 자리로 돌아간다. |
+| 대화상자 · 시트 위에서 | 그 위에 뜬다(z-index L5) — 닫으면 아래 표면으로 초점이 돌아간다. |
 
 ## Accessibility
 
 | 기준 | 검증 |
 |---|---|
-| **WCAG 1.4.3 / 1.4.11 / 2.4.7 / 2.4.11** | Dialog와 동일 — `surface-default` × `text-*` 대비, focus ring 시인성. |
-| **WCAG 2.1.2** No Keyboard Trap | focus trap은 의도. Cancel button으로 빠져나갈 수 있어 충족. |
-| **WCAG 3.3.4** Error Prevention (Legal/Financial/Data) AA | 비가역 액션은 사용자가 "확인하고 진행"하도록 명시적 단계 필수 — AlertDialog가 그 단계. ✓ |
-| **WCAG 3.3.6** Error Prevention (All) AAA | 모든 사용자 제출에 확인 단계 — 사이트가 AAA 추구 시 AlertDialog 활용. |
-| **ARIA** | `role="alertdialog"` + `aria-modal="true"` + `aria-labelledby` + `aria-describedby`. Radix 기본 처리. `role="alertdialog"`이 `role="dialog"`보다 강한 의미(스크린리더가 즉시 announce). |
-| **Default focus** | Cancel (실수 방지). |
+| **WCAG 1.4.3** Color contrast(글자 ≥ 4.5:1) | 제목 · 설명 `fg-neutral` 떠 있는 표면 위 16.41 · 다크 11.62 ✓. 버튼 글자는 [Button](button.md) 의 검증 |
+| **WCAG 2.4.3** Focus order | 열면 확인창으로, 닫으면 연 자리로. 열린 동안 초점이 확인창 안을 돈다 |
+| **WCAG 2.5.8** Target Size — Minimum(AA ≥ 24×24) | 버튼 40 · 36 ✓ |
+| **WCAG 2.5.5** Target Size — Enhanced(AAA ≥ 44×44) | 버튼은 누르는 영역을 44 까지 넓힌다(Button) ✓ |
+| **ARIA** | `role="alertdialog"` + `aria-modal="true"`, 제목 `aria-labelledby` · 설명 `aria-describedby` — 제목이 없으면 `aria-label` 로 묻는 말을 단다 |
 
 ## Do / Don't
 
 ### ✅ Do
 
-- title은 **결정 또는 결과**를 짧은 명사구로 ("거래 삭제", "그룹 삭제", "해지 불가").
-  한눈에 무슨 일이 벌어지는지가 읽혀야 한다.
-- **같은 동작이면 어디서 불렀든 제목·설명이 같다.** 상세에서 눌렀든 스와이프 트레이에서
-  눌렀든 같은 삭제라면 같은 문구다. 플랫폼도 마찬가지다 — 앱 · 모바일 웹 · 데스크톱 웹이
-  같은 제목, 같은 설명을 쓴다. 경로·플랫폼에 따라 달라도 되는 것은 footer 버튼의
-  **배치와 크기**뿐이다.
-- description은 **상세 내역** — 무엇이 어떻게 되는지와 확인 질문을 여기서 말한다
-  ("연결된 자산 잔액이 함께 조정됩니다. 삭제하시겠어요?"). 결과를 빼고 질문만 두지 않는다.
-- **파괴적 액션은 description 에서 대상을 이름으로 짚는다** — "이 계좌를 삭제할까요?" 가
-  아니라 `"급여통장"을(를) 삭제할까요?`. 확인창은 사용자가 **무엇을** 지우려 했는지 되짚는
-  마지막 자리다. 리스트에서 잘못된 행을 눌렀다면 여기 말고는 알아챌 곳이 없다.
-- destructive action label은 행위 직접 표현 ("영구 삭제", "권한 회수").
-- Cancel을 default focus로 — Enter 사고 방지.
-- 위험 액션(삭제/회수/탈퇴/결제 확정)에 사용 — 일반 form 입력은 `Dialog`.
+- 되돌릴 수 없는 일 앞에서만 — 둘 중 하나를 고르게.
+- 확정은 동작 이름, 지우기는 Critical.
+- 설명에 무엇이 어떻게 되는지 적는다.
 
 ### ❌ Don't
 
-- close button (X) 두기 — 사용자가 결정을 회피하지 못하게 함.
-- overlay click으로 닫히게 — 실수 닫힘으로 결정 미루기 안 됨.
-- Action button을 default focus로 — Enter 사고 직결.
-- 모호한 label ("확인", "OK", "Yes") — 결정 행위를 명시. 결정 자체가 없는 acknowledge 의 `확인` 은 제외.
-- AlertDialog 안에 form 입력 — 결정만 받음. 입력은 `Dialog`.
-- 페이지에 AlertDialog 여러 개 겹침 — 사용자 혼란.
-- 파괴적 확인에서 대상을 지시대명사로만 부르기 ("이 항목", "이 계좌") — 어느 행을 눌렀는지 확인할 길이 사라진다.
-- 같은 동작인데 진입 경로·플랫폼마다 다른 제목 — 같은 결과를 다른 일로 읽게 만든다.
+- 확인창 안에 입력칸.
+- "확인" · "예" 같은 버튼 글, 합니다체.
+- 취소를 Critical 로.
+- 동작 셋 이상을 확인창에.
+- 모양을 화면마다 바꾸기(폭 · 정렬 · 버튼 순서) — SEED 도 "임의로 수정하거나 변형" 을 막는다.
+
+## Specification
+
+`alert-dialog.yaml` 의 규칙을 하나도 빼지 않고 조건마다 그린다 — 웹 · 앱이 Alert Dialog 를 만들 때 이 값을 그대로 쓴다. 조건이 없는 `Base` 가 모든 조합에 걸리고, 뒤의 규칙이 앞의 같은 값을 덮는다.
+
+[그림: Specification — alert-dialog.yaml 의 규칙 전부](../../site/components/specs/spec-sheet.tsx#alert-dialog)
+
+## SEED 와 다른 점
+
+- **1280 이상은 버튼 small 36** — Button 결정(대화상자 바닥 36)을 따랐다. 1280 미만은 SEED 와 같은 medium 40.
+- **딤은 porest 0.50 · 다크 0.65**(v102) — SEED 0.455.
+- **z-index 는 specs/z-index.md 의 L5**(딤 300 · 확인창 301) — 열린 대화상자 · 시트 위에 뜬다. SEED 는 모든 모달이 2 + layerIndex 라 DOM 순서에 기댄다.
+- **`Esc` 는 취소** — SEED 와 같다. 옛 porest 스펙은 `Esc` 도 막았다.
 
 ## Migration notes
 
-- **title `display-sm`(24/700) → `title-md`(18/600)**: Dialog 와 동일 정합. 24px 가 컨텍스트 모달에 과해 모든 모달·시트 타이틀과 통일(18/600 semibold). 공유 `.modal-title` 시각이므로 Dialog 와 함께 이동. 상세는 [`dialog.md`](dialog.md) Migration notes 참조.
-- 기존 `alert-dialog.tsx`는 `dialog.tsx`와 동일한 토큰 부재(`p-6`, `rounded-md`, `shadow-lg`, title `text-title-lg`) 사용 — 이번 동기에서 `Dialog`와 함께 preview `.modal-*` 톤으로 정렬, 픽셀 하드코딩 대신 `--spacing-2xl`/`--spacing-md` 토큰 직접 인용. *(폭·여백은 2026-09-16 에 다시 정해졌다 — 위 Sizes 와 [`dialog`](dialog.md) Layout 이 현재 값이다.)*
-- **AlertDialogTitle 하단 border 제거**: Radix `AlertDialogPrimitive.Title`도 `<h2>`를 렌더해 Dialog와 동일한 충돌이 있었음. `build-site.mjs`의 `.content h2` → `.content > h2` selector 격리로 자동 해소(상세는 [`dialog.md`](dialog.md) Migration notes 참조).
-- `AlertDialogCancel` 은 `neutralWeak`, `AlertDialogAction` 은 `criticalSolid` — 둘 다 `small`(36). 2026-09-30 Button 구조 변경으로 옛 `secondary` · `destructive` 에서 옮겼다([`button`](button.md) Migration notes). 모달 footer 취소를 옅은 회색 채움으로 통일한 건 2026-08 부터다.
-- 위험이 아닌 확정(발행 · 결제)은 `className={cn(buttonVariants({ variant: "neutralSolid", size: "small" }))}` 로 바꿔 쓴다. spec 에선 `criticalSolid` 를 기본 action 으로 둔다.
-- preview-html의 `renderShadcnDisclose` 안 `.ad-*`(icon-circle 변형)도 `.modal-*` 톤으로 정렬 — title-sm → display-sm으로 통일.
-- **box-shadow는 Tailwind utility(`shadow-xl`) 대신 inline `style={{ boxShadow: "var(--shadow-xl)" }}` 사용** — Dialog와 동일한 fix. Tailwind v4 `--tw-shadow-*` 분해 처리가 다크 모드 CSS 변수 override를 우회하는 문제. preview `.modal-dialog` SoT와 다크 모드 정합 보장. 상세는 [`dialog.md`](dialog.md) Migration notes 참조.
-- **title 규칙을 "결정 질문형" 에서 "결정 또는 결과(명사구)" 로 개정했다(2026-08).** 원래 Do 는
-  질문형을 예시로 못박고 있었는데, 앱·웹의 삭제 확인이 처음부터 전부 명사구였다 —
-  `memo_detail_dialog.dart:84`(메모 삭제) · `todo_detail_dialog.dart:85`(할 일 삭제) ·
-  `tx_detail_dialog.dart:121`(거래 삭제) · `asset_detail_dialog.dart:101`. 질문은 전부
-  description 에 있었다. 어느 한 화면이 어긴 게 아니라 **규칙 쪽이 실태와 어긋나 있었고**,
-  그대로 두면 모든 확인창이 위반으로 읽힌다. 제목은 한눈에 무슨 일이 벌어지는지 알리고,
-  질문과 결과는 description 이 함께 진다.
-- 위 개정으로 [`swipe-actions`](swipe-actions.md) 를 위해 두었던 "트리거 라벨 예외" 절이
-  필요 없어져 걷어냈다 — 스와이프 트레이의 `삭제` 는 그 자체가 결정 명사구라 일반 규칙으로
-  통과한다. 예외로 남겨 두면 규칙이 둘로 보인다.
-- **acknowledge(단일 액션) 변형을 넣었다(2026-08).** title 규칙이 "결정 또는 결과" 로 개정되면서
-  `해지 불가` 같은 **결과** 제목이 정식이 됐는데, Variants 는 여전히 `취소`+액션 2개만 상정하고
-  있었다. 그 틈에서 카테고리 삭제 차단 화면이 제목은 `카테고리 삭제`, 버튼은 눌러도 아무 일 없는
-  빨간 `삭제` 인 채로 굴러갔다(앱·웹 양쪽). 결정이 없는 통지에는 고를 것을 내밀지 않는다.
-- **"같은 동작이면 같은 문구" 와 "대상을 이름으로" 를 규칙으로 올렸다(2026-08).** 같은 계좌를
-  지우는데 데스크톱 웹은 제목 `계좌 삭제` · 설명 `"급여통장"을(를) 목록에서 제거합니다`, 앱은
-  제목 `삭제` · 설명 `이 계좌를 삭제하시겠습니까?` 로 떴다 — 제목도 설명도 플랫폼과 경로마다
-  달랐다. 앞선 개정이 제목의 **형식**(명사구)만 정하고 **동일성**은 말하지 않아, 형식만 지키면
-  무엇을 쓰든 통과했다. 설명 쪽은 더 나빠서, 지시대명사("이 계좌를")로 부르면 리스트에서 잘못된
-  행을 눌렀을 때 알아챌 자리가 아예 없다. 확인창의 존재 이유가 그 되짚음인데 그걸 못 했다.
-  [`swipe-actions`](swipe-actions.md) 의 "제목은 트레이 라벨 그대로" 규칙도 이 개정으로 뒤집혔다.
+### 2026-10-02 — SEED Alert Dialog 로 다시 정한다
+
+사용자가 [비교 페이지](https://claude.ai/artifact/2KE4tDQT6p5GPyhx7Y29vt)에서 정했다 — SEED 모양 · 동작(최대 272 · 모서리 20 · 제목 20 / 27 · 설명 16 / 22 짙은 글자 · 버튼 나란히(길면 세로 · 확정 위) · 바깥 무시 · `Esc` = 취소). 버튼은 Button 결정대로 1280 이상 36. 옛 Alert Dialog(420 · 폰 90% · 모서리 12 · 제목 18 / 600 · 바깥 · `Esc` 모두 막음 · 처음 초점 취소)는 걷었다 — 옛 스펙은 `alert-dialog.history/v-pre-seed-overlay.*`.
+
+제품은 앱 적용 단계에서 옮긴다(2026-10-02 조사). 확인창 닫는 규칙이 지금 다섯 갈래다.
+
+- **Desk 웹** — ConfirmDialog 35곳(지우기 26). 바깥 · `Esc` 모두 막고, 닫으면 초점이 body 로 떨어진다. 문구의 합니다체 15곳 · "-시-" 4곳. 환불 확인은 설명 안에 날짜 입력칸이 있다(→ Dialog).
+- **Desk 앱** — 확인창 35곳이 **바깥 탭으로 닫힌다**(Flutter 기본). 열 때 초점이 어디에도 가지 않는다. 설명이 제목과 같은 색. 관심 그룹 삭제 · 할부 정리 되돌리기의 버튼이 "확인"(웹은 "그룹 삭제" · "되돌리기"). PFormAlertDialog 3곳이 확인창으로 폼을 띄운다(→ Dialog · 시트).
+- **HR 웹** — AlertDialog 7곳(모두 삭제)이 **`Esc` 로 닫힌다** · 바깥은 막는다. 삭제 버튼 3.76:1, 설명 4.42:1, "정말 … 삭제하시겠습니까?" 7곳 모두.

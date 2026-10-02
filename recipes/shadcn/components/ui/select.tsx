@@ -34,6 +34,8 @@ import { inputButtonSurfaceVariants, inputButtonVariants } from "@/components/ui
  * 하나 고르기는 고르면 닫히고(다시 눌러도 풀리지 않는다), 여럿 고르기는 열린 채 고르거나 푼다(고른 순서를 지킨다).
  * Esc · 바깥 누르기 · Tab 은 닫는다 — Esc · 고르기로 닫으면 트리거로 포커스가 돌아오고, Tab 은 트리거 다음(Shift 는 앞) 칸으로 간다.
  * 닫힌 트리거에서 글자 키는 하나 고르기면 그 글자로 시작하는 다음 선택지로 값을 바로 바꾼다(열지 않는다 — 네이티브 select).
+ * 휠 스크롤은 목록 안에서 멈춘다 — 대화상자 · 시트 안에서 열었을 때 그 표면의 스크롤 잠금(문서에 건다)이 목록의 휠을 막지 않게
+ * (Popover 와 같다).
  * name 을 주면 고른 값마다 hidden input 을 둔다(비활성이면 보내지 않는다).
  */
 
@@ -587,6 +589,8 @@ const Select = React.forwardRef<HTMLButtonElement, SelectProps>((props, ref) => 
             }
           }}
           onKeyDown={onListKeyDown}
+          // 휠은 목록에서 멈춘다 — 대화상자 안이면 그 스크롤 잠금이 문서에서 휠을 막는다
+          onWheel={(e) => e.stopPropagation()}
         >
           <div ref={scrollRef} data-slot="select-scroll" className={SCROLL}>
             {groups.map((group, g) => {

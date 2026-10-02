@@ -107,6 +107,7 @@ function IconPicker({
       </PopoverTrigger>
       <PopoverContent
         align="start"
+        aria-label="아이콘 선택"
         className={cn("p-[var(--spacing-md)]", CONTENT_WIDTH[size])}
       >
         <div className="mb-[var(--spacing-sm)]">

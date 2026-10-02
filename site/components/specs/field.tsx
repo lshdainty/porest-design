@@ -119,11 +119,11 @@ const Hero: Fig = ({ caption }) => (
         </Form>
       </Screen>
       </div>
-      <WebWindow mode="light" w={600} h={420} url="hr.porest.app">
+      <WebWindow mode="light" w={600} h={480} url="hr.porest.app">
         <WebDialog
           mode="light"
+          brand="hr"
           title="공지 작성"
-          w={440}
           footer={
             <div className="ml-auto flex gap-2">
               <ButtonView look={buttonLook({ variant: 'neutralWeak', size: 'small' }, 'hr')} mode="light" label="취소" state="enabled" />
@@ -375,17 +375,7 @@ const LeaveGuide: Fig = ({ caption }) => (
           h={600}
           bg="bg-layer-default"
           overlay={
-            <AlertBox
-              mode="light"
-              title="작성한 내용이 사라져요"
-              body="지금 나가면 쓴 내용은 저장되지 않아요."
-              footer={
-                <div className="flex gap-2">
-                  <div className="flex-1">{cta('계속 쓰기', 'light', 'neutralWeak')}</div>
-                  <div className="flex-1">{cta('나가기', 'light', 'criticalSolid')}</div>
-                </div>
-              }
-            />
+            <AlertBox mode="light" title="작성한 내용이 사라져요" body="지금 나가면 쓴 내용은 저장되지 않아요." cancel="계속 작성" confirm="나가기" />
           }
         >
           <div className="flex flex-col px-6 pt-4">

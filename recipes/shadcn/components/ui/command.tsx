@@ -1,10 +1,9 @@
 import * as React from "react";
-import { type DialogProps } from "@radix-ui/react-dialog";
 import { Command as CommandPrimitive } from "cmdk";
 import { Search } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, type DialogProps } from "@/components/ui/dialog";
 
 /*
  * Porest Command (shadcn 베이스 + Porest 디자인 토큰)
@@ -13,7 +12,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
  * - cmdk 베이스. ⌘K 스타일 명령어 팔레트.
  * - composition: Command > CommandInput / CommandList > CommandEmpty /
  *                CommandGroup > CommandItem / CommandSeparator / CommandShortcut
- * - CommandDialog: Command + Dialog 조합 (전역 ⌘K).
+ * - CommandDialog: Command + Dialog 조합 (전역 ⌘K). 보이는 제목이 없어 label(기본 "명령어 검색")을 대화상자의 이름으로 단다.
  *
  * 시각 정합:
  * - Input: Input.md md spec 정합 (h-10 + body-md + token padding + font-sans)
@@ -37,10 +36,10 @@ const Command = React.forwardRef<
 ));
 Command.displayName = CommandPrimitive.displayName;
 
-const CommandDialog = ({ children, ...props }: DialogProps) => {
+const CommandDialog = ({ children, label = "명령어 검색", ...props }: DialogProps & { label?: string }) => {
   return (
     <Dialog {...props}>
-      <DialogContent className="overflow-hidden p-0">
+      <DialogContent aria-label={label}>
         <Command className="[&_[cmdk-group-heading]]:px-[var(--spacing-md)] [&_[cmdk-group-heading]]:py-[var(--spacing-sm)] [&_[cmdk-group-heading]]:text-label-sm [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-text-secondary [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-[var(--spacing-xs)] [&_[cmdk-input-wrapper]_svg]:h-4 [&_[cmdk-input-wrapper]_svg]:w-4 [&_[cmdk-input]]:h-10 [&_[cmdk-item]]:px-[var(--spacing-md)] [&_[cmdk-item]]:py-[var(--spacing-sm)] [&_[cmdk-item]_svg]:h-4 [&_[cmdk-item]_svg]:w-4">
           {children}
         </Command>

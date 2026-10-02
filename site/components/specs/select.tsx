@@ -10,6 +10,7 @@ import { RadioView } from './radio-group-view';
 import { selectBoxLook } from './select-box-look';
 import { SelectBoxGroupView } from './select-box-view';
 import { SheetOverlay, SheetPanel } from './input-button-pickers';
+import { PHONE_SAFE, ov } from './overlay-screens';
 import type { ItemState, SelGroup, SelSize, SelectLook, TriggerState } from './select-look';
 import { SelectPlayground } from './select-playground';
 import { Cap, CATS, Cell, F, Form, HeroScreens, Live, PAY_FLAT, PAY_GROUPS, PAY_NONE, POLICY, Surface, desk, hr, plain, tf } from './select-screens';
@@ -620,8 +621,8 @@ const MobileGuide: Fig = ({ caption }) => {
           <PayPhone
             payment={<SelectTriggerView look={lk} mode="light" size="large" state="open" labels={['현대카드 M']} />}
             overlay={
-              <SheetOverlay look={lk} mode="light">
-                <SheetPanel look={lk} mode="light" title="결제 수단">
+              <SheetOverlay ov={ov()} mode="light">
+                <SheetPanel ov={ov()} mode="light" title="결제 수단" bodyPad={false} safe={PHONE_SAFE}>
                   <SelectListView look={lk} mode="light" size="large" groups={groups} selected={['hyundai-m']} style={{ background: 'transparent', boxShadow: 'none', borderRadius: 0, padding: 0 }} />
                 </SheetPanel>
               </SheetOverlay>

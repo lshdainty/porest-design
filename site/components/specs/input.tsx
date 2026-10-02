@@ -81,7 +81,7 @@ const Hero: Fig = ({ caption }) => (
         <WebDialog
           mode="light"
           title="휴가 신청"
-          w={440}
+          brand="hr"
           footer={
             <div className="ml-auto flex gap-2">
               <ButtonView look={buttonLook({ variant: 'neutralWeak', size: 'small' }, 'hr')} mode="light" label="취소" state="enabled" />

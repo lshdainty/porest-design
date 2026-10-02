@@ -3791,34 +3791,15 @@ Desk — 메모/할일/가계부 저장 완료, 동기화 상태, 작업 취소 
 #### A11y
 - HR과 동일 — role/aria-live, focus 안 받음, swipe 키보드 fallback (close button)
 
-### Modal
+### 시트 · 대화상자 · 확인창 · 팝오버
 
-Desk — 메모/할일 편집, 가계부 entry 입력, 카테고리 관리 등. 모바일 우선이라 **bottom sheet** 형태가 default(centered modal은 desktop 보조).
+공통 정의는 `DESIGN.md` 의 같은 절, 원본은 `specs/components/bottom-sheet.md` · `dialog.md` · `alert-dialog.md` · `popover.md`(2026-10-02 SEED). 표면 · 고른 색은 브랜드와 관계없이 같다.
 
-#### Structure
-- overlay: `overlay-dim-light` / `overlay-dim-dark` (탭 시 닫기)
-- container (centered modal): `surface-default` + `outline-strong-light` 1px + `shadow-lg` (Desk는 modal에 `xl`보다 한 단 약한 `lg` 사용 — 친근감)
-- container (bottom sheet): `surface-default` + 상단 라운드 `radius-2xl` (20px) + drag handle bar 위에 표시
-
-#### Variant
-- sm 320px: 간단 confirm
-- **md 400px** (default centered): 메모/할일 편집 form
-- lg 560px: detail view (가계부 월간 요약)
-- **mobile sheet** (모바일 default): full-width, 화면 하단 점진 노출 (스와이프 가능)
-
-#### Layout
-- container padding: `lg` (16px) — Desk는 모바일 viewport 고려 보수적
-- header/body-lg 간격: `md`, body-lg/footer 간격: `lg`
-- footer button: 모바일 sheet는 전체 폭 stacked button, desktop centered는 우측 정렬
-
-#### Motion
-- centered modal 등장: overlay fade + container `motion-duration-base` scale+fade
-- bottom sheet 등장: 하단 슬라이드 `motion-duration-slow` × `motion-ease-out`
-- swipe-to-dismiss 사용 시: `motion-duration-fast` follow-through
-
-#### A11y
-- `role="dialog"` + `aria-modal="true"` + `aria-labelledby` + focus trap + ESC/swipe close + return focus + scroll lock
-- bottom sheet drag handle은 `aria-label="끌어서 닫기"` + 키보드 fallback (close button 포함)
+- **폼 · 상세** — 한 부품(Responsive Dialog)이 1280 미만 Bottom Sheet · 이상 Dialog 로 띄운다(지금 ModalShell 은 768 에서 바뀐다).
+- **거래 추가 · 수정 같은 입력 폼** — 바깥 누르기 · 끌어내리기로 닫히지 않는다. 시트는 위 닫기 + 바닥 [저장], 대화상자는 바닥 [취소] [저장]. 바뀐 값이 있으면 나가기 전에 "작성한 내용이 사라져요" 를 묻는다.
+- **삭제 · 되돌리기 확인 35곳** — Alert Dialog. 버튼은 동작 이름(관심 그룹 "그룹 삭제" · 할부 정리 "되돌리기" — 앱의 "확인" 을 걷는다). 환불처럼 입력이 필요한 확인은 Dialog · 시트로 옮긴다.
+- **날짜 · 시각 고르기** — 1280 미만은 시트(Input Button), 이상은 Popover(지금은 폰에서도 팝오버).
+- 앱 적용 때 정할 자리 — 85 ~ 92% 높이 시트 9곳(페이지 · 스냅 높이 · 내용 높이), 밤하늘 · 관측 리포트(모바일 전체 화면), 알림 팝오버 · 데스크톱 필터.
 
 ### Chart color (palette)
 
@@ -3947,12 +3928,7 @@ Desk(B2C) 4 컴포넌트 사용 패턴 — DESIGN.md 공통 spec 외 brand-speci
 - 무한 스크롤은 가계부 dashboard에선 회피 (scroll position 잃기 쉬움) — load-more가 명시적.
 
 #### Drawer — Desk
-- **bottom sheet** 압도적 우선 — 거래 입력, 메모 attachments, 할일 추가, 카테고리 필터.
-  - swipe handle 8×40 상단 표시 (gesture hint)
-  - swipe-down threshold 30% 또는 velocity 기준 닫기
-  - safe-area-inset-bottom 적용 (iOS home indicator 회피)
-- **left drawer (navigation)**: 햄버거 메뉴 — 카테고리 list, 보관함, 설정 진입. 너비 80vw.
-- focus trap + scroll lock 필수. 키보드 사용자 회피 위해 모바일에서도 ARIA 정확.
+아래에서 올라오는 시트는 2026-10-02 Bottom Sheet 로 바뀌었다 — 위 "시트 · 대화상자 · 확인창 · 팝오버" 절. 옆 패널은 Side Panel 차례에 정한다.
 
 #### Spinner / Progress — Desk
 - **메모 저장 spinner**: button 안 sm 16 spinner + "저장 중..." 라벨.
@@ -4046,9 +4022,7 @@ Desk(B2C) 5 disclosure/overlay 컴포넌트.
 - 데스크탑 web에서는 right-click 동일 메뉴.
 
 #### Alert Dialog — Desk
-- **메모 영구 삭제**: "30일 후 영구 삭제됩니다. 보관함이 아닌 즉시 삭제할까요?"
-- **카테고리 삭제**: "이 카테고리의 모든 거래 (47건)이 미분류로 이동돼요" (destructive 명시).
-- **계정 삭제**: 강력한 destructive — 6자리 OTP 추가 확인 후 삭제 (Alert Dialog + Input OTP 결합 패턴).
+2026-10-02 SEED Alert Dialog 로 다시 정했다 — 위 "시트 · 대화상자 · 확인창 · 팝오버" 절.
 
 ### Data batch (v71 추가)
 
@@ -4135,11 +4109,7 @@ Desk(B2C) 5 추가 shadcn 누락 컴포넌트 — 모바일 우선.
 - 할 일 우선순위 · 반복 주기처럼 2 ~ 4개 폼 값은 칩, 요일 7개 · 계좌 종류 6개는 Select.
 
 #### Popover — Desk
-- **카테고리 quick edit** — 가계부 거래 row의 카테고리 클릭으로 popover, 다른 카테고리 선택 후 자동 닫기.
-- **메모 quick action** — 메모 카드 우상단 ⋯ 클릭으로 popover (편집/삭제/공유/duplicate).
-- **할일 due-date 빠른 변경** — 할일 카드 due chip 클릭으로 calendar popover.
-- 모바일 — popover 자동으로 bottom sheet으로 전환 (small screen detection).
-- bottom-end placement default — 카드 list context.
+2026-10-02 SEED Popover 로 다시 정했다 — 위 "시트 · 대화상자 · 확인창 · 팝오버" 절.
 
 #### File Upload — Desk
 - **영수증 다중 업로드** — 가계부 거래에 영수증 사진 multi (max 3장 / 거래 1건).

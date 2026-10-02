@@ -35,3 +35,6 @@ export const PEOPLE: Person[] = [
   { value: 'junho', name: '조준호', team: '영업팀', hue: 'orange' },
 ];
 
+
+// 달력(CalendarGrid)의 높이 — 머리 40 · 요일 줄 24 · 다섯 주(날 칸 = cell − 8) · 줄 사이 4. 달력은 아직 스펙이 없다(Date Picker 차례) — 그림의 값
+export const calendarHeight = (cell: number, weeks = 5) => 40 + 24 + weeks * (cell - 8) + weeks * 4;

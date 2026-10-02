@@ -1,82 +1,49 @@
 'use client';
 // Input Button 이 여는 자리 — 시트(1280 미만) · 팝오버(1280 이상)와 그 안의 달력 · 격자 · 검색 목록.
-// 시트 · 팝오버 · 달력 · 시각 휠의 모양은 아직 스펙이 없다(Bottom Sheet · Popover · Date Picker · Time Picker 차례) —
-// 역할 색 토큰으로 간단히 그린다. 칸(Input Button)과 Field 는 YAML 대로다(select-view · text-field-view).
-import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
-import { createPortal } from 'react-dom';
-import { Check, ChevronLeft, ChevronRight, X } from 'lucide-react';
+// 시트 · 팝오버는 Bottom Sheet · Popover 스펙(bottom-sheet · popover.yaml — overlay-view · overlay-live)대로 그린다.
+// 달력 · 시각 휠 · 격자의 모양은 아직 스펙이 없다(Date Picker · Time Picker 차례) — 역할 색 토큰으로 간단히 그린다.
+// 칸(Input Button)과 Field 는 YAML 대로다(select-view · text-field-view).
+import { useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { ButtonLook } from './button-look';
 import { ButtonView } from './button-view';
 import { CATEGORIES, PEOPLE, WEEK, catText, formatDate, weekday, type CatItem, type Person } from './input-button-data';
+import type { OvKit, OverlayLook } from './overlay-shared';
+import { ModalLayer, PopoverLayer, useMinWidth } from './overlay-live';
+import { DimView, PopoverSurface, SheetSurface } from './overlay-view';
 import { scv, type SelIcon, type SelSizeProp, type SelTone, type SelectLook, type ViewMode } from './select-shared';
 import { InputButtonView, SelIconView, labelFocusOnly } from './select-view';
 import type { TfFieldLook, TfInputLook } from './text-field-shared';
 import { TfFieldView, TfInputView } from './text-field-view';
 
-const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 const tone = (look: SelectLook, name: SelTone, mode: ViewMode) => scv(look.tone[name], mode);
-const dimOf = (look: SelectLook, mode: ViewMode) => (mode === 'auto' ? 'var(--p-overlay-dim)' : look.overlay.dim[mode]);
 const FONT = "'Pretendard Variable', Pretendard, sans-serif";
 
-// 폭이 이 값 이상인지 — Input Button 이 여는 자리(1280 미만 시트 · 이상 팝오버)
-function useMinWidth(px: number) {
-  const [wide, setWide] = useState(false);
-  useEffect(() => {
-    const m = window.matchMedia(`(min-width: ${px}px)`);
-    const on = () => setWide(m.matches);
-    on();
-    m.addEventListener('change', on);
-    return () => m.removeEventListener('change', on);
-  }, [px]);
-  return wide;
-}
-
-// ── 시트 · 팝오버의 판 ────────────────────────────────────
-// 시트 — 위 모서리 · 손잡이 · 제목(고를 값의 종류) · 닫기, 아래에 확정 버튼(있을 때만)
-export function SheetPanel({ look, mode = 'auto', title, titleId, children, footer, onClose }: { look: SelectLook; mode?: ViewMode; title: string; titleId?: string; children: ReactNode; footer?: ReactNode; onClose?: () => void }) {
-  const r = look.overlay.sheetRadius;
-  const close = (
-    <span className="flex h-7 w-7 items-center justify-center rounded-full" style={{ background: tone(look, 'bg-neutral-weak', mode) }}>
-      <X aria-hidden size={14} strokeWidth={2.5} style={{ color: tone(look, 'fg-neutral', mode) }} />
-    </span>
-  );
+// ── 시트 · 팝오버의 판(멈춘 그림) ──────────────────────────
+// 시트 — 제목(고를 값의 종류) · 위 닫기, 아래에 확정 버튼(있을 때만). 사람 목록처럼 줄이 화면 여백을 가지면 본문 여백을 뺀다(bodyPad)
+export function SheetPanel({ ov, mode = 'auto', title, children, footer, bodyPad = true, safe }: { ov: OverlayLook; mode?: ViewMode; title: string; children: ReactNode; footer?: ReactNode; bodyPad?: boolean; safe?: number }) {
   return (
-    <div className="relative" style={{ borderRadius: `${r}px ${r}px 0 0`, background: tone(look, 'bg-layer-floating', mode), fontFamily: FONT }}>
-      <span aria-hidden className="absolute left-1/2 top-1.5 h-1 w-9 -translate-x-1/2 rounded-full" style={{ background: tone(look, 'stroke-neutral-weak', mode) }} />
-      {onClose ? (
-        <button type="button" aria-label="닫기" onClick={onClose} className="absolute right-4 top-6 cursor-pointer border-0 bg-transparent p-0">
-          {close}
-        </button>
-      ) : (
-        <span aria-hidden className="absolute right-4 top-6">
-          {close}
-        </span>
-      )}
-      <div id={titleId} className="pb-4 pl-6 pr-14 pt-6 text-[22px] font-bold leading-[30px]" style={{ color: tone(look, 'fg-neutral', mode) }}>
-        {title}
-      </div>
-      <div>{children}</div>
-      {footer ? <div className="px-6 pb-4 pt-3">{footer}</div> : <div className="h-4" />}
-    </div>
+    <SheetSurface look={ov.sheet} mode={mode} title={title} footer={footer} bodyPad={bodyPad} safe={safe}>
+      {children}
+    </SheetSurface>
   );
 }
 
 // 시트를 폰 화면 위에 — 딤 위 아래쪽
-export function SheetOverlay({ look, mode = 'auto', children }: { look: SelectLook; mode?: ViewMode; children: ReactNode }) {
+export function SheetOverlay({ ov, mode = 'auto', children }: { ov: OverlayLook; mode?: ViewMode; children: ReactNode }) {
   return (
-    <div className="absolute inset-0 flex flex-col justify-end" style={{ background: dimOf(look, mode) }}>
+    <DimView dim={ov.sheet.dim} mode={mode} place="end">
       {children}
-    </div>
+    </DimView>
   );
 }
 
-// 팝오버 — 떠 있는 판(목록과 같은 바탕 · 그림자 · 모서리로 간단히)
-export function PopoverPanel({ look, mode = 'auto', children, footer, width, pad = 16 }: { look: SelectLook; mode?: ViewMode; children: ReactNode; footer?: ReactNode; width?: number | string; pad?: number }) {
+// 팝오버 — 머리 없는 고르는 패널(무엇을 고르는지는 칸이 말한다), 아래에 확정 버튼(있을 때만)
+export function PopoverPanel({ ov, mode = 'auto', children, footer, width, bodyPad = true }: { ov: OverlayLook; mode?: ViewMode; children: ReactNode; footer?: ReactNode; width?: number | string; bodyPad?: boolean }) {
   return (
-    <div style={{ width, boxSizing: 'border-box', padding: pad, borderRadius: look.overlay.popoverRadius, background: tone(look, 'bg-layer-floating', mode), boxShadow: scv(look.content.shadow, mode), fontFamily: FONT }}>
+    <PopoverSurface look={ov.popover} mode={mode} footer={footer} width={width} bodyPad={bodyPad} scroll={{ overflow: false, scrolled: false }}>
       {children}
-      {footer && <div className="mt-3 flex justify-end gap-2">{footer}</div>}
-    </div>
+    </PopoverSurface>
   );
 }
 
@@ -91,6 +58,7 @@ export function CalendarGrid({
   cell = 42,
   onPick,
   dayRef,
+  range,
 }: {
   look: SelectLook;
   mode?: ViewMode;
@@ -101,6 +69,8 @@ export function CalendarGrid({
   cell?: number;
   onPick?: (d: number) => void;
   dayRef?: (d: number, el: HTMLButtonElement | null) => void;
+  // 기간 — 시작 · 끝은 고른 날처럼 채우고, 사이는 옅게
+  range?: { start?: number; end?: number };
 }) {
   const first = new Date(year, month - 1, 1).getDay();
   const days = new Date(year, month, 0).getDate();
@@ -128,8 +98,9 @@ export function CalendarGrid({
         ))}
         {Array.from({ length: days }, (_, i) => {
           const d = i + 1;
-          const sel = d === selected;
-          const now = d === today && !sel;
+          const sel = d === selected || (!!range && (d === range.start || d === range.end));
+          const between = !!range && range.start !== undefined && range.end !== undefined && d > range.start && d < range.end;
+          const now = d === today && !sel && !between;
           const style: CSSProperties = {
             width: dot,
             height: dot,
@@ -142,8 +113,8 @@ export function CalendarGrid({
             fontFamily: FONT,
             border: 0,
             padding: 0,
-            background: sel ? tone(look, 'bg-neutral-inverted', mode) : now ? tone(look, 'bg-neutral-weak', mode) : 'transparent',
-            color: sel ? tone(look, 'fg-neutral-inverted', mode) : now ? fg : tone(look, 'fg-neutral-muted', mode),
+            background: sel ? tone(look, 'bg-neutral-inverted', mode) : now || between ? tone(look, 'bg-neutral-weak', mode) : 'transparent',
+            color: sel ? tone(look, 'fg-neutral-inverted', mode) : now || between ? fg : tone(look, 'fg-neutral-muted', mode),
             cursor: onPick ? 'pointer' : undefined,
           };
           return onPick ? (
@@ -187,7 +158,7 @@ export function TimeWheel({ look, mode = 'auto', columns, width = 280 }: { look:
 export function CategoryGrid({ look, mode = 'auto', items = CATEGORIES, selected, pressed, onPick, cellRef }: { look: SelectLook; mode?: ViewMode; items?: CatItem[]; selected?: string; pressed?: string; onPick?: (v: string) => void; cellRef?: (v: string, el: HTMLButtonElement | null) => void }) {
   const groups = [...new Set(items.map((i) => i.group))];
   return (
-    <div className="flex flex-col gap-3 px-4" style={{ fontFamily: FONT }}>
+    <div className="flex flex-col gap-3" style={{ fontFamily: FONT }}>
       {groups.map((g) => (
         <div key={g} className="flex flex-col gap-1">
           <span className="px-2 text-[13px] font-medium leading-[18px]" style={{ color: tone(look, 'fg-neutral-subtle', mode) }}>
@@ -234,7 +205,7 @@ export function CategoryGrid({ look, mode = 'auto', items = CATEGORIES, selected
 // 날(1 ~ 31) 격자 — 반복 날짜처럼 달과 상관없이 날만 고른다(누르면 바로)
 export function DayGrid({ look, mode = 'auto', selected, onPick, cellRef }: { look: SelectLook; mode?: ViewMode; selected?: number; onPick?: (d: number) => void; cellRef?: (d: number, el: HTMLButtonElement | null) => void }) {
   return (
-    <div className="grid grid-cols-7 gap-1 px-4" style={{ fontFamily: FONT }}>
+    <div className="grid grid-cols-7 gap-1" style={{ fontFamily: FONT }}>
       {Array.from({ length: 31 }, (_, i) => {
         const d = i + 1;
         const on = d === selected;
@@ -309,9 +280,10 @@ export function PeopleList({ look, mode = 'auto', people, query = '', selected, 
 }
 
 // ── 실제로 여는 자리 ─────────────────────────────────────
-// 1280 미만은 아래 시트(딤 위), 이상은 칸 아래 8 의 팝오버(칸 왼쪽에 맞추고, 아래가 모자라면 위로). Esc · 바깥 · 딤을 누르면 닫는다
+// 1280 미만은 아래 시트(Bottom Sheet — 고르기: 위 닫기 · 바깥 누르기 · 끌어내리기 · Esc 로 닫힌다), 이상은 칸 아래 8 의 팝오버
+// (Popover — 칸 왼쪽에 맞추고 아래가 모자라면 위로 · 바깥 · Esc · Tab 으로 빠져나가면 닫힌다). 열면 고른 날 · 고른 칸 · 검색칸으로 초점이 간다
 function IbSurface({
-  look,
+  kit,
   mode,
   open,
   onClose,
@@ -320,9 +292,10 @@ function IbSurface({
   children,
   footer,
   popoverWidth,
+  bodyPad = true,
   autoFocus = '[data-autofocus]',
 }: {
-  look: SelectLook;
+  kit: OvKit;
   mode: ViewMode;
   open: boolean;
   onClose: () => void;
@@ -331,92 +304,31 @@ function IbSurface({
   children: ReactNode;
   footer?: ReactNode;
   popoverWidth?: number;
+  bodyPad?: boolean;
   // 열린 뒤 포커스를 받을 것 — 검색칸 · 고른 날 · 고른 칸
   autoFocus?: string;
 }) {
-  const wide = useMinWidth(look.ib.breakpoint);
-  const [mounted, setMounted] = useState(false);
-  const [pos, setPos] = useState<{ left: number; top?: number; bottom?: number } | null>(null);
-  const panelRef = useRef<HTMLDivElement | null>(null);
+  const wide = useMinWidth(kit.ov.breakpoint);
   const titleId = useId();
-  useEffect(() => setMounted(true), []);
   const box = anchor?.closest('.psel-box') as HTMLElement | null;
-
-  useIsoLayoutEffect(() => {
-    if (!open || !wide || !box) return;
-    const place = () => {
-      const r = box.getBoundingClientRect();
-      const p = panelRef.current;
-      const h = p?.offsetHeight ?? 0;
-      const w = p?.offsetWidth ?? r.width;
-      const vw = document.documentElement.clientWidth;
-      const vh = window.innerHeight;
-      const g = look.content.gutter;
-      const e = look.content.edge;
-      const left = Math.max(e, Math.min(r.left, vw - e - w));
-      const below = vh - r.bottom - g - e;
-      setPos(below >= h || below >= r.top - g - e ? { left, top: r.bottom + g } : { left, bottom: vh - r.top + g });
-    };
-    place();
-    window.addEventListener('scroll', place, true);
-    window.addEventListener('resize', place);
-    return () => {
-      window.removeEventListener('scroll', place, true);
-      window.removeEventListener('resize', place);
-    };
-  }, [open, wide, box, look]);
-
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        onClose();
-      }
-    };
-    const onDown = (e: Event) => {
-      const t = e.target as Node;
-      if (panelRef.current?.contains(t) || box?.contains(t)) return;
-      if (wide) onClose();
-    };
-    document.addEventListener('keydown', onKey);
-    document.addEventListener('pointerdown', onDown, true);
-    return () => {
-      document.removeEventListener('keydown', onKey);
-      document.removeEventListener('pointerdown', onDown, true);
-    };
-  }, [open, wide, onClose, box]);
-
-  // 열린 뒤 포커스 — 판 안의 검색칸 · 고른 날 · 고른 칸(없으면 닫기 버튼이 아닌 첫 버튼)
-  useEffect(() => {
-    if (!open || !mounted) return;
-    const raf = requestAnimationFrame(() => {
-      const p = panelRef.current;
-      const el = p?.querySelector<HTMLElement>(autoFocus) ?? p?.querySelector<HTMLElement>('input, button:not([aria-label="닫기"])');
-      el?.focus({ preventScroll: true });
-      el?.scrollIntoView?.({ block: 'nearest' });
-    });
-    return () => cancelAnimationFrame(raf);
-  }, [open, mounted, wide, autoFocus]);
-
-  if (!open || !mounted) return null;
-  return createPortal(
-    wide ? (
-      <div ref={panelRef} role="dialog" aria-label={title} className="psel" style={{ position: 'fixed', zIndex: 100, left: pos?.left ?? 0, top: pos?.top, bottom: pos?.bottom, visibility: pos ? 'visible' : 'hidden' }}>
-        <PopoverPanel look={look} mode={mode} width={popoverWidth ?? box?.offsetWidth} footer={footer}>
+  if (wide)
+    return (
+      <PopoverLayer open={open} anchor={box} look={kit.ov.popover} mode={mode} align="start" ariaLabel={title} focusSelector={autoFocus} onRequestClose={onClose}>
+        {({ ref, rootProps, style, maxHeight, avail }) => (
+          <PopoverSurface ref={ref} rootProps={rootProps} style={style} maxHeight={maxHeight} avail={avail} width={popoverWidth} look={kit.ov.popover} mode={mode} footer={footer} bodyPad={bodyPad}>
+            {children}
+          </PopoverSurface>
+        )}
+      </PopoverLayer>
+    );
+  return (
+    <ModalLayer open={open} kind="sheet" look={kit.ov} mode={mode} outside="close" drag onRequestClose={onClose} labelledBy={titleId} returnFocus={() => anchor} focusSelector={autoFocus}>
+      {({ ref, rootProps, style, maxHeight }) => (
+        <SheetSurface ref={ref} rootProps={rootProps} style={style} maxHeight={maxHeight} look={kit.ov.sheet} mode={mode} title={title} titleId={titleId} onClose={onClose} footer={footer} bodyPad={bodyPad} safe="env(safe-area-inset-bottom, 0px)">
           {children}
-        </PopoverPanel>
-      </div>
-    ) : (
-      <div className="fixed inset-0 z-[100] flex flex-col items-center justify-end" style={{ background: dimOf(look, mode) }} onPointerDown={(e) => e.target === e.currentTarget && onClose()}>
-        <div ref={panelRef} role="dialog" aria-modal aria-labelledby={titleId} className="w-full max-w-[480px]">
-          <SheetPanel look={look} mode={mode} title={title} titleId={titleId} footer={footer} onClose={onClose}>
-            <div className="max-h-[60vh] overflow-y-auto">{children}</div>
-          </SheetPanel>
-        </div>
-      </div>
-    ),
-    document.body,
+        </SheetSurface>
+      )}
+    </ModalLayer>
   );
 }
 
@@ -447,6 +359,10 @@ export type InputButtonDemoProps = {
   // 확정 버튼 — 시트(넓게) · 팝오버(작게)
   done?: { sheet: ButtonLook; popover: ButtonLook };
   width?: number | string;
+  // 여는 자리(시트 · 팝오버)의 모양 — bottom-sheet · popover.yaml
+  kit: OvKit;
+  // 값이 바뀔 때(폼의 바뀐 값 확인)
+  onValue?: (v: string | undefined) => void;
 };
 
 const YEAR = 2026;
@@ -474,8 +390,14 @@ export function InputButtonDemo({
   affix = { prefix: 'none', suffix: 'icon' },
   done,
   width,
+  kit,
+  onValue,
 }: InputButtonDemoProps) {
-  const [value, setValue] = useState<string | undefined>(initial);
+  const [value, setOwnValue] = useState<string | undefined>(initial);
+  const setValue = (v: string | undefined) => {
+    setOwnValue(v);
+    onValue?.(v);
+  };
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<number | undefined>(undefined);
   const [query, setQuery] = useState('');
@@ -537,9 +459,8 @@ export function InputButtonDemo({
   let footer: ReactNode = null;
   let popoverWidth: number | undefined;
   if (kind === 'date') {
-    popoverWidth = 6 * 2 + 42 * 7 + 4;
     content = (
-      <div className="flex justify-center px-4">
+      <div className="flex justify-center">
         <CalendarGrid
           look={look}
           mode={mode}
@@ -588,7 +509,7 @@ export function InputButtonDemo({
     popoverWidth = 360;
     content = (
       <div className="flex flex-col gap-2">
-        <div className="px-4">
+        <div style={{ padding: `0 ${kit.ov.popover.body.padX}px` }}>
           {input && (
             <span className="block" data-search>
               <TfInputView look={input} mode={mode} size="large" prefixIcon="search" placeholder="이름 · 팀으로 찾기" ariaLabel={`${label} 찾기`} value={query} onValue={setQuery} clearable />
@@ -635,7 +556,7 @@ export function InputButtonDemo({
           />
         )}
       </TfFieldView>
-      <IbSurface look={look} mode={mode} open={open} onClose={close} anchor={btnRef.current} title={label} footer={footer} popoverWidth={popoverWidth} autoFocus={kind === 'people' ? '[data-search] input' : undefined}>
+      <IbSurface kit={kit} mode={mode} open={open} onClose={close} anchor={btnRef.current} title={label} footer={footer} popoverWidth={popoverWidth} bodyPad={kind !== 'people'} autoFocus={kind === 'people' ? '[data-search] input' : undefined}>
         {content}
       </IbSurface>
     </div>

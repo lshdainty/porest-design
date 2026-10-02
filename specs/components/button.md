@@ -171,7 +171,7 @@
 
 ### 버튼 배치
 
-- 닫기 · 초기화처럼 Dismiss 뜻의 `neutralWeak` 와 CTA 를 나란히 채울 때는 **3:7** 로 나눈다 — 위계가 분명해진다. 모달 footer 는 [Dialog](dialog.md) · [Drawer](drawer.md) 의 폭 나누기(지금은 균등)를 따른다.
+- 닫기 · 초기화처럼 Dismiss 뜻의 `neutralWeak` 와 CTA 를 나란히 채울 때는 **3:7** 로 나눈다 — 위계가 분명해진다. 모달 footer 는 [Dialog](dialog.md) · [Bottom Sheet](bottom-sheet.md) 의 폭 나누기(지금은 균등)를 따른다.
 - 비슷한 위계의 `neutralWeak` 둘은 나란히 둘 수 있다.
 - **셋 이상 나란히 두지 않는다** — 중요도가 비슷해 보여 고르기 어렵고, 큰 글자에서 라벨이 잘린다. 더 있으면 아이콘만 버튼(더보기)으로 넘긴다.
 - 인접한 버튼 사이는 8(`spacing-x2`).

@@ -79,6 +79,7 @@ rules:
         color: $color-fg-neutral-muted
       content:
         width: { value: 트리거 폭, note: "트리거와 같은 폭 — 선택지 글은 목록 안에서 줄바꿈된다" }
+        zIndex: { value: 200, note: "specs/z-index.md L3 — 대화상자 · 시트(101) 안에서 열어도 그 위" }
         background: $color-bg-layer-floating
         radius: $radius-r5
         shadow: $shadow-s3

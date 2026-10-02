@@ -341,6 +341,8 @@ Sonner stack — top-right (HR) / bottom-center (Desk 모바일) 위치. 실제 
 
 ## Modal / Dialog
 
+> 2026-10-02 — 대화상자 · 확인창은 `specs/components/dialog.md` · `alert-dialog.md`(SEED)가 원본이다. 아래 마크업은 옛 모양이다.
+
 ```html
 <div class="relative bg-overlay-dim p-8 rounded-md min-h-64 flex items-center justify-center">
   <div role="dialog" aria-modal="true" aria-labelledby="dialog-title" class="bg-surface-default rounded-xl shadow-xl max-w-md w-full p-6 flex flex-col gap-4">
@@ -379,6 +381,8 @@ A11y: focus trap (Tab/Shift+Tab 내부 순환), Escape 닫기, 닫힌 후 trigge
 ---
 
 ## Drawer / Sheet
+
+> 2026-10-02 — 아래에서 올라오는 시트는 Bottom Sheet(`specs/components/bottom-sheet.md`), 대화상자 · 확인창 · 팝오버는 `dialog.md` · `alert-dialog.md` · `popover.md` 가 원본이다(SEED). 아래 마크업은 옛 Drawer 모양이고, 오른쪽 패널(Sheet)은 Side Panel 차례에 다시 정한다.
 
 ```html
 <div class="relative bg-overlay-dim p-0 rounded-md min-h-80 overflow-hidden flex justify-end">

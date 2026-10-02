@@ -131,7 +131,7 @@ Table은 **size variant 없음** — TableHead height만 고정(`h-10` 40px), Ta
 - **모든 column sortable** — 의미 없는 column(이미지/액션)은 sortable 안 함.
 - **숫자 cell 좌측 정렬** — 자릿수 비교 어려움. 항상 우측 + `tabular-nums`.
 - **5+ status type 동시 사용** — Badge variant 분기 폭발. 의미 통합 또는 다른 시각화.
-- **table 안 nested table** — semantic 혼란. 별도 detail panel 또는 [`Drawer`](drawer.md)로 분리.
+- **table 안 nested table** — semantic 혼란. 별도 detail panel 또는 [`Bottom Sheet`](bottom-sheet.md)로 분리.
 - **모바일에 가로 스크롤만 의존** — 사용성 ↓. column hide 또는 카드 fallback 우선.
 
 ## Migration notes

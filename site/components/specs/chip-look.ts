@@ -3,7 +3,6 @@
 // 색은 토큰 이름과 라이트 · 다크 값을 함께 둔다(사이트 모드를 따르는 그림은 --p-<토큰> 변수로).
 import { axisValues, loadComponentSpec, num, resolveState, stateNames, tokenValue, type TypeValue } from '@/lib/component-spec';
 import { color, design, pressScale, type Brand } from '@/lib/design-tokens';
-import { selectLook } from './select-look';
 import { CHIP_SELECTED, CHIP_SIZES, CHIP_STATES, CHIP_TONES, CHIP_VARIANTS, type ChipColor, type ChipFace, type ChipLook, type ChipMotion, type ChipSize, type ChipSizeLook, type ChipType, type ChipVariant } from './chip-shared';
 export * from './chip-shared';
 
@@ -169,8 +168,6 @@ export function chipLook(brand: Brand = 'desk'): ChipLook {
   // 비었을 때 높이는 비고대로 칩 한 줄(medium) — 크기가 바뀌면 같이 고친다
   if (group.minHeight !== sizes.medium.h) throw new Error(`chip.yaml 의 group.minHeight(${group.minHeight})가 medium 칩 높이(${sizes.medium.h})와 다르다`);
 
-  // 시트 · 팝오버는 아직 스펙이 없다(Bottom Sheet · Popover 차례) — Select · Input Button 그림과 같은 값으로 간단히
-  const sel = selectLook(brand === 'hr' ? 'hr' : 'desk');
   const look: ChipLook = {
     defaults: { variant: must(spec.defaults?.variant, 'defaults.variant') as ChipVariant, size: must(spec.defaults?.size, 'defaults.size') as ChipSize },
     sizes,
@@ -187,7 +184,6 @@ export function chipLook(brand: Brand = 'desk'): ChipLook {
     motion: { color: color2, scale: scale2 },
     press: { distance: ps.distance, widthDivisor: ps.widthDivisor, minBasis: ps.minBasis },
     tone: Object.fromEntries(CHIP_TONES.map((n) => [n, named(n, brand)])) as ChipLook['tone'],
-    overlay: { dim: sel.overlay.dim, sheetRadius: sel.overlay.sheetRadius, popoverRadius: sel.overlay.popoverRadius, shadow: sel.content.shadow },
   };
   cache.set(brand, look);
   return look;
