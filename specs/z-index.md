@@ -10,7 +10,7 @@ Porest 는 Bootstrap 식 **명시적 z-index 계층 분기** 정책을 채택. s
 |---|---|---|---|
 | **L0 — base** | `auto` | 일반 콘텐츠 | document 기본 flow |
 | **L1 — page sticky/fixed** | `z-50` | sticky header, FAB(`speed-dial`), env 표시 등 | 페이지 위 고정 UI |
-| **L2 — modal** | `z-[100]` overlay · `z-[101]` content | `dialog` / `drawer` / `sheet` | modal layer — overlay + content 분리 |
+| **L2 — modal** | `z-[100]` overlay · `z-[101]` content | `dialog` / `bottom-sheet` / `sheet` | modal layer — overlay + content 분리 |
 | **L3 — modal-aware floating** | `z-[200]` | `popover` / `select` / `dropdown-menu` / `color-picker` (popover 패턴) | page 와 modal 안 어디서든 사용. modal(L2) 위에 떠야 하므로 200. page 에서도 동일 값 — sticky/FAB(L1=50) 위 자연스러움 |
 | **L4 — modal-aware tooltip** | `z-[210]` | `tooltip` | popover 위에 살짝 떠야 함 (hover 잠깐 뜨고 사라지는 참고 정보) |
 | **L5 — alert-dialog** | `z-[300]` overlay · `z-[301]` content | `alert-dialog` | 비가역 결정 강제. dialog(L2) 위로 명시 — dialog 안에서 삭제 확인 같은 alert 띄우는 케이스 보존 |

@@ -3767,33 +3767,14 @@ HR — 결재 처리 완료, 직원 정보 저장, 시스템 알림 등 짧은 �
 - 자동 닫힘 시간 prefers-reduced-motion +50% 또는 시스템 설정으로 조정 가능
 - focus 빼앗지 않음, dismissible `aria-label="알림 닫기"`
 
-### Modal
+### 시트 · 대화상자 · 확인창 · 팝오버
 
-HR — 결재 처리(승인/반려 confirm), 직원 정보 편집, 평가 입력, 권한 변경 등 form/decision flow에서 광범위 사용. desktop 우선이라 centered modal 위주.
+공통 정의는 `DESIGN.md` 의 같은 절, 원본은 `specs/components/bottom-sheet.md` · `dialog.md` · `alert-dialog.md` · `popover.md`(2026-10-02 SEED). 표면 · 고른 색은 브랜드와 관계없이 같다.
 
-#### Structure
-- overlay: `overlay-dim-light` / `overlay-dim-dark` (page click 시 닫기 — destructive action 없는 modal만)
-- container: `surface-default` + `outline-strong-light` 1px + `shadow-xl` (dark는 `shadow-xl-dark`)
-- 3 영역: header(title + close) / body-lg / footer (action buttons)
-
-#### Variant
-- sm 384px: 확인 다이얼로그 ("승인하시겠습니까?")
-- **md 480px** (default): 직원 단일 정보 편집
-- lg 640px: 다단계 평가 입력, 복잡한 form
-- mobile (모바일 앱 한정): full sheet bottom-up
-
-#### Layout
-- container padding: `xl` (24px)
-- header/body-lg 간격: `lg`, body-lg/footer 간격: `xl`
-- footer button 정렬: 우측, primary action 우측 끝, secondary action 그 좌측
-
-#### Motion
-- 등장: overlay `motion-duration-base` fade + container `motion-duration-slow` scale+fade
-- 사라짐: 역순, `motion-duration-base`
-
-#### A11y
-- `role="dialog"` + `aria-modal="true"` + `aria-labelledby` + focus trap + ESC close + return focus + scroll lock
-- destructive action(삭제, 영구 변경)은 `role="alertdialog"` + 명시 confirm
+- **폼 · 상세** — HR 은 데스크톱이 주라 대부분 Dialog(medium 480 · 큰 표는 large 800)이고, 1280 미만에서는 같은 내용이 Bottom Sheet 로 뜬다. 높이는 화면의 80% 까지 · 본문만 스크롤(지금 30곳 중 18곳이 상한 없이 넘친다).
+- **입력 폼은 바닥 [취소] [저장]** — 머리 닫기 버튼을 함께 두지 않고, 바깥을 눌러도 닫히지 않는다. 바뀐 값이 있으면 나가기 전에 묻는다.
+- **삭제 확인 7곳** — Alert Dialog. 확정은 `criticalSolid`, 글은 "… 삭제할까요?"(지금 "정말 … 삭제하시겠습니까?"), `Esc` 는 취소 · 바깥 누르기는 무시.
+- 앱 적용 때 정할 자리 — 규정 안내 12(Popover · Help Bubble), 전체 화면 Dialog 3(페이지 · 시트 · Side Panel).
 
 ### Chart color (palette)
 
@@ -3913,10 +3894,7 @@ HR(B2B) 4 컴포넌트 사용 패턴 — DESIGN.md 공통 spec 외 brand-specifi
 - size: lg 48 데스크탑 (mouse hit 정밀), sm 32 inline (테이블 row 안 mini paging은 비권장 — 페이지 단위로).
 
 #### Drawer — HR
-- **side drawer** (right): 직원 클릭 시 우측 슬라이드 detail panel. 너비 480px (`min(80vw, 480px)`).
-- **결재 의견 drawer**: footer에 primary("승인") + secondary("반려") + tertiary("보류") 3 액션.
-- **권한 설정 drawer**: form layout horizontal, 좌측 라벨 + 우측 control. 닫기 시 unsaved changes 확인.
-- focus trap + Esc dismiss + return focus 모두 필수.
+아래에서 올라오는 시트는 2026-10-02 Bottom Sheet 로 바뀌었다 — 위 "시트 · 대화상자 · 확인창 · 팝오버" 절. 옆 패널은 Side Panel 차례에 정한다.
 
 #### Spinner / Progress — HR
 - **결재 처리 중 inline spinner**: 승인 클릭 시 button 안 sm 16 spinner + "처리 중..." 라벨 (text-on-accent 위 white spinner).
@@ -4005,9 +3983,7 @@ HR(B2B) 5 disclosure/overlay 컴포넌트.
 - 데이터 그리드 power user (관리자) 빠른 action.
 
 #### Alert Dialog — HR
-- **결재 반려**: "정말 반려하시겠어요? 신청자에게 알림이 가요." + 사유 입력 textarea.
-- **권한 회수**: "이 직원의 모든 권한을 회수합니다. 복구는 관리자 승인 필요." (destructive 강조).
-- **평가 삭제**: 작성 중 평가 삭제 confirm — 영구 삭제 명시.
+2026-10-02 SEED Alert Dialog 로 다시 정했다 — 위 "시트 · 대화상자 · 확인창 · 팝오버" 절.
 
 ### Data batch (v71 추가)
 
@@ -4092,11 +4068,7 @@ HR(B2B) 5 추가 shadcn 누락 컴포넌트.
 - 예 / 아니오 하나는 Checkbox, 설명이 붙는 선택은 Select Box.
 
 #### Popover — HR
-- **결재 의견 입력** — 승인/반려 옆 작은 댓글 아이콘 클릭으로 popover 열림. textarea + 첨부 + 확인 button.
-- **직원 빠른 정보** — 직원명 옆 (i) 아이콘 클릭으로 부서/직급/연락처 mini card.
-- **휴가 잔여 정보** — 휴가 신청 form에서 "남은 연차?" 클릭, 잔여일수 + 사용 history 4-5건.
-- **bottom-start placement** default — form context에서 아래로 펼치는 게 자연스러움.
-- click trigger default — hover는 결재 같은 critical action에 부적합.
+2026-10-02 SEED Popover 로 다시 정했다 — 위 "시트 · 대화상자 · 확인창 · 팝오버" 절.
 
 #### File Upload — HR
 - **평가 첨부** — 인사평가 단일 PDF 업로드 (max 10MB), 1년 유지.

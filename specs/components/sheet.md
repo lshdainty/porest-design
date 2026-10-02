@@ -2,7 +2,7 @@
 
 > 화면 가장자리(top/bottom/left/right)에서 슬라이드되는 modal-style 패널. modal `Dialog`(중앙 정렬)과 달리 **가장자리 부착** + **부분 화면 차지**(60% 또는 max-w-sm 패널)로 본문 컨텍스트를 유지하면서 보조 UI를 표시. Radix `Dialog` 베이스 + side variant + `Tailwind animate-in/out`.
 
-Porest Sheet는 **4 sides(top/right/bottom/left) × 단일 시각 톤** 매트릭스로 정의됩니다. [`Dialog`](dialog.md)/[`Drawer`](drawer.md)와 같은 floating 카드 톤 — `surface-default` + `shadow-xl` + `padding-2xl` + `gap-md` + 슬라이드 방향 반대 모서리의 border. [`Drawer`](drawer.md)(bottom-only + drag-to-close + handle)와 달리 **모든 4 방향** 지원 + drag 동작 없음 — 데스크탑 친화. close button(X)은 우상단 고정.
+Porest Sheet는 **4 sides(top/right/bottom/left) × 단일 시각 톤** 매트릭스로 정의됩니다. [`Dialog`](dialog.md)/[`Bottom Sheet`](bottom-sheet.md)와 같은 floating 카드 톤 — `surface-default` + `shadow-xl` + `padding-2xl` + `gap-md` + 슬라이드 방향 반대 모서리의 border. [`Bottom Sheet`](bottom-sheet.md)(bottom-only + drag-to-close + handle)와 달리 **모든 4 방향** 지원 + drag 동작 없음 — 데스크탑 친화. close button(X)은 우상단 고정.
 
 ## Anatomy
 
@@ -35,7 +35,7 @@ right side example:
 **규칙**
 
 - 슬라이드 방향의 **반대편 모서리에만 1px border** — right sheet은 `border-l border-border-default`, bottom sheet은 `border-t border-border-default`. 본문과 자연 경계.
-- shadow는 **inline style**(`boxShadow: var(--shadow-xl)`) — Tailwind utility(`shadow-lg`) 대신 [`Dialog`](dialog.md)/[`Drawer`](drawer.md)/[`Popover`](popover.md)/[`Card`](card.md)/[`Sonner`](sonner.md)와 동일한 다크 모드 fix 패턴.
+- shadow는 **inline style**(`boxShadow: var(--shadow-xl)`) — Tailwind utility(`shadow-lg`) 대신 [`Dialog`](dialog.md)/[`Bottom Sheet`](bottom-sheet.md)/[`Popover`](popover.md)/[`Card`](card.md)/[`Sonner`](sonner.md)와 동일한 다크 모드 fix 패턴.
 - side variant 폭은 `w-3/4` + `sm:max-w-sm` (≤384px) — 모바일에선 75%, 데스크탑에선 384px 고정. 데이터·필터 패널엔 충분.
 - top/bottom sheet은 `inset-x-0` + 높이 자동(콘텐츠) — 모바일 친화 액션 시트 톤.
 - close button(X)은 항상 우상단 — 사용자가 즉시 인식. focus-visible ring 필수.
@@ -48,7 +48,7 @@ right side example:
 | `right` *(default)* | 우측 가장자리 | `w-3/4 sm:max-w-sm` (모바일 75% / 데스크탑 ≤384) | `border-l border-border-default` | 필터, 상세 보기, 우측 nav. 가장 흔한 패턴. |
 | `left` | 좌측 가장자리 | `w-3/4 sm:max-w-sm` | `border-r border-border-default` | 모바일 nav, 햄버거 메뉴 패턴. |
 | `top` | 상단 가장자리 | `inset-x-0` (전체 폭), 높이 콘텐츠 | `border-b border-border-default` | system-wide 알림, 검색 expand. drop-down 메가 메뉴 대안. |
-| `bottom` | 하단 가장자리 | `inset-x-0`, 높이 콘텐츠 | `border-t border-border-default` | 모바일 액션 시트, 공유/저장 옵션. [`Drawer`](drawer.md)와 시각 비슷하나 drag 없음. |
+| `bottom` | 하단 가장자리 | `inset-x-0`, 높이 콘텐츠 | `border-t border-border-default` | 모바일 액션 시트, 공유/저장 옵션. [`Bottom Sheet`](bottom-sheet.md)와 시각 비슷하나 drag 없음. |
 
 ## Sizes
 
@@ -79,7 +79,7 @@ motion: `transition ease-in-out` + Radix `data-state` driven.
 
 **Action sheet (bottom)**
 
-- 모바일 공유/저장 등 — 하단 슬라이드. button stack vertical. [`Drawer`](drawer.md)가 drag 친화면 그쪽 권장.
+- 모바일 공유/저장 등 — 하단 슬라이드. button stack vertical. [`Bottom Sheet`](bottom-sheet.md)가 drag 친화면 그쪽 권장.
 
 **Top expand**
 
@@ -113,7 +113,7 @@ motion: `transition ease-in-out` + Radix `data-state` driven.
 
 ## Sheet vs Dialog vs Drawer 사용 가이드
 
-| 항목 | Sheet (이 spec) | [`Dialog`](dialog.md) | [`Drawer`](drawer.md) |
+| 항목 | Sheet (이 spec) | [`Dialog`](dialog.md) | [`Bottom Sheet`](bottom-sheet.md) |
 |---|---|---|---|
 | 위치 | 화면 가장자리 (4 sides) | 화면 중앙 | 화면 하단 또는 side |
 | 폭 | side: w-3/4 sm:max-w-sm / top·bottom: full | 480 (md) / 384 (sm) | bottom: full / side: w-3/4 |
@@ -122,7 +122,7 @@ motion: `transition ease-in-out` + Radix `data-state` driven.
 | 사용처 | 데스크탑 필터/상세 패널 / 모바일 nav · action sheet | 데스크탑 form/확인 | 모바일 친화 시트 (drag 자연) |
 | Animation | slide-in-from-{side} 500/300ms | zoom-in-95 + fade-in 200/180ms | translate-y-full → 0 |
 
-**선택 기준**: 데스크탑 필터/상세 → Sheet right. 모바일 nav → Sheet left. 모바일 action + drag → [`Drawer`](drawer.md). 중앙 form/확인 → [`Dialog`](dialog.md).
+**선택 기준**: 데스크탑 필터/상세 → Sheet right. 모바일 nav → Sheet left. 모바일 action + drag → [`Bottom Sheet`](bottom-sheet.md). 중앙 form/확인 → [`Dialog`](dialog.md).
 
 ## Do / Don't
 
@@ -131,16 +131,16 @@ motion: `transition ease-in-out` + Radix `data-state` driven.
 - 데스크탑 필터/상세 패널 — right side가 가장 자연.
 - 모바일 햄버거 nav — left side. 메인 콘텐츠 옆 슬라이드.
 - 시스템 알림 / 검색 expand — top side, 짧은 콘텐츠만.
-- 모바일 action sheet — bottom side. drag 친화면 [`Drawer`](drawer.md) 권장.
+- 모바일 action sheet — bottom side. drag 친화면 [`Bottom Sheet`](bottom-sheet.md) 권장.
 - close button(X) 우상단 — 사용자 즉시 인식.
 
 ### ❌ Don't
 
 - 중앙 form/확인 — [`Dialog`](dialog.md) 사용. Sheet은 가장자리.
-- drag-to-close 필요 — [`Drawer`](drawer.md). Sheet은 drag 없음.
+- drag-to-close 필요 — [`Bottom Sheet`](bottom-sheet.md). Sheet은 drag 없음.
 - 긴 본문 + top side — 모바일에선 어색. top은 짧은 알림용.
 - 한 페이지 여러 Sheet 동시 — modal stack은 사용자 혼란. 한 번에 1개 modal.
-- Sheet 안에서 다른 Sheet trigger — modal 위 modal. [`Drawer`](drawer.md) 안 select/popover는 OK.
+- Sheet 안에서 다른 Sheet trigger — modal 위 modal. [`Bottom Sheet`](bottom-sheet.md) 안 select/popover는 OK.
 
 ## Migration notes
 
@@ -152,7 +152,7 @@ motion: `transition ease-in-out` + Radix `data-state` driven.
   - description `text-sm text-muted-foreground` → `text-body-sm text-text-secondary` (이미 정합)
   - close `focus:ring-2 focus:ring-ring focus:ring-offset-2` → `focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2` (키보드 only)
   - close `top-4 right-4` → `top-[var(--spacing-md)] right-[var(--spacing-md)]` (12 토큰)
-- **box-shadow는 Tailwind utility(`shadow-lg`) 대신 inline `style={{ boxShadow: "var(--shadow-xl)" }}`** — Tailwind v4 `--tw-shadow-*` 분해 처리가 다크 모드 CSS 변수 override를 우회하는 문제 fix. [`Dialog`](dialog.md)/[`AlertDialog`](alert-dialog.md)/[`Drawer`](drawer.md)와 동일 패턴. shadow level도 `shadow-lg`(보조) → `shadow-xl`(modal-level) 정합.
+- **box-shadow는 Tailwind utility(`shadow-lg`) 대신 inline `style={{ boxShadow: "var(--shadow-xl)" }}`** — Tailwind v4 `--tw-shadow-*` 분해 처리가 다크 모드 CSS 변수 override를 우회하는 문제 fix. [`Dialog`](dialog.md)/[`AlertDialog`](alert-dialog.md)/[`Bottom Sheet`](bottom-sheet.md)와 동일 패턴. shadow level도 `shadow-lg`(보조) → `shadow-xl`(modal-level) 정합.
 - shadcn 기본 `border-b/-t/-l/-r` 그대로 — 슬라이드 방향 반대 모서리 1px solid border.
 - preview-html에 별도 `.sht-*` CSS 없음 — site preview/component page에서 직접 렌더. preview-html `.drw-*`(Drawer)는 별도 스펙(handle bar + drag-to-close).
 - overlay token은 `bg-[var(--overlay-dim-light)]` — 다크 모드에서도 동일 토큰 자동 swap (`--overlay-dim-light-dark` 정의).

@@ -1,194 +1,206 @@
 # Dialog
 
-> 페이지 위에 떠 있는 floating modal — 사용자 결정·form 입력·콘텐츠 편집이 필요한 흐름을 일시 차단. 위험한 비가역 액션 확정은 별도 [`alert-dialog.md`](alert-dialog.md) 사용.
+> 1280 이상에서 화면 정중앙에 뜨는 대화상자. 입력 폼 · 상세처럼 지금 화면을 떠나지 않고 할 일을 띄운다 — 같은 내용을 1280 미만에서는 [Bottom Sheet](bottom-sheet.md) 로 띄운다(한 부품이 폭으로 바꾼다 — Responsive Dialog). 되돌릴 수 없는 확인은 [Alert Dialog](alert-dialog.md), 트리거에 붙는 짧은 내용은 [Popover](popover.md), 화면 높이를 넘는 긴 내용은 페이지다.
 
-Porest Dialog는 **3 sizes × 1 정렬 톤** 매트릭스로 정의됩니다. Toss 톤(절제 · 신뢰감)을 따라 `radius-lg`(12px) + `shadow-xl` + `title-md` title — 여백은 container 가 아니라 header·body·footer 가 각자 갖습니다(header `18 22` · body `22` · footer `18 22`). 한국어 본문 가독성을 위해 description은 `body-md` + `text-secondary`.
+구조는 당근 [SEED Dialog](https://seed-design.io/components/dialog) · Responsive Dialog(Apache-2.0)를 따른다 — 딤 · 대화상자 · 머리(제목 · 설명 · 닫기) · 본문 · 바닥, 본문만 스크롤. 값은 porest 토큰이고, SEED 와 다른 자리는 맨 아래 "SEED 와 다른 점" 에 적었다(2026-10-02 사용자 결정).
+
+수치 원본은 [`dialog.yaml`](dialog.yaml)이다. 수치 표 자리(`[표: …]`)와 그림 자리(`[그림: …]`)는 사이트가 그 파일로 그린다 — GitHub 에서는 그 파일 · 그림 코드로 가는 링크로 보인다.
+
+[그림: 휴가 신청 · 거래 상세 — 라이트 · 다크](../../site/components/specs/dialog.tsx#hero)
+
+### 직접 골라 보기
+
+크기 · 쓰임(입력 폼 · 조회) · 설명 · 본문 길이 · 창 폭(1280 위 · 아래)을 고르면 스펙대로 그린 대화상자(1280 미만이면 시트)와 그 코드가 바뀐다. 실제로 열고 닫고 본문을 스크롤할 수 있다.
+
+[그림: 플레이그라운드](../../site/components/specs/dialog.tsx#playground)
 
 ## Anatomy
 
-```
-┌────────────────────────────────────────────────────────┐
-│ ⓐ overlay (page-wide dim)                              │
-│       ┌─────────────────────────────────────┐          │
-│       │ ⓑ container                  ⓒ close│          │
-│       │                                     │          │
-│       │ ⓓ title (title-md)                  │          │
-│       │ ⓔ description (body-md, secondary)  │          │
-│       │                                     │          │
-│       │ ⓕ body (optional)                   │          │
-│       │   ┌─────────────────────────────┐   │          │
-│       │   │ key            value        │   │          │
-│       │   │ key            value        │   │          │
-│       │   └─────────────────────────────┘   │          │
-│       │                                     │          │
-│       │ ⓖ footer (actions, right-aligned)   │          │
-│       │              [Cancel] [Primary]     │          │
-│       └─────────────────────────────────────┘          │
-└────────────────────────────────────────────────────────┘
-```
+[그림: 대화상자는 딤 · 대화상자 · 머리 · 본문 · 바닥으로, 본문이 넘치면 아래가 흐려지고 스크롤하면 머리 아래 선이 생긴다](../../site/components/specs/dialog.tsx#anatomy)
 
-| ⓐ overlay | 페이지 dim. light `--overlay-dim-light` rgba(0,0,0,0.50), dark `--overlay-dim-dark` rgba(0,0,0,0.65). click 시 닫힘. |
-| ⓑ container | preview `.modal-dialog` 그대로 — `background:var(--color-surface-default); border-radius:var(--radius-lg); box-shadow:var(--shadow-xl); width:min(90%, <max-w>); max-height:86vh; display:flex; flex-direction:column; overflow:hidden;` — **padding 0 · gap 0**. 여백은 header·body·footer 가 각자 갖는다(아래 Layout). |
-| ⓒ close button | 우상단 icon button (X 16px). `aria-label="닫기"`. focus-visible 시 ring. |
-| ⓓ title | preview `.modal-title` 그대로 — `font-size:var(--text-title-md); font-weight:600; line-height:var(--text-title-md--line-height); color:var(--color-text-primary); letter-spacing:-0.01em;` |
-| ⓔ description | preview `.modal-description` 그대로 — `font-size:var(--text-body-md); color:var(--color-text-secondary); line-height:1.6;` 선택 요소. |
-| ⓕ body | 자유 영역. 스크롤은 여기서만 인다(`flex:1; min-height:0; overflow-y:auto`). 정보 표시는 `.dialog-fields`(gray 채움 + key-val rows) 패턴, form은 `gap-md` flex column. |
-| ⓖ footer | preview `.modal-actions` 그대로 — `display:flex; gap:var(--spacing-sm); justify-content:flex-end; padding:18px 22px; flex-shrink:0;` primary는 우측 끝, cancel은 좌측. |
+| ⓐ Overlay | 딤 — 대화상자 뒤 화면 전체. 조회 대화상자는 누르면 닫힌다(입력 폼은 무시). |
+| ⓑ Container | 대화상자 — 화면 정중앙, medium 480 · large 800, 높이는 화면의 80% 까지. |
+| ⓒ Header | 머리 — 제목 · 설명. 조회 · 안내 대화상자만 오른쪽에 닫기 버튼. |
+| ⓓ Body | 본문 — 넘치면 이 안에서만 스크롤한다(머리 · 바닥은 그대로). |
+| ⓔ Footer | 바닥 — 버튼, 오른쪽 정렬. |
 
-**규칙**
+[표: 부위](dialog.yaml#slots)
 
-- title 없는 dialog는 `aria-label` 필수 (스크린리더 대응).
-- description 없을 수 있음 — title 단독이면 `aria-describedby` 생략 가능.
-- body 내 `.dialog-fields` 패턴(gray bg + key-val)은 정보 확인용. form 입력은 별도 group.
+## Properties
 
-## Variants
+### Size
 
-Dialog 자체는 **variant 없음** — 시각 통일이 일관성에 유리. 의미 분기(확정·취소 vs 정보 표시)는 footer 액션 구성으로 표현. 위험 액션 확정은 [`AlertDialog`](alert-dialog.md) 사용.
+`medium` 480 *(기본)* — 일반 입력 폼 · 상세, `large` 800 — 복잡한 설정 · 많은 조회. 높이는 내용만큼이고 화면 높이의 80% 를 넘지 않는다. 넘치는 만큼 본문이 스크롤된다.
 
-## Sizes
-
-`box-sizing: border-box` 기준 max-width. 모바일에선 `width: min(90%, max-width)`로 좁은 화면 대응.
-
-사이즈로 갈리는 건 **폭 하나뿐**이다 — 여백은 세 사이즈가 같고 구역이 갖는다(아래 Layout).
+[그림: 크기 — medium 480 · large 800](../../site/components/specs/dialog.tsx#size)
 
 [표: 크기](dialog.yaml#size)
 
-너비는 `width: min(90%, <max-width>)` — 좁은 viewport에서 90% width로 자동 축소.
+### 머리 · 본문 · 바닥
 
-Tailwind utility 매핑 (dialog.tsx cva — `--spacing-*`/`--dialog-max-w` 토큰 그대로 인용):
-- `sm`: `[--dialog-max-w:420px] rounded-lg`
-- `md`: `[--dialog-max-w:520px] rounded-lg`
-- `lg`: `[--dialog-max-w:720px] rounded-lg`
-- 공통: `w-[min(90%,var(--dialog-max-w))] max-h-[86vh] flex flex-col overflow-hidden`
-- 구역: header `px-[22px] py-[18px]` · body `p-[22px]` · footer `px-[22px] py-[18px]`
+머리는 위 24 · 좌우 24 · 아래 16, 제목 22 / 30 · 700 · 설명 16 / 22 · 사이 6. 본문은 좌우 24. 바닥은 위 16 · 좌우 24 · 아래 24 에 버튼을 오른쪽으로 모은다 — Button small 36, [취소] [저장] 순서. 본문이 넘치면 아래 48 이 흐려지고(끝까지 스크롤해도 그만큼 비워 둔다), 위로 스크롤하면 머리 아래 1px 선이 생긴다.
 
-**z-index**
+[그림: 본문 스크롤 — 아래 흐림 · 머리 아래 선](../../site/components/specs/dialog.tsx#scroll)
 
-| Layer | Class | 정책 |
-|---|---|---|
-| Overlay | `z-[100]` | [`z-index.md`](../z-index.md) L2 modal overlay |
-| Content | `z-[101]` | [`z-index.md`](../z-index.md) L2 modal content |
+[표: 공통](dialog.yaml#base.enabled)
 
-**모바일 sheet (별도)**
+### State
 
-- 좁은 viewport(≤ 480)에서는 옵션으로 bottom sheet 모드 — `bottom-0 left-0 right-0 rounded-t-xl` + slide-up motion. 본 spec 범위 밖(Drawer 사용 권장).
+| 상태 | 모습 |
+|---|---|
+| `enabled` | 열림 — 딤 위 대화상자 |
+| `scrolled` | 본문이 위로 스크롤됨 — 머리 아래 1px `stroke-neutral-subtle` |
+| `overflow` | 본문이 넘침 — 아래 48 흐림 |
+| `pressed` | 닫기 버튼 — `bg-layer-floating-pressed` + 2px 거리 축소 |
+| `focused` | 키보드 포커스에만 링 2px · 띄움 2px |
 
-## States
-
-Dialog는 open/closed 2 state. Radix `data-state` attribute(`open`/`closed`)로 motion 분기.
-
-| State | Overlay | Container | Body scroll | Focus |
-|---|---|---|---|---|
-| `closed` | 미렌더 | 미렌더 | 정상 | trigger element |
-| `open` | dim 활성 (fade-in) | 화면 가운데 (scale+fade-in) | lock (`overflow: hidden`) | container 안 첫 focusable로 이동 |
-| transitioning | (motion 표 참조) | (motion 표 참조) | — | — |
-
-### Motion
+[표: 상태](dialog.yaml#matrix)
 
 [표: 모션](dialog.yaml#motion)
 
-`prefers-reduced-motion: reduce` 시 즉시 표시 (globally 0.01ms로 단축).
+## Guidelines
 
-## Layout
+### 한 부품이 폭으로 바뀐다
 
-**여백은 구역이 갖는다.** container 는 padding 0 이고 header·body·footer 가 각자 들고 있다 —
-셋의 배경·테두리·스크롤이 달라 한 덩어리로 묶이지 않기 때문이다(본문만 스크롤한다).
+폼 · 상세는 한 부품(`ResponsiveDialog`)으로 짠다 — 1280 이상에서 Dialog, 미만에서 [Bottom Sheet](bottom-sheet.md) 다. 머리 · 본문 · 바닥은 같고, 닫는 자리만 표면에 맞춰 바뀐다(아래 "닫기 버튼과 취소"). 경계는 [Input Button](input-button.md) 과 같은 1280 이라, 대화상자 안의 날짜 칸은 늘 팝오버로, 시트 안의 날짜 칸은 늘 시트로 열린다 — 표면이 엇갈려 겹치지 않는다.
 
-[표: 구역별 여백](dialog.yaml#base.open)
+[그림: 같은 폼 — 1280 이상 대화상자 · 미만 시트](../../site/components/specs/dialog.tsx#responsive-guide)
 
-**header 위와 footer 아래는 같은 값이다**(18). 예전에 footer 만 14 라 위아래가 4px 어긋나
-보였다(desk 2026-09-16 실측).
+### 입력 폼은 실수로 닫히지 않게
 
-**header**
+입력 폼 대화상자는 바깥(딤)을 눌러도 닫히지 않는다. 바닥 [취소] · `Esc` 로 닫고(1280 미만의 시트는 뒤로 가기로도), 바뀐 값이 있으면 닫기 전에 "작성한 내용이 사라져요" 를 묻는다([Field](field.md) 의 규칙). 조회 · 안내 대화상자는 바깥 누르기 · `Esc` 로 닫힌다.
 
-- title + description 묶음 `flex flex-col gap-1.5` (6px).
-- description 없으면 title 단독.
+[그림: 닫기 — 입력 폼은 바깥을 눌러도 닫히지 않는다](../../site/components/specs/dialog.tsx#dismiss-guide)
 
-**body**
+### 닫기 버튼과 취소 — 하나만
 
-- 정보 확인용은 `.dialog-fields` 패턴(`bg-surface-input` + `radius-md` + `gap-xs` 사이).
-- form은 group 간 `gap-md`.
+| 대화상자 | 닫는 자리 |
+|---|---|
+| 입력 폼(저장 · 신청처럼 주 작업이 있다) | 바닥 [취소] [저장] — 머리 닫기 버튼 없음 |
+| 조회 · 안내 | 머리 닫기 버튼 — 바닥 버튼은 다른 동작(수정 · 삭제)이 있을 때만 |
 
-**footer**
+닫기 버튼과 바닥 취소를 함께 두지 않는다. 1280 미만의 시트에서는 입력 폼도 위 닫기 버튼 + 바닥 [저장] 이다([Bottom Sheet](bottom-sheet.md)).
 
-- 데스크탑(**≥ 480px**, `--breakpoint-sm`): `flex justify-end gap-sm`. 주 액션 우측 끝, 취소는 그 왼쪽.
-- 모바일(**< 480px**): `flex gap-sm` + 각 button `flex-1`(가로 균등 분배) + `size="large"`(48).
-  한 손 조작 폭을 확보한다 — [`drawer`](drawer.md) footer 와 같은 규칙.
-- **footer 버튼 크기는 `small` 하나** — 높이 36 · 좌우 14 · 14px([`button`](button.md)
-  Size). 한 footer 안에 두 크기가 섞이면 "어떤 건 글씨 양옆이 넓고 어떤 건 좁다" 가 된다
-  (desk 2026-09-16 실측). footer 안에 `<Button>` 을 손으로 놓지 말고 표준 footer 를 쓴다.
-- **삭제 버튼에 `flush` 를 쓰지 않는다** — flush ghost 는 글자색만 바뀌는 텍스트 버튼이라 빨간 글자를
-  잃는다. 좌우 여백을 그대로 두고 좌측 정렬은 `margin-right:auto` 로만 한다.
-- footer 왼쪽의 **`leftSlot`**(자산 상세 '금액 가리기' 처럼 ghost + 아이콘)은 반대로
-  **`flush="left"` 를 쓴다** — 아이콘을 본문 콘텐츠 열에 맞춘다. 그 버튼은 텍스트 버튼이라
-  hover 에 배경 없이 글자색으로만 반응한다([`button`](button.md) 가장자리 맞춤).
-  글자만 있는 leftSlot(요약 문구 등)에는 쓰지 않는다.
-- 모달 footer 의 **취소는 `neutralWeak`**(옅은 회색 채움), **주 액션은 `neutralSolid`**(서비스의 핵심
-  액션이면 `brandSolid`). 확인 창을 여는 **삭제는 왼쪽에 `ghost` + `critical`**(빨간 글자), 삭제의
-  **확정**은 [`AlertDialog`](alert-dialog.md) 의 `criticalSolid` 다 — [`button`](button.md) 모달 footer
-  규칙(2026-09-30). 옛 이름(`secondary` · `dangerSoft` · `default`)은 button Migration notes.
-- **액션은 최대 2개** — 상세는 `삭제`·`수정`, 편집 폼은 `취소`·`저장`. 우상단 X 가 이미 닫기이므로
-  footer 에 `확인`·`닫기` 를 두지 않는다. 줄이는 순서와 예외는 [`drawer`](drawer.md#액션-구성) SoT.
+[그림: 닫는 자리 — 폼은 바닥 취소 · 조회는 머리 닫기 · 둘을 함께](../../site/components/specs/dialog.tsx#close-guide)
+
+### 대화상자에 두지 않는 것
+
+- 되돌릴 수 없는 확인 → [Alert Dialog](alert-dialog.md).
+- 트리거에 붙는 짧은 내용(안내 · 고르기 패널) → [Popover](popover.md).
+- 화면 높이를 넘는 긴 내용 · 단계가 많은 일 → 페이지.
+- 대화상자 위에 대화상자 — 겹쳐도 되는 건 그 안에서 연 Alert Dialog · Popover 뿐이다.
+
+### 글
+
+제목은 하는 일 — "휴가 신청" · "거래 상세". 설명은 덧붙일 말이 있을 때만 한 문장(해요체 · 마침표). 바닥 버튼은 동작 이름("신청" · "저장") — "확인" 으로 뭉뚱그리지 않는다.
+
+## 코드
+
+레시피 `recipes/shadcn/components/ui/dialog.tsx` 를 쓴다(Radix Dialog 위). 폼 · 상세는 `ResponsiveDialog` — 1280 에서 Dialog 와 Bottom Sheet 를 바꾸고, `form` 이면 닫는 자리도 표면에 맞춰 바꾼다(대화상자는 바닥 취소, 시트는 위 닫기). `form` 이 아니면(조회 · 안내) 두 표면 모두 위 닫기 버튼이다. 본문에 [List](list.md) 를 바로 두면 줄이 제 좌우 여백(24)을 가지므로 본문 좌우 여백을 뺀다(`className="px-0"`). 아래 미리보기는 스펙 값으로 그린 모습이다.
+
+### 입력 폼
+
+[그림: 휴가 신청](../../site/components/specs/dialog.tsx#ex-form)
+
+```tsx
+import { Button } from "@/components/ui/button"
+import { ResponsiveDialog, ResponsiveDialogBody, ResponsiveDialogCancel, ResponsiveDialogContent, ResponsiveDialogFooter } from "@/components/ui/dialog"
+
+{/* form — 바깥 누르기 · 끌어내리기로 닫지 않는다. dirty — 닫기 전에 "작성한 내용이 사라져요" 를 묻는다 */}
+<ResponsiveDialog open={open} onOpenChange={setOpen} form dirty={isDirty}>
+  <ResponsiveDialogContent title="휴가 신청" description="승인되면 알려드려요.">
+    <ResponsiveDialogBody>
+      <Field label="휴가 종류">…</Field>
+      <Field label="기간">…</Field>
+    </ResponsiveDialogBody>
+    <ResponsiveDialogFooter>
+      {/* 1280 이상에서만 그린다 — 시트에서는 위 닫기 버튼이 맡는다 */}
+      <ResponsiveDialogCancel>취소</ResponsiveDialogCancel>
+      <Button onClick={submit}>신청</Button>
+    </ResponsiveDialogFooter>
+  </ResponsiveDialogContent>
+</ResponsiveDialog>
+```
+
+### 조회
+
+[그림: 거래 상세](../../site/components/specs/dialog.tsx#ex-view)
+
+```tsx
+{/* 조회 — 머리 닫기 버튼(시트에서는 오른쪽 위 원), 바깥 누르기로도 닫힌다 */}
+<ResponsiveDialog open={open} onOpenChange={setOpen}>
+  <ResponsiveDialogContent title="거래 상세">
+    <ResponsiveDialogBody className="px-0">
+      <List>…</List>
+    </ResponsiveDialogBody>
+  </ResponsiveDialogContent>
+</ResponsiveDialog>
+```
 
 ## Behavior
 
 | 인터랙션 | 동작 |
 |---|---|
-| Trigger click | open. trigger element 기억(닫힘 시 focus 복귀). |
-| Overlay click | close. *위험 액션은 AlertDialog 사용*. |
-| `Escape` | close. |
-| Close button click | close. |
-| `Tab` / `Shift+Tab` | container 안에서만 순환 (focus trap). |
-| Close (어떤 경로든) | trigger element로 focus 복귀. body scroll lock 해제. |
-| Body scroll | dialog 열림 동안 `overflow: hidden` (배경 스크롤 차단). |
-
-### Known issue — dropdown item → dialog 연쇄
-
-DropdownMenu의 `onSelect` 콜백에서 직접 dialog를 열면 `body { pointer-events: none }` 잠금 해제 순서가 꼬여 dialog 내부 클릭이 안 먹는 Radix 알려진 버그가 있다([`z-index.md`](../z-index.md) Known issues 참조). [`Dropdown Menu`](dropdown-menu.md) Behavior 섹션의 `e.preventDefault() + setTimeout(fn, 0)` 패턴으로 한 프레임 분리하거나, dropdown 외부 trigger로 dialog 열기.
+| 열기 | 200ms 로 크게 나타나며 줄어든다(1.3 → 1). 처음 초점은 대화상자에 간다. |
+| 바닥 취소 · 닫기 버튼 · `Esc` | 닫는다. 입력 폼에 바뀐 값이 있으면 먼저 묻는다. 뒤로 가기로 닫는 것은 1280 미만(시트)뿐이다 — 데스크톱 브라우저의 뒤로 가기는 페이지를 떠난다. |
+| 바깥(딤) 누르기 | 조회 · 안내는 닫는다. **입력 폼은 무시한다.** |
+| 본문 스크롤 | 본문만 스크롤 — 위로 스크롤되면 머리 아래 선, 넘치면 아래 흐림. |
+| 닫힌 뒤 | 100ms 로 사라지고, 초점은 연 자리(트리거)로 돌아간다. |
+| 열린 동안 | 뒤 화면을 보조 기술에서 숨기고 스크롤을 잠근다. 초점은 대화상자 안을 돈다. |
+| 창 폭이 1280 을 넘나듦 | 열린 채 표면이 바뀐다(대화상자 ↔ 시트). 값은 폼(부모)이 들고 있어 그대로다 — 입력칸의 값을 대화상자 · 시트 안에만 두지 않는다. |
 
 ## Accessibility
 
 | 기준 | 검증 |
 |---|---|
-| **WCAG 1.4.3** Color contrast (text ≥ 4.5:1) | title `text-primary` × `surface-default` = 14:1+ ✓, description `text-secondary` × `surface-default` ≥ 4.5:1 ✓ (`npm run lint:dark` 검증) |
-| **WCAG 1.4.11** Non-text contrast (UI ≥ 3:1) | container outline + close button focus ring 모두 ≥ 3:1 ✓ |
-| **WCAG 2.1.2** No Keyboard Trap | focus trap은 의도된 modal 동작 — `Escape`/close button로 빠져나갈 수 있어 충족. |
-| **WCAG 2.4.3** Focus Order | 열림 시 첫 focusable, 닫힘 시 trigger로 복귀 — 자연스러운 흐름. |
-| **WCAG 2.4.7** Focus Visible | close button + 모든 actions에 `focus-visible:ring-2`. |
-| **WCAG 2.4.11** Focus Appearance (AA) | 2px ring + 2px offset 인접 표면 대비 3:1 ✓. |
-| **ARIA** | `role="dialog"` + `aria-modal="true"` + `aria-labelledby="dialog-title-id"` + (선택) `aria-describedby="dialog-desc-id"`. Radix 기본 처리. |
-| **Reduced motion** | 위 Motion 표 참조. |
+| **WCAG 1.4.3** Color contrast(글자 ≥ 4.5:1) | 제목 `fg-neutral` 떠 있는 표면 위 16.41 · 다크 11.62, 설명 `fg-neutral-muted` 7.11 · 6.67 ✓ |
+| **WCAG 1.4.11** Non-text contrast(≥ 3:1) | 닫기 아이콘 `fg-neutral-subtle` 5.50 · 5.27 ✓. 키보드 포커스 링 Desk 8.38 · 5.28 · HR 5.06 · 5.39 ✓ |
+| **WCAG 2.4.3** Focus order | 열면 대화상자로, 닫으면 연 자리로 초점이 간다. 열린 동안 초점이 뒤 화면으로 나가지 않는다 |
+| **WCAG 1.4.10** Reflow | 1280 미만은 시트로 바뀌고, 대화상자 높이는 화면의 80% 까지 — 넘치면 본문이 스크롤된다(머리 · 바닥이 화면 밖으로 나가지 않는다) |
+| **WCAG 2.5.8** Target Size — Minimum(AA ≥ 24×24) | 닫기 버튼 52 · 바닥 버튼 36 ✓ |
+| **WCAG 2.5.5** Target Size — Enhanced(AAA ≥ 44×44) | 닫기 버튼 52 ✓ · 바닥 버튼은 누르는 영역을 44 까지 넓힌다(Button) ✓ |
+| **ARIA** | `role="dialog"` + `aria-modal="true"`, 제목 `aria-labelledby` · 설명 `aria-describedby`(있을 때만), 닫기 버튼 이름 "닫기" |
 
 ## Do / Don't
 
 ### ✅ Do
 
-- title은 사용자 행위를 직접 표현 ("프로필 편집", "메모 삭제 확인") — 시스템 톤 회피.
-- description은 결과·영향을 명시 ("삭제 후 30일 보관함에 보관됩니다") — 사용자 결정에 필요한 정보.
-- footer button은 우측 정렬, 주 액션(`neutralSolid`) 우측 끝, 취소(`neutralWeak`)는 그 왼쪽. **삭제의 확정은 `AlertDialog` 의 `criticalSolid`**.
-- 액션 2개까지 — 3번째가 필요해 보이면 `확인`·`닫기` 부터 뺀다(우상단 X 와 중복).
-- 정보 확인용은 `.dialog-fields` 패턴(gray 채움 + key-val) — 한눈에 비교 가능.
-- 모바일(< 480px)에서 footer button 은 `flex-1` 균등 분배 + `large`(48) — 주 액션 우측(`neutralSolid`), 보조 좌측(`neutralWeak` · 삭제는 `ghost` + `critical`).
+- 폼 · 상세는 한 부품으로 — 1280 이상 대화상자, 미만 시트.
+- 입력 폼은 바닥 [취소] [저장], 조회는 머리 닫기 버튼.
+- 입력 폼은 바깥 누르기로 닫지 않고, 바뀐 값이 있으면 닫기 전에 묻는다.
+- 긴 내용은 본문만 스크롤 — 머리 · 바닥은 늘 보인다.
 
 ### ❌ Don't
 
-- title 없이 description만 — 스크린리더 사용자에게 컨텍스트 부족 (최소 `aria-label`).
-- 페이지에 dialog를 여러 개 겹쳐 띄움 — 사용자 혼란. nested는 회피 (탭/스텝퍼로 분리).
-- form 안에 dialog 안에 form 안에 dialog … — 한 단계만.
-- destructive 액션 (비가역 삭제 등)을 Dialog로 처리 — overlay click으로 실수 닫힘 위험. **AlertDialog 사용**.
-- close button을 footer로 옮김 — 사용자 학습 비용 (관습은 우상단 X).
-- 상세 dialog footer 에 `확인` — X 와 같은 동작. 상세는 `삭제`·`수정` 만 둔다.
-- 편집 폼 footer 에 `삭제` — 삭제는 상세에서. [`drawer`](drawer.md#액션-구성) 참조.
+- 머리 닫기 버튼과 바닥 취소를 함께.
+- 되돌릴 수 없는 확인을 Dialog 로(Alert Dialog).
+- 높이 상한 없이 내용을 늘려 제목 · 버튼이 화면 밖으로.
+- 대화상자 위에 대화상자.
+
+## Specification
+
+`dialog.yaml` 의 규칙을 하나도 빼지 않고 조건마다 그린다 — 웹 · 앱이 Dialog 를 만들 때 이 값을 그대로 쓴다. 조건이 없는 `Base` 가 모든 조합에 걸리고, 뒤의 규칙이 앞의 같은 값을 덮는다. 상태는 `enabled` 에서 바뀌는 값만 적었다. 1280 미만의 모습은 [Bottom Sheet](bottom-sheet.md) 의 Specification 이다.
+
+[그림: Specification — dialog.yaml 의 규칙 전부](../../site/components/specs/spec-sheet.tsx#dialog)
+
+## SEED 와 다른 점
+
+- **바뀌는 폭은 1280**(사용자 결정 2026-10-02) — SEED Responsive Dialog 는 md(768). porest 는 Input Button 의 시트 · 팝오버 경계(1280)와 하나로 맞췄다.
+- **바닥 버튼은 Button small 36** — SEED 예제는 medium 40. Button 을 정할 때 "40 은 대화상자에 비해 굵다" 로 고른 값을 지켰다(2026-10-02 다시 확인).
+- **딤은 porest 0.50 · 다크 0.65**(v102) — SEED 0.455.
+- **입력 폼은 바깥을 눌러도 닫히지 않고, 머리 닫기 버튼을 두지 않는다** — SEED 도 같은 쪽을 권한다(snippet 의 바깥 닫기 기본값 · "입력 폼에서는 헤더 X 지양"). porest 는 규칙으로 못박았다.
+- **반투명 색을 불투명 짝으로**(v102) — 머리 아래 선 `stroke-neutral-subtle`, 닫기 버튼 누름 `bg-layer-floating-pressed`.
+- **z-index 는 specs/z-index.md 의 L2**(딤 100 · 대화상자 101) — 그 안에서 연 Popover(L3) · Alert Dialog(L5)가 위에 뜬다(SEED 는 모두 2 + layerIndex).
 
 ## Migration notes
 
-- **title `display-sm`(24/700) → `title-md`(18/600)**: 실사용(데스크톱 모달) 검수 결과 24px 는 컨텍스트 모달/폼 다이얼로그에 과도하게 큼. 모든 모달·시트 타이틀(sheet `title-md`, drawer/ModalShell 18)과 통일해 18/600(semibold)로 정합. `display-sm` 토큰 자체(H2·아바타·차트 등)는 유지하고 dialog 타이틀 매핑만 하향. alert-dialog 타이틀도 동일하게 정합(공유 `.modal-title`).
-- 기존 `dialog.tsx`는 `max-w-lg`(512) / `p-6`(24) / `gap-4` / `rounded-md` / `shadow-lg` / title `text-title-lg`였으나 이번 동기에서 preview의 `.modal-*` 스타일로 정렬: `w-[min(90%,480px)]` / `p-[var(--spacing-2xl)]`(32) / `gap-[var(--spacing-md)]`(12) / `rounded-xl` / `shadow-xl` / title `text-display-sm`. 픽셀 하드코딩(`p-10` 등) 대신 디자인 토큰 직접 인용으로 spec과 1:1 동기. *(폭·여백은 2026-09-16 에 다시 정해졌다 — 위 Sizes·Layout 이 현재 값이다.)*
-- **DialogTitle 하단 border 제거**: Radix `DialogPrimitive.Title`은 WAI-ARIA 패턴에 따라 `<h2>`를 렌더 — 이전에 `build-site.mjs`의 `.content h2` selector가 `main.content` 안의 모든 h2(spec markdown ##, example-preview 안 DialogTitle)에 무차별 적용되어, inline style이 override 못 한 `padding-bottom: 12px` + `border-bottom: 1px solid`이 DialogTitle 아래에 박혔음. site의 selector를 `.content > h2`(직접 자식만)로 격리하여 spec-section 안의 H2와 example-preview 안의 DialogTitle 모두에서 docs 섹션 구분선이 자동 분리됨. DialogTitle 시각 스펙(preview `.modal-title` 그대로)은 변경 없음 — border는 원래부터 spec에 없었음.
-- size variant(`sm`/`md`/`lg`) 신규 도입 — 기존 단일 max-width 고정.
-- 기존 description `text-body-sm` → `text-body-md`로 보강 (한국어 가독성).
-- DESIGN.md `### Modal` prose 정의(`radius-lg` / padding `xl`)는 이번 spec(`radius-2xl` / padding `2xl`)로 정정 — 시각 SoT는 preview, prose가 따라옴.
-- **2026-08-21 — 컨테이너 radius `radius-2xl`(20) → `radius-lg`(12)**: popup 은 시트와 달리 화면 가운데
-  좁게 뜨므로 20 은 과하다. 안에 놓이는 버튼이 `radius-md`(8)라 12 가 가장 안정적이다.
-  sm 은 원래 12 였고 md·lg 만 따라온 셈 — 세 사이즈가 같아졌다. 시트/드로어는 20 유지.
-- **box-shadow는 Tailwind utility(`shadow-xl`) 대신 inline `style={{ boxShadow: "var(--shadow-xl)" }}` 사용** — Tailwind v4 shadow utility는 내부적으로 box-shadow를 `--tw-shadow-*` 변수로 분해 처리하기 때문에, 다크 모드 CSS 변수 override(`[data-theme="dark"] { --shadow-xl: var(--shadow-xl-dark) }`)가 우회되어 다크 모드 inset top highlight + 강화된 검정 그림자가 적용되지 않는 문제 fix. preview `.modal-dialog` SoT(`box-shadow: var(--shadow-xl)` 직접 인용)와 다크 모드 시각 정합 보장. 동일 패턴: AlertDialog/Drawer(shadow-xl), Popover(shadow-md), Sonner(shadow-lg), Card(shadow-sm).
+### 2026-10-02 — SEED Dialog 로 다시 정한다
+
+사용자가 [비교 페이지](https://claude.ai/artifact/2KE4tDQT6p5GPyhx7Y29vt)에서 정했다 — 일로 나누기(폼 · 상세는 한 부품이 폭으로 시트 ↔ 대화상자) · 경계 1280 · 입력 폼은 바깥으로 닫지 않음 · 닫기 버튼과 취소는 하나만 · SEED 모양(medium 480 · large 800 · 최대 80% · 모서리 20 · 제목 22 / 30 · 본문만 스크롤 + 흐림 · 머리 아래 선). 바닥 버튼은 Button 결정대로 small 36. 옛 Dialog(sm 420 · md 520 · lg 720 · 86vh · 모서리 12 · 제목 18 / 600 · 머리 X + 바닥 취소)는 걷었다 — 옛 스펙은 `dialog.history/v-pre-seed-overlay.*`.
+
+제품은 앱 적용 단계에서 옮긴다(2026-10-02 조사).
+
+- **Desk 웹** — ModalShell 53곳(768 에서 시트 ↔ 대화상자 → 1280). 열어도 초점이 안으로 들어가지 않고 Tab 이 가려진 뒤 화면을 돌며, 닫으면 초점이 body 로 떨어진다. ModalShell 의 `aria-describedby` 가 없는 id 를 가리킨다. 폼 33곳이 바깥 누르기로 경고 없이 닫힌다. 상세 바닥의 삭제(dangerSoft)는 4.01:1.
+- **Desk 앱** — 시트가 대부분이고 프리셋 저장만 가운데 대화상자(PFormAlertDialog)다(→ 시트). 폼 29곳이 경고 없이 닫힌다.
+- **HR 웹** — Dialog 30곳 중 18곳이 높이 상한이 없어 긴 내용이면 제목과 버튼이 화면 밖으로 나간다(데스크톱 y −161 · 모바일 y −671). 트리거 없이 연 21곳은 닫으면 초점이 body 로 떨어진다. 닫기 버튼 16×16 "Close", 딤 0.80, 설명 4.42:1.
+- 앱 적용 때 화면마다 정할 자리 — HR 전체 화면 Dialog 3(페이지 · 시트 · Side Panel), 데스크톱 필터(Dialog · Popover · Side Panel), 반복 거래 상세의 바닥 액션 3개.

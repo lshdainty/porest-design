@@ -1,9 +1,8 @@
 // Chip 페이지의 그림 — specs/components/chip.md 의 `[그림: …](../../site/components/specs/chip.tsx#<id>)` 자리.
 // 칩은 chip.yaml 을 푼 값(chipLook)으로, Field · 칸은 field · input.yaml(textFieldLook), Select · Input Button 은 select · input-button.yaml(selectLook),
-// 버튼은 button.yaml 로 그린다. 시트 · 팝오버 · 스크롤 끝 흐림 · Segmented · Tabs 는 아직 스펙이 없어 역할 색 토큰으로 간단히 그린다.
+// 버튼은 button.yaml, 시트 · 대화상자 · 팝오버는 bottom-sheet · dialog · popover.yaml(overlay-look)로 그린다. 스크롤 끝 흐림 · Segmented · Tabs 는 아직 스펙이 없어 역할 색 토큰으로 간단히 그린다.
 // 휴대폰 화면 안의 칸은 large, 데스크톱 창 안의 칸은 medium 이다. 칩은 어디서나 medium(기본)이고, small 은 데스크톱의 촘촘한 필터 · 표 위 줄만이다.
 import { Fragment, type CSSProperties, type ReactNode } from 'react';
-import { proseValue } from '@/lib/design-tokens';
 import { Figure, Panel, MARK, MARK_LINE } from '../foundations/ui';
 import { buttonLook } from './button-look';
 import { checkLook } from './checkbox-look';
@@ -13,7 +12,9 @@ import { BudgetField, DemoFrame, FilterBarDemo, MultiDemo, PeopleField, SingleDe
 import { ChipPlayground } from './chip-playground';
 import { ChipGroupView, ChipView, InputChipView, type ChipViewProps } from './chip-view';
 import { PopoverPanel, SheetOverlay, SheetPanel } from './input-button-pickers';
-import { Cap, F, Form, HR_DIALOG_TITLE, Surface, cta, desk, hr, smallBtn, tf } from './select-screens';
+import { CenterOn, PHONE_SAFE, dialogChrome, overlayKit, ov } from './overlay-screens';
+import { DialogSurface, EndButtons } from './overlay-view';
+import { Cap, F, Form, Surface, cta, desk, hr, tf } from './select-screens';
 import { InputButtonView } from './select-view';
 import { TfInputView } from './text-field-view';
 import { Line, Phone, Row, Verdict, WebWindow, rc, type Mode } from './kit';
@@ -167,69 +168,61 @@ function TxAddPhone({ mode, scale = 0.7, h = 600 }: { mode: Mode; scale?: number
     </Phone>
   );
 }
-// 웹의 폼 대화상자 — 머리는 제목뿐(닫기 버튼 없이 아래 취소 · 등록으로 닫는다 — 사용자 결정). 오버레이 스펙 전이라 Select 그림의 HR 대화상자와 같은 치수로
-function FormDialog({ mode, title, children, footer, w, top = 24 }: { mode: Mode; title: string; children: ReactNode; footer: ReactNode; w: number; top?: number }) {
-  return (
-    <div className="absolute inset-0 flex justify-center" style={{ background: mode === 'auto' ? 'var(--p-overlay-dim)' : desk().overlay.dim[mode], paddingTop: top }}>
-      <div className="h-max rounded-xl" style={{ width: w, background: rc('bg-layer-floating', mode, 'hr'), boxShadow: mode === 'auto' ? 'var(--p-shadow-s4)' : proseValue(mode === 'dark' ? 'shadow-s4-dark' : 'shadow-s4') }}>
-        <div className="flex items-center px-[22px] pb-2 pt-[18px]">
-          <span className="text-[17px] font-bold" style={{ color: rc('fg-neutral', mode, 'hr') }}>
-            {title}
-          </span>
-        </div>
-        <div className="px-[22px] pb-2">{children}</div>
-        <div className="flex items-center gap-2 px-[22px] pb-[18px] pt-4">{footer}</div>
-      </div>
-    </div>
-  );
-}
-// HR 공지 작성(데스크톱 · 칸 medium · 칩 medium — small 은 데스크톱의 촘촘한 필터 · 표 위 줄만) — 지금 Select 인 공지 유형(GENERAL · URGENT · EVENT · MAINTENANCE)을 칩으로
-function HrNoticeWindow({ mode, w = 520, dialogW = 440 }: { mode: Mode; w?: number; dialogW?: number }) {
+// HR 공지 작성(데스크톱 · 칸 medium · 칩 medium — small 은 데스크톱의 촘촘한 필터 · 표 위 줄만) — 지금 Select 인 공지 유형(GENERAL · URGENT · EVENT · MAINTENANCE)을 칩으로.
+// 대화상자는 Dialog(dialog.yaml) — 입력 폼이라 머리 닫기 없이 바닥 취소 · 등록
+function HrNoticeWindow({ mode, w = 560 }: { mode: Mode; w?: number }) {
   const h = hr();
   const t = tf();
   const lk = cl('hr');
+  const o = ov('hr');
   const check = checkLook({ size: 'medium' }, 'hr');
-  const btnH = buttonLook({ variant: 'brandSolid', size: 'small' }, 'hr').faces.light.enabled.height;
   const label = px(t.field.label.text.lineHeight) + t.field.gap;
-  const gap = 20;
-  // 창 높이 — 창 막대 32 · 위 24 · 대화상자 머리 + 칸 넷(사이 20) + 본문 아래 8 + 버튼 줄(위 16 · 아래 18) + 아래 24
+  const gap = t.field.form.gapY;
+  // 창 높이 — 창 막대 32 · 위아래 24 · 대화상자(머리 + 칸 넷 + 바닥)
   const body = label + t.input.sizes.outline.medium.minHeight + gap + label + lk.sizes[lk.defaults.size].h + gap + label + h.ib.sizes.medium.h + gap + check.faces.unchecked.light.enabled.row.minHeight;
-  const winH = 32 + 24 + HR_DIALOG_TITLE + body + 8 + 16 + btnH + 18 + 24;
+  const chrome = dialogChrome('hr');
+  const winH = 32 + 24 * 2 + chrome.head + body + chrome.foot;
+  const s = o.dialog.footer.button.size;
   return (
     <WebWindow mode={mode} w={w} h={winH} url="hr.porest.app">
-      <FormDialog
-        mode={mode}
-        title="공지 작성"
-        w={dialogW}
-        footer={
-          <div className="ml-auto flex gap-2">
-            {smallBtn('취소', mode, 'neutralWeak')}
-            {smallBtn('등록', mode, 'brandSolid')}
-          </div>
-        }
-      >
-        <Form gap={gap}>
-          <F mode={mode} label="제목">
-            <TfInputView look={t.input} mode={mode} size="medium" state="enabled" value="10월 전사 워크숍 안내" />
-          </F>
-          <F mode={mode} label="공지 유형">
-            <Chips mode={mode} brand="hr" items={[['일반'], ['긴급'], ['이벤트', true], ['점검']]} />
-          </F>
-          <div className="flex" style={{ gap: t.field.form.gapX }}>
-            <div className="min-w-0 flex-1">
-              <F mode={mode} label="시작일">
-                <InputButtonView look={h} mode={mode} size="medium" state="enabled" value="2026. 10. 1. (목)" suffixIcon="calendar" />
-              </F>
+      <CenterOn mode={mode} dim={o.dialog.dim}>
+        <DialogSurface
+          look={o.dialog}
+          mode={mode}
+          title="공지 작성"
+          footer={
+            <EndButtons
+              mode={mode}
+              items={[
+                { label: '취소', look: buttonLook({ variant: 'neutralWeak', size: s }, 'hr') },
+                { label: '등록', look: buttonLook({ variant: 'brandSolid', size: s }, 'hr') },
+              ]}
+            />
+          }
+        >
+          <Form gap={gap}>
+            <F mode={mode} label="제목">
+              <TfInputView look={t.input} mode={mode} size="medium" state="enabled" value="10월 전사 워크숍 안내" />
+            </F>
+            <F mode={mode} label="공지 유형">
+              <Chips mode={mode} brand="hr" items={[['일반'], ['긴급'], ['이벤트', true], ['점검']]} />
+            </F>
+            <div className="flex" style={{ gap: t.field.form.gapX }}>
+              <div className="min-w-0 flex-1">
+                <F mode={mode} label="시작일">
+                  <InputButtonView look={h} mode={mode} size="medium" state="enabled" value="2026. 10. 1. (목)" suffixIcon="calendar" />
+                </F>
+              </div>
+              <div className="min-w-0 flex-1">
+                <F mode={mode} label="종료일">
+                  <InputButtonView look={h} mode={mode} size="medium" state="enabled" value="2026. 10. 31. (토)" suffixIcon="calendar" />
+                </F>
+              </div>
             </div>
-            <div className="min-w-0 flex-1">
-              <F mode={mode} label="종료일">
-                <InputButtonView look={h} mode={mode} size="medium" state="enabled" value="2026. 10. 31. (토)" suffixIcon="calendar" />
-              </F>
-            </div>
-          </div>
-          <CheckboxView look={check} mode={mode} checked="unchecked" state="enabled" label="상단에 고정" />
-        </Form>
-      </FormDialog>
+            <CheckboxView look={check} mode={mode} checked="unchecked" state="enabled" label="상단에 고정" />
+          </Form>
+        </DialogSurface>
+      </CenterOn>
     </WebWindow>
   );
 }
@@ -254,6 +247,7 @@ const Playground: Fig = () => (
     field={tf().field}
     input={tf().input}
     cta={{ desk: buttonLook({ variant: 'neutralSolid', size: 'large' }, 'desk'), hr: buttonLook({ variant: 'neutralSolid', size: 'large' }, 'hr') }}
+    kits={{ desk: overlayKit('desk'), hr: overlayKit('hr') }}
   />
 );
 
@@ -589,20 +583,18 @@ const MultiGuide: Fig = ({ caption }) => (
 // 필터 바 — 폰 목록(라이트) · 그 조건만 연 시트(다크, 1280 미만) · 데스크톱 팝오버(1280 이상, small)
 const CATS: [string, boolean?][] = [['식비', true], ['카페', true], ['교통', true], ['쇼핑'], ['문화'], ['의료'], ['주거'], ['통신']];
 function CategorySheet({ mode }: { mode: Mode }) {
-  const lk = desk();
+  const o = ov();
   return (
-    <SheetOverlay look={lk} mode={mode}>
-      <SheetPanel look={lk} mode={mode} title="카테고리" footer={cta('완료', mode)}>
-        <div className="px-6">
-          <Chips mode={mode} items={CATS} />
-        </div>
+    <SheetOverlay ov={o} mode={mode}>
+      <SheetPanel ov={o} mode={mode} title="카테고리" footer={cta('완료', mode)} safe={PHONE_SAFE}>
+        <Chips mode={mode} items={CATS} />
       </SheetPanel>
     </SheetOverlay>
   );
 }
 function DeskWebLedger({ mode }: { mode: Mode }) {
   const lk = cl();
-  const sel = desk();
+  const o = ov();
   const s = lk.sizes.small;
   return (
     <WebWindow mode={mode} w={520} h={340} url="desk.porest.app">
@@ -613,8 +605,8 @@ function DeskWebLedger({ mode }: { mode: Mode }) {
         <div className="relative">
           <Bar mode={mode} s="small" />
           {/* 기간 칩(맨 앞 지우기 다음) 아래에 그 조건만 */}
-          <div className="absolute z-10" style={{ left: s.iconOnlyW + lk.group.gap, top: s.h + sel.content.gutter }}>
-            <PopoverPanel look={sel} mode={mode}>
+          <div className="absolute z-10" style={{ left: s.iconOnlyW + lk.group.gap, top: s.h + o.popover.offset }}>
+            <PopoverPanel ov={o} mode={mode}>
               <Chips mode={mode} s="small" items={[['전체'], ['이번 달', true], ['지난 달'], ['최근 3개월']]} />
             </PopoverPanel>
           </div>
@@ -878,7 +870,7 @@ const ExMultiple: Fig = () => (
 );
 const ExFilter: Fig = () => (
   <DemoFrame look={cl()} pad={false}>
-    <FilterBarDemo look={cl()} cta={buttonLook({ variant: 'neutralSolid', size: 'large' })} height={400} />
+    <FilterBarDemo look={cl()} kit={overlayKit()} cta={buttonLook({ variant: 'neutralSolid', size: 'large' })} height={400} />
   </DemoFrame>
 );
 const ExSuggestion: Fig = () => (

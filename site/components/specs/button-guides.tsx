@@ -148,16 +148,7 @@ const Usage: Fig = ({ caption }) => {
             scale={s}
             bg="bg-layer-default"
             overlay={
-              <AlertBox
-                title="메모를 삭제할까요?"
-                body="'장보기 목록' 을 지우면 되돌릴 수 없어요."
-                footer={
-                  <div className="flex gap-2">
-                    <B variant="neutralWeak" size="large" grow={1} label="취소" />
-                    <B variant="criticalSolid" size="large" grow={1} label="삭제" />
-                  </div>
-                }
-              />
+              <AlertBox title="메모를 삭제할까요?" body="'장보기 목록' 을 지우면 되돌릴 수 없어요." confirm="삭제" />
             }
           >
             <div className="flex flex-col gap-3 px-6 pt-4">
@@ -390,7 +381,7 @@ const ModalFooter: Fig = ({ caption }) => (
           <DeskWebPage />
           <WebDialog
             title="거래 상세"
-            w={380}
+            close
             footer={
               <>
                 <div className="mr-auto">
@@ -412,7 +403,6 @@ const ModalFooter: Fig = ({ caption }) => (
           <DeskWebPage />
           <WebDialog
             title="거래 수정"
-            w={380}
             footer={
               <div className="ml-auto flex gap-2">
                 <B variant="neutralWeak" size="small" label="취소" />

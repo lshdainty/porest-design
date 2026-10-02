@@ -223,17 +223,6 @@ export function brandProfile(brandName, tokens) {
         primary: "새 결재 시작",
         secondary: "이력 보기",
       },
-      modal: {
-        title: "휴가 신청 확인",
-        description: "5/12 ~ 5/14 (3일) 휴가 신청을 결재 라인에 제출할까요?",
-        primary: "신청",
-        secondary: "취소",
-        fields: [
-          { k: "기간", v: "5/12 ~ 5/14 (3일)" },
-          { k: "잔여 연차", v: "8.5일 → 5.5일" },
-          { k: "결재 라인", v: "팀장 → 본부장" },
-        ],
-      },
       toasts: [
         { kind: "success", title: "결재 승인 완료", body: "김지원의 휴가 신청이 승인되었습니다." },
         { kind: "error", title: "신청 실패", body: "잔여 연차가 부족합니다 (현재 0.5일)." },
@@ -404,17 +393,6 @@ export function brandProfile(brandName, tokens) {
         primary: "할일 추가",
         secondary: "어제 보기",
       },
-      modal: {
-        title: "메모 삭제 확인",
-        description: "\"Porest 브랜드 톤\" 메모를 삭제하면 30일 후 영구 삭제됩니다. 보관함에 그대로 둘까요?",
-        primary: "삭제",
-        secondary: "보관함으로",
-        fields: [
-          { k: "제목", v: "Porest 브랜드 톤" },
-          { k: "작성일", v: "2026-05-08" },
-          { k: "단어 수", v: "342" },
-        ],
-      },
       toasts: [
         { kind: "success", title: "메모 저장 완료", body: "Porest 브랜드 톤 메모가 저장되었습니다." },
         { kind: "error", title: "동기화 실패", body: "인터넷 연결을 확인하고 다시 시도해주세요." },
@@ -573,17 +551,6 @@ export function brandProfile(brandName, tokens) {
       description: "이 영역은 빈 상태 시각화 demo입니다. 실제 사용 시나리오는 brand 파일 (HR / Desk) 참조.",
       primary: "더 알아보기",
       secondary: "닫기",
-    },
-    modal: {
-      title: "토큰 갱신 확인",
-      description: "이 변경을 brand 파일에 적용하시겠습니까? sync 단계에서 colors-2 region이 자동 미러됩니다.",
-      primary: "적용",
-      secondary: "취소",
-      fields: [
-        { k: "변경 항목", v: "colors-2 region (semantic)" },
-        { k: "영향 파일", v: "DESIGN.{hr,desk}.md" },
-        { k: "verify 필수", v: "npm run verify" },
-      ],
     },
     toasts: [
       { kind: "success", title: "Build 완료", body: `exports/tokens.css 생성 (${tokens.colors.length} colors, ${tokens.text.length} typography).` },
@@ -2560,6 +2527,44 @@ export function renderTextFieldGallery(brand) {
   </section>`;
 }
 
+// 달력 — 여는 자리 그림(03h · 03k)에 넣는 자리만 그린 달력이다. 크기 · 고른 날의 모양은 Date Picker 차례에 정한다. 2026년 10월 1일은 목요일이라 앞 4칸이 빈다
+const pickCalendar = ({ picked = [], range = [] } = {}) => {
+  const days = Array.from({ length: 31 }, (_, i) => i + 1).map((d) => {
+    const cls = ["pib-cal-day", picked.includes(d) && "pib-cal-day--picked", range.includes(d) && "pib-cal-day--range"].filter(Boolean).join(" ");
+    return `<span class="${cls}"><span>${d}</span></span>`;
+  });
+  const blanks = Array.from({ length: 4 }, () => '<span class="pib-cal-day" aria-hidden="true"></span>');
+  const nav = (icon, name) => `<button class="btn btn-ghost btn-ghost-subtle btn-icon-only btn-size-small" type="button" aria-label="${name}">${PICK_ICON[icon]}</button>`;
+  return `<div class="pib-cal">
+            <div class="pib-cal-head">${nav("chevronLeft", "이전 달")}<span class="pib-cal-month">2026년 10월</span>${nav("chevronRight", "다음 달")}</div>
+            <div class="pib-cal-grid">${["일", "월", "화", "수", "목", "금", "토"].map(d => `<span class="pib-cal-dow">${d}</span>`).join("")}${blanks.join("")}${days.join("")}</div>
+          </div>`;
+};
+
+// Input Button 의 여는 자리 — 폰(1280 미만)은 Bottom Sheet(위에 고를 값의 종류를 제목으로 · 닫기 28 원 · 아래 "완료" large 48 폭 전체),
+// 데스크톱 웹(1280 이상)은 칸 아래 8 · 왼쪽 맞춤 Popover(고르는 패널이라 머리 없이 본문 · 아래 "완료" small 36 오른쪽).
+// 시트 · 팝오버는 03k 의 도우미(bottomSheet · overlayPopover)로 그린다 — 뒤 화면의 칸은 열린 채(aria-expanded)다. 03h · 03k 가 함께 쓴다
+const pickSurfaceMock = {
+  phone: () => overlayFrame({
+    device: "phone",
+    height: 600,
+    page: overlayPage({ title: "거래 추가", body: textField({ label: "날짜", control: { kind: "inputButton", size: "large", value: "10월 1일 (목)", suffixIcon: "calendarDays", expanded: true } }) }),
+    layers: [overlayScrim(), overlayLayer("sheet", bottomSheet({ title: "날짜", body: pickCalendar({ picked: [8] }), footer: [overlayButton("완료", { size: "large" })] }))],
+  }),
+  desktop: () => overlayFrame({
+    device: "desktop",
+    height: 560,
+    page: overlayPage({
+      title: "휴가 신청",
+      desktop: true,
+      body: overlayAnchor(
+        textField({ label: "기간", control: { kind: "inputButton", size: "medium", value: "10월 12일 (월)~10월 14일 (수)", suffixIcon: "calendarDays", expanded: true } }),
+        overlayPopover({ label: "기간 고르기", body: pickCalendar({ picked: [12, 14], range: [13] }), footer: [overlayButton("완료")] }),
+      ),
+    }),
+  }),
+};
+
 // Select · Input Button 갤러리 — 트리거 · 크기 · 상태 · 목록 · 여럿 고르기 · 붙이개 · 여는 자리 일곱 판을 흰 표면(.vignette-card) 위에 그린다.
 // 견본 틀(.ptf-samples · .ptf-cap · .ptf-now)과 상태 표(.cb-matrix · .ptf-matrix)는 Text Field 갤러리 것을 그대로 쓴다.
 // 글은 Desk(거래 추가 · 예산 · 할부 · 알림)와 HR(휴가 신청 · 결재)에서 빌렸다 — select.md · input-button.md 코드 예와 같은 글이다.
@@ -2711,47 +2716,13 @@ export function renderPickGallery(brand) {
     ]),
   );
 
-  // 7. 여는 자리 — 폰의 시트 · 데스크톱 웹의 팝오버. 달력은 자리만 그린 것이다(Date Picker 차례에 정한다) — 2026년 10월 1일은 목요일이라 앞 4칸이 빈다
-  const calendar = ({ picked = [], range = [] } = {}) => {
-    const days = Array.from({ length: 31 }, (_, i) => i + 1).map((d) => {
-      const cls = ["pib-cal-day", picked.includes(d) && "pib-cal-day--picked", range.includes(d) && "pib-cal-day--range"].filter(Boolean).join(" ");
-      return `<span class="${cls}"><span>${d}</span></span>`;
-    });
-    const blanks = Array.from({ length: 4 }, () => '<span class="pib-cal-day" aria-hidden="true"></span>');
-    const nav = (icon, name) => `<button class="btn btn-ghost btn-ghost-subtle btn-icon-only btn-size-small" type="button" aria-label="${name}">${PICK_ICON[icon]}</button>`;
-    return `<div class="pib-cal">
-            <div class="pib-cal-head">${nav("chevronLeft", "이전 달")}<span class="pib-cal-month">2026년 10월</span>${nav("chevronRight", "다음 달")}</div>
-            <div class="pib-cal-grid">${["일", "월", "화", "수", "목", "금", "토"].map(d => `<span class="pib-cal-dow">${d}</span>`).join("")}${blanks.join("")}${days.join("")}</div>
-          </div>`;
-  };
-  const phoneMock = `<div class="pib-mock pib-mock--phone">
-          <div class="pib-mock-screen">
-            <div class="ptf-screen-title">거래 추가</div>
-            ${pickButton("날짜", { ...date, expanded: true })}
-          </div>
-          <div class="pib-dim" aria-hidden="true"></div>
-          <div class="pib-sheet" role="group" aria-label="날짜 고르기">
-            <div class="pib-sheet-title">날짜</div>
-            ${calendar({ picked: [8] })}
-            <button class="btn btn-neutral-solid btn-size-large pib-done" type="button">완료</button>
-          </div>
-        </div>`;
-  const desktopMock = `<div class="pib-mock pib-mock--desktop">
-          <div class="ptf-screen-title">휴가 신청</div>
-          <div class="pib-anchor">
-            ${pickButton("기간", { size: "medium", value: "10월 12일 (월)~10월 14일 (수)", suffixIcon: "calendarDays", expanded: true })}
-            <div class="pib-popover" role="group" aria-label="기간 고르기">
-              ${calendar({ picked: [12, 14], range: [13] })}
-              <div class="pib-popover-actions"><button class="btn btn-neutral-solid" type="button">완료</button></div>
-            </div>
-          </div>
-        </div>`;
+  // 7. 여는 자리 — 폰의 시트 · 데스크톱 웹의 팝오버. 시트 · 팝오버는 03k 의 Bottom Sheet · Popover 다(pickSurfaceMock). 달력은 자리만 그린 것이다(Date Picker 차례에 정한다)
   const surfacePanel = panel(
     "여는 자리 — 1280 미만 시트 · 이상 팝오버 · \"완료\"",
-    "여는 자리는 화면 폭으로 정한다 — 칸 크기가 바뀌는 폭(1280)과 같다. 1280 미만(폰 · 태블릿 · 앱)은 아래에서 올라오는 시트로, 위에 고를 값의 종류를 제목으로 둔다. 1280 이상(데스크톱 웹)은 칸 아래 8 에 붙고 칸 왼쪽에 맞춘 팝오버다(아래가 모자라면 위로). 달력 · 시각은 고르는 동안 칸의 값이 바뀌지 않는다 — 고른 날은 시트 · 팝오버 안에만 있다가 \"완료\" 를 누를 때 칸에 들어가고(그림의 8일은 아직 칸에 없다), 바깥을 누르거나 끌어내리거나 Esc 로 닫으면 버린다. 열 때는 칸의 값에서 시작한다. 기간처럼 두 번 고르는 것은 둘을 다 고르기 전에는 \"완료\" 를 막는다. 목록 · 격자는 누르는 순간 고르고 닫혀 \"완료\" 가 없다. 시트 · 팝오버 · 달력의 모양(크기 · 모서리 · 그림자 · 고른 날)은 Bottom Sheet · Popover · Date Picker 차례에 정한다 — 여기서는 자리만 그렸다.",
+    "여는 자리는 화면 폭으로 정한다 — 칸 크기가 바뀌는 폭(1280)과 같다. 1280 미만(폰 · 태블릿 · 앱)은 아래에서 올라오는 Bottom Sheet 로, 위에 고를 값의 종류를 제목으로 두고 오른쪽 위에 닫기(28 원)를 둔다. 1280 이상(데스크톱 웹)은 칸 아래 8 에 붙고 칸 왼쪽에 맞춘 Popover 다(아래가 모자라면 위로) — 고르는 패널이라 머리 없이 본문만이다. 달력 · 시각은 고르는 동안 칸의 값이 바뀌지 않는다 — 고른 날은 시트 · 팝오버 안에만 있다가 \"완료\" 를 누를 때 칸에 들어가고(그림의 8일은 아직 칸에 없다), 바깥을 누르거나 끌어내리거나 Esc 로 닫으면 버린다. 열 때는 칸의 값에서 시작한다. 기간처럼 두 번 고르는 것은 둘을 다 고르기 전에는 \"완료\" 를 막는다. \"완료\" 는 시트에서 Button large 48 폭 전체, 팝오버에서 small 36 오른쪽이다. 목록 · 격자는 누르는 순간 고르고 닫혀 \"완료\" 가 없다. 시트 · 팝오버의 모양은 03k — Bottom Sheet · Popover 이고, 달력의 모양(크기 · 고른 날)만 Date Picker 차례에 정한다 — 달력은 자리만 그렸다.",
     samples([
-      sample("폰 — 시트", "useInputButtonSurface() → \"sheet\" · 위에 제목 · 아래 완료", phoneMock),
-      sample("데스크톱 웹 — 팝오버", "useInputButtonSurface() → \"popover\" · 칸 아래 8 · 왼쪽 맞춤", desktopMock),
+      sample("폰 — 시트", "useInputButtonSurface() → \"sheet\" · 위에 제목 · 닫기 · 아래 완료", pickSurfaceMock.phone()),
+      sample("데스크톱 웹 — 팝오버", "useInputButtonSurface() → \"popover\" · 칸 아래 8 · 왼쪽 맞춤 · 머리 없음", pickSurfaceMock.desktop()),
     ], "ptf-samples ptf-samples--forms"),
   );
 
@@ -3476,6 +3447,335 @@ export function renderTabsGallery(brand) {
   </section>`;
 }
 
+// Bottom Sheet · Dialog · Alert Dialog · Popover — spec: specs/components/bottom-sheet.md · dialog.md · alert-dialog.md · popover.md ·
+// 수치 bottom-sheet.yaml · dialog.yaml · alert-dialog.yaml · popover.yaml · 쌓임 specs/z-index.md. 구조는 SEED Bottom Sheet · Dialog · Responsive Dialog ·
+// Alert Dialog · Popover(2026-10-02).
+// 표면은 넷이다 — 시트 .pov-sheet · 대화상자 .pov-dialog · 확인창 .pov-alert · 팝오버 .pov-popover. 머리(제목 · 설명) · 본문 · 바닥으로 짜고, 닫기 .pov-close 는
+// 시트에서 28 원(--circle), 대화상자 · 팝오버에서 투명 52 상자(--box)다. 확인창에는 닫기가 없다.
+// 그림은 열린 순간을 멈춘 것이다 — 폰 · 데스크톱 화면 틀(.pov-frame — 갤러리 것) 안에 뒤 화면(.pov-page)을 그리고 딤(.pov-scrim) · 표면을 얹는다.
+// 틀이 쌓임 맥락을 가두므로(isolation) 안의 z-index 는 z-index.md 값 그대로다 — 시트 · 대화상자 L2(딤 100 · 표면 101) · 팝오버 L3(200) · 확인창 L5(300 · 301).
+// 표면은 role=group 이다 — 레시피는 role="dialog" · "alertdialog" + aria-modal 이지만, 미리보기 페이지까지 막지 않게 했다. 대신 모달 뒤 화면은 inert 로 둬
+// 레시피의 결과(뒤 화면을 보조 기술에서 숨기고 초점을 가둔다)를 흉내 낸다. 팝오버는 비모달이라 뒤 화면 안에 그대로 그린다.
+// 본문 스크롤(넘치면 아래 48 흐림 · 위로 스크롤하면 머리 아래 선)은 페이지 끝 스크립트가 레시피처럼 맡는다. 확인창 버튼의 세로 전환은 CSS 다(레시피와 같다).
+const OVERLAY_ICON = {
+  x: listSvg('<path d="M18 6 6 18"/><path d="m6 6 12 12"/>'),
+  info: listSvg('<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>'),
+};
+const OVERLAY_CLOSE_INTERACTIONS = ["pressed", "focus"];
+let overlaySeq = 0;
+const nextOverlayId = (prefix) => `${prefix}-${(overlaySeq += 1)}`;
+
+// 바닥 버튼 — Button 갤러리의 .btn 그대로다. variant 는 .btn-* 이름(neutral-solid · neutral-weak · critical-solid), size 는 높이로 고른 크기
+// (시트 large 48 · 대화상자 · 팝오버 small 36 · 확인창 1280 미만 medium 40 · 이상 small 36)
+export function overlayButton(label, { variant = "neutral-solid", size = "small" } = {}) {
+  return `<button class="btn btn-${variant} btn-size-${size}" type="button">${escape(label)}</button>`;
+}
+
+// 닫기 — 이름 "닫기". circle(시트 — 28 원 · 아이콘 14 · 누르는 영역 44) · box(대화상자 · 팝오버 — 투명 52 상자 · 아이콘 22).
+// interaction 은 그 순간을 멈춘 상태(pressed · focus — 갤러리 전용)
+export function overlayClose({ kind = "box", interaction = "" } = {}) {
+  const cls = ["pov-close", `pov-close--${kind}`, OVERLAY_CLOSE_INTERACTIONS.includes(interaction) && `pov-close--${interaction}`].filter(Boolean).join(" ");
+  return `<button type="button" class="${cls}" aria-label="닫기">${OVERLAY_ICON.x}</button>`;
+}
+
+// 표면의 이름 — 제목이 있으면 aria-labelledby, 없으면(머리 없는 팝오버 · 제목 없는 확인창) label 을 aria-label 로. 설명은 aria-describedby
+const overlayNameAttrs = (titleId, descId, label = "") => attrsOf([
+  titleId ? `aria-labelledby="${titleId}"` : label && `aria-label="${escape(label)}"`,
+  descId && `aria-describedby="${descId}"`,
+]);
+
+// Bottom Sheet — 1280 미만의 폼 · 상세 · 고르기. 글(title · description)은 여기서 escape 하고 body · footer 는 HTML 조각으로 받는다.
+//   close   위 닫기(28 원) — 조회 · 고르기 · 시트의 입력 폼 모두 둔다(기본). 닫기가 있으면 제목 오른쪽을 64 비운다
+//   handle  손잡이 — 스냅 높이(절반 · 가득)를 둘 때만. snap 은 그림이 멈춘 높이(half)
+//   footer  바닥 버튼(large 48) — 하나면 폭 전체, 둘이면 반씩(보조 왼쪽 · 주 오른쪽)
+export function bottomSheet({ id = nextOverlayId("pov-sheet"), title = "", description = "", body = "", footer = [], close = true, handle = false, snap = "", closeInteraction = "" } = {}) {
+  const titleId = `${id}-title`;
+  const descId = description ? `${id}-desc` : "";
+  const head = `<div class="pov-sheet-header${close ? " pov-sheet-header--close" : ""}"><div class="pov-sheet-title" id="${titleId}">${escape(title)}</div>${description ? `<p class="pov-sheet-desc" id="${descId}">${escape(description)}</p>` : ""}</div>`;
+  return `<div class="pov-sheet${snap ? ` pov-sheet--${snap}` : ""}" role="group" ${overlayNameAttrs(titleId, descId)}>${handle ? '<div class="pov-handle" aria-hidden="true"></div>' : ""}${head}${close ? overlayClose({ kind: "circle", interaction: closeInteraction }) : ""}<div class="pov-sheet-body">${body}</div>${footer.length ? `<div class="pov-sheet-footer">${footer.join("")}</div>` : ""}</div>`;
+}
+
+// Dialog — 1280 이상의 폼 · 상세. 글은 여기서 escape 하고 body · footer 는 HTML 조각으로 받는다.
+//   size    medium 480(기본) · large 800
+//   close   머리 닫기(52 상자) — 조회 · 안내만. 입력 폼은 두지 않는다(바닥 취소가 닫는다). 닫기가 있으면 머리 오른쪽을 52 비운다
+//   scroll  본문 스크롤 — top(기본) · scrolled(그릴 때 위로 스크롤해 둔다). 넘침 · 스크롤 표시는 페이지 끝 스크립트가 단다
+//   footer  바닥 버튼(small 36) — 오른쪽 정렬, [취소] [저장] 차례
+export function overlayDialog({ id = nextOverlayId("pov-dialog"), title = "", description = "", body = "", footer = [], size = "medium", close = false, scroll = "top", closeInteraction = "" } = {}) {
+  const titleId = `${id}-title`;
+  const descId = description ? `${id}-desc` : "";
+  const head = `<div class="pov-dialog-header${close ? " pov-dialog-header--close" : ""}"><div class="pov-dialog-title" id="${titleId}">${escape(title)}</div>${description ? `<p class="pov-dialog-desc" id="${descId}">${escape(description)}</p>` : ""}</div>`;
+  return `<div class="pov-dialog${size === "large" ? " pov-dialog--large" : ""}" role="group" ${overlayNameAttrs(titleId, descId)}>${head}${close ? overlayClose({ kind: "box", interaction: closeInteraction }) : ""}<div class="pov-dialog-body" data-pov-scroll="${scroll}">${body}</div>${footer.length ? `<div class="pov-dialog-footer">${footer.join("")}</div>` : ""}</div>`;
+}
+
+// Alert Dialog — 되돌릴 수 없는 일 앞의 확인. 글은 여기서 escape 한다. 닫기 버튼 · 입력칸이 없다.
+//   single  알리기 — 버튼 하나 폭 전체. 아니면 [취소] [확정] 둘이고, 배치는 CSS 가 글 폭으로 정한다(alert-dialog.tsx 의 AlertDialogFooter 와 같다) —
+//           버튼마다 반 폭을 바탕으로 두고 글 폭보다 줄지 않아, 한쪽 글이 반을 넘으면 줄이 넘어가고(wrap-reverse) 확정이 위로 간다
+//   tone    critical(지우는 · 잃는 확정 — criticalSolid, 기본) · neutral(그 밖의 확정 — neutralSolid). 취소는 늘 neutralWeak
+//   size    medium(1280 미만 40, 기본) · small(1280 이상 36)
+//   label   제목이 없을 때 묻는 말 — aria-label
+export function alertDialog({ id = nextOverlayId("pov-alert"), title = "", description = "", cancel = "취소", action = "", tone = "critical", single = false, size = "medium", label = "" } = {}) {
+  const titleId = title ? `${id}-title` : "";
+  const descId = `${id}-desc`;
+  const confirm = overlayButton(action, { variant: tone === "critical" ? "critical-solid" : "neutral-solid", size });
+  const buttons = single ? confirm : `${overlayButton(cancel, { variant: "neutral-weak", size })}${confirm}`;
+  return `<div class="pov-alert" role="group" ${overlayNameAttrs(titleId, descId, label)}>${title ? `<div class="pov-alert-title" id="${titleId}">${escape(title)}</div>` : ""}<p class="pov-alert-desc" id="${descId}">${escape(description)}</p><div class="pov-alert-footer">${buttons}</div></div>`;
+}
+
+// Popover — 트리거에 붙는 비모달 표면. 글은 여기서 escape 하고 body · footer 는 HTML 조각으로 받는다.
+//   title · description  머리 — 안내 팝오버는 제목 + 닫기(52 상자 · 머리 오른쪽 52 비움), 고르는 패널은 머리 없이 본문만(이름은 label)
+//   footer  바닥 버튼(small 36) — 고른 것을 넣을 때("완료")만, 오른쪽 정렬
+//   본문은 대화상자와 같이 넘치면 아래 48 흐림 · 위로 스크롤하면 머리 아래 선이다(페이지 끝 스크립트)
+export function overlayPopover({ id = nextOverlayId("pov-pop"), title = "", description = "", body = "", footer = [], close = true, label = "", closeInteraction = "" } = {}) {
+  const titleId = title ? `${id}-title` : "";
+  const descId = title && description ? `${id}-desc` : "";
+  const withClose = !!title && close;
+  const head = title ? `<div class="pov-pop-header${withClose ? " pov-pop-header--close" : ""}"><div class="pov-pop-title" id="${titleId}">${escape(title)}</div>${descId ? `<p class="pov-pop-desc" id="${descId}">${escape(description)}</p>` : ""}</div>` : "";
+  return `<div class="pov-popover" role="group" id="${id}" ${overlayNameAttrs(titleId, descId, label)}>${head}${withClose ? overlayClose({ kind: "box", interaction: closeInteraction }) : ""}<div class="pov-pop-body" data-pov-scroll="top">${body}</div>${footer.length ? `<div class="pov-pop-footer">${footer.join("")}</div>` : ""}</div>`;
+}
+
+// 화면 틀 — phone(폭 360 까지 · 아래 홈 표시줄 안전 영역 34) · desktop(브라우저 창). 갤러리 것이고 컴포넌트의 일부가 아니다.
+//   page    뒤 화면(overlayPage) — 모달(layers)을 얹으면 inert 로 둔다
+//   layers  그 위의 딤 · 표면(overlayScrim · overlayLayer) — 쓴 차례로 쌓인다
+//   height  화면 높이 — 시트 90% · 대화상자 80% 상한이 이 높이를 따른다
+export function overlayFrame({ device = "phone", height = 600, page = "", layers = [] } = {}) {
+  const bar = device === "desktop" ? '<div class="pov-frame-bar" aria-hidden="true"><span></span><span></span><span></span></div>' : "";
+  const home = device === "phone" ? '<div class="pov-home" aria-hidden="true"></div>' : "";
+  return `<div class="pov-frame pov-frame--${device}">${bar}<div class="pov-viewport" style="--pov-h: ${height}px;"><div class="pov-page"${layers.length ? " inert" : ""}>${page}</div>${layers.join("")}${home}</div></div>`;
+}
+// 딤 — modal(시트 · 대화상자 L2 100) · alert(확인창 L5 300). overlay-dim 0.50 · 다크 0.65
+const overlayScrim = (level = "modal") => `<div class="pov-scrim${level === "alert" ? " pov-scrim--alert" : ""}" aria-hidden="true"></div>`;
+// 표면 자리 — sheet(아래 가운데 · 화면 폭 전체) · dialog(가운데 · 좌우 20 남김) · alert(가운데 · 좌우 32 남김). inert 는 위에 확인창이 뜬 대화상자
+const overlayLayer = (kind, surface, { inert = false } = {}) => `<div class="pov-layer pov-layer--${kind}"${inert ? " inert" : ""}>${surface}</div>`;
+// 팝오버를 연 자리 — 트리거(또는 칸) 아래 8 · 왼쪽 맞춤으로 뒤 화면 위에 뜬다
+const overlayAnchor = (trigger, popover) => `<div class="pov-anchor">${trigger}${popover}</div>`;
+
+// 뒤 화면 — 제목 + 내용. rows 는 목록 줄(List — 보기만 하는 줄), body 는 화면 여백 안의 조각(폼 · 칸), lead 는 제목과 내용 사이 한 줄이다.
+// 데스크톱은 회색 바탕(bg-layer-basement) 위 흰 카드에 내용을 둔다. 2026년 10월 1일은 목요일이다
+const OVERLAY_LEDGER = [
+  { color: "orange", icon: "utensils", title: "김밥천국", detail: "식비 · 현대카드 M", amount: "8,000원" },
+  { color: "blue", icon: "bus", title: "버스", detail: "교통 · 현대카드 M", amount: "1,500원" },
+  { color: "violet", icon: "bag", title: "다이소", detail: "쇼핑 · 현대카드 M", amount: "12,300원" },
+  { color: "indigo", icon: "wallet", title: "월급", detail: "수입 · 국민 주계좌", amount: "3,200,000원" },
+];
+const OVERLAY_LEAVE = [
+  { color: "blue", icon: "calendar", title: "연차", detail: "10월 12일 (월) ~ 14일 (수)", value: "승인 대기" },
+  { color: "indigo", icon: "calendar", title: "반차(오전)", detail: "9월 30일 (수)", value: "승인" },
+  { color: "violet", icon: "calendar", title: "병가", detail: "9월 8일 (화)", value: "승인" },
+];
+const overlayRow = (r) => listRow({ prefix: listTile(r.color, r.icon), title: r.title, detail: r.detail, suffix: r.amount ? `<span class="plst-amount">${escape(r.amount)}</span>` : escape(r.value) });
+const overlayPage = ({ title = "가계부", rows = OVERLAY_LEDGER, body = "", lead = "", desktop = false } = {}) => {
+  const content = body ? `<div class="pov-page-body">${body}</div>` : listOf(rows.map(overlayRow));
+  return `<div class="pov-page-title">${escape(title)}</div>${lead ? `<div class="pov-page-lead">${lead}</div>` : ""}${desktop ? `<div class="pov-page-card">${content}</div>` : content}`;
+};
+
+// 거래 추가 폼 — 같은 폼이 1280 미만 시트(칸 large 52) · 이상 대화상자(medium 40)에 뜬다. 칸이 모두 필수라 점 · "선택" 을 붙이지 않는다(2/3 규칙)
+const overlayTxForm = (size, fields = ["amount", "category", "date"]) => {
+  const all = {
+    amount: { label: "금액", required: true, control: { kind: "input", size, value: "8,000", suffix: "원", inputmode: "numeric", format: "amount" } },
+    category: { label: "카테고리", required: true, control: { kind: "inputButton", size, value: "식비", prefixIcon: "utensils", suffixIcon: "chevronDown" } },
+    date: { label: "날짜", required: true, control: { kind: "inputButton", size, value: "10월 1일 (목)", suffixIcon: "calendarDays" } },
+  };
+  return `<div class="ptf-form">${fields.map(k => textField(all[k])).join("")}</div>`;
+};
+
+// 표면 안의 목록 — 줄이 제 좌우 24 를 가지므로 본문 여백 밖(표면 끝)까지 낸다(.pov-bleed). 값 줄은 보기만 하는 줄, 라디오 줄은 List 의 라디오 24
+const overlayValueList = (pairs) => `<div class="pov-bleed">${listOf(pairs.map(([title, value]) => listRow({ title, suffix: escape(value) })))}</div>`;
+const overlayRadioList = (label, options, picked) => `<div class="pov-bleed"><div class="plst" role="radiogroup" aria-label="${escape(label)}">${
+  options.map(title => listRow({ kind: "control", as: "div", title, suffix: radio({ size: "large", checked: title === picked }).replace("<button ", '<button data-list-action="" ') })).join("")
+}</div></div>`;
+
+// 시트 · 대화상자 · 확인창 · 팝오버 갤러리 — 나누기 · 시트 · 대화상자 · 확인창 · 팝오버 · 닫기 버튼 여섯 판을 흰 표면(.vignette-card) 위에 그린다.
+// 견본 틀(.ptf-samples · .ptf-cap)과 상태 표(.cb-matrix)는 Text Field 갤러리 것을 그대로 쓴다. 글은 Desk(거래 추가 · 기간 · 거래 상세 · 관심 그룹)와
+// HR(휴가 신청 · 연차 사용 규정)에서 빌렸다 — bottom-sheet.md · dialog.md · alert-dialog.md · popover.md 코드 예와 같은 글이다.
+// 그림은 열린 순간을 멈췄다 — 닫기 · 버튼 · 칸은 실제로 눌리고, 대화상자 본문은 실제로 스크롤된다(페이지 끝 스크립트).
+export function renderOverlayGallery(brand) {
+  const panel = (title, sub, body) => `
+    <div class="vignette-card cb-panel">
+      <div class="vignette-head">
+        <div class="vignette-title">${escape(title)}</div>
+        <div class="vignette-sub">${escape(sub)}</div>
+      </div>${body}
+    </div>`;
+  const samples = (items, cls = "ptf-samples") => `
+      <div class="${cls}">${items.join("")}
+      </div>`;
+  const sample = (cap, en, body) => `
+        <div class="ptf-sample">
+          <div class="ptf-cap">${escape(cap)}<span>${escape(en)}</span></div>
+          ${body}
+        </div>`;
+  const DESKTOP = "ptf-samples pov-samples--desktop";
+  const detail = [["금액", "8,000원"], ["카테고리", "식비"], ["결제 수단", "현대카드 M"], ["날짜", "10월 1일 (목)"], ["메모", "친구와 점심"]];
+
+  // 1. 나누기 — 같은 폼(ResponsiveDialog)이 1280 미만 시트 · 이상 대화상자. 닫는 자리만 표면에 맞춰 바뀐다
+  const formSheet = overlayFrame({
+    device: "phone",
+    height: 640,
+    page: overlayPage(),
+    layers: [overlayScrim(), overlayLayer("sheet", bottomSheet({ title: "거래 추가", body: overlayTxForm("large"), footer: [overlayButton("저장", { size: "large" })] }))],
+  });
+  const formDialog = overlayFrame({
+    device: "desktop",
+    height: 560,
+    page: overlayPage({ desktop: true }),
+    layers: [overlayScrim(), overlayLayer("dialog", overlayDialog({ title: "거래 추가", body: overlayTxForm("medium"), footer: [overlayButton("취소", { variant: "neutral-weak" }), overlayButton("저장")] }))],
+  });
+  const splitPanel = panel(
+    "나누기 — 같은 폼이 1280 에서 시트 ↔ 대화상자",
+    "폼 · 상세는 한 부품(ResponsiveDialog)으로 짠다 — 1280 미만은 아래에서 올라오는 Bottom Sheet, 이상은 화면 정중앙의 Dialog 다. 머리 · 본문 · 바닥은 같고 닫는 자리만 표면에 맞춰 바뀐다 — 시트의 입력 폼은 위 닫기 + 바닥 저장 하나(Button large 48 폭 전체), 대화상자의 입력 폼은 바닥 [취소] [저장](Button small 36 오른쪽)이고 머리 닫기가 없다. 닫기 버튼과 바닥 취소를 함께 두지 않는다. 입력 폼은 바깥(딤)을 눌러도 · 아래로 끌어도 닫히지 않아 시트에 손잡이를 달지 않는다 — 닫기 · 취소 · Esc · 뒤로 가기로 닫고, 바뀐 값이 있으면 닫기 전에 \"작성한 내용이 사라져요\" 를 묻는다(Field). 경계 1280 은 Input Button 과 같고, 칸도 폰은 large 52 · 데스크톱 웹은 medium 40 이다. 시트 · 대화상자는 그림자 없이 딤(overlay-dim 0.50 · 다크 0.65) 위에 떠 있는 표면(bg-layer-floating)으로 뜬다. 열린 동안 뒤 화면은 보조 기술에서 숨기고 스크롤을 잠그며, 초점은 표면 안을 돈다 — 닫으면 연 자리로 돌아간다. 창 폭이 1280 을 넘나들면 열린 채 표면이 바뀌고 값은 폼(부모)이 들고 있어 그대로다.",
+    samples([
+      sample("폰 · 1280 미만 — Bottom Sheet", "ResponsiveDialog form — 위 닫기 + 바닥 저장(large 48) · 손잡이 없음", formSheet),
+      sample("데스크톱 웹 · 1280 이상 — Dialog medium 480", "ResponsiveDialog form — 바닥 취소 · 저장(small 36) · 머리 닫기 없음", formDialog),
+    ], "ptf-samples ptf-samples--forms"),
+  );
+
+  // 2. Bottom Sheet — 고르기(설명 · List 라디오 · 바닥 둘) · 손잡이(스냅 높이 절반에 멈춘 조회 시트)
+  const pickSheet = overlayFrame({
+    device: "phone",
+    height: 600,
+    page: overlayPage(),
+    layers: [overlayScrim(), overlayLayer("sheet", bottomSheet({
+      title: "기간",
+      description: "고른 기간의 거래만 보여요.",
+      body: overlayRadioList("기간", ["이번 달", "지난달", "최근 3개월"], "이번 달"),
+      footer: [overlayButton("초기화", { variant: "neutral-weak", size: "large" }), overlayButton("적용", { size: "large" })],
+    }))],
+  });
+  const snapSheet = overlayFrame({
+    device: "phone",
+    height: 600,
+    page: overlayPage(),
+    layers: [overlayScrim(), overlayLayer("sheet", bottomSheet({ title: "거래 상세", body: overlayValueList(detail), handle: true, snap: "half" }))],
+  });
+  const sheetPanel = panel(
+    "Bottom Sheet — 머리 · 바닥 · 고르기 · 손잡이",
+    "최대 480(넓은 화면에서는 가운데) · 위 두 모서리 24 이고, 높이는 내용만큼이며 화면 높이의 90% 를 넘지 않는다 — 그보다 긴 내용은 시트 안 스크롤로 버티지 않고 페이지로 옮긴다. 머리는 위 24 · 아래 16 · 좌우 화면 여백 24, 제목 22/30 · 700 · fg-neutral, 설명 16/22 · fg-neutral-muted(사이 8)이고, 닫기가 있으면 제목 오른쪽을 64 비운다. 닫기는 오른쪽 위(위 24 · 오른쪽 24)의 28 원 bg-neutral-weak · 아이콘 14 fg-neutral 이고 누르는 영역은 44 다. 본문은 좌우 24 이고 넘치면 이 안에서 스크롤한다. 바닥은 위 12 · 아래 16 에 안전 영역(홈 표시줄)을 더하고, 버튼은 Button large 48 — 하나면 폭 전체, 둘이면 반씩(사이 8 · 보조 왼쪽 · 주 오른쪽)이다. 조회 · 고르기 시트도 위 닫기이고, 바닥 버튼은 고른 것을 넣을 때(\"적용\" · \"완료\")만 둔다. 조회 · 고르기 시트는 바깥 누르기 · 끌어내리기로 닫힌다 — 놓을 때 빠르게(0.4px/ms 넘게) 끌었거나 높이의 25% 이상 내려왔으면 닫고, 열린 뒤 0.5초 · 본문을 스크롤하는 중에는 끌리지 않는다. 손잡이(36 × 4 · stroke-neutral-weak · 위 6 · 누르는 영역 44 · 보조 기술에 숨김)는 절반 · 가득 같은 스냅 높이를 둘 때만 단다 — 누르면 다음 높이로 가고, 가장 낮은 높이에서 누르면 닫힌다. 300ms(d6) enter-expressive 로 올라오고 200ms(d4) exit 로 내려간다. 딤 L2 100 · 시트 101.",
+    samples([
+      sample("고르기 — 설명 · 초기화 · 적용 반씩", "BottomSheet — List 라디오 · 바닥 버튼 둘(large 48)", pickSheet),
+      sample("손잡이 — 스냅 높이를 둘 때만", "snapPoints — 시트는 화면의 90% 높이 · 절반 높이에 멈췄다 · 바닥 버튼 없음", snapSheet),
+    ]),
+  );
+
+  // 3. Dialog — 조회(머리 닫기) · 본문이 넘칠 때(아래 48 흐림) · 위로 스크롤했을 때(머리 아래 선). 둘째 · 셋째는 실제로 스크롤된다
+  const leaveFields = [
+    { label: "휴가 종류", required: true, control: { kind: "select", size: "medium", value: "연차" } },
+    { label: "기간", required: true, control: { kind: "inputButton", size: "medium", value: "10월 12일 (월)~10월 14일 (수)", suffixIcon: "calendarDays" } },
+    { label: "비상 연락처", required: true, control: { kind: "input", size: "medium", value: "010-1234-5678", inputmode: "tel" } },
+    { label: "휴가 사유", max: 1000, control: { kind: "textarea", size: "medium", value: "가족 행사 참석으로 연차를 씁니다.\n인수인계 문서는 결재 전에 팀 채널에 올려 두었습니다." } },
+  ];
+  const leaveMarks = textFieldMarks(leaveFields);
+  const leaveForm = () => `<div class="ptf-form">${leaveFields.map((f, i) => textField({ ...f, mark: leaveMarks[i] })).join("")}</div>`;
+  const viewDialog = overlayFrame({
+    device: "desktop",
+    height: 520,
+    page: overlayPage({ desktop: true }),
+    layers: [overlayScrim(), overlayLayer("dialog", overlayDialog({ title: "거래 상세", close: true, body: overlayValueList(detail) }))],
+  });
+  const leaveDialog = (scroll) => overlayFrame({
+    device: "desktop",
+    height: 520,
+    page: overlayPage({ desktop: true, title: "휴가", rows: OVERLAY_LEAVE }),
+    layers: [overlayScrim(), overlayLayer("dialog", overlayDialog({
+      title: "휴가 신청",
+      description: "승인되면 알려드려요.",
+      body: leaveForm(),
+      footer: [overlayButton("취소", { variant: "neutral-weak" }), overlayButton("신청")],
+      scroll,
+    }))],
+  });
+  const dialogPanel = panel(
+    "Dialog — 조회 · 본문 스크롤",
+    "medium 480(기본) · large 800 이고, 좌우 20 은 남기며 높이는 화면의 80% 까지다 · 모서리 20. 머리는 위 24 · 좌우 24 · 아래 16, 제목 22/30 · 700 · 설명 16/22 · fg-neutral-muted(사이 6). 바닥은 위 16 · 좌우 24 · 아래 24 에 버튼을 오른쪽으로 모은다(사이 8). 조회 · 안내는 머리 오른쪽에 닫기를 둔다 — 투명 52 상자 · 아이콘 22 fg-neutral-subtle(아이콘이 위 28 · 오른쪽 24 — 제목 첫 줄 가운데와 맞는다)이고, 닫기가 있으면 머리 오른쪽을 52 비운다. 조회의 바닥 버튼은 수정 · 삭제 같은 다른 동작이 있을 때만이고, 조회 · 안내는 바깥 누르기 · Esc 로도 닫힌다. 본문만 스크롤한다 — 머리 · 바닥은 늘 보인다. 본문이 넘치면 아래 48 이 표면 쪽으로 흐려지고(끝까지 스크롤해도 남아 본문 아래 48 을 비워 둔다), 위로 스크롤하면 머리 아래 1px stroke-neutral-subtle 선이 150ms 로 나타난다 — 아래 두 대화상자는 실제로 스크롤된다. 200ms(d4) enter-expressive 로 1.3 배에서 줄며 나타나고 100ms(d2)로 사라진다. 딤 L2 100 · 대화상자 101 — 그 안에서 연 팝오버(L3) · 확인창(L5)이 위에 뜬다.",
+    samples([
+      sample("조회 — 머리 닫기 · 바닥 버튼 없음", "Dialog — 닫기 52 상자 · 바깥 누르기로도 닫힌다", viewDialog),
+      sample("본문이 넘칠 때 — 아래 48 흐림", "DialogBody overflow — 끝까지 스크롤해도 48 을 비워 둔다", leaveDialog("top")),
+      sample("위로 스크롤했을 때 — 머리 아래 선", "DialogBody scrolled — 1px stroke-neutral-subtle · 150ms", leaveDialog("scrolled")),
+    ], DESKTOP),
+  );
+
+  // 4. Alert Dialog — 나란히 · 세로 · 하나(폰 · medium 40) · 대화상자 위(데스크톱 · small 36)
+  const alertPhone = (surface) => overlayFrame({ device: "phone", height: 440, page: overlayPage(), layers: [overlayScrim("alert"), overlayLayer("alert", surface)] });
+  const alertOverDialog = overlayFrame({
+    device: "desktop",
+    height: 560,
+    page: overlayPage({ desktop: true }),
+    layers: [
+      overlayScrim(),
+      overlayLayer("dialog", overlayDialog({ title: "거래 추가", body: overlayTxForm("medium"), footer: [overlayButton("취소", { variant: "neutral-weak" }), overlayButton("저장")] }), { inert: true }),
+      overlayScrim("alert"),
+      overlayLayer("alert", alertDialog({ title: "작성한 내용이 사라져요", description: "나가면 입력한 금액과 날짜가 저장되지 않아요.", cancel: "계속 작성", action: "나가기", size: "small" })),
+    ],
+  });
+  const alertPanel = panel(
+    "Alert Dialog — 나란히 · 세로 · 하나 · 대화상자 위",
+    "되돌릴 수 없는 일 앞에서 묻는 확인창이다 — 폰 · 데스크톱 모두 화면 정중앙에 같은 모양으로 뜬다. 최대 272(좌우 32 는 남긴다) · 안쪽 20 · 모서리 20 · 그림자 없음, 제목 20/27 · 700 이고 설명 16/22 는 다른 떠 있는 표면과 달리 짙은 fg-neutral 이다(꼭 읽어야 할 말 — 제목과 사이 6, 제목이 없으면 0). 버튼은 위 16 · 사이 8 이고 1280 미만 Button medium 40, 이상 small 36 이다. 확정은 되돌릴 수 없으면 criticalSolid, 아니면 neutralSolid, 취소는 neutralWeak — 취소를 빨갛게 칠하지 않는다. 나란히(기본)는 취소 왼쪽 · 확정 오른쪽 반씩이고, 한쪽 글이 반 폭을 넘으면 세로로 쌓고 확정이 위로 간다 — 고르는 prop 없이 글 폭이 정한다(버튼마다 반 폭을 바탕으로 두고 글보다 줄지 않아 줄이 넘어간다). 알리기만 할 때는 버튼 하나가 폭 전체다. 버튼 글은 동작 이름이다(\"확인\" · \"예\" 를 쓰지 않는다). 닫기 버튼이 없고 바깥(딤)을 눌러도 닫히지 않으며, Esc · 뒤로 가기는 취소와 같다. 입력칸을 넣지 않는다 — 입력이 필요하면 Dialog · Bottom Sheet 다. 대화상자 · 시트 위에서는 그 위에 뜬다(L5 딤 300 · 확인창 301).",
+    `${samples([
+      sample("나란히 — 폰 · medium 40", "horizontal — [취소] [삭제] 반씩 · criticalSolid", alertPhone(alertDialog({ title: "거래를 삭제할까요?", description: "삭제한 거래는 되돌릴 수 없어요.", action: "삭제" }))),
+      sample("세로 — 확정 글이 반 폭을 넘을 때", "vertical — 확정이 위 · 둘 다 폭 전체", alertPhone(alertDialog({ title: "관심 그룹을 삭제할까요?", description: "그룹에 담은 종목 12개도 함께 빠져요.", action: "그룹과 종목 함께 삭제" }))),
+      sample("하나 — 알리기", "single — 결과에 맞는 동작 이름 · neutralSolid", alertPhone(alertDialog({ title: "로그인이 만료됐어요", description: "30분 동안 쓰지 않아 로그아웃했어요. 다시 로그인해 주세요.", action: "다시 로그인", tone: "neutral", single: true }))),
+    ])}${samples([
+      sample("데스크톱 웹 · 대화상자 위 — small 36", "작성 중 나가기 — 확인창 L5(300 · 301)가 대화상자 L2(100 · 101) 위", alertOverDialog),
+    ], `${DESKTOP} pov-samples--next`)}`,
+  );
+
+  // 5. Popover — 안내(제목 + 닫기, 칸 옆 i 버튼) · 고르는 패널(머리 없이 · 완료 — Input Button 의 팝오버)
+  const infoId = nextOverlayId("pov-pop");
+  const infoTrigger = `<span class="pov-info">남은 연차 8.5일<button class="btn btn-ghost btn-icon-only btn-size-xsmall" type="button" aria-label="연차 사용 규정" aria-haspopup="dialog" aria-expanded="true" aria-controls="${infoId}">${OVERLAY_ICON.info}</button></span>`;
+  const infoPopover = overlayPopover({ id: infoId, title: "연차 사용 규정", body: '<p class="pov-pop-text">입사 1년 미만은 한 달에 1일씩 생기고, 1년이 지나면 15일이 생겨요.</p>' });
+  const infoFrame = overlayFrame({ device: "desktop", height: 440, page: overlayPage({ desktop: true, title: "휴가", rows: OVERLAY_LEAVE, lead: overlayAnchor(infoTrigger, infoPopover) }) });
+  const popoverPanel = panel(
+    "Popover — 안내 · 고르는 패널",
+    "트리거에 붙어 뜨는 비모달 표면이다 — 1280 이상에서 칸 옆 안내 · 고르는 패널(Input Button 의 달력 · 시각 · 목록)을 띄우고, 같은 내용이 1280 미만에서는 Bottom Sheet 다. 폭 320 ~ 480(화면 가장자리에서 16 을 남긴다) · 높이는 600 과 남은 공간 중 작은 쪽까지 · 모서리 20 · 그림자 s3 이고, 트리거와 8 떨어져 아래에 뜬다(아래가 모자라면 위로, 옆으로 넘치면 화면 안으로 민다). 딤 · 스크롤 잠금이 없고 뒤 화면을 숨기지 않는다. 머리 · 본문 · 바닥 여백은 Dialog 와 같고 제목만 20/27 · 700, 설명은 14/19 · fg-neutral-muted 다. 안내 팝오버는 제목 + 닫기(52 상자 · 아이콘이 위 27 · 오른쪽 24)이고, 고르는 패널은 머리 없이 본문만 — 무엇을 고르는지는 트리거가 말한다. 바닥 버튼은 고른 것을 넣을 때(\"완료\")만 Button small 36 오른쪽이다. 열면 초점이 안으로(닫기 버튼이 아니라 내용) 가지만 가두지 않는다 — 마지막에서 Tab 으로 나가면 닫히고, 바깥 · Esc 로 닫으면 트리거로 돌아간다. 호버로 열지 않는다. 150ms(d3) enter 로 트리거 쪽에서 0.95 배부터 커지고 100ms(d2)로 사라진다. L3 200 — 페이지에서도 대화상자 · 시트 안에서도 그 위에 뜬다.",
+    samples([
+      sample("안내 — 제목 + 닫기", "PopoverContent title — 칸 옆 i 버튼(ghost · xsmall · 아이콘만) · 아래 8", infoFrame),
+      sample("고르는 패널 — 머리 없이 · 완료", "Input Button 의 팝오버 — 칸 아래 8 · 왼쪽 맞춤 · 완료 small 36", pickSurfaceMock.desktop()),
+    ], DESKTOP),
+  );
+
+  // 6. 닫기 버튼 — 시트 원 · 대화상자 · 팝오버 상자 × 기본 · 누름 · 포커스 · 누르는 영역. 누름 · 포커스는 그 순간을 멈췄다(.pov-close--pressed · --focus)
+  const closeCols = [
+    { ko: "기본", en: "enabled" },
+    { ko: "누름", en: "pressed — 바탕 + 2px 거리 축소", interaction: "pressed" },
+    { ko: "포커스", en: "focused — 키보드만 · 링 2px", interaction: "focus" },
+    { ko: "누르는 영역", en: "점선 — 원 44 · 상자 52", target: true },
+  ];
+  const closeRows = [
+    { ko: "시트 — 28 원", en: "bg-neutral-weak · 아이콘 14 fg-neutral — 누름 bg-neutral-weak-pressed", kind: "circle" },
+    { ko: "대화상자 · 팝오버 — 52 상자", en: "투명 · 모서리 12 · 아이콘 22 fg-neutral-subtle — 누름 bg-layer-floating-pressed", kind: "box" },
+  ];
+  const closePanel = panel(
+    "닫기 버튼 — 기본 · 누름 · 포커스",
+    "닫기는 이름이 \"닫기\" 인 버튼이다. 시트는 28 원(bg-neutral-weak · 아이콘 lucide x 14 fg-neutral)이고 누르는 영역을 사방 8 넓혀 44 × 44 로 둔다 — 원 바탕(표면과 1.08 · 다크 1.13:1)은 장식이고 아이콘(16.41 · 11.62:1)이 버튼을 알린다. 대화상자 · 팝오버는 투명 52 상자(모서리 12 · 아이콘 22 fg-neutral-subtle — 5.50 · 5.27:1)다. 누르면 시트는 원 바탕이 bg-neutral-weak-pressed, 상자는 bg-layer-floating-pressed 로 칠해지고 버튼이 2px 거리로 준다(기준 28 · 52 — 모션 줄이기면 줄지 않는다). 포커스는 키보드로 왔을 때만 바깥 링 2px · 띄움 2px stroke-focus-ring 이다. 누름 · 포커스는 그 순간을 멈춰 그렸다 — 버튼은 실제 버튼이라 눌러 보면 같은 모습이다. 칸의 바탕은 떠 있는 표면(bg-layer-floating)이다. 확인창에는 닫기가 없다.",
+    `
+      <div class="cb-matrix pov-close-matrix" style="--cb-cols: ${closeCols.length};">
+        <div class="cb-matrix-row cb-matrix-row--head"><div class="cb-matrix-head">닫기</div>${
+          closeCols.map(c => `<div class="cb-matrix-head">${escape(c.ko)}<span>${escape(c.en)}</span></div>`).join("")
+        }</div>${closeRows.map(r => `
+        <div class="cb-matrix-row"><div class="cb-matrix-label">${escape(r.ko)}<span>${escape(r.en)}</span></div>${
+          closeCols.map(c => `<div class="cb-matrix-cell"><span class="pov-close-demo${c.target ? " pov-close-demo--target" : ""}">${overlayClose({ kind: r.kind, interaction: c.interaction || "" })}</span></div>`).join("")
+        }</div>`).join("")}
+      </div>`,
+  );
+
+  const lede = "SEED Bottom Sheet · Dialog · Responsive Dialog · Alert Dialog · Popover 구조 — 표면을 일로 나눈다. 폼 · 상세는 한 부품이 폭으로 표면을 바꾼다 — 1280 미만은 아래에서 올라오는 시트(최대 480 · 위 모서리 24), 이상은 가운데 대화상자(medium 480 · large 800 · 모서리 20 · 높이는 화면의 80% 까지). 되돌릴 수 없는 확인은 폰 · 데스크톱 모두 가운데 확인창(최대 272), 트리거에 붙는 짧은 안내 · 고르는 패널은 1280 이상에서 팝오버(320 ~ 480 · 그림자 s3)다. 시트 · 대화상자 · 확인창은 그림자 없이 딤(0.50 · 다크 0.65) 위의 떠 있는 표면(bg-layer-floating)이고, 팝오버만 딤 없이 그림자로 뜬다. 입력 폼은 바깥 누르기 · 끌어내리기로 닫히지 않고, 닫기 버튼과 바닥 취소는 하나만 둔다. 쌓임은 specs/z-index.md — 시트 · 대화상자 L2(100 · 101) · 팝오버 L3(200) · 확인창 L5(300 · 301). 그림은 열린 순간을 멈춘 것이고, 폰 · 데스크톱 화면 틀은 갤러리 것이다. 옛 Modal · 아래 Drawer · 옛 Alert Dialog · 옛 Popover(테두리 · shadow-md) 모양은 걷었다."
+    + (brand.key === "shared" ? " 공유 토큰에는 브랜드 역할 색이 없어 포커스 링이 여기서는 중립(fg-neutral)으로 보인다 — HR · Desk 미리보기에서 브랜드 색이다." : "");
+
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">03k — Bottom Sheet · Dialog · Alert Dialog · Popover</div>
+      <h2 class="section-title">시트 · 대화상자 · 확인창 · 팝오버 — 1280&nbsp;에서 바뀌는 표면 · 닫는 길 · 쌓임</h2>
+      <p class="section-lede">${escape(lede)}</p>
+    </header>
+    ${splitPanel}
+    ${sheetPanel}
+    ${dialogPanel}
+    ${alertPanel}
+    ${popoverPanel}
+    ${closePanel}
+  </section>`;
+}
+
 export function renderVignettes(brand) {
   // 탭 — 옛 underline · pills 그림(브랜드 색 밑줄 · 채움)은 걷었다(tabs.md 2026-10-02). 다른 구역으로 옮기는 자리(HR 직원 상세 · 공유 문서)는 Line 탭,
   // 같은 메모를 거르는 자리(Desk 의 전체 · 즐겨찾기 · 오늘 · 보관함)는 Segmented Control 이다 — 모양 · 동작은 03j 의 도우미 그대로다
@@ -3821,39 +4121,7 @@ export function renderEmptyState(brand) {
   </section>`;
 }
 
-export function renderModal(brand) {
-  const m = brand.modal;
-  if (!m) return "";
-  const fields = m.fields.map(f => `
-    <div class="modal-row">
-      <div class="modal-key">${escape(f.k)}</div>
-      <div class="modal-val">${escape(f.v)}</div>
-    </div>`).join("");
-  return `
-  <section class="section">
-    <header class="section-head">
-      <div class="section-eyebrow">10 — Modal</div>
-      <h2 class="section-title">${escape(m.title)}</h2>
-      <p class="section-lede">overlay-dim + 카드 + 결정 액션 — 정적 시연 (실제 modal은 focus trap + overlay click outside 동작 동반).</p>
-    </header>
-    <div class="modal-stage">
-      <div class="modal-overlay"></div>
-      <div class="modal-dialog">
-        <div class="modal-head">
-          <div class="modal-title">${escape(m.title)}</div>
-        </div>
-        <div class="modal-body">
-          <div class="modal-description">${escape(m.description)}</div>
-          <div class="modal-fields">${fields}</div>
-        </div>
-        <div class="modal-actions">
-          <button class="btn btn-neutral-weak">${escape(m.secondary)}</button>
-          <button class="btn btn-neutral-solid">${escape(m.primary)}</button>
-        </div>
-      </div>
-    </div>
-  </section>`;
-}
+// 옛 "10 — Modal"(브랜드마다 확인 + 키 · 값 칸 · 모서리 12 · shadow-xl)은 걷었다 — 시트 · 대화상자 · 확인창은 03k 다(dialog.md · alert-dialog.md, 2026-10-02)
 
 export function renderToasts(brand) {
   const ts = brand.toasts || [];
@@ -4050,30 +4318,20 @@ export function renderBatchV67(brand) {
         </nav>
        </div>`;
 
-  // Drawer (정적 표시 — 실제 슬라이드 안 함)
+  // Drawer (정적 표시 — 실제 슬라이드 안 함). Desk 의 아래 Drawer(손잡이 늘 · 위 닫기 + 키 · 값 줄)는 걷고 03k 의 Bottom Sheet 로 그린다(bottom-sheet.md, 2026-10-02) —
+  // 입력 폼이라 위 닫기 + 바닥 저장(large 48)이고 손잡이가 없다. 옆 패널(HR · 공유 — 오른쪽)은 Side Panel 차례에 다시 정한다 — 아직 옛 모양이다
   const drawerLabel = isHr
     ? "Side drawer (HR 직원 detail panel)"
     : isDesk
-      ? "Bottom sheet (Desk 거래 입력)"
+      ? "Bottom Sheet (Desk 거래 추가) — 모양은 03k"
       : "Drawer pattern (side / bottom 양쪽)";
   const drawer = isDesk
-    ? `<div class="drw-frame">
-        <div class="drw-bottom">
-          <div class="drw-handle"></div>
-          <div class="drw-header">
-            <div class="drw-title">거래 추가</div>
-            <button class="drw-close" type="button" aria-label="닫기">✕</button>
-          </div>
-          <div class="drw-body">
-            <div class="drw-row"><span class="drw-key">유형</span><span class="drw-val">지출</span></div>
-            <div class="drw-row"><span class="drw-key">금액</span><span class="drw-val">₩28,500</span></div>
-            <div class="drw-row"><span class="drw-key">카테고리</span><span class="drw-val">식비 · 카페</span></div>
-          </div>
-          <div class="drw-actions">
-            <button class="btn btn-neutral-solid" type="button">저장</button>
-          </div>
-        </div>
-       </div>`
+    ? overlayFrame({
+        device: "phone",
+        height: 520,
+        page: overlayPage(),
+        layers: [overlayScrim(), overlayLayer("sheet", bottomSheet({ title: "거래 추가", body: overlayTxForm("large", ["amount", "category"]), footer: [overlayButton("저장", { size: "large" })] }))],
+      })
     : `<div class="drw-frame">
         <div class="drw-side">
           <div class="drw-header">
@@ -4164,7 +4422,7 @@ export function renderBatchV67(brand) {
   <section class="section">
     <header class="section-head">
       <div class="section-eyebrow">14 — Components batch (v67)</div>
-      <h2 class="section-title">Pagination · Drawer · Spinner · Stepper</h2>
+      <h2 class="section-title">Pagination · ${isDesk ? "Bottom Sheet" : "Drawer"} · Spinner · Stepper</h2>
       <p class="section-lede">시스템 빈틈 4 컴포넌트 — 모두 prose-only spec, 새 토큰 0 (기존 합성).</p>
     </header>
     <div class="batch-grid">
@@ -4372,23 +4630,32 @@ export function renderShadcnDisclose(brand) {
         </div>
         <div class="sc-note">right-click / long-press</div>
       </div>
+      <!-- Alert Dialog — 옛 모양(모서리 12 · shadow-xl · 합니다체 · 처음 초점 취소)은 걷고 03k 의 확인창으로 그린다(alert-dialog.md, 2026-10-02) -->
       <div class="sc-card sc-card--full">
-        <div class="sc-head">Alert Dialog (destructive) — spec: specs/components/alert-dialog.md · overlay click 무시, close button 없음, default focus = Cancel</div>
-        <div class="modal-stage" style="height:auto; padding:var(--spacing-xl); background:linear-gradient(135deg, var(--color-chart-blue), var(--color-chart-violet));">
-          <div class="modal-overlay"></div>
-          <div class="modal-dialog" role="alertdialog" aria-modal="true">
-            <div class="modal-head">
-              <div class="modal-title">${brand.key === "hr" ? "권한 회수" : brand.key === "desk" ? "메모 영구 삭제" : "항목 삭제"}</div>
-            </div>
-            <div class="modal-body">
-              <div class="modal-description">${brand.key === "hr" ? "\"김서연\" 님의 모든 권한이 회수됩니다. 복구는 관리자 승인이 필요합니다." : brand.key === "desk" ? "\"Porest 브랜드 톤\" 을 30일 보관함을 거치지 않고 즉시 삭제합니다." : "\"2026 예산안\" 을 삭제합니다. 이 작업은 되돌릴 수 없습니다."}</div>
-            </div>
-            <div class="modal-actions">
-              <button class="btn btn-neutral-weak" autofocus>취소</button>
-              <button class="btn btn-critical-solid">${brand.key === "hr" ? "회수" : "삭제"}</button>
-            </div>
-          </div>
-        </div>
+        <div class="sc-head">Alert Dialog — spec: specs/components/alert-dialog.md · 모양은 03k · 바깥 누르기 무시 · Esc 는 취소 · 닫기 버튼 없음 · 처음 초점은 확인창</div>
+        ${overlayFrame({
+          device: "desktop",
+          height: 320,
+          page: brand.key === "hr"
+            ? overlayPage({ desktop: true, title: "권한 관리", rows: [
+                { color: "blue", icon: "user", title: "김서연", detail: "디자인 본부 · 관리자", value: "전체 권한" },
+                { color: "indigo", icon: "user", title: "박서준", detail: "프로덕트 본부 · 팀장", value: "결재 권한" },
+                { color: "violet", icon: "user", title: "이도윤", detail: "운영 본부 · 팀원", value: "조회 권한" },
+              ] })
+            : brand.key === "desk"
+              ? overlayPage({ desktop: true, title: "메모", rows: [
+                  { color: "orange", icon: "book", title: "Porest 브랜드 톤", detail: "10월 1일 (목)", value: "342자" },
+                  { color: "blue", icon: "book", title: "5월 회고", detail: "9월 30일 (수)", value: "1,204자" },
+                  { color: "violet", icon: "book", title: "참고 자료", detail: "9월 28일 (월)", value: "86자" },
+                ] })
+              : overlayPage({ desktop: true }),
+          layers: [overlayScrim("alert"), overlayLayer("alert", alertDialog({
+            title: brand.key === "hr" ? "권한을 회수할까요?" : brand.key === "desk" ? "메모를 삭제할까요?" : "거래를 삭제할까요?",
+            description: brand.key === "hr" ? "김서연 님의 모든 권한이 바로 빠져요. 다시 주려면 관리자 승인이 필요해요." : brand.key === "desk" ? "삭제한 메모는 되돌릴 수 없어요." : "삭제한 거래는 되돌릴 수 없어요.",
+            action: brand.key === "hr" ? "회수" : "삭제",
+            size: "small",
+          }))],
+        })}
       </div>
     </div>
   </section>`;
@@ -4522,7 +4789,12 @@ export function renderBatchV73V78(brand) {
                           : isDesk ? "2026-05-15 23:00 ~ 24:00 동기화 일시 중단됩니다."
                                    : "약관 변경 예정 — sticky banner.";
   const people = chipPeople(brand);
-  const popoverHead = isHr ? "결재 의견" : isDesk ? "카테고리 빠른 변경" : "Popover (formal)";
+  // 안내 팝오버 — 칸 옆 i 버튼(Button ghost · xsmall · 아이콘만)이 연다. 글은 해요체 짧은 문장(popover.md 글)
+  const popoverInfo = isHr
+    ? { id: nextOverlayId("pov-pop"), page: "휴가", label: "남은 연차 8.5일", title: "연차 사용 규정", text: "입사 1년 미만은 한 달에 1일씩 생기고, 1년이 지나면 15일이 생겨요." }
+    : isDesk
+      ? { id: nextOverlayId("pov-pop"), page: "가계부", label: "이번 달 예산", title: "예산 알림", text: "카테고리 예산의 80% 와 100% 에 닿으면 알려드려요." }
+      : { id: nextOverlayId("pov-pop"), page: "가계부", label: "공유 토큰", title: "공유 토큰 동기화", text: "DESIGN.md 의 공유 토큰은 npm run sync 로 HR · Desk 파일에 복제돼요." };
   const treeRoot = isHr ? ["개발본부", "백엔드팀", "프론트팀"]
                         : isDesk ? ["식비", "외식", "마트"]
                                  : ["루트", "자식 1", "자식 2"];
@@ -4557,16 +4829,23 @@ export function renderBatchV73V78(brand) {
         <div class="sc-note">Outline Weak 고른 모습(bg-neutral-weak + 1px stroke-neutral-contrast)에 지우기(lucide x · 이름 "{글} 지우기")를 붙인다 — 칩은 버튼이 아니고 지우기만 따로 눌린다. 모양 · 쓰임은 03i — Chip. 옛 Tag / Chip(브랜드 10% 바탕 · 칩 안의 입력칸)은 걷었다.</div>
       </div>
 
-      <!-- Popover -->
+      <!-- Popover — 옛 .pop(288 · 모서리 8 · 1px 테두리 · shadow-md · 안의 의견 입력칸 + 취소 · 제출)은 걷고 03k 의 안내 팝오버로 그린다.
+           팝오버에 폼을 넣지 않는다 — 폼은 Dialog · Bottom Sheet 다(popover.md, 2026-10-02) -->
       <div class="sc-card">
-        <div class="sc-head">Popover — interactive</div>
-        <div class="pop-anchor">
-          <button class="pop-trigger" aria-expanded="true" aria-haspopup="dialog" type="button">${escape(popoverHead)} ▾</button>
-          <div class="pop" role="dialog" aria-label="${escape(popoverHead)}">
-            ${textField({ label: isHr ? "결재 의견" : isDesk ? "메모" : "의견", control: { kind: "textarea", size: "responsive", placeholder: isHr ? "예: 일정 확인했습니다" : isDesk ? "예: 점심 · 김밥천국" : "예: 검토 의견" } })}
-            <div class="pop-actions"><button class="btn btn--ghost" type="button">취소</button><button class="btn btn--primary" type="button">제출</button></div>
-          </div>
-        </div>
+        <div class="sc-head">Popover — 안내 · 제목 + 닫기(모양은 03k)</div>
+        ${overlayFrame({
+          device: "desktop",
+          height: 320,
+          page: overlayPage({
+            desktop: true,
+            title: popoverInfo.page,
+            rows: isHr ? OVERLAY_LEAVE : OVERLAY_LEDGER,
+            lead: overlayAnchor(
+              `<span class="pov-info">${escape(popoverInfo.label)}<button class="btn btn-ghost btn-icon-only btn-size-xsmall" type="button" aria-label="${escape(popoverInfo.title)}" aria-haspopup="dialog" aria-expanded="true" aria-controls="${popoverInfo.id}">${OVERLAY_ICON.info}</button></span>`,
+              overlayPopover({ id: popoverInfo.id, title: popoverInfo.title, body: `<p class="pov-pop-text">${escape(popoverInfo.text)}</p>` }),
+            ),
+          }),
+        })}
       </div>
 
       <!-- File Upload -->
@@ -5117,7 +5396,7 @@ export function pageCss() {
     }
 
     /* 크기 — 이름이 아니라 높이로 고른다. 옛 sm → xsmall(알약) · md → medium · lg → large.
-       모달 footer 는 small(36 — button.md 버튼 배치). */
+       대화상자 · 팝오버 바닥은 small(36), 시트 바닥은 large(48) — 03k 의 overlayButton 이 크기를 단다(button.md 버튼 배치). */
     .btn-size-xsmall, .btn-size-sm {
       --press-basis: 32;
       --progress-size: 14px;
@@ -5129,7 +5408,7 @@ export function pageCss() {
       font-size: var(--text-t3);
       line-height: var(--text-t3--line-height);
     }
-    .btn-size-small, .modal-actions .btn {
+    .btn-size-small {
       --press-basis: 36;
       --progress-size: 14px;
       --btn-icon-size: 14px;
@@ -7050,42 +7329,8 @@ export function pageCss() {
       }
     }
 
-    /* 여는 자리 그림(03h) — 폰(360)의 시트 · 데스크톱 웹의 팝오버. 갤러리 것이다 — 시트 · 팝오버 · 달력의 모양(크기 · 모서리 · 그림자 · 고른 날)은
-       Bottom Sheet · Popover · Date Picker 차례에 정한다. 여기서는 자리만 그렸다(떠 있는 표면 bg-layer-floating · 고른 날 bg-neutral-inverted 원은 임시다).
-       팝오버는 칸 아래 8 · 칸 왼쪽에 맞춘다(갤러리에서는 흐름 안에 그렸다). */
-    .pib-mock {
-      position: relative;
-      overflow: hidden;
-      border: 1px solid var(--color-border-default);
-      border-radius: var(--radius-r4);
-      background: var(--color-bg-layer-default);
-      font-family: var(--font-sans);
-    }
-    .pib-mock--phone { max-width: 360px; height: 600px; }
-    .pib-mock--desktop { max-width: 640px; padding: var(--spacing-x8) var(--layout-margin); }
-    .pib-mock-screen { padding: var(--spacing-x6) var(--spacing-global-gutter); }
-    .pib-dim { position: absolute; inset: 0; background: var(--overlay-dim-light); }
-    .pib-sheet {
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      padding: var(--spacing-x6) var(--spacing-global-gutter);
-      border-radius: var(--radius-r5) var(--radius-r5) 0 0;
-      background: var(--color-bg-layer-floating);
-    }
-    .pib-sheet-title { margin-bottom: var(--spacing-x3); font-size: var(--text-t6); line-height: var(--text-t6--line-height); font-weight: 700; color: var(--color-fg-neutral); }
-    .pib-done { width: 100%; margin-top: var(--spacing-x4); }
-    .pib-anchor { display: flex; flex-direction: column; align-items: flex-start; }
-    .pib-popover {
-      width: min(300px, 100%);
-      margin-top: var(--spacing-x2);
-      padding: var(--spacing-x3) var(--spacing-x4) var(--spacing-x4);
-      border-radius: var(--radius-r5);
-      background: var(--color-bg-layer-floating);
-      box-shadow: var(--shadow-s3);
-    }
-    .pib-popover-actions { display: flex; justify-content: flex-end; margin-top: var(--spacing-x3); }
+    /* 여는 자리 그림(03h · 03k)의 달력 — 자리만 그린 것이다. 크기 · 고른 날(bg-neutral-inverted 원은 임시다)의 모양은 Date Picker 차례에 정한다.
+       달력을 담는 시트 · 팝오버는 아래 Overlays 블록의 .pov-sheet · .pov-popover 다(03k). */
     .pib-cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--spacing-x1); }
     .pib-cal-month { font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 700; color: var(--color-fg-neutral); }
     .pib-cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); row-gap: var(--spacing-x1); text-align: center; }
@@ -7098,9 +7343,10 @@ export function pageCss() {
     .psel-na { font-size: var(--text-caption); line-height: 1.4; color: var(--color-text-tertiary); }
     .psel-narrow { max-width: 200px; }
 
-    /* 다크 — 역할 색을 고르는 칸 · 목록 · 여는 자리 그림 안에서만 다크 짝으로 바꾼다(.ptf-field · .psb-group 과 같다 — 전역 다크 블록은 옛 이름만 바꾼다).
-       끼운 .btn 은 제 다크 블록이 다시 바꾼다. 공유 토큰(DESIGN.md)에 없는 브랜드 짝(포커스 링)은 비어서 위 대체값(중립)으로 떨어진다. */
-    [data-theme="dark"] :is(.psel-trigger, .psel-list, .pib, .pib-mock) {
+    /* 다크 — 역할 색을 고르는 칸 · 목록 안에서만 다크 짝으로 바꾼다(.ptf-field · .psb-group 과 같다 — 전역 다크 블록은 옛 이름만 바꾼다).
+       끼운 .btn 은 제 다크 블록이 다시 바꾼다. 여는 자리 그림(달력)은 Overlays 블록의 .pov-frame 이 바꾼다.
+       공유 토큰(DESIGN.md)에 없는 브랜드 짝(포커스 링)은 비어서 위 대체값(중립)으로 떨어진다. */
+    [data-theme="dark"] :is(.psel-trigger, .psel-list, .pib) {
       --color-stroke-neutral-weak: var(--color-stroke-neutral-weak-dark);
       --color-stroke-neutral-subtle: var(--color-stroke-neutral-subtle-dark);
       --color-stroke-critical-solid: var(--color-stroke-critical-solid-dark);
@@ -7120,7 +7366,6 @@ export function pageCss() {
       --color-fg-neutral-subtle: var(--color-fg-neutral-subtle-dark);
       --shadow-s3: var(--shadow-s3-dark);
     }
-    [data-theme="dark"] .pib-dim { background: var(--overlay-dim-dark); }
 
     /* === Chip — specs/components/chip.md · chip.yaml(수치 원본) ===
        구조는 SEED Chip(2026-10-02). 칩 .pchip 은 알약 하나다 — 앞 아이콘 .pchip-prefix · 글 .pchip-label · 뒤 아이콘 .pchip-suffix(아이콘만이면 .pchip-icon).
@@ -7617,6 +7862,257 @@ export function pageCss() {
     /* 도메인 비뇨트(04) — 내용 칸 글 · 거르는 메모 */
     .ptab-vignette-panel { padding-top: var(--spacing-x4); font-size: var(--text-t4); line-height: var(--text-t4--line-height); color: var(--color-fg-neutral-subtle); }
     .ptab-memos { display: flex; flex-direction: column; gap: var(--spacing-x2); margin-top: var(--spacing-x4); }
+    /* === Bottom Sheet · Dialog · Alert Dialog · Popover — specs/components/bottom-sheet.md · dialog.md · alert-dialog.md · popover.md(수치는 *.yaml) · specs/z-index.md ===
+       구조는 SEED Bottom Sheet · Dialog · Responsive Dialog · Alert Dialog · Popover(2026-10-02). 표면은 넷 — 시트 .pov-sheet · 대화상자 .pov-dialog · 확인창 .pov-alert ·
+       팝오버 .pov-popover. 모두 떠 있는 표면 bg-layer-floating 이고, 시트 · 대화상자 · 확인창은 그림자 없이 딤(overlay-dim 0.50 · 다크 0.65) 위에, 팝오버는 딤 없이 shadow-s3 로 뜬다.
+       머리 .pov-*-header(제목 · 설명) · 본문 .pov-*-body · 바닥 .pov-*-footer 로 짠다. 닫기 .pov-close 는 시트 28 원(--circle) · 대화상자 · 팝오버 투명 52 상자(--box)이고,
+       누르면 바탕이 칠해지고 2px 거리로 준다(배율 = (기준 − 2) ÷ 기준, 기준 28 · 52 — 모션 줄이기면 줄지 않는다). 포커스는 키보드에만 바깥 링 2px · 띄움 2px stroke-focus-ring 이다.
+       대화상자 · 팝오버 본문은 넘치면 [data-overflow](아래 48 흐림 + 본문 아래 48 비움), 위로 스크롤되면 [data-scrolled](머리 아래 1px 선)다 — 페이지 끝 스크립트가 단다.
+       확인창 바닥은 글 폭이 배치를 정한다 — 한쪽 글이 반 폭을 넘으면 세로(확정이 위), 버튼 하나면 폭 전체(alert-dialog.tsx 와 같은 flex-wrap-reverse).
+       화면 틀 .pov-frame(폰 · 데스크톱 웹) · 뒤 화면 .pov-page · 표면 자리 .pov-layer 는 갤러리 것이다 — 틀의 .pov-viewport 가 쌓임 맥락을 가둬 z-index 는 z-index.md 값을
+       그대로 쓴다(시트 · 대화상자 L2 딤 100 · 표면 101, 팝오버 L3 200, 확인창 L5 딤 300 · 표면 301). 폰 틀의 --pov-safe-bottom 은 레시피의 env(safe-area-inset-bottom) 자리다.
+       .pov-close--pressed · --focus 는 갤러리에서 그 순간을 고정해 보여 주는 클래스다. 다크 짝은 이 블록 끝의 [data-theme="dark"] 에서 바꾼다. */
+
+    /* 화면 틀 — 폰(360 까지 · 아래 홈 표시줄 안전 영역 34) · 데스크톱 웹(브라우저 창). 높이는 --pov-h 로 받는다 */
+    .pov-frame {
+      --pov-safe-bottom: 0px;
+      overflow: hidden;
+      width: 100%;
+      min-width: 0;
+      border: 1px solid var(--color-border-default);
+      border-radius: var(--radius-r4);
+      background: var(--color-bg-layer-default);
+      font-family: var(--font-sans);
+    }
+    .pov-frame--phone { --pov-safe-bottom: 34px; max-width: 360px; }
+    .pov-frame-bar { display: flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; background: var(--color-bg-neutral-weak); }
+    .pov-frame-bar > span { width: 8px; height: 8px; border-radius: var(--radius-full); background: var(--color-stroke-neutral-weak); }
+    .pov-viewport { position: relative; isolation: isolate; height: var(--pov-h, 600px); overflow: hidden; }
+    .pov-page { height: 100%; overflow: hidden; padding-top: var(--spacing-x6); background: var(--color-bg-layer-default); }
+    .pov-frame--desktop .pov-page { padding: var(--spacing-x6) var(--layout-margin) 0; background: var(--color-bg-layer-basement); }
+    .pov-page-title { margin-bottom: var(--spacing-x4); padding: 0 var(--spacing-global-gutter); font-size: var(--text-t7); line-height: var(--text-t7--line-height); font-weight: 700; color: var(--color-fg-neutral); }
+    .pov-page-lead, .pov-page-body { padding: 0 var(--spacing-global-gutter); }
+    .pov-page-lead { margin-bottom: var(--spacing-x4); }
+    .pov-frame--desktop :is(.pov-page-title, .pov-page-lead) { padding: 0; }
+    .pov-page-card { padding: var(--spacing-x2) 0; border-radius: var(--radius-r4); background: var(--color-bg-layer-default); }
+    .pov-frame--desktop .pov-page-body { padding: var(--spacing-x4) var(--spacing-x6) var(--spacing-x6); }
+    .pov-home { position: absolute; left: 50%; bottom: 8px; z-index: 999; width: 134px; max-width: 40%; height: 5px; translate: -50% 0; border-radius: var(--radius-full); background: var(--color-fg-neutral); pointer-events: none; }
+    /* 칸 옆 안내 — 글 + i 버튼(Button ghost · xsmall · 아이콘만, 팝오버를 연다) */
+    .pov-info { display: inline-flex; align-items: center; gap: var(--spacing-x1); font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 500; color: var(--color-fg-neutral); }
+
+    /* 딤 — 화면 전체. 시트 · 대화상자 L2 100, 확인창 L5 300 */
+    .pov-scrim { position: absolute; inset: 0; z-index: 100; background: var(--overlay-dim-light); }
+    .pov-scrim--alert { z-index: 300; }
+    /* 표면 자리 — 시트는 아래 가운데(화면 폭 전체 · 최대 480), 대화상자는 가운데 · 좌우 20 남김, 확인창은 가운데 · 좌우 32 남김 */
+    .pov-layer { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 0 var(--spacing-x5); }
+    .pov-layer--sheet { align-items: flex-end; padding: 0; }
+    .pov-layer--alert { padding: 0 var(--spacing-x8); }
+
+    /* 표면 공통 — 떠 있는 표면 · 머리 · 본문 · 바닥을 세로로 */
+    .pov-sheet,
+    .pov-dialog,
+    .pov-alert,
+    .pov-popover {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      background: var(--color-bg-layer-floating);
+      color: var(--color-fg-neutral);
+      font-family: var(--font-sans);
+      text-align: left;
+    }
+
+    /* Bottom Sheet — 최대 480 · 화면 높이의 90% 까지 · 위 두 모서리 24 · 그림자 없음, 아래에 안전 영역. L2 시트 101 */
+    .pov-sheet {
+      z-index: 101;
+      width: 100%;
+      max-width: 480px;
+      max-height: 90%;
+      padding-bottom: var(--pov-safe-bottom);
+      border-radius: var(--radius-r6) var(--radius-r6) 0 0;
+    }
+    /* 스냅 높이 — 시트를 화면의 90% 높이로 두고 스냅 높이만큼만 보이게 아래로 내린다(vaul). 절반이면 화면의 0.4(= 시트의 4/9)만큼 — 틀이 아래를 자른다 */
+    .pov-sheet--half { height: 90%; translate: 0 calc(100% * 4 / 9); }
+    /* 머리 — 위 24 · 아래 16 · 좌우 화면 여백 24, 제목 ↔ 설명 8. 닫기가 있으면 제목 오른쪽 64(24 + 원 28 + 12) */
+    .pov-sheet-header { display: flex; flex-shrink: 0; flex-direction: column; gap: var(--spacing-x2); padding: var(--spacing-x6) var(--spacing-global-gutter) var(--spacing-x4); }
+    .pov-sheet-title { font-size: var(--text-t8); line-height: var(--text-t8--line-height); font-weight: 700; color: var(--color-fg-neutral); }
+    .pov-sheet-header--close .pov-sheet-title { padding-right: calc(28px + var(--spacing-x3)); }
+    .pov-sheet-desc { margin: 0; font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 400; color: var(--color-fg-neutral-muted); }
+    /* 본문 — 좌우 24, 넘치면 이 안에서 스크롤. 바닥이 없으면 아래 16 을 본문이 가진다 */
+    .pov-sheet-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 0 var(--spacing-global-gutter); }
+    .pov-sheet-body:last-child { padding-bottom: var(--spacing-x4); }
+    /* 바닥 — 위 12 · 아래 16(그 아래 안전 영역) · 사이 8. 버튼 large 48 — 하나면 폭 전체, 둘이면 반씩 */
+    .pov-sheet-footer { display: flex; flex-shrink: 0; gap: var(--spacing-x2); padding: var(--spacing-x3) var(--spacing-global-gutter) var(--spacing-x4); }
+    .pov-sheet-footer > .btn { flex: 1 1 0; min-width: 0; }
+    /* 손잡이 — 스냅 높이를 둘 때만. 36 × 4 · stroke-neutral-weak · 위 6 · 가로 가운데, 누르는 영역 44 × 44(보조 기술에는 숨긴다). 누름 색은 두지 않는다 */
+    .pov-handle { position: absolute; top: var(--spacing-x1_5); left: 50%; z-index: 1; width: 36px; height: 4px; translate: -50% 0; border-radius: var(--radius-full); background: var(--color-stroke-neutral-weak); }
+    .pov-handle::before { content: ""; position: absolute; left: 50%; top: 50%; width: 44px; height: 44px; translate: -50% -50%; }
+
+    /* Dialog — medium 480 · large 800(좌우 20 남김 — 표면 자리) · 화면 높이의 80% 까지 · 모서리 20 · 그림자 없음. L2 대화상자 101 */
+    .pov-dialog { z-index: 101; width: 480px; max-width: 100%; max-height: 80%; border-radius: var(--radius-r5); }
+    .pov-dialog--large { width: 800px; }
+    /* 머리 — 위 24 · 좌우 24 · 아래 16, 제목 ↔ 설명 6. 닫기가 있으면 오른쪽 52(24 + 아이콘 22 + 6). 팝오버도 같다 */
+    .pov-dialog-header,
+    .pov-pop-header { display: flex; flex-shrink: 0; flex-direction: column; gap: var(--spacing-x1_5); padding: var(--spacing-x6) var(--spacing-x6) var(--spacing-x4); }
+    .pov-dialog-header--close,
+    .pov-pop-header--close { padding-right: calc(var(--spacing-x6) + 22px + var(--spacing-x1_5)); }
+    .pov-dialog-title { font-size: var(--text-t8); line-height: var(--text-t8--line-height); font-weight: 700; color: var(--color-fg-neutral); }
+    .pov-dialog-desc { margin: 0; font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 400; color: var(--color-fg-neutral-muted); }
+    /* 본문 — 좌우 24, 넘치면 이 안에서만 스크롤(머리 · 바닥은 그대로). 바닥이 없으면 아래 24 를 본문이 가진다 */
+    .pov-dialog-body,
+    .pov-pop-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 0 var(--spacing-x6); transition: box-shadow var(--motion-duration-color-transition) var(--motion-ease-easing); }
+    .pov-dialog-body:last-child,
+    .pov-pop-body:last-child { padding-bottom: var(--spacing-x6); }
+    /* 머리 없는 팝오버(고르는 패널) — 위 24 를 본문이 가진다 */
+    .pov-pop-body:first-child { padding-top: var(--spacing-x6); }
+    /* 위로 스크롤됨 — 머리 아래 1px stroke-neutral-subtle(안쪽 그림자). 본문이 첫 자식이면(머리가 없으면) 그리지 않는다 */
+    :is(.pov-dialog-body, .pov-pop-body)[data-scrolled]:not(:first-child) { box-shadow: inset 0 1px 0 0 var(--color-stroke-neutral-subtle); }
+    /* 넘침 — 아래 48 을 표면 쪽으로 흐린다(마스크). 끝까지 스크롤해도 남으므로 본문 아래 48 을 비워 둔다 */
+    :is(.pov-dialog-body, .pov-pop-body)[data-overflow] {
+      padding-bottom: 48px;
+      -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 48px), transparent);
+      mask-image: linear-gradient(to bottom, #000 calc(100% - 48px), transparent);
+    }
+    /* 넘쳐 스크롤할 수 있는 본문은 키보드로도 스크롤하도록 Tab 이 선다(스크립트가 tabindex 를 단다) — 키보드 포커스에 안쪽 링 2px */
+    :is(.pov-dialog-body, .pov-pop-body):focus { outline: none; }
+    :is(.pov-dialog-body, .pov-pop-body):focus-visible { outline: 2px solid var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral))); outline-offset: -2px; }
+    /* 바닥 — 위 16 · 좌우 24 · 아래 24 · 사이 8, 오른쪽 정렬. 버튼 small 36 */
+    .pov-dialog-footer,
+    .pov-pop-footer { display: flex; flex-shrink: 0; justify-content: flex-end; gap: var(--spacing-x2); padding: var(--spacing-x4) var(--spacing-x6) var(--spacing-x6); }
+
+    /* Alert Dialog — 최대 272(좌우 32 남김 — 표면 자리) · 안쪽 20 · 모서리 20 · 그림자 없음. L5 확인창 301 */
+    .pov-alert { z-index: 301; width: 272px; max-width: 100%; padding: var(--spacing-x5); border-radius: var(--radius-r5); }
+    .pov-alert-title { font-size: var(--text-t7); line-height: var(--text-t7--line-height); font-weight: 700; color: var(--color-fg-neutral); }
+    /* 설명 — 다른 떠 있는 표면과 달리 짙은 fg-neutral(꼭 읽어야 할 말). 제목 ↔ 설명 6, 제목이 없으면 0 */
+    .pov-alert-desc { margin: 0; font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 400; color: var(--color-fg-neutral); }
+    .pov-alert-title + .pov-alert-desc { margin-top: var(--spacing-x1_5); }
+    /* 버튼 — 위 16 · 사이 8. 버튼마다 반 폭을 바탕으로(늘어나 채운다) 글 폭보다 줄지 않는다 — 나란히(기본)는 [취소] [확정] 반씩,
+       한쪽 글이 반을 넘으면 줄이 넘어가고 wrap-reverse 라 둘째(확정)가 위로 간다(둘 다 폭 전체). 하나면 폭 전체. DOM 순서는 늘 [취소] [확정] */
+    .pov-alert-footer { display: flex; flex-wrap: wrap-reverse; gap: var(--spacing-x2); padding-top: var(--spacing-x4); }
+    .pov-alert-footer > .btn { flex: 1 1 calc(50% - var(--spacing-x2) / 2); min-width: max-content; }
+
+    /* Popover — 폭 320 ~ 480(가용 폭까지) · 높이 600 까지 · 모서리 20 · 그림자 s3. 트리거 아래 8 · 왼쪽 맞춤. L3 팝오버 200 */
+    .pov-anchor { position: relative; display: flex; flex-direction: column; align-items: flex-start; }
+    .pov-popover {
+      position: absolute;
+      top: calc(100% + var(--spacing-x2));
+      left: 0;
+      z-index: 200;
+      width: max-content;
+      min-width: min(320px, 100%);
+      max-width: min(480px, 100%);
+      max-height: 600px;
+      border-radius: var(--radius-r5);
+      box-shadow: var(--shadow-s3);
+    }
+    .pov-pop-title { font-size: var(--text-t7); line-height: var(--text-t7--line-height); font-weight: 700; color: var(--color-fg-neutral); }
+    .pov-pop-desc { margin: 0; font-size: var(--text-t4); line-height: var(--text-t4--line-height); font-weight: 400; color: var(--color-fg-neutral-muted); }
+    /* 안내 글 — 본문의 짧은 해요체 문장. 레시피(PopoverBody)는 글자 모양을 정하지 않아 표면의 fg-neutral 을 물려받는다 — 크기는 본문 글(t5)로 그렸다 */
+    .pov-pop-text { margin: 0; font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 400; color: inherit; }
+
+    /* 표면 안의 목록 — 줄이 제 좌우 24 를 가지므로 본문 여백 밖(표면 끝)까지 낸다 */
+    .pov-bleed { margin-inline: calc(-1 * var(--spacing-x6)); }
+
+    /* 닫기 — 이름 "닫기". 시트 28 원(누르는 영역 44), 대화상자 · 팝오버 투명 52 상자. 바탕은 color-transition, 축소는 pressed-scale 시간으로 바뀐다 */
+    .pov-close {
+      --pov-focus-ring: var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral)));
+      position: absolute;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      cursor: pointer;
+      transition:
+        background-color var(--motion-duration-color-transition) var(--motion-ease-easing),
+        scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    /* 시트 — 28 원 bg-neutral-weak · 아이콘 14 fg-neutral, 위 24 · 오른쪽 24. 누르는 영역은 사방 8 넓혀 44 */
+    .pov-close--circle {
+      --press-basis: 28;
+      top: var(--spacing-x6);
+      right: var(--spacing-global-gutter);
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-full);
+      background: var(--color-bg-neutral-weak);
+      color: var(--color-fg-neutral);
+    }
+    .pov-close--circle > svg { width: 14px; height: 14px; }
+    .pov-close--circle::before { content: ""; position: absolute; inset: calc(-1 * var(--spacing-x2)); border-radius: var(--radius-full); }
+    /* 대화상자 · 팝오버 — 투명 52 상자 · 모서리 12 · 아이콘 22 fg-neutral-subtle. 아이콘이 위 28(팝오버 27) · 오른쪽 24 — 상자는 아이콘보다 사방 15 넓다 */
+    .pov-close--box {
+      --press-basis: 52;
+      top: calc(28px - 15px);
+      right: calc(var(--spacing-x6) - 15px);
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-r3);
+      background: transparent;
+      color: var(--color-fg-neutral-subtle);
+    }
+    .pov-popover > .pov-close--box { top: calc(27px - 15px); }
+    .pov-close--box > svg { width: 22px; height: 22px; }
+    /* 누름 = 바탕 + 축소, 호버 = 같은 바탕(마우스 있는 기기에서만 · 축소 없음) */
+    @media (hover: hover) {
+      .pov-close--circle:hover { background: var(--color-bg-neutral-weak-pressed); }
+      .pov-close--box:hover { background: var(--color-bg-layer-floating-pressed); }
+    }
+    .pov-close--circle:active,
+    .pov-close--circle.pov-close--pressed { background: var(--color-bg-neutral-weak-pressed); }
+    .pov-close--box:active,
+    .pov-close--box.pov-close--pressed { background: var(--color-bg-layer-floating-pressed); }
+    .pov-close:active,
+    .pov-close.pov-close--pressed { scale: calc(1 - 2 / var(--press-basis)); }
+    .pov-close:focus-visible,
+    .pov-close.pov-close--focus { outline: 2px solid var(--pov-focus-ring); outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) {
+      .pov-close:active,
+      .pov-close.pov-close--pressed { scale: 1; }
+    }
+
+    /* 갤러리 — 데스크톱 틀은 520 이상 칸(대화상자 480 + 좌우 20). 닫기 버튼 표의 칸은 떠 있는 표면 바탕 위에 버튼을 제자리에 둔다 —
+       --target 은 누르는 영역을 점선으로 보인다. 모두 갤러리 것이다 */
+    .pov-samples--desktop { grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr)); }
+    .pov-samples--next { margin-top: var(--spacing-xl); }
+    .pov-close-matrix .cb-matrix-row { grid-template-columns: 168px repeat(var(--cb-cols), minmax(96px, 1fr)); }
+    .pov-close-demo { position: relative; display: inline-grid; place-items: center; width: 84px; height: 76px; border-radius: var(--radius-r3); background: var(--color-bg-layer-floating); box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-subtle); }
+    .pov-close-demo > .pov-close { position: relative; top: auto; right: auto; }
+    .pov-close-demo--target > .pov-close--circle::before { outline: 1px dashed var(--color-fg-neutral-subtle); }
+    .pov-close-demo--target > .pov-close--box { outline: 1px dashed var(--color-fg-neutral-subtle); outline-offset: -1px; }
+    @media (max-width: 900px) {
+      .pov-close-matrix .cb-matrix-row { grid-template-columns: 120px repeat(var(--cb-cols), minmax(96px, 1fr)); }
+    }
+    /* 폰 폭 — 줄 이름을 한 줄 전체로 올리고 네 칸을 그 아래에 나란히 둔다(판이 가로로 밀리지 않게) */
+    @media (max-width: 600px) {
+      .pov-close-matrix .cb-matrix-row { grid-template-columns: repeat(var(--cb-cols), minmax(0, 1fr)); }
+      .pov-close-matrix .cb-matrix-row > :first-child { grid-column: 1 / -1; }
+      .pov-close-demo { width: 100%; max-width: 84px; }
+    }
+
+    /* 다크 — 역할 색을 화면 틀 · 닫기 표 안에서만 다크 짝으로 바꾼다(.psel-list · .plst 와 같다 — 전역 다크 블록은 옛 이름만 바꾼다).
+       끼운 .btn · .ptf-* · .plst · .radio 는 저마다의 다크 블록이 다시 바꾼다. 공유 토큰(DESIGN.md)에 없는 브랜드 짝(포커스 링)은 비어서 대체값(중립)으로 떨어진다. 딤은 0.65 */
+    [data-theme="dark"] :is(.pov-frame, .pov-close-demo) {
+      --color-bg-layer-default: var(--color-bg-layer-default-dark);
+      --color-bg-layer-default-pressed: var(--color-bg-layer-default-pressed-dark);
+      --color-bg-layer-basement: var(--color-bg-layer-basement-dark);
+      --color-bg-layer-floating: var(--color-bg-layer-floating-dark);
+      --color-bg-layer-floating-pressed: var(--color-bg-layer-floating-pressed-dark);
+      --color-bg-neutral-weak: var(--color-bg-neutral-weak-dark);
+      --color-bg-neutral-weak-pressed: var(--color-bg-neutral-weak-pressed-dark);
+      --color-bg-neutral-inverted: var(--color-bg-neutral-inverted-dark);
+      --color-fg-neutral: var(--color-fg-neutral-dark);
+      --color-fg-neutral-inverted: var(--color-fg-neutral-inverted-dark);
+      --color-fg-neutral-muted: var(--color-fg-neutral-muted-dark);
+      --color-fg-neutral-subtle: var(--color-fg-neutral-subtle-dark);
+      --color-stroke-neutral-weak: var(--color-stroke-neutral-weak-dark);
+      --color-stroke-neutral-subtle: var(--color-stroke-neutral-subtle-dark);
+      --color-stroke-focus-ring: var(--color-stroke-focus-ring-dark);
+      --shadow-s3: var(--shadow-s3-dark);
+    }
+    [data-theme="dark"] .pov-scrim { background: var(--overlay-dim-dark); }
 
     /* todo-card */
     .todo-list { display: flex; flex-direction: column; gap: 2px; }
@@ -7918,46 +8414,7 @@ export function pageCss() {
     .empty-description { color: var(--color-text-secondary); max-width: 40ch; line-height: 1.6; }
     .empty-actions { display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-sm); flex-wrap: wrap; justify-content: center; }
 
-    /* === Modal === */
-    .modal-stage {
-      position: relative;
-      background: linear-gradient(135deg, var(--color-chart-blue), var(--color-chart-violet));
-      border-radius: var(--radius-lg);
-      height: 480px;
-      overflow: hidden;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .modal-overlay {
-      position: absolute; inset: 0;
-      background: var(--overlay-dim-light, rgba(0, 0, 0, 0.4));
-    }
-    /* 여백은 container 가 아니라 head/body/foot 이 갖는다 — dialog.md Layout.
-       본문만 스크롤해야 해서 셋을 한 덩어리로 묶을 수 없다. */
-    .modal-dialog {
-      position: relative;
-      background: var(--color-surface-default);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-xl);
-      width: min(90%, 520px);
-      max-height: 86vh;
-      overflow: hidden;
-      display: flex; flex-direction: column;
-    }
-    .modal-head { flex-shrink: 0; padding: 18px 22px; display: flex; flex-direction: column; gap: var(--spacing-md); }
-    .modal-body { flex: 1; min-height: 0; overflow-y: auto; padding: 22px; display: flex; flex-direction: column; gap: var(--spacing-md); }
-    .modal-title { font-size: var(--text-title-md); font-weight: 600; line-height: var(--text-title-md--line-height); color: var(--color-text-primary); letter-spacing: -0.01em; }
-    .modal-description { font-size: var(--text-body-md); color: var(--color-text-secondary); line-height: 1.6; }
-    .modal-fields {
-      display: flex; flex-direction: column; gap: var(--spacing-xs);
-      background: var(--color-surface-input);
-      border-radius: var(--radius-md);
-      padding: var(--spacing-md);
-    }
-    .modal-row { display: flex; justify-content: space-between; font-size: var(--text-caption); }
-    .modal-key { color: var(--color-text-tertiary); }
-    .modal-val { font-weight: 600; }
-    /* footer 18 22 — head 위와 같은 값이다(dialog.md Layout). 버튼은 small(36) — Button 블록의 크기 규칙에 .modal-actions .btn 이 함께 있다. */
-    .modal-actions { flex-shrink: 0; padding: 18px 22px; display: flex; gap: var(--spacing-sm); justify-content: flex-end; }
+    /* 옛 Modal(.modal-* — 모서리 12 · shadow-xl · 머리 18 22)은 걷었다. 시트 · 대화상자 · 확인창은 Overlays 블록의 .pov-* 다(03k) */
 
     /* === Toast === sonner.md SoT — surface-raised + 테두리 없음 + radius-md + shadow-md + 20px stroke svg(kind별 색).
        flex-wrap + content 한 줄 전체 — 버튼이 있으면 글 아래 줄로 간다(2026-09-22). */
@@ -8110,7 +8567,7 @@ export function pageCss() {
     .pg-ellipsis { display: flex; align-items: center; padding: 0 var(--spacing-xs); color: var(--color-text-tertiary); }
     .pg-loadmore { align-self: flex-start; min-width: 200px; }
 
-    /* Drawer (정적 표시) */
+    /* Drawer (정적 표시) — 옆 패널(.drw-side, HR · 공유)만 남았다. Side Panel 차례에 다시 정한다. 아래 Drawer 는 03k 의 Bottom Sheet(.pov-sheet)다 */
     .drw-frame {
       background: var(--color-bg-page);
       border-radius: var(--radius-md);
@@ -8129,20 +8586,6 @@ export function pageCss() {
       padding: var(--spacing-lg);
       display: flex; flex-direction: column; gap: var(--spacing-md);
       align-self: stretch;
-    }
-    .drw-bottom {
-      background: var(--color-surface-default);
-      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-      box-shadow: var(--shadow-xl);
-      width: 100%;
-      padding: var(--spacing-lg);
-      display: flex; flex-direction: column; gap: var(--spacing-md);
-    }
-    .drw-handle {
-      width: 40px; height: 4px;
-      background: var(--color-surface-input);
-      border-radius: var(--radius-full);
-      margin: -4px auto var(--spacing-sm);
     }
     .drw-header { display: flex; justify-content: space-between; align-items: center; }
     .drw-title { font-weight: 600; font-size: var(--text-title-sm); }
@@ -8328,13 +8771,7 @@ export function pageCss() {
 
     /* 옛 Tag / Chip(.chip · .chip-x · .chip--input — 브랜드 10% 바탕 · 칩 안의 입력칸)은 걷었다. 칩은 위 Chip 블록의 .pchip 이다(chip.md, 2026-10-02) */
 
-    /* Popover */
-    .pop-anchor { position: relative; }
-    /* popover.md SoT — compact pill trigger + token padding */
-    .pop-trigger { background: var(--color-surface-input); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); padding: var(--spacing-xs) var(--spacing-sm); cursor: pointer; font-size: var(--text-caption); color: var(--color-text-primary); }
-    .pop { position: relative; margin-top: var(--spacing-xs); background: var(--color-surface-default); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); padding: var(--spacing-md); box-shadow: var(--shadow-md); display: flex; flex-direction: column; gap: var(--spacing-sm); }
-    /* 안의 의견 칸은 Field + 여러 줄 입력칸(.ptf-textarea — 웹 기본 반응형)이다. 옛 caption 톤 회색 칸은 걷었다 */
-    .pop-actions { display: flex; justify-content: flex-end; gap: var(--spacing-xs); }
+    /* 옛 Popover(.pop · .pop-trigger — 288 · 모서리 8 · 1px 테두리 · shadow-md)는 걷었다. 팝오버는 Overlays 블록의 .pov-popover 다(03k) */
 
     /* File Upload */
     .fu-zone { border: 2px dashed var(--color-border-default); border-radius: var(--radius-md); padding: var(--spacing-lg); display: flex; flex-direction: column; align-items: center; gap: 4px; background: var(--color-bg-page); }
@@ -8485,14 +8922,7 @@ export function pageCss() {
     .ctx-item--destructive:hover { background: color-mix(in srgb, var(--color-error) 12%, transparent); }
     .ctx-sep { height: 1px; background: var(--color-border-default); margin: var(--spacing-xs) 0; }
 
-    /* Alert Dialog */
-    .ad { display: flex; gap: var(--spacing-md); padding: var(--spacing-lg); background: var(--color-bg-page); border-radius: var(--radius-md); align-items: flex-start; }
-    .ad-icon { width: 32px; height: 32px; border-radius: var(--radius-full); background: var(--color-error); color: var(--color-text-on-accent, #fff); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; flex-shrink: 0; }
-    .ad-body { flex: 1; }
-    .ad-title { font-size: var(--text-title-md); font-weight: 600; line-height: var(--text-title-md--line-height); color: var(--color-text-primary); letter-spacing: -0.01em; margin-bottom: var(--spacing-xs); }
-    .ad-desc { font-size: var(--text-body-md); color: var(--color-text-secondary); line-height: 1.6; margin-bottom: var(--spacing-md); }
-    .ad-actions { display: flex; gap: var(--spacing-sm); justify-content: flex-end; }
-    /* 확정 버튼(.btn-destructive = criticalSolid)은 Button 블록에 있다 */
+    /* 옛 Alert Dialog(.ad-* — 아이콘 원 · 오른쪽 버튼)는 걷었다. 확인창은 Overlays 블록의 .pov-alert 다(03k) */
 
     /* Data Table */
     .dt { display: flex; flex-direction: column; gap: var(--spacing-sm); }
@@ -8550,7 +8980,8 @@ export function pageCss() {
     /* IconPicker — icon-picker.md SoT (popover trigger + grid 8-col) */
     .ipk-trigger { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 1px solid var(--color-border-default); background: var(--color-surface-default); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); cursor: pointer; color: var(--color-text-primary); font: inherit; }
     .ipk-trigger:hover { background: var(--color-surface-input); }
-    .ipk-content { width: 320px; padding: var(--spacing-md); border: 1px solid var(--color-border-default); background: var(--color-surface-default); border-radius: var(--radius-md); box-shadow: var(--shadow-md); }
+    /* 열린 표면은 Popover 다(icon-picker.tsx 의 PopoverContent) — 옛 1px 테두리 · 모서리 8 · shadow-md 는 걷고 03k 의 팝오버 모양(bg-layer-floating · 모서리 20 · shadow-s3)으로 그린다 */
+    .ipk-content { width: 320px; padding: var(--spacing-md); background: var(--color-bg-layer-floating); border-radius: var(--radius-r5); box-shadow: var(--shadow-s3); }
     /* 검색칸 — Input prefixIcon · clearable(.ptf-input, 웹 기본 반응형). 옛 36 칸 + 절대 위치 아이콘은 걷었다(icon-picker.md 2026-10-01) */
     .ipk-search { margin-bottom: var(--spacing-sm); }
     .ipk-grid { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px; max-height: 240px; overflow-y: auto; }
@@ -8612,7 +9043,9 @@ export function pageCss() {
     .overlay-card { width: 220px; }
     .overlay-bg { position: relative; height: 140px; background: linear-gradient(135deg, var(--color-chart-blue), var(--color-chart-violet)); border-radius: var(--radius-md); overflow: hidden; }
     .overlay-dim { position: absolute; inset: 0; }
-    .overlay-modal { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); background: var(--color-surface-default); padding: var(--spacing-md) var(--spacing-lg); border-radius: var(--radius-md); box-shadow: var(--shadow-xl); font-size: var(--text-caption); font-weight: 600; }
+    /* 딤 위의 떠 있는 표면 — 시트 · 대화상자 · 확인창처럼 bg-layer-floating · 모서리 20 · 그림자 없음(03k) */
+    .overlay-modal { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); background: var(--color-bg-layer-floating); color: var(--color-fg-neutral); padding: var(--spacing-md) var(--spacing-lg); border-radius: var(--radius-r5); font-size: var(--text-caption); font-weight: 600; }
+    [data-theme="dark"] .overlay-modal { background: var(--color-bg-layer-floating-dark); color: var(--color-fg-neutral-dark); }
     .overlay-name { text-align: center; font-size: var(--text-caption); font-family: ui-monospace, monospace; margin-top: var(--spacing-sm); }
 
     [data-theme="dark"] body { background: var(--color-bg-page-dark); color: var(--color-text-primary-dark); }
@@ -8630,24 +9063,21 @@ export function pageCss() {
     [data-theme="dark"] .review-item,
     [data-theme="dark"] .amenity-grid,
     [data-theme="dark"] .empty-card,
-    [data-theme="dark"] .modal-dialog,
     [data-theme="dark"] .toast,
     [data-theme="dark"] .ld-highlights,
     [data-theme="dark"] .ld-host,
     [data-theme="dark"] .sk-card-wrap,
     [data-theme="dark"] .batch-card,
     [data-theme="dark"] .drw-side,
-    [data-theme="dark"] .drw-bottom,
     [data-theme="dark"] .sc-card,
     [data-theme="dark"] .ctx,
     [data-theme="dark"] .car-arrow,
     [data-theme="dark"] .son-toast,
     [data-theme="dark"] .sl,
-    [data-theme="dark"] .ipk-content,
     [data-theme="dark"] .ipk-trigger,
     [data-theme="dark"] .swatch { background: var(--color-surface-default-dark); }
+    [data-theme="dark"] .ipk-content { background: var(--color-bg-layer-floating-dark); box-shadow: var(--shadow-s3-dark); }
     [data-theme="dark"] .sl,
-    [data-theme="dark"] .ipk-content,
     [data-theme="dark"] .ipk-trigger { border-color: var(--color-border-default-dark); }
     [data-theme="dark"] .sl-row + .sl-row,
     [data-theme="dark"] .ipk-footer { border-color: var(--color-border-default-dark); }
@@ -8658,7 +9088,6 @@ export function pageCss() {
     [data-theme="dark"] .mb,
     [data-theme="dark"] .cmd,
     [data-theme="dark"] .hc,
-    [data-theme="dark"] .ad,
     [data-theme="dark"] .car-frame,
     [data-theme="dark"] .sa,
     [data-theme="dark"] .chart-mini,
@@ -8697,7 +9126,6 @@ export function pageCss() {
     [data-theme="dark"] .tgg--solid .tgg-item--active { background: var(--color-primary); color: var(--color-text-on-accent, #fff); }
     [data-theme="dark"] .cmd-input { background: var(--color-surface-default-dark); border-color: var(--color-border-default-dark); color: var(--color-text-primary-dark); }
     [data-theme="dark"] .drw-frame { background: var(--color-bg-page-dark); }
-    [data-theme="dark"] .drw-handle { background: var(--color-surface-input-dark); }
     [data-theme="dark"] .drw-row { border-color: var(--color-border-default-dark); }
     [data-theme="dark"] .drw-actions { border-color: var(--color-border-default-dark); }
     [data-theme="dark"] .drw-close:hover { background: var(--color-surface-input-dark); }
@@ -8719,7 +9147,6 @@ export function pageCss() {
     [data-theme="dark"] .sk-card .sk,
     [data-theme="dark"] .sk-demo-cell .sk { background-color: var(--color-surface-default-dark); background-image: linear-gradient(90deg, var(--color-surface-default-dark) 0%, var(--color-surface-input-dark) 50%, var(--color-surface-default-dark) 100%); }
     [data-theme="dark"] .sk-row { border-color: var(--color-border-default-dark); }
-    [data-theme="dark"] .modal-fields { background: var(--color-surface-input-dark); }
     [data-theme="dark"] .ld-rail-row,
     [data-theme="dark"] .cal-legend { border-color: var(--color-border-default-dark); }
     [data-theme="dark"] .hero-fact,
@@ -8913,13 +9340,13 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     ${renderPickGallery(brand)}
     ${renderChipGallery(brand)}
     ${renderTabsGallery(brand)}
+    ${renderOverlayGallery(brand)}
     ${renderVignettes(brand)}
     ${renderListingDetail(brand)}
     ${renderCalendar(brand)}
     ${renderReviews(brand)}
     ${renderAmenities(brand)}
     ${renderEmptyState(brand)}
-    ${renderModal(brand)}
     ${renderToasts(brand)}
     ${renderForm(brand)}
     ${renderSkeleton(brand)}
@@ -9376,6 +9803,42 @@ function renderHtml(brandName, css, tokens, sourceFile) {
         nextItem.focus();
         pick(nextItem);
       });
+    })();
+    // Overlays (2026-10-02) — dialog.tsx · popover.tsx 의 본문(DialogBody · PopoverBody)이 하는 일을 흉내 낸다(페이지의 모든 [data-pov-scroll]).
+    // 넘치면 data-overflow(아래 48 흐림 + 본문 아래 48 비움) · 키보드로도 스크롤하도록 tabindex 0, 위로 스크롤되면 data-scrolled(머리 아래 1px 선).
+    // 넘침은 비움(48)을 뺀 내용으로 잰다. data-pov-scroll="scrolled" 본문은 그릴 때 조금 스크롤해 둔다(그 순간을 멈춘 그림 — 직접 스크롤해도 같다).
+    // 폭이 바뀌면 다시 잰다 — 크기 감시 안에서는 다음 그림 틀(requestAnimationFrame)에 고쳐 감시가 되돌아 울리지 않게 한다.
+    (function () {
+      var bodies = Array.prototype.slice.call(document.querySelectorAll("[data-pov-scroll]"));
+      function scrolled(body) { body.toggleAttribute("data-scrolled", body.scrollTop > 0); }
+      function fit(body) {
+        var top = body.scrollTop;
+        body.removeAttribute("data-overflow");
+        var over = body.scrollHeight > body.clientHeight + 1;
+        body.toggleAttribute("data-overflow", over);
+        if (over) body.setAttribute("tabindex", "0"); else body.removeAttribute("tabindex");
+        body.scrollTop = top;
+        scrolled(body);
+      }
+      bodies.forEach(function (body) {
+        body.addEventListener("scroll", function () { scrolled(body); }, { passive: true });
+        fit(body);
+        if (body.getAttribute("data-pov-scroll") === "scrolled") { body.scrollTop = 120; scrolled(body); }
+      });
+      window.addEventListener("load", function () { bodies.forEach(fit); });
+      if (window.ResizeObserver) {
+        var seen = new WeakMap();
+        var ro = new ResizeObserver(function (entries) {
+          entries.forEach(function (entry) {
+            var el = entry.target;
+            var key = el.offsetWidth + "x" + el.offsetHeight;
+            if (seen.get(el) === key) return;
+            seen.set(el, key);
+            requestAnimationFrame(function () { fit(el); });
+          });
+        });
+        bodies.forEach(function (el) { ro.observe(el, { box: "border-box" }); });
+      }
     })();
   </script>
 </body>

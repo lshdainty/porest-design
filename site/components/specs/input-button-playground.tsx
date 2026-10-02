@@ -4,13 +4,14 @@
 import { useMemo, useState } from 'react';
 import type { ButtonLook } from './button-look';
 import { InputButtonDemo } from './input-button-pickers';
+import type { OvKit } from './overlay-shared';
 import { BRANDS, MODES, PlayFrame, SIZES, STATES, Seg } from './select-playground';
 import type { SelSizeProp, SelectLook, ViewMode } from './select-shared';
 import type { TfFieldLook } from './text-field-shared';
 
 const attr = (cond: boolean, s: string) => (cond ? [s] : []);
 
-export function InputButtonPlayground({ looks, field, done }: { looks: Record<'desk' | 'hr', SelectLook>; field: TfFieldLook; done: Record<'desk' | 'hr', { sheet: ButtonLook; popover: ButtonLook }> }) {
+export function InputButtonPlayground({ looks, field, done, kits }: { looks: Record<'desk' | 'hr', SelectLook>; field: TfFieldLook; done: Record<'desk' | 'hr', { sheet: ButtonLook; popover: ButtonLook }>; kits: Record<'desk' | 'hr', OvKit> }) {
   const [size, setSize] = useState<SelSizeProp>('responsive');
   const [state, setState] = useState<(typeof STATES)[number][0]>('enabled');
   const [prefix, setPrefix] = useState<'none' | 'icon' | 'text'>('text');
@@ -36,8 +37,8 @@ export function InputButtonPlayground({ looks, field, done }: { looks: Record<'d
     ];
     const icons = [...(suffix === 'icon' ? ['ChevronDown'] : []), ...(prefix === 'icon' ? ['Repeat'] : [])].sort();
     const head = `${icons.length ? `import { ${icons.join(', ')} } from "lucide-react"\n` : ''}import { Field } from "@/components/ui/field"\nimport { InputButton } from "@/components/ui/input-button"\n\n`;
-    // 여는 자리는 md 의 날짜 예시와 같다 — useInputButtonSurface() 로 시트(Drawer) · 팝오버(PopoverTrigger asChild 로 감싼다)
-    return `${head}<Field ${fieldAttrs.join(' ')}>\n  <InputButton\n    ${ib.join('\n    ')}\n  />\n</Field>\n{/* useInputButtonSurface() — 1280 미만 시트(Drawer) · 이상 팝오버(PopoverTrigger asChild 로 감싼다). 1 ~ 31 격자에서 누르면 setDay(d) · setOpen(false) */}`;
+    // 여는 자리는 md 의 날짜 예시와 같다 — useInputButtonSurface() 로 시트(BottomSheet) · 팝오버(PopoverTrigger asChild 로 감싼다)
+    return `${head}<Field ${fieldAttrs.join(' ')}>\n  <InputButton\n    ${ib.join('\n    ')}\n  />\n</Field>\n{/* useInputButtonSurface() — 1280 미만 시트(BottomSheet) · 이상 팝오버(PopoverTrigger asChild 로 감싼다). 1 ~ 31 격자에서 누르면 setDay(d) · setOpen(false) */}`;
   }, [size, state, prefix, suffix, clear]);
 
   const look = looks[brand];
@@ -50,6 +51,7 @@ export function InputButtonPlayground({ looks, field, done }: { looks: Record<'d
         <InputButtonDemo
           key={JSON.stringify([state, brand, prefix, suffix, clear])}
           look={look}
+          kit={kits[brand]}
           field={field}
           mode={mode}
           size={size}

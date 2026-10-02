@@ -1,8 +1,11 @@
 // 컴포넌트 페이지의 화면 예시 조각 — Desk · HR 화면을 실제 크기로 그린다(SEED 가이드의 앱 화면 그림 자리).
 // 색은 역할 색(DESIGN*.md)에서, 글자 크기는 화면 예시라 그림 안에서 정한다(컴포넌트 자체의 값은 YAML 에서 온다).
 import type { CSSProperties, ReactNode } from 'react';
-import { ChevronLeft, ChevronRight, House, Wallet, CalendarDays, NotebookPen, Menu, Signal, Wifi, BatteryFull, X } from 'lucide-react';
-import { color, design, proseValue, type Brand } from '@/lib/design-tokens';
+import { ChevronLeft, ChevronRight, House, Wallet, CalendarDays, NotebookPen, Menu, Signal, Wifi, BatteryFull } from 'lucide-react';
+import { color, design, type Brand } from '@/lib/design-tokens';
+import { buttonLook } from './button-look';
+import { overlayLook } from './overlay-look';
+import { AlertSurface, DialogSurface, DimView, SheetSurface } from './overlay-view';
 import { textFieldLook } from './text-field-look';
 import { TfFieldView, TfInputView } from './text-field-view';
 
@@ -17,8 +20,6 @@ export const rc = (name: string, mode: Mode = 'auto', brand: Brand = 'desk') => 
   if (mode === 'auto') return `var(--p-${brand === 'hr' && hrOnly(name) ? 'hr-' : ''}${name})`;
   return name === 'static-white' || name === 'static-black' ? color(name, brand) : color(mode === 'dark' ? `${name}-dark` : name, brand);
 };
-const dim = (mode: Mode) => (mode === 'auto' ? 'var(--p-overlay-dim)' : proseValue(mode === 'dark' ? 'overlay-dim-dark' : 'overlay-dim-light'));
-const shadow4 = (mode: Mode) => (mode === 'auto' ? 'var(--p-shadow-s4)' : proseValue(mode === 'dark' ? 'shadow-s4-dark' : 'shadow-s4'));
 const deco = (mode: Mode, name: 'frame' | 'chrome' | 'chrome-url') =>
   mode === 'auto' ? `var(--p-${name})` : ({ frame: ['#1A1F2E', '#3A3F4C'], chrome: ['#E4E6EB', '#2B303D'], 'chrome-url': ['#F5F6FA', '#1E222C'] } as const)[name][mode === 'dark' ? 1 : 0];
 
@@ -201,39 +202,36 @@ export function Field({ label, value, mode = 'auto', placeholder = false, size =
   );
 }
 
-// 아래에서 올라온 시트 — 딤 위에
+// 그림 속 폰의 홈 표시줄 자리 — 시트 바닥 아래에 더하는 안전 영역(기기마다 다르다). Phone 의 아래 고정 영역(위 12 · 아래 28)과 맞춘다
+export const PHONE_SAFE = 12;
+
+// 아래에서 올라온 시트 — Bottom Sheet(bottom-sheet.yaml): 위 닫기(원) · 제목 · 본문 · 바닥 버튼, 손잡이 없음
 export function Sheet({ title, children, footer, mode = 'auto', close = true }: { title: string; children?: ReactNode; footer?: ReactNode; mode?: Mode; close?: boolean }) {
+  const o = overlayLook();
   return (
-    <div className="absolute inset-0 flex flex-col justify-end" style={{ background: dim(mode) }}>
-      <div className="rounded-t-[24px] px-6 pb-7 pt-3" style={{ background: rc('bg-layer-floating', mode) }}>
-        <span className="mx-auto mb-4 block h-1 w-10 rounded-full" style={{ background: rc('stroke-neutral-weak', mode) }} />
-        <div className="mb-4 flex items-center justify-between">
-          <span className="text-[19px] font-bold" style={{ color: rc('fg-neutral', mode) }}>
-            {title}
-          </span>
-          {close && <X size={22} style={{ color: rc('fg-neutral-subtle', mode) }} />}
-        </div>
+    <DimView dim={o.sheet.dim} mode={mode} place="end">
+      <SheetSurface look={o.sheet} mode={mode} title={title} close={close} footer={footer} safe={PHONE_SAFE}>
         {children}
-        {footer && <div className="mt-6">{footer}</div>}
-      </div>
-    </div>
+      </SheetSurface>
+    </DimView>
   );
 }
 
-// 가운데 대화상자 — 앱의 Alert Dialog
-export function AlertBox({ title, body, footer, mode = 'auto' }: { title: string; body: string; footer: ReactNode; mode?: Mode }) {
+// 가운데 확인창 — Alert Dialog(alert-dialog.yaml). 폰 그림이라 버튼은 1280 미만의 크기(medium), 취소 왼쪽 · 확정 오른쪽(길면 세로)
+export function AlertBox({ title, body, cancel = '취소', confirm, tone = 'critical', mode = 'auto', brand = 'desk' }: { title: string; body: string; cancel?: string; confirm: string; tone?: 'critical' | 'neutral'; mode?: Mode; brand?: Brand }) {
+  const o = overlayLook(brand === 'hr' ? 'hr' : 'desk');
+  const size = o.alert.footer.below.size;
   return (
-    <div className="absolute inset-0 flex items-center justify-center px-7" style={{ background: dim(mode) }}>
-      <div className="w-full rounded-[20px] px-6 pb-5 pt-6" style={{ background: rc('bg-layer-floating', mode) }}>
-        <div className="text-[18px] font-bold" style={{ color: rc('fg-neutral', mode) }}>
-          {title}
-        </div>
-        <div className="mt-2 text-[14px] leading-[21px]" style={{ color: rc('fg-neutral-muted', mode) }}>
-          {body}
-        </div>
-        <div className="mt-6">{footer}</div>
-      </div>
-    </div>
+    <DimView dim={o.alert.dim} mode={mode} place="center">
+      <AlertSurface
+        look={o.alert}
+        mode={mode}
+        title={title}
+        description={body}
+        cancel={{ label: cancel, look: buttonLook({ variant: 'neutralWeak', size }, brand) }}
+        confirm={{ label: confirm, look: buttonLook({ variant: tone === 'critical' ? 'criticalSolid' : 'neutralSolid', size }, brand) }}
+      />
+    </DimView>
   );
 }
 
@@ -256,21 +254,15 @@ export function WebWindow({ children, mode = 'auto', w = 640, h = 380, url = 'de
   );
 }
 
-// 웹의 가운데 모달 — 머리 · 본문 · 아래(footer)
-export function WebDialog({ title, children, footer, mode = 'auto', w = 440 }: { title: string; children: ReactNode; footer: ReactNode; mode?: Mode; w?: number }) {
+// 웹의 가운데 대화상자 — Dialog(dialog.yaml) medium. 입력 폼은 바닥 [취소] [주 버튼] 이고 머리 닫기가 없다 — 조회 · 안내만 close
+export function WebDialog({ title, description, children, footer, mode = 'auto', close = false, brand = 'desk' }: { title: string; description?: string; children: ReactNode; footer?: ReactNode; mode?: Mode; close?: boolean; brand?: Brand }) {
+  const o = overlayLook(brand === 'hr' ? 'hr' : 'desk');
   return (
-    <div className="absolute inset-0 flex items-center justify-center" style={{ background: dim(mode) }}>
-      <div className="overflow-hidden rounded-xl" style={{ width: w, background: rc('bg-layer-floating', mode), boxShadow: shadow4(mode) }}>
-        <div className="flex items-center justify-between px-[22px] pb-2 pt-[18px]">
-          <span className="text-[17px] font-bold" style={{ color: rc('fg-neutral', mode) }}>
-            {title}
-          </span>
-          <X size={20} style={{ color: rc('fg-neutral-subtle', mode) }} />
-        </div>
-        <div className="px-[22px] pb-2">{children}</div>
-        <div className="flex items-center gap-2 px-[22px] pb-[18px] pt-4">{footer}</div>
-      </div>
-    </div>
+    <DimView dim={o.dialog.dim} mode={mode} place="center">
+      <DialogSurface look={o.dialog} mode={mode} title={title} description={description} close={close} footer={footer} scroll={{ overflow: false, scrolled: false }}>
+        {children}
+      </DialogSurface>
+    </DimView>
   );
 }
 

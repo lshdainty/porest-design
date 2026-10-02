@@ -1,10 +1,10 @@
 // Select · Input Button 페이지가 같이 쓰는 그림 조각 — 화면 예시(Desk 거래 추가 · HR 휴가 신청), Field 묶음, 설명 글, 선택지 묶음.
 // 칸(Select · Input Button · Input)의 수치는 YAML 을 푼 값(selectLook · textFieldLook)에서 온다. 화면 틀(폰 · 창 · 대화상자)의 글자 크기는 그림 안에서 정한다.
 import type { CSSProperties, ReactNode } from 'react';
-import { X } from 'lucide-react';
-import { proseValue } from '@/lib/design-tokens';
 import { buttonLook } from './button-look';
 import { ButtonView } from './button-view';
+import { overlayLook } from './overlay-look';
+import { DialogSurface, DimView } from './overlay-view';
 import { selectLook, type SelGroup, type SelSizeProp, type SelectLook } from './select-look';
 import { InputButtonView, SelectOpenView, SelectTriggerView } from './select-view';
 import { textFieldLook } from './text-field-look';
@@ -62,7 +62,7 @@ export function Form({ children, gap }: { children: ReactNode; gap?: number }) {
 }
 
 export const cta = (label: string, mode: Mode, variant = 'neutralSolid', brand: 'desk' | 'hr' = 'desk') => <ButtonView look={buttonLook({ variant, size: 'large' }, brand)} mode={mode} label={label} fill state="enabled" />;
-export const smallBtn = (label: string, mode: Mode, variant: string, brand: 'desk' | 'hr' = 'hr') => <ButtonView look={buttonLook({ variant, size: 'small' }, brand)} mode={mode} label={label} state="enabled" />;
+export const smallBtn = (label: string, mode: Mode, variant: string, brand: 'desk' | 'hr' = 'hr', size = 'small') => <ButtonView look={buttonLook({ variant, size }, brand)} mode={mode} label={label} state="enabled" />;
 
 // ── 선택지 묶음 ─────────────────────────────────────────
 // 결제 수단(Desk) — "없음" 은 맨 앞 따로 묶음
@@ -133,48 +133,58 @@ export function DeskTxPhone({ mode, scale = 0.6, h = 640, payment, overlay }: { 
   );
 }
 
-// 웹의 가운데 대화상자 — kit 의 WebDialog 와 같은 모양이되 안을 자르지 않는다(열린 목록이 대화상자 밖으로 나온다 — 실제로는 body 에 띄운다)
-export function HrDialog({ mode, title, children, footer, w = 400, top = 24 }: { mode: Mode; title: string; children: ReactNode; footer: ReactNode; w?: number; top?: number }) {
+// HR 대화상자(데스크톱) — Dialog(dialog.yaml): 화면 정중앙 · medium 480. 입력 폼이라 머리 닫기 없이 바닥 [취소] [주 버튼].
+// 열린 목록 · 팝오버는 대화상자 밖으로 나온다(실제로는 body 에 띄운다) — 판이 자르지 않게 그린다
+export function HrDialog({ mode, title, description, children, footer }: { mode: Mode; title: string; description?: string; children: ReactNode; footer: ReactNode }) {
+  const o = overlayLook('hr');
   return (
-    <div className="absolute inset-0 flex justify-center" style={{ background: mode === 'auto' ? 'var(--p-overlay-dim)' : desk().overlay.dim[mode], paddingTop: top }}>
-      <div className="h-max rounded-xl" style={{ width: w, background: rc('bg-layer-floating', mode, 'hr'), boxShadow: mode === 'auto' ? 'var(--p-shadow-s4)' : proseValue(mode === 'dark' ? 'shadow-s4-dark' : 'shadow-s4') }}>
-        <div className="flex items-center justify-between px-[22px] pb-2 pt-[18px]">
-          <span className="text-[17px] font-bold" style={{ color: rc('fg-neutral', mode, 'hr') }}>
-            {title}
-          </span>
-          <X size={20} style={{ color: rc('fg-neutral-subtle', mode, 'hr') }} />
-        </div>
-        <div className="px-[22px] pb-2">{children}</div>
-        <div className="flex items-center gap-2 px-[22px] pb-[18px] pt-4">{footer}</div>
-      </div>
-    </div>
+    <DimView dim={o.dialog.dim} mode={mode} place="center">
+      <DialogSurface look={o.dialog} mode={mode} title={title} description={description} footer={footer} unclipped>
+        {children}
+      </DialogSurface>
+    </DimView>
   );
 }
+// 대화상자의 머리(제목 한 줄) · 바닥(버튼 한 줄) 높이 — 창 높이를 셀 때
+export function hrDialogChrome(description = false) {
+  const d = overlayLook('hr').dialog;
+  return {
+    head: d.header.padTop + px(d.title.lineHeight) + (description ? d.header.gap + px(d.description.lineHeight) : 0) + d.header.padBottom,
+    foot: d.footer.padTop + d.footer.button.height + d.footer.padBottom,
+  };
+}
+// 창 높이 — 가운데 대화상자(높이 dialogH)에서 머리 아래 below 만큼 내려온 것(열린 목록 · 팝오버)이 창 아래 margin 안에 들어오게
+export function centeredWindowH(dialogH: number, head: number, below: number, margin = 24) {
+  return 32 + Math.max(dialogH + margin * 2, 2 * (head + below + margin) - dialogH);
+}
+// 바닥 [취소] [주 버튼] — 대화상자는 Button small
+export const hrFooter = (mode: Mode, primary: string) => {
+  const size = overlayLook('hr').dialog.footer.button.size;
+  return (
+    <>
+      {smallBtn('취소', mode, 'neutralWeak', 'hr', size)}
+      {smallBtn(primary, mode, 'brandSolid', 'hr', size)}
+    </>
+  );
+};
 
 // HR 휴가 신청(데스크톱 · medium) — 휴가 정책 Select 를 열었다
-export const HR_DIALOG_TITLE = 58;
-export function HrLeaveWindow({ mode, w = 520, dialogW = 400 }: { mode: Mode; w?: number; dialogW?: number }) {
+export function HrLeaveWindow({ mode, w = 540, s = 1 }: { mode: Mode; w?: number; s?: number }) {
   const lk = hr();
   const t = tf();
   const m = lk.item.sizes.medium;
+  const label = px(t.field.label.text.lineHeight) + t.field.gap;
   // 열린 목록의 아래 끝 — 라벨 + 간격 + 칸 + 목록 간격 + 목록(위아래 여백 + 설명 있는 줄 하나 + 한 줄 다섯)
   const listH = lk.content.padY * 2 + m.heightDesc + m.height * (POLICY[0].items.length - 1);
-  const listBottom = px(t.field.label.text.lineHeight) + t.field.gap + lk.trigger.sizes.medium.h + lk.content.gutter + listH;
-  const h = 32 + 24 + HR_DIALOG_TITLE + listBottom + 24;
+  const listBottom = label + lk.trigger.sizes.medium.h + lk.content.gutter + listH;
+  const body = 2 * (label + lk.trigger.sizes.medium.h) + t.field.form.gapY;
+  const c = hrDialogChrome();
+  const h = centeredWindowH(c.head + body + c.foot, c.head, listBottom);
   return (
+    <ScaledBox w={w} h={h} s={s}>
     <WebWindow mode={mode} w={w} h={h} url="hr.porest.app">
-      <HrDialog
-        mode={mode}
-        title="휴가 신청"
-        w={dialogW}
-        footer={
-          <div className="ml-auto flex gap-2">
-            {smallBtn('취소', mode, 'neutralWeak')}
-            {smallBtn('신청', mode, 'brandSolid')}
-          </div>
-        }
-      >
-        <Form gap={20}>
+      <HrDialog mode={mode} title="휴가 신청" footer={hrFooter(mode, '신청')}>
+        <Form>
           <F mode={mode} label="휴가 정책">
             <SelectOpenView look={lk} mode={mode} size="medium" groups={POLICY} selected={['annual']} states={{ 'half-am': 'hovered' }} placement="overlay" />
           </F>
@@ -184,6 +194,17 @@ export function HrLeaveWindow({ mode, w = 520, dialogW = 400 }: { mode: Mode; w?
         </Form>
       </HrDialog>
     </WebWindow>
+    </ScaledBox>
+  );
+}
+
+// 줄여 그린다 — 자리(폭 · 높이)도 같이 준다
+export function ScaledBox({ w, h, s, children }: { w: number; h: number; s: number; children: ReactNode }) {
+  if (s === 1) return <>{children}</>;
+  return (
+    <div className="shrink-0" style={{ width: w * s, height: h * s }}>
+      <div style={{ width: w, height: h, transform: `scale(${s})`, transformOrigin: 'top left' }}>{children}</div>
+    </div>
   );
 }
 
@@ -194,7 +215,7 @@ export function HeroScreens() {
       {(['light', 'dark'] as const).map((mode) => (
         <div key={mode} className="flex items-start gap-4">
           <DeskTxPhone mode={mode} />
-          <HrLeaveWindow mode={mode} />
+          <HrLeaveWindow mode={mode} s={0.7} />
         </div>
       ))}
     </div>

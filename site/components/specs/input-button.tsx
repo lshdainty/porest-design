@@ -1,23 +1,25 @@
 // Input Button 페이지의 그림 — specs/components/input-button.md 의 `[그림: …](../../site/components/specs/input-button.tsx#<id>)` 자리.
-// 칸은 input-button.yaml 을 푼 값(selectLook().ib)으로, Field 는 field.yaml 로 그린다. 시트 · 팝오버 · 달력 · 휠은 아직 스펙이 없어
-// 역할 색 토큰으로 간단히 그린다(Bottom Sheet · Popover · Date Picker · Time Picker 차례에 정한다).
+// 칸은 input-button.yaml 을 푼 값(selectLook().ib)으로, Field 는 field.yaml, 시트 · 팝오버 · 대화상자는 bottom-sheet · popover · dialog.yaml(overlay-look)로 그린다.
+// 달력 · 휠은 아직 스펙이 없어 역할 색 토큰으로 간단히 그린다(Date Picker · Time Picker 차례에 정한다).
 // 휴대폰 화면 안의 칸은 large, 데스크톱 창 안의 칸은 medium 으로 고정한다.
 import type { CSSProperties, ReactNode } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Figure, Panel, MARK, MARK_LINE } from '../foundations/ui';
 import { buttonLook } from './button-look';
 import { InputButtonPlayground } from './input-button-playground';
-import { PEOPLE } from './input-button-data';
+import { PEOPLE, calendarHeight } from './input-button-data';
 import { CalendarGrid, CategoryGrid, InputButtonDemo, PeopleList, PopoverPanel, SheetOverlay, SheetPanel, TimeWheel } from './input-button-pickers';
 import type { IbState } from './select-look';
-import { Cap, Cell, DeskTxPhone, F, Form, HR_DIALOG_TITLE, HrDialog, Live, Surface, cta, desk, hr, smallBtn, tf } from './select-screens';
+import { PHONE_SAFE, overlayKit, ov } from './overlay-screens';
+import { Cap, Cell, DeskTxPhone, F, Form, HrDialog, Live, ScaledBox, Surface, centeredWindowH, cta, desk, hr, hrDialogChrome, hrFooter, smallBtn, tf } from './select-screens';
 import { InputButtonView, SelectOpenView, SelectTriggerView } from './select-view';
 import { TfInputView } from './text-field-view';
 import { Phone, Verdict, WebWindow, rc, type Mode } from './kit';
 
 type Fig = (p: { caption?: string }) => ReactNode;
 const px = (v: string) => parseFloat(v);
-const done = (brand: 'desk' | 'hr' = 'desk') => ({ sheet: buttonLook({ variant: 'neutralSolid', size: 'large' }, brand), popover: buttonLook({ variant: 'neutralSolid', size: 'small' }, brand) });
+// 확정 버튼 — 시트는 Bottom Sheet 바닥(large), 팝오버는 Popover 바닥(small)
+const done = (brand: 'desk' | 'hr' = 'desk') => ({ sheet: buttonLook({ variant: 'neutralSolid', size: ov(brand).sheet.footer.button.size }, brand), popover: buttonLook({ variant: 'neutralSolid', size: ov(brand).popover.footer.button.size }, brand) });
 
 function Pin({ n }: { n: string }) {
   return (
@@ -41,10 +43,11 @@ function Screen({ title, mode = 'light', children, overlay, scale = 0.52, h = 60
 // 달력 시트 — 제목(고를 값의 종류) · 달력 · 완료
 function DateSheet({ mode = 'light', selected, today = 1 }: { mode?: Mode; selected?: number; today?: number }) {
   const lk = desk();
+  const o = ov();
   return (
-    <SheetOverlay look={lk} mode={mode}>
-      <SheetPanel look={lk} mode={mode} title="날짜" footer={cta('완료', mode)}>
-        <div className="flex justify-center px-4">
+    <SheetOverlay ov={o} mode={mode}>
+      <SheetPanel ov={o} mode={mode} title="날짜" footer={cta('완료', mode)} safe={PHONE_SAFE}>
+        <div className="flex justify-center">
           <CalendarGrid look={lk} mode={mode} year={2026} month={10} selected={selected} today={today} />
         </div>
       </SheetPanel>
@@ -53,30 +56,25 @@ function DateSheet({ mode = 'light', selected, today = 1 }: { mode?: Mode; selec
 }
 
 // ── Overview ──────────────────────────────────────────────
-// HR 휴가 신청(데스크톱 · medium) — 날짜 칸 아래 8 에 달력 팝오버를 열었다(1280 이상). 팝오버 · 달력은 아직 스펙이 없다(그림의 값)
+// HR 휴가 신청(데스크톱 · medium) — 날짜 칸 아래 8 에 달력 팝오버(머리 없는 고르는 패널)를 열었다(1280 이상). 달력은 아직 스펙이 없다(그림의 값)
 function HrDateWindow({ mode }: { mode: Mode }) {
   const h = hr();
   const t = tf();
+  const o = ov('hr');
   const b = h.ib.sizes.medium;
   const cell = 34;
   const field = px(t.field.label.text.lineHeight) + t.field.gap + b.h;
-  // 창 높이 — 창 막대 32 · 위 24 · 대화상자 머리 + 두 칸(사이 20) + 팝오버(여백 16 · 머리 40 · 요일 24 · 다섯 주 · 완료 36) + 아래 24
-  const pop = 16 * 2 + 40 + 24 + 5 * (cell - 8) + 5 * 4 + 12 + 36;
-  const winH = 32 + 24 + HR_DIALOG_TITLE + field + 20 + field + h.content.gutter + pop + 24;
+  // 팝오버 — 본문 위 여백(머리 없음) + 달력 + 바닥(위 · 아래 여백 + 버튼)
+  const p = o.popover;
+  const pop = p.body.padTop + calendarHeight(cell) + p.footer.padTop + p.footer.button.height + p.footer.padBottom;
+  const c = hrDialogChrome();
+  const body = field * 2 + t.field.form.gapY;
+  const winH = centeredWindowH(c.head + body + c.foot, c.head, field * 2 + t.field.form.gapY + p.offset + pop);
   return (
-    <WebWindow mode={mode} w={520} h={winH} url="hr.porest.app">
-      <HrDialog
-        mode={mode}
-        title="휴가 신청"
-        w={400}
-        footer={
-          <div className="ml-auto flex gap-2">
-            {smallBtn('취소', mode, 'neutralWeak')}
-            {smallBtn('신청', mode, 'brandSolid')}
-          </div>
-        }
-      >
-        <Form gap={20}>
+    <ScaledBox w={540} h={winH} s={0.7}>
+    <WebWindow mode={mode} w={540} h={winH} url="hr.porest.app">
+      <HrDialog mode={mode} title="휴가 신청" footer={hrFooter(mode, '신청')}>
+        <Form>
           <F mode={mode} label="휴가 정책">
             <SelectTriggerView look={h} mode={mode} size="medium" state="enabled" labels={['연차']} />
           </F>
@@ -84,8 +82,8 @@ function HrDateWindow({ mode }: { mode: Mode }) {
             <F mode={mode} label="날짜">
               <InputButtonView look={h} mode={mode} size="medium" state="enabled" value="2026. 10. 12. (월)" suffixIcon="calendar" />
             </F>
-            <div className="absolute left-0 z-10" style={{ top: field + h.content.gutter }}>
-              <PopoverPanel look={h} mode={mode} footer={smallBtn('완료', mode, 'neutralSolid')}>
+            <div className="absolute left-0 z-10" style={{ top: field + p.offset }}>
+              <PopoverPanel ov={o} mode={mode} footer={smallBtn('완료', mode, 'neutralSolid', 'hr', p.footer.button.size)}>
                 <CalendarGrid look={h} mode={mode} year={2026} month={10} selected={14} today={1} cell={cell} />
               </PopoverPanel>
             </div>
@@ -93,6 +91,7 @@ function HrDateWindow({ mode }: { mode: Mode }) {
         </Form>
       </HrDialog>
     </WebWindow>
+    </ScaledBox>
   );
 }
 
@@ -110,7 +109,7 @@ const Hero: Fig = ({ caption }) => (
   </Figure>
 );
 
-const Playground: Fig = () => <InputButtonPlayground looks={{ desk: desk(), hr: hr() }} field={tf().field} done={{ desk: done('desk'), hr: done('hr') }} />;
+const Playground: Fig = () => <InputButtonPlayground looks={{ desk: desk(), hr: hr() }} field={tf().field} done={{ desk: done('desk'), hr: done('hr') }} kits={{ desk: overlayKit('desk'), hr: overlayKit('hr') }} />;
 
 // ── Anatomy ───────────────────────────────────────────────
 const Anatomy: Fig = ({ caption }) => {
@@ -328,11 +327,15 @@ const OpenGuide: Fig = ({ caption }) => {
   const h = hr();
   const b = h.ib.sizes.medium;
   const t = tf();
+  const o = ov('hr');
+  const p = o.popover;
   // 팝오버 안 달력의 날 칸 — 폰 폭(390)에서도 창이 판 안에 들어가게(달력은 아직 스펙이 없다)
   const cell = 36;
-  const popTop = px(t.field.label.text.lineHeight) + t.field.gap + b.h + h.content.gutter;
-  // 창 높이 — 창 막대 32 · 위 여백 24 + 칸 + 팝오버(여백 16 · 머리 40 · 요일 24 · 다섯 주 · 완료 버튼 36) + 아래 여백 24. 팝오버 · 달력은 아직 스펙이 없다(그림의 값)
-  const popWindowH = 32 + 24 + popTop + (16 * 2 + 40 + 24 + 5 * (cell - 8) + 5 * 4 + 12 + 36) + 24;
+  const popTop = px(t.field.label.text.lineHeight) + t.field.gap + b.h + p.offset;
+  // 창 높이 — 창 막대 32 · 위 여백 24 + 칸 + 팝오버(본문 위 여백 · 달력 · 바닥) + 아래 여백 24
+  const popWindowH = 32 + 24 + popTop + p.body.padTop + calendarHeight(cell) + p.footer.padTop + p.footer.button.height + p.footer.padBottom + 24;
+  // 팝오버 폭 — 달력 + 본문 좌우 여백(최소 폭보다 좁으면 최소 폭)
+  const popW = Math.max(p.minWidth, cell * 7 + p.body.padX * 2);
   return (
     <Panel caption={caption}>
       <div className="flex flex-wrap items-start justify-center gap-6">
@@ -342,24 +345,26 @@ const OpenGuide: Fig = ({ caption }) => {
               <InputButtonView look={lk} mode="light" size="large" state="pressed" value="10월 12일 (월)" suffixIcon="calendar" />
             </F>
           </Screen>
-          <Cap strong={`${lk.ib.breakpoint} 미만 — 아래 시트`}>위에 제목(고를 값의 종류) · 아래에 완료</Cap>
+          <Cap strong={`${lk.ib.breakpoint} 미만 — 아래 시트`}>위에 제목(고를 값의 종류) · 닫기, 아래에 완료</Cap>
         </div>
         <div className="flex flex-col items-center gap-2">
-          <WebWindow mode="light" w={320} h={popWindowH} url="hr.porest.app">
-            <div className="h-full px-5 pt-6" style={{ background: rc('bg-layer-default', 'light', 'hr') }}>
+          <ScaledBox w={popW + p.edge * 2} h={popWindowH} s={0.85}>
+          <WebWindow mode="light" w={popW + p.edge * 2} h={popWindowH} url="hr.porest.app">
+            <div className="h-full pt-6" style={{ background: rc('bg-layer-default', 'light', 'hr'), paddingLeft: p.edge, paddingRight: p.edge }}>
               <div className="relative w-[240px]">
                 <F mode="light" label="날짜">
                   <InputButtonView look={h} mode="light" size="medium" state="enabled" value="2026. 10. 12. (월)" suffixIcon="calendar" />
                 </F>
                 <div className="absolute left-0 z-10" style={{ top: popTop }}>
-                  <PopoverPanel look={h} mode="light" footer={smallBtn('완료', 'light', 'neutralSolid')}>
+                  <PopoverPanel ov={o} mode="light" footer={smallBtn('완료', 'light', 'neutralSolid', 'hr', p.footer.button.size)}>
                     <CalendarGrid look={h} mode="light" year={2026} month={10} selected={12} today={1} cell={cell} />
                   </PopoverPanel>
                 </div>
               </div>
             </div>
           </WebWindow>
-          <Cap strong={`${lk.ib.breakpoint} 이상 — 칸 아래 ${h.content.gutter} 팝오버`}>칸 왼쪽에 맞추고, 아래가 모자라면 위로</Cap>
+          </ScaledBox>
+          <Cap strong={`${lk.ib.breakpoint} 이상 — 칸 아래 ${p.offset} 팝오버`}>칸 왼쪽에 맞추고, 아래가 모자라면 위로</Cap>
         </div>
       </div>
     </Panel>
@@ -384,9 +389,9 @@ const ConfirmGuide: Fig = ({ caption }) => {
           <Screen
             title="거래 추가"
             overlay={
-              <SheetOverlay look={lk} mode="light">
-                <SheetPanel look={lk} mode="light" title="시각">
-                  <div className="px-6 pb-2">
+              <SheetOverlay ov={ov()} mode="light">
+                <SheetPanel ov={ov()} mode="light" title="시각" safe={PHONE_SAFE}>
+                  <div>
                     <TimeWheel look={lk} mode="light" columns={[{ items: ['오전', '오후'], at: 1 }, { items: hours, at: 2 }, { items: mins, at: 6 }]} />
                   </div>
                 </SheetPanel>
@@ -412,8 +417,8 @@ const ListGuide: Fig = ({ caption }) => {
           <Screen
             title="거래 추가"
             overlay={
-              <SheetOverlay look={lk} mode="light">
-                <SheetPanel look={lk} mode="light" title="카테고리">
+              <SheetOverlay ov={ov()} mode="light">
+                <SheetPanel ov={ov()} mode="light" title="카테고리" safe={PHONE_SAFE}>
                   <CategoryGrid look={lk} mode="light" selected="breakfast" pressed="lunch" />
                 </SheetPanel>
               </SheetOverlay>
@@ -451,10 +456,10 @@ const SearchGuide: Fig = ({ caption }) => {
           <Screen
             title="휴가 신청"
             overlay={
-              <SheetOverlay look={lk} mode="light">
-                <SheetPanel look={lk} mode="light" title="결재자">
-                  <div className="flex flex-col gap-2 pb-2">
-                    <div className="px-4">
+              <SheetOverlay ov={ov()} mode="light">
+                <SheetPanel ov={ov()} mode="light" title="결재자" bodyPad={false} safe={PHONE_SAFE}>
+                  <div className="flex flex-col gap-2">
+                    <div style={{ padding: `0 ${ov().sheet.body.padX}px` }}>
                       <TfInputView look={t.input} mode="light" size="large" state="focused" prefixIcon="search" value="김" clearable />
                     </div>
                     <PeopleList look={lk} mode="light" people={people} query="김" />
@@ -483,17 +488,17 @@ const SearchGuide: Fig = ({ caption }) => {
 // ── 코드 미리보기(실제로 열고 고를 수 있다 — 이 창의 폭으로 시트 · 팝오버) ─────
 const ExDate: Fig = () => (
   <Live>
-    <InputButtonDemo look={desk()} field={tf().field} kind="date" label="날짜" placeholder="날짜 선택" initial="12" done={done()} />
+    <InputButtonDemo look={desk()} kit={overlayKit()} field={tf().field} kind="date" label="날짜" placeholder="날짜 선택" initial="12" done={done()} />
   </Live>
 );
 const ExList: Fig = () => (
   <Live>
-    <InputButtonDemo look={desk()} field={tf().field} kind="category" label="카테고리" placeholder="카테고리 선택" initial="lunch" />
+    <InputButtonDemo look={desk()} kit={overlayKit()} field={tf().field} kind="category" label="카테고리" placeholder="카테고리 선택" initial="lunch" />
   </Live>
 );
 const ExSearch: Fig = () => (
   <Live>
-    <InputButtonDemo look={desk()} field={tf().field} input={tf().input} kind="people" label="참조자" indicator="optional" placeholder="참조자 선택" clearable initial="pore" />
+    <InputButtonDemo look={desk()} kit={overlayKit()} field={tf().field} input={tf().input} kind="people" label="참조자" indicator="optional" placeholder="참조자 선택" clearable initial="pore" />
   </Live>
 );
 const ExStates: Fig = () => {
@@ -501,7 +506,7 @@ const ExStates: Fig = () => {
   return (
     <Live>
       <Form>
-        <InputButtonDemo look={lk} field={tf().field} kind="date" label="날짜" placeholder="날짜 선택" invalid errorMessage="날짜를 골라주세요." done={done()} />
+        <InputButtonDemo look={lk} kit={overlayKit()} field={tf().field} kind="date" label="날짜" placeholder="날짜 선택" invalid errorMessage="날짜를 골라주세요." done={done()} />
         <F label="날짜">
           <InputButtonView look={lk} disabled value="10월 1일 (목)" suffixIcon="calendar" ariaLabel="날짜, 10월 1일 (목)" />
         </F>

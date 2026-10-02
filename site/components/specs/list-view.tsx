@@ -357,12 +357,20 @@ export type ListViewProps = {
   // 줄마다 콘텐츠 좌우 여백을 따로(나쁜 예)
   padX?: (number | undefined)[];
   style?: CSSProperties;
+  // 하나 고르기 — 고른 값을 밖에서 쥐거나(value) 바뀔 때 듣는다(onValue). 없으면 목록이 스스로 쥔다
+  value?: string;
+  onValue?: (v: string) => void;
 };
 
 // 목록 — 라디오 줄이 있으면 하나 고르기 묶음(role=radiogroup), 모두 체크 줄이면 여럿 고르기 묶음(fieldset)
-export function ListView({ look, rows, mode = 'auto', live = true, divider = 'none', ariaLabel, width = '100%', bgRadius, padX, style }: ListViewProps) {
+export function ListView({ look, rows, mode = 'auto', live = true, divider = 'none', ariaLabel, width = '100%', bgRadius, padX, style, value: valueProp, onValue }: ListViewProps) {
   const radios = rows.filter((r) => r.kind === 'radio');
-  const [value, setValue] = useState(radios.find((r) => r.checked)?.value ?? radios[0]?.value);
+  const [own, setOwn] = useState(radios.find((r) => r.checked)?.value ?? radios[0]?.value);
+  const value = valueProp ?? own;
+  const setValue = (v: string | undefined) => {
+    setOwn(v);
+    if (v !== undefined) onValue?.(v);
+  };
   const refs = useRef<(HTMLDivElement | null)[]>([]);
   const isGroup = radios.length > 0;
   const isCheckGroup = !isGroup && rows.length > 0 && rows.every((r) => r.kind === 'check');

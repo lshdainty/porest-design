@@ -461,7 +461,7 @@ export const buttonExamples = [
   {
     title: "모달 footer",
     description:
-      "오른쪽에 [취소 neutralWeak] [저장 neutralSolid] 를 small(36)로 둔다. 확인 창을 여는 삭제는 왼쪽에 ghost + critical 글자로 두고, 삭제의 확정은 Alert Dialog 의 criticalSolid 가 맡는다. 삭제는 flush 없이 mr-auto 로 왼쪽에 붙인다 — flush 는 빨간 글자를 neutralSubtle 로 덮는다. footer 버튼은 라벨만 쓰고 아이콘을 붙이지 않는다(drawer.md). neutralOutline 둘로 두지 않는다.",
+      "오른쪽에 [취소 neutralWeak] [저장 neutralSolid] 를 small(36)로 둔다. 확인 창을 여는 삭제는 왼쪽에 ghost + critical 글자로 두고, 삭제의 확정은 Alert Dialog 의 criticalSolid 가 맡는다. 삭제는 flush 없이 mr-auto 로 왼쪽에 붙인다 — flush 는 빨간 글자를 neutralSubtle 로 덮는다. footer 버튼은 라벨만 쓰고 아이콘을 붙이지 않는다. neutralOutline 둘로 두지 않는다.",
     jsx: `// 대화상자 footer — 라벨만. 삭제는 확인 창을 연다(확정은 Alert Dialog 의 criticalSolid)
 <div className="flex items-center gap-x2">
   <Button variant="ghost" ghostColor="critical" size="small" className="mr-auto" onClick={openDeleteConfirm}>
@@ -481,7 +481,7 @@ export const buttonExamples = [
   {
     title: "화면 하단 CTA 3:7",
     description:
-      "닫기 · 초기화 같은 neutralWeak 와 CTA 를 나란히 채울 때 3:7 로 나눈다 — 위계가 분명해진다. 화면 하단 고정 바라 large(48)이고, 셋 이상 나란히 두지 않는다. 모달 footer 는 이 비율이 아니라 Dialog · Drawer 의 나눔을 따른다.",
+      "닫기 · 초기화 같은 neutralWeak 와 CTA 를 나란히 채울 때 3:7 로 나눈다 — 위계가 분명해진다. 화면 하단 고정 바라 large(48)이고, 셋 이상 나란히 두지 않는다. 모달 footer 는 이 비율이 아니라 Dialog · Bottom Sheet 의 나눔을 따른다.",
     jsx: `// 화면 하단 고정 CTA 둘 — large, neutralWeak : CTA = 3 : 7
 <div className="fixed inset-x-0 bottom-0 flex gap-x2 border-t border-stroke-neutral-weak bg-bg-layer-default px-x4 pt-x3 pb-safe">
   <Button variant="neutralWeak" size="large" className="flex-[3]">닫기</Button>

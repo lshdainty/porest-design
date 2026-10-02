@@ -1,10 +1,12 @@
 'use client';
 // Chip 페이지의 실제로 누르는 미리보기 — 코드 절(하나 고르기 · 여럿 고르기 · 필터 바 · 제안 · 입력값)과 플레이그라운드가 쓴다.
 // 칩은 chip.yaml(chip-view), 칸 · Field 는 field · input.yaml(text-field-view), 버튼은 button.yaml(button-view) 그대로다.
-// 필터 바가 여는 시트는 아직 스펙이 없다(Bottom Sheet 차례) — 역할 색 토큰으로 간단히 그린다.
-import { useEffect, useId, useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from 'react';
+// 필터 바가 여는 시트는 Bottom Sheet(bottom-sheet.yaml — overlay-view · overlay-live)다 — 미리보기 화면 안에 띄운다.
+import { useId, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import type { ButtonLook } from './button-look';
-import { ButtonView } from './button-view';
+import type { OvKit } from './overlay-shared';
+import { ModalLayer } from './overlay-live';
+import { SheetButtons, SheetSurface } from './overlay-view';
 import { ccv, summarize, type ChipIcon, type ChipLook, type ChipSize, type ChipTone, type ChipVariant, type ViewMode } from './chip-shared';
 import { ChipField, ChipGroupView, ChipRadioGroupLive, ChipSuggestLive, ChipToggleGroupLive, ChipView, InputChipGroupLive, type ChipItem } from './chip-view';
 import type { TfFieldLook, TfInputLook } from './text-field-shared';
@@ -173,62 +175,51 @@ function chipText(f: FilterState, c: Cond) {
   return summarize(f[c.key as 'category' | 'pay'].map((v) => labelOf(c, v)));
 }
 
-// 시트 — 딤 위 아래에서. 제목 · 그 조건의 칩(Outline Weak — 시트 안 고르기) · 완료. 바뀐 값은 바로 걸린다
-function FilterSheet({ look, cta, mode, cond, f, setF, size, onClose }: { look: ChipLook; cta: ButtonLook; mode: ViewMode; cond: Cond; f: FilterState; setF: (f: FilterState) => void; size?: ChipSize; onClose: () => void }) {
+// 시트 — 그 조건만(Bottom Sheet 고르기: 위 닫기 · 바깥 누르기 · 끌어내리기 · Esc 로 닫힌다). 제목 · 그 조건의 칩(Outline Weak — 시트 안 고르기) · 완료.
+// 바뀐 값은 바로 걸린다. 미리보기 화면(frame) 안에 띄운다
+function FilterSheet({
+  look,
+  kit,
+  cta,
+  mode,
+  cond,
+  open,
+  f,
+  setF,
+  size,
+  onClose,
+  container,
+  returnFocus,
+  id,
+}: {
+  look: ChipLook;
+  kit: OvKit;
+  cta: ButtonLook;
+  mode: ViewMode;
+  cond: Cond | null;
+  open: boolean;
+  f: FilterState;
+  setF: (f: FilterState) => void;
+  size?: ChipSize;
+  onClose: () => void;
+  container: HTMLElement | null;
+  returnFocus: () => HTMLElement | null;
+  id: string;
+}) {
   const titleId = useId();
-  const panel = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    // 열면 고른 칩(없으면 첫 칩)으로 포커스
-    const el = panel.current?.querySelector<HTMLElement>('[aria-checked="true"]') ?? panel.current?.querySelector<HTMLElement>('[role="radio"], [role="checkbox"]');
-    el?.focus();
-  }, []);
-  const onKey = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'Escape') {
-      e.preventDefault();
-      onClose();
-      return;
-    }
-    if (e.key !== 'Tab' || !panel.current) return;
-    // 포커스를 시트 안에 둔다
-    const all = [...panel.current.querySelectorAll<HTMLElement>('button:not([disabled])')].filter((b) => b.tabIndex >= 0);
-    if (!all.length) return;
-    const first = all[0];
-    const last = all[all.length - 1];
-    if (e.shiftKey && document.activeElement === first) {
-      e.preventDefault();
-      last.focus();
-    } else if (!e.shiftKey && document.activeElement === last) {
-      e.preventDefault();
-      first.focus();
-    }
-  };
-  const r = look.overlay.sheetRadius;
-  const dim = mode === 'auto' ? 'var(--p-overlay-dim)' : look.overlay.dim[mode];
+  if (!cond || !container) return null;
   return (
-    <div className="absolute inset-0 z-10 flex flex-col justify-end" style={{ background: dim }} onClick={onClose}>
-      <div
-        ref={panel}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        onKeyDown={onKey}
-        onClick={(e) => e.stopPropagation()}
-        style={{ position: 'relative', borderRadius: `${r}px ${r}px 0 0`, background: t(look, 'bg-layer-floating', mode), fontFamily: FONT, padding: `24px ${look.scrollRow.padX}px 16px` }}
-      >
-        <span aria-hidden className="absolute left-1/2 top-1.5 h-1 w-9 -translate-x-1/2 rounded-full" style={{ background: t(look, 'stroke-neutral-weak', mode) }} />
-        <div id={titleId} className="pb-4 text-[20px] font-bold leading-7" style={{ color: t(look, 'fg-neutral', mode) }}>
-          {cond.label}
-        </div>
-        {cond.kind === 'single' ? (
-          <ChipRadioGroupLive look={look} mode={mode} variant="outlineWeak" size={size} items={cond.items} value={f.period} onValue={(v) => setF({ ...f, period: v })} ariaLabelledby={titleId} />
-        ) : (
-          <ChipToggleGroupLive look={look} mode={mode} variant="outlineWeak" size={size} items={cond.items} value={f[cond.key as 'category' | 'pay']} onValue={(v) => setF({ ...f, [cond.key]: v })} ariaLabelledby={titleId} />
-        )}
-        <div className="pt-6">
-          <ButtonView look={cta} mode={mode} label="완료" fill onClick={onClose} />
-        </div>
-      </div>
-    </div>
+    <ModalLayer open={open} kind="sheet" look={kit.ov} mode={mode} outside="close" drag container={container} onRequestClose={onClose} labelledBy={titleId} returnFocus={returnFocus} focusSelector='[aria-checked="true"]'>
+      {({ ref, rootProps, style, maxHeight }) => (
+        <SheetSurface ref={ref} rootProps={{ ...rootProps, id }} style={style} maxHeight={maxHeight} look={kit.ov.sheet} mode={mode} title={cond.label} titleId={titleId} onClose={onClose} footer={<SheetButtons mode={mode} items={[{ label: '완료', look: cta, onClick: onClose }]} />}>
+          {cond.kind === 'single' ? (
+            <ChipRadioGroupLive look={look} mode={mode} variant="outlineWeak" size={size} items={cond.items} value={f.period} onValue={(v) => setF({ ...f, period: v })} ariaLabelledby={titleId} />
+          ) : (
+            <ChipToggleGroupLive look={look} mode={mode} variant="outlineWeak" size={size} items={cond.items} value={f[cond.key as 'category' | 'pay']} onValue={(v) => setF({ ...f, [cond.key]: v })} ariaLabelledby={titleId} />
+          )}
+        </SheetSurface>
+      )}
+    </ModalLayer>
   );
 }
 
@@ -272,6 +263,7 @@ function TxRows({ look, mode, f }: { look: ChipLook; mode: ViewMode; f: FilterSt
 
 export function FilterBarDemo({
   look,
+  kit,
   cta,
   mode = 'auto',
   variant = 'solid',
@@ -284,6 +276,7 @@ export function FilterBarDemo({
   initial = { period: 'this', category: ['food', 'cafe', 'transport'], pay: [] },
 }: {
   look: ChipLook;
+  kit: OvKit;
   cta: ButtonLook;
   mode?: ViewMode;
   variant?: ChipVariant;
@@ -298,19 +291,18 @@ export function FilterBarDemo({
 }) {
   const [f, setF] = useState<FilterState>(initial);
   const [open, setOpen] = useState<Cond['key'] | null>(null);
+  // 닫히는 동안에도 시트에 그 조건을 그린다
+  const [shownKey, setShownKey] = useState<Cond['key'] | null>(null);
+  const [frame, setFrame] = useState<HTMLDivElement | null>(null);
   const openers = useRef(new Map<string, HTMLButtonElement | null>());
   const sheetId = useId();
   const conds = CONDS.filter((c) => keys.includes(c.key));
   const active = conds.filter((c) => isOn(f, c)).length;
-  const close = () => {
-    const k = open;
-    setOpen(null);
-    if (k) requestAnimationFrame(() => openers.current.get(k)?.focus());
-  };
-  const cond = CONDS.find((c) => c.key === open);
-  const frame: CSSProperties = { position: 'relative', display: 'flex', flexDirection: 'column', height, overflow: 'hidden', borderRadius: 16, background: t(look, 'bg-layer-default', mode), padding: `16px ${look.scrollRow.padX}px 0`, fontFamily: FONT };
+  const close = () => setOpen(null);
+  const cond = CONDS.find((c) => c.key === shownKey) ?? null;
+  const frameStyle: CSSProperties = { position: 'relative', isolation: 'isolate', display: 'flex', flexDirection: 'column', height, overflow: 'hidden', borderRadius: 16, background: t(look, 'bg-layer-default', mode), padding: `16px ${look.scrollRow.padX}px 0`, fontFamily: FONT };
   return (
-    <div style={frame}>
+    <div ref={setFrame} style={frameStyle}>
       <ChipGroupView look={look} mode={mode} layout="scroll" fog={look.tone['bg-layer-default']} ariaLabel="거래 거르기">
         {active > 0 && (
           <ChipView
@@ -344,7 +336,10 @@ export function FilterBarDemo({
             controls={open === c.key ? sheetId : undefined}
             disabled={disabled === 'all' || (disabled === 'one' && i === conds.length - 1)}
             buttonRef={(el) => void openers.current.set(c.key, el)}
-            onClick={() => setOpen(c.key)}
+            onClick={() => {
+              setShownKey(c.key);
+              setOpen(c.key);
+            }}
           />
         ))}
       </ChipGroupView>
@@ -353,11 +348,7 @@ export function FilterBarDemo({
           <TxRows look={look} mode={mode} f={f} />
         </div>
       )}
-      {cond && (
-        <div id={sheetId}>
-          <FilterSheet look={look} cta={cta} mode={mode} cond={cond} f={f} setF={setF} size={size} onClose={close} />
-        </div>
-      )}
+      <FilterSheet look={look} kit={kit} cta={cta} mode={mode} cond={cond} open={open !== null} f={f} setF={setF} size={size} onClose={close} container={frame} returnFocus={() => (shownKey ? (openers.current.get(shownKey) ?? null) : null)} id={sheetId} />
     </div>
   );
 }

@@ -1,5 +1,7 @@
 // Select · Input Button 의 모양 — specs/components/select.yaml · input-button.yaml 을 풀어 둔다(서버, 빌드 때).
 // 그림(select-view)은 이 값만 받아 그린다. 색은 토큰 이름과 라이트 · 다크 값을 함께 둔다(사이트 모드를 따르는 그림은 이름으로).
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { loadComponentSpec, num, resolveState, tokenValue, type TypeValue } from '@/lib/component-spec';
 import { color, design, pressScale, proseValue, type Brand } from '@/lib/design-tokens';
 import { SEL_SIZES, SEL_TONES, type SelBoxLook, type SelBoxSize, type SelColor, type SelGroupLabelSize, type SelItemSize, type SelMotion, type SelSize, type SelType, type SelectLook } from './select-shared';
@@ -138,6 +140,14 @@ function boxLook(component: Spec, brand: Brand): SelBoxLook {
   };
 }
 
+// 목록의 쌓임 — select.yaml 에는 없고 specs/z-index.md 의 L3(popover · select · dropdown-menu) 줄이 정한다
+function floatingZ() {
+  const md = readFileSync(join(process.cwd(), '..', 'specs/z-index.md'), 'utf8');
+  const m = /\*\*L3[^|]*\|\s*`z-\[(\d+)\]`\s*\|[^|]*select/.exec(md);
+  if (!m) throw new Error('specs/z-index.md 에서 select 가 든 L3 줄(z-[N])을 찾지 못했다');
+  return Number(m[1]);
+}
+
 const cache = new Map<Brand, SelectLook>();
 
 export function selectLook(brand: Brand = 'desk'): SelectLook {
@@ -204,6 +214,7 @@ export function selectLook(brand: Brand = 'desk'): SelectLook {
     bg: c(base['content.background'], 'content.background'),
     shadow: shadow(base['content.shadow'], 'content.shadow'),
     motion: { open: motionOf('select', '목록 — 열 때'), close: motionOf('select', '목록 — 닫을 때'), from: numIn(String(openMotion.note ?? ''), /(0\.\d+)\s*→\s*1/, '목록 — 열 때 비고') },
+    z: floatingZ(),
   };
 
   const look: SelectLook = {
@@ -246,12 +257,6 @@ export function selectLook(brand: Brand = 'desk'): SelectLook {
     press: { distance, widthDivisor, minBasis },
     ib: { ...ib, breakpoint: ibBreakpoint },
     tone: Object.fromEntries(SEL_TONES.map((n) => [n, named(n, brand)])) as SelectLook['tone'],
-    overlay: {
-      dim: { light: proseValue('overlay-dim-light'), dark: proseValue('overlay-dim-dark') },
-      // 시트 · 팝오버는 아직 스펙이 없다(Bottom Sheet · Popover 차례) — 시트는 r6, 팝오버는 목록과 같은 모서리로 간단히 그린다
-      sheetRadius: must(num(design().front.rounded.r6), 'rounded.r6'),
-      popoverRadius: len(base['content.radius'], 'content.radius'),
-    },
   };
   cache.set(brand, look);
   return look;

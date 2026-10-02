@@ -812,7 +812,7 @@ export function SelectView({
     ...vars,
     ...listBoxStyle(look, mode),
     position: 'fixed',
-    zIndex: 100,
+    zIndex: c.z,
     left: pos?.left ?? 0,
     width: pos?.width ?? 0,
     top: pos?.top,

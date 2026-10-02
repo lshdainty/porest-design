@@ -110,7 +110,7 @@ Resizable은 **size variant 없음** — 부모 컨테이너가 폭/높이 결�
 | **WCAG 1.4.11** Non-text contrast (handle × bg) | `border-default` 1.4:1 — 단독 약함이나 cursor 변화 + grip box(withHandle) 보강. `withHandle` 옵션 권장. |
 | **WCAG 2.1.1** Keyboard | `Tab`/`ArrowLeft/Right`/`ArrowUp/Down` (react-resizable-panels 기본) ✓ |
 | **WCAG 2.4.7** Focus Visible | `focus-visible:ring-1 ring-ring ring-offset-1` ✓ (1px ring — handle 얇아 작게) |
-| **WCAG 2.5.5** Target Size (AAA, 44×44) | handle 1px — 미달(⚠). hit area 4px도 미달. grip box 12×16도 미달. 모바일 우선이면 [`Drawer`](drawer.md)/[`Sheet`](sheet.md)로 토글 분리 권장 (사용자가 직접 크기 조절보단 toggle). |
+| **WCAG 2.5.5** Target Size (AAA, 44×44) | handle 1px — 미달(⚠). hit area 4px도 미달. grip box 12×16도 미달. 모바일 우선이면 [`Bottom Sheet`](bottom-sheet.md)/[`Sheet`](sheet.md)로 토글 분리 권장 (사용자가 직접 크기 조절보단 toggle). |
 | **WCAG 2.5.8** Target Size Minimum (AA, 24×24) | 미달(⚠). 데스크탑 친화 컴포넌트 — 모바일에선 신뢰성 낮음. |
 | **ARIA** | `react-resizable-panels`가 `role="separator"` + `aria-controls` + `aria-valuenow`/`aria-valuemin`/`aria-valuemax` 자동 부여. screen reader가 size 인식. |
 
@@ -125,7 +125,7 @@ Resizable은 **size variant 없음** — 부모 컨테이너가 폭/높이 결�
 
 ### ❌ Don't
 
-- 모바일 친화 화면에 — handle hit area 4px는 터치 친화 아님. 모바일은 [`Drawer`](drawer.md)/[`Sheet`](sheet.md) 토글로 분리.
+- 모바일 친화 화면에 — handle hit area 4px는 터치 친화 아님. 모바일은 [`Bottom Sheet`](bottom-sheet.md)/[`Sheet`](sheet.md) 토글로 분리.
 - 정적 비율로 충분한 곳에 Resizable — 단순 layout은 `grid`/`flex`로 충분. Resizable은 사용자 조절 필요 시만.
 - handle 색을 brand primary로 — layout primitive라 brand 강조 회피. `border-default` 절제 톤 유지.
 - 깊은 nested(4+ levels) — UI 복잡도 폭발. 2 levels까지 권장.

@@ -82,6 +82,8 @@ export type SelectLook = {
     // 그림자 — 사이트 모드를 따르면 --p-shadow-sN
     shadow: SelColor;
     motion: { open: SelMotion; close: SelMotion; from: number };
+    // 쌓임 — specs/z-index.md 의 L3(modal-aware floating). 대화상자 · 시트(L2) 안에서도 그 위에 뜬다
+    z: number;
   };
   item: {
     padX: number;
@@ -98,9 +100,8 @@ export type SelectLook = {
   press: { distance: number; widthDivisor: number; minBasis: number };
   // Input Button(input-button.yaml) — 상자는 트리거와 같은 값이다
   ib: SelBoxLook & { breakpoint: number };
-  // 그림 속 화면 · 시트 · 팝오버가 쓰는 역할 색(시트 · 팝오버 · 달력은 아직 스펙이 없다 — 토큰으로 간단히)
+  // 그림 속 화면 · 달력 · 격자가 쓰는 역할 색(달력 · 시각 휠 · 격자는 아직 스펙이 없다 — 토큰으로 간단히). 시트 · 팝오버는 overlay-look
   tone: Record<SelTone, SelColor>;
-  overlay: { dim: { light: string; dark: string }; sheetRadius: number; popoverRadius: number };
 };
 
 export const SEL_TONES = [

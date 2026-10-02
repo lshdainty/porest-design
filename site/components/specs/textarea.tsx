@@ -1,7 +1,6 @@
 // Textarea 페이지의 그림 — specs/components/textarea.md 의 `[그림: …](../../site/components/specs/textarea.tsx#<id>)` 자리.
 // 여러 줄 입력칸은 textarea.yaml(+ input.yaml 의 상자 · 색, field.yaml)을 푼 값(textFieldLook)으로 그린다.
 import type { CSSProperties, ReactNode } from 'react';
-import { X } from 'lucide-react';
 import { Figure, Panel, MARK, MARK_LINE } from '../foundations/ui';
 import { buttonLook } from './button-look';
 import { ButtonView } from './button-view';
@@ -9,6 +8,8 @@ import { textFieldLook } from './text-field-look';
 import { TextareaPlayground } from './text-field-playground';
 import { TfFieldView, TfInputView, TfLiveTextareaField, TfTextareaView, type TfTextareaViewProps } from './text-field-view';
 import { Phone, Sheet, Verdict, WebDialog, WebWindow, rc, type Mode } from './kit';
+import { overlayLook } from './overlay-look';
+import { SheetSurface } from './overlay-view';
 
 type Fig = (p: { caption?: string }) => ReactNode;
 const look = () => textFieldLook('desk');
@@ -72,7 +73,7 @@ const Hero: Fig = ({ caption }) => {
           <WebDialog
             mode="light"
             title="휴가 신청"
-            w={440}
+            brand="hr"
             footer={
               <div className="ml-auto flex gap-2">
                 <ButtonView look={buttonLook({ variant: 'neutralWeak', size: 'small' }, 'hr')} mode="light" label="취소" state="enabled" />
@@ -209,20 +210,14 @@ const MaxGuide: Fig = ({ caption }) => {
             h={600}
             bg="bg-layer-basement"
             overlay={
-              // 시트가 화면 높이를 넘어 아래가 잘린다 — 저장 버튼은 화면 밖
+              // 시트가 화면 높이를 넘어 아래가 잘린다 — 저장 버튼은 화면 밖(Bottom Sheet 모양 그대로, 높이만 넘친다)
               <div className="absolute inset-0" style={{ background: 'var(--p-overlay-dim)' }}>
-                <div className="absolute inset-x-0 top-14 rounded-t-[24px] px-6 pb-7 pt-3" style={{ background: rc('bg-layer-floating', 'light') }}>
-                  <span className="mx-auto mb-4 block h-1 w-10 rounded-full" style={{ background: rc('stroke-neutral-weak', 'light') }} />
-                  <div className="mb-4 flex items-center justify-between">
-                    <span className="text-[19px] font-bold" style={{ color: rc('fg-neutral', 'light') }}>
-                      메모 추가
-                    </span>
-                    <X size={22} style={{ color: rc('fg-neutral-subtle', 'light') }} />
-                  </div>
-                  <TfFieldView look={lk.field} mode="light" label="메모">
-                    <TfTextareaView look={lk.textarea} input={lk.input} mode="light" size="large" state="enabled" value={`${long}\n${long}\n${long}`} />
-                  </TfFieldView>
-                  <div className="mt-6">{cta('저장', 'light')}</div>
+                <div className="absolute inset-x-0 top-14">
+                  <SheetSurface look={overlayLook().sheet} mode="light" title="메모 추가" footer={cta('저장', 'light')}>
+                    <TfFieldView look={lk.field} mode="light" label="메모">
+                      <TfTextareaView look={lk.textarea} input={lk.input} mode="light" size="large" state="enabled" value={`${long}\n${long}\n${long}`} />
+                    </TfFieldView>
+                  </SheetSurface>
                 </div>
               </div>
             }
