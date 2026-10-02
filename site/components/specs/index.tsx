@@ -12,7 +12,9 @@ import { listFigures } from './list';
 import { radioGroupFigures } from './radio-group';
 import { selectFigures } from './select';
 import { selectBoxFigures } from './select-box';
+import { segmentedControlFigures } from './segmented-control';
 import { switchFigures } from './switch';
+import { tabsFigures } from './tabs';
 import { textareaFigures } from './textarea';
 import { SpecSheet } from './spec-sheet';
 
@@ -27,7 +29,9 @@ const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactN
   'radio-group': radioGroupFigures,
   select: selectFigures,
   'select-box': selectBoxFigures,
+  'segmented-control': segmentedControlFigures,
   switch: switchFigures,
+  tabs: tabsFigures,
   textarea: textareaFigures,
 };
 

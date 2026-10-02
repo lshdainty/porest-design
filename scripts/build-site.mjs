@@ -52,6 +52,7 @@ import { sonnerExamples } from "../recipes/shadcn/examples/sonner-examples.mjs";
 import { swipeActionsExamples } from "../recipes/shadcn/examples/swipe-actions-examples.mjs";
 // Phase 4 Navigation
 import { tabsExamples } from "../recipes/shadcn/examples/tabs-examples.mjs";
+import { segmentedControlExamples } from "../recipes/shadcn/examples/segmented-control-examples.mjs";
 import { breadcrumbExamples } from "../recipes/shadcn/examples/breadcrumb-examples.mjs";
 import { paginationExamples } from "../recipes/shadcn/examples/pagination-examples.mjs";
 import { dropdownMenuExamples } from "../recipes/shadcn/examples/dropdown-menu-examples.mjs";
@@ -143,6 +144,7 @@ const SHADCN_EXAMPLES = {
   "swipe-actions": swipeActionsExamples,
   // Phase 4 Navigation
   tabs: tabsExamples,
+  "segmented-control": segmentedControlExamples,
   breadcrumb: breadcrumbExamples,
   pagination: paginationExamples,
   "dropdown-menu": dropdownMenuExamples,
@@ -1994,7 +1996,7 @@ const SHADCN_CATALOG = [
   { slug: "swipe-actions", name: "Swipe Actions", category: "Data Display", description: "리스트 행을 밀어 편집·삭제에 바로 닿는 모바일 패턴." },
   { slug: "tooltip", name: "Tooltip", category: "Overlay", description: "호버 시 짧은 설명." },
 
-  // Navigation (9)
+  // Navigation (10)
   { slug: "breadcrumb", name: "Breadcrumb", category: "Navigation", description: "현재 위치 경로 표시." },
   { slug: "command", name: "Command", category: "Navigation", description: "Cmd+K 검색 팔레트 — cmdk 베이스." },
   { slug: "context-menu", name: "Context Menu", category: "Navigation", description: "우클릭 / 길게 누르기 메뉴." },
@@ -2002,8 +2004,9 @@ const SHADCN_CATALOG = [
   { slug: "menubar", name: "Menubar", category: "Navigation", description: "데스크탑 앱 스타일 메뉴 바." },
   { slug: "navigation-menu", name: "Navigation Menu", category: "Navigation", description: "메가 메뉴 / 글로벌 nav." },
   { slug: "pagination", name: "Pagination", category: "Navigation", description: "페이지 분할 네비." },
+  { slug: "segmented-control", name: "Segmented Control", category: "Navigation", description: "같은 내용을 2 ~ 4가지로 바로 거르거나 · 정렬하거나 · 다르게 보는 컨트롤 — 그 내용 바로 위에 하나 두고, 칸이 트랙 폭을 똑같이 나눈다 (SEED Segmented Control 구조)." },
   { slug: "sidebar", name: "Sidebar", category: "Navigation", description: "사이드 네비게이션 (그룹/접기 지원)." },
-  { slug: "tabs", name: "Tabs", category: "Navigation", description: "탭 네비게이션 (underline / pills)." },
+  { slug: "tabs", name: "Tabs", category: "Navigation", description: "다른 구역으로 옮기는 탭. 화면 · 구역 맨 위의 1차 탭은 Line(Fill · Hug × small · medium — 고르면 2px 막대가 미끄러진다), 그 안의 2차 탭은 Chip Tabs (SEED Tabs 구조)." },
 
   // Disclosure (2)
   { slug: "accordion", name: "Accordion", category: "Disclosure", description: "접고 펼치는 패널 (단일/다중)." },

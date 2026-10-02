@@ -3710,34 +3710,15 @@ Desk — 데이터 내보내기 · 카드 혜택 필터 checkbox, 메모 즐겨�
 - 누르는 순간 바뀌는 고르기(테마 같은)는 List 의 라디오 줄, 누르면 바로 무언가를 하는 자리는 버튼이다.
 - Desk — 상자 모양 고르기 6 패턴(테마 · 내보내기 기간 · 파일 형식 · 더치페이 분배 방식 · 필터 거래 종류 · 반복 거래 종료)을 화면마다 손으로 짜서 선택 표시가 다섯 가지다(2026-10-01 조사). 테마는 List 라디오 줄로, 나머지는 앱 적용 단계에서 Select Box 로 옮긴다. "빠르게 맞추기" 는 누르면 바로 금액을 고치므로 버튼이다.
 
-### Tabs
+### Tabs · Segmented Control
 
-Desk — 메모 view(전체/즐겨찾기/태그별), 가계부 view(수입/지출/카테고리), 할일 view(오늘/예정/완료). 모바일 우선이라 fill/pills variant 적극.
+공통 정의는 `DESIGN.md` 의 Tabs · Segmented Control 절, 원본은 `specs/components/tabs.md` · `segmented-control.md`(2026-10-02 SEED). 고른 표시는 중립색이라 브랜드와 관계없이 같고, 알림 점만 브랜드 색(`bg-brand-solid`)이다.
 
-#### Variant
-- **fill** (모바일 default): active tab 배경 `primary` (`#0147AD`) + `text-on-accent` — bottom nav 또는 sticky top tabs
-- **pills** (sub-tab): active tab `radius-full` + `primary-light` 12% tint 배경 — 메모 태그 필터 등
-- **underline** (desktop): bottom border 2px + `text-primary`
-
-#### Size
-- 모바일 bottom nav: `lg` (52px) — touch hit area 우선
-- 모바일 top tab: `md` (44px)
-- desktop sub-tab: `sm` (36px)
-
-#### Layout
-- 모바일 bottom nav: 풀-width, 5 tab 균등 분할, label + icon
-- 모바일 top tab: horizontal scroll if 5+ tabs
-
-#### Motion
-- pill/fill transition: `motion-duration-base` × `motion-ease-out` (친근감)
-- panel 전환: `motion-duration-fast` fade — Desk는 콘텐츠 전환 부드럽게
-- swipe gesture로 tab 전환 가능 (mobile)
-
-#### A11y
-- role tablist/tab/tabpanel + aria 속성
-- 키보드: ←→/Home/End/Enter/Space, vertical은 ↑↓
-- 모바일 swipe-to-tab: 키보드 ←→ 동등 + `aria-live="polite"` panel 변경 알림
-- bottom nav는 `<nav role="navigation">` wrap
+- **1차 Line** — 통계(카테고리 · 추이 · 비교) · 설정 > 자산 관리(계좌 · 예금 · 카드 · 투자) · 카테고리(지출 · 수입) · 증권사(나무증권 · 토스증권)는 Fill, 금액 가리기(9개)는 Hug. 모바일 · 데스크톱이 같은 모양이다(지금은 기기마다 밑줄 · 알약이 갈린다).
+- **2차 Chip Tabs** — 증권 보유 · 관심 · 발견.
+- **Segmented Control** — 가계부 목록(전체 · 지출 · 수입) · 할 일(오늘 · 이번 주 · 전체 · 완료) · 프리셋 정렬 · 사용 내역 정렬 · 자산 추이 기간(3개월 · 6개월 · 1년), 목록 바로 위.
+- **탭 아닌 자리로** — 폼 값 탭(거래 종류 · 반복 주기 · 언어 · 이메일 주기 …)은 Chip · Select, 메모 태그 · 카드 혜택 · 반복 거래 거르기는 Chip 필터 바.
+- 앱 적용 때 정할 자리 — 더치페이(진행 중 · 완료 · 친구) · 관심 그룹 · 호가 · 체결 · 달력 · 목록 · 차트 기간 5 · 캘린더 보기 5.
 
 ### Dropdown (Menu / Select 공통 패턴)
 

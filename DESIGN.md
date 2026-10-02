@@ -4258,57 +4258,55 @@ trigger 클릭/키보드로 펼쳐지는 옵션 list — context menu, action me
 - [ ] **2.4.11**: panel 외곽선(`outline-strong`) 충분한 대비 + item focus state visible
 - [ ] **dismiss**: panel 외부 클릭, Esc 키, trigger 재클릭 모두 닫음
 
-### Tabs
+### Tabs · Segmented Control
 
-콘텐츠 영역을 여러 view로 분할 — detail page의 섹션 전환, dashboard의 카테고리 toggle, 설정 페이지의 grouping.
+수치 · 규칙의 원본은 `specs/components/tabs.md` · `tabs.yaml` · `chip-tabs.yaml` 과 `segmented-control.md` · `segmented-control.yaml` 이다 — 2026-10-02 SEED Tabs · Segmented Control 구조로 새로 정했다(옛 variant 넷 · 수동 활성화를 걷었다). 이 절은 토큰과 닿는 자리만 모은다.
 
-#### Structure (신규 토큰 없음)
-- tab list: 가로/세로 정렬된 trigger 모음
-- tab trigger:
-  - inactive: `text-secondary` + 투명 배경
-  - active: `text-primary` + bottom border 2px (또는 fill, variant 별)
-  - hover: `text-primary` + 미세 배경(`surface-input`)
-  - disabled: `text-disabled` + cursor:not-allowed
-- tab panel: 하단 콘텐츠 영역, `surface-default` 위 `body-md` (15/400)
+#### 나누기
 
-#### Variant
-| Variant | Active 표현 | 사용 |
-|---|---|---|
-| **underline** (default) | bottom border 2px `primary` (brand 색) + `text-primary` | desktop primary tabs |
-| **fill** | active tab 배경 `primary` 채움 + `text-on-accent` | mobile bottom nav 류, sticky tab |
-| **pills** | active tab radius `radius-full` + 배경 `primary-light` 12% tint + `text-primary` | sub-tab, secondary nav |
-| **vertical** (sidebar) | active tab 좌측 border 2px + `text-primary` + 배경 `surface-input` | sidebar navigation |
+| 자리 | 컴포넌트 |
+|---|---|
+| 다른 구역 · 페이지로 옮긴다(1차, 화면 · 구역 맨 위) | Tabs — Line |
+| 1차 탭 안에서 다시 나눈다(2차) | Tabs — Chip Tabs(필터 바가 같은 화면에 있으면 Line) |
+| 같은 내용 2 ~ 4가지 거르기 · 정렬 · 보기(그 내용 바로 위, 한 화면 하나) | Segmented Control |
+| 2 ~ 4개 짧은 폼 값 · 목록 조건 | Chip(하나 고르기 · 필터 바) |
 
-#### Size
-| Size | height | text | padding (V/H) |
-|---|---|---|---|
-| sm | 36px | `caption` (12/400) | `xs` / `md` |
-| **md** (default) | 44px | `body-md` (15/600) | `sm` / `lg` |
-| lg | 52px | `body-md` (15/600) | `md` / `lg` |
+#### Line
 
-#### Layout
-- tab trigger 간격: `xs` (4px) gap
-- tab list 아래 `divider-light` 1px line (underline variant) — active tab 아래는 더 진한 2px border가 line을 덮음
-- tab panel padding: `lg` (16px) 또는 `xl` (24px) — variant에 따라
+| 요소 | 값 |
+|---|---|
+| 크기 | `small` 40 · 글 `t4` 14(기본) · `medium` 44 · 글 `t5` 16. 탭 위아래 · 좌우 10, 글은 아래로 붙인다. 글은 고르든 안 고르든 700 |
+| 색 | 안 고름 `fg-neutral-subtle`, 고름 `fg-neutral` + 아래 2px `fg-neutral` 막대(`motion-duration-d4` · `motion-ease-easing` 로 미끄러진다). 브랜드 색 · 굵기 변화 없음 — Desk · HR 이 같다 |
+| 목록 | `bg-layer-default` + 바닥 안쪽 1px `stroke-neutral-subtle` |
+| 폭 | Fill — 5개 이하 · 짧은 글, 칸을 나누고 막대를 좌우 16 들인다. Hug — 6개 이상 · 긴 글 · 넓은 데스크톱 자리, 목록 좌우 16 · 넘치면 가로 스크롤(고른 탭으로 16 여유를 두고 스크롤) |
+| 누름 · 포커스 · 비활성 | 탭 2px 거리 축소만(색 · 호버 모양 없음) · 탭 안쪽 링 2px · 글 `fg-disabled` |
+| 알림 점 | 6 · 브랜드 채움 색(브랜드 파일의 bg-brand-solid), 글 오른쪽 위 2 — 새 소식이 있는 탭 하나에만 |
 
-#### Motion
-- 인디케이터 transition: `motion-duration-fast` 150ms × `motion-ease-out` (border 위치 이동 시 underline slide)
-- 패널 전환: instant 또는 `motion-duration-fast` fade (instant이 일반적)
+#### Chip Tabs
 
-#### Accessibility
-- [ ] **role**:
-  - tab list: `role="tablist"`
-  - trigger: `role="tab"` + `aria-selected="true|false"` + `aria-controls="panel-id"`
-  - panel: `role="tabpanel"` + `aria-labelledby="tab-id"` + `tabindex="0"` (panel focus 가능)
-- [ ] **키보드 네비게이션** (manual activation):
-  - `Tab`: tab list로 진입 → 현재 active tab으로 focus
-  - `←`/`→` arrow: 인접 tab으로 focus 이동(activation 안 함)
-  - `Home`/`End`: 첫/마지막 tab focus
-  - `Enter`/`Space`: focus된 tab 활성화
-  - vertical variant은 `↑`/`↓` arrow 사용
-- [ ] **automatic activation** (대안): focus 이동 시 자동 activation — content가 가벼울 때만 (form 입력 중 자동 전환은 사용자 혼란)
-- [ ] **2.4.11**: active indicator 충분한 대비 (`primary` × `bg-page` 3:1 이상 — brand 파일 contrast 참조)
-- [ ] **모바일 swipe**: tab panel을 swipe로 전환 가능 시 키보드 동등 동작 + `aria-live` 변경 알림 권장
+칩 하나는 Chip(`chip.yaml`)의 Solid · Outline Strong 그대로다 — medium 36(기본) · large 40, 고르면 `bg-neutral-inverted` · `fg-neutral-inverted`. 목록은 좌우 `spacing-global-gutter` · 위아래 8 · 칩 사이 `spacing-between-chips`, 한 줄 가로 스크롤. 화면 전체 내용을 바꾸면 Solid, 일부면 Outline.
+
+#### Segmented Control
+
+| 요소 | 값 |
+|---|---|
+| 크기 | 트랙 안쪽 4 + 칸 34 = 42, 글 `t5` 16 · 700, 칸 좌우 12 — 칸이 트랙 폭을 똑같이 나눈다(최소 폭 없음 — 폰에서도 4개) |
+| 색 | 트랙 `bg-neutral-weak`, 안 고른 글 `fg-neutral-subtle`, 고른 칸은 흰 알약 `bg-layer-default` + 안쪽 짙은 1px `stroke-neutral-contrast` 위 `fg-neutral`(`motion-duration-d4` 로 미끄러진다 — SEED 의 옅은 1px 은 트랙과 1.14:1 이라 바꿨다) |
+| 누름 · 호버 | 안 고름 `bg-neutral-weak-pressed` + 1px `stroke-neutral-weak`(글 `fg-neutral-muted`) · 고름 `bg-layer-default-pressed` + 짙은 1px 그대로, 칸 안의 글만 2px 거리 축소 |
+| 비활성 | 글 `fg-disabled`, 고른 채 막히면 칸에 `bg-disabled` + 1px `stroke-neutral-solid`(흐림 없음 — v106) |
+
+#### 쓰는 규칙
+
+- 화살표로 옮기면 바로 고른다(자동) — 바로 저장되거나 되돌리기 어려운 값은 탭 · Segmented 에 두지 않는다(폼 값은 Chip · Select).
+- 탭 내용은 바로 바꾸고 탭마다 상태(스크롤 · 입력)를 남긴다. 폰의 1차 탭만 밀어 넘기고, 웹은 1차 탭을 주소에 남긴다.
+- 탭 · Segmented 글에 개수를 붙이지 않는다 — 새 소식은 한 탭에 알림 점.
+
+#### Accessibility 체크리스트
+- [ ] Tabs — `tablist`(보이는 제목 또는 `aria-label`) · `tab`(`aria-selected` · `aria-controls`) · `tabpanel`(`aria-labelledby`), 고른 탭만 `tabindex="0"`, `←` `→` · `Home` · `End` 로 옮기며 고른다(끝에서 처음으로, 막힌 탭은 건너뛴다)
+- [ ] Segmented Control — `radiogroup`(`aria-label`) + 라디오, 화살표로 옮기며 고른다
+- [ ] 알림 점은 보조 기술에 "새 소식" 을 덧붙인다
+- [ ] 키보드 포커스 링 — Line 은 탭 안쪽, Chip Tabs · Segmented 는 바깥
+- [ ] 누르는 높이 — Line small 40 · Segmented 34 는 AAA(44)에 못 미친다(AA ✓)
 
 ### Switch / Checkbox / Radio (control 묶음)
 
@@ -5040,6 +5038,8 @@ range 값 선택 (음량, 가격대, 평가 등). **신규 prose-token 후보 �
 - 키보드: Tab focus, Space/Enter toggle
 
 ### Toggle Group (v69 추가)
+
+> 2026-10-02 — 같은 내용의 보기 바꾸기 · 정렬처럼 하나를 고르는 2 ~ 4칸은 Segmented Control(`specs/components/segmented-control.md`)이다. 아래 single 쓰임은 Toggle Button 차례에 다시 정한다.
 
 Toggle 묶음 — 단일 선택 (radio-like) 또는 다중 선택 (checkbox-like). **새 토큰 0**.
 

@@ -1,5 +1,7 @@
 # Toggle Group
 
+> **2026-10-02** — 같은 내용의 보기 바꾸기 · 정렬처럼 하나를 고르는 2 ~ 4칸은 [Segmented Control](segmented-control.md) 이다(Tabs · Segmented 결정). 이 스펙의 single · segmented 쓰임은 Toggle Button 차례에 다시 정한다 — 그때까지 새 화면에는 Segmented Control 을 쓴다.
+
 > 여러 Toggle을 segmented connected 형태로 묶은 컨트롤. view 모드 선택(list/grid/card), 정렬 옵션(최신/오래된), 텍스트 정렬(좌/중/우)처럼 **2–5개 mutually exclusive(single) 또는 multiple option** 선택에 사용. Radix `ToggleGroup` 베이스.
 
 Porest ToggleGroup은 **2 types(single/multiple) × [`Toggle`](toggle.md) 시각 상속** 매트릭스로 정의됩니다. preview `.tgg`/`.tgg-item` SoT 정합 — Root: outer border 1px + `radius-md` + `overflow-hidden`. Item: borderless + `divide-x` separator만(좌측 1px line). Toggle 단독 사용과 달리 **하나의 segmented unit으로 시각 응집** — toolbar/filter 그룹임을 즉시 식별.

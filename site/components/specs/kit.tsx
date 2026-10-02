@@ -23,8 +23,11 @@ const deco = (mode: Mode, name: 'frame' | 'chrome' | 'chrome-url') =>
   mode === 'auto' ? `var(--p-${name})` : ({ frame: ['#1A1F2E', '#3A3F4C'], chrome: ['#E4E6EB', '#2B303D'], 'chrome-url': ['#F5F6FA', '#1E222C'] } as const)[name][mode === 'dark' ? 1 : 0];
 
 export const PHONE_W = 360;
+// 기기 틀 두께 — 틀은 화면 안쪽으로 그린다(screenW 를 주면 바깥으로 — 화면 폭이 그 값이 된다)
+const FRAME = 8;
 
-// 휴대폰 화면 — 상태 막대 · 앱 막대 · 본문 · 아래 고정 영역. scale 로 줄여 그린다(나란히 둘 때)
+// 휴대폰 화면 — 상태 막대 · 앱 막대 · 본문 · 아래 고정 영역. scale 로 줄여 그린다(나란히 둘 때).
+// screenW 를 주면 틀 안 화면이 정확히 그 폭이다(스펙의 "360 폰" 수치를 그대로 재야 하는 그림)
 export function Phone({
   children,
   title,
@@ -37,6 +40,7 @@ export function Phone({
   scale = 1,
   bg = 'bg-layer-basement',
   tabs = false,
+  screenW,
 }: {
   children?: ReactNode;
   title?: string;
@@ -49,19 +53,21 @@ export function Phone({
   scale?: number;
   bg?: string;
   tabs?: boolean;
+  screenW?: number;
 }) {
   const fg = rc('fg-neutral', mode);
+  const w = screenW ? screenW + FRAME * 2 : PHONE_W;
   return (
-    <div className="shrink-0" style={{ width: PHONE_W * scale, height: h * scale }}>
+    <div className="shrink-0" style={{ width: w * scale, height: h * scale }}>
       <div
         className="relative flex flex-col overflow-hidden"
         style={{
-          width: PHONE_W,
+          width: w,
           height: h,
           transform: scale === 1 ? undefined : `scale(${scale})`,
           transformOrigin: 'top left',
           borderRadius: 36,
-          border: `8px solid ${deco(mode, 'frame')}`,
+          border: `${FRAME}px solid ${deco(mode, 'frame')}`,
           background: rc(bg, mode),
           fontFamily: 'Pretendard Variable, Pretendard, sans-serif',
           color: fg,
