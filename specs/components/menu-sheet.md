@@ -202,7 +202,7 @@ import { MenuSheet, MenuSheetContent, MenuSheetGroup, MenuSheetItem, MenuSheetTr
 - **막힌 줄을 둔다** — SEED 는 Figma 에만 있고 코드 · 색이 없다. Menu 와 같은 규칙(전용 색 · 누르지 못함)으로 채운다 — 1280 에서 Menu 와 바뀌어도 같은 줄이 막혀 있어야 한다.
 - **보조 기술용 닫기는 키보드 초점이 오면 보인다** — SEED 는 안 보이는 채로 Tab 이 선다(기초의 "초점은 늘 보인다").
 - **트리거에 `aria-haspopup="dialog"` · `aria-expanded`** — SEED 는 문서에 적고 실제로는 붙이지 않는다.
-- **z-index 는 specs/z-index.md 의 L2**(딤 100 · 시트 101).
+- **z-index 는 specs/z-index.md 의 L2**(딤 `z-modal` 100 · 시트 `z-modal-content` 101).
 
 ## Migration notes
 

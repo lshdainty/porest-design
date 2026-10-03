@@ -32,14 +32,14 @@
 
 // 딤 — 100ms 로 나타나고 사라진다
 const OVERLAY = [
-  "fixed inset-0 z-[100] bg-[var(--overlay-dim-light)] dark:bg-[var(--overlay-dim-dark)]",
+  "fixed inset-0 z-(--z-modal) bg-[var(--overlay-dim-light)] dark:bg-[var(--overlay-dim-dark)]",
   "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:duration-[var(--motion-duration-d2)] data-[state=open]:ease-[var(--motion-ease-enter)]",
   "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:duration-[var(--motion-duration-d2)] data-[state=closed]:ease-[var(--motion-ease-exit)]",
 ].join(" ");
 
 // 대화상자 — 정중앙, 좌우 20 은 남긴다, 높이는 화면의 80% 까지. 열림 200ms enter-expressive 로 1.3 배에서 줄며 나타난다
 const CONTENT = [
-  "fixed left-1/2 top-1/2 z-[101] flex max-h-[80dvh] max-w-[calc(100%-var(--spacing-x5)*2)] -translate-x-1/2 -translate-y-1/2 flex-col",
+  "fixed left-1/2 top-1/2 z-(--z-modal-content) flex max-h-[80dvh] max-w-[calc(100%-var(--spacing-x5)*2)] -translate-x-1/2 -translate-y-1/2 flex-col",
   "overflow-hidden rounded-r5 bg-bg-layer-floating font-sans text-fg-neutral outline-none",
   "data-[state=open]:animate-in data-[state=open]:fade-in-0",
   "motion-safe:data-[state=open]:zoom-in-130 motion-safe:data-[state=open]:duration-[var(--motion-duration-d4)] motion-safe:data-[state=open]:ease-[var(--motion-ease-enter-expressive)]",

@@ -176,7 +176,7 @@ import { HelpBubble, HelpBubbleAnchor, HelpBubbleContent } from "@/components/ui
 - **바탕은 porest `bg-neutral-inverted`**(SEED neutral-solid 의 역할 짝) — 다크에서는 밝은 말풍선에 짙은 글자(SEED 와 같은 방향).
 - **닫기 버튼의 누르는 영역은 44** — SEED 38(기초의 "누르는 영역 44").
 - **닫기 버튼의 초점 링은 말풍선 글자색** — porest 브랜드 링은 짙은 말풍선 위에서 3:1 에 못 미친다(SEED 링은 파랑이라 닿는다).
-- **z-index 는 specs/z-index.md 의 L4**(210) — 팝오버 · 메뉴 안에서 열어도 그 위에 뜬다. SEED 는 포털 없이 99 로 그려 둘레 상자가 자를 수 있다.
+- **z-index 는 specs/z-index.md 의 L4**(`z-tooltip` 210) — 팝오버 · 메뉴 안에서 열어도 그 위에 뜬다. SEED 는 포털 없이 99 로 그려 둘레 상자가 자를 수 있다.
 
 ## Migration notes
 

@@ -48,7 +48,7 @@ import { useInputButtonSurface } from "@/components/ui/input-button";
  * 닫기 버튼은 52 투명 상자 · 아이콘 22 fg-neutral-subtle — 아이콘이 위 28 · 오른쪽 24. 누르면 bg-layer-floating-pressed + 2px 거리
  * 축소(기준 52), 호버는 누름 색. 이름 "닫기". 본문은 좌우 24 — 맨 끝(바닥이 없을 때)이면 아래 24, 맨 앞(머리가 없을 때)이면 위 24.
  * 바닥은 위 16 · 좌우 24 · 아래 24. 넘쳐 스크롤할 수 있는 본문은 키보드로도 스크롤하도록 Tab 이 선다(안쪽 링).
- * 쌓임: 딤 100 · 대화상자 101(specs/z-index.md L2) — 그 안에서 연 Popover(L3) · Alert Dialog(L5)가 위에 뜬다.
+ * 쌓임: 딤 z-modal 100 · 대화상자 z-modal-content 101(specs/z-index.md L2) — 그 안에서 연 Popover(L3) · Alert Dialog(L5)가 위에 뜬다.
  * 모션: 200ms enter-expressive 로 1.3 배에서 줄며 나타나고 100ms exit 로 줄지 않고 사라진다(딤 100ms). 모션 줄이기면 150ms 서서히.
  */
 
@@ -195,7 +195,7 @@ DialogTrigger.displayName = "DialogTrigger";
 // ── 모양 ─────────────────────────────────────────────────────
 // 딤 — 100ms 로 나타나고 사라진다
 const OVERLAY = [
-  "fixed inset-0 z-[100] bg-[var(--overlay-dim-light)] dark:bg-[var(--overlay-dim-dark)]",
+  "fixed inset-0 z-(--z-modal) bg-[var(--overlay-dim-light)] dark:bg-[var(--overlay-dim-dark)]",
   "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:duration-[var(--motion-duration-d2)] data-[state=open]:ease-[var(--motion-ease-enter)]",
   "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:duration-[var(--motion-duration-d2)] data-[state=closed]:ease-[var(--motion-ease-exit)]",
 ].join(" ");
@@ -203,7 +203,7 @@ const OVERLAY = [
 // 대화상자 — 정중앙, 좌우 20 은 남긴다, 높이는 화면의 80% 까지. 열림 200ms enter-expressive 로 1.3 배에서 줄며 나타난다
 // (모션 줄이기면 150ms 서서히). 닫힘 100ms exit 로 줄지 않고 사라진다
 const CONTENT = [
-  "fixed left-1/2 top-1/2 z-[101] flex max-h-[80dvh] max-w-[calc(100%-var(--spacing-x5)*2)] -translate-x-1/2 -translate-y-1/2 flex-col",
+  "fixed left-1/2 top-1/2 z-(--z-modal-content) flex max-h-[80dvh] max-w-[calc(100%-var(--spacing-x5)*2)] -translate-x-1/2 -translate-y-1/2 flex-col",
   "overflow-hidden rounded-r5 bg-bg-layer-floating font-sans text-fg-neutral outline-none",
   "data-[state=open]:animate-in data-[state=open]:fade-in-0",
   "motion-safe:data-[state=open]:zoom-in-130 motion-safe:data-[state=open]:duration-[var(--motion-duration-d4)] motion-safe:data-[state=open]:ease-[var(--motion-ease-enter-expressive)]",

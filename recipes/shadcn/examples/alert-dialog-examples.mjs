@@ -15,7 +15,7 @@
  * 숨은 제목(sr-only)으로 맨 뒤에 둔다. 바닥의 배치는 CSS 가 글 폭으로 정한다 — 한쪽 글이 반 폭을 넘으면 줄이 넘어가고 확정이 위로 간다.
  * Radix 가 실행 중에 붙이는 것 중 열림(data-state="open" — 모션 클래스가 읽는다) · 이름 잇기(id · aria-labelledby · aria-describedby) ·
  * tabindex="-1" 을 그리고, 딤 · 확인창의 style(pointer-events)과 뒤 화면의 aria-hidden 은 그리지 않는다.
- * 확인창은 화면(fixed)에 뜬다 — 미리보기 틀(STAGE)에 transform 을 줘 fixed 의 기준을 틀로 바꾸고, isolation 으로 z-index(딤 300 · 확인창 301)를
+ * 확인창은 화면(fixed)에 뜬다 — 미리보기 틀(STAGE)에 transform 을 줘 fixed 의 기준을 틀로 바꾸고, isolation 으로 z-index(딤 z-alert 300 · 확인창 z-alert-content 301)를
  * 틀 안에 가둔다(사이트 머리 막대 위로 올라오지 않게). 틀과 그 안의 뒤 화면(가계부 줄)은 미리보기 그림이다.
  * 사이트의 `.content p { margin: 12px 0; color: text-primary }` 는 층(@layer) 밖 규칙이라 Tailwind utility 를 늘 이긴다 — 설명 <p> 에는
  * 클래스가 정한 바깥 여백 · 글자색을 style 로 한 번 더 적는다(P_FIX — 레시피에는 없는 미리보기용 덧칠).
@@ -27,14 +27,14 @@
 
 // 딤 — overlay-dim 라이트 0.50 · 다크 0.65. 100ms 로 나타나고 사라진다
 const OVERLAY = [
-  "fixed inset-0 z-[300] bg-[var(--overlay-dim-light)] dark:bg-[var(--overlay-dim-dark)]",
+  "fixed inset-0 z-(--z-alert) bg-[var(--overlay-dim-light)] dark:bg-[var(--overlay-dim-dark)]",
   "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:duration-[var(--motion-duration-d2)] data-[state=open]:ease-[var(--motion-ease-enter)]",
   "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:duration-[var(--motion-duration-d2)] data-[state=closed]:ease-[var(--motion-ease-exit)]",
 ].join(" ");
 
 // 확인창 — 최대 272, 좌우 32 를 남긴다. 안쪽 20 · 모서리 20, 그림자 없음
 const CONTENT = [
-  "fixed left-1/2 top-1/2 z-[301] flex w-[calc(100%-var(--spacing-x8)*2)] max-w-[272px] -translate-x-1/2 -translate-y-1/2 flex-col",
+  "fixed left-1/2 top-1/2 z-(--z-alert-content) flex w-[calc(100%-var(--spacing-x8)*2)] max-w-[272px] -translate-x-1/2 -translate-y-1/2 flex-col",
   "rounded-r5 bg-bg-layer-floating p-x5 font-sans text-fg-neutral outline-none",
   "data-[state=open]:animate-in data-[state=open]:fade-in-0",
   "motion-safe:data-[state=open]:zoom-in-130 motion-safe:data-[state=open]:duration-[var(--motion-duration-d4)] motion-safe:data-[state=open]:ease-[var(--motion-ease-enter-expressive)]",
@@ -178,7 +178,7 @@ export const alertDialogExamples = [
   {
     title: "지우기",
     description:
-      "되돌릴 수 없는 일 앞에서 묻는다 — 둘 중 하나를 고르는 자리다. 지우는 확정은 variant=\"criticalSolid\", 취소는 neutralWeak(Critical 은 확정에만). 버튼 글은 동작 이름이다(\"삭제\" — \"확인\" · \"예\" 로 뭉뚱그리지 않는다). 닫기 버튼이 없고 바깥(딤)을 눌러도 닫히지 않는다 — Esc · 뒤로 가기는 취소와 같다. 열면 초점은 확인창으로 가고, 닫으면 연 자리로 돌아간다. 확인창은 최대 272 · 안쪽 20 · 모서리 20 이고 그림자 없이 딤(0.50 · 다크 0.65) 위에 뜬다(z-index L5 — 딤 300 · 확인창 301).",
+      "되돌릴 수 없는 일 앞에서 묻는다 — 둘 중 하나를 고르는 자리다. 지우는 확정은 variant=\"criticalSolid\", 취소는 neutralWeak(Critical 은 확정에만). 버튼 글은 동작 이름이다(\"삭제\" — \"확인\" · \"예\" 로 뭉뚱그리지 않는다). 닫기 버튼이 없고 바깥(딤)을 눌러도 닫히지 않는다 — Esc · 뒤로 가기는 취소와 같다. 열면 초점은 확인창으로 가고, 닫으면 연 자리로 돌아간다. 확인창은 최대 272 · 안쪽 20 · 모서리 20 이고 그림자 없이 딤(0.50 · 다크 0.65) 위에 뜬다(z-index L5 — 딤 z-alert 300 · 확인창 z-alert-content 301).",
     jsx: `import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogTitle } from "@/components/ui/alert-dialog"
 
 <AlertDialog open={open} onOpenChange={setOpen}>

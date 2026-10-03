@@ -12,7 +12,7 @@
 #   - 닫기 버튼의 누르는 영역 44(SEED 38 — 기초의 "누르는 영역 44").
 #   - Tooltip 은 포인터를 말풍선 위로 옮겨도 닫히지 않는다(WCAG 1.4.13 — SEED 기본은 닫힌다).
 #   - 닫기 버튼의 초점 링은 말풍선 글자색(fg-neutral-inverted) — porest 브랜드 링은 짙은 말풍선 위에서 3:1 에 못 미친다.
-#   - z-index: specs/z-index.md 의 L4(210) — 팝오버 · 메뉴(L3) 위. SEED 99 는 포털 없이 그린다.
+#   - z-index: specs/z-index.md 의 L4(z-tooltip 210) — 팝오버 · 메뉴(L3) 위. SEED 99 는 포털 없이 그린다.
 
 name: HelpBubble
 
@@ -54,7 +54,7 @@ rules:
         shadow: none
         offset: { value: $spacing-x1, note: "화살표 끝 ↔ 트리거 4(말풍선 몸통과는 12)" }
         margin: { value: $spacing-x4, note: "화면 가장자리와 최소 16 — 모자라면 반대편으로 뒤집고 옆으로 민다" }
-        zIndex: { value: 210, note: "specs/z-index.md L4" }
+        zIndex: { value: 210, note: "z-tooltip — specs/z-index.md L4" }
       arrow:
         width: 12px
         height: { value: 8px, note: "끝 모서리 2 — 말풍선과 같은 색. 트리거와 4 는 이 상자의 끝에서 잰다 — 둥근 끝 때문에 그림 끝은 1 더 떨어져 보인다(SEED 와 같다)" }

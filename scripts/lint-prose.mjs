@@ -34,6 +34,7 @@ const TOKEN_PREFIXES = [
   "page-text-", "focus-ring-", "divider-", "outline-", "outline-strong-",
   "disabled-label-", "shadow-", "motion-duration-", "motion-ease-",
   "overlay-dim-", "radius-", "spacing-", "breakpoint-", "layout-", "fg-", "stroke-", "static-", "gradient-",
+  "z-", // v116 z-index 층 이름 — 걷은 v65 이름(z-drawer · z-toast …)이 본문에 남으면 잡는다
 ];
 
 // 토큰처럼 보이지만 실제로는 CSS 속성/HTML/일반 단어인 단어들 — 보고에서 제외
@@ -69,11 +70,13 @@ const NOISE = new Set([
   "text-start", "text-end",
   "inline-size", "block-size", "max-inline-size",
   "border-default", "border-strong", "border-default-dark", // shared neutral border tokens (lint-prose 인식 prefix와 충돌 회피)
+  "z-index", // CSS 속성 이름 — z- 토큰 아님
 ]);
 
 function looksLikeToken(s) {
   if (NOISE.has(s)) return false;
   if (!/^[a-z][a-z0-9_-]*$/.test(s)) return false;
+  if (/^z-\d+$/.test(s)) return false; // Tailwind 숫자 z 클래스(z-50 · z-10) — 토큰이 아니다
   return TOKEN_PREFIXES.some(p => s === p.replace(/-$/, "") || s.startsWith(p));
 }
 
@@ -115,8 +118,8 @@ function extractDefinedTokens(content) {
     }
   }
 
-  // prose tokens (shadow / motion / overlay / breakpoint / layout tables)
-  const proseRe = /^\|\s*`((?:shadow|motion-(?:duration|ease)|overlay|breakpoint|layout|gradient)-[a-z0-9-]+)`\s*\|/gm;
+  // prose tokens (shadow / motion / overlay / breakpoint / layout / gradient / z-index tables)
+  const proseRe = /^\|\s*`((?:shadow|motion-(?:duration|ease)|overlay|breakpoint|layout|gradient|z)-[a-z0-9-]+)`\s*\|/gm;
   let m;
   while ((m = proseRe.exec(content)) !== null) defined.add(m[1]);
 

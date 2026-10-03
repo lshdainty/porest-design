@@ -12,7 +12,7 @@
 #   - 바닥 버튼: SEED 예제 medium 40 → Button small 36(Button 결정 — "40 은 대화상자에 비해 굵다", 2026-10-02 다시 확인).
 #   - 딤: SEED bg.overlay 0.455 → porest overlay-dim 0.50 · 다크 0.65(v102).
 #   - 반투명 색을 불투명 짝으로(v102): 머리 아래 선 stroke-neutral-subtle, 닫기 버튼 누름 bg-layer-floating-pressed.
-#   - z-index: specs/z-index.md 의 L2(딤 100 · 대화상자 101).
+#   - z-index: specs/z-index.md 의 L2(딤 z-modal 100 · 대화상자 z-modal-content 101).
 
 name: Dialog
 
@@ -49,14 +49,14 @@ rules:
     enabled:
       overlay:
         background: { value: $overlay-dim-light, dark: $overlay-dim-dark, note: "porest 딤(v102)" }
-        zIndex: { value: 100, note: "specs/z-index.md L2" }
+        zIndex: { value: 100, note: "z-modal — specs/z-index.md L2" }
       root:
         maxWidth: { value: 화면 폭 − 40, note: "좌우 20 은 남긴다" }
         maxHeight: { value: 화면 높이의 80%, note: "dvh 우선 — 넘치면 본문만 스크롤" }
         radius: $radius-r5
         background: $color-bg-layer-floating
         shadow: { value: none, note: "그림자 없이 딤과 표면 색으로 뜬다(SEED · Elevation)" }
-        zIndex: { value: 101, note: "specs/z-index.md L2" }
+        zIndex: { value: 101, note: "z-modal-content — specs/z-index.md L2" }
       header:
         paddingTop: $spacing-x6
         paddingX: $spacing-x6

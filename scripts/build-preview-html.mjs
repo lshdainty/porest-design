@@ -3458,7 +3458,7 @@ export function renderTabsGallery(brand) {
 // 표면은 넷이다 — 시트 .pov-sheet · 대화상자 .pov-dialog · 확인창 .pov-alert · 팝오버 .pov-popover. 머리(제목 · 설명) · 본문 · 바닥으로 짜고, 닫기 .pov-close 는
 // 시트에서 28 원(--circle), 대화상자 · 팝오버에서 투명 52 상자(--box)다. 확인창에는 닫기가 없다.
 // 그림은 열린 순간을 멈춘 것이다 — 폰 · 데스크톱 화면 틀(.pov-frame — 갤러리 것) 안에 뒤 화면(.pov-page)을 그리고 딤(.pov-scrim) · 표면을 얹는다.
-// 틀이 쌓임 맥락을 가두므로(isolation) 안의 z-index 는 z-index.md 값 그대로다 — 시트 · 대화상자 L2(딤 100 · 표면 101) · 팝오버 L3(200) · 확인창 L5(300 · 301).
+// 틀이 쌓임 맥락을 가두므로(isolation) 안의 z-index 는 토큰(v116) 그대로다 — 시트 · 대화상자 L2(딤 z-modal 100 · 표면 z-modal-content 101) · 팝오버 L3(z-floating 200) · 확인창 L5(z-alert 300 · z-alert-content 301).
 // 표면은 role=group 이다 — 레시피는 role="dialog" · "alertdialog" + aria-modal 이지만, 미리보기 페이지까지 막지 않게 했다. 대신 모달 뒤 화면은 inert 로 둬
 // 레시피의 결과(뒤 화면을 보조 기술에서 숨기고 초점을 가둔다)를 흉내 낸다. 팝오버는 비모달이라 뒤 화면 안에 그대로 그린다.
 // 본문 스크롤(넘치면 아래 48 흐림 · 위로 스크롤하면 머리 아래 선)은 페이지 끝 스크립트가 레시피처럼 맡는다. 확인창 버튼의 세로 전환은 CSS 다(레시피와 같다).
@@ -3763,7 +3763,7 @@ export function renderOverlayGallery(brand) {
       </div>`,
   );
 
-  const lede = "SEED Bottom Sheet · Dialog · Responsive Dialog · Alert Dialog · Popover 구조 — 표면을 일로 나눈다. 폼 · 상세는 한 부품이 폭으로 표면을 바꾼다 — 1280 미만은 아래에서 올라오는 시트(최대 480 · 위 모서리 24), 이상은 가운데 대화상자(medium 480 · large 800 · 모서리 20 · 높이는 화면의 80% 까지). 되돌릴 수 없는 확인은 폰 · 데스크톱 모두 가운데 확인창(최대 272), 트리거에 붙는 짧은 안내 · 고르는 패널은 1280 이상에서 팝오버(320 ~ 480 · 그림자 s3)다. 시트 · 대화상자 · 확인창은 그림자 없이 딤(0.50 · 다크 0.65) 위의 떠 있는 표면(bg-layer-floating)이고, 팝오버만 딤 없이 그림자로 뜬다. 입력 폼은 바깥 누르기 · 끌어내리기로 닫히지 않고, 닫기 버튼과 바닥 취소는 하나만 둔다. 쌓임은 specs/z-index.md — 시트 · 대화상자 L2(100 · 101) · 팝오버 L3(200) · 확인창 L5(300 · 301). 그림은 열린 순간을 멈춘 것이고, 폰 · 데스크톱 화면 틀은 갤러리 것이다. 옛 Modal · 아래 Drawer · 옛 Alert Dialog · 옛 Popover(테두리 · shadow-md) 모양은 걷었다."
+  const lede = "SEED Bottom Sheet · Dialog · Responsive Dialog · Alert Dialog · Popover 구조 — 표면을 일로 나눈다. 폼 · 상세는 한 부품이 폭으로 표면을 바꾼다 — 1280 미만은 아래에서 올라오는 시트(최대 480 · 위 모서리 24), 이상은 가운데 대화상자(medium 480 · large 800 · 모서리 20 · 높이는 화면의 80% 까지). 되돌릴 수 없는 확인은 폰 · 데스크톱 모두 가운데 확인창(최대 272), 트리거에 붙는 짧은 안내 · 고르는 패널은 1280 이상에서 팝오버(320 ~ 480 · 그림자 s3)다. 시트 · 대화상자 · 확인창은 그림자 없이 딤(0.50 · 다크 0.65) 위의 떠 있는 표면(bg-layer-floating)이고, 팝오버만 딤 없이 그림자로 뜬다. 입력 폼은 바깥 누르기 · 끌어내리기로 닫히지 않고, 닫기 버튼과 바닥 취소는 하나만 둔다. 쌓임은 specs/z-index.md — 시트 · 대화상자 L2(z-modal 100 · z-modal-content 101) · 팝오버 L3(z-floating 200) · 확인창 L5(z-alert 300 · z-alert-content 301). 그림은 열린 순간을 멈춘 것이고, 폰 · 데스크톱 화면 틀은 갤러리 것이다. 옛 Modal · 아래 Drawer · 옛 Alert Dialog · 옛 Popover(테두리 · shadow-md) 모양은 걷었다."
     + (brand.key === "shared" ? " 공유 토큰에는 브랜드 역할 색이 없어 포커스 링이 여기서는 중립(fg-neutral)으로 보인다 — HR · Desk 미리보기에서 브랜드 색이다." : "");
 
   return `
@@ -4567,7 +4567,7 @@ export function renderMenuGallery(brand) {
     ], DESKTOP)}`,
   );
 
-  const lede = "SEED Menu · Swipeable Menu Sheet · Help Bubble · Help Bubble Tooltip 구조 — 메뉴 가족이다. 줄 · 화면의 동작은 1280 이상에서 트리거(줄 끝 ⋮ · 머리의 더보기)에 붙는 Menu(폭 200 · 줄 39 · 비모달), 1280 미만에서 같은 목록의 Menu Sheet(줄 52 · 손잡이 · 딤)다 — 메뉴는 누르면 바로 실행하고 닫히는 동작만 담고, 값을 고르는 일은 Select · Segmented Control 이다. 도움말은 짙은 말풍선 하나(최대 280 · 13 · 모서리 12 · 화살표)를 두 가지로 연다 — 눌러서 여는 Help Bubble(터치에서도 닿는다)과 마우스 · 키보드로 여는 Tooltip(보조). 쌓임은 specs/z-index.md — 메뉴 L3(200) · 시트 L2(100 · 101) · 말풍선 L4(210). 그림은 열린 순간을 멈춘 것이고, 화면 틀은 03k 것이다. 옛 Dropdown Menu(160 · 줄 32 · 1px 테두리 · 체크 · 라디오 · 단축키 · 하위 메뉴) · Context Menu · Menubar · Hover Card · 옛 툴팁(반전 · 모서리 2 · 그림자)은 걷었다."
+  const lede = "SEED Menu · Swipeable Menu Sheet · Help Bubble · Help Bubble Tooltip 구조 — 메뉴 가족이다. 줄 · 화면의 동작은 1280 이상에서 트리거(줄 끝 ⋮ · 머리의 더보기)에 붙는 Menu(폭 200 · 줄 39 · 비모달), 1280 미만에서 같은 목록의 Menu Sheet(줄 52 · 손잡이 · 딤)다 — 메뉴는 누르면 바로 실행하고 닫히는 동작만 담고, 값을 고르는 일은 Select · Segmented Control 이다. 도움말은 짙은 말풍선 하나(최대 280 · 13 · 모서리 12 · 화살표)를 두 가지로 연다 — 눌러서 여는 Help Bubble(터치에서도 닿는다)과 마우스 · 키보드로 여는 Tooltip(보조). 쌓임은 specs/z-index.md — 메뉴 L3(z-floating 200) · 시트 L2(z-modal 100 · z-modal-content 101) · 말풍선 L4(z-tooltip 210). 그림은 열린 순간을 멈춘 것이고, 화면 틀은 03k 것이다. 옛 Dropdown Menu(160 · 줄 32 · 1px 테두리 · 체크 · 라디오 · 단축키 · 하위 메뉴) · Context Menu · Menubar · Hover Card · 옛 툴팁(반전 · 모서리 2 · 그림자)은 걷었다."
     + (brand.key === "shared" ? " 공유 토큰에는 브랜드 역할 색이 없어 포커스 링이 여기서는 중립(fg-neutral)으로 보인다 — HR · Desk 미리보기에서 브랜드 색이다." : "");
 
   return `
@@ -8609,8 +8609,8 @@ export function pageCss() {
        누르면 바탕이 칠해지고 2px 거리로 준다(배율 = (기준 − 2) ÷ 기준, 기준 28 · 52 — 모션 줄이기면 줄지 않는다). 포커스는 키보드에만 바깥 링 2px · 띄움 2px stroke-focus-ring 이다.
        대화상자 · 팝오버 본문은 넘치면 [data-overflow](아래 48 흐림 + 본문 아래 48 비움), 위로 스크롤되면 [data-scrolled](머리 아래 1px 선)다 — 페이지 끝 스크립트가 단다.
        확인창 바닥은 글 폭이 배치를 정한다 — 한쪽 글이 반 폭을 넘으면 세로(확정이 위), 버튼 하나면 폭 전체(alert-dialog.tsx 와 같은 flex-wrap-reverse).
-       화면 틀 .pov-frame(폰 · 데스크톱 웹) · 뒤 화면 .pov-page · 표면 자리 .pov-layer 는 갤러리 것이다 — 틀의 .pov-viewport 가 쌓임 맥락을 가둬 z-index 는 z-index.md 값을
-       그대로 쓴다(시트 · 대화상자 L2 딤 100 · 표면 101, 팝오버 L3 200, 확인창 L5 딤 300 · 표면 301). 폰 틀의 --pov-safe-bottom 은 레시피의 env(safe-area-inset-bottom) 자리다.
+       화면 틀 .pov-frame(폰 · 데스크톱 웹) · 뒤 화면 .pov-page · 표면 자리 .pov-layer 는 갤러리 것이다 — 틀의 .pov-viewport 가 쌓임 맥락을 가둬 z-index 는 토큰(v116)을
+       그대로 쓴다(시트 · 대화상자 L2 딤 --z-modal · 표면 --z-modal-content, 팝오버 L3 --z-floating, 확인창 L5 딤 --z-alert · 표면 --z-alert-content). 폰 틀의 --pov-safe-bottom 은 레시피의 env(safe-area-inset-bottom) 자리다.
        .pov-close--pressed · --focus 는 갤러리에서 그 순간을 고정해 보여 주는 클래스다. 다크 짝은 이 블록 끝의 [data-theme="dark"] 에서 바꾼다. */
 
     /* 화면 틀 — 폰(360 까지 · 아래 홈 표시줄 안전 영역 34) · 데스크톱 웹(브라우저 창). 높이는 --pov-h 로 받는다 */
@@ -8640,9 +8640,9 @@ export function pageCss() {
     /* 칸 옆 안내 — 글 + i 버튼(Button ghost · xsmall · 아이콘만, 팝오버를 연다) */
     .pov-info { display: inline-flex; align-items: center; gap: var(--spacing-x1); font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 500; color: var(--color-fg-neutral); }
 
-    /* 딤 — 화면 전체. 시트 · 대화상자 L2 100, 확인창 L5 300 */
-    .pov-scrim { position: absolute; inset: 0; z-index: 100; background: var(--overlay-dim-light); }
-    .pov-scrim--alert { z-index: 300; }
+    /* 딤 — 화면 전체. 시트 · 대화상자 L2 z-modal(100), 확인창 L5 z-alert(300) */
+    .pov-scrim { position: absolute; inset: 0; z-index: var(--z-modal); background: var(--overlay-dim-light); }
+    .pov-scrim--alert { z-index: var(--z-alert); }
     /* 표면 자리 — 시트는 아래 가운데(화면 폭 전체 · 최대 480), 대화상자는 가운데 · 좌우 20 남김, 확인창은 가운데 · 좌우 32 남김 */
     .pov-layer { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 0 var(--spacing-x5); }
     .pov-layer--sheet { align-items: flex-end; padding: 0; }
@@ -8663,9 +8663,9 @@ export function pageCss() {
       text-align: left;
     }
 
-    /* Bottom Sheet — 최대 480 · 화면 높이의 90% 까지 · 위 두 모서리 24 · 그림자 없음, 아래에 안전 영역. L2 시트 101 */
+    /* Bottom Sheet — 최대 480 · 화면 높이의 90% 까지 · 위 두 모서리 24 · 그림자 없음, 아래에 안전 영역. L2 시트 z-modal-content(101) */
     .pov-sheet {
-      z-index: 101;
+      z-index: var(--z-modal-content);
       width: 100%;
       max-width: 480px;
       max-height: 90%;
@@ -8689,8 +8689,8 @@ export function pageCss() {
     .pov-handle { position: absolute; top: var(--spacing-x1_5); left: 50%; z-index: 1; width: 36px; height: 4px; translate: -50% 0; border-radius: var(--radius-full); background: var(--color-stroke-neutral-weak); }
     .pov-handle::before { content: ""; position: absolute; left: 50%; top: 50%; width: 44px; height: 44px; translate: -50% -50%; }
 
-    /* Dialog — medium 480 · large 800(좌우 20 남김 — 표면 자리) · 화면 높이의 80% 까지 · 모서리 20 · 그림자 없음. L2 대화상자 101 */
-    .pov-dialog { z-index: 101; width: 480px; max-width: 100%; max-height: 80%; border-radius: var(--radius-r5); }
+    /* Dialog — medium 480 · large 800(좌우 20 남김 — 표면 자리) · 화면 높이의 80% 까지 · 모서리 20 · 그림자 없음. L2 대화상자 z-modal-content(101) */
+    .pov-dialog { z-index: var(--z-modal-content); width: 480px; max-width: 100%; max-height: 80%; border-radius: var(--radius-r5); }
     .pov-dialog--large { width: 800px; }
     /* 머리 — 위 24 · 좌우 24 · 아래 16, 제목 ↔ 설명 6. 닫기가 있으면 오른쪽 52(24 + 아이콘 22 + 6). 팝오버도 같다 */
     .pov-dialog-header,
@@ -8721,8 +8721,8 @@ export function pageCss() {
     .pov-dialog-footer,
     .pov-pop-footer { display: flex; flex-shrink: 0; justify-content: flex-end; gap: var(--spacing-x2); padding: var(--spacing-x4) var(--spacing-x6) var(--spacing-x6); }
 
-    /* Alert Dialog — 최대 272(좌우 32 남김 — 표면 자리) · 안쪽 20 · 모서리 20 · 그림자 없음. L5 확인창 301 */
-    .pov-alert { z-index: 301; width: 272px; max-width: 100%; padding: var(--spacing-x5); border-radius: var(--radius-r5); }
+    /* Alert Dialog — 최대 272(좌우 32 남김 — 표면 자리) · 안쪽 20 · 모서리 20 · 그림자 없음. L5 확인창 z-alert-content(301) */
+    .pov-alert { z-index: var(--z-alert-content); width: 272px; max-width: 100%; padding: var(--spacing-x5); border-radius: var(--radius-r5); }
     .pov-alert-title { font-size: var(--text-t7); line-height: var(--text-t7--line-height); font-weight: 700; color: var(--color-fg-neutral); }
     /* 설명 — 다른 떠 있는 표면과 달리 짙은 fg-neutral(꼭 읽어야 할 말). 제목 ↔ 설명 6, 제목이 없으면 0 */
     .pov-alert-desc { margin: 0; font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 400; color: var(--color-fg-neutral); }
@@ -8732,13 +8732,13 @@ export function pageCss() {
     .pov-alert-footer { display: flex; flex-wrap: wrap-reverse; gap: var(--spacing-x2); padding-top: var(--spacing-x4); }
     .pov-alert-footer > .btn { flex: 1 1 calc(50% - var(--spacing-x2) / 2); min-width: max-content; }
 
-    /* Popover — 폭 320 ~ 480(가용 폭까지) · 높이 600 까지 · 모서리 20 · 그림자 s3. 트리거 아래 8 · 왼쪽 맞춤. L3 팝오버 200 */
+    /* Popover — 폭 320 ~ 480(가용 폭까지) · 높이 600 까지 · 모서리 20 · 그림자 s3. 트리거 아래 8 · 왼쪽 맞춤. L3 팝오버 z-floating(200) */
     .pov-anchor { position: relative; display: flex; flex-direction: column; align-items: flex-start; }
     .pov-popover {
       position: absolute;
       top: calc(100% + var(--spacing-x2));
       left: 0;
-      z-index: 200;
+      z-index: var(--z-floating);
       width: max-content;
       min-width: min(320px, 100%);
       max-width: min(480px, 100%);
@@ -8861,14 +8861,14 @@ export function pageCss() {
        모션 줄이기면 축소하지 않는다. 포커스는 키보드에만 링 2px 이다. --hover · --pressed · --focus 는 갤러리에서 그 순간을 고정해 보여 주는 클래스다.
        다크 짝은 이 블록 끝의 [data-theme="dark"] 에서 바꾼다. */
 
-    /* Snackbar — 자리 .psnack-region 은 화면 아래 가운데(좌우 · 아래 8, 탭 바 · 바닥 버튼이 있으면 그 위 8 · z L6 400). 띠 .psnack 은 짙은 바탕 ·
+    /* Snackbar — 자리 .psnack-region 은 화면 아래 가운데(좌우 · 아래 8, 탭 바 · 바닥 버튼이 있으면 그 위 8 · L6 z-snackbar 400). 띠 .psnack 은 짙은 바탕 ·
        최소 44 · 여백 10 · 모서리 8 · 그림자 없음 · 자리 폭을 채우다 최대 464. 아이콘 24(오른쪽 2) → 글과 액션(좌우 6 · 사이 10 · 양 끝) → 보조 기술용 닫기 */
     .psnack-region {
       position: absolute;
       right: 0;
       bottom: 0;
       left: 0;
-      z-index: 400;
+      z-index: var(--z-snackbar);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -9365,7 +9365,7 @@ export function pageCss() {
     /* === Menu · Menu Sheet · Help Bubble · Tooltip — specs/components/menu.md · menu-sheet.md · help-bubble.md · tooltip.md(수치는 menu.yaml · menu-sheet.yaml ·
        help-bubble.yaml) · specs/z-index.md ===
        구조는 SEED Menu · Swipeable Menu Sheet · Help Bubble · Help Bubble Tooltip(2026-10-02).
-       메뉴 .pmenu(role=menu)는 폭 200 · bg-layer-floating · 모서리 20 · shadow-s3 · 위아래 8 의 떠 있는 표면이다(L3 200 · 비모달 — 글이 길면 폭을 늘리지 않고 줄을 바꾼다).
+       메뉴 .pmenu(role=menu)는 폭 200 · bg-layer-floating · 모서리 20 · shadow-s3 · 위아래 8 의 떠 있는 표면이다(L3 z-floating 200 · 비모달 — 글이 길면 폭을 늘리지 않고 줄을 바꾼다).
        묶음 .pmenu-group 사이에만 선 .pmenu-divider(1px stroke-neutral-subtle · 좌우 16 들임 · 위아래 8)를 긋고, 묶음 이름 .pmenu-label 은 t3 · fg-neutral-subtle · 위아래 8 · 좌우 16 이다.
        줄 .pmenu-item 은 위아래 10 · 좌우 16 이고 콘텐츠 .pmenu-item-content(앞 아이콘 18 · 이름 t4 · 설명 t2 · 뒤 아이콘 16, 사이 8)는 누르면 2px 거리로 준다 — 한 줄 39 · 설명이 붙으면 57.
        알약(호버 · 누름 바탕)은 ::before 가 좌우 8 들여 모서리 12 · bg-layer-floating-pressed 로 칠하고, 키보드 링은 ::after 가 같은 자리 안쪽에 2px 로 그린다(바탕 없음) —
@@ -9388,7 +9388,7 @@ export function pageCss() {
     .pmenu {
       --pmenu-focus-ring: var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral)));
       position: relative;
-      z-index: 200;
+      z-index: var(--z-floating);
       display: flex;
       flex-direction: column;
       box-sizing: border-box;
@@ -9479,13 +9479,13 @@ export function pageCss() {
     .pmenu[data-motion="in"] { transform-origin: top right; animation: pmenu-in var(--motion-duration-d3) var(--motion-ease-enter); }
     .pmenu[data-motion="in"][data-side="top"] { transform-origin: bottom right; }
 
-    /* Menu Sheet — 최대 480 · 화면 높이의 90% 까지 · 위 두 모서리 20 · 그림자 없음. 위 24(손잡이 자리) · 좌우 24 · 아래 16 + 안전 영역. L2 시트 101 */
+    /* Menu Sheet — 최대 480 · 화면 높이의 90% 까지 · 위 두 모서리 20 · 그림자 없음. 위 24(손잡이 자리) · 좌우 24 · 아래 16 + 안전 영역. L2 시트 z-modal-content(101) */
     /* 포커스 링 — 공유 토큰(DESIGN.md)에는 브랜드 역할 색이 없어 중립으로 떨어진다(.pmenu · .pov-close 와 같은 대체 사슬). 상태 표의 칸(.pmsheet-demo)에도 둔다 */
     .pmsheet,
     .pmsheet-demo { --pmsheet-focus-ring: var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral))); }
     .pmsheet {
       position: relative;
-      z-index: 101;
+      z-index: var(--z-modal-content);
       display: flex;
       flex-direction: column;
       box-sizing: border-box;
@@ -9618,14 +9618,14 @@ export function pageCss() {
     .pmsheet-close:focus-visible,
     .pmsheet-close.pmsheet-close--focus { outline: 2px solid var(--pmsheet-focus-ring); outline-offset: 2px; }
 
-    /* 말풍선 — 짙은 바탕(다크에서는 밝은 바탕) · 모서리 12 · 위아래 10 · 좌우 12 · 폭은 내용만큼 최대 280 · 그림자 없음, 제목 ↔ 설명 2. L4 210.
+    /* 말풍선 — 짙은 바탕(다크에서는 밝은 바탕) · 모서리 12 · 위아래 10 · 좌우 12 · 폭은 내용만큼 최대 280 · 그림자 없음, 제목 ↔ 설명 2. L4 z-tooltip(210).
        놓인 틀(.pov-viewport)에 뜬 층이다 — 자리는 페이지 끝 스크립트가 트리거로 잰다(재기 전에는 틀 왼쪽 위) */
     .pbub {
       --pbub-arrow-x: 50%;
       position: absolute;
       left: 0;
       top: 0;
-      z-index: 210;
+      z-index: var(--z-tooltip);
       display: flex;
       flex-direction: column;
       gap: var(--spacing-x0_5);
@@ -10790,7 +10790,7 @@ export function pageCss() {
       position: fixed;
       top: var(--spacing-lg);
       right: var(--spacing-lg);
-      z-index: var(--z-toast, 1400);
+      z-index: var(--z-sticky); /* L1 — 페이지에 붙은 고정 버튼(v116). 그림의 층은 틀 안에 갇혀 있다 */
       display: flex;
       align-items: center;
       gap: var(--spacing-xs);

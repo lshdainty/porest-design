@@ -190,7 +190,7 @@ import { ResponsiveDialog, ResponsiveDialogBody, ResponsiveDialogCancel, Respons
 - **딤은 porest 0.50 · 다크 0.65**(v102) — SEED 0.455.
 - **입력 폼은 바깥을 눌러도 닫히지 않고, 머리 닫기 버튼을 두지 않는다** — SEED 도 같은 쪽을 권한다(snippet 의 바깥 닫기 기본값 · "입력 폼에서는 헤더 X 지양"). porest 는 규칙으로 못박았다.
 - **반투명 색을 불투명 짝으로**(v102) — 머리 아래 선 `stroke-neutral-subtle`, 닫기 버튼 누름 `bg-layer-floating-pressed`.
-- **z-index 는 specs/z-index.md 의 L2**(딤 100 · 대화상자 101) — 그 안에서 연 Popover(L3) · Alert Dialog(L5)가 위에 뜬다(SEED 는 모두 2 + layerIndex).
+- **z-index 는 specs/z-index.md 의 L2**(딤 `z-modal` 100 · 대화상자 `z-modal-content` 101) — 그 안에서 연 Popover(L3) · Alert Dialog(L5)가 위에 뜬다(SEED 는 모두 2 + layerIndex).
 
 ## Migration notes
 

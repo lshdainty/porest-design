@@ -29,7 +29,7 @@ import { cn } from "@/lib/utils";
  * 모양: 폭은 내용만큼 최대 280(여백 포함), 위아래 10 · 좌우 12 · 모서리 12 · bg-neutral-inverted(다크는 밝은 말풍선) · 그림자 없음.
  * 제목 t3 13 / 18 · 700, 설명 t3 · 400(사이 2), 글자는 fg-neutral-inverted — 단어 단위로 줄을 바꾸고 줄바꿈 문자는 살린다.
  * 화살표는 12 × 8(끝 모서리 2) — 늘 트리거 가운데를 가리키고 말풍선 모서리와 14 를 남긴다(트리거가 작아 모자라면 말풍선을 민다).
- * 화살표 끝 ↔ 트리거 4(말풍선 몸통과는 12), 화면 가장자리와 16 — 모자라면 반대편으로 뒤집고 옆으로 민다. 쌓임은 z 210(L4 —
+ * 화살표 끝 ↔ 트리거 4(말풍선 몸통과는 12), 화면 가장자리와 16 — 모자라면 반대편으로 뒤집고 옆으로 민다. 쌓임은 z-tooltip 210(L4 —
  * 팝오버 · 메뉴 위). 닫기 버튼은 오른쪽 위 모서리에 붙은 38 투명 상자 · 아이콘 14(위 12 · 오른쪽 12 자리) · 누르는 영역 44 ·
  * 글과 4, 누르면 2px 거리 축소만(바탕 없음), 키보드 포커스는 안쪽 2px 링을 말풍선 글자색으로(브랜드 링은 짙은 말풍선 위에서 3:1 에
  * 못 미친다). 이름 "닫기".
@@ -44,7 +44,7 @@ import { cn } from "@/lib/utils";
 // data-instant(툴팁이 이어서 열림 · 바로 닫음)면 모션이 없다. 길이는 --tw-animation-duration 으로 준다 — duration-* 는 transition-duration 도
 // 바꿔(transition-property 의 처음 값은 all) 테마를 바꿀 때 색까지 200ms 로 번지게 한다
 const BUBBLE = [
-  "relative z-[210] box-border w-max max-w-[min(280px,var(--radix-popper-available-width,280px))] rounded-r3 bg-bg-neutral-inverted px-x3 py-x2_5",
+  "relative z-(--z-tooltip) box-border w-max max-w-[min(280px,var(--radix-popper-available-width,280px))] rounded-r3 bg-bg-neutral-inverted px-x3 py-x2_5",
   "font-sans text-fg-neutral-inverted break-keep [overflow-wrap:break-word]",
   "origin-[var(--radix-popper-transform-origin)]",
   "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:[--tw-animation-duration:var(--motion-duration-d4)] data-[state=open]:ease-[var(--motion-ease-enter)] motion-safe:data-[state=open]:zoom-in-90",

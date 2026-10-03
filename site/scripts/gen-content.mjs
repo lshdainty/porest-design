@@ -415,8 +415,31 @@ write(
   tokenReference(),
 );
 
+// specs/z-index.md 의 층 표 — 토큰 칸(`z-floating` …)의 DESIGN.md 값(v116)이 z-index 칸의 숫자와 같고, DESIGN.md 의 z- 토큰이 빠짐없이 있는지.
+// 층 표는 사람이 읽는 사본이라 값이 바뀌면 여기서 멈춘다(v65 토큰이 층 표와 다른 값으로 남아 있던 일이 있었다).
+function checkZLayers(text) {
+  const tokens = new Map([...proseTokenRows(read('DESIGN.md'))].filter(([n]) => n.startsWith('z-')).map(([n, { value }]) => [n, value]));
+  const seen = new Set();
+  for (const row of text.split('\n').filter((l) => l.startsWith('| **L'))) {
+    // | Layer | 토큰 | z-index | 컴포넌트 | 의미 |
+    const [layer = '', tokenCell = '', zCell = ''] = row.split('|').slice(1).map((c) => c.trim());
+    const names = [...tokenCell.matchAll(/`(z-[a-z0-9-]+)`/g)].map((m) => m[1]);
+    const values = [...zCell.matchAll(/`(-?\d+|auto)`/g)].map((m) => m[1]);
+    if (!names.length || names.length !== values.length) throw new Error(`specs/z-index.md ${layer} — 토큰(${names.join(', ')})과 값(${values.join(', ')})이 짝이 안 맞는다`);
+    names.forEach((n, i) => {
+      if (!tokens.has(n)) throw new Error(`specs/z-index.md ${layer} 의 ${n} 이 DESIGN.md 의 z-index 표에 없다`);
+      if (tokens.get(n) !== values[i]) throw new Error(`specs/z-index.md ${layer} 의 ${n} ${values[i]} 가 DESIGN.md 값 ${tokens.get(n)} 과 다르다`);
+      seen.add(n);
+    });
+  }
+  const missing = [...tokens.keys()].filter((n) => !seen.has(n));
+  if (missing.length) throw new Error(`DESIGN.md 의 z-index 토큰 ${missing.join(', ')} 이 specs/z-index.md 층 표에 없다`);
+}
+
 for (const { file, slug } of FOUNDATION_SPECS) {
-  const spec = splitSpec(read(file));
+  const text = read(file);
+  if (slug === 'z-index') checkZLayers(text);
+  const spec = splitSpec(text);
   write(`foundations/${slug}.md`, { ...spec, source: file }, spec.body);
 }
 

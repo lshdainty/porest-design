@@ -20,7 +20,7 @@
  * (--radix-dropdown-menu-content-available-height — 미리보기는 틀 안의 남은 높이로 적었다)를 그린다.
  * 레시피는 메뉴를 body 끝(portal)에 띄우고 Radix 가 감싼 div(position: fixed)로 트리거 아래 8 에 놓는다 — 미리보기는 감싼 div 를 틀 안의
  * position: absolute 로 흉내 낸다. 메뉴는 트리거의 오른쪽 끝에 맞춘다(align 기본 end — 줄 끝 ⋮ · 머리 더보기). 화면 가장자리 8 을 넘으면
- * 안으로 미는 계산(collisionPadding)은 하지 않는다 — 그림의 트리거는 틀 가장자리에서 24 이상 떨어져 있다. 틀의 isolation 이 z-[200] 을 틀 안에 가둔다.
+ * 안으로 미는 계산(collisionPadding)은 하지 않는다 — 그림의 트리거는 틀 가장자리에서 24 이상 떨어져 있다. 틀의 isolation 이 z-(--z-floating) 을 틀 안에 가둔다.
  * 레시피가 cn() 으로 합치는 자리는 merge() 로 똑같이 합친다 — 같은 속성을 다시 쓴 클래스는 뒤의 것만 남는다.
  * 모션 클래스(animate-in · zoom-in-95 …)는 tw-animate-css 의 것이라 사이트에서는 아무 일도 하지 않는다 — 열린 순간을 멈춘 그림이다.
  * 레시피의 스크립트(열고 닫기 · 화살표 · 글자로 찾기 · 호버가 초점을 옮기지 않게 하기 · 누르는 순간 --press-basis 재기 · 닫힌 뒤 onSelect)는
@@ -32,7 +32,7 @@
 
 // 메뉴 — 폭 200 · 모서리 20 · 떠 있는 바탕 + s3 · z 200. 열 때 150ms enter · 닫을 때 100ms exit 로 0.95 ↔ 1 · 투명도
 const CONTENT = [
-  "z-[200] w-[200px] overflow-hidden rounded-r5 bg-bg-layer-floating font-sans text-fg-neutral shadow-[var(--shadow-s3)] outline-none",
+  "z-(--z-floating) w-[200px] overflow-hidden rounded-r5 bg-bg-layer-floating font-sans text-fg-neutral shadow-[var(--shadow-s3)] outline-none",
   "origin-[var(--radix-dropdown-menu-content-transform-origin)]",
   "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:[--tw-animation-duration:var(--motion-duration-d3)] data-[state=open]:ease-[var(--motion-ease-enter)] motion-safe:data-[state=open]:zoom-in-95",
   "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:[--tw-animation-duration:var(--motion-duration-d2)] data-[state=closed]:ease-[var(--motion-ease-exit)] motion-safe:data-[state=closed]:zoom-out-95",
@@ -213,7 +213,7 @@ const ICONS = {
   externalLink: svg('<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>'),
 };
 
-// 미리보기 틀 — 데스크톱 화면(1280 이상) 위에 메뉴. isolation 이 z-[200] 을 틀 안에 가둔다
+// 미리보기 틀 — 데스크톱 화면(1280 이상) 위에 메뉴. isolation 이 z-(--z-floating) 을 틀 안에 가둔다
 const STAGE = (height) =>
   `position:relative; isolation:isolate; overflow:hidden; width:100%; height:${height}px; border:1px solid var(--color-stroke-neutral-subtle); border-radius:var(--radius-r4); background:var(--color-bg-layer-basement); font-family:var(--font-sans);`;
 const PAGE = "padding:var(--spacing-x6);";
@@ -227,7 +227,7 @@ const ROW_TITLE = "font-size:var(--text-t5); line-height:var(--text-t5--line-hei
 const ROW_DETAIL = "font-size:var(--text-t3); line-height:var(--text-t3--line-height); color:var(--color-fg-neutral-subtle);";
 // 트리거와 메뉴 — 트리거 아래 8(sideOffset) · 오른쪽 끝 맞춤(align end). 감싼 div 는 Radix 의 popper 감싸개 자리다
 const ANCHOR = "position:relative; display:inline-flex; flex-shrink:0;";
-const WRAPPER = "position:absolute; right:0; top:calc(100% + var(--spacing-x2)); min-width:max-content; z-index:200;";
+const WRAPPER = "position:absolute; right:0; top:calc(100% + var(--spacing-x2)); min-width:max-content; z-index:var(--z-floating);";
 const CAPTION =
   "font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:var(--text-t2); line-height:var(--text-t2--line-height); color:var(--color-fg-neutral-subtle);";
 

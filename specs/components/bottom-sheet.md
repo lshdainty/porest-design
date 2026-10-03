@@ -193,7 +193,7 @@ import { BottomSheet, BottomSheetBody, BottomSheetContent, BottomSheetFooter } f
 - **입력 폼은 바깥 누르기 · 끌어내리기로 닫지 않는다**(사용자 결정 2026-10-02) — SEED 는 "복잡한 양식 · 결제" 에 닫기 버튼 + 손잡이 제거를 권하고, 끌어 닫기까지 막으려면 따로 끈다.
 - **시트의 입력 폼은 위 닫기 + 바닥 저장** — 닫기 버튼과 바닥 취소를 함께 두지 않는다(SEED Dialog 의 규칙을 시트에도).
 - **손잡이 누름 색은 두지 않는다** — SEED `palette.gray-500` 의 짝이 porest 역할 색에 없다.
-- **z-index 는 specs/z-index.md 의 L2**(딤 100 · 시트 101) — 그 위에 Popover(L3) · Alert Dialog(L5)가 뜬다.
+- **z-index 는 specs/z-index.md 의 L2**(딤 `z-modal` 100 · 시트 `z-modal-content` 101) — 그 위에 Popover(L3) · Alert Dialog(L5)가 뜬다.
 
 ## Migration notes
 

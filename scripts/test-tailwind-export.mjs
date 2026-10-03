@@ -39,11 +39,42 @@ const NAMESPACE_PATTERNS = [
   { name: "breakpoint reset", regex: /^\s+--breakpoint-\*:\s*initial;/gm, minCount: 1 },
   { name: "layout", regex: /^\s+--layout-[a-z0-9-]+:/gm, minCount: 6 },
   { name: "touch", regex: /^\s+--touch-[a-z0-9-]+:/gm, minCount: 5 },
-  { name: "z-index", regex: /^\s+--z-[a-z]+:/gm, minCount: 6 },
+  { name: "z-index", regex: /^\s+--z-[a-z-]+:/gm, minCount: 10 },
   { name: "@keyframes", regex: /^@keyframes\s+[a-z][a-z0-9-]*\s*\{/gm, minCount: 14 },
 ];
 
 const BRAND_COLORS = ["primary", "primary-light", "border-focus", "border-focus-light"];
+
+// v116 z-index — 층 이름 열 개(specs/z-index.md L0 ~ L9). 값은 DESIGN*.md 표가 원본이라 여기 적지 않고,
+// 이름이 빠짐없이 나오는지 · z-base 가 auto 인지 · 나머지가 층 차례대로 커지는지 · 세 파일이 같은지만 본다.
+const Z_LAYERS = [
+  "z-base", "z-sticky", "z-modal", "z-modal-content", "z-floating", "z-tooltip",
+  "z-alert", "z-alert-content", "z-snackbar", "z-dev",
+];
+const Z_REMOVED = ["z-dropdown", "z-drawer", "z-toast"]; // v65 — v116 에서 걷었다
+let zShared = null;
+
+function checkZIndex(css, target) {
+  let errors = 0;
+  const vars = new Map([...css.matchAll(/^\s+--(z-[a-z-]+):\s*([^;]+);/gm)].map((m) => [m[1], m[2].trim()]));
+  const names = [...vars.keys()];
+  if (names.join(",") !== Z_LAYERS.join(",")) {
+    console.error(`  ❌ z-index 이름 · 차례: ${names.join(", ")} (expected ${Z_LAYERS.join(", ")})`);
+    errors++;
+  }
+  for (const old of Z_REMOVED) {
+    if (vars.has(old)) { console.error(`  ❌ 걷은 z-index 토큰 --${old} 가 남았다`); errors++; }
+  }
+  if (vars.get("z-base") !== "auto") { console.error(`  ❌ --z-base: ${vars.get("z-base")} (expected auto)`); errors++; }
+  const nums = Z_LAYERS.slice(1).map((n) => Number(vars.get(n)));
+  if (nums.some((v) => !Number.isInteger(v))) { console.error(`  ❌ z-index 값이 정수가 아니다: ${nums.join(", ")}`); errors++; }
+  else if (nums.some((v, i) => i > 0 && v <= nums[i - 1])) { console.error(`  ❌ z-index 가 층 차례대로 커지지 않는다: ${nums.join(" < ")}`); errors++; }
+  const sig = [...vars].map(([n, v]) => `${n}=${v}`).join(" ");
+  if (target.isShared) zShared = sig;
+  else if (zShared !== null && sig !== zShared) { console.error(`  ❌ z-index 가 공유 파일과 다르다: ${sig}`); errors++; }
+  if (errors === 0) console.log(`  ✓ z-index 층: ${[...vars].map(([n, v]) => `${n} ${v}`).join(" · ")}`);
+  return errors;
+}
 
 let totalErrors = 0;
 
@@ -79,6 +110,9 @@ for (const target of TARGETS) {
     }
   }
   totalErrors += nsFail;
+
+  // 2-1. z-index 층(v116)
+  totalErrors += checkZIndex(css, target);
 
   // 3. brand-specific 토큰 검증 (HR/Desk only)
   if (!target.isShared) {

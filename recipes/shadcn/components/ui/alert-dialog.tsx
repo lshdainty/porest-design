@@ -23,7 +23,7 @@ import { useInputButtonSurface } from "@/components/ui/input-button";
  * 버튼은 1280 미만 medium 40 · 이상 small 36 — Footer 가 Input Button 과 같은 경계(useInputButtonSurface)로 정해,
  * 크기를 주지 않은 바로 아래 자식에 넣는다. 배치는 CSS 가 정한다 — 버튼마다 반 폭(사이 8)을 바탕으로 두고 글 폭보다 줄지
  * 않게 해, 한쪽이 반을 넘으면 줄이 넘어가고(wrap-reverse) 둘째(확정)가 위로 간다. DOM 순서는 늘 [취소] [확정] 이다.
- * 딤 300 · 확인창 301(specs/z-index.md L5) — 열린 대화상자 · 시트 위에 뜬다. 딤은 overlay-dim(라이트 0.50 · 다크 0.65).
+ * 딤 z-alert 300 · 확인창 z-alert-content 301(specs/z-index.md L5) — 열린 대화상자 · 시트 위에 뜬다. 딤은 overlay-dim(라이트 0.50 · 다크 0.65).
  * 모션: 200ms enter-expressive 로 1.3 배에서 줄며 나타나고 100ms exit 로 줄지 않고 사라진다(딤은 100ms 로 나타나고 사라진다).
  * 모션 줄이기면 150ms 서서히 나타난다.
  *
@@ -200,7 +200,7 @@ AlertDialogTrigger.displayName = "AlertDialogTrigger";
 
 // 딤 — overlay-dim 라이트 0.50 · 다크 0.65. 100ms 로 나타나고 사라진다
 const OVERLAY = [
-  "fixed inset-0 z-[300] bg-[var(--overlay-dim-light)] dark:bg-[var(--overlay-dim-dark)]",
+  "fixed inset-0 z-(--z-alert) bg-[var(--overlay-dim-light)] dark:bg-[var(--overlay-dim-dark)]",
   "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:duration-[var(--motion-duration-d2)] data-[state=open]:ease-[var(--motion-ease-enter)]",
   "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:duration-[var(--motion-duration-d2)] data-[state=closed]:ease-[var(--motion-ease-exit)]",
 ].join(" ");
@@ -208,7 +208,7 @@ const OVERLAY = [
 // 확인창 — 최대 272, 좌우 32 를 남긴다(화면이 336 보다 좁으면 화면 폭 − 64). 안쪽 20 · 모서리 20, 그림자 없음.
 // 열림 200ms enter-expressive 로 1.3 배에서 줄며 나타난다(모션 줄이기면 150ms 서서히). 닫힘 100ms exit 로 사라진다
 const CONTENT = [
-  "fixed left-1/2 top-1/2 z-[301] flex w-[calc(100%-var(--spacing-x8)*2)] max-w-[272px] -translate-x-1/2 -translate-y-1/2 flex-col",
+  "fixed left-1/2 top-1/2 z-(--z-alert-content) flex w-[calc(100%-var(--spacing-x8)*2)] max-w-[272px] -translate-x-1/2 -translate-y-1/2 flex-col",
   "rounded-r5 bg-bg-layer-floating p-x5 font-sans text-fg-neutral outline-none",
   "data-[state=open]:animate-in data-[state=open]:fade-in-0",
   "motion-safe:data-[state=open]:zoom-in-130 motion-safe:data-[state=open]:duration-[var(--motion-duration-d4)] motion-safe:data-[state=open]:ease-[var(--motion-ease-enter-expressive)]",

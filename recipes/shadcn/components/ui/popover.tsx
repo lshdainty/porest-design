@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
  *     보내고, 표면은 바깥으로 나간 초점에 닫힌다(초점은 나간 자리에 남는다). 첫 칸에서 Shift+Tab 은 트리거로, 열린 동안 트리거에서
  *     Tab 은 표면 안으로 — 표면은 문서 끝(portal)에 있어 브라우저에 맡기면 순서가 끊긴다.
  *   - 바깥 누르기 · Esc · 닫기 버튼으로 닫으면 초점은 트리거로 돌아간다 — 바깥을 눌러 다른 칸에 초점이 갔으면 그 자리에 둔다.
- *   - 대화상자 · 시트 안에서 열면 그 위에 뜨고(z 200), 그 표면이 닫히면 함께 닫힌다.
+ *   - 대화상자 · 시트 안에서 열면 그 위에 뜨고(z-floating 200), 그 표면이 닫히면 함께 닫힌다.
  *
  * 모양: 폭은 내용만큼 320 ~ 480, 화면 가장자리와 16 을 남긴다(가용 폭이 더 좁으면 가용 폭). 높이는 600 과 남은 공간 중 작은 쪽까지 —
  * 넘치면 본문이 스크롤한다. 트리거와 8 떨어져 아래(모자라면 위)에 뜨고 옆으로 넘치면 화면 안으로 민다. 모서리 r5 20 · 그림자 s3 —
@@ -180,10 +180,10 @@ PopoverTrigger.displayName = "PopoverTrigger";
 
 const PopoverAnchor = PopoverPrimitive.Anchor;
 
-// 표면 — 폭 320 ~ 480(가용 폭까지) · 높이 600(가용 높이까지), 모서리 20 · 그림자 s3 · z 200.
+// 표면 — 폭 320 ~ 480(가용 폭까지) · 높이 600(가용 높이까지), 모서리 20 · 그림자 s3 · z-floating 200.
 // 열림 150ms enter 로 트리거 쪽 변에서 0.95 → 1 · 투명도, 닫힘 100ms exit 로 0.95 · 투명도(모션 줄이기면 투명도만)
 const CONTENT = [
-  "relative z-[200] flex flex-col overflow-hidden rounded-r5 bg-bg-layer-floating font-sans text-fg-neutral shadow-[var(--shadow-s3)] outline-none",
+  "relative z-(--z-floating) flex flex-col overflow-hidden rounded-r5 bg-bg-layer-floating font-sans text-fg-neutral shadow-[var(--shadow-s3)] outline-none",
   // 가용 폭 · 높이는 Radix 가 자리를 잰 뒤에 들어온다 — 그 전에는 320 · 480 · 600 으로 둔다
   "min-w-[min(320px,var(--radix-popover-content-available-width,320px))] max-w-[min(480px,var(--radix-popover-content-available-width,480px))]",
   "max-h-[min(600px,var(--radix-popover-content-available-height,600px))]",

@@ -107,6 +107,9 @@
 **v115 — 반전 짝 역할 셋 (2026-10-02)**
 - v115: `fg-positive-inverted` · `fg-critical-inverted`(공유) · `fg-brand-inverted`(브랜드) — 반전 표면(`bg-neutral-inverted`, 스낵바) 위의 상태 아이콘 · 액션 글자. 라이트는 그 역할의 다크 값(green-800 · red-800 · brand-900 의 다크 팔레트), 다크는 라이트 값(green-700 · red-700 · brand-600). 짙은 띠 위 대비 — 성공 6.87 · 4.70, 실패 6.89 · 4.68, 브랜드 Desk 6.90 · 7.76 · HR 7.05 · 4.69(밝은 바탕용 `fg-*` 는 1.96 ~ 3.25). `role-*-on-inverted` 대비 짝을 더해 lint 가 잰다. 사용자 결정(2026-10-02 알림 메시지 비교 3번 A — 토큰 셋을 알고 골랐다).
 
+**v116 — z-index 를 층 이름으로 (2026-10-03)**
+- v116: z-index 토큰 10개를 `specs/z-index.md` 의 층 표 값 그대로 층 이름으로 둔다 — `z-base` auto(L0, 쌓임 맥락 없음) · `z-sticky` 50(L1 고정 헤더 · 하단 탭바 · 플로팅 버튼) · `z-modal` 100 · `z-modal-content` 101(L2 대화상자 · 시트 딤 · 표면) · `z-floating` 200(L3 팝오버 · Select 목록 · 메뉴, 모달 안에서도 같은 값) · `z-tooltip` 210(L4) · `z-alert` 300 · `z-alert-content` 301(L5 확인창) · `z-snackbar` 400(L6) · `z-dev` 9999(L9 개발 환경 표시). v65 의 6 토큰(z-base 0 · z-dropdown 1000 · z-sticky 1100 · z-drawer 1200 · z-modal 1300 · z-toast 1400)은 걷었다 — 레시피 · 스펙은 층 표의 숫자를 따로 적어 토큰과 값이 달랐다. 이름이 남은 `z-base` · `z-sticky` · `z-modal` 은 값이 바뀌었다(0 → auto · 1100 → 50 · 1300 → 100, `z-modal` 은 이제 딤) — 옛 값을 복사해 둔 제품은 토큰을 새로 받을 때 그 자리를 층으로 다시 고른다. 순서의 이유: 떠 있는 것이 모달 위(대화상자 안의 목록), 확인창이 메뉴 위(SEED Elevation 의 "Alert Dialog 가 맨 위" — SEED CSS 의 99999 팝오버가 아니라 문서 쪽), 말풍선이 팝오버 위, 스낵바가 모든 표면 위. 웹은 화면을 쌓지 않아 SEED 의 `2 + layerIndex` 같은 더하기가 없고, 앱(Flutter)은 숫자 없이 같은 순서를 따른다. 레시피 13곳의 `z-[100]` … `z-[400]` 을 `z-(--z-modal)` … `z-(--z-snackbar)` 로(Tailwind 4.3.3 · 브라우저 CDN 에서 확인), 예제 · 미리보기 CSS 는 같은 변수로, 컴포넌트 YAML 은 값을 두고 비고에 토큰 이름을. `parseZIndex` 는 정수 · `auto` 만 받고 같은 이름의 다른 값을 막는다, `test:exports` 는 열 이름 · 층 차례 · 세 파일 일치를 본다, `lint:prose` 는 `z-` 토큰 참조도 검사한다(걷은 이름이 본문에 남으면 잡는다), 사이트 빌드는 층 표의 숫자가 토큰 값과 같은지 본다. "한 번에 5개" 규칙의 예외 — 사용자 결정(2026-10-03 비교 페이지 1A 층 표를 정본으로 · 2A 새 토큰은 층 이름으로).
+
 ### Components
 
 **v33~v48 — Component spec batch (16 components, sparse 매핑 자동 검증 활성)**

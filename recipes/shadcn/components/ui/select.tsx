@@ -84,7 +84,7 @@ const CHEVRON_CLOSED = "rotate-0 [transition:rotate_var(--motion-duration-d2)_va
 // 목록 — 트리거 폭 · 모서리 20 · 떠 있는 바탕 + s3. 열 때 150ms enter · 닫을 때 100ms exit 로 0.95 ↔ 1 · 투명도, 붙은 쪽에서 커진다.
 // 모션 줄이기면 투명도만(크기는 motion-safe 에서만)
 const CONTENT = [
-  "z-[200] w-[var(--radix-popover-trigger-width)] overflow-hidden rounded-r5 bg-bg-layer-floating font-sans shadow-[var(--shadow-s3)] outline-none",
+  "z-(--z-floating) w-[var(--radix-popover-trigger-width)] overflow-hidden rounded-r5 bg-bg-layer-floating font-sans shadow-[var(--shadow-s3)] outline-none",
   "origin-[var(--radix-popover-content-transform-origin)]",
   "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:duration-[var(--motion-duration-d3)] data-[state=open]:ease-[var(--motion-ease-enter)] motion-safe:data-[state=open]:zoom-in-95",
   "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:duration-[var(--motion-duration-d2)] data-[state=closed]:ease-[var(--motion-ease-exit)] motion-safe:data-[state=closed]:zoom-out-95",

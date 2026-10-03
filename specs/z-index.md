@@ -1,21 +1,26 @@
 # Z-Index Layers
 
-> Porest 의 floating layer stacking 정책. 시스템 wide 가이드. 각 컴포넌트의 z-index 분기는 이 표를 SoT 로 따른다.
+> Porest 의 floating layer stacking 정책. 시스템 wide 가이드. 각 컴포넌트의 z-index 는 이 표의 층을 따르고, 층마다 값은 DESIGN.md 의 z-index 토큰(v116)이 원본이다.
 
 Porest 는 Bootstrap 식 **명시적 z-index 계층 분기** 정책을 채택. shadcn 공식은 모든 layer 가 `z-50` + portal order 로 stacking 하지만, 디버깅 / 의도 명시 / 예측 가능성을 위해 layer 별로 z-index 를 분기한다. Portal 순서에 의존하면 깨질 때 추적이 어렵다.
 
 ## Layer matrix
 
-| Layer | z-index | 컴포넌트 | 의미 |
-|---|---|---|---|
-| **L0 — base** | `auto` | 일반 콘텐츠 | document 기본 flow |
-| **L1 — page sticky/fixed** | `z-50` | sticky header, FAB(`speed-dial`), env 표시 등 | 페이지 위 고정 UI |
-| **L2 — modal** | `z-[100]` overlay · `z-[101]` content | `dialog` / `bottom-sheet` / `sheet` | modal layer — overlay + content 분리 |
-| **L3 — modal-aware floating** | `z-[200]` | `popover` / `select` / `menu` / `color-picker` (popover 패턴) | page 와 modal 안 어디서든 사용. modal(L2) 위에 떠야 하므로 200. page 에서도 동일 값 — sticky/FAB(L1=50) 위 자연스러움 |
-| **L4 — modal-aware tooltip** | `z-[210]` | `help-bubble` · `tooltip` | popover 위에 살짝 떠야 함 (hover 잠깐 뜨고 사라지는 참고 정보) |
-| **L5 — alert-dialog** | `z-[300]` overlay · `z-[301]` content | `alert-dialog` | 비가역 결정 강제. dialog(L2) 위로 명시 — dialog 안에서 삭제 확인 같은 alert 띄우는 케이스 보존 |
-| **L6 — snackbar** | `z-[400]` | `snackbar` | 모든 시트 · 대화상자 · 확인창 위의 잠깐 알림(2026-10-02 — 옛 sonner 라이브러리 기본 99999+ 를 명시 값으로) |
-| **L9 — dev** | `z-[9999]` | `env-watermark` | dev only 시각 표시 (production 비활성) |
+| Layer | 토큰 | z-index | 컴포넌트 | 의미 |
+|---|---|---|---|---|
+| **L0 — base** | `z-base` | `auto` | 일반 콘텐츠 | document 기본 flow — 쌓임 맥락을 만들지 않는다 |
+| **L1 — page sticky/fixed** | `z-sticky` | `50` | sticky header, 하단 탭바, FAB(`speed-dial`) | 페이지 위 고정 UI |
+| **L2 — modal** | `z-modal` · `z-modal-content` | `100` · `101` | `dialog` / `bottom-sheet` / `menu-sheet` / `sheet` | modal layer — overlay + content 분리 |
+| **L3 — modal-aware floating** | `z-floating` | `200` | `popover` / `select` / `menu` / `color-picker` (popover 패턴) | page 와 modal 안 어디서든 사용. modal(L2) 위에 떠야 하므로 200. page 에서도 동일 값 — sticky/FAB(L1=50) 위 자연스러움 |
+| **L4 — modal-aware tooltip** | `z-tooltip` | `210` | `help-bubble` · `tooltip` | popover 위에 살짝 떠야 함 (hover 잠깐 뜨고 사라지는 참고 정보) |
+| **L5 — alert-dialog** | `z-alert` · `z-alert-content` | `300` · `301` | `alert-dialog` | overlay + content 분리. 비가역 결정 강제. dialog(L2) 위로 명시 — dialog 안에서 삭제 확인 같은 alert 띄우는 케이스 보존 |
+| **L6 — snackbar** | `z-snackbar` | `400` | `snackbar` | 모든 시트 · 대화상자 · 확인창 위의 잠깐 알림(2026-10-02 — 옛 sonner 라이브러리 기본 99999+ 를 명시 값으로) |
+| **L9 — dev** | `z-dev` | `9999` | `env-watermark` | dev only 시각 표시 (production 비활성) |
+
+- z-index 칸의 숫자는 토큰 칸의 값을 옮겨 적은 것이다 — 사이트 빌드(`site/scripts/gen-content.mjs`)가 DESIGN.md 의 토큰 값과 같은지, 토큰이 빠짐없이 있는지 확인한다.
+- 웹은 토큰 변수로 부른다 — CSS `z-index: var(--z-floating)`, Tailwind v4 `z-(--z-floating)`. 숫자 클래스(`z-[200]` · `z-50`)로 층을 적지 않는다.
+- 앱(Flutter)은 숫자 없이 같은 순서를 따른다 — 라우트 · 오버레이가 연 순서로 쌓이므로 위 차례가 되게 띄운다.
+- 한 컴포넌트 안에서 겹침을 정리하는 작은 값(`z-[1]` · `z-10`)은 층이 아니다 — 이 표 밖이다.
 
 ## 의도된 stacking 시나리오
 
@@ -31,13 +36,13 @@ Porest 는 Bootstrap 식 **명시적 z-index 계층 분기** 정책을 채택. s
 
 ## L3 의 "modal-aware" 의미
 
-L3 컴포넌트(popover/select/menu) 는 **page 와 modal 안 두 컨텍스트에서 같은 값(z-200) 사용**. 호출처별 변경 없이 한 컴포넌트 = 한 z-index — `inModal` prop 같은 분기 불필요. 호출처는 modal 안 사용 시 추가 className override 안 해도 정상.
+L3 컴포넌트(popover/select/menu) 는 **page 와 modal 안 두 컨텍스트에서 같은 값(`z-floating` 200) 사용**. 호출처별 변경 없이 한 컴포넌트 = 한 z-index — `inModal` prop 같은 분기 불필요. 호출처는 modal 안 사용 시 추가 className override 안 해도 정상.
 
 근거 — page 에는 L2(modal=100) layer 자체가 페이지 표면엔 없으므로 L3(200) 가 page sticky(L1=50) 위로 자연스럽게 떠도 어색하지 않다.
 
 ## L5 안 floating 의 edge case
 
-alert-dialog(L5=300/301) 안에서 popover/select 띄우는 케이스는 매우 드물지만 만약 필요하면 호출처에서 `className="z-[400]"` 식으로 override. 시스템 분기 추가 보류 — drift 우려.
+alert-dialog(L5=300/301) 안에서 popover/select 띄우는 케이스는 매우 드물지만 만약 필요하면 호출처에서 `className="z-[310]"` 처럼 확인창 표면(`z-alert-content` 301) 바로 위로 override 한다 — 스낵바(`z-snackbar` 400)보다는 아래. 시스템 분기 · 토큰 추가 보류 — drift 우려.
 
 ## Known issues (Radix portal + 다중 modal)
 
@@ -63,12 +68,17 @@ dropdown 닫힐 때 `aria-hidden="true"` 가 body 에 남아 screen reader 가 d
 
 ## 컴포넌트 spec 의 z-index 명시 규칙
 
-각 컴포넌트 spec 의 Sizes 또는 States 표에 z-index 행 필수 — 이 가이드의 layer 명과 z-index 값 동시 표기. 예:
+각 컴포넌트 spec 의 Sizes 또는 States 표에 z-index 행 필수 — 이 가이드의 layer 명 · 토큰 · 값 동시 표기. YAML(`specs/components/<이름>.yaml`)이 있으면 값은 숫자로 두고 토큰 이름은 비고에 쓴다 — 사이트 그림이 YAML 의 수를 그대로 쓰기 때문이다. 예:
 
 ```
-| z-index | z-[200] (L3 modal-aware floating) | — |
+| z-index | `z-floating` 200 (L3 modal-aware floating) | — |
+```
+
+```yaml
+zIndex: { value: 200, note: "z-floating — specs/z-index.md L3" }
 ```
 
 ## Migration notes
 
 - **v1: 최초 명시 (2026-05-15)** — 그동안 각 컴포넌트 spec 에 z-index 가 분산 명시되거나 누락된 상태였음. desk-front 가 모두 다른 값으로 분기(50/100/101/200/9999) 두고 있었는데 정합 기준이 없었음. Bootstrap 식 명시 계층 채택. shadcn 표준(모두 z-50 + portal order) 은 디버깅 어렵다고 판단 — 우리는 명시 분기.
+- **v2: 토큰이 원본 (2026-10-03, DESIGN.md v116)** — 층마다 토큰을 두고 이름을 층으로 붙였다(`z-sticky` · `z-modal` · `z-modal-content` · `z-floating` · `z-tooltip` · `z-alert` · `z-alert-content` · `z-snackbar` · `z-dev`, L0 은 `z-base` `auto`). 값은 이 표 그대로다. 그동안 DESIGN.md 의 v65 토큰(z-dropdown 1000 · z-drawer 1200 · z-toast 1400 …)은 이 표와 값이 달랐다(레시피는 이 표의 숫자를 따로 적었다) — 걷었다. 레시피의 `z-[100]` 같은 숫자 클래스는 `z-(--z-modal)` 로 바꿨다. 사용자 결정(2026-10-03 — 이 층 표를 정본으로, 새 토큰은 층 이름으로).

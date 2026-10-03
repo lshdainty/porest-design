@@ -104,13 +104,19 @@ function pressOf(pressed: Vals, slot: string, what: string): MPress {
   return { distance: ps.distance, widthDivisor: ps.widthDivisor, minBasis: ps.minBasis, motion: motionPair(pressed[`${slot}.scaleDuration`], pressed[`${slot}.scaleEasing`], `${what} pressed ${slot}.scale`) };
 }
 
-// specs/z-index.md 의 층 — 그 층 줄에 컴포넌트 이름이 있고 값이 YAML 과 같은지
+// specs/z-index.md 의 층 — 그 층 줄에 컴포넌트 이름이 있고, 줄의 토큰(DESIGN.md v116 — z-floating …) 값이 줄의 숫자 · YAML 과 같은지
 function zLayer(layer: string, component: string, z: number) {
   const md = readFileSync(join(REPO, 'specs/z-index.md'), 'utf8');
   const row = md.split('\n').find((l) => l.startsWith(`| **${layer}`));
   if (!row) throw new Error(`specs/z-index.md 에 ${layer} 줄이 없다`);
   if (!new RegExp(`\`${component}\``).test(row)) throw new Error(`specs/z-index.md 의 ${layer} 줄에 ${component} 가 없다`);
-  same(numIn(row, /z-\[(\d+)\]/, `z-index.md ${layer}`), z, `${component} 의 z-index — specs/z-index.md ${layer}`);
+  // | Layer | 토큰 | z-index | 컴포넌트 | 의미 |
+  const [, tokenCell = '', zCell = ''] = row.split('|').slice(1).map((c) => c.trim());
+  const tokens = [...tokenCell.matchAll(/`(z-[a-z-]+)`/g)].map((m) => m[1]);
+  const values = [...zCell.matchAll(/`(\d+|auto)`/g)].map((m) => m[1]);
+  if (!tokens.length || tokens.length !== values.length) throw new Error(`specs/z-index.md ${layer} 줄의 토큰(${tokens.join(', ')})과 값(${values.join(', ')})이 짝이 안 맞는다`);
+  tokens.forEach((t, i) => same(proseValue(t), values[i], `specs/z-index.md ${layer} 의 ${t} — DESIGN.md 토큰 값`));
+  if (!values.includes(String(z))) throw new Error(`${component} 의 z-index — YAML ${z} 가 specs/z-index.md ${layer}(${tokens.map((t, i) => `${t} ${values[i]}`).join(' · ')})에 없다`);
 }
 
 // md 의 Behavior 표 한 줄
