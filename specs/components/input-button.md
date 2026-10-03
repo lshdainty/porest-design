@@ -94,7 +94,7 @@ Input Button 은 늘 고르는 자리를 연다 — 달력 · 시각 휠 · 아�
 | 1280 미만(폰 · 태블릿 · 앱) | 아래에서 올라오는 시트 — 위에 제목(고를 값의 종류), 확정이 필요하면 아래에 "완료" |
 | 1280 이상(데스크톱 웹) | 칸 아래 8 에 붙는 팝오버 — 칸 폭에 왼쪽을 맞추고, 아래가 모자라면 위로 |
 
-시트 · 팝오버의 모양은 [Bottom Sheet](bottom-sheet.md) · [Popover](popover.md) 를 따른다. 달력 · 시각 휠의 모양은 Date Picker · Time Picker 차례에 정한다.
+시트 · 팝오버의 모양은 [Bottom Sheet](bottom-sheet.md) · [Popover](popover.md) 를 따른다. 달력은 [Date Picker](date-picker.md), 시각 휠은 [Time Picker](time-picker.md), 달만 고르는 휠은 [Wheel Picker](wheel-picker.md) 다.
 
 [그림: 여는 자리 — 폰의 시트 · 데스크톱의 팝오버](../../site/components/specs/input-button.tsx#open-guide)
 
@@ -124,7 +124,7 @@ Input Button 은 늘 고르는 자리를 연다 — 달력 · 시각 휠 · 아�
 
 ## 코드
 
-레시피 `recipes/shadcn/components/ui/input-button.tsx`(InputButton · useInputButtonSurface)를 [Field](field.md) 안에 둔다. 값은 쓰는 쪽이 가진다 — 칸은 값을 보이고 누르면 `onClick` 을 부를 뿐이다. 여는 자리는 `useInputButtonSurface()` 가 폭으로 정한다(1280 미만 `"sheet"` · 이상 `"popover"`). 달력 레시피는 아직 옛 모양이다(Date Picker 차례에). 아래 미리보기는 스펙 값으로 그린 모습이다.
+레시피 `recipes/shadcn/components/ui/input-button.tsx`(InputButton · useInputButtonSurface)를 [Field](field.md) 안에 둔다. 값은 쓰는 쪽이 가진다 — 칸은 값을 보이고 누르면 `onClick` 을 부를 뿐이다. 여는 자리는 `useInputButtonSurface()` 가 폭으로 정한다(1280 미만 `"sheet"` · 이상 `"popover"`). 달력은 [Date Picker](date-picker.md) 레시피다. 아래 미리보기는 스펙 값으로 그린 모습이다.
 
 ### 날짜 — "완료" 로 넣는다
 
@@ -134,6 +134,7 @@ Input Button 은 늘 고르는 자리를 연다 — 달력 · 시각 휠 · 아�
 import { CalendarDays } from "lucide-react"
 import { BottomSheet, BottomSheetBody, BottomSheetContent, BottomSheetFooter } from "@/components/ui/bottom-sheet"
 import { Button } from "@/components/ui/button"
+import { DatePicker, formatDateValue } from "@/components/ui/date-picker"
 import { Field } from "@/components/ui/field"
 import { InputButton, useInputButtonSurface } from "@/components/ui/input-button"
 import { Popover, PopoverBody, PopoverContent, PopoverFooter, PopoverTrigger } from "@/components/ui/popover"
@@ -145,7 +146,7 @@ const [draft, setDraft] = React.useState(date)
 const trigger = (
   <InputButton
     placeholder="날짜 선택"
-    value={date ? formatDate(date) : undefined}
+    value={date ? formatDateValue(date) : undefined}
     suffixIcon={<CalendarDays />}
     aria-haspopup="dialog"
     aria-expanded={open}
@@ -155,15 +156,15 @@ const trigger = (
     }}
   />
 )
-const calendar = <Calendar mode="single" selected={draft} onSelect={setDraft} />
+const calendar = <DatePicker selection="single" value={draft} onValueChange={setDraft} autoFocus />
 // 바닥 버튼은 크기를 주지 않는다 — 시트 바닥은 large 48, 팝오버 바닥은 small 36 을 넣는다
-const done = <Button onClick={() => { setDate(draft); setOpen(false) }}>완료</Button>
+const done = <Button disabled={!draft} onClick={() => { setDate(draft); setOpen(false) }}>완료</Button>
 
 <Field label="날짜">
   {surface === "sheet" ? (
     <BottomSheet open={open} onOpenChange={setOpen}>
       {trigger}
-      <BottomSheetContent title="날짜">
+      <BottomSheetContent title="날짜 선택">
         <BottomSheetBody>{calendar}</BottomSheetBody>
         <BottomSheetFooter>{done}</BottomSheetFooter>
       </BottomSheetContent>
@@ -172,7 +173,7 @@ const done = <Button onClick={() => { setDate(draft); setOpen(false) }}>완료</
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>{trigger}</PopoverTrigger>
       {/* 고르는 패널은 머리 없이 — 이름은 aria-label */}
-      <PopoverContent aria-label="날짜" align="start">
+      <PopoverContent aria-label="날짜 선택" align="start">
         <PopoverBody>{calendar}</PopoverBody>
         <PopoverFooter>{done}</PopoverFooter>
       </PopoverContent>
@@ -231,7 +232,7 @@ const done = <Button onClick={() => { setDate(draft); setOpen(false) }}>완료</
   <InputButton value="10월 1일 (목)" suffixIcon={<CalendarDays />} />
 </Field>
 <Field label="입사일" readOnly>
-  <InputButton value="2024. 3. 4. (월)" suffixIcon={<CalendarDays />} />
+  <InputButton value="2024년 3월 4일 (월)" suffixIcon={<CalendarDays />} />
 </Field>
 ```
 

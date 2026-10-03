@@ -57,13 +57,13 @@ Porest Calendar는 **3 modes(single/multiple/range) × 원형 day cell** 매트�
 
 Calendar는 **size variant 없음** — day cell 40×40 고정. 사용처 className으로 외곽 padding/wrap 조정.
 
-[표: 크기와 모양](calendar.yaml#base.default)
+[표: 크기와 모양](v-pre-seed-date.yaml#base.default)
 
-[표: 전환](calendar.yaml#motion)
+[표: 전환](v-pre-seed-date.yaml#motion)
 
 ## States (day)
 
-[표: 날짜 상태](calendar.yaml#matrix)
+[표: 날짜 상태](v-pre-seed-date.yaml#matrix)
 
 ## Layout (한국 도메인 패턴)
 

@@ -3806,31 +3806,14 @@ HR(B2B) — 직원 카드, 조직도, 결재 큐 author, 평가 reviewer 등 모
 #### Sparse 매핑
 DESIGN.md와 동일 (`avatar` chart-blue × text-on-accent, lint contrast 활성).
 
-### Calendar (v61 추가)
+### 날짜 · 시각 고르기 — HR
 
-HR(B2B) — 휴가 신청·결재 일정·근태 캘린더·평가 일정 등 핵심 일정 컴포넌트. 데이터 밀도 우선이라 lg 사이즈(40px) 기본, 정보 표기 풍부.
+> 2026-10-03 — 모양 · 규칙은 공유 DESIGN.md 의 "날짜 · 시각 고르기" 절과 `specs/components/date-picker.md` · `time-picker.md` · `wheel-picker.md`. 옛 Calendar(v61) HR 패턴은 걷었다.
 
-#### HR 사용 패턴
-- **휴가 신청 range**: 시작일·종료일 2-step 선택 → range-start/mid/end 표시. 주말·공휴일 자동 disabled (휴가 일수 계산 제외).
-- **결재 일정 marker**: 셀 우하단 4×4 dot (`primary` `#357B5F` 채움) — 해당일 결재 항목 존재 표시. 셀 클릭 시 결재 list dropdown.
-- **근태 캘린더**: 출근(`success` 4×4 dot 좌하단), 지각(`warning`), 결근(`error`) — 일별 상태 표기.
-- **평가 일정**: 평가 기간 range를 `primary-light` 배경으로 강조 (피선택 결과 아닌 정보 표시 — selected variant와 톤 분리 위해 stroke 1px outline 추가).
-
-#### Layout 차이
-- 데스크탑 우선: lg 사이즈 (40×40) default. 모바일은 md (36×36).
-- 휴가/근태 화면은 풀 페이지 캘린더 — month/year navigation 헤더 좌우에 `오늘로 이동` 버튼 (`button-primary` sm).
-- 결재 큐와 통합된 mini calendar: sm (32×32) inline + 우측 결재 list 패널 (sticky).
-
-#### Color
-- selected (single/range-start/range-end): `primary` `#357B5F` 채움 + `text-on-accent`.
-- range-mid: `primary-light` `#6BAE8C` 배경 + `text-primary`.
-- today indicator (선택 안 됐을 때): `border-focus` `#357B5F` 1px outline + `primary` 텍스트.
-
-#### Touch target
-데스크탑 우선이라 `touch-min` (44×44) 충족 위해 lg 사이즈(40×40)에 외곽 padding `xs` (4px) 보강. 모바일 화면 전환 시 md(36×36)에서 padding `sm` (8px) 적용.
-
-#### Sparse 매핑
-신규 yaml 컴포넌트 0. 기존 `button-primary`(selected cell), `alert-text-success/error/warning`(근태 dot color), `card-light`(셀 default ground)이 contrast 페어 활성.
+- 날짜 하나: 휴가 · 초과근무 날짜(+ 시각 칸), 입사일, 생일, 공휴일 · 음력 날짜, 최초 부여일.
+- 기간(기간 달력 + 빠른 기간): 업무 보고 · 공지 게시 · 부여 유효기간 · 일정 시작 ~ 끝.
+- 시각: 초과근무 시작 · 종료(분 간격은 자리마다), 일정 시간표(30분).
+- 연도만: 연도 Select(짧은 선택지) — 달까지 고르면 연 · 월 휠.
 
 ### Field — HR
 
@@ -4014,16 +3997,12 @@ HR(B2B) 5 추가 컴포넌트.
 - legend interactive 적극 — 시리즈 토글로 데이터 비교
 
 #### Date Range Picker — HR
-- **dual picker** 데스크탑 default — 다른 달 동시 보기.
-- 휴가 기간 선택 (5/12 ~ 5/14) — preset "이번 주" / "다음 주" / "이번 달" 빈번.
-- 결재 history 검색 — preset "지난 30일" / "이번 분기" / "이번 년도".
-- 평가 기간: "Q1" (1/1-3/31) / "Q2" / "Q3" / "Q4" preset.
+
+> 2026-10-03 걷었다 — 기간은 Date Picker 기간("날짜 · 시각 고르기" 절).
 
 #### Time Picker — HR
-- **dropdown picker** 데스크탑 — 결재 일정, 회의 예약 등.
-- step **5분** default — 결재 일정 5분 단위 권장.
-- 24h format default — 비즈니스 톤.
-- 마감 시각 입력: "오늘 18:00" / "내일 09:00" preset 단축키.
+
+> 2026-10-03 걷었다 — 시각은 Time Picker("날짜 · 시각 고르기" 절, 오전·오후 12시간 휠).
 
 ### Extras-2 batch (v73 추가)
 

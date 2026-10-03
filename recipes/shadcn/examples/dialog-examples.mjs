@@ -505,7 +505,7 @@ const DETAIL = [
 const leaveForm = (uid, more = false) =>
   `<div style="display:flex; flex-direction:column; gap:var(--spacing-x6);">${[
     field(`${uid}-kind`, "휴가 종류", (id) => selectTrigger(id, "연차")),
-    field(`${uid}-period`, "기간", (id, labelId) => dateButton(id, labelId, "10월 12일 (월)~10월 14일 (수)")),
+    field(`${uid}-period`, "기간", (id, labelId) => dateButton(id, labelId, "10월 12일~10월 14일")),
     more ? field(`${uid}-phone`, "비상 연락처", (id) => textInput(id, "010-1234-5678", "tel")) : "",
     more ? field(`${uid}-place`, "휴가지", (id) => textInput(id, "제주")) : "",
   ].join("")}</div>`;

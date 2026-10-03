@@ -139,7 +139,7 @@ export function WebPage({ mode, title, brand = 'desk', rows = 4, children }: { m
   );
 }
 const HR_ROWS: [string, string, string, string][] = [
-  ['연차', '10월 12일 (월) ~ 10월 13일 (화)', '2일', 'green'],
+  ['연차', '10월 12일 (월)~10월 13일 (화)', '2일', 'green'],
   ['반차(오후)', '9월 25일 (금)', '0.5일', 'blue'],
   ['경조 휴가', '9월 4일 (금)', '1일', 'violet'],
   ['연차', '8월 14일 (금)', '1일', 'green'],
@@ -180,7 +180,7 @@ export function LeaveFields({ mode, size = 'medium' }: { mode: Mode; size?: 'lar
         <SelectTriggerView look={lk} mode={mode} size={size} state="enabled" labels={['연차']} />
       </F>
       <F mode={mode} label="기간">
-        <InputButtonView look={lk} mode={mode} size={size} state="enabled" value="2026. 10. 12. (월) ~ 10. 13. (화)" suffixIcon="calendar" />
+        <InputButtonView look={lk} mode={mode} size={size} state="enabled" value="10월 12일~10월 13일" suffixIcon="calendar" />
       </F>
     </Form>
   );
@@ -194,7 +194,7 @@ export function leaveFieldsHeight(size: 'large' | 'medium') {
 // 기간 — 하나 고르기 줄(오른쪽 라디오). 목록 줄은 화면 여백(24)을 스스로 가진다 — 시트 본문의 좌우 여백은 뺀다
 export const PERIOD: RowSpec[] = [
   { kind: 'radio', title: '이번 달', value: 'this', checked: true },
-  { kind: 'radio', title: '지난달', value: 'last' },
+  { kind: 'radio', title: '지난 달', value: 'last' },
   { kind: 'radio', title: '최근 3개월', value: 'q' },
 ];
 export function PeriodList({ mode, live = false, rows = PERIOD }: { mode: Mode; live?: boolean; rows?: RowSpec[] }) {

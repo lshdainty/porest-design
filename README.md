@@ -57,7 +57,7 @@ npm run build    # site/out — 정적 사이트 + 검색 색인 + llms.txt
 │   └── site/             # 풀 docs site — Landing + Tokens × 8 + Components × 50 (shadcn 1:1 매핑)
 ├── recipes/              # 사용처에 그대로 복사 가능한 컴포넌트 레시피
 │   └── shadcn/
-│       ├── components/ui/   # 47개 .tsx 컴포넌트 (cva + Slot + forwardRef + Radix 표준)
+│       ├── components/ui/   # 60개 .tsx 컴포넌트 (cva + Slot + forwardRef + Radix 표준)
 │       ├── examples/        # 50개 *-examples.mjs (Preview HTML + JSX 코드 토글 데이터)
 │       ├── styles/porest-shadcn-bridge.css  # Porest 토큰 → shadcn variables alias
 │       └── lib/utils.ts     # cn() helper
@@ -108,7 +108,7 @@ prose-token은 lint 비대상 (spec이 shadow/motion/overlay/breakpoint/touch-ta
 Coverage:
 - **80+ 컴포넌트 prose spec** (shadcn/ui 카탈로그 ~100% + Banner/Tag/Popover/File Upload/Treeview 등 누락 보강)
 - **shadcn 컴포넌트 페이지 50/50** (`exports/site/components/*.html`) — Form 17 / Display 12 / Overlay 9 / Navigation 9 / Disclosure 2 / Data 4 / Status 1, 각 페이지에 Preview(토큰 적용된 라이브 렌더) + Code(JSX) 토글
-- **47개 `.tsx` 레시피** (`recipes/shadcn/components/ui/`, cva + Slot + forwardRef + Radix 표준) + 3 조립 컴포넌트(combobox / date-picker / data-table — Command/Calendar/Table 조립)
+- **60개 `.tsx` 레시피** (`recipes/shadcn/components/ui/`, cva + Slot + forwardRef + Radix 표준) — 날짜 · 시각은 `date-picker` · `time-picker` · `wheel-picker`(2026-10-03 SEED, 옛 Calendar 조립을 대신)
 - 14 keyframes, 10 z-index layer, 5 breakpoint, 5 touch target.
 
 ---

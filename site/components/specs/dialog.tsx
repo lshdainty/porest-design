@@ -1,6 +1,7 @@
 // Dialog 페이지의 그림 — specs/components/dialog.md 의 `[그림: …](../../site/components/specs/dialog.tsx#<id>)` 자리.
 // 대화상자는 dialog.yaml 을 푼 값(overlayLook().dialog)으로, 1280 미만의 시트는 bottom-sheet.yaml(overlayLook().sheet)로 그린다.
 // 칸 · 목록 줄 · 버튼은 그 컴포넌트의 YAML 로 그린다. 데스크톱 창 · 폰의 크기는 그림 안에서 정한다.
+import { dateKit } from './date-look';
 import type { ReactNode } from 'react';
 import { Figure, Panel, MARK_LINE } from '../foundations/ui';
 import { listLook } from './list-look';
@@ -345,7 +346,7 @@ const CloseGuide: Fig = ({ caption }) => {
 };
 
 // ── 코드 미리보기(실제로 열고 닫는다 — 이 창의 폭으로 대화상자 · 시트) ─────
-const ExForm: Fig = () => <LeaveDialogDemo kit={overlayKit('hr')} sel={hr()} field={tf().field} trigger={btn('brandSolid', 'small', 'hr')} />;
+const ExForm: Fig = () => <LeaveDialogDemo kit={overlayKit('hr')} date={dateKit('hr')} sel={hr()} field={tf().field} trigger={btn('brandSolid', 'small', 'hr')} />;
 const ExView: Fig = () => <DetailDialogDemo kit={overlayKit()} list={listLook()} rows={DETAIL} />;
 
 export const dialogFigures: Record<string, Fig> = {

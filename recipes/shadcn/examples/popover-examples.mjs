@@ -24,7 +24,10 @@
  * 모션 클래스(animate-in · zoom-in-95 …)는 tw-animate-css 의 것이라 사이트에서는 아무 일도 하지 않는다.
  * 레시피의 스크립트(처음 초점 · Tab 으로 나가면 닫기 · 바깥 · Esc · 초점 되돌리기 · 본문 재기)는 정적 HTML 에 없다.
  * 아이콘은 lucide-react 와 같은 모양의 inline SVG 다(lucide 의 class · xmlns 는 그리지 않는다).
+ * 고르는 패널의 달력은 date-picker-examples.mjs 의 그림(datePickerHtml — date-picker.tsx 의 DOM · 클래스)을 그대로 쓴다.
  */
+
+import { datePickerHtml } from "./date-picker-examples.mjs";
 
 // ── popover.tsx 의 상수와 같은 값 ──────────────────────────────────────────
 
@@ -335,28 +338,11 @@ function infoStage({ uid, label, triggerLabel, title, description, text, height 
   const lead = `<div style="display:flex; align-items:center; gap:var(--spacing-x1); font-size:var(--text-t5); line-height:var(--text-t5--line-height); font-weight:500; color:var(--color-fg-neutral);">${esc(label)}${trigger}</div>`;
   const body = { html: text.map((t) => `<p style="${P_FIX.body} ${BODY_TEXT}">${esc(t)}</p>`).join(`<div style="height:var(--spacing-x3);"></div>`), overflow, scrolled };
   return `<div style="${STAGE(height)}"><div style="${PAGE}"><div aria-hidden="true" style="${PAGE_TITLE}">휴가</div><div style="${ANCHOR}">${lead}${popoverContent({ uid, title, description, body, availableHeight })}</div>${card([
-    ["연차 · 10월 12일 (월) ~ 14일 (수)", "승인 대기"],
+    ["연차 · 10월 12일 (월)~14일 (수)", "승인 대기"],
     ["반차(오전) · 9월 30일 (수)", "승인"],
     ["병가 · 9월 8일 (화)", "승인"],
   ])}</div></div>`;
 }
-
-// 달력 자리 — Calendar 의 모양은 Date Picker 차례에 정한다(미리보기 그림). 2026년 10월 1일은 목요일이라 앞 4칸이 빈다
-const CAL_DAY = "display:grid; place-items:center; height:36px; font-size:var(--text-t4); line-height:var(--text-t4--line-height); color:var(--color-fg-neutral);";
-const calendar = ({ picked = [], range = [] }) => {
-  const day = (d) => {
-    const on = picked.includes(d);
-    const mid = range.includes(d);
-    const mark = on ? "background:var(--color-bg-neutral-inverted); color:var(--color-fg-neutral-inverted); font-weight:700;" : mid ? "background:var(--color-bg-neutral-weak);" : "";
-    return `<span style="${CAL_DAY}"><span style="display:grid; place-items:center; width:32px; height:32px; border-radius:var(--radius-full); ${mark}">${d}</span></span>`;
-  };
-  const head = ["일", "월", "화", "수", "목", "금", "토"]
-    .map((d) => `<span style="padding:var(--spacing-x1) 0; text-align:center; font-size:var(--text-t3); color:var(--color-fg-neutral-subtle);">${d}</span>`)
-    .join("");
-  const blanks = '<span aria-hidden="true"></span>'.repeat(4);
-  const days = Array.from({ length: 31 }, (_, i) => day(i + 1)).join("");
-  return `<div aria-label="2026년 10월" role="group"><div style="margin-bottom:var(--spacing-x1); text-align:center; font-size:var(--text-t5); line-height:var(--text-t5--line-height); font-weight:700; color:var(--color-fg-neutral);">2026년 10월</div><div style="display:grid; grid-template-columns:repeat(7, minmax(0, 1fr)); row-gap:var(--spacing-x1);">${head}${blanks}${days}</div></div>`;
-};
 
 // <Field label> + <InputButton size="medium"> — Field 문맥이 라벨 id 를 잇는다. PopoverTrigger asChild 가 InputButton 의 버튼에 Radix 의
 // 속성과 data-slot 을 얹는다 — InputButton 은 data-slot 뒤에 받은 속성을 펼쳐 버튼의 data-slot 이 "popover-trigger" 가 된다
@@ -380,9 +366,6 @@ function pickField({ uid, label, value, contentId }) {
   return `<div data-slot="field" class="${FIELD_ROOT}"><div data-slot="field-header" class="${FIELD_HEADER}"><label id="${labelId}" for="${controlId}" class="${FIELD_LABEL} ${FIELD_LABEL_WEIGHT.medium}">${esc(label)}</label></div>${box}<span class="sr-only" aria-live="polite"></span></div>`;
 }
 
-const RANGE_NOTE =
-  "font-size:var(--text-t4); line-height:var(--text-t4--line-height); color:var(--color-fg-neutral-subtle);";
-
 // ── 예제 ──────────────────────────────────────────────────────────────────
 
 const RULES = [
@@ -399,6 +382,7 @@ export const popoverExamples = [
       "칸 옆 i 버튼(Button ghost · xsmall · 아이콘만 — 이름은 aria-label)이 연다. 안내 팝오버는 머리에 제목(20 / 27 · 700)과 닫기(52 상자 · 아이콘 22 fg-neutral-subtle — 아이콘이 위 27 · 오른쪽 24)를 둔다. 표면은 폭 320 ~ 480(화면 가장자리 16 을 남긴다) · 모서리 20 · 그림자 s3 이고 트리거 아래 8 에 뜬다 — 딤이 없고 뒤 화면을 막지 않는다(비모달). 열면 초점이 안으로(닫기 버튼이 아니라 내용) 가지만 가두지 않는다 — 마지막에서 Tab 으로 나가면 닫히고, 바깥 · Esc 로 닫으면 트리거로 돌아간다. 1280 미만에서는 같은 내용을 Bottom Sheet 로 띄운다.",
     jsx: `import { Popover, PopoverBody, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
+{/* 1280 이상 — 1280 미만에서는 같은 내용을 Bottom Sheet 로 띄운다(useInputButtonSurface() 로 고른다) */}
 <Popover>
   <PopoverTrigger asChild>
     <Button variant="ghost" size="xsmall" layout="iconOnly" aria-label="연차 사용 규정"><Info /></Button>
@@ -461,37 +445,38 @@ export const popoverExamples = [
   {
     title: "고르는 패널 — 머리 없이 · 바닥 완료",
     description:
-      "Input Button 의 고르는 패널(달력 · 시각 · 목록)은 1280 이상에서 팝오버로 연다 — 머리 없이 본문만이고(무엇을 고르는지는 트리거가 말한다) 표면에 aria-label 로 이름을 단다. 칸 아래 8 · 왼쪽 맞춤(align=\"start\")이다. 확정이 필요한 달력 · 시각만 바닥(PopoverFooter — Button small 36, 오른쪽)에 \"완료\" 를 두고, 누르는 순간 고르는 목록 · 격자는 바닥이 없다. 머리가 없으면 본문이 위 24 를 가진다. 달력의 모양은 Date Picker 차례에 정한다 — 그림의 달력은 자리만 그렸다.",
-    jsx: `import { InputButton, useInputButtonSurface } from "@/components/ui/input-button"
+      "Input Button 의 고르는 패널(달력 · 시각 · 목록)은 1280 이상에서 팝오버로 연다 — 머리 없이 본문만이고(무엇을 고르는지는 트리거가 말한다) 표면에 aria-label 로 고를 값의 종류(\"날짜 선택\")를 이름으로 단다. 칸 아래 8 · 왼쪽 맞춤(align=\"start\")이다. 확정이 필요한 달력 · 시각만 바닥(PopoverFooter — Button small 36, 오른쪽)에 \"완료\" 를 두고, 누르는 순간 고르는 목록 · 격자는 바닥이 없다. 머리가 없으면 본문이 위 24 를 가진다. 달력은 Date Picker 다 — 팝오버 안에서 336(칸 48 × 7) · 늘 6주이고, 오늘(2일)은 옅은 원 + 굵은 숫자, 고른 날은 짙은 원, 고를 수 없는 날(할 일 마감은 오늘부터 — min)은 흐린 숫자 + 취소선이다. 하루를 고르기 전에는 \"완료\" 가 막힌다. 기간을 고르는 팝오버는 두 달 나란히(744 — date-picker 페이지)다.",
+    jsx: `import { DatePicker, formatDateValue } from "@/components/ui/date-picker"
+import { InputButton, useInputButtonSurface } from "@/components/ui/input-button"
 import { Popover, PopoverBody, PopoverContent, PopoverFooter, PopoverTrigger } from "@/components/ui/popover"
 
 {/* 1280 이상 — useInputButtonSurface() === "popover" */}
-<Field label="기간">
+<Field label="마감일">
   <Popover open={open} onOpenChange={setOpen}>
     <PopoverTrigger asChild>
-      <InputButton size="medium" value={formatRange(range)} suffixIcon={<CalendarDays />} aria-haspopup="dialog" aria-expanded={open} />
+      <InputButton size="medium" value={formatDateValue(due)} suffixIcon={<CalendarDays />} aria-haspopup="dialog" aria-expanded={open} />
     </PopoverTrigger>
-    <PopoverContent align="start" aria-label="기간 고르기">
+    <PopoverContent align="start" aria-label="날짜 선택">
       <PopoverBody>
-        <Calendar mode="range" selected={draft} onSelect={setDraft} />
+        <DatePicker selection="single" min={today} value={draft} onValueChange={setDraft} />
       </PopoverBody>
       <PopoverFooter>
-        <Button onClick={() => { setRange(draft); setOpen(false) }} disabled={!draft?.to}>완료</Button>
+        <Button onClick={() => { setDue(draft); setOpen(false) }} disabled={!draft}>완료</Button>
       </PopoverFooter>
     </PopoverContent>
   </Popover>
 </Field>`,
     render: () => {
       const uid = "popover-ex-pick";
-      const field = pickField({ uid: `${uid}-field`, label: "기간", value: "10월 12일 (월)~10월 14일 (수)", contentId: uid });
+      const field = pickField({ uid: `${uid}-field`, label: "마감일", value: "10월 9일 (금)", contentId: uid });
       const panel = popoverContent({
         uid,
-        ariaLabel: "기간 고르기",
+        ariaLabel: "날짜 선택",
         align: "start",
-        body: { html: `${calendar({ picked: [12, 14], range: [13] })}<p style="${P_FIX.body} ${RANGE_NOTE} margin-top:var(--spacing-x2);">10월 12일 (월) ~ 14일 (수) · 3일</p>` },
+        body: { html: datePickerHtml({ uid: `${uid}-dp`, value: new Date(2026, 9, 9), min: new Date(2026, 9, 2) }) },
         footer: [button({ variant: "neutralSolid", size: "small", children: "완료" })],
       });
-      return `<div style="${STAGE(560)}"><div style="${PAGE}"><div aria-hidden="true" style="${PAGE_TITLE}">휴가 신청</div><div style="padding:var(--spacing-x4) var(--spacing-x6) var(--spacing-x6); border-radius:var(--radius-r4); background:var(--color-bg-layer-default);"><div style="${ANCHOR}">${field}${panel}</div></div></div></div>`;
+      return `<div style="${STAGE(680)}"><div style="${PAGE}"><div aria-hidden="true" style="${PAGE_TITLE}">할 일</div><div style="padding:var(--spacing-x4) var(--spacing-x6) var(--spacing-x6); border-radius:var(--radius-r4); background:var(--color-bg-layer-default);"><div style="${ANCHOR}">${field}${panel}</div></div></div></div>`;
     },
   },
 ];

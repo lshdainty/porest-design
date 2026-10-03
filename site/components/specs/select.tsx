@@ -13,7 +13,7 @@ import { SheetOverlay, SheetPanel } from './input-button-pickers';
 import { PHONE_SAFE, ov } from './overlay-screens';
 import type { ItemState, SelGroup, SelSize, SelectLook, TriggerState } from './select-look';
 import { SelectPlayground } from './select-playground';
-import { Cap, CATS, Cell, F, Form, HeroScreens, Live, PAY_FLAT, PAY_GROUPS, PAY_NONE, POLICY, Surface, desk, hr, plain, tf } from './select-screens';
+import { CATS, Cap, Cell, DateTimeFields, F, Form, HeroScreens, Live, PAY_FLAT, PAY_GROUPS, PAY_NONE, POLICY, Surface, desk, hr, plain, tf } from './select-screens';
 import { InputButtonView, SelectFieldList, SelectField, SelectListView, SelectOpenView, SelectTriggerView } from './select-view';
 import { TfInputView } from './text-field-view';
 import { Phone, Verdict, rc } from './kit';
@@ -593,7 +593,7 @@ function PayPhone({ payment, overlay }: { payment: ReactNode; overlay?: ReactNod
   const lk = desk();
   const t = tf();
   return (
-    <Phone title="거래 추가" mode="light" scale={0.52} h={600} bg="bg-layer-default" overlay={overlay}>
+    <Phone title="거래 추가" mode="light" scale={0.52} h={600} bg="bg-layer-default" overlay={overlay} screenW={360}>
       <div className="flex flex-col px-6 pt-4" style={{ gap: t.field.form.gapY }}>
         <F mode="light" label="금액">
           <TfInputView look={t.input} mode="light" size="large" state="enabled" value="12,000" suffix="원" />
@@ -601,9 +601,7 @@ function PayPhone({ payment, overlay }: { payment: ReactNode; overlay?: ReactNod
         <F mode="light" label="결제 수단">
           {payment}
         </F>
-        <F mode="light" label="날짜">
-          <InputButtonView look={lk} mode="light" size="large" state="enabled" value="10월 1일 (목) 오후 12:30" suffixIcon="calendar" />
-        </F>
+        <DateTimeFields mode="light" label="날짜" date="10월 1일 (목)" time="오후 3:00" />
       </div>
     </Phone>
   );

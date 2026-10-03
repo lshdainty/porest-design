@@ -14,7 +14,7 @@ import { ChipGroupView, ChipView, InputChipView, type ChipViewProps } from './ch
 import { PopoverPanel, SheetOverlay, SheetPanel } from './input-button-pickers';
 import { CenterOn, PHONE_SAFE, dialogChrome, overlayKit, ov } from './overlay-screens';
 import { DialogSurface, EndButtons } from './overlay-view';
-import { Cap, F, Form, Surface, cta, desk, hr, tf } from './select-screens';
+import { Cap, DateTimeFields, F, Form, Surface, cta, desk, hr, tf } from './select-screens';
 import { InputButtonView } from './select-view';
 import { TfInputView } from './text-field-view';
 import { Line, Phone, Row, Verdict, WebWindow, rc, type Mode } from './kit';
@@ -150,7 +150,7 @@ function TxAddPhone({ mode, scale = 0.7, h = 600 }: { mode: Mode; scale?: number
   const lk = desk();
   const t = tf();
   return (
-    <Phone title="거래 추가" mode={mode} scale={scale} h={h} bg="bg-layer-default" bottom={cta('저장', mode)}>
+    <Phone title="거래 추가" mode={mode} scale={scale} h={h} bg="bg-layer-default" bottom={cta('저장', mode)} screenW={360}>
       <div className="flex flex-col px-6 pt-4" style={{ gap: t.field.form.gapY }}>
         <F mode={mode} label="거래 종류">
           <Chips mode={mode} v="outlineStrong" items={[['지출', true], ['수입'], ['이체']]} />
@@ -161,9 +161,7 @@ function TxAddPhone({ mode, scale = 0.7, h = 600 }: { mode: Mode; scale?: number
         <F mode={mode} label="카테고리">
           <InputButtonView look={lk} mode={mode} size="large" state="enabled" value="식비 · 점심" prefixIcon="utensils" suffixIcon="chevron-down" />
         </F>
-        <F mode={mode} label="날짜">
-          <InputButtonView look={lk} mode={mode} size="large" state="enabled" value="10월 1일 (목) 오후 12:30" suffixIcon="calendar" />
-        </F>
+        <DateTimeFields mode={mode} label="날짜" date="10월 1일 (목)" time="오후 3:00" />
       </div>
     </Phone>
   );
@@ -207,18 +205,10 @@ function HrNoticeWindow({ mode, w = 560 }: { mode: Mode; w?: number }) {
             <F mode={mode} label="공지 유형">
               <Chips mode={mode} brand="hr" items={[['일반'], ['긴급'], ['이벤트', true], ['점검']]} />
             </F>
-            <div className="flex" style={{ gap: t.field.form.gapX }}>
-              <div className="min-w-0 flex-1">
-                <F mode={mode} label="시작일">
-                  <InputButtonView look={h} mode={mode} size="medium" state="enabled" value="2026. 10. 1. (목)" suffixIcon="calendar" />
-                </F>
-              </div>
-              <div className="min-w-0 flex-1">
-                <F mode={mode} label="종료일">
-                  <InputButtonView look={h} mode={mode} size="medium" state="enabled" value="2026. 10. 31. (토)" suffixIcon="calendar" />
-                </F>
-              </div>
-            </div>
+            {/* 기간은 칸 하나 — 시작 · 종료 두 칸으로 나누지 않는다(date-picker.md) */}
+            <F mode={mode} label="게시 기간">
+              <InputButtonView look={h} mode={mode} size="medium" state="enabled" value="10월 1일~10월 31일" suffixIcon="calendar" />
+            </F>
             <CheckboxView look={check} mode={mode} checked="unchecked" state="enabled" label="상단에 고정" />
           </Form>
         </DialogSurface>

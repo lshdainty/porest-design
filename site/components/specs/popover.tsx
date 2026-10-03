@@ -1,11 +1,11 @@
 // Popover 페이지의 그림 — specs/components/popover.md 의 `[그림: …](../../site/components/specs/popover.tsx#<id>)` 자리.
 // 팝오버는 popover.yaml 을 푼 값(overlayLook().popover)으로 그린다 — 폭 320 ~ 480 · 트리거와 8 · 가장자리와 16 · 그림자 s3.
-// 칸 · 버튼은 그 컴포넌트의 YAML, 달력은 아직 스펙이 없어(Date Picker 차례) Input Button 그림의 달력을 쓴다. 팝오버는 1280 이상의 데스크톱에만 그린다.
+// 칸 · 버튼은 그 컴포넌트의 YAML, 달력은 Date Picker(date-picker.yaml — 336 · 칸 48)다. 팝오버는 1280 이상의 데스크톱에만 그린다.
 import type { CSSProperties, ReactNode } from 'react';
 import { ChevronRight, Info } from 'lucide-react';
 import { Figure, Panel, MARK_LINE } from '../foundations/ui';
-import { CalendarGrid } from './input-button-pickers';
-import { calendarHeight } from './input-button-data';
+import { dateKit } from './date-look';
+import { DatePickerView } from './date-view';
 import { PopoverPlayground } from './overlay-playground';
 import { RulePopoverDemo } from './overlay-demos';
 import { Band, Legend, Note, RULE_TEXT, RuleBody, RulePopover, Scaled, Shot, btn, ov, overlayKit, pinAt } from './overlay-screens';
@@ -19,7 +19,6 @@ type Fig = (p: { caption?: string }) => ReactNode;
 const pv = () => ov('hr').popover;
 const px = (v: string) => parseFloat(v);
 const line: CSSProperties = { outline: `1px dashed ${MARK_LINE}`, outlineOffset: -1 };
-const CELL = 36;
 
 // ── 그림 속 데스크톱 페이지 ─────────────────────────────────
 // 창 안 페이지(HR) — 제목 · 줄. 자리(absolute)는 창 안쪽 기준이다
@@ -72,10 +71,11 @@ const ruleH = (lines: number) => {
   const p = pv();
   return p.header.padTop + px(p.title.lineHeight) + p.header.padBottom + lines * px(p.description.lineHeight) + p.body.padBottom;
 };
-// 날짜 패널의 높이 — 본문 위 여백(머리 없음) + 달력 + 바닥
+// 날짜 패널의 높이 — 본문 위 여백(머리 없음) + 달력(머리 · 요일 줄 · 6주) + 바닥
 const dateH = () => {
   const p = pv();
-  return p.body.padTop + calendarHeight(CELL) + p.footer.padTop + p.footer.button.height + p.footer.padBottom;
+  const d = dateKit('hr').date;
+  return p.body.padTop + d.header.height + d.weekday.height + d.cell.height * d.cell.weeks + p.footer.padTop + p.footer.button.height + p.footer.padBottom;
 };
 
 // 연차 사용 규정 — 아이콘 아래 8 에 팝오버(가로는 가장자리 16 안으로 민다)
@@ -100,7 +100,7 @@ function RuleWindow({ mode, w = 540, s = 1, marks, decor, short = false }: { mod
   );
 }
 // 날짜 고르기 — 휴가 신청 페이지의 날짜 칸 아래 8 에 머리 없는 고르는 패널(달력 · 완료)
-function DateWindow({ mode, w = 420, s = 1, marks, decor }: { mode: Mode; w?: number; s?: number; marks?: OvMarks; decor?: OvDecor }) {
+function DateWindow({ mode, w = 448, s = 1, marks, decor }: { mode: Mode; w?: number; s?: number; marks?: OvMarks; decor?: OvDecor }) {
   const p = pv();
   const t = tf();
   const lk = hr();
@@ -118,7 +118,7 @@ function DateWindow({ mode, w = 420, s = 1, marks, decor }: { mode: Mode; w?: nu
                 <SelectTriggerView look={lk} mode={mode} size="medium" state="enabled" labels={['연차']} />
               </F>
               <F mode={mode} label="날짜">
-                <InputButtonView look={lk} mode={mode} size="medium" state="enabled" value="2026. 10. 12. (월)" suffixIcon="calendar" />
+                <InputButtonView look={lk} mode={mode} size="medium" state="enabled" value="10월 12일 (월)" suffixIcon="calendar" />
               </F>
             </Form>
           </div>
@@ -134,9 +134,7 @@ function DatePanel({ mode, marks, decor }: { mode: Mode; marks?: OvMarks; decor?
   const p = pv();
   return (
     <PopoverSurface look={p} mode={mode} scroll={{ overflow: false, scrolled: false }} marks={marks} decor={decor} footer={<EndButtons mode={mode} items={[{ label: '완료', look: btn('neutralSolid', p.footer.button.size, 'hr') }]} />}>
-      <div className="flex justify-center">
-        <CalendarGrid look={hr()} mode={mode} year={2026} month={10} selected={12} today={1} cell={CELL} />
-      </div>
+      <DatePickerView kit={dateKit('hr')} mode={mode} value={{ y: 2026, m: 10, d: 12 }} />
     </PopoverSurface>
   );
 }
@@ -155,7 +153,7 @@ const Hero: Fig = ({ caption }) => (
   </Figure>
 );
 
-const Playground: Fig = () => <PopoverPlayground kits={{ desk: overlayKit('desk'), hr: overlayKit('hr') }} sels={{ desk: desk(), hr: hr() }} field={tf().field} />;
+const Playground: Fig = () => <PopoverPlayground kits={{ desk: overlayKit('desk'), hr: overlayKit('hr') }} sels={{ desk: desk(), hr: hr() }} field={tf().field} dates={{ desk: dateKit('desk'), hr: dateKit('hr') }} />;
 
 // ── Anatomy ───────────────────────────────────────────────
 // 안내(머리 · 본문) · 고르는 패널(본문 · 바닥) — 트리거와 8
@@ -264,7 +262,7 @@ function FormPopoverWindow() {
               <TfInputView look={t.input} size="medium" state="enabled" value="가족 행사" />
             </F>
             <F label="날짜">
-              <InputButtonView look={hr()} size="medium" state="enabled" value="2026. 10. 12. (월)" suffixIcon="calendar" />
+              <InputButtonView look={hr()} size="medium" state="enabled" value="10월 12일 (월)" suffixIcon="calendar" />
             </F>
           </Form>
         </PopoverSurface>

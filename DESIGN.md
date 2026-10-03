@@ -3533,7 +3533,8 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 | **Disclosure** | | | |
 | `accordion` / `collapsible` | — | — | 인라인 |
 | **Data** | | | |
-| `calendar` day cell | `sm` | 4px | 또는 `full` (선택된 날) |
+| `date-picker` 날짜 원 · 기간 띠 | `full` · — | 9999px · 0 | 원 42 · 띠는 줄 끝에서 각지게 끊는다 — 2026-10-03 SEED Date Picker(`date-picker.yaml`) |
+| `wheel-picker` 선택 띠 | `r2` | 8px | 2026-10-03 SEED Wheel Picker(`wheel-picker.yaml`) — Time Picker · 연 · 월 휠 |
 | `table` / `data-table` row | — | — | |
 | `chart` | — | — | |
 
@@ -4451,72 +4452,31 @@ hash(name) % 10 → `chart-{red,orange,yellow,green,blue,indigo,violet,pink,brow
 #### HR / Desk 듀얼 브랜드
 spec 자체는 brand-neutral. brand 파일에서 사용 패턴 차이 prose — HR(데이터 그리드 inline 작은 사이즈), Desk(profile/메모 inline 중-대 사이즈) 분기.
 
-### Calendar (v61 추가)
+### 날짜 · 시각 고르기 — Date Picker · Time Picker · Wheel Picker
 
-날짜 선택·표시 컴포넌트. HR(휴가 신청·승인 일정), Desk(가계부 거래일·할일 due date) 양쪽 핵심. **새 토큰 추가 0** — 기존 typography(`caption`/`body-lg`) + radius/spacing + brand primary로 구성.
+> 2026-10-03 SEED 구조로 새로 정했다(옛 Calendar v61 · Date Range Picker v72 · Time Picker v72 를 대신). 수치 원본은 `specs/components/date-picker.yaml` · `time-picker.yaml` · `wheel-picker.yaml`, 쓰는 규칙은 같은 이름의 `.md`. 옛 Calendar 스펙은 `specs/components/calendar.history/v-pre-seed-date.*`.
 
-#### Layout
-- 7×N 그리드 (요일 헤더 1행 + 4–6 주 행).
-- day cell: 정사각형 — `lg` 사이즈 `40×40`(데스크탑), `md` 사이즈 `36×36`(모바일/컴팩트).
-- gap: `xs` (4px) — 주말 강조 없이 균일.
-- month/year header: `title-sm` 19/600, 좌우 `←`/`→` 네비 버튼(`outline-strong` icon).
-- 요일 라벨: `caption` 12/400 `text-tertiary`, 일요일은 `error`(휴일 톤), 토요일은 `info`(브랜드 무관 관례).
+날짜 · 시각은 치지 않고 고른다 — 칸은 Input Button 이고, 누르면 1280 미만은 아래 시트 · 이상은 칸 아래 팝오버가 열리며 "완료" 로 넣는다(고르는 동안 칸 값은 그대로, 닫으면 버림).
 
-#### Day cell variant × state
-| Variant | bg | text | radius | 메모 |
-|---|---|---|---|---|
-| **default** | transparent | `text-primary` | `radius-full` (40px 원형) | hover시 `surface-input` 채움 |
-| **today** | transparent | `primary` | `radius-full` + `border-focus` 1px outline | 선택 안 됐어도 시각 강조 |
-| **selected (single)** | `primary` | `text-on-accent` | `radius-full` | brand primary 채움(잉크) |
-| **range-start / range-end** | `primary` | `text-on-accent` | `radius-full` (선택 cell) + 인접 셀 까지 `primary-light` 띠 | 휴가 기간·기간 거래 표시 |
-| **range-mid** | `primary-light` | `text-primary` | `0` (사각 띠) | 시작·끝 셀 사이 연결 |
-| **disabled (off-month)** | transparent | `text-tertiary` | `radius-full` | 이전·다음 달 회색 톤 |
-| **disabled (휴일/잠금)** | transparent | `text-disabled` | `radius-full` | cursor:not-allowed |
+| 이런 값 | 고르는 것 |
+|---|---|
+| 날짜 하나 | Date Picker — 한 달, 늘 6주 |
+| 기간 | Date Picker 기간 — 칸 하나("9월 28일~10월 6일"), 시트는 이어지는 달 · 팝오버는 두 달, 위에 빠른 기간 칩 |
+| 여러 날 | Date Picker 여러 날 — 따로 그린 원 |
+| 시각 | Time Picker — 오전·오후 → 시 → 분, 분 간격 기본 5 |
+| 날짜 + 시각 | 날짜 칸 + 시각 칸 나란히 |
+| 달만(예산 · 홈 · 카드 실적) | Wheel Picker 연 · 월 + "완료" |
+| 1 ~ 31(매월 N일 · 결제일) | Select |
 
-#### Size
-| Size | cell | text | 사용 |
-|---|---|---|---|
-| sm | 32×32 | `caption` 12/400 | inline mini calendar (datepicker dropdown) |
-| **md** (default) | 36×36 | `body-lg` 15/400 | 모바일 풀스크린 |
-| lg | 40×40 | `body-lg` 15/600 | 데스크탑 풀 페이지 |
+| | Date Picker | Time Picker · Wheel Picker |
+|---|---|---|
+| 크기 | 칸 48(폭 ÷ 7) · 원 42 · 머리 · 요일 48 · 늘 6주 · 팝오버 336 · 두 달 696 | 항목 44 × 5 = 220 · 연 · 월 휠 7칸 · small 36 |
+| 글자 | 숫자 `t5` 500 `fg-neutral-muted` · 요일 `t4` 500 `fg-neutral-subtle` · 제목 `t5` 700 | 항목 26 / 35 · 500 — 고른 것 `fg-neutral` · 둘레 `fg-disabled` |
+| 상태 | 오늘 옅은 원 `bg-neutral-weak` + 숫자 700 · 고름 `bg-neutral-inverted` · 기간 띠 `bg-neutral-weak` · 앞뒤 달 `fg-disabled`(누르지 못함) · 막힘 `fg-disabled` + 취소선 · 읽기 전용 `stroke-neutral-solid` | 띠 `bg-neutral-weak` 모서리 8 · 좌우 16 들임 · 안개 min(40%, 3칸) |
+| 키보드 | WAI-ARIA Grid — ←→ 하루 · ↑↓ 한 주 · PageUp/Down 한 달 · Shift+Page 한 해 | 칼럼마다 Tab · ↑↓ · Home · End |
+| 칸 표기 | 올해 "10월 15일 (목)" · 다른 해 "2027년 1월 3일 (일)" · 기간 물결표 | "오후 3:00" |
 
-#### Header navigation
-- 좌우 화살표(◁ ▷): 24×24 hit area는 `touch-min` (44×44) 확보를 위해 padding `sm` 적용.
-- 월/년 표시 클릭시 month picker(드롭다운) 또는 year picker(grid) 변환 — Dropdown spec 참조.
-
-#### Touch target
-- day cell 자체는 36–40px이지만 inline padding 없이 셀 자체가 hit area — `sm`–`md` 사이즈에서 모바일 사용 시 `touch-comfortable` (48×48) 권장.
-- 좌우 네비 버튼은 `touch-min` (44×44) 필수.
-
-#### Motion
-- selected/range 변경: `motion-duration-fast` (150ms) `motion-ease-out` — bg 색·radius 동시 트랜지션. range는 시작·끝 동시 페인트(staggered 금지).
-- month transition: 좌우 슬라이드 `motion-duration-base` (200ms) — 화살표 방향과 일치.
-- `prefers-reduced-motion: reduce`: 모든 트랜지션 0ms.
-
-#### Accessibility
-- [ ] **HTML**: `<table role="grid">` 또는 `<div role="grid">` + 행 `role="row"` + 셀 `role="gridcell"`.
-- [ ] **aria 라벨**: 셀에 `aria-label="2026년 5월 10일 일요일"` 형식. `aria-selected="true"`(선택), `aria-current="date"`(today), `aria-disabled="true"`(off-month/잠금).
-- [ ] **키보드**:
-  - 화살표키 (`↑↓←→`): 일 단위 이동. 주간 경계는 `↑/↓`로 7일씩 이동.
-  - `PageUp` / `PageDown`: 월 이동. `Shift+PageUp/PageDown`: 년 이동.
-  - `Home` / `End`: 주 시작 / 끝.
-  - `Enter` / `Space`: 선택 확정.
-  - `Esc`: 드롭다운 datepicker 닫기.
-- [ ] **focus ring**: 셀 hover와 별개로 keyboard focus 시 `border-focus` 2px outline + 1px offset.
-- [ ] **screen reader**: 월/년 변경 시 `aria-live="polite"` 알림 — "2026년 5월" 발화.
-- [ ] **range 선택**: 시작 → 끝 두 단계, 첫 선택 시 `aria-label="시작일 선택됨, 종료일을 선택하세요"` 안내.
-- [ ] **disabled cell**: focus 가능하되 선택 불가 — screen reader가 "선택 불가" 발화.
-
-#### Sparse component 매핑 (lint contrast)
-신규 yaml 컴포넌트 추가 0 — 기존 `card-light`(default cell ground), `button-primary`(selected cell — brand 파일), `alert-text-success`/`alert-text-error`(요일 헤더 토/일 색)이 contrast 페어 검증 담당. 모든 셀은 기존 토큰 합성으로 표현 가능.
-
-#### 추가 이유
-1. v33-v60 컴포넌트 batch에는 시간/날짜 선택 컴포넌트 부재 — HR 휴가·Desk 가계부의 핵심 사용자 흐름이 **날짜 선택 기반**.
-2. **새 토큰 0** — 기존 typography/radius/spacing/brand primary 합성으로 표현 가능. lint contrast 부담 0.
-3. 모바일/데스크탑 동시 — sm/md/lg 3 사이즈로 mini datepicker dropdown부터 풀 페이지까지 커버.
-
-#### HR / Desk 듀얼 브랜드
-spec brand-neutral. brand 파일에서 사용 패턴 차이 prose — HR(휴가 신청 range, 결재 일정 marker), Desk(가계부 거래 dot, 할일 due date 강조) 분기.
+빠른 기간은 한 벌이다 — 이번 주(일 ~ 토) · 이번 달(1일 ~ 말일) · 지난 달 · 최근 7일 · 30일 · 최근 3개월 · 6개월 · 1년(이번 달을 넣은 달들) · 올해(1월 1일 ~ 12월 31일). 화면은 이 안에서 고른다.
 
 ### Field (폼 — 라벨 · 설명 · 오류)
 
@@ -5341,64 +5301,11 @@ spec brand-neutral. brand 파일 — HR(Data Table 결재/직원/평가 그리�
 
 ### Date Range Picker (v72 추가)
 
-기간(시작-종료) 선택 — Calendar(v61) range variant 활용. **새 토큰 0**.
-
-#### Anatomy
-- trigger: Input(v34) — "2026-05-01 ~ 2026-05-14" 또는 placeholder "기간 선택"
-- panel: Dropdown panel — 좌측 Calendar + 우측 preset list
-- 좌측 Calendar:
-  - 1개월 또는 2개월(데스크탑) 표시
-  - range-start / range-mid / range-end 셀 시각 (v61 Calendar variant)
-  - hover 시 임시 range 미리 표시
-- 우측 preset list (옵션):
-  - "오늘" / "어제" / "지난 7일" / "지난 30일" / "이번 달" / "지난 달"
-  - 클릭 시 좌측 Calendar에 즉시 반영
-
-#### Mode
-- **single picker** (1 calendar): 모바일 또는 좁은 viewport
-- **dual picker** (2 calendar 좌-우): 데스크탑 — 다른 달 동시 보기 (예: 5월~6월 range)
-
-#### Layout
-- panel width: `min(640px, 100vw)` (dual), `min(360px, 100vw)` (single)
-- preset list: 우측 120-160px, divider로 분리
-- footer: "취소" + "적용" actions
-
-#### Accessibility
-- v61 Calendar 패턴 그대로 — `role="grid"` + `aria-current="date"` + `aria-selected`
-- range 선택 안내: 첫 선택 후 `aria-live` "시작일 선택됨, 종료일을 선택하세요"
-- 키보드: Calendar 동일 (arrow / Page / Home/End / Enter / Esc)
-- preset 키보드: Tab으로 진입, arrow keys로 이동, Enter 적용
+> 2026-10-03 걷었다 — 기간은 Date Picker 기간("날짜 · 시각 고르기" 절)이다. 칸 하나 · 달력 하나, 빠른 기간은 한 벌(옛 "오늘 / 어제 / 지난 7일 …" + "취소 · 적용" 을 대신).
 
 ### Time Picker (v72 추가)
 
-시:분 또는 시:분:초 입력. **새 토큰 0**.
-
-#### Variant
-| Variant | 형태 |
-|---|---|
-| **input only** (default) | `<input type="time">` 또는 커스텀 |
-| **dropdown picker** | input + 펼침 panel (시 list + 분 list 좌우) |
-| **wheel picker** | 모바일 native scroll wheel — iOS/Android |
-
-#### Anatomy (dropdown picker)
-- input: 24h "14:30" 또는 12h "2:30 PM"
-- panel: 좌측 시 column (00-23) + 우측 분 column (00-59 5분 단위 또는 1분)
-- 각 column scroll list — current 가운데 highlight
-
-#### Step
-- 1분, 5분(default), 10분, 15분, 30분 — context별
-- 결재 일정 1분, 가계부 거래 시각 5분 등
-
-#### State
-- empty: placeholder "시각 입력"
-- valid: "14:30" 정상 표시
-- invalid: error 1px border + alert text "시각 형식이 잘못됐어요"
-- disabled: opacity 0.5 + cursor not-allowed
-
-#### Accessibility
-- `<input type="time">` 사용 권장 — native a11y 자동, 모바일 wheel picker 자동
-- 커스텀 picker: `role="listbox"` + items `role="option"` (시/분 각각)
-- 키보드: arrow keys로 시/분 이동, Tab으로 시→분→AM/PM, Enter 확정
+> 2026-10-03 걷었다 — 시각은 Time Picker("날짜 · 시각 고르기" 절 · `specs/components/time-picker.md`)다. 치는 칸 · 24시간("14:30")을 오전·오후 12시간 휠로 바꿨다.
 
 #### HR / Desk 듀얼 브랜드 (v72 5종 공통)
 spec brand-neutral. brand 파일 — HR(Sonner top-right 결재 알림 stack / Chart bar/line dashboard / Date Range Picker dual desktop / Time Picker 결재 일정 5분 step), Desk(Sonner bottom-center 모바일 / Chart pie 가계부 카테고리 / Aspect Ratio 16:9 메모 attachment / Date Range Picker single 모바일).

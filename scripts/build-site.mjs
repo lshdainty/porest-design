@@ -73,10 +73,11 @@ import { selectExamples } from "../recipes/shadcn/examples/select-examples.mjs";
 import { inputOtpExamples } from "../recipes/shadcn/examples/input-otp-examples.mjs";
 import { comboboxExamples } from "../recipes/shadcn/examples/combobox-examples.mjs";
 import { datePickerExamples } from "../recipes/shadcn/examples/date-picker-examples.mjs";
+import { timePickerExamples } from "../recipes/shadcn/examples/time-picker-examples.mjs";
+import { wheelPickerExamples } from "../recipes/shadcn/examples/wheel-picker-examples.mjs";
 // Phase 6 Data
 import { tableExamples } from "../recipes/shadcn/examples/table-examples.mjs";
 import { dataTableExamples } from "../recipes/shadcn/examples/data-table-examples.mjs";
-import { calendarExamples } from "../recipes/shadcn/examples/calendar-examples.mjs";
 import { chartExamples } from "../recipes/shadcn/examples/chart-examples.mjs";
 // Display extras (shadcn 외 — Porest 자체 정의)
 import { spinnerExamples } from "../recipes/shadcn/examples/spinner-examples.mjs";
@@ -91,7 +92,6 @@ import {
   parseTokensFromCss,
   renderButtonGallery,
   renderListingDetail,
-  renderCalendar,
   renderEmptyState,
   renderSnackbars,
   renderSkeleton,
@@ -165,10 +165,11 @@ const SHADCN_EXAMPLES = {
   "input-otp": inputOtpExamples,
   combobox: comboboxExamples,
   "date-picker": datePickerExamples,
+  "time-picker": timePickerExamples,
+  "wheel-picker": wheelPickerExamples,
   // Phase 6 Data
   table: tableExamples,
   "data-table": dataTableExamples,
-  calendar: calendarExamples,
   chart: chartExamples,
   // Display extras
   spinner: spinnerExamples,
@@ -1956,12 +1957,12 @@ function parseExamplesMd() {
 // 각 항목: slug, name, category, description.
 // 페이지 1대1 매핑: 묶지 않음 (input-textarea 같은 묶음 폐기).
 const SHADCN_CATALOG = [
-  // Form (17)
+  // Form (19)
   { slug: "button", name: "Button", category: "Form", description: "액션을 실행하는 버튼. 변형 7 × 크기 4 × 배치 2(SEED Action Button 구조)." },
   { slug: "checkbox", name: "Checkbox", category: "Form", description: "여러 선택 가능한 박스." },
   { slug: "chip", name: "Chip", category: "Form", description: "2 ~ 4개 짧은 폼 값 고르기 · 누르면 값을 채우는 제안 · 목록 위 필터 바 · 지우기로 빼는 넣은 값을 맡는 작은 알약 (SEED Chip 구조)." },
   { slug: "combobox", name: "Combobox", category: "Form", description: "검색·필터 가능한 select." },
-  { slug: "date-picker", name: "Date Picker", category: "Form", description: "calendar + popover 조합 날짜 선택." },
+  { slug: "date-picker", name: "Date Picker", category: "Form", description: "날짜 · 기간 · 여러 날을 고르는 달력 — 날짜 칸(Input Button)을 누르면 1280 미만 시트 · 이상 팝오버로 열리고 \"완료\" 로 넣는다. 머리 · 요일 줄 · 날짜 칸 48 · 기간 띠, 한 달 · 두 달 · 이어지는 달 (SEED Date Picker 구조)." },
   { slug: "field", name: "Field", category: "Form", description: "칸 이름 · 필수 표시 · 설명 · 오류 · 글자 수를 입력 하나에 붙이는 둘레 (SEED Field 구조)." },
   { slug: "input", name: "Input", category: "Form", description: "한 줄 글 · 숫자를 직접 치는 입력칸. 상자 · 밑줄 × large · medium · 반응형, 앞 · 뒤 붙이개 · 지우기 (SEED Text Input 구조)." },
   { slug: "input-button", name: "Input Button", category: "Form", description: "입력칸 모양의 버튼. 누르면 달력 · 시각 · 아이콘 격자 · 긴 목록을 1280 미만 시트 · 이상 팝오버로 열고 고른 값이 칸에 들어간다 (SEED Input Button 구조)." },
@@ -1972,8 +1973,10 @@ const SHADCN_CATALOG = [
   { slug: "slider", name: "Slider", category: "Form", description: "범위 값 선택 슬라이더." },
   { slug: "switch", name: "Switch", category: "Form", description: "on/off 토글." },
   { slug: "textarea", name: "Textarea", category: "Form", description: "여러 줄 글을 받는 입력칸. 3줄에서 쓴 만큼 자라고 최대 · 고정 높이를 정할 수 있다 (SEED Textarea 구조)." },
+  { slug: "time-picker", name: "Time Picker", category: "Form", description: "시각을 고르는 12시간 휠 — 오전·오후 · 시 · 분. 시각 칸을 누르면 1280 미만 시트 · 이상 팝오버로 열리고 \"완료\" 로 넣는다 (SEED Time Picker 구조)." },
   { slug: "toggle", name: "Toggle", category: "Form", description: "on/off 버튼 (인라인)." },
   { slug: "toggle-group", name: "Toggle Group", category: "Form", description: "단일 또는 복수 선택 토글 그룹." },
+  { slug: "wheel-picker", name: "Wheel Picker", category: "Form", description: "순서가 있는 값을 세로로 굴려 고르는 휠 — 칼럼 · 항목 · 가운데 선택 띠 · 위아래 안개. Time Picker 의 바탕이고, 달력의 연 · 월 휠 · 달만 고르는 자리에 쓴다 (SEED Wheel Picker 구조)." },
 
   // Display (16)
   { slug: "aspect-ratio", name: "Aspect Ratio", category: "Display", description: "고정 비율 컨테이너 (16:9, 4:3 등)." },
@@ -2019,8 +2022,7 @@ const SHADCN_CATALOG = [
   { slug: "accordion", name: "Accordion", category: "Disclosure", description: "접고 펼치는 패널 (단일/다중)." },
   { slug: "collapsible", name: "Collapsible", category: "Disclosure", description: "콘텐츠 접고 펼치기 (단일)." },
 
-  // Data (4)
-  { slug: "calendar", name: "Calendar", category: "Data", description: "달력 위젯 — react-day-picker 베이스." },
+  // Data (3)
   { slug: "chart", name: "Chart", category: "Data", description: "데이터 시각화 — Recharts 베이스." },
   { slug: "data-table", name: "Data Table", category: "Data", description: "정렬·필터·페이징 테이블 — TanStack Table 베이스." },
   { slug: "table", name: "Table", category: "Data", description: "기본 HTML 테이블 스타일." },
@@ -2051,7 +2053,6 @@ function getDemoFunctions(slug) {
     case "toast-sonner": return [renderSnackbars, renderShadcnExtras];
     case "skeleton-spinner-progress": return [renderSkeleton, renderBatchV67];
     case "empty-state": return [renderEmptyState];
-    case "calendar-date-range-picker": return [renderCalendar, renderShadcnExtras];
     case "tabs": return [renderVignettes];
     case "breadcrumb-sidebar": return [renderShadcnNav];
     case "pagination-stepper": return [renderBatchV67];

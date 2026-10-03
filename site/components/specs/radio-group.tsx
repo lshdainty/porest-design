@@ -2,6 +2,7 @@
 // 동그라미 · 라벨은 radio-group.yaml 을 푼 값(radioLook)으로, 화면 예시는 kit 의 Desk 화면 조각으로 그린다.
 // 오늘 제품에는 라벨만 있는 Radio 가 없다 — 선택지는 캘린더 일정의 반복 선택지를 빌렸다(radio-group.md Guidelines).
 import type { CSSProperties, ReactNode } from 'react';
+import { Calendar } from 'lucide-react';
 import { Figure, Panel, MARK, MARK_LINE } from '../foundations/ui';
 import { axisDesc, axisValues, loadComponentSpec } from '@/lib/component-spec';
 import { radioGroupGap, radioLook, radioParts, RADIO_CHECKED, RADIO_STATES, type RadioChecked, type RadioCombo, type RadioState } from './radio-group-look';
@@ -12,6 +13,8 @@ import { ButtonView } from './button-view';
 import { Phone, Sheet, Verdict, rc, type Mode } from './kit';
 import { selectBoxLook } from './select-box-look';
 import { SelectBoxGroupView } from './select-box-view';
+import { selectLook } from './select-look';
+import { formatDay } from './date-shared';
 
 type Fig = (p: { caption?: string }) => ReactNode;
 const spec = () => loadComponentSpec('radio-group');
@@ -300,7 +303,8 @@ const TouchTarget: Fig = ({ caption }) => (
   </Figure>
 );
 
-const Pair = ({ children }: { children: ReactNode }) => <div className="flex w-full max-w-[620px] gap-4">{children}</div>;
+// 좋은 예 · 나쁜 예 — 좁은 폭(폰)에서는 위아래로 쌓는다(나란히 두면 상자가 115 까지 줄어 글이 끊긴다)
+const Pair = ({ children }: { children: ReactNode }) => <div className="flex w-full max-w-[620px] flex-col gap-4 sm:flex-row">{children}</div>;
 
 const GroupGuide: Fig = ({ caption }) => (
   <Panel caption={caption}>
@@ -362,10 +366,20 @@ function Inp({ children, w = 64 }: { children: ReactNode; w?: number }) {
     </span>
   );
 }
+// 종료일은 타이핑하지 않고 달력으로 고른다 — Input Button 모양(값 + 달력 아이콘)
+function InpBtn({ children }: { children: ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg px-2 py-1 text-[13px] tabular-nums" style={{ border: `1px solid ${rc('stroke-neutral-weak')}`, background: rc('bg-layer-default'), color: rc('fg-neutral') }}>
+      {children}
+      <Calendar aria-hidden size={13} strokeWidth={2} style={{ color: rc('fg-neutral-muted') }} />
+    </span>
+  );
+}
+const END_DAY = { y: 2027, m: 3, d: 31 };
 const END = [
   { t: '무기한', d: '중지할 때까지 계속 반복' },
   { t: '횟수 지정', input: <span className="inline-flex items-center gap-1.5 text-[13px]" style={{ color: rc('fg-neutral') }}>총 <Inp>12</Inp> 회</span> },
-  { t: '종료일 지정', input: <Inp w={140}>2027. 3. 31.</Inp> },
+  { t: '종료일 지정', input: <InpBtn>{formatDay(END_DAY)}</InpBtn> },
 ];
 const SelectBoxGuide: Fig = ({ caption }) => (
   <Panel caption={caption}>
@@ -381,7 +395,7 @@ const SelectBoxGuide: Fig = ({ caption }) => (
             boxes={[
               { value: 'none', title: '무기한', description: '중지할 때까지 계속 반복' },
               { value: 'count', title: '횟수 지정', description: '정한 횟수만큼 반복', footer: { before: '총', value: '12', after: '회', aria: '반복 횟수' } },
-              { value: 'date', title: '종료일 지정', description: '정한 날까지 반복', footer: { value: '2027. 3. 31.', width: 148, aria: '종료일' } },
+              { value: 'date', title: '종료일 지정', description: '정한 날까지 반복', footer: { button: formatDay(END_DAY), aria: '종료일', look: selectLook('desk') } },
             ]}
           />
         </div>

@@ -2,6 +2,7 @@
 // 칸(Select · Input Button · Input)의 수치는 YAML 을 푼 값(selectLook · textFieldLook)에서 온다. 화면 틀(폰 · 창 · 대화상자)의 글자 크기는 그림 안에서 정한다.
 import type { CSSProperties, ReactNode } from 'react';
 import { buttonLook } from './button-look';
+import { timeLook } from './date-look';
 import { ButtonView } from './button-view';
 import { overlayLook } from './overlay-look';
 import { DialogSurface, DimView } from './overlay-view';
@@ -109,12 +110,32 @@ export const CATS: SelGroup[] = [
 ];
 
 // ── 화면 예시 ───────────────────────────────────────────
-// Desk 거래 추가(폰 · large) — 카테고리 · 날짜는 Input Button, 결제 수단은 Select
-export function DeskTxPhone({ mode, scale = 0.6, h = 640, payment, overlay }: { mode: Mode; scale?: number; h?: number; payment?: ReactNode; overlay?: ReactNode }) {
+// 날짜 칸 + 시각 칸 나란히 — 날짜와 시각은 한 칸에 넣지 않는다(time-picker.md "날짜와 함께" · flex-wrap gap-x2,
+// 날짜 칸은 글이 다 들어가는 폭 이상 · 시각 칸은 md 의 폭 — 한 줄에 다 들어가지 않으면 시각 칸이 다음 줄로)
+export function DateTimeFields({ mode, label, date, time, size = 'large', brand = 'desk' }: { mode: Mode; label: string; date: string; time: string; size?: 'large' | 'medium'; brand?: 'desk' | 'hr' }) {
+  const lk = brand === 'hr' ? hr() : desk();
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'flex-end' }}>
+      <div style={{ flex: '1 1 0%', minWidth: 'max-content' }}>
+        <F mode={mode} label={label}>
+          <InputButtonView look={lk} mode={mode} size={size} state="enabled" value={date} suffixIcon="calendar" />
+        </F>
+      </div>
+      {/* 라벨은 짝마다 하나(날짜 칸 위) — 시각 칸은 라벨 없이 아래를 맞추고, 이름은 보조 기술에만 */}
+      <div style={{ width: timeLook().fieldWidth, flexShrink: 0 }}>
+        <span className="sr-only">시간</span>
+        <InputButtonView look={lk} mode={mode} size={size} state="enabled" value={time} suffixIcon="clock" />
+      </div>
+    </div>
+  );
+}
+
+// Desk 거래 추가(폰 · large) — 카테고리 · 날짜 · 시각은 Input Button, 결제 수단은 Select. 틀 안 화면은 360(날짜 칸 + 시각 칸이 한 줄에 들어가는 폭)
+export function DeskTxPhone({ mode, scale = 0.58, h = 640, payment, overlay, screenW = 360 }: { mode: Mode; scale?: number; h?: number; payment?: ReactNode; overlay?: ReactNode; screenW?: number }) {
   const lk = desk();
   const t = tf();
   return (
-    <Phone title="거래 추가" mode={mode} scale={scale} h={h} bg="bg-layer-default" bottom={cta('저장', mode)} overlay={overlay}>
+    <Phone title="거래 추가" mode={mode} scale={scale} h={h} bg="bg-layer-default" bottom={cta('저장', mode)} overlay={overlay} screenW={screenW}>
       <div className="flex flex-col px-6 pt-4" style={{ gap: t.field.form.gapY }}>
         <F mode={mode} label="금액">
           <TfInputView look={t.input} mode={mode} size="large" state="enabled" value="12,000" suffix="원" />
@@ -125,9 +146,7 @@ export function DeskTxPhone({ mode, scale = 0.6, h = 640, payment, overlay }: { 
         <F mode={mode} label="결제 수단">
           {payment ?? <SelectTriggerView look={lk} mode={mode} size="large" state="enabled" labels={['현대카드 M']} />}
         </F>
-        <F mode={mode} label="날짜">
-          <InputButtonView look={lk} mode={mode} size="large" state="enabled" value="10월 1일 (목) 오후 12:30" suffixIcon="calendar" />
-        </F>
+        <DateTimeFields mode={mode} label="날짜" date="10월 1일 (목)" time="오후 3:00" />
       </div>
     </Phone>
   );
@@ -189,7 +208,7 @@ export function HrLeaveWindow({ mode, w = 540, s = 1 }: { mode: Mode; w?: number
             <SelectOpenView look={lk} mode={mode} size="medium" groups={POLICY} selected={['annual']} states={{ 'half-am': 'hovered' }} placement="overlay" />
           </F>
           <F mode={mode} label="날짜">
-            <InputButtonView look={lk} mode={mode} size="medium" state="enabled" value="2026. 10. 12. (월)" suffixIcon="calendar" />
+            <InputButtonView look={lk} mode={mode} size="medium" state="enabled" value="10월 12일 (월)" suffixIcon="calendar" />
           </F>
         </Form>
       </HrDialog>

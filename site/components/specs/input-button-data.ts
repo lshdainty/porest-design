@@ -2,9 +2,6 @@
 // 'use client' 파일에서 내보낸 값은 서버 그림이 읽지 못한다 — 그래서 따로 둔다.
 import type { SelIcon } from './select-shared';
 
-export const WEEK = ['일', '월', '화', '수', '목', '금', '토'];
-export const weekday = (y: number, m: number, d: number) => WEEK[new Date(y, m - 1, d).getDay()];
-export const formatDate = (y: number, m: number, d: number, style: 'desk' | 'hr') => (style === 'hr' ? `${y}. ${m}. ${d}. (${weekday(y, m, d)})` : `${m}월 ${d}일 (${weekday(y, m, d)})`);
 
 export type CatItem = { value: string; group: string; label: string; icon: SelIcon; hue: 'orange' | 'blue' | 'green' | 'violet' | 'pink' };
 export const CATEGORIES: CatItem[] = [
@@ -35,6 +32,3 @@ export const PEOPLE: Person[] = [
   { value: 'junho', name: '조준호', team: '영업팀', hue: 'orange' },
 ];
 
-
-// 달력(CalendarGrid)의 높이 — 머리 40 · 요일 줄 24 · 다섯 주(날 칸 = cell − 8) · 줄 사이 4. 달력은 아직 스펙이 없다(Date Picker 차례) — 그림의 값
-export const calendarHeight = (cell: number, weeks = 5) => 40 + 24 + weeks * (cell - 8) + weeks * 4;

@@ -5,7 +5,8 @@
 import { useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { Info } from 'lucide-react';
 import { ButtonView } from './button-view';
-import { CalendarGrid } from './input-button-pickers';
+import { DatePickerView } from './date-view';
+import { formatDay, type DateKit, type Day } from './date-shared';
 import type { ListLook, RowSpec } from './list-shared';
 import { ListView } from './list-view';
 import { ocv, type AlertLayout, type OvKit, type OvTone, type ViewMode } from './overlay-shared';
@@ -112,7 +113,7 @@ function LeaveAsk({ kit, mode, open, wide, container, onStay, onLeave, descripti
 type SheetUse = 'form' | 'pick' | 'view';
 const PERIODS = [
   { value: 'this', label: '이번 달' },
-  { value: 'last', label: '지난달' },
+  { value: 'last', label: '지난 달' },
   { value: 'q', label: '최근 3개월' },
 ];
 const DETAIL: RowSpec[] = [
@@ -532,12 +533,12 @@ const RULE_LONG = [
 type Place = 'top' | 'bottom' | 'edge';
 function popoverCode(o: { head: boolean; foot: boolean; long: boolean }) {
   const ui = ['Popover', 'PopoverBody', 'PopoverContent', ...(o.foot ? ['PopoverFooter'] : []), 'PopoverTrigger'];
-  const content = o.head ? 'title="연차 사용 규정"' : 'aria-label="날짜"';
-  const body = o.head ? (o.long ? '…(긴 안내 — 넘치면 본문만 스크롤)' : RULE) : '<Calendar mode="single" selected={day} onSelect={setDraft} />';
+  const content = o.head ? 'title="연차 사용 규정"' : 'aria-label="날짜 선택"';
+  const body = o.head ? (o.long ? '…(긴 안내 — 넘치면 본문만 스크롤)' : RULE) : '<DatePicker selection="single" value={draft} onValueChange={setDraft} />';
   return `import { Info } from "lucide-react"\nimport { Button } from "@/components/ui/button"\nimport { ${ui.join(', ')} } from "@/components/ui/popover"\n\n<Popover>\n  <PopoverTrigger asChild>\n    ${o.head ? '<Button variant="ghost" size="xsmall" layout="iconOnly" aria-label="연차 사용 규정"><Info /></Button>' : '<InputButton value={…} suffixIcon={<CalendarDays />} />'}\n  </PopoverTrigger>\n  <PopoverContent ${content}>\n    <PopoverBody>${body}</PopoverBody>${o.foot ? '\n    <PopoverFooter>\n      <Button size="small" onClick={done}>완료</Button>\n    </PopoverFooter>' : ''}\n  </PopoverContent>\n</Popover>`;
 }
 
-export function PopoverPlayground({ kits, sels, field }: { kits: Record<Brand, OvKit>; sels: Record<Brand, SelectLook>; field: TfFieldLook }) {
+export function PopoverPlayground({ kits, sels, field, dates }: { kits: Record<Brand, OvKit>; sels: Record<Brand, SelectLook>; field: TfFieldLook; dates: Record<Brand, DateKit> }) {
   const [head, setHead] = useState<'yes' | 'no'>('yes');
   const [foot, setFoot] = useState<'no' | 'yes'>('no');
   const [len, setLen] = useState<'short' | 'long'>('short');
@@ -545,14 +546,18 @@ export function PopoverPlayground({ kits, sels, field }: { kits: Record<Brand, O
   const [mode, setMode] = useState<ViewMode>('auto');
   const [brand, setBrand] = useState<Brand>('hr');
   const [open, setOpen] = useState(false);
-  const [day, setDay] = useState<number | undefined>(12);
+  // 고르는 패널의 달력 — 칸의 날(day)과 고르던 날(draft). "완료" 로 넣는다(date-picker.md)
+  const [day, setDay] = useState<Day | undefined>({ y: 2026, m: 10, d: 12 });
+  const [draft, setDraft] = useState<Day | undefined>(day);
   const [el, setEl] = useState<HTMLDivElement | null>(null);
   const btn = useRef<HTMLButtonElement | null>(null);
   const id = useId();
   const kit = kits[brand];
   const p = kit.ov.popover;
   const withHead = head === 'yes';
-  const code = useMemo(() => popoverCode({ head: withHead, foot: foot === 'yes', long: len === 'long' }), [withHead, foot, len]);
+  // 달력 패널은 늘 바닥 "완료" — 날짜를 누르는 순간 넣고 닫지 않는다
+  const withFoot = !withHead || foot === 'yes';
+  const code = useMemo(() => popoverCode({ head: withHead, foot: withFoot, long: len === 'long' }), [withHead, withFoot, len]);
   const text: CSSProperties = { margin: 0, fontFamily: p.description.fontFamily, fontSize: p.description.fontSize, lineHeight: p.description.lineHeight, color: ocv(p.description.color, mode) };
   const body = withHead ? (
     len === 'long' ? (
@@ -567,24 +572,7 @@ export function PopoverPlayground({ kits, sels, field }: { kits: Record<Brand, O
       <p style={text}>{RULE}</p>
     )
   ) : (
-    <div className="flex justify-center">
-      <CalendarGrid
-        look={sels[brand]}
-        mode={mode}
-        year={2026}
-        month={10}
-        today={1}
-        selected={day}
-        onPick={(d) => {
-          setDay(d);
-          if (foot === 'no') setOpen(false);
-        }}
-        dayRef={(d, e) => {
-          if (e && d === (day ?? 1)) e.setAttribute('data-autofocus', '');
-          else e?.removeAttribute('data-autofocus');
-        }}
-      />
-    </div>
+    <DatePickerView kit={dates[brand]} mode={mode} live autoFocus value={draft} onValue={(v) => setDraft(v as Day | undefined)} ariaLabel="날짜 선택" />
   );
   // 트리거 자리 — 화면 위(아래로 뜬다) · 아래(위로 뒤집힌다) · 오른쪽 가장자리(화면 안으로 민다)
   const pos: CSSProperties = place === 'top' ? { left: 24, top: 64 } : place === 'bottom' ? { left: 24, bottom: 24 } : { right: 8, top: 64 };
@@ -593,7 +581,7 @@ export function PopoverPlayground({ kits, sels, field }: { kits: Record<Brand, O
       wide
       code={code}
       stage={
-        <Screen kit={kit} mode={mode} desktop height={480} title="휴가" setEl={setEl}>
+        <Screen kit={kit} mode={mode} desktop height={withHead ? 480 : 640} title="휴가" setEl={setEl}>
           <Rows kit={kit} mode={mode} n={3} />
           <div className="absolute flex items-center gap-1" style={pos}>
             {withHead && (
@@ -604,15 +592,18 @@ export function PopoverPlayground({ kits, sels, field }: { kits: Record<Brand, O
             <button
               ref={btn}
               type="button"
-              aria-label={withHead ? '연차 사용 규정' : `날짜, 10월 ${day ?? ''}일`}
+              aria-label={withHead ? '연차 사용 규정' : `날짜, ${day ? formatDay(day) : '날짜 선택'}`}
               aria-haspopup="dialog"
               aria-expanded={open}
               aria-controls={open ? `${id}pop` : undefined}
-              onClick={() => setOpen((o) => !o)}
+              onClick={() => {
+                setDraft(day);
+                setOpen((o) => !o);
+              }}
               className="flex h-8 cursor-pointer items-center justify-center gap-1.5 rounded-lg border-0 px-2"
               style={{ background: withHead ? 'transparent' : tone(kit, 'bg-layer-default', mode), color: tone(kit, withHead ? 'fg-neutral-subtle' : 'fg-neutral', mode), boxShadow: withHead ? undefined : `inset 0 0 0 1px ${tone(kit, 'stroke-neutral-weak', mode)}`, fontFamily: FONT, fontSize: 14 }}
             >
-              {withHead ? <Info aria-hidden size={18} strokeWidth={2} /> : `10월 ${day ?? ''}일`}
+              {withHead ? <Info aria-hidden size={18} strokeWidth={2} /> : day ? formatDay(day) : '날짜 선택'}
             </button>
           </div>
           <PopoverLayer open={open} anchor={btn.current} look={p} mode={mode} align={withHead ? 'center' : 'start'} container={el} id={`${id}pop`} labelledBy={withHead ? `${id}t` : undefined} ariaLabel={withHead ? undefined : '날짜'} onRequestClose={() => setOpen(false)}>
@@ -628,7 +619,24 @@ export function PopoverPlayground({ kits, sels, field }: { kits: Record<Brand, O
                 title={withHead ? '연차 사용 규정' : undefined}
                 titleId={`${id}t`}
                 onClose={() => (setOpen(false), btn.current?.focus())}
-                footer={foot === 'yes' ? <EndButtons mode={mode} items={[{ label: '완료', look: kit.dialog.solid, onClick: () => setOpen(false) }]} /> : undefined}
+                footer={
+                  withFoot ? (
+                    <EndButtons
+                      mode={mode}
+                      items={[
+                        {
+                          label: '완료',
+                          look: kit.dialog.solid,
+                          state: !withHead && !draft ? 'disabled' : undefined,
+                          onClick: () => {
+                            if (!withHead && draft) setDay(draft);
+                            setOpen(false);
+                          },
+                        },
+                      ]}
+                    />
+                  ) : undefined
+                }
               >
                 {body}
               </PopoverSurface>
@@ -639,13 +647,20 @@ export function PopoverPlayground({ kits, sels, field }: { kits: Record<Brand, O
       controls={
         <>
           <Seg label="머리" value={head} options={[['yes', '제목 + 닫기(안내)'], ['no', '없음(고르는 패널)']] as const} onChange={(v) => (setHead(v), setOpen(false))} />
-          <Seg label="바닥" value={foot} options={[['no', '없음'], ['yes', '완료']] as const} onChange={setFoot} />
+          {withHead ? (
+            <Seg label="바닥" value={foot} options={[['no', '없음'], ['yes', '완료']] as const} onChange={setFoot} />
+          ) : (
+            <div className="flex flex-col gap-1.5 text-[12px] text-fd-muted-foreground">
+              <span className="font-medium">바닥</span>
+              <span>달력은 늘 &quot;완료&quot; — 고르는 동안 칸 값은 그대로다(Date Picker).</span>
+            </div>
+          )}
           {withHead ? (
             <Seg label="본문 길이" value={len} options={[['short', '짧게'], ['long', '길게(넘쳐 스크롤)']] as const} onChange={setLen} />
           ) : (
             <div className="flex flex-col gap-1.5 text-[12px] text-fd-muted-foreground">
               <span className="font-medium">본문 길이</span>
-              <span>고르는 패널은 달력 — {foot === 'yes' ? '고르고 "완료"' : '누르면 바로 고르고 닫힌다'}.</span>
+              <span>고르는 패널은 달력(Date Picker 336) — 고르고 &quot;완료&quot;.</span>
             </div>
           )}
           <Seg label="트리거 자리" value={place} options={[['top', '화면 위'], ['bottom', '화면 아래(위로 뒤집힌다)'], ['edge', '오른쪽 가장자리']] as const} onChange={(v) => (setPlace(v), setOpen(false))} />

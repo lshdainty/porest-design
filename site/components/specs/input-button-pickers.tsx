@@ -1,13 +1,15 @@
 'use client';
 // Input Button 이 여는 자리 — 시트(1280 미만) · 팝오버(1280 이상)와 그 안의 달력 · 격자 · 검색 목록.
 // 시트 · 팝오버는 Bottom Sheet · Popover 스펙(bottom-sheet · popover.yaml — overlay-view · overlay-live)대로 그린다.
-// 달력 · 시각 휠 · 격자의 모양은 아직 스펙이 없다(Date Picker · Time Picker 차례) — 역할 색 토큰으로 간단히 그린다.
-// 칸(Input Button)과 Field 는 YAML 대로다(select-view · text-field-view).
+// 달력은 Date Picker(date-picker.yaml — date-view), 칸(Input Button)과 Field 는 YAML 대로다(select-view · text-field-view).
+// 카테고리 격자 · 사람 목록은 아직 스펙이 없다 — 역할 색 토큰으로 간단히 그린다.
 import { useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
-import { Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Check } from 'lucide-react';
 import type { ButtonLook } from './button-look';
 import { ButtonView } from './button-view';
-import { CATEGORIES, PEOPLE, WEEK, catText, formatDate, weekday, type CatItem, type Person } from './input-button-data';
+import { CATEGORIES, PEOPLE, catText, type CatItem, type Person } from './input-button-data';
+import { TODAY, formatDay, type DateKit, type Day } from './date-shared';
+import { DatePickerView } from './date-view';
 import type { OvKit, OverlayLook } from './overlay-shared';
 import { ModalLayer, PopoverLayer, useMinWidth } from './overlay-live';
 import { DimView, PopoverSurface, SheetSurface } from './overlay-view';
@@ -47,113 +49,7 @@ export function PopoverPanel({ ov, mode = 'auto', children, footer, width, bodyP
   );
 }
 
-// ── 달력 · 격자 · 휠 · 사람 목록(그림 · 실제 둘 다) ─────────────
-export function CalendarGrid({
-  look,
-  mode = 'auto',
-  year,
-  month,
-  selected,
-  today,
-  cell = 42,
-  onPick,
-  dayRef,
-  range,
-}: {
-  look: SelectLook;
-  mode?: ViewMode;
-  year: number;
-  month: number;
-  selected?: number;
-  today?: number;
-  cell?: number;
-  onPick?: (d: number) => void;
-  dayRef?: (d: number, el: HTMLButtonElement | null) => void;
-  // 기간 — 시작 · 끝은 고른 날처럼 채우고, 사이는 옅게
-  range?: { start?: number; end?: number };
-}) {
-  const first = new Date(year, month - 1, 1).getDay();
-  const days = new Date(year, month, 0).getDate();
-  const fg = tone(look, 'fg-neutral', mode);
-  const dot = cell - 8;
-  return (
-    <div style={{ width: cell * 7, maxWidth: '100%', fontFamily: FONT }}>
-      <div className="flex h-10 items-center justify-between px-1">
-        <span className="text-[16px] font-bold" style={{ color: fg }}>
-          {year}년 {month}월
-        </span>
-        <span className="flex gap-4" aria-hidden>
-          <ChevronLeft size={20} style={{ color: fg }} />
-          <ChevronRight size={20} style={{ color: fg }} />
-        </span>
-      </div>
-      <div className="grid grid-cols-7 gap-y-1">
-        {WEEK.map((w) => (
-          <span key={w} className="text-center text-[13px] font-medium leading-6" style={{ color: tone(look, 'fg-neutral-subtle', mode) }}>
-            {w}
-          </span>
-        ))}
-        {Array.from({ length: first }, (_, i) => (
-          <span key={`b${i}`} />
-        ))}
-        {Array.from({ length: days }, (_, i) => {
-          const d = i + 1;
-          const sel = d === selected || (!!range && (d === range.start || d === range.end));
-          const between = !!range && range.start !== undefined && range.end !== undefined && d > range.start && d < range.end;
-          const now = d === today && !sel && !between;
-          const style: CSSProperties = {
-            width: dot,
-            height: dot,
-            margin: '0 auto',
-            display: 'grid',
-            placeItems: 'center',
-            borderRadius: 9999,
-            fontSize: 15,
-            fontWeight: 500,
-            fontFamily: FONT,
-            border: 0,
-            padding: 0,
-            background: sel ? tone(look, 'bg-neutral-inverted', mode) : now || between ? tone(look, 'bg-neutral-weak', mode) : 'transparent',
-            color: sel ? tone(look, 'fg-neutral-inverted', mode) : now || between ? fg : tone(look, 'fg-neutral-muted', mode),
-            cursor: onPick ? 'pointer' : undefined,
-          };
-          return onPick ? (
-            <button key={d} ref={(el) => dayRef?.(d, el)} type="button" aria-pressed={sel} aria-label={`${month}월 ${d}일 ${weekday(year, month, d)}요일${d === today ? ', 오늘' : ''}`} style={style} onClick={() => onPick(d)}>
-              {d}
-            </button>
-          ) : (
-            <span key={d} style={style}>
-              {d}
-            </span>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-// 시각 휠(모양만 — Time Picker 차례에 정한다). 가운데 줄이 고른 값
-export function TimeWheel({ look, mode = 'auto', columns, width = 280 }: { look: SelectLook; mode?: ViewMode; columns: { items: string[]; at: number }[]; width?: number }) {
-  const row = 40;
-  return (
-    <div className="relative mx-auto flex justify-center" style={{ width, height: row * 5, fontFamily: FONT }}>
-      <span aria-hidden className="absolute inset-x-0 rounded-xl" style={{ top: row * 2, height: row, background: tone(look, 'bg-layer-floating-pressed', mode) }} />
-      {columns.map((col, ci) => (
-        <div key={ci} className="relative flex flex-1 flex-col items-center">
-          {[-2, -1, 0, 1, 2].map((o) => {
-            const t = col.items[col.at + o];
-            return (
-              <span key={o} className="flex items-center justify-center" style={{ height: row, fontSize: o === 0 ? 20 : 17, fontWeight: o === 0 ? 600 : 400, color: tone(look, o === 0 ? 'fg-neutral' : 'fg-neutral-subtle', mode), opacity: Math.abs(o) === 2 ? 0.5 : 1 }}>
-                {t ?? ''}
-              </span>
-            );
-          })}
-        </div>
-      ))}
-    </div>
-  );
-}
-
+// ── 격자 · 사람 목록(그림 · 실제 둘 다) ─────────────
 // 카테고리 격자 — 묶음 제목 아래 아이콘 칸. 고른 칸은 체크
 export function CategoryGrid({ look, mode = 'auto', items = CATEGORIES, selected, pressed, onPick, cellRef }: { look: SelectLook; mode?: ViewMode; items?: CatItem[]; selected?: string; pressed?: string; onPick?: (v: string) => void; cellRef?: (v: string, el: HTMLButtonElement | null) => void }) {
   const groups = [...new Set(items.map((i) => i.group))];
@@ -198,32 +94,6 @@ export function CategoryGrid({ look, mode = 'auto', items = CATEGORIES, selected
           </div>
         </div>
       ))}
-    </div>
-  );
-}
-
-// 날(1 ~ 31) 격자 — 반복 날짜처럼 달과 상관없이 날만 고른다(누르면 바로)
-export function DayGrid({ look, mode = 'auto', selected, onPick, cellRef }: { look: SelectLook; mode?: ViewMode; selected?: number; onPick?: (d: number) => void; cellRef?: (d: number, el: HTMLButtonElement | null) => void }) {
-  return (
-    <div className="grid grid-cols-7 gap-1" style={{ fontFamily: FONT }}>
-      {Array.from({ length: 31 }, (_, i) => {
-        const d = i + 1;
-        const on = d === selected;
-        return (
-          <button
-            key={d}
-            ref={(el) => cellRef?.(d, el)}
-            type="button"
-            aria-pressed={on}
-            aria-label={`${d}일`}
-            onClick={() => onPick?.(d)}
-            className="mx-auto flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-0 text-[15px] font-medium"
-            style={{ background: on ? tone(look, 'bg-neutral-inverted', mode) : 'transparent', color: on ? tone(look, 'fg-neutral-inverted', mode) : tone(look, 'fg-neutral', mode), fontFamily: FONT }}
-          >
-            {d}
-          </button>
-        );
-      })}
     </div>
   );
 }
@@ -333,7 +203,7 @@ function IbSurface({
 }
 
 // ── Field + Input Button + 여는 자리(실제로 써 보는 칸) ─────────
-export type IbDemoKind = 'date' | 'category' | 'day' | 'people';
+export type IbDemoKind = 'date' | 'category' | 'people';
 export type InputButtonDemoProps = {
   look: SelectLook;
   field: TfFieldLook;
@@ -351,11 +221,12 @@ export type InputButtonDemoProps = {
   disabled?: boolean;
   readOnly?: boolean;
   clearable?: boolean;
-  // 처음 값 — date 는 날(2026년 10월), day 는 날, category · people 은 value
+  // 처음 값 — date 는 2026년 10월의 날("12") 또는 "2026-10-12", category · people 은 value
   initial?: string;
-  dateStyle?: 'desk' | 'hr';
-  // 반복 날짜(day) — 앞 · 뒤 붙이개
-  affix?: { prefix: 'none' | 'icon' | 'text'; suffix: 'none' | 'icon' | 'text' };
+  // 달력(date) — Date Picker 의 모양(date-picker.yaml)
+  date?: DateKit;
+  // 앞 · 뒤 붙이개 — 카테고리(category)
+  affix?: { prefix: 'none' | 'icon' | 'text'; suffix: 'none' | 'icon' };
   // 확정 버튼 — 시트(넓게) · 팝오버(작게)
   done?: { sheet: ButtonLook; popover: ButtonLook };
   width?: number | string;
@@ -365,9 +236,13 @@ export type InputButtonDemoProps = {
   onValue?: (v: string | undefined) => void;
 };
 
-const YEAR = 2026;
-const MONTH = 10;
-const TODAY = 1;
+// 날짜 값 — "2026-10-12"(날만 적으면 2026년 10월)
+const toDay = (v?: string): Day | undefined => {
+  if (!v) return undefined;
+  const p = v.split('-').map(Number);
+  return p.length === 3 ? { y: p[0], m: p[1], d: p[2] } : { y: TODAY.y, m: TODAY.m, d: p[0] };
+};
+const fromDay = (d: Day) => `${d.y}-${d.m}-${d.d}`;
 
 export function InputButtonDemo({
   look,
@@ -386,8 +261,8 @@ export function InputButtonDemo({
   readOnly = false,
   clearable = false,
   initial,
-  dateStyle = 'desk',
-  affix = { prefix: 'none', suffix: 'icon' },
+  date,
+  affix,
   done,
   width,
   kit,
@@ -399,7 +274,11 @@ export function InputButtonDemo({
     onValue?.(v);
   };
   const [open, setOpen] = useState(false);
-  const [draft, setDraft] = useState<number | undefined>(undefined);
+  // 달력에서 고르던 날 — "완료" 를 누를 때 칸에 들어간다
+  const [draft, setDraft] = useState<Day | undefined>(undefined);
+  const wide = useMinWidth(kit.ov.breakpoint);
+  // 붙이개 — 주지 않으면 카테고리의 기본(고른 아이콘 + 아래 화살표)
+  const fx = affix ?? { prefix: 'icon', suffix: 'icon' };
   const [query, setQuery] = useState('');
   const [touched, setTouched] = useState(false);
   const btnRef = useRef<HTMLButtonElement | null>(null);
@@ -420,37 +299,34 @@ export function InputButtonDemo({
   let text: string | undefined;
   let prefix: string | undefined;
   let prefixIcon: SelIcon | undefined;
-  let suffix: string | undefined;
   let suffixIcon: SelIcon | undefined;
   if (kind === 'date') {
-    text = value ? formatDate(YEAR, MONTH, Number(value), dateStyle) : undefined;
+    const day = toDay(value);
+    text = day ? formatDay(day) : undefined;
     suffixIcon = 'calendar';
   } else if (kind === 'category') {
+    // 앞 붙이개 — 고른 카테고리의 아이콘(값에 딸린 아이콘) · 글자, 뒤 붙이개 — 아래 화살표(격자를 연다)
     text = cat ? catText(cat) : undefined;
-    prefixIcon = cat?.icon;
-    suffixIcon = 'chevron-down';
-  } else if (kind === 'people') {
+    if (fx.prefix === 'icon') prefixIcon = cat?.icon;
+    if (fx.prefix === 'text') prefix = '지출';
+    if (fx.suffix === 'icon') suffixIcon = 'chevron-down';
+  } else {
     text = person?.name;
     suffixIcon = 'chevron-down';
-  } else {
-    text = value ? (affix.suffix === 'text' ? value : `${value}일`) : undefined;
-    if (affix.prefix === 'icon') prefixIcon = 'repeat';
-    if (affix.prefix === 'text') prefix = '매월';
-    if (affix.suffix === 'icon') suffixIcon = 'chevron-down';
-    if (affix.suffix === 'text') suffix = '일';
   }
 
   const filtered = useMemo(() => (query ? PEOPLE.filter((p) => p.name.includes(query) || p.team.includes(query)) : PEOPLE), [query]);
-  const doneBtn = (wide: 'sheet' | 'popover') =>
+  // "완료" — 하루를 고르기 전에는 막힌다(date-picker.md)
+  const doneBtn = (where: 'sheet' | 'popover') =>
     done && (
       <ButtonView
-        look={done[wide]}
+        look={done[where]}
         mode={mode}
         label="완료"
-        fill={wide === 'sheet'}
+        fill={where === 'sheet'}
+        state={draft ? 'live' : 'disabled'}
         onClick={() => {
-          if (draft !== undefined) commit(String(draft));
-          else close();
+          if (draft) commit(fromDay(draft));
         }}
       />
     );
@@ -458,24 +334,9 @@ export function InputButtonDemo({
   let content: ReactNode = null;
   let footer: ReactNode = null;
   let popoverWidth: number | undefined;
-  if (kind === 'date') {
-    content = (
-      <div className="flex justify-center">
-        <CalendarGrid
-          look={look}
-          mode={mode}
-          year={YEAR}
-          month={MONTH}
-          selected={draft}
-          today={TODAY}
-          onPick={setDraft}
-          dayRef={(d, el) => {
-            if (el && d === (draft ?? TODAY)) el.setAttribute('data-autofocus', '');
-            else el?.removeAttribute('data-autofocus');
-          }}
-        />
-      </div>
-    );
+  if (kind === 'date' && date) {
+    // 1280 미만 시트는 시트 폭 − 좌우 24, 이상 팝오버는 336(칸 48 × 7). 열면 고른 날(없으면 오늘)로 초점
+    content = <DatePickerView kit={date} mode={mode} live autoFocus value={draft} onValue={(v) => setDraft(v as Day | undefined)} width={wide ? undefined : '100%'} ariaLabel={label} />;
     footer = <SurfaceFooter look={look} sheet={doneBtn('sheet')} popover={doneBtn('popover')} />;
   } else if (kind === 'category') {
     content = (
@@ -491,20 +352,6 @@ export function InputButtonDemo({
       />
     );
     popoverWidth = 360;
-  } else if (kind === 'day') {
-    content = (
-      <DayGrid
-        look={look}
-        mode={mode}
-        selected={value ? Number(value) : undefined}
-        onPick={(d) => commit(String(d))}
-        cellRef={(d, el) => {
-          if (el && d === Number(value ?? 1)) el.setAttribute('data-autofocus', '');
-          else el?.removeAttribute('data-autofocus');
-        }}
-      />
-    );
-    popoverWidth = 320;
   } else {
     popoverWidth = 360;
     content = (
@@ -542,21 +389,20 @@ export function InputButtonDemo({
             placeholder={placeholder}
             prefix={prefix}
             prefixIcon={prefixIcon}
-            suffix={suffix}
             suffixIcon={suffixIcon}
             clearable={clearable}
             onClear={() => setValue(undefined)}
             haspopup="dialog"
             expanded={open}
             onClick={() => {
-              setDraft(kind === 'date' && value ? Number(value) : undefined);
+              setDraft(kind === 'date' ? toDay(value) : undefined);
               setQuery('');
               setOpen(true);
             }}
           />
         )}
       </TfFieldView>
-      <IbSurface kit={kit} mode={mode} open={open} onClose={close} anchor={btnRef.current} title={label} footer={footer} popoverWidth={popoverWidth} bodyPad={kind !== 'people'} autoFocus={kind === 'people' ? '[data-search] input' : undefined}>
+      <IbSurface kit={kit} mode={mode} open={open} onClose={close} anchor={btnRef.current} title={kind === 'date' ? placeholder : label} footer={footer} popoverWidth={popoverWidth} bodyPad={kind !== 'people'} autoFocus={kind === 'people' ? '[data-search] input' : undefined}>
         {content}
       </IbSurface>
     </div>

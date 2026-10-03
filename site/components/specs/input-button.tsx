@@ -1,17 +1,20 @@
 // Input Button 페이지의 그림 — specs/components/input-button.md 의 `[그림: …](../../site/components/specs/input-button.tsx#<id>)` 자리.
 // 칸은 input-button.yaml 을 푼 값(selectLook().ib)으로, Field 는 field.yaml, 시트 · 팝오버 · 대화상자는 bottom-sheet · popover · dialog.yaml(overlay-look)로 그린다.
-// 달력 · 휠은 아직 스펙이 없어 역할 색 토큰으로 간단히 그린다(Date Picker · Time Picker 차례에 정한다).
-// 휴대폰 화면 안의 칸은 large, 데스크톱 창 안의 칸은 medium 으로 고정한다.
+// 달력은 Date Picker(date-picker.yaml), 시각 휠은 Time Picker(time-picker · wheel-picker.yaml)다 — date-look 이 푼 값으로 그린다.
+// 휴대폰 화면 안의 칸은 large, 데스크톱 창 안의 칸은 medium 으로 고정한다. 달력을 여는 폰은 스펙의 360 화면이다(시트 달력 312).
 import type { CSSProperties, ReactNode } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Figure, Panel, MARK, MARK_LINE } from '../foundations/ui';
 import { buttonLook } from './button-look';
 import { InputButtonPlayground } from './input-button-playground';
-import { PEOPLE, calendarHeight } from './input-button-data';
-import { CalendarGrid, CategoryGrid, InputButtonDemo, PeopleList, PopoverPanel, SheetOverlay, SheetPanel, TimeWheel } from './input-button-pickers';
+import { PEOPLE } from './input-button-data';
+import { CategoryGrid, InputButtonDemo, PeopleList, SheetOverlay, SheetPanel } from './input-button-pickers';
+import { D, DONE, DeskPopover, PickerPopover, PickerSheet, SCREEN, dk, popFooter, popoverH, sheetFooter } from './date-screens';
+import { DatePickerView } from './date-view';
+import { TimePickerView } from './wheel-view';
 import type { IbState } from './select-look';
 import { PHONE_SAFE, overlayKit, ov } from './overlay-screens';
-import { Cap, Cell, DeskTxPhone, F, Form, HrDialog, Live, ScaledBox, Surface, centeredWindowH, cta, desk, hr, hrDialogChrome, hrFooter, smallBtn, tf } from './select-screens';
+import { Cap, Cell, DeskTxPhone, F, Form, Live, ScaledBox, Surface, desk, hr, tf } from './select-screens';
 import { InputButtonView, SelectOpenView, SelectTriggerView } from './select-view';
 import { TfInputView } from './text-field-view';
 import { Phone, Verdict, WebWindow, rc, type Mode } from './kit';
@@ -30,68 +33,62 @@ function Pin({ n }: { n: string }) {
 }
 const markBox: CSSProperties = { outline: `1px dashed ${MARK_LINE}`, background: MARK };
 
-// 휴대폰 화면 — 흰 바탕 폼 + (열면) 시트
-function Screen({ title, mode = 'light', children, overlay, scale = 0.52, h = 600, bottom }: { title: string; mode?: Mode; children: ReactNode; overlay?: ReactNode; scale?: number; h?: number; bottom?: ReactNode }) {
+// 휴대폰 화면 — 흰 바탕 폼 + (열면) 시트. 달력 · 시각 시트를 여는 화면은 360 폭(screenW) · 칸이 시트 위로 보이는 높이
+function Screen({ title, mode = 'light', children, overlay, scale = 0.52, h = 600, bottom, screenW }: { title: string; mode?: Mode; children: ReactNode; overlay?: ReactNode; scale?: number; h?: number; bottom?: ReactNode; screenW?: number }) {
   return (
-    <Phone title={title} mode={mode} scale={scale} h={h} bg="bg-layer-default" overlay={overlay} bottom={bottom}>
+    <Phone title={title} mode={mode} scale={scale} h={h} bg="bg-layer-default" overlay={overlay} bottom={bottom} screenW={screenW}>
       <div className="flex flex-col px-6 pt-4" style={{ gap: tf().field.form.gapY }}>
         {children}
       </div>
     </Phone>
   );
 }
-// 달력 시트 — 제목(고를 값의 종류) · 달력 · 완료
-function DateSheet({ mode = 'light', selected, today = 1 }: { mode?: Mode; selected?: number; today?: number }) {
-  const lk = desk();
-  const o = ov();
+// 달력 시트 — 제목(고를 값의 종류 "날짜 선택") · Date Picker(시트 폭 − 좌우 24) · 완료. 고르던 날(draft)은 칸 값과 따로다
+function DateSheet({ mode = 'light', selected }: { mode?: Mode; selected?: number }) {
   return (
-    <SheetOverlay ov={o} mode={mode}>
-      <SheetPanel ov={o} mode={mode} title="날짜" footer={cta('완료', mode)} safe={PHONE_SAFE}>
-        <div className="flex justify-center">
-          <CalendarGrid look={lk} mode={mode} year={2026} month={10} selected={selected} today={today} />
-        </div>
-      </SheetPanel>
+    <SheetOverlay ov={ov()} mode={mode}>
+      <PickerSheet mode={mode} title="날짜 선택" footer={sheetFooter(mode, [{ ...DONE, disabled: !selected }])}>
+        <DatePickerView kit={dk()} mode={mode} value={selected ? D(10, selected) : undefined} width="100%" />
+      </PickerSheet>
     </SheetOverlay>
   );
 }
+// 달력 시트를 연 폰 — 칸이 시트 위로 보이는 높이
+const DATE_PHONE_H = 760;
 
 // ── Overview ──────────────────────────────────────────────
-// HR 휴가 신청(데스크톱 · medium) — 날짜 칸 아래 8 에 달력 팝오버(머리 없는 고르는 패널)를 열었다(1280 이상). 달력은 아직 스펙이 없다(그림의 값)
+// HR 휴가 신청(데스크톱 · medium) — 날짜 칸 아래 8 에 달력 팝오버(머리 없는 고르는 패널 · Date Picker 336)를 열었다(1280 이상).
+// 팝오버(484)가 칸 아래로 다 보이게 페이지의 폼으로 그린다 — 가운데 대화상자 안이면 창이 지나치게 길어진다
 function HrDateWindow({ mode }: { mode: Mode }) {
   const h = hr();
   const t = tf();
-  const o = ov('hr');
-  const b = h.ib.sizes.medium;
-  const cell = 34;
-  const field = px(t.field.label.text.lineHeight) + t.field.gap + b.h;
-  // 팝오버 — 본문 위 여백(머리 없음) + 달력 + 바닥(위 · 아래 여백 + 버튼)
-  const p = o.popover;
-  const pop = p.body.padTop + calendarHeight(cell) + p.footer.padTop + p.footer.button.height + p.footer.padBottom;
-  const c = hrDialogChrome();
-  const body = field * 2 + t.field.form.gapY;
-  const winH = centeredWindowH(c.head + body + c.foot, c.head, field * 2 + t.field.form.gapY + p.offset + pop);
+  const field = px(t.field.label.text.lineHeight) + t.field.gap + h.ib.sizes.medium.h;
   return (
-    <ScaledBox w={540} h={winH} s={0.7}>
-    <WebWindow mode={mode} w={540} h={winH} url="hr.porest.app">
-      <HrDialog mode={mode} title="휴가 신청" footer={hrFooter(mode, '신청')}>
+    <DeskPopover
+      mode={mode}
+      brand="hr"
+      w={460}
+      title="휴가 신청"
+      scale={0.66}
+      fieldW={320}
+      fieldsH={field * 2 + t.field.form.gapY}
+      field={
         <Form>
           <F mode={mode} label="휴가 정책">
             <SelectTriggerView look={h} mode={mode} size="medium" state="enabled" labels={['연차']} />
           </F>
-          <div className="relative">
-            <F mode={mode} label="날짜">
-              <InputButtonView look={h} mode={mode} size="medium" state="enabled" value="2026. 10. 12. (월)" suffixIcon="calendar" />
-            </F>
-            <div className="absolute left-0 z-10" style={{ top: field + p.offset }}>
-              <PopoverPanel ov={o} mode={mode} footer={smallBtn('완료', mode, 'neutralSolid', 'hr', p.footer.button.size)}>
-                <CalendarGrid look={h} mode={mode} year={2026} month={10} selected={14} today={1} cell={cell} />
-              </PopoverPanel>
-            </div>
-          </div>
+          <F mode={mode} label="날짜">
+            <InputButtonView look={h} mode={mode} size="medium" state="enabled" value="10월 12일 (월)" suffixIcon="calendar" />
+          </F>
         </Form>
-      </HrDialog>
-    </WebWindow>
-    </ScaledBox>
+      }
+      popH={popoverH('hr')}
+      popover={
+        <PickerPopover mode={mode} brand="hr" footer={popFooter(mode, [DONE], 'hr')}>
+          <DatePickerView kit={dk('hr')} mode={mode} value={D(10, 14)} />
+        </PickerPopover>
+      }
+    />
   );
 }
 
@@ -101,7 +98,7 @@ const Hero: Fig = ({ caption }) => (
     <div className="flex flex-col gap-4">
       {(['light', 'dark'] as const).map((mode) => (
         <div key={mode} className="flex items-start gap-4">
-          <DeskTxPhone mode={mode} overlay={<DateSheet mode={mode} selected={12} />} />
+          <DeskTxPhone mode={mode} screenW={SCREEN} overlay={<DateSheet mode={mode} selected={12} />} />
           <HrDateWindow mode={mode} />
         </div>
       ))}
@@ -301,14 +298,14 @@ const AloneGuide: Fig = ({ caption }) => {
     <Panel caption={caption}>
       <Pair>
         <Verdict ok note="늘 고르는 자리를 연다 — 달력 · 시각 휠 · 격자 · 목록 · 검색 시트">
-          <Screen title="거래 추가" overlay={<DateSheet selected={12} />}>
+          <Screen title="거래 추가" screenW={SCREEN} h={DATE_PHONE_H} overlay={<DateSheet selected={12} />}>
             <F mode="light" label="날짜">
               <InputButtonView look={lk} mode="light" size="large" state="pressed" value="10월 12일 (월)" suffixIcon="calendar" />
             </F>
           </Screen>
         </Verdict>
         <Verdict ok={false} note="다른 화면으로 가는 칸 — 그건 List 의 줄이다">
-          <Screen title="설정">
+          <Screen title="설정" screenW={SCREEN} h={DATE_PHONE_H}>
             <F mode="light" label="알림">
               <InputButtonView look={lk} mode="light" size="large" state="enabled" value="켜짐" suffixIcon="chevron-right" />
             </F>
@@ -329,18 +326,16 @@ const OpenGuide: Fig = ({ caption }) => {
   const t = tf();
   const o = ov('hr');
   const p = o.popover;
-  // 팝오버 안 달력의 날 칸 — 폰 폭(390)에서도 창이 판 안에 들어가게(달력은 아직 스펙이 없다)
-  const cell = 36;
   const popTop = px(t.field.label.text.lineHeight) + t.field.gap + b.h + p.offset;
   // 창 높이 — 창 막대 32 · 위 여백 24 + 칸 + 팝오버(본문 위 여백 · 달력 · 바닥) + 아래 여백 24
-  const popWindowH = 32 + 24 + popTop + p.body.padTop + calendarHeight(cell) + p.footer.padTop + p.footer.button.height + p.footer.padBottom + 24;
-  // 팝오버 폭 — 달력 + 본문 좌우 여백(최소 폭보다 좁으면 최소 폭)
-  const popW = Math.max(p.minWidth, cell * 7 + p.body.padX * 2);
+  const popWindowH = 32 + 24 + popTop + popoverH('hr') + 24;
+  // 팝오버 폭 — 달력 336 + 본문 좌우 여백
+  const popW = dk('hr').date.width + p.body.padX * 2;
   return (
     <Panel caption={caption}>
       <div className="flex flex-wrap items-start justify-center gap-6">
         <div className="flex flex-col items-center gap-2">
-          <Screen title="거래 추가" overlay={<DateSheet selected={12} />}>
+          <Screen title="거래 추가" screenW={SCREEN} h={DATE_PHONE_H} overlay={<DateSheet selected={12} />}>
             <F mode="light" label="날짜">
               <InputButtonView look={lk} mode="light" size="large" state="pressed" value="10월 12일 (월)" suffixIcon="calendar" />
             </F>
@@ -348,17 +343,17 @@ const OpenGuide: Fig = ({ caption }) => {
           <Cap strong={`${lk.ib.breakpoint} 미만 — 아래 시트`}>위에 제목(고를 값의 종류) · 닫기, 아래에 완료</Cap>
         </div>
         <div className="flex flex-col items-center gap-2">
-          <ScaledBox w={popW + p.edge * 2} h={popWindowH} s={0.85}>
+          <ScaledBox w={popW + p.edge * 2} h={popWindowH} s={0.8}>
           <WebWindow mode="light" w={popW + p.edge * 2} h={popWindowH} url="hr.porest.app">
             <div className="h-full pt-6" style={{ background: rc('bg-layer-default', 'light', 'hr'), paddingLeft: p.edge, paddingRight: p.edge }}>
               <div className="relative w-[240px]">
                 <F mode="light" label="날짜">
-                  <InputButtonView look={h} mode="light" size="medium" state="enabled" value="2026. 10. 12. (월)" suffixIcon="calendar" />
+                  <InputButtonView look={h} mode="light" size="medium" state="enabled" value="10월 12일 (월)" suffixIcon="calendar" />
                 </F>
                 <div className="absolute left-0 z-10" style={{ top: popTop }}>
-                  <PopoverPanel ov={o} mode="light" footer={smallBtn('완료', 'light', 'neutralSolid', 'hr', p.footer.button.size)}>
-                    <CalendarGrid look={h} mode="light" year={2026} month={10} selected={12} today={1} cell={cell} />
-                  </PopoverPanel>
+                  <PickerPopover mode="light" brand="hr" footer={popFooter('light', [DONE], 'hr')}>
+                    <DatePickerView kit={dk('hr')} mode="light" value={D(10, 12)} />
+                  </PickerPopover>
                 </div>
               </div>
             </div>
@@ -373,13 +368,12 @@ const OpenGuide: Fig = ({ caption }) => {
 
 const ConfirmGuide: Fig = ({ caption }) => {
   const lk = desk();
-  const hours = Array.from({ length: 12 }, (_, i) => String(i + 1));
-  const mins = Array.from({ length: 12 }, (_, i) => String(i * 5).padStart(2, '0'));
+  const k = dk();
   return (
     <Panel caption={caption}>
       <Pair>
         <Verdict ok note='고르는 동안 칸은 그대로(1일) — "완료" 를 누를 때 12일이 들어간다'>
-          <Screen title="거래 추가" overlay={<DateSheet selected={12} />}>
+          <Screen title="거래 추가" screenW={SCREEN} h={DATE_PHONE_H} overlay={<DateSheet selected={12} />}>
             <F mode="light" label="날짜">
               <InputButtonView look={lk} mode="light" size="large" state="enabled" value="10월 1일 (목)" suffixIcon="calendar" />
             </F>
@@ -388,13 +382,13 @@ const ConfirmGuide: Fig = ({ caption }) => {
         <Verdict ok={false} note="휠을 굴리는 대로 칸이 바뀐다 — 지나가던 값이 들어가고, 닫아도 되돌릴 수 없다">
           <Screen
             title="거래 추가"
+            screenW={SCREEN}
+            h={DATE_PHONE_H}
             overlay={
               <SheetOverlay ov={ov()} mode="light">
-                <SheetPanel ov={ov()} mode="light" title="시각" safe={PHONE_SAFE}>
-                  <div>
-                    <TimeWheel look={lk} mode="light" columns={[{ items: ['오전', '오후'], at: 1 }, { items: hours, at: 2 }, { items: mins, at: 6 }]} />
-                  </div>
-                </SheetPanel>
+                <PickerSheet mode="light" title="시간 선택" footer={undefined}>
+                  <TimePickerView wheel={k.wheel} time={k.time} mode="light" value={{ hour: 15, minute: 30 }} at={{ minute: 6.45 }} />
+                </PickerSheet>
               </SheetOverlay>
             }
           >
@@ -488,7 +482,7 @@ const SearchGuide: Fig = ({ caption }) => {
 // ── 코드 미리보기(실제로 열고 고를 수 있다 — 이 창의 폭으로 시트 · 팝오버) ─────
 const ExDate: Fig = () => (
   <Live>
-    <InputButtonDemo look={desk()} kit={overlayKit()} field={tf().field} kind="date" label="날짜" placeholder="날짜 선택" initial="12" done={done()} />
+    <InputButtonDemo look={desk()} kit={overlayKit()} field={tf().field} kind="date" date={dk()} label="날짜" placeholder="날짜 선택" initial="12" done={done()} />
   </Live>
 );
 const ExList: Fig = () => (
@@ -506,12 +500,12 @@ const ExStates: Fig = () => {
   return (
     <Live>
       <Form>
-        <InputButtonDemo look={lk} kit={overlayKit()} field={tf().field} kind="date" label="날짜" placeholder="날짜 선택" invalid errorMessage="날짜를 골라주세요." done={done()} />
+        <InputButtonDemo look={lk} kit={overlayKit()} field={tf().field} kind="date" date={dk()} label="날짜" placeholder="날짜 선택" invalid errorMessage="날짜를 골라주세요." done={done()} />
         <F label="날짜">
           <InputButtonView look={lk} disabled value="10월 1일 (목)" suffixIcon="calendar" ariaLabel="날짜, 10월 1일 (목)" />
         </F>
         <F label="입사일">
-          <InputButtonView look={lk} readOnly value="2024. 3. 4. (월)" suffixIcon="calendar" ariaLabel="입사일, 2024. 3. 4. (월)" />
+          <InputButtonView look={lk} readOnly value="2024년 3월 4일 (월)" suffixIcon="calendar" ariaLabel="입사일, 2024년 3월 4일 (월)" />
         </F>
       </Form>
     </Live>
