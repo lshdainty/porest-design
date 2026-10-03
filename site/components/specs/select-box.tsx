@@ -11,6 +11,8 @@ import { ButtonView } from './button-view';
 import { checkLook } from './checkbox-look';
 import { CheckboxView } from './checkbox-view';
 import { RadioView } from './radio-group-view';
+import { selectLook } from './select-look';
+import { formatDay } from './date-shared';
 import { Phone, Verdict, rc, type Mode } from './kit';
 
 type Fig = (p: { caption?: string }) => ReactNode;
@@ -57,10 +59,12 @@ const STATE_KO: Record<SbState, string> = { enabled: '기본', hovered: '호버'
 
 // ── 화면 예시의 선택지 ────────────────────────────────────
 // Desk — 반복 거래 종료(고르면 반복 횟수 · 종료일 칸이 열린다)
+const END_DAY = { y: 2027, m: 3, d: 31 };
 const END: BoxSpec[] = [
   { value: 'none', title: '무기한', description: '중지할 때까지 계속 반복' },
   { value: 'count', title: '횟수 지정', description: '정한 횟수만큼 반복', footer: { before: '총', value: '12', after: '회', aria: '반복 횟수' } },
-  { value: 'date', title: '종료일 지정', description: '정한 날까지 반복', footer: { value: '2027. 3. 31.', width: 148, aria: '종료일' } },
+  // 종료일은 타이핑하지 않고 달력으로 고른다 — Input Button(input-button.md), 값은 Date Picker 의 표시 형식
+  { value: 'date', title: '종료일 지정', description: '정한 날까지 반복', footer: { button: formatDay(END_DAY), aria: '종료일', look: selectLook('desk') } },
 ];
 // Desk — 내보내기 파일 형식 · 기간
 const FORMAT: BoxSpec[] = [

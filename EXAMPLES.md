@@ -160,7 +160,7 @@ Textarea — max-length + counter (Desk 메모 550자 제한 등).
 </Field>
 
 <Field label="날짜">
-  <InputButton placeholder="날짜 선택" value={date ? formatDate(date) : undefined} suffixIcon={<CalendarDays />} aria-haspopup="dialog" aria-expanded={open} onClick={() => setOpen(true)} />
+  <InputButton placeholder="날짜 선택" value={date ? formatDateValue(date) : undefined} suffixIcon={<CalendarDays />} aria-haspopup="dialog" aria-expanded={open} onClick={() => setOpen(true)} />
 </Field>
 ```
 
@@ -710,6 +710,8 @@ Hover Card — non-interactive preview. delay 700ms hover, link/avatar에 mentio
 ---
 
 ## Calendar / Date Range Picker
+
+> 2026-10-03 — 날짜 · 기간은 `specs/components/date-picker.md`(SEED Date Picker), 시각은 `time-picker.md`, 달만 고르기는 `wheel-picker.md` 가 원본이다. Calendar · Date Range Picker 는 걷었다. 아래 마크업은 옛 모양이다.
 
 ```html
 <div role="application" aria-label="2026년 5월" class="bg-surface-default border border-default rounded-lg p-4 w-80">

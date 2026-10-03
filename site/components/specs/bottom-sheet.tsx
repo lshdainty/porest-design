@@ -1,6 +1,7 @@
 // Bottom Sheet 페이지의 그림 — specs/components/bottom-sheet.md 의 `[그림: …](../../site/components/specs/bottom-sheet.tsx#<id>)` 자리.
 // 시트는 bottom-sheet.yaml 을 푼 값(overlayLook().sheet)으로, 칸 · 목록 줄 · 버튼은 그 컴포넌트의 YAML 로 그린다.
 // 폰 그림의 안전 영역(홈 표시줄)은 기기 값이라 그림에서 정한다(PHONE_SAFE).
+import { dateKit } from './date-look';
 import type { CSSProperties, ReactNode } from 'react';
 import { Figure, Panel, MARK_LINE } from '../foundations/ui';
 import { chipLook } from './chip-look';
@@ -466,7 +467,7 @@ const ButtonsGuide: Fig = ({ caption }) => (
 
 // ── 코드 미리보기(실제로 열고 닫는다) ────────────────────────
 const ExPick: Fig = () => <PeriodPickDemo kit={overlayKit()} chip={chipLook()} list={listLook()} />;
-const ExForm: Fig = () => <TxFormSheetDemo kit={overlayKit()} sel={desk()} field={tf().field} input={tf().input} cta={btn('neutralSolid', 'small')} />;
+const ExForm: Fig = () => <TxFormSheetDemo kit={overlayKit()} date={dateKit()} sel={desk()} field={tf().field} input={tf().input} cta={btn('neutralSolid', 'small')} />;
 
 export const bottomSheetFigures: Record<string, Fig> = {
   hero: Hero,

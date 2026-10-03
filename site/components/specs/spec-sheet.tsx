@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react';
 import { loadComponentSpec, stateNames } from '@/lib/component-spec';
 import { design, proseValue } from '@/lib/design-tokens';
-import { PROP_LABEL, PROP_ORDER, setsWeight } from '../../scripts/spec-tables.mjs';
+import { PROP_ORDER, propLabelFor, setsWeight } from '../../scripts/spec-tables.mjs';
 
 type Boxed = { value: unknown; dark?: unknown; note?: string };
 const isBoxed = (v: unknown): v is Boxed => !!v && typeof v === 'object' && 'value' in (v as object);
@@ -115,9 +115,9 @@ function Value({ raw, omitWeight = false }: { raw: unknown; omitWeight?: boolean
   );
 }
 
-const LABELS = PROP_LABEL as Record<string, string>;
 const ORDER = PROP_ORDER as string[];
-const propLabel = (slot: string, prop: string) => LABELS[`${slot}.${prop}`] ?? LABELS[prop] ?? prop;
+// 이름표 — 컴포넌트 것(Wheel Picker 의 띠 들임)이 먼저, 없으면 공용(spec-tables 의 propLabelFor)
+const labelFor = propLabelFor as (name: string, slot: string, prop: string) => string;
 
 export function SpecSheet({ component }: { component: string }) {
   const spec = loadComponentSpec(component);
@@ -159,7 +159,7 @@ export function SpecSheet({ component }: { component: string }) {
                         <td>{first && <code className="text-[12.5px] text-fd-foreground">{r.slot}</code>}</td>
                         <td className="text-fd-muted-foreground">{first && r.state}</td>
                         <td>
-                          <span className="text-fd-foreground">{propLabel(r.slot, r.prop)}</span>
+                          <span className="text-fd-foreground">{labelFor(spec.name, r.slot, r.prop)}</span>
                           <span className="ml-1 font-mono text-[11px] text-fd-muted-foreground">{r.prop}</span>
                         </td>
                         <td>

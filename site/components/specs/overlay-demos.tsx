@@ -8,8 +8,8 @@ import { Info } from 'lucide-react';
 import { ButtonView } from './button-view';
 import type { ChipLook } from './chip-shared';
 import { ChipView } from './chip-view';
-import { CalendarGrid } from './input-button-pickers';
-import { formatDate } from './input-button-data';
+import { DatePickerView } from './date-view';
+import { TODAY, formatDay, formatRange, isComplete, type DateKit, type DateValue, type Day, type RangeValue } from './date-shared';
 import type { ListLook, RowSpec } from './list-shared';
 import { ListView } from './list-view';
 import { ocv, type OvKit, type OvTone, type ViewMode } from './overlay-shared';
@@ -116,7 +116,7 @@ function useFormClose(dirty: boolean, close: () => void) {
 // ── Bottom Sheet — 고르기(기간) ────────────────────────────
 export const PERIOD_ITEMS = [
   { value: 'this', label: '이번 달', months: [10] },
-  { value: 'last', label: '지난달', months: [9] },
+  { value: 'last', label: '지난 달', months: [9] },
   { value: 'q', label: '최근 3개월', months: [10, 9, 8] },
 ];
 export function PeriodPickDemo({ kit, chip, list, mode = 'auto' }: { kit: OvKit; chip: ChipLook; list: ListLook; mode?: ViewMode }) {
@@ -200,11 +200,10 @@ export function PeriodPickDemo({ kit, chip, list, mode = 'auto' }: { kit: OvKit;
 }
 
 // ── 날짜 칸 — 시트 안에서는 시트로, 대화상자 안에서는 팝오버로 연다(Input Button 의 1280) ─────
-const YEAR = 2026;
-const MONTH = 10;
-const TODAY = 1;
+// 달력은 Date Picker(date-picker.yaml) — 하루는 한 달, 기간은 시트에서 이어지는 달 · 팝오버에서 두 달. "완료" 로 넣는다
 function DateField({
   kit,
+  date,
   sel,
   field,
   mode,
@@ -212,53 +211,42 @@ function DateField({
   value,
   onValue,
   range = false,
-  style = 'desk',
 }: {
   kit: OvKit;
+  date: DateKit;
   sel: SelectLook;
   field: TfFieldLook;
   mode: ViewMode;
   label: string;
-  value: [number, number?];
-  onValue: (v: [number, number?]) => void;
-  // 기간 — 두 번 고른다(시작 · 끝). 둘을 다 고르기 전에는 "완료" 를 막는다
+  value: DateValue;
+  onValue: (v: DateValue) => void;
+  // 기간 — 시작 · 끝을 한 달력에서. 둘을 다 고르기 전에는 "완료" 를 막는다
   range?: boolean;
-  style?: 'desk' | 'hr';
 }) {
   const wide = useMinWidth(kit.ov.breakpoint);
   const [open, setOpen] = useState(false);
-  const [draft, setDraft] = useState<[number?, number?]>([]);
+  const [draft, setDraft] = useState<DateValue>(undefined);
   const btn = useRef<HTMLButtonElement | null>(null);
   const id = useId();
-  const text = (v: [number?, number?]) => (v[0] === undefined ? '' : range && v[1] !== undefined ? `${formatDate(YEAR, MONTH, v[0], style)} ~ ${formatDate(YEAR, MONTH, v[1], style).replace(`${YEAR}. `, '')}` : formatDate(YEAR, MONTH, v[0], style));
-  const pick = (d: number) => {
-    if (!range) return setDraft([d]);
-    setDraft(([s, e]) => (s === undefined || e !== undefined || d < s ? [d, undefined] : [s, d]));
+  const selection = range ? 'range' : 'single';
+  const r = value as RangeValue | undefined;
+  const text = range ? (r?.start && r.end ? formatRange({ start: r.start, end: r.end }) : '') : value ? formatDay(value as Day) : '';
+  const title = range ? '기간 선택' : '날짜 선택';
+  const visible = range ? (wide ? 'twoMonths' : 'continuous') : 'month';
+  const ready = isComplete(selection, draft);
+  // 닫힌 뒤 초점은 칸으로(팝오버는 스스로 돌려주지 않는다)
+  const close = () => {
+    setOpen(false);
+    requestAnimationFrame(() => btn.current?.focus());
   };
-  const ready = draft[0] !== undefined && (!range || draft[1] !== undefined);
   const done = () => {
     if (!ready) return;
-    onValue([draft[0]!, range ? draft[1] : undefined]);
-    setOpen(false);
+    onValue(draft);
+    close();
   };
-  const cal = (
-    <div className="flex justify-center">
-      <CalendarGrid
-        look={sel}
-        mode={mode}
-        year={YEAR}
-        month={MONTH}
-        today={TODAY}
-        selected={range ? undefined : draft[0]}
-        range={range ? { start: draft[0], end: draft[1] } : undefined}
-        onPick={pick}
-        dayRef={(d, el) => {
-          if (el && d === (draft[0] ?? TODAY)) el.setAttribute('data-autofocus', '');
-          else el?.removeAttribute('data-autofocus');
-        }}
-      />
-    </div>
-  );
+  const cal = <DatePickerView kit={date} mode={mode} live autoFocus selection={selection} visibleRange={visible} value={draft} onValue={setDraft} width={wide ? undefined : '100%'} fill={visible === 'continuous'} ariaLabel={label} />;
+  const buttons = (b: OvKit['sheet']) => [...(range ? [{ label: '초기화', look: b.weak, onClick: () => setDraft(undefined) }] : []), { label: '완료', look: b.solid, onClick: done, state: ready ? undefined : ('disabled' as const) }];
+  const popW = visible === 'twoMonths' ? date.date.twoMonths.width + kit.ov.popover.body.padX * 2 : undefined;
   return (
     <>
       <TfFieldView look={field} mode={mode} label={label}>
@@ -268,9 +256,10 @@ function DateField({
             mode={mode}
             id={ctl.id}
             describedBy={ctl.describedBy}
-            ariaLabel={`${label}, ${text(value)}`}
+            ariaLabel={`${label}, ${text || title}`}
             buttonRef={btn}
-            value={text(value)}
+            value={text}
+            placeholder={title}
             suffixIcon="calendar"
             haspopup="dialog"
             expanded={open}
@@ -282,17 +271,30 @@ function DateField({
         )}
       </TfFieldView>
       {wide ? (
-        <PopoverLayer open={open} anchor={btn.current} look={kit.ov.popover} mode={mode} onRequestClose={() => setOpen(false)} ariaLabel={label}>
+        <PopoverLayer open={open} anchor={btn.current} look={kit.ov.popover} mode={mode} onRequestClose={close} ariaLabel={title}>
           {({ ref, rootProps, style: st, maxHeight, avail }) => (
-            <PopoverSurface ref={ref} rootProps={rootProps} style={st} maxHeight={maxHeight} avail={avail} look={kit.ov.popover} mode={mode} footer={<EndButtons mode={mode} items={[{ label: '완료', look: kit.dialog.solid, onClick: done, state: ready ? undefined : 'disabled' }]} />}>
+            <PopoverSurface ref={ref} rootProps={rootProps} style={popW ? { ...st, maxWidth: popW } : st} maxHeight={maxHeight} avail={popW ? undefined : avail} look={kit.ov.popover} mode={mode} footer={<EndButtons mode={mode} items={buttons(kit.dialog)} />}>
               {cal}
             </PopoverSurface>
           )}
         </PopoverLayer>
       ) : (
-        <ModalLayer open={open} kind="sheet" look={kit.ov} mode={mode} outside="close" drag onRequestClose={() => setOpen(false)} labelledBy={`${id}t`} returnFocus={() => btn.current}>
+        <ModalLayer open={open} kind="sheet" look={kit.ov} mode={mode} outside="close" drag={visible !== 'continuous'} onRequestClose={() => setOpen(false)} labelledBy={`${id}t`} returnFocus={() => btn.current} focusSelector="[data-autofocus]">
           {({ ref, rootProps, style: st, maxHeight }) => (
-            <SheetSurface ref={ref} rootProps={rootProps} style={st} maxHeight={maxHeight} look={kit.ov.sheet} mode={mode} title={label} titleId={`${id}t`} onClose={() => setOpen(false)} safe={SAFE} footer={<SheetButtons mode={mode} items={[{ label: '완료', look: kit.sheet.solid, onClick: done, state: ready ? undefined : 'disabled' }]} />}>
+            <SheetSurface
+              ref={ref}
+              rootProps={rootProps}
+              style={visible === 'continuous' ? { ...st, height: maxHeight } : st}
+              maxHeight={maxHeight}
+              look={kit.ov.sheet}
+              mode={mode}
+              title={title}
+              titleId={`${id}t`}
+              onClose={() => setOpen(false)}
+              safe={SAFE}
+              bodyStyle={visible === 'continuous' ? { display: 'flex', flexDirection: 'column' } : undefined}
+              footer={<SheetButtons mode={mode} items={buttons(kit.sheet)} />}
+            >
               {cal}
             </SheetSurface>
           )}
@@ -304,17 +306,17 @@ function DateField({
 
 // ── Bottom Sheet — 입력 폼(거래 추가) ───────────────────────
 // 시트로만 뜬다(BottomSheet form) — 위 닫기 + 바닥 저장, 바깥 누르기 · 끌기로 닫히지 않는다
-export function TxFormSheetDemo({ kit, sel, field, input, mode = 'auto', cta }: { kit: OvKit; sel: SelectLook; field: TfFieldLook; input: TfInputLook; mode?: ViewMode; cta: OvKit['sheet']['solid'] }) {
-  const [saved, setSaved] = useState<{ amount: number; day: number }[]>([]);
+export function TxFormSheetDemo({ kit, date, sel, field, input, mode = 'auto', cta }: { kit: OvKit; date: DateKit; sel: SelectLook; field: TfFieldLook; input: TfInputLook; mode?: ViewMode; cta: OvKit['sheet']['solid'] }) {
+  const [saved, setSaved] = useState<{ amount: number; day: Day }[]>([]);
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState('');
-  const [day, setDay] = useState<[number, number?]>([TODAY]);
+  const [day, setDay] = useState<DateValue>(TODAY);
   const trigger = useRef<HTMLButtonElement | null>(null);
   const id = useId();
-  const dirty = amount !== '' || day[0] !== TODAY;
+  const dirty = amount !== '' || day !== TODAY;
   const reset = () => {
     setAmount('');
-    setDay([TODAY]);
+    setDay(TODAY);
   };
   const close = () => {
     setOpen(false);
@@ -337,7 +339,7 @@ export function TxFormSheetDemo({ kit, sel, field, input, mode = 'auto', cta }: 
       </Heading>
       <ul className="mt-2 flex flex-col">
         {saved.map((s, i) => (
-          <TxRow key={i} kit={kit} mode={mode} tx={{ title: '새 거래', sub: formatDate(YEAR, MONTH, s.day, 'desk'), amount: -s.amount, hue: 'green' }} />
+          <TxRow key={i} kit={kit} mode={mode} tx={{ title: '새 거래', sub: formatDay(s.day), amount: -s.amount, hue: 'green' }} />
         ))}
         {TXS.slice(0, 2).map((t) => (
           <TxRow key={t.title} kit={kit} mode={mode} tx={t} />
@@ -364,7 +366,7 @@ export function TxFormSheetDemo({ kit, sel, field, input, mode = 'auto', cta }: 
                     label: '저장',
                     look: kit.sheet.solid,
                     onClick: () => {
-                      if (value > 0) setSaved((x) => [{ amount: value, day: day[0] }, ...x]);
+                      if (value > 0) setSaved((x) => [{ amount: value, day: (day as Day | undefined) ?? TODAY }, ...x]);
                       close();
                     },
                   },
@@ -376,7 +378,7 @@ export function TxFormSheetDemo({ kit, sel, field, input, mode = 'auto', cta }: 
               <TfFieldView look={field} mode={mode} label="금액">
                 {(ctl) => <TfInputView look={input} mode={mode} size="large" id={ctl.id} describedBy={ctl.describedBy} value={amount} onValue={setAmount} format="amount" suffix="원" placeholder="0" />}
               </TfFieldView>
-              <DateField kit={kit} sel={sel} field={field} mode={mode} label="날짜" value={day} onValue={setDay} />
+              <DateField kit={kit} date={date} sel={sel} field={field} mode={mode} label="날짜" value={day} onValue={setDay} />
             </div>
           </SheetSurface>
         )}
@@ -488,17 +490,18 @@ export const POLICY_GROUPS: SelGroup[] = [
     ],
   },
 ];
-export function LeaveDialogDemo({ kit, sel, field, mode = 'auto', trigger: trigLook }: { kit: OvKit; sel: SelectLook; field: TfFieldLook; mode?: ViewMode; trigger: OvKit['dialog']['solid'] }) {
+const LEAVE: RangeValue = { start: { y: 2026, m: 10, d: 12 }, end: { y: 2026, m: 10, d: 13 } };
+export function LeaveDialogDemo({ kit, date, sel, field, mode = 'auto', trigger: trigLook }: { kit: OvKit; date: DateKit; sel: SelectLook; field: TfFieldLook; mode?: ViewMode; trigger: OvKit['dialog']['solid'] }) {
   const [open, setOpen] = useState(false);
   const [kind, setKind] = useState<string[]>([]);
-  const [period, setPeriod] = useState<[number, number?]>([12, 13]);
+  const [period, setPeriod] = useState<DateValue>(LEAVE);
   const [sent, setSent] = useState<string | null>(null);
   const trigger = useRef<HTMLButtonElement | null>(null);
-  const dirty = kind.length > 0 || period[0] !== 12 || period[1] !== 13;
+  const dirty = kind.length > 0 || period !== LEAVE;
   const close = () => {
     setOpen(false);
     setKind([]);
-    setPeriod([12, 13]);
+    setPeriod(LEAVE);
   };
   const guard = useFormClose(dirty, close);
   const label = (v: string) => POLICY_GROUPS[0].items.find((i) => i.value === v)?.label ?? '';
@@ -531,7 +534,8 @@ export function LeaveDialogDemo({ kit, sel, field, mode = 'auto', trigger: trigL
           label: '신청',
           brand: true,
           onClick: () => {
-            setSent(`${label(kind[0] ?? 'annual')} 신청 — 10월 ${period[0]}일 ~ ${period[1]}일, 승인을 기다려요.`);
+            const r = period as RangeValue;
+            setSent(`${label(kind[0] ?? 'annual')} 신청 — ${r.start && r.end ? formatRange({ start: r.start, end: r.end }) : ''}, 승인을 기다려요.`);
             close();
           },
         }}
@@ -540,7 +544,7 @@ export function LeaveDialogDemo({ kit, sel, field, mode = 'auto', trigger: trigL
           <TfFieldView look={field} mode={mode} label="휴가 종류">
             {(ctl) => <SelectView look={sel} mode={mode} groups={POLICY_GROUPS} placeholder="휴가 종류 선택" value={kind} onValue={setKind} id={ctl.id} describedBy={ctl.describedBy} />}
           </TfFieldView>
-          <DateField kit={kit} sel={sel} field={field} mode={mode} label="기간" value={period} onValue={setPeriod} range style="hr" />
+          <DateField kit={kit} date={date} sel={sel} field={field} mode={mode} label="기간" value={period} onValue={setPeriod} range />
         </div>
       </ResponsiveLayer>
       <LeaveConfirm kit={kit} mode={mode} open={guard.asking} description="나가면 입력한 내용이 저장되지 않아요." onStay={guard.stay} onLeave={guard.leave} />

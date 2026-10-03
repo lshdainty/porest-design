@@ -3,6 +3,7 @@
 import type { CheckLook } from './checkbox-shared';
 import type { SnackbarLook } from './feedback-shared';
 import type { RadioLook } from './radio-group-shared';
+import type { SelIcon, SelectLook } from './select-shared';
 
 type Mode = 'light' | 'dark';
 
@@ -99,8 +100,12 @@ export type SbIcon = (typeof SB_ICONS)[number];
 
 // 앞 — 아이콘 22
 export type SbPrefix = { icon: SbIcon };
-// 펼침의 내용 — 입력칸(앞 · 뒤 글자) 또는 안내 글
-export type SbFooter = { before?: string; value: string; after?: string; width?: number; aria: string } | { note: string };
+// 펼침의 내용 — 입력칸(앞 · 뒤 글자) · 고르는 칸(Input Button — 날짜처럼 타이핑하지 않는 값) 또는 안내 글
+// 고르는 칸은 input-button.yaml 을 푼 값(SelectLook)으로 그린다 — 여는 자리(시트 · 팝오버)는 이 그림의 몫이 아니다
+export type SbFooter =
+  | { before?: string; value: string; after?: string; width?: number; aria: string }
+  | { button: string; aria: string; look: SelectLook; icon?: SelIcon; width?: number | string }
+  | { note: string };
 
 // 상자 하나 — state 를 주면 그 상태로 멈춘 그림
 export type BoxSpec = {

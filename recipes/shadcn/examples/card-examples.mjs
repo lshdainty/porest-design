@@ -85,7 +85,7 @@ export const cardExamples = [
   <CardContent className="flex items-center justify-between p-6">
     <div className="flex flex-col gap-1">
       <span className="text-title-sm font-semibold">5월 휴가 신청</span>
-      <span className="text-label-sm text-text-secondary">김지원 · 5/12 ~ 5/14 · 연차 3일</span>
+      <span className="text-label-sm text-text-secondary">김지원 · 5월 12일~5월 14일 · 연차 3일</span>
     </div>
     <div className="flex gap-2">
       <Button size="sm">승인</Button>
@@ -97,7 +97,7 @@ export const cardExamples = [
   <div style="display:flex; align-items:center; justify-content:space-between; padding:var(--spacing-xl);">
     <div style="display:flex; flex-direction:column; gap:var(--spacing-xs); min-width:0;">
       <span style="font-size:var(--text-title-sm); line-height:var(--text-title-sm--line-height); font-weight:var(--text-title-sm--font-weight); color:var(--color-text-primary);">5월 휴가 신청</span>
-      <span style="font-size:var(--text-label-sm); line-height:var(--text-label-sm--line-height); color:var(--color-text-secondary);">김지원 · 5/12 ~ 5/14 · 연차 3일</span>
+      <span style="font-size:var(--text-label-sm); line-height:var(--text-label-sm--line-height); color:var(--color-text-secondary);">김지원 · 5월 12일~5월 14일 · 연차 3일</span>
     </div>
     <div style="display:flex; gap:var(--spacing-sm);">
       <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-sm font-medium transition-colors bg-primary text-text-on-accent shadow-sm hover:brightness-105 h-8 px-3 text-label-sm">승인</button>
@@ -147,7 +147,7 @@ export const cardExamples = [
       <CalendarClock className="text-text-secondary" size={16} />
       <div className="flex-1">
         <div className="text-caption text-text-tertiary mb-0.5">선택 기간</div>
-        <div className="text-body-sm font-semibold text-text-primary">2025.06.01 ~ 2026.07.04 <span className="text-text-tertiary font-normal">(399일)</span></div>
+        <div className="text-body-sm font-semibold text-text-primary">2025년 6월 1일~2026년 7월 4일 <span className="text-text-tertiary font-normal">(399일)</span></div>
       </div>
       <div className="flex items-center gap-1 text-text-secondary text-caption font-semibold">
         <Pencil size={14} /> 변경
@@ -161,7 +161,7 @@ export const cardExamples = [
       <span style="display:inline-flex; color:var(--color-text-secondary);">📅</span>
       <div style="flex:1; min-width:0;">
         <div style="font-size:var(--text-caption); color:var(--color-text-tertiary); margin-bottom:2px;">선택 기간</div>
-        <div style="font-size:var(--text-body-sm); font-weight:600; color:var(--color-text-primary);">2025.06.01 ~ 2026.07.04 <span style="color:var(--color-text-tertiary); font-weight:400;">(399일)</span></div>
+        <div style="font-size:var(--text-body-sm); font-weight:600; color:var(--color-text-primary);">2025년 6월 1일~2026년 7월 4일 <span style="color:var(--color-text-tertiary); font-weight:400;">(399일)</span></div>
       </div>
       <div style="display:flex; align-items:center; gap:4px; color:var(--color-text-secondary); font-size:var(--text-caption); font-weight:600;">
         <span>✏️</span> 변경

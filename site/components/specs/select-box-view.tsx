@@ -4,6 +4,7 @@
 // 색은 라이트(-l) · 다크(-d) 값을 둘 다 싣고 CSS(global.css 의 .psb)가 사이트 모드에 맞춰 고른다.
 // 상자는 세 층이다 — 상자(테두리 · 바탕, 줄지 않는다) · 누르는 자리(콘텐츠 + 컨트롤, 누르면 이 자리만 준다) · 펼침(그 아래).
 import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent } from 'react';
+import { InputButtonView } from './select-view';
 import {
   ArrowDownLeft,
   ArrowLeftRight,
@@ -327,10 +328,18 @@ function Box({ look, box, kind, control, layout, mode, live, on, onToggle, onArr
   );
 }
 
-// 펼침의 내용 — 입력칸(input.yaml 의 기본 모습) 또는 안내 글. 펼침의 내용은 쓰는 쪽이 정한다
+// 펼침의 내용 — 입력칸(input.yaml 의 기본 모습) · 고르는 칸(Input Button) 또는 안내 글. 펼침의 내용은 쓰는 쪽이 정한다
 export function FooterContent({ spec, look, mode }: { spec: SbFooter; look: SbLook; mode: ViewMode }) {
   const f = look.faces.unselected[pickL(mode)].enabled;
   if ('note' in spec) return <span style={{ fontSize: f.description.fontSize, lineHeight: f.description.lineHeight, color: 'var(--psb-desc)' }}>{spec.note}</span>;
+  // 고르는 칸 — Input Button large(폰 화면의 칸, 상자는 Input 상자형과 같은 52). 그림이라 열지 않는다
+  if ('button' in spec)
+    return (
+      <span className="flex" style={{ width: spec.width ?? '100%' }}>
+        <span className="sr-only">{spec.aria}</span>
+        <InputButtonView look={spec.look} mode={mode} size="large" state="enabled" value={spec.button} suffixIcon={spec.icon ?? 'calendar'} />
+      </span>
+    );
   const i = look.input;
   return (
     <span className="flex items-center" style={{ gap: 8, fontSize: f.description.fontSize, lineHeight: f.description.lineHeight, color: 'var(--psb-title)' }}>

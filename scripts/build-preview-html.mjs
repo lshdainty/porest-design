@@ -239,7 +239,7 @@ export function brandProfile(brandName, tokens) {
         fields: [
           { type: "input", label: "신청자", value: "김지원", helper: "근속 2년차 · 디자인본부", required: true, readonly: true, pair: true },
           { type: "select", label: "휴가 정책", value: "연차", options: ["연차", "반차(오전)", "반차(오후)", "병가", "특별휴가"], required: true },
-          { type: "inputButton", label: "기간", value: "5월 12일 (화)~5월 14일 (목)", suffixIcon: "calendarDays", helper: "사용 일수 3일 · 남은 연차 8.5일", required: true },
+          { type: "inputButton", label: "기간", value: "5월 12일~5월 14일", suffixIcon: "calendarDays", helper: "사용 일수 3일 · 남은 연차 8.5일", required: true },
           { type: "textarea", label: "사유", value: "가족 행사 참석으로 인한 연차 사용 요청드립니다.\n결재 후 인수인계 문서 공유드리겠습니다.", max: 1000 },
         ],
         primary: "결재 라인에 제출",
@@ -510,7 +510,7 @@ export function brandProfile(brandName, tokens) {
       },
     },
     calendar: {
-      title: "Calendar primitive",
+      title: "5월 일정",
       month: "May 2026",
       leadingEmpty: 4,
       days: Array.from({ length: 31 }, (_, i) => {
@@ -2488,7 +2488,7 @@ export function renderTextFieldGallery(brand) {
     { label: "메모", max: 100, control: { kind: "textarea", size: "large", placeholder: "예: 친구와 점심" } },
   ];
   const hrPolicy = { label: "휴가 정책", required: true, control: { kind: "select", size: "medium", value: "연차" } };
-  const hrPeriod = { label: "기간", required: true, control: { kind: "inputButton", size: "medium", value: "10월 12일 (월)~10월 14일 (수)", suffixIcon: "calendarDays" } };
+  const hrPeriod = { label: "기간", required: true, control: { kind: "inputButton", size: "medium", value: "10월 12일~10월 14일", suffixIcon: "calendarDays" } };
   const hrHoliday = { label: "휴가지", control: { kind: "input", size: "medium", placeholder: "예: 제주", clearable: true } };
   const hrPhone = { label: "비상 연락처", required: true, requiredMessage: "비상 연락처를 입력해주세요.", control: { kind: "input", size: "medium", value: "010-1234-5678", inputmode: "tel" } };
   const hrRows = [
@@ -2532,39 +2532,27 @@ export function renderTextFieldGallery(brand) {
   </section>`;
 }
 
-// 달력 — 여는 자리 그림(03h · 03k)에 넣는 자리만 그린 달력이다. 크기 · 고른 날의 모양은 Date Picker 차례에 정한다. 2026년 10월 1일은 목요일이라 앞 4칸이 빈다
-const pickCalendar = ({ picked = [], range = [] } = {}) => {
-  const days = Array.from({ length: 31 }, (_, i) => i + 1).map((d) => {
-    const cls = ["pib-cal-day", picked.includes(d) && "pib-cal-day--picked", range.includes(d) && "pib-cal-day--range"].filter(Boolean).join(" ");
-    return `<span class="${cls}"><span>${d}</span></span>`;
-  });
-  const blanks = Array.from({ length: 4 }, () => '<span class="pib-cal-day" aria-hidden="true"></span>');
-  const nav = (icon, name) => `<button class="btn btn-ghost btn-ghost-subtle btn-icon-only btn-size-small" type="button" aria-label="${name}">${PICK_ICON[icon]}</button>`;
-  return `<div class="pib-cal">
-            <div class="pib-cal-head">${nav("chevronLeft", "이전 달")}<span class="pib-cal-month">2026년 10월</span>${nav("chevronRight", "다음 달")}</div>
-            <div class="pib-cal-grid">${["일", "월", "화", "수", "목", "금", "토"].map(d => `<span class="pib-cal-dow">${d}</span>`).join("")}${blanks.join("")}${days.join("")}</div>
-          </div>`;
-};
-
 // Input Button 의 여는 자리 — 폰(1280 미만)은 Bottom Sheet(위에 고를 값의 종류를 제목으로 · 닫기 28 원 · 아래 "완료" large 48 폭 전체),
 // 데스크톱 웹(1280 이상)은 칸 아래 8 · 왼쪽 맞춤 Popover(고르는 패널이라 머리 없이 본문 · 아래 "완료" small 36 오른쪽).
-// 시트 · 팝오버는 03k 의 도우미(bottomSheet · overlayPopover)로 그린다 — 뒤 화면의 칸은 열린 채(aria-expanded)다. 03h · 03k 가 함께 쓴다
+// 시트 · 팝오버는 03k 의 도우미(bottomSheet · overlayPopover)로 그린다 — 뒤 화면의 칸은 열린 채(aria-expanded)다. 03h · 03k 가 함께 쓴다.
+// 달력은 03n 의 Date Picker(datePicker — 시트는 시트 폭 − 좌우 24, 팝오버는 336)다. 오늘은 10월 2일(금) — 폰은 칸의 1일에서 열어 8일을 고른 순간(칸은 아직 1일),
+// 데스크톱은 할 일 마감(오늘부터 — 1일은 막힌 날)을 연 순간이다
 const pickSurfaceMock = {
   phone: () => overlayFrame({
     device: "phone",
-    height: 600,
+    height: 740,
     page: overlayPage({ title: "거래 추가", body: textField({ label: "날짜", control: { kind: "inputButton", size: "large", value: "10월 1일 (목)", suffixIcon: "calendarDays", expanded: true } }) }),
-    layers: [overlayScrim(), overlayLayer("sheet", bottomSheet({ title: "날짜", body: pickCalendar({ picked: [8] }), footer: [overlayButton("완료", { size: "large" })] }))],
+    layers: [overlayScrim(), overlayLayer("sheet", bottomSheet({ title: "날짜 선택", body: datePicker({ label: "날짜 선택", surface: "sheet", start: 20261008 }), footer: [overlayButton("완료", { size: "large" })] }))],
   }),
   desktop: () => overlayFrame({
     device: "desktop",
-    height: 560,
+    height: 680,
     page: overlayPage({
-      title: "휴가 신청",
+      title: "할 일",
       desktop: true,
       body: overlayAnchor(
-        textField({ label: "기간", control: { kind: "inputButton", size: "medium", value: "10월 12일 (월)~10월 14일 (수)", suffixIcon: "calendarDays", expanded: true } }),
-        overlayPopover({ label: "기간 고르기", body: pickCalendar({ picked: [12, 14], range: [13] }), footer: [overlayButton("완료")] }),
+        textField({ label: "마감일", control: { kind: "inputButton", size: "medium", value: "10월 9일 (금)", suffixIcon: "calendarDays", expanded: true } }),
+        overlayPopover({ label: "날짜 선택", body: datePicker({ label: "날짜 선택", surface: "popover", start: 20261009, min: PDP_TODAY }), footer: [overlayButton("완료")] }),
       ),
     }),
   }),
@@ -2721,10 +2709,10 @@ export function renderPickGallery(brand) {
     ]),
   );
 
-  // 7. 여는 자리 — 폰의 시트 · 데스크톱 웹의 팝오버. 시트 · 팝오버는 03k 의 Bottom Sheet · Popover 다(pickSurfaceMock). 달력은 자리만 그린 것이다(Date Picker 차례에 정한다)
+  // 7. 여는 자리 — 폰의 시트 · 데스크톱 웹의 팝오버. 시트 · 팝오버는 03k 의 Bottom Sheet · Popover 이고(pickSurfaceMock), 달력은 03n 의 Date Picker 다
   const surfacePanel = panel(
     "여는 자리 — 1280 미만 시트 · 이상 팝오버 · \"완료\"",
-    "여는 자리는 화면 폭으로 정한다 — 칸 크기가 바뀌는 폭(1280)과 같다. 1280 미만(폰 · 태블릿 · 앱)은 아래에서 올라오는 Bottom Sheet 로, 위에 고를 값의 종류를 제목으로 두고 오른쪽 위에 닫기(28 원)를 둔다. 1280 이상(데스크톱 웹)은 칸 아래 8 에 붙고 칸 왼쪽에 맞춘 Popover 다(아래가 모자라면 위로) — 고르는 패널이라 머리 없이 본문만이다. 달력 · 시각은 고르는 동안 칸의 값이 바뀌지 않는다 — 고른 날은 시트 · 팝오버 안에만 있다가 \"완료\" 를 누를 때 칸에 들어가고(그림의 8일은 아직 칸에 없다), 바깥을 누르거나 끌어내리거나 Esc 로 닫으면 버린다. 열 때는 칸의 값에서 시작한다. 기간처럼 두 번 고르는 것은 둘을 다 고르기 전에는 \"완료\" 를 막는다. \"완료\" 는 시트에서 Button large 48 폭 전체, 팝오버에서 small 36 오른쪽이다. 목록 · 격자는 누르는 순간 고르고 닫혀 \"완료\" 가 없다. 시트 · 팝오버의 모양은 03k — Bottom Sheet · Popover 이고, 달력의 모양(크기 · 고른 날)만 Date Picker 차례에 정한다 — 달력은 자리만 그렸다.",
+    "여는 자리는 화면 폭으로 정한다 — 칸 크기가 바뀌는 폭(1280)과 같다. 1280 미만(폰 · 태블릿 · 앱)은 아래에서 올라오는 Bottom Sheet 로, 위에 고를 값의 종류를 제목(\"날짜 선택\")으로 두고 오른쪽 위에 닫기(28 원)를 둔다. 1280 이상(데스크톱 웹)은 칸 아래 8 에 붙고 칸 왼쪽에 맞춘 Popover 다(아래가 모자라면 위로) — 고르는 패널이라 머리 없이 본문만이고 이름(aria-label)이 같은 말이다. 달력 · 시각은 고르는 동안 칸의 값이 바뀌지 않는다 — 고른 날은 시트 · 팝오버 안에만 있다가 \"완료\" 를 누를 때 칸에 들어가고(그림의 8일은 아직 칸에 없다), 바깥을 누르거나 끌어내리거나 Esc 로 닫으면 버린다. 열 때는 칸의 값에서 시작한다. 기간처럼 두 번 고르는 것은 둘을 다 고르기 전에는 \"완료\" 를 막는다. \"완료\" 는 시트에서 Button large 48 폭 전체, 팝오버에서 small 36 오른쪽이다. 목록 · 격자는 누르는 순간 고르고 닫혀 \"완료\" 가 없다. 시트 · 팝오버의 모양은 03k — Bottom Sheet · Popover, 달력은 03n 의 Date Picker 다 — 시트는 시트 폭에서 좌우 24 를 뺀 폭(360 화면 312), 팝오버는 336 이고, 오늘(2일)은 옅은 원 + 굵은 숫자 · 고른 날은 짙은 원 · 고를 수 없는 날(할 일 마감은 오늘부터)은 흐린 숫자 + 취소선이다.",
     samples([
       sample("폰 — 시트", "useInputButtonSurface() → \"sheet\" · 위에 제목 · 닫기 · 아래 완료", pickSurfaceMock.phone()),
       sample("데스크톱 웹 — 팝오버", "useInputButtonSurface() → \"popover\" · 칸 아래 8 · 왼쪽 맞춤 · 머리 없음", pickSurfaceMock.desktop()),
@@ -3366,10 +3354,10 @@ export function renderTabsGallery(brand) {
         listRow({ prefix: tile("blue", "bus"), title: "교통", detail: "11%", suffix: won("98,000원") }),
       ])}` },
       { label: "추이", body: `<p class="ptab-lead">한 달 지출 — 최근 4개월</p>${listOf([
-        listRow({ title: "9월", detail: "9월 1일 ~ 30일", suffix: won("905,200원") }),
-        listRow({ title: "8월", detail: "8월 1일 ~ 31일", suffix: won("876,000원") }),
-        listRow({ title: "7월", detail: "7월 1일 ~ 31일", suffix: won("790,400원") }),
-        listRow({ title: "6월", detail: "6월 1일 ~ 30일", suffix: won("842,100원") }),
+        listRow({ title: "9월", detail: "9월 1일~30일", suffix: won("905,200원") }),
+        listRow({ title: "8월", detail: "8월 1일~31일", suffix: won("876,000원") }),
+        listRow({ title: "7월", detail: "7월 1일~31일", suffix: won("790,400원") }),
+        listRow({ title: "6월", detail: "6월 1일~30일", suffix: won("842,100원") }),
       ])}` },
       { label: "비교", body: `<p class="ptab-lead">8월보다 <strong>29,200원</strong> 더 썼어요</p>${listOf([
         listRow({ prefix: tile("orange", "utensils"), title: "식비", detail: "8월 336,000원", suffix: won("+12,000원") }),
@@ -3405,12 +3393,12 @@ export function renderTabsGallery(brand) {
     label: "휴가 신청",
     items: [
       { label: "신청 내역", body: listOf([
-        listRow({ title: "연차 3일", detail: "10월 12일 (월) ~ 14일 (수) · 승인 대기" }),
+        listRow({ title: "연차 3일", detail: "10월 12일 (월)~14일 (수) · 승인 대기" }),
         listRow({ title: "반차 · 오후", detail: "9월 25일 (금) · 승인됨" }),
         listRow({ title: "연차 1일", detail: "9월 4일 (금) · 승인됨" }),
       ]) },
       { label: "승인 내역", dot: true, body: listOf([
-        listRow({ title: "김지원 · 연차 3일", detail: "디자인 본부 · 10월 20일 (화) ~ 22일 (목) · 대기" }),
+        listRow({ title: "김지원 · 연차 3일", detail: "디자인 본부 · 10월 20일 (화)~22일 (목) · 대기" }),
         listRow({ title: "박서연 · 반차", detail: "프로덕트 본부 · 10월 16일 (금) 오전 · 대기" }),
         listRow({ title: "이도현 · 연차 1일", detail: "운영 본부 · 9월 30일 (수) · 승인함" }),
       ]) },
@@ -3564,7 +3552,7 @@ const OVERLAY_LEDGER = [
   { color: "indigo", icon: "wallet", title: "월급", detail: "수입 · 국민 주계좌", amount: "3,200,000원" },
 ];
 const OVERLAY_LEAVE = [
-  { color: "blue", icon: "calendar", title: "연차", detail: "10월 12일 (월) ~ 14일 (수)", value: "승인 대기" },
+  { color: "blue", icon: "calendar", title: "연차", detail: "10월 12일 (월)~14일 (수)", value: "승인 대기" },
   { color: "indigo", icon: "calendar", title: "반차(오전)", detail: "9월 30일 (수)", value: "승인" },
   { color: "violet", icon: "calendar", title: "병가", detail: "9월 8일 (화)", value: "승인" },
 ];
@@ -3665,7 +3653,7 @@ export function renderOverlayGallery(brand) {
   // 3. Dialog — 조회(머리 닫기) · 본문이 넘칠 때(아래 48 흐림) · 위로 스크롤했을 때(머리 아래 선). 둘째 · 셋째는 실제로 스크롤된다
   const leaveFields = [
     { label: "휴가 종류", required: true, control: { kind: "select", size: "medium", value: "연차" } },
-    { label: "기간", required: true, control: { kind: "inputButton", size: "medium", value: "10월 12일 (월)~10월 14일 (수)", suffixIcon: "calendarDays" } },
+    { label: "기간", required: true, control: { kind: "inputButton", size: "medium", value: "10월 12일~10월 14일", suffixIcon: "calendarDays" } },
     { label: "비상 연락처", required: true, control: { kind: "input", size: "medium", value: "010-1234-5678", inputmode: "tel" } },
     { label: "휴가 사유", max: 1000, control: { kind: "textarea", size: "medium", value: "가족 행사 참석으로 연차를 씁니다.\n인수인계 문서는 결재 전에 팀 채널에 올려 두었습니다." } },
   ];
@@ -4052,7 +4040,7 @@ export function renderFeedbackGallery(brand) {
             <div class="ptf-screen-title">휴가 신청</div>
             <div class="ptf-form">${callout({ tone: "critical", role: "alert", description: "신청하지 못했어요. 입력한 내용은 그대로 있어요. 잠시 뒤 다시 신청해 주세요." })}${
               textField({ label: "휴가 정책", control: { kind: "select", size: "medium", value: "연차" } })}${
-              textField({ label: "기간", control: { kind: "inputButton", size: "medium", value: "10월 12일 (월)~10월 14일 (수)", suffixIcon: "calendarDays" } })}</div>
+              textField({ label: "기간", control: { kind: "inputButton", size: "medium", value: "10월 12일~10월 14일", suffixIcon: "calendarDays" } })}</div>
             <div class="ptf-screen-actions ptf-screen-actions--end"><button class="btn btn-neutral-weak" type="button"><span>취소</span></button><button class="btn btn-neutral-solid" type="button"><span>신청</span></button></div>
           </div>`;
   const calloutStatePanel = panel(
@@ -4585,6 +4573,524 @@ export function renderMenuGallery(brand) {
   </section>`;
 }
 
+// 날짜 계산 · 달력 칸 그리기 — 빌드(그림)와 페이지 끝 스크립트(고르기 · 달 넘기기)가 같은 코드를 쓴다. 페이지에는 toString 으로 옮기므로
+// 바깥 이름을 부르지 않고 ES5 로 쓴다(글은 숫자 · 날짜 이름뿐이라 escape 가 필요 없다). 날짜는 yyyymmdd 수(20261002)이고 계산은 UTC 로 한다.
+// 칸 하나의 상태(o) — mode(single · range · multiple) · start · end · picks · min · max · off(막힌 날) · readOnly(확정된 시작일) · today ·
+// tab(Tab 자리) · frozen({ 날짜: "hover" | "pressed" | "focus" } — 그 순간을 멈춘 날짜, 갤러리 전용) · fill(앞뒤 달을 흐리게 채우고 늘 6주)
+function pdpLib() {
+  var WEEK = ["일", "월", "화", "수", "목", "금", "토"];
+  function key(y, m, d) { return y * 10000 + m * 100 + d; }
+  function year(k) { return Math.floor(k / 10000); }
+  function month(k) { return Math.floor(k / 100) % 100; }
+  function day(k) { return k % 100; }
+  function utc(k) { return Date.UTC(year(k), month(k) - 1, day(k)); }
+  function fromUtc(t) { var x = new Date(t); return key(x.getUTCFullYear(), x.getUTCMonth() + 1, x.getUTCDate()); }
+  function addDays(k, n) { return fromUtc(utc(k) + n * 86400000); }
+  function daysIn(y, m) { return new Date(Date.UTC(y, m, 0)).getUTCDate(); }
+  function weekday(k) { return new Date(utc(k)).getUTCDay(); }
+  // 달 옮기기 — [연, 월]. 날짜를 옮기면 같은 날, 없으면 말일(PageUp · PageDown)
+  function addMonths(y, m, n) { var t = y * 12 + (m - 1) + n; var ny = Math.floor(t / 12); return [ny, t - ny * 12 + 1]; }
+  function shiftDay(k, n) { var ym = addMonths(year(k), month(k), n); return key(ym[0], ym[1], Math.min(day(k), daysIn(ym[0], ym[1]))); }
+  function title(y, m) { return y + "년 " + m + "월"; }
+  // 읽는 이름 — "2026년 10월 15일 목요일"
+  function name(k) { return year(k) + "년 " + month(k) + "월 " + day(k) + "일 " + WEEK[weekday(k)] + "요일"; }
+  // 칸 값 — 올해는 "10월 15일 (목)", 다른 해는 "2027년 1월 3일 (일)". 기간은 "10월 1일~10월 31일"(물결표를 앞뒤에 붙여 쓴다 — International Design) —
+  // 올해가 아닌 날이 끼면 양쪽에 연도(date-picker.md "글")
+  function format(k, today) { return (year(k) === year(today) ? "" : year(k) + "년 ") + month(k) + "월 " + day(k) + "일 (" + WEEK[weekday(k)] + ")"; }
+  function formatRange(s, e, today) {
+    var withYear = year(s) !== year(today) || year(e) !== year(today);
+    function f(k) { return (withYear ? year(k) + "년 " : "") + month(k) + "월 " + day(k) + "일"; }
+    return f(s) + "~" + f(e);
+  }
+  // 빠른 기간 — 달력 단위, 주는 일요일부터(date-picker.md "빠른 기간"). [시작, 끝]
+  function preset(p, today) {
+    var y = year(today), m = month(today);
+    function months(n) { var a = addMonths(y, m, -(n - 1)); return [key(a[0], a[1], 1), key(y, m, daysIn(y, m))]; }
+    var last = addMonths(y, m, -1);
+    switch (p) {
+      case "thisWeek": return [addDays(today, -weekday(today)), addDays(today, 6 - weekday(today))];
+      case "thisMonth": return [key(y, m, 1), key(y, m, daysIn(y, m))];
+      case "lastMonth": return [key(last[0], last[1], 1), key(last[0], last[1], daysIn(last[0], last[1]))];
+      case "last7Days": return [addDays(today, -6), today];
+      case "last30Days": return [addDays(today, -29), today];
+      case "last3Months": return months(3);
+      case "last6Months": return months(6);
+      case "last1Year": return months(12);
+      case "thisYear": return [key(y, 1, 1), key(y, 12, 31)];
+    }
+    return [0, 0];
+  }
+  // 날짜 칸 — 칸(role=gridcell · 기간 띠 data-band) > 날짜 버튼(칸 전체가 누르는 자리) > 원 · 숫자.
+  // 겹치면 고름 > 기간 안 > 오늘(오늘의 굵기는 CSS 가 남긴다). 막힌 날 · 읽기 전용은 aria-disabled 라 초점은 간다.
+  // 막힌 날은 data-disabled(취소선) — 오늘이면 원 없이 굵은 숫자 + 취소선, 고른 날이면 고른 모양 + 취소선(CSS)
+  function cell(k, o) {
+    var mode = o.mode || "single", s = o.start || 0, e = o.end || 0;
+    var selected = false, band = "", inRange = false;
+    if (mode === "range") {
+      selected = k === s || (e > 0 && k === e);
+      if (s && e && e !== s) {
+        if (k === s) band = "start";
+        else if (k === e) band = "end";
+        else if (k > s && k < e) { band = "middle"; inRange = true; }
+      }
+    } else if (mode === "multiple") selected = (o.picks || []).indexOf(k) >= 0;
+    else selected = k === s;
+    var readOnly = !!o.readOnly && k === o.readOnly;
+    if (readOnly) selected = false;
+    var off = !!((o.min && k < o.min) || (o.max && k > o.max) || (o.off || []).indexOf(k) >= 0);
+    // 미완성 기간(시작만 고름)의 시작은 막힌 날이어도 시작 원 위에 취소선을 긋지 않는다
+    var strike = off && !(mode === "range" && selected && !e);
+    var frozen = o.frozen && o.frozen[k] ? " pdp-day--" + o.frozen[k] : "";
+    var button = '<button type="button" class="pdp-day' + frozen + '" data-date="' + k + '" tabindex="' + (k === o.tab ? "0" : "-1") + '" aria-label="' + name(k) + (readOnly ? ", 읽기 전용 시작일" : "") + '"' +
+      (k === o.today ? ' aria-current="date" data-today=""' : "") +
+      (off || readOnly ? ' aria-disabled="true"' : "") +
+      (selected ? ' data-selected=""' : "") +
+      (inRange ? ' data-in-range=""' : "") +
+      (strike ? ' data-disabled=""' : "") +
+      (readOnly ? ' data-readonly=""' : "") +
+      '><span class="pdp-day-visual">' + day(k) + "</span></button>";
+    return '<span class="pdp-cell" role="gridcell"' + (selected || inRange || readOnly ? ' aria-selected="true"' : "") + (band ? ' data-band="' + band + '"' : "") + ">" + button + "</span>";
+  }
+  // 앞뒤 달 날짜 — 흐리게 보이기만 하고 누르지 못한다. 숫자만 보조 기술에 숨기고 칸(gridcell)은 남겨 요일 짝을 지킨다 — 칸째 숨기면 그 주의
+  // 칸 수가 줄어 보조 기술이 요일을 잘못 짝짓는다. 기간 띠도 그리지 않는다. 이어지는 달은 빈 칸(숫자 없음)
+  function outside(k) { return '<span class="pdp-cell" role="gridcell" data-outside=""><span class="pdp-day" data-outside=""><span class="pdp-day-visual" aria-hidden="true">' + day(k) + "</span></span></span>"; }
+  function empty() { return '<span class="pdp-cell" role="gridcell" data-outside=""></span>'; }
+  // 요일 줄 — "일" … "토", 읽는 이름은 "일요일" …
+  function weekdays() {
+    var html = '<div class="pdp-week pdp-weekdays" role="row">';
+    for (var i = 0; i < 7; i++) html += '<span class="pdp-weekday" role="columnheader" aria-label="' + WEEK[i] + '요일">' + WEEK[i] + "</span>";
+    return html + "</div>";
+  }
+  // 한 달의 주 — fill 이면 늘 6주(앞뒤 달 날짜를 흐리게 채운다 — 달을 넘겨도 높이가 그대로), 아니면 그 달의 주 수(앞뒤는 빈 칸 — 이어지는 달)
+  function weeks(y, m, o) {
+    var first = key(y, m, 1), lead = weekday(first), n = daysIn(y, m);
+    var total = o.fill ? 42 : Math.ceil((lead + n) / 7) * 7, html = "";
+    for (var i = 0; i < total; i++) {
+      if (i % 7 === 0) html += '<div class="pdp-week" role="row">';
+      var k = addDays(first, i - lead);
+      html += i >= lead && i < lead + n ? cell(k, o) : o.fill ? outside(k) : empty();
+      if (i % 7 === 6) html += "</div>";
+    }
+    return html;
+  }
+  // 달 하나의 격자 — 요일 줄(이어지는 달은 위에 하나만 붙는다) + 주. 이름은 그 달의 제목(aria-labelledby). 기간 · 여러 날은 aria-multiselectable
+  function grid(y, m, o, labelledby) {
+    return '<div class="pdp-grid" role="grid" aria-labelledby="' + labelledby + '"' + (o.mode === "range" || o.mode === "multiple" ? ' aria-multiselectable="true"' : "") +
+      ' data-pdp-month="' + key(y, m, 1) + '">' + (o.fill ? weekdays() : "") + weeks(y, m, o) + "</div>";
+  }
+  return {
+    WEEK: WEEK, key: key, year: year, month: month, day: day, addDays: addDays, daysIn: daysIn, weekday: weekday, addMonths: addMonths, shiftDay: shiftDay,
+    title: title, name: name, format: format, formatRange: formatRange, preset: preset, cell: cell, outside: outside, weekdays: weekdays, weeks: weeks, grid: grid,
+  };
+}
+
+// Date Picker · Time Picker · Wheel Picker — spec: specs/components/date-picker.md · time-picker.md · wheel-picker.md · 수치 date-picker.yaml ·
+// time-picker.yaml · wheel-picker.yaml. 구조는 SEED Date Picker · Time Picker · Wheel Picker(2026-10-03). 옛 Calendar(v61) · Date Range Picker · Time Picker(v72)를 대신한다.
+// 달력 .pdp(role=group) — 빠른 기간 .pdp-presets(기간만, 03i 의 Chip) · 머리 .pdp-header(제목 .pdp-title · 이전 · 다음 .pdp-nav — 두 달은 달 이름 .pdp-month-name) ·
+// 격자 .pdp-grid(role=grid — 요일 줄 .pdp-weekdays · 주 .pdp-week > 칸 .pdp-cell(role=gridcell · 기간 띠 data-band) > 날짜 버튼 .pdp-day > 원 · 숫자 .pdp-day-visual).
+// 이어지는 달(.pdp--continuous)은 머리 없이 위에 붙는 요일 줄 · 달마다 이름 .pdp-month-label · 아래 안개 .pdp-fog 다. 연 · 월 휠 .pdp-wheel 은 요일 줄 · 날짜 자리를 덮는다.
+// 날짜의 상태는 data-today · data-selected · data-in-range · data-disabled · data-readonly · data-outside 가 그린다 — 칸은 pdpLib 이 만든다(페이지 끝 스크립트와 같은 코드).
+// 휠 .pwheel(role=group) — 띠 .pwheel-indicator · 칼럼 .pwheel-col(role=spinbutton) > 항목 줄 .pwheel-track + 띠 안의 짙은 사본 .pwheel-hl · 위아래 안개 .pwheel-fog.
+// 칼럼의 자리는 --pwheel-index(가운데 항목 번호) 하나가 두 줄을 함께 옮긴다 — 띠에 걸친 글자만 짙게 보인다(굴리는 동안에도).
+// 오늘은 2026년 10월 2일(금)이다 — date-picker.md 빠른 기간 표의 오늘과 같다. data-pdp-live 달력 · data-pwheel 휠은 페이지 끝 스크립트가 고르기 · 달 넘기기 · 굴리기를 흉내 낸다.
+const PDP = pdpLib();
+const PDP_TODAY = 20261002;
+const PDP_PRESETS = { thisWeek: "이번 주", thisMonth: "이번 달", lastMonth: "지난 달", last7Days: "최근 7일", last30Days: "최근 30일", last3Months: "최근 3개월", last6Months: "최근 6개월", last1Year: "최근 1년", thisYear: "올해" };
+let pdpSeq = 0;
+const nextPdpId = (prefix = "pdp") => `${prefix}-${(pdpSeq += 1)}`;
+
+// 휠 칼럼 하나 — spinbutton(이름 · aria-valuetext · aria-valuemin 0 · aria-valuemax · aria-valuenow)이고 항목은 보조 기술에 숨긴다. 글(options)은 여기서 escape 한다.
+//   index  고른 항목 번호 · loop  끝 다음에 처음이 이어진다(칼럼마다) · align  center · end(시 · 연 — 끝을 맞춘다) · start(월)
+//   role   period · hour · minute(Time Picker) · year · month(연 · 월 휠) — 페이지 끝 스크립트가 읽는다 · focus  키보드로 들어온 순간을 멈춘 링(갤러리 전용)
+//   width  칼럼 폭 고정(연 · 월 휠 — 연 120 · 월 96). 없으면 항목 글 폭 + 좌우 16(시각 휠)
+// 반복 칼럼은 항목 줄을 여러 벌(앞뒤 base 벌 + 가운데) 잇고 가운데 벌에서 고른다 — 위아래로 보이는 3칸까지 늘 앞뒤 벌이 채운다
+function wheelColumn({ label, options, index = 0, loop = false, align = "center", role = "", focus = false, disabled = false, width = 0 }) {
+  const n = options.length;
+  const base = loop ? Math.ceil(3 / n) : 0;
+  const items = options.map(o => `<div class="pwheel-item">${escape(o)}</div>`).join("").repeat(loop ? base * 2 + 1 : 1);
+  const cls = ["pwheel-col", align !== "center" && `pwheel-col--${align}`, focus && "pwheel-col--focus"].filter(Boolean).join(" ");
+  return `<div ${attrsOf([
+    `class="${cls}"`,
+    'role="spinbutton"',
+    `tabindex="${disabled ? -1 : 0}"`,
+    `aria-label="${escape(label)}"`,
+    'aria-valuemin="0"',
+    `aria-valuemax="${n - 1}"`,
+    `aria-valuenow="${index}"`,
+    `aria-valuetext="${escape(options[index])}"`,
+    disabled && 'aria-disabled="true"',
+    `data-pwheel-n="${n}"`,
+    loop && `data-pwheel-base="${base}"`,
+    role && `data-pwheel-role="${role}"`,
+    `style="--pwheel-index: ${base * n + index};${width ? ` width: ${width}px;` : ""}"`,
+  ])}><div class="pwheel-track" aria-hidden="true">${items}</div><div class="pwheel-hl" aria-hidden="true"><div class="pwheel-track">${items}</div></div></div>`;
+}
+
+// 휠 — 칼럼 묶음을 가운데에 모은다. role=group + 이름(필수). 글은 여기서 escape 한다.
+//   size  medium 44 · 글자 26(기본) · small 36 · 20 — 글자는 글자 크기 설정을 따르지 않는 px · rows  보이는 칸 수(5 기본 · 달력의 연 · 월 휠 7)
+//   format  time("오후 3:00") · month("2026년 10월") — "완료" 가 칸에 넣을 글의 꼴(페이지 끝 스크립트) · disabled  막힌 휠(값은 그대로, 고른 항목도 흐리게)
+//   live  페이지 끝 스크립트가 굴리기 · 누르기 · 키를 흉내 낸다 · width  홀로 그린 견본의 폭
+function wheelPicker({ id = "", label, size = "medium", rows = 5, columns = [], format = "", disabled = false, live = true, width = "" } = {}) {
+  return `<div ${attrsOf([
+    id && `id="${id}"`,
+    `class="pwheel pwheel--${size}"`,
+    'role="group"',
+    `aria-label="${escape(label)}"`,
+    disabled && 'aria-disabled="true" data-disabled=""',
+    format && `data-pwheel-format="${format}"`,
+    live && !disabled && 'data-pwheel=""',
+    `style="--pwheel-rows: ${rows};${width ? ` width: ${width};` : ""}"`,
+  ])}><div class="pwheel-indicator" aria-hidden="true"></div><div class="pwheel-columns">${columns.map(c => wheelColumn({ ...c, disabled })).join("")}</div><div class="pwheel-fog pwheel-fog--top" aria-hidden="true"></div><div class="pwheel-fog pwheel-fog--bottom" aria-hidden="true"></div></div>`;
+}
+
+// Time Picker — 오전·오후 → 시 → 분 세 칼럼의 12시간 휠(값은 24시간 hour · minute). 시는 1 ~ 12(0 을 채우지 않는다 · 오른쪽 정렬 · 반복),
+// 분은 2자리 · 분 간격대로(반복), 오전 · 오후는 두 칸에서 멈춘다. 시 · 분 글자는 쓰지 않는다 — 칼럼 이름과 자리가 단위를 알린다
+function timePicker({ id = "", label = "시간 선택", hour = 15, minute = 0, step = 5, size = "medium", live = true, focus = "", width = "" } = {}) {
+  const minutes = Array.from({ length: 60 / step }, (_, i) => String(i * step).padStart(2, "0"));
+  return wheelPicker({ id, label, size, live, width, format: "time", columns: [
+    { label: "오전/오후", options: ["오전", "오후"], index: hour >= 12 ? 1 : 0, role: "period", focus: focus === "period" },
+    { label: "시", options: Array.from({ length: 12 }, (_, i) => String(i + 1)), index: (hour + 11) % 12, loop: true, align: "end", role: "hour", focus: focus === "hour" },
+    { label: "분", options: minutes, index: Math.round(minute / step) % minutes.length, loop: true, role: "minute", focus: focus === "minute" },
+  ] });
+}
+
+// 연 · 월 휠 — 달력 머리의 휠(7칸)과 달만 고르는 자리(5칸)가 같은 모양이다. 연은 처음 · 끝에서 멈추고(범위는 자리마다 — 달력 기본 오늘 ± 100년), 월은 돌아간다.
+// 항목은 날짜 표기 그대로 "2026년" · "10월"(wheel-picker.md "항목"), 연은 오른쪽 · 월은 왼쪽 정렬로 가운데에 모은다(SEED · date-picker.tsx 와 같다).
+// 칼럼 폭은 연 120 · 월 96 으로 고정한다 — 달력 머리의 휠(date-picker.yaml wheel.columns)과 달만 고르는 휠(wheel-picker.md 코드의 className)이 같다
+function monthWheel({ id = "", label = "월 선택", year = 2026, month = 10, from = year - 100, to = year + 100, rows = 5, size = "medium", live = true, focus = "", disabled = false, width = "", columns = [120, 96] } = {}) {
+  return wheelPicker({ id, label, size, rows, live, disabled, width, format: "month", columns: [
+    { label: "연도", options: Array.from({ length: to - from + 1 }, (_, i) => `${from + i}년`), index: year - from, align: "end", role: "year", focus: focus === "year", width: columns[0] },
+    { label: "월", options: Array.from({ length: 12 }, (_, i) => `${i + 1}월`), index: month - 1, loop: true, align: "start", role: "month", focus: focus === "month", width: columns[1] },
+  ] });
+}
+
+// Date Picker — 달력 하나. 칸 · 숫자 · 읽는 이름은 pdpLib 이 만든다(페이지 끝 스크립트와 같은 코드). 글(label)은 여기서 escape 한다.
+//   view      month(한 달 · 늘 6주) · two(두 달 나란히 — 1280 이상 팝오버의 기간) · continuous(이어지는 달 — 1280 미만 시트의 기간)
+//   surface   sheet(시트 폭 − 좌우 24 — 360 화면 312) · popover(336 · 두 달 696)
+//   mode      single · range · multiple — start · end(기간 — 끝이 없으면 미완성) · picks(여러 날)
+//   month     처음 보이는 달 [연, 월] · months  이어지는 달의 목록 · scrollTo  이어지는 달에서 처음 보일 달(페이지 끝 스크립트가 스크롤한다)
+//   min · max · off  고를 수 있는 범위 · 막힌 날 · readOnly  확정된 시작일(기간 늘리기 — 흐린 채움, 누르지 못한다)
+//   frozen    { 날짜: "hover" | "pressed" | "focus" } — 그 순간을 멈춘 날짜(갤러리 전용)
+//   presets   빠른 기간 칩(PDP_PRESETS 의 키) · preset  고른 칩 — 시트는 한 줄 가로 스크롤(화면 끝까지), 팝오버는 줄바꿈
+//   wheel     연 · 월 휠을 연 순간(그림 — 셰브론 180° · 이전 · 다음 막힘) · live  페이지 끝 스크립트가 고르기 · 달 넘기기 · 휠 · 칩 · 키를 흉내 낸다
+function datePicker({ id = nextPdpId(), label = "날짜 선택", view = "month", surface = "sheet", mode = "single", month = [2026, 10], months = [], scrollTo = null, start = 0, end = 0, picks = [], min = 0, max = 0, off = [], readOnly = 0, today = PDP_TODAY, frozen = null, presets = null, preset = "", wheel = false, live = false } = {}) {
+  const [y, m] = month;
+  const visible = view === "continuous" ? months : view === "two" ? [month, PDP.addMonths(y, m, 1)] : [month];
+  const firstKey = PDP.key(visible[0][0], visible[0][1], 1);
+  const [ly, lm] = visible[visible.length - 1];
+  const lastKey = PDP.key(ly, lm, PDP.daysIn(ly, lm));
+  const startKey = start || readOnly;
+  // Tab 자리 — 고른 날(기간은 시작), 없으면 오늘, 보이는 달에 없으면 첫 달 1일(date-picker.md Behavior)
+  const tab = [mode === "multiple" ? picks[0] : startKey, today].find(k => k && k >= firstKey && k <= lastKey) || firstKey;
+  const o = { mode, start: startKey, end, picks, min, max, off, readOnly, today, tab, frozen, fill: view !== "continuous" };
+  const nav = (name, dir) => `<button class="btn btn-ghost btn-icon-only btn-size-medium pdp-nav" type="button" aria-label="${name}" data-pdp-nav="${dir}"${wheel ? " disabled" : ""}>${PICK_ICON[dir < 0 ? "chevronLeft" : "chevronRight"]}</button>`;
+  // 빠른 기간 칩 — 그 기간이 고를 수 있는 범위 · 막힌 날에 걸리면 칩을 막는다(잘라서 넣지 않는다 — 이름이 같으면 같은 기간)
+  const presetOff = (p) => {
+    const [s0, e0] = PDP.preset(p, today);
+    return (min && s0 < min) || (max && e0 > max) || off.includes(s0) || off.includes(e0);
+  };
+  const presetRow = presets ? `<div class="pdp-presets">${chipGroup({
+    role: "radiogroup",
+    layout: surface === "sheet" ? "scroll" : "wrap",
+    gutter: surface === "sheet",
+    label: "빠른 기간",
+    items: presets.map((p, i) => chip({ kind: "radio", variant: "outlineStrong", label: PDP_PRESETS[p], selected: p === preset, disabled: !!presetOff(p), tabindex: (preset ? p === preset : i === 0) ? 0 : -1, data: `data-pdp-preset="${p}"` })),
+  })}</div>` : "";
+  let body;
+  if (view === "month") {
+    // 연 · 월 휠은 여는 달력(live)과 연 순간의 그림에만 둔다 — 멈춘 그림의 닫힌 휠은 그리지 않는다
+    const hasWheel = live || wheel;
+    const header = `<div class="pdp-header"><button type="button" class="pdp-title" aria-expanded="${wheel ? "true" : "false"}"${hasWheel ? ` aria-controls="${id}-wheel"` : ""}><span class="pdp-title-text" id="${id}-title">${PDP.title(y, m)}</span><span class="pdp-title-icon" aria-hidden="true">${PICK_ICON.chevronDown}</span></button><div class="pdp-navs">${nav("이전 달", -1)}${nav("다음 달", 1)}</div></div>`;
+    const wheelBox = hasWheel ? `<div class="pdp-wheel" id="${id}-wheel"${wheel ? "" : " hidden"}>${monthWheel({ label: "연도와 월", year: y, month: m, from: PDP.year(today) - 100, to: PDP.year(today) + 100, rows: 7, live, columns: [120, 96] })}</div>` : "";
+    body = `${header}<div class="pdp-body">${PDP.grid(y, m, o, `${id}-title`)}${wheelBox}</div>`;
+  } else if (view === "two") {
+    const [y2, m2] = visible[1];
+    const header = `<div class="pdp-header pdp-header--two">${nav("이전 달", -1)}<span class="pdp-month-name" id="${id}-m0">${PDP.title(y, m)}</span><span class="pdp-month-name" id="${id}-m1">${PDP.title(y2, m2)}</span>${nav("다음 달", 1)}</div>`;
+    body = `${header}<div class="pdp-months">${PDP.grid(y, m, o, `${id}-m0`)}${PDP.grid(y2, m2, o, `${id}-m1`)}</div>`;
+  } else {
+    const weekdayRow = `<div class="pdp-week pdp-weekdays pdp-weekdays--sticky" aria-hidden="true">${PDP.WEEK.map(w => `<span class="pdp-weekday">${w}</span>`).join("")}</div>`;
+    const list = months.map(([yy, mm]) => `<div class="pdp-month"><div class="pdp-month-label" id="${id}-${yy}-${mm}">${PDP.title(yy, mm)}</div>${PDP.grid(yy, mm, o, `${id}-${yy}-${mm}`)}</div>`).join("");
+    body = `<div class="pdp-scroll"${scrollTo ? ` data-pdp-scroll-to="${PDP.key(scrollTo[0], scrollTo[1], 1)}"` : ""}>${weekdayRow}${list}</div><div class="pdp-fog" aria-hidden="true"></div>`;
+  }
+  const state = live ? attrsOf([
+    'data-pdp-live=""',
+    `data-pdp-view="${view}"`,
+    `data-pdp-mode="${mode}"`,
+    `data-pdp-ym="${firstKey}"`,
+    `data-pdp-today="${today}"`,
+    `data-pdp-start="${startKey || 0}"`,
+    `data-pdp-end="${end || 0}"`,
+    min && `data-pdp-min="${min}"`,
+    max && `data-pdp-max="${max}"`,
+    readOnly && `data-pdp-readonly="${readOnly}"`,
+    off.length && `data-pdp-off="${off.join(",")}"`,
+    picks.length && `data-pdp-picks="${picks.join(",")}"`,
+  ]) : "";
+  return `<div class="pdp pdp--${view} pdp--${surface}" role="group" aria-label="${escape(label)}" id="${id}"${wheel ? ' data-pdp-wheel-open=""' : ""}${state ? ` ${state}` : ""}>${presetRow}${body}<span class="pdp-sr" aria-live="polite"></span></div>`;
+}
+
+// 날짜 칸 줄 — 상태 견본. cells 는 날짜(앞뒤 달은 { outside: 날짜 }), 7칸마다 줄을 바꾼다. 칸은 48 × 48(팝오버의 칸)이다
+const pdpStrip = ({ label, cells, o = {} }) => {
+  const cols = Math.min(7, cells.length);
+  const keys = cells.filter(c => typeof c === "number");
+  const st = { mode: "single", today: PDP_TODAY, tab: keys[0], fill: true, ...o };
+  if (st.readOnly && !st.start) st.start = st.readOnly;
+  const rows = [];
+  for (let i = 0; i < cells.length; i += 7) rows.push(cells.slice(i, i + 7));
+  return `<div class="pdp pdp-strip" role="group" aria-label="${escape(label)}" style="width: ${cols * 48}px;"><div class="pdp-grid" role="grid" aria-label="${escape(label)}"${st.mode !== "single" ? ' aria-multiselectable="true"' : ""}>${
+    rows.map(r => `<div class="pdp-week" role="row" style="--pdp-cols: ${cols};">${r.map(c => (typeof c === "number" ? PDP.cell(c, st) : PDP.outside(c.outside))).join("")}</div>`).join("")
+  }</div></div>`;
+};
+
+// "완료" · "초기화" — 시트 바닥은 large 48(하나면 폭 전체, 둘이면 반씩), 팝오버 바닥은 small 36 오른쪽. data-* 는 페이지 끝 스크립트가 읽는다 —
+// 완료는 고른 값을 이어진 칸(data-pick-target — Input Button 의 값 자리)에 넣고, 고르기 전(기간은 끝을 고르기 전)에는 막힌다
+const pickDone = ({ picker, target, size = "small", kind = "date", disabled = false }) =>
+  `<button class="btn btn-neutral-solid btn-size-${size}" type="button" ${kind === "date" ? `data-pdp-done="${picker}"` : `data-pwheel-done="${picker}"`} data-pick-target="${target}"${disabled ? " disabled" : ""}>완료</button>`;
+const pickReset = ({ picker, size = "small" }) => `<button class="btn btn-neutral-weak btn-size-${size}" type="button" data-pdp-reset="${picker}">초기화</button>`;
+
+// 날짜 · 시각 · 달 고르기 갤러리 — 날짜 하나 · 기간 · 날짜 칸 상태 · 겹칠 때와 고를 수 없는 날 · 연 · 월 휠 · Time Picker · Wheel Picker · 날짜 + 시각 여덟 판을
+// 흰 표면(.vignette-card) 위에 그린다. 견본 틀(.ptf-samples · .ptf-cap)은 Text Field 갤러리 것, 화면 틀 · 시트 · 팝오버는 03k 것, 칩은 03i 것이다.
+// 글은 Desk(일정 · 통계 · 환불 · 예산 · 거래)와 HR(일정 시간표)에서 빌렸다 — date-picker.md · time-picker.md · wheel-picker.md 코드 예와 같은 글이다.
+// 시트 · 팝오버는 열린 순간을 멈춘 그림이고, 그 안의 달력 · 휠은 실제로 누르고 굴려 "완료" 로 칸에 넣을 수 있다(페이지 끝 스크립트).
+export function renderDateTimeGallery(brand) {
+  const panel = (title, sub, body) => `
+    <div class="vignette-card cb-panel">
+      <div class="vignette-head">
+        <div class="vignette-title">${escape(title)}</div>
+        <div class="vignette-sub">${escape(sub)}</div>
+      </div>${body}
+    </div>`;
+  const samples = (items, cls = "ptf-samples") => `
+      <div class="${cls}">${items.join("")}
+      </div>`;
+  const sample = (cap, en, body) => `
+        <div class="ptf-sample">
+          <div class="ptf-cap">${escape(cap)}<span>${escape(en)}</span></div>
+          ${body}
+        </div>`;
+  const demo = (body, cls = "") => `<div class="pdp-demo${cls ? ` ${cls}` : ""}">${body}</div>`;
+  // 칸 — Field 의 라벨 + Input Button(열린 채). id 의 "-value" 가 "완료" 가 값을 넣을 자리다
+  const field = (id, label, size, control) => textField({ id, label, control: { kind: "inputButton", size, expanded: true, ...control } });
+  const sheetFrame = (height, page, sheet) => overlayFrame({ device: "phone", height, page, layers: [overlayScrim(), overlayLayer("sheet", sheet)] });
+
+  // 1. 날짜 하나 — 일정 날짜. 칸의 15일에서 열고 22일을 고른 순간(칸은 아직 15일이다)
+  const evPhone = nextPdpId("pdt-ev");
+  const evDesk = nextPdpId("pdt-ev");
+  const singlePhone = sheetFrame(740,
+    overlayPage({ title: "일정 추가", body: field(`${evPhone}-field`, "날짜", "large", { value: "10월 15일 (목)", suffixIcon: "calendarDays" }) }),
+    bottomSheet({ title: "날짜 선택", body: datePicker({ id: evPhone, label: "날짜 선택", surface: "sheet", start: 20261022, live: true }), footer: [pickDone({ picker: evPhone, target: `${evPhone}-field-value`, size: "large" })] }),
+  );
+  const singleDesktop = overlayFrame({
+    device: "desktop",
+    height: 680,
+    page: overlayPage({
+      title: "일정 추가",
+      desktop: true,
+      body: overlayAnchor(
+        field(`${evDesk}-field`, "날짜", "medium", { value: "10월 15일 (목)", suffixIcon: "calendarDays" }),
+        overlayPopover({ label: "날짜 선택", body: datePicker({ id: evDesk, label: "날짜 선택", surface: "popover", start: 20261022, live: true }), footer: [pickDone({ picker: evDesk, target: `${evDesk}-field-value` })] }),
+      ),
+    }),
+  });
+  const singlePanel = panel(
+    "Date Picker — 날짜 하나 · 시트 · 팝오버 · \"완료\"",
+    "날짜 칸(Input Button)을 누르면 1280 미만은 아래 시트, 이상은 칸 아래 8 의 팝오버로 달력이 열린다 — 날짜를 치는 칸은 두지 않는다. 달력은 머리(연 · 월 제목 · 이전 · 다음) · 요일 줄 · 날짜 칸이고, 머리 · 요일 줄 · 날짜 줄은 모두 48 이다. 날짜 칸은 달력 폭 ÷ 7 × 48 이고 칸 전체가 누르는 자리다 — 원 42 는 칸 위 3 에 놓여 원끼리 6 떨어진다. 숫자 16 / 22 · 500 fg-neutral-muted(숫자 폭을 같게), 요일 14 / 19 · 500 fg-neutral-subtle, 제목 16 / 22 · 700 + 셰브론 20(글자는 머리 왼쪽에서 4), 이전 · 다음은 Button ghost 40(아이콘 18 · 누르는 영역 44)을 오른쪽 끝에 붙인다. 달력은 늘 6주다 — 앞뒤 달 날짜를 흐리게(fg-disabled) 채워 달을 넘겨도 시트 머리 · 바닥이 움직이지 않고, 흐린 날은 누르지 못한다(보조 기술에도 숨긴다). 팝오버의 달력은 336(칸 48 × 7), 시트는 시트 폭에서 좌우 24 를 뺀 폭이다(360 화면 312 · 칸 44.6 — 칸이 44 보다 좁으면 원을 칸 폭 − 2 로 줄인다). 오늘은 옅은 원(bg-neutral-weak) + 숫자 700 · fg-neutral, 고른 날은 짙은 원(bg-neutral-inverted) + fg-neutral-inverted 다 — 브랜드 색을 쓰지 않는다. 마우스를 올린 날은 옅은 원(bg-layer-floating-pressed)이고 날짜는 눌러도 줄지 않는다. 열 때는 칸의 값에서 시작하고, 고르는 동안 칸 값은 그대로다 — 그림은 15일에서 열어 22일을 고른 순간이라 칸은 아직 15일이다. \"완료\" 를 누를 때 칸에 들어가고(시트는 Button large 48 폭 전체, 팝오버는 small 36 오른쪽 · 달력 아래 16), 하루를 고르기 전에는 막힌다. 바깥 · 끌어내리기 · Esc 로 닫으면 고르던 것은 버린다. 두 그림은 실제로 날짜를 누르고, 이전 · 다음으로 달을 넘기고, 제목을 눌러 연 · 월 휠을 열고 닫고, \"완료\" 로 칸에 넣을 수 있다 — 방향키(하루 · 한 주) · Home · End(그 주의 일 · 토) · PageUp · PageDown(한 달, Shift 면 한 해)으로도 옮긴다.",
+    samples([
+      sample("폰 — 시트 · 칸 44.6 · 완료 large 48", "selection=\"single\" · useInputButtonSurface() → \"sheet\" — 제목은 고를 값의 종류(\"날짜 선택\")", singlePhone),
+      sample("데스크톱 웹 — 팝오버 · 달력 336 · 완료 small 36", "useInputButtonSurface() → \"popover\" — 칸 아래 8 · 왼쪽 맞춤 · 머리 없음", singleDesktop),
+    ], "ptf-samples ptf-samples--forms"),
+  );
+
+  // 2. 기간 — 통계 기간. 시트는 이어지는 달(이번 달을 고른 순간), 팝오버는 두 달 나란히(9월 28일~10월 6일)
+  const statPhone = nextPdpId("pdt-stat");
+  const statDesk = nextPdpId("pdt-stat");
+  const rangePresets = ["thisWeek", "thisMonth", "lastMonth", "last3Months", "thisYear"];
+  const rangePhone = sheetFrame(700,
+    overlayPage({ title: "통계", body: field(`${statPhone}-field`, "기간", "large", { value: "10월 1일~10월 31일", suffixIcon: "calendarDays" }) }),
+    bottomSheet({
+      title: "기간 선택",
+      body: datePicker({ id: statPhone, label: "기간 선택", view: "continuous", surface: "sheet", mode: "range", months: [[2026, 8], [2026, 9], [2026, 10], [2026, 11], [2026, 12]], scrollTo: [2026, 10], start: 20261001, end: 20261031, presets: rangePresets, preset: "thisMonth", live: true }),
+      footer: [pickReset({ picker: statPhone, size: "large" }), pickDone({ picker: statPhone, target: `${statPhone}-field-value`, size: "large" })],
+    }),
+  );
+  const rangeDesktop = overlayFrame({
+    device: "desktop",
+    height: 760,
+    page: overlayPage({
+      title: "통계",
+      desktop: true,
+      body: overlayAnchor(
+        field(`${statDesk}-field`, "기간", "medium", { value: "9월 28일~10월 6일", suffixIcon: "calendarDays" }),
+        overlayPopover({ label: "기간 선택", body: datePicker({ id: statDesk, label: "기간 선택", view: "two", surface: "popover", mode: "range", month: [2026, 9], start: 20260928, end: 20261006, presets: rangePresets, live: true }), footer: [pickReset({ picker: statDesk }), pickDone({ picker: statDesk, target: `${statDesk}-field-value` })] }),
+      ),
+    }),
+  });
+  const rangePanel = panel(
+    "기간 — 칸 하나 · 시트는 이어지는 달 · 팝오버는 두 달 · 빠른 기간",
+    "기간은 시작 · 종료 두 칸으로 나누지 않는다 — 칸 하나(\"9월 28일~10월 6일\")를 누르면 한 달력에서 시작과 끝을 고른다. 첫 탭이 시작, 시작 뒤의 날을 누르면 끝이고 사이가 띠로 이어진다 — 띠는 원과 같은 높이 42(칸 위 3)의 bg-neutral-weak 이고, 시작 칸은 원 가운데부터 오른쪽 · 끝 칸은 왼쪽부터 원 가운데까지 · 사이 칸은 칸 폭 전체다(줄 끝에서 둥글리지 않고 칸 끝에서 끊는다). 시작보다 앞을 누르면 그날이 새 시작이고, 같은 날을 두 번 누르면 하루짜리 기간, 다 고른 뒤 다시 누르면 새로 시작한다. 끝을 고르는 동안 미리 칠해 보이지 않는다. 1280 미만 시트는 달이 위아래로 이어진다(continuous) — 시트를 화면 높이의 90% 로 열고, 머리 없이 스크롤로 달을 넘기고, 요일 줄이 위에 붙고, 달마다 이름(16 · 700 · 왼쪽 4)을 두고, 앞뒤 달은 비우고(그 달의 주 수), 아래 96 을 안개로 흐린다. 1280 이상 팝오버는 두 달을 나란히 둔다(twoMonths — 336 + 24 + 336 = 696, 팝오버 폭 744 는 Popover 최대 480 의 예외) — 머리를 나누지 않고 달 이름은 달마다 가운데, 이전은 첫 달 왼쪽 끝 · 다음은 둘째 달 오른쪽 끝(위 4)이며 달 이름은 누르지 않는다(연 · 월 휠이 없다). 달력 위에는 빠른 기간 칩 한 줄을 둔다 — Chip Outline Strong medium 36 하나 고르기(고른 칩은 짙은 채움) · 사이 8 · 아래 12 이고, 시트는 한 줄 가로 스크롤(화면 끝까지), 팝오버는 줄바꿈이다. 칩을 누르면 그 기간을 칠하고 시작이 든 달로 옮기고, 달력에서 다른 날을 누르면 칩 고름이 풀린다. 기간이 고를 수 있는 범위 · 막힌 날에 걸리면 그 칩을 막는다(잘라서 넣지 않는다 — 이름이 같으면 같은 기간이다). 이름과 범위는 한 벌(이번 주 = 일 ~ 토 · 이번 달 · 지난 달 · 최근 7일 · 30일 · 최근 3개월 · 6개월 · 1년 = 이번 달을 넣은 달들 · 올해)이고 달력 단위다. 기간 안의 오늘은 원 없이 띠 위의 굵은 숫자다(두 그림의 2일). 바닥은 \"초기화\"(neutralWeak) + \"완료\" 이고, 끝을 고르기 전에는 \"완료\" 가 막힌다. 두 그림은 실제로 시작 · 끝을 누르고 칩을 고를 수 있다.",
+    `${samples([
+      sample("폰 — 이어지는 달 · 칩 줄 가로 스크롤 · 안개 96", "visibleRange=\"continuous\" · presets — \"이번 달\" 을 누른 순간(10월 전체가 칠해졌다)", rangePhone),
+    ], "ptf-samples ptf-samples--forms")}${samples([
+      sample("데스크톱 웹 — 두 달 나란히 · 팝오버 744", "visibleRange=\"twoMonths\" — 336 + 24 + 336 · 칩 줄은 줄바꿈 · 앞뒤 달은 흐리게", rangeDesktop),
+    ], "ptf-samples pov-samples--next pdt-samples--wide")}`,
+  );
+
+  // 3. 상태 — 날짜 칸 하나(가운데 칸). 호버 · 누름 · 키보드 초점은 그 순간을 멈췄다
+  const states = [
+    ["보통", "enabled — 숫자 fg-neutral-muted · 원 없음", { cells: [20261006, 20261007, 20261008] }],
+    ["호버", "hovered — 웹, 옅은 원 bg-layer-floating-pressed", { cells: [20261006, 20261007, 20261008], o: { frozen: { 20261007: "hover" } } }],
+    ["누름", "pressed — 터치, 같은 원 · 날짜는 줄지 않는다", { cells: [20261006, 20261007, 20261008], o: { frozen: { 20261007: "pressed" } } }],
+    ["오늘 · 기간 위의 호버", "hovered on today · inRange — 한 단계 짙은 bg-neutral-weak-pressed", { cells: [20261001, 20261002, 20261003], o: { mode: "range", start: 20261001, end: 20261003, frozen: { 20261002: "hover" } } }],
+    ["키보드 초점", "focused — 원 둘레 안쪽 2px stroke-focus-ring", { cells: [20261006, 20261007, 20261008], o: { frozen: { 20261007: "focus" } } }],
+    ["오늘", "today — 옅은 원 bg-neutral-weak + 숫자 700", { cells: [20261001, 20261002, 20261003] }],
+    ["고름", "selected — 짙은 원 bg-neutral-inverted", { cells: [20261014, 20261015, 20261016], o: { start: 20261015 } }],
+    ["기간", "inRange — 시작 · 끝 원 사이 띠 bg-neutral-weak", { cells: [20261014, 20261015, 20261016], o: { mode: "range", start: 20261014, end: 20261016 } }],
+    ["앞뒤 달", "outside — 흐린 숫자 fg-disabled · 누르지 못함", { cells: [{ outside: 20260929 }, { outside: 20260930 }, 20261001] }],
+    ["막힘", "disabled — 흐린 숫자 + 취소선 · 초점은 간다", { cells: [20261002, 20261003, 20261004], o: { max: PDP_TODAY } }],
+    ["읽기 전용", "readOnly — 확정된 시작일, 흐린 채움 stroke-neutral-solid", { cells: [20261005, 20261006, 20261007], o: { mode: "range", readOnly: 20261006, end: 20261009, min: 20261006 } }],
+  ];
+  const statePanel = panel(
+    "상태 — 보통 · 호버 · 누름 · 키보드 초점 · 오늘 · 고름 · 기간 · 앞뒤 달 · 막힘 · 읽기 전용",
+    "날짜 칸 하나의 모습이다(가운데 칸 — 칸 48 × 48 · 원 42). 보통은 숫자 fg-neutral-muted 에 원이 없다. 마우스를 올리면(웹) 옅은 원 bg-layer-floating-pressed 이고, 손가락으로 누르는 동안 같은 원이다 — 날짜는 줄지 않는다(이전 · 다음만 Button 처럼 2px 거리로 준다). 오늘(옅은 원) · 기간 사이 날(띠) 위에서는 같은 색이 되어 안 보이지 않게 한 단계 짙은 bg-neutral-weak-pressed 다. 막힌 날 · 읽기 전용 · 앞뒤 달에는 호버 원이 없다. 키보드 초점은 원 둘레 안쪽 2px 링(stroke-focus-ring)이다 — 칸이 아니라 원 둘레다. 오늘은 옅은 원(bg-neutral-weak)에 숫자 700 · fg-neutral — 옅은 원은 바탕과 1.08:1 이라 굵기로도 알린다. 고른 날(하루 · 여러 날의 고른 날, 기간의 시작 · 끝)은 짙은 원 bg-neutral-inverted + fg-neutral-inverted, 기간의 사이 날은 원 없이 띠 bg-neutral-weak 에 숫자 fg-neutral-muted 다. 앞뒤 달 날짜는 흐린 숫자(fg-disabled)로 보이기만 하고 누르지 못한다 — 숫자만 보조 기술에 숨기고 칸은 남겨 요일 짝을 지키며, 기간 띠도 그리지 않는다. 고를 수 없는 날은 흐린 숫자에 취소선 — 흐림(불투명도)만으로 그리지 않고, aria-disabled 라 키보드 초점은 간다. 확정돼 바꿀 수 없는 시작일(진행 중인 기간 늘리기)은 읽기 전용 — 채움을 남겨 흐리게(stroke-neutral-solid + fg-neutral-inverted) 그리고 누르지 못한다. 바탕은 150ms(color-transition)로 바뀐다. 호버 · 누름 · 초점은 그 순간을 멈춰 그렸다 — 칸은 실제 버튼이라 올리고 눌러 보면 같은 모습이다.",
+    samples(states.map(([ko, en, s]) => sample(ko, en, demo(pdpStrip({ label: `${ko} — 날짜 칸`, ...s }), "pdp-demo--strip"))), "ptf-samples pdt-samples--states"),
+  );
+
+  // 4. 겹칠 때 · 고를 수 없는 날 · 읽기 전용 시작일 — 주 하나(일 ~ 토) 줄과 환불일 달력
+  const overlaps = [
+    ["고름이 이긴다 — 오늘을 고르면", "selected + today — 짙은 원, 굵기 700 은 남는다", { cells: [20260927, 20260928, 20260929, 20260930, 20261001, 20261002, 20261003], o: { start: PDP_TODAY } }],
+    ["기간 안의 오늘", "inRange + today — 원 없이 띠 위에 굵은 숫자", { cells: [20260927, 20260928, 20260929, 20260930, 20261001, 20261002, 20261003], o: { mode: "range", start: 20260928, end: 20261006 } }],
+    ["기간 안의 막힌 날 — 9일 한글날", "inRange + disabled — 띠는 그대로, 숫자만 흐린 취소선", { cells: [20261004, 20261005, 20261006, 20261007, 20261008, 20261009, 20261010], o: { mode: "range", start: 20261006, end: 20261010, off: [20261009] } }],
+    ["오늘인데 막힌 날 · 고른 날인데 막힌 날", "today + disabled — 원 없이 굵은 숫자 + 취소선 · selected + disabled — 고른 모양 + 취소선", { cells: [20260927, 20260928, 20260929, 20260930, 20261001, 20261002, 20261003], o: { start: 20260929, off: [PDP_TODAY, 20260929] } }],
+    ["미완성 기간 — 시작만 고름 · 2일 이상 · 최대 3일", "start only — 시작 원에는 취소선을 긋지 않는다, 넘는 날은 막힘", { cells: [20261011, 20261012, 20261013, 20261014, 20261015, 20261016, 20261017], o: { mode: "range", start: 20261013, off: [20261013, 20261016, 20261017] } }],
+    ["읽기 전용 시작일 — 진행 중인 기간 늘리기", "readOnly start · min = 시작일 — 앞은 막힘, 끝만 새로 고른다", { cells: [20260927, 20260928, 20260929, 20260930, 20261001, 20261002, 20261003, 20261004, 20261005, 20261006, 20261007, 20261008, 20261009, 20261010], o: { mode: "range", readOnly: 20260928, end: 20261009, min: 20260928 } }],
+  ];
+  const refund = demo(datePicker({ label: "환불일", surface: "popover", start: 20261001, min: 20260924, max: PDP_TODAY }));
+  const overlapPanel = panel(
+    "상태가 겹칠 때 · 고를 수 없는 날 · 읽기 전용 시작일",
+    "오늘 · 고름 · 기간 · 막힘 · 읽기 전용은 한 날짜에 함께 걸린다 — 고름 > 기간 안 > 오늘 순으로 이기고, 오늘의 굵기(700)는 늘 남는다. 오늘을 고르면 짙은 원이고, 기간 안의 오늘은 원 없이 띠 위의 굵은 숫자다. 막힌 날이 기간 안에 있으면 띠는 그대로 깔리고 숫자만 흐린 취소선이다. 오늘인데 막힌 날은 원 없이 굵은 숫자 + 취소선, 고른 날인데 막힌 날은 고른 모양 + 취소선이다. 미완성 기간(시작만 고름)의 시작일이 막힌 날이어도(2일 이상이라 같은 날을 끝으로 고를 수 없다) 시작 원 위에는 취소선을 긋지 않는다 — 시작을 고르는 순간 제약에 걸린 날이 한꺼번에 막힌 날로 바뀔 수 있어, 그런 제약(최소 · 최대 기간)은 달력 위 Callout 으로 미리 알린다. 자리마다 고를 수 있는 범위가 다르다 — 환불일은 거래일 ~ 오늘(min · max), 할 일 마감은 오늘부터다. 그 밖의 날은 막힌 날이고 키보드 초점은 간다. 이미 확정돼 바꿀 수 없는 시작일(진행 중인 기간 늘리기)은 읽기 전용이다 — 채움을 남겨 흐리게 그리고, 앞의 날은 막고 끝만 새로 고른다. 달력 전체가 보기 전용이면 날짜마다가 아니라 달력 전체를 읽기 전용으로 둔다.",
+    `${samples(overlaps.map(([ko, en, s]) => sample(ko, en, demo(pdpStrip({ label: ko, ...s }), "pdp-demo--strip"))), "ptf-samples pdt-samples--weeks")}${samples([
+      sample("고를 수 있는 범위 — 환불일", "min={transactionDate}(9월 24일) · max={today}(10월 2일) — 3일부터는 막힌 날", refund),
+    ], "ptf-samples pov-samples--next pdt-samples--cal")}`,
+  );
+
+  // 5. 연 · 월 옮기기 — 제목을 누른 순간(휠이 요일 줄 · 날짜 자리를 덮는다)
+  const wheelOpen = demo(datePicker({ label: "날짜 선택", surface: "popover", start: 20261015, wheel: true }));
+  const wheelPanel = panel(
+    "연 · 월 옮기기 — 제목을 누르면 휠",
+    "제목(\"2026년 10월\")을 누르면 요일 줄과 날짜 자리(48 + 6주 288 = 336)에 연 | 월 휠이 뜬다 — Wheel Picker medium 7칸(44 × 7 = 308)을 가운데에 두어 위아래 14 가 남는다. 셰브론이 위로 돌고(180° · 150ms), 열린 동안 이전 · 다음은 막힌다. 휠과 날짜는 모션 없이 바뀐다. 제목을 다시 누르면 휠을 닫고 고른 달로 옮기며 그 달 1일이 다음 Tab 자리다. 연의 범위는 자리마다 정하고(기본 오늘 ± 100년) 처음 · 끝에서 멈추며, 월은 돌아간다(12월 다음 1월). 항목은 \"2026년\" · \"10월\" 이고, 칼럼 폭을 연 120 · 월 96 으로 고정해 연은 오른쪽 · 월은 왼쪽에 맞춰 가운데에 모은다(달만 고르는 휠도 같다). 휠 모양(가운데 띠 · 안개)은 아래 Wheel Picker 판과 같다. 두 달 나란히 · 이어지는 달에는 휠이 없다. 위 날짜 하나 그림의 제목을 눌러 직접 열어 볼 수 있다.",
+    samples([
+      sample("제목을 누른 순간 — 연 · 월 휠 7칸", "title aria-expanded=\"true\" · 이전 · 다음 disabled · 셰브론 180°", wheelOpen),
+    ], "ptf-samples pdt-samples--cal"),
+  );
+
+  // 6. Time Picker — 일정 시작 시각(시트 · 팝오버) · 분 간격 1 · 30
+  const tPhone = nextPdpId("pdt-time");
+  const tDesk = nextPdpId("pdt-time");
+  const timePhone = sheetFrame(580,
+    overlayPage({ title: "일정 추가", body: field(`${tPhone}-field`, "시간", "large", { value: "오후 3:00", suffixIcon: "clock" }) }),
+    bottomSheet({ title: "시간 선택", body: timePicker({ id: tPhone, label: "시간 선택" }), footer: [pickDone({ picker: tPhone, target: `${tPhone}-field-value`, size: "large", kind: "wheel" })] }),
+  );
+  const timeDesktop = overlayFrame({
+    device: "desktop",
+    height: 520,
+    page: overlayPage({
+      title: "일정 추가",
+      desktop: true,
+      body: overlayAnchor(
+        field(`${tDesk}-field`, "시간", "medium", { value: "오후 3:00", suffixIcon: "clock" }),
+        overlayPopover({ label: "시간 선택", body: timePicker({ id: tDesk, label: "시간 선택" }), footer: [pickDone({ picker: tDesk, target: `${tDesk}-field-value`, kind: "wheel" })] }),
+      ),
+    }),
+  });
+  const timePanel = panel(
+    "Time Picker — 오전·오후 · 시 · 분 · 시트 · 팝오버",
+    "시각 칸(뒤 아이콘 clock)을 누르면 1280 미만 시트 · 이상 팝오버로 12시간 휠이 열린다 — 칼럼은 오전·오후 → 시 → 분(한국어 순서)이고 시 · 분 글자 없이 숫자만 쓴다(\"오후 3 00\" = 오후 3시 00분 — 단위는 칼럼 이름과 자리가 알린다). 칸 표기(\"오후 3:00\", International Design v106)와 같은 말이라 24시간 휠을 두지 않고, 값은 24시간 {hour, minute} 로 다룬다. 휠은 Wheel Picker medium 5칸(44 × 5 = 220) · 글자 26 / 35 · 500 이다. 오전 · 오후는 두 칸에서 멈추고, 시는 1 ~ 12(0 을 채우지 않는다)를 오른쪽에 맞춰 한 자리 · 두 자리 수의 끝을 맞추고 돌아간다, 분은 2자리로 분 간격의 분만 있고 돌아간다. 분 간격은 기본 5 — 분이 중요한 자리(방해 금지 · 알림)는 1, 느슨한 시간대는 10 · 15, 근무 · 일정 시간표(HR 일정)는 30 이다. 시 휠이 11 ↔ 12 를 넘으면 오전 · 오후가 따라 바뀌고(오전 11 → 오후 12), 분 휠은 55 → 00 을 넘어도 시는 그대로다. 휠을 굴리는 동안 칸 값은 그대로이고 \"완료\" 로 넣는다 — 칸이 비었으면 지금 시각을 분 간격에 맞춰 반올림한 자리(9시 13분 → 9시 15분)를 짚어 열기만 한다. 두 그림은 실제로 끌고 · 휠로 굴리고 · 항목을 누르고 · ↑ ↓ 로 옮기고 \"완료\" 로 칸에 넣을 수 있다.",
+    `${samples([
+      sample("폰 — 시트 · 휠 220 · 완료 large 48", "TimePicker minuteStep={5} — 제목 \"시간 선택\"", timePhone),
+      sample("데스크톱 웹 — 팝오버 · 완료 small 36", "useInputButtonSurface() → \"popover\" — 칸 아래 8 · 왼쪽 맞춤", timeDesktop),
+    ], "ptf-samples ptf-samples--forms")}${samples([
+      sample("분 간격 1 — 방해 금지 시작", "minuteStep={1} — 00 ~ 59(60칸)", demo(timePicker({ label: "방해 금지 시작", hour: 22, minute: 30, step: 1, width: "272px" }))),
+      sample("분 간격 30 — HR 일정 시간표", "minuteStep={30} — 00 · 30(2칸)", demo(timePicker({ label: "일정 시작", hour: 9, minute: 30, step: 30, width: "272px" }))),
+    ], "ptf-samples pov-samples--next")}`,
+  );
+
+  // 7. Wheel Picker — 예산 월(시트 · 팝오버) · 크기 · 상태
+  const mPhone = nextPdpId("pdt-month");
+  const mDesk = nextPdpId("pdt-month");
+  const budgetYears = { from: 2021, to: 2031 };
+  const monthPhone = sheetFrame(580,
+    overlayPage({ title: "예산", body: field(`${mPhone}-field`, "월", "large", { value: "2026년 10월", suffixIcon: "chevronDown" }) }),
+    bottomSheet({ title: "월 선택", body: monthWheel({ id: mPhone, label: "월 선택", ...budgetYears }), footer: [pickDone({ picker: mPhone, target: `${mPhone}-field-value`, size: "large", kind: "wheel" })] }),
+  );
+  const monthDesktop = overlayFrame({
+    device: "desktop",
+    height: 520,
+    page: overlayPage({
+      title: "예산",
+      desktop: true,
+      body: overlayAnchor(
+        field(`${mDesk}-field`, "월", "medium", { value: "2026년 10월", suffixIcon: "chevronDown" }),
+        overlayPopover({ label: "월 선택", body: monthWheel({ id: mDesk, label: "월 선택", ...budgetYears }), footer: [pickDone({ picker: mDesk, target: `${mDesk}-field-value`, kind: "wheel" })] }),
+      ),
+    }),
+  });
+  const wheelLookPanel = panel(
+    "Wheel Picker — 달만 고르기 · 크기 · 키보드 초점 · 막힘",
+    "순서가 있는 값을 세로로 굴려 고르는 휠이다 — 시각 · 연 · 월. 예산 · 홈 · 카드 실적처럼 달만 고르는 자리는 연 | 월 두 칼럼 휠을 1280 미만 시트 · 이상 팝오버로 열고 \"완료\" 로 넣는다(달력의 연 · 월 휠과 같은 모양 — 연 120 오른쪽 · 월 96 왼쪽 정렬, 4 × 3 월 격자는 두지 않는다). 폭을 정하지 않은 칼럼(시각 휠)은 항목 글 폭 + 좌우 16 이고, 칼럼 묶음은 휠 가운데에 모인다. 항목은 500 · fg-disabled(숫자 폭을 같게)이고, 가운데 선택 띠(bg-neutral-weak · 모서리 8 · 휠 좌우 끝에서 16 들임)에 걸친 부분만 fg-neutral 로 칠한다 — 굴리는 동안에도 띠를 지나는 글자만 짙다. 위아래 끝은 안개로 바탕색까지 흐린다(gradient-fade-mask) — 안개는 휠 높이의 40% 와 항목 3칸 중 짧은 쪽이다(5칸 88 · 7칸 123 · small 72). medium(44 · 글자 26 / 35)이 기본이고 small(36 · 20 / 27)은 좁은 팝오버에만 쓴다 — 글자는 글자 크기 설정을 따르지 않는 px 다. 보이는 칸은 홀수만(기본 5 · 달력 머리 7). 끌면(3px 넘게) 따라오고 놓을 때 속도로 최대 3칸 더 가서 220 ~ 360ms 로 맞추고, 마우스 휠 · 트랙패드는 마지막 입력 120ms 뒤 가까운 칸으로 160ms, 보이는 항목을 누르면 그 항목을 가운데로 옮긴다 — 값은 멈춘 뒤 한 번만 바뀐다. 반복은 칼럼마다(월은 돌고 연은 멈춘다). 키보드는 칼럼마다 Tab 자리 하나 · ↑ ↓ · Home · End 이고, 키보드로 들어오면 가운데 항목 둘레 안쪽에 2px 링(모서리 8)이 선다. 막힌 휠은 값은 그대로, 고른 항목도 흐리게(띠는 남는다) 그리고 굴릴 수도 초점이 갈 수도 없다. 예산 그림은 실제로 굴리고 \"완료\" 로 칸에 넣을 수 있다.",
+    `${samples([
+      sample("폰 — 예산 월 · 시트 · 완료", "WheelPicker aria-label=\"월 선택\" — 연도(멈춤) · 월(반복)", monthPhone),
+      sample("데스크톱 웹 — 팝오버", "같은 휠 · 완료 small 36", monthDesktop),
+    ], "ptf-samples ptf-samples--forms")}${samples([
+      sample("medium — 44 · 글자 26 · 안개 88", "size=\"medium\"(기본) · 5칸 220", demo(monthWheel({ label: "medium", ...budgetYears, live: false, width: "272px" }))),
+      sample("small — 36 · 글자 20 · 안개 72", "size=\"small\" — 좁은 팝오버만 · 5칸 180", demo(monthWheel({ label: "small", size: "small", ...budgetYears, live: false, width: "272px" }))),
+      sample("키보드 초점 — 가운데 항목 둘레 안쪽 2px", "focused — 링 stroke-focus-ring · 모서리 8 · 키보드로 들어올 때만", demo(monthWheel({ label: "키보드 초점", ...budgetYears, live: false, focus: "month", width: "272px" }))),
+      sample("막힘 — 값은 그대로 · 고른 항목도 흐리게", "disabled — 띠는 남는다 · 굴리기 · 초점 없음", demo(monthWheel({ label: "막힘", ...budgetYears, disabled: true, width: "272px" }))),
+    ], "ptf-samples pov-samples--next")}`,
+  );
+
+  // 8. 날짜 + 시각 — 두 칸 나란히(flex-wrap · 사이 8). 날짜 칸은 글이 다 들어가는 폭 이상이고 남는 폭을 채우고(min-w-max flex-1),
+  //    시각 칸은 144(shrink-0)다 — 한 줄에 둘이 들어가지 않으면 시각 칸이 다음 줄로 내려간다. 칸 글은 말줄임으로 자르지 않는다.
+  //    라벨은 쌍에 하나 — 날짜 칸 위에 두고, 시각 칸은 아래 끝을 맞추고 그 라벨 + 값으로 읽힌다(aria-labelledby). 종일이면 시각 칸만 걷는다
+  const pair = (size, rows) => `<div class="ptf-form">${rows.map(([label, date, time]) => {
+    const id = nextTextFieldId();
+    return `<div class="pdt-datetime">${
+      textField({ id, label, className: "pdt-date", control: { kind: "inputButton", size, value: date, placeholder: "날짜 선택", suffixIcon: "calendarDays" } })}<div class="pdt-time">${
+      inputButton({ size, value: time, placeholder: "시간 선택", suffixIcon: "clock", labelledby: `${id}-label` })}</div></div>`;
+  }).join("")}</div>`;
+  //    한 줄에 드는지는 날짜 글 폭이 정한다 — 폰은 다른 해 날짜(시각 칸이 내려간다), 데스크톱은 올해 날짜(한 줄)로 그린다.
+  //    올해 날짜는 360 폰에서도 한 줄이지만(Pretendard) 글꼴이 없으면 넘칠 수 있어, 글꼴이 달라도 결과가 같은 값을 골랐다
+  const dtPhone = overlayFrame({ device: "phone", height: 420, page: overlayPage({ title: "일정 추가", body: pair("large", [["시작", "2027년 1월 3일 (일)", "오전 11:30"], ["종료", "2027년 1월 3일 (일)", "오후 12:30"]]) }) });
+  const dtDesktop = overlayFrame({ device: "desktop", height: 360, page: overlayPage({ title: "일정 추가", desktop: true, body: pair("medium", [["시작", "10월 15일 (목)", "오후 3:00"], ["종료", "10월 15일 (목)", ""]]) }) });
+  const dateTimePanel = panel(
+    "날짜 + 시각 — 두 칸 나란히",
+    "날짜와 시각을 함께 받으면 날짜 칸 옆에 시각 칸을 나란히 둔다(flex flex-wrap gap-x2 — 사이 8) — 하나만 바꾸기 쉽고, 종일이면 시각 칸만 걷는다. 시각 칸은 144(w-[144px] shrink-0 — large 에서 \"오후 12:30\" 이 잘리지 않는 폭), 날짜 칸은 글이 다 들어가는 폭 이상이고 남는 폭을 채운다(min-w-max flex-1). 한 줄에 둘이 들어가지 않으면(다른 해 날짜 \"2027년 1월 3일 (일)\" · 큰 글자 설정 · 좁은 폰) 시각 칸이 다음 줄로 내려간다 — 올해 날짜는 360 폭 폰에서도 한 줄이다. 칸 글을 말줄임으로 자르지 않는다. 폭은 Input Button 의 rootClassName(상자)에 준다. 한 칸에 날짜 · 시각을 같이 넣지 않는다. 날짜 칸은 달력(뒤 아이콘 calendar), 시각 칸은 시각 휠(clock)을 연다 — 둘 다 Input Button 이고 폰은 large 52, 1280 이상 데스크톱 웹은 medium 40 이다. 비어 있으면 \"{값의 종류} 선택\"(\"날짜 선택\" · \"시간 선택\")이 들어간다. 칸 값은 올해 \"10월 15일 (목)\", 다른 해 \"2027년 1월 3일 (일)\", 시각 \"오후 3:00\" 이다. 그림은 라벨을 쌍에 하나(\"시작\" · \"종료\") 날짜 칸 위에 두고, 시각 칸은 아래 끝을 맞춰 그 라벨 + 값으로 읽힌다(\"시작 오전 11:30\").",
+    samples([
+      sample("폰 — 다른 해 날짜는 시각 칸이 다음 줄로", "large 52 · 날짜 칸 + 8 + 144 가 칸 자리를 넘는다", dtPhone),
+      sample("데스크톱 웹 — 올해 날짜 · 한 줄", "medium 40 · 종료 시간은 비었다(\"시간 선택\")", dtDesktop),
+    ], "ptf-samples ptf-samples--forms"),
+  );
+
+  const lede = "SEED Date Picker · Time Picker · Wheel Picker 구조 — 날짜 · 시각은 치지 않고 고른다. 칸은 Input Button 이고, 누르면 1280 미만은 아래 시트 · 이상은 칸 아래 팝오버가 열리며 \"완료\" 로 넣는다(고르는 동안 칸 값은 그대로, 닫으면 버림). 달력은 칸 48(폭 ÷ 7) · 원 42 · 숫자 16 · 머리 · 요일 줄 48 · 늘 6주(앞뒤 달은 흐리게 채운다)이고 팝오버에서 336 이다. 오늘은 옅은 원 + 숫자 700, 고른 날은 짙은 원, 기간은 띠, 막힌 날은 흐린 숫자 + 취소선 — 브랜드 색은 쓰지 않는다. 기간은 칸 하나 · 달력 하나 — 시트는 이어지는 달, 팝오버는 두 달 나란히(696)이고 위에 빠른 기간 칩 한 줄을 둔다. 제목을 누르면 연 · 월 휠이 날짜 자리를 덮는다. 시각은 오전·오후 → 시 → 분 세 칼럼의 12시간 휠(44 × 5 = 220 · 글자 26)이고 분 간격은 기본 5, 달만 고르는 자리(예산 · 홈 · 카드 실적)는 연 | 월 휠 + \"완료\" 다. 휠은 가운데 띠(bg-neutral-weak · 모서리 8 · 좌우 16 들임)에 걸친 글자만 짙게 칠하고 위아래 끝을 안개로 흐린다. 날짜와 시각을 함께 받으면 두 칸을 나란히 두고, 한 줄에 다 들어가지 않으면 시각 칸이 다음 줄로 내려간다. 그림의 오늘은 2026년 10월 2일(금)이다. 옛 Calendar(원 40 · 고른 날 브랜드 채움 · 오늘 2px 테두리 · 앞뒤 달 tertiary) · Date Range Picker(두 칸 · 화살표 · 일수 알약) · Time Picker v72(치는 칸 · 24시간)는 걷었다."
+    + (brand.key === "shared" ? " 공유 토큰에는 브랜드 역할 색이 없어 포커스 링이 여기서는 중립(fg-neutral)으로 보인다 — HR · Desk 미리보기에서 브랜드 색이다." : "");
+
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">03n — 날짜 · 시각 고르기</div>
+      <h2 class="section-title">날짜 · 시각 고르기 — 달력 48 · 기간 띠 · 12시간 휠 · 연 · 월 휠</h2>
+      <p class="section-lede">${escape(lede)}</p>
+    </header>
+    ${singlePanel}
+    ${rangePanel}
+    ${statePanel}
+    ${overlapPanel}
+    ${wheelPanel}
+    ${timePanel}
+    ${wheelLookPanel}
+    ${dateTimePanel}
+  </section>`;
+}
+
 export function renderVignettes(brand) {
   // 탭 — 옛 underline · pills 그림(브랜드 색 밑줄 · 채움)은 걷었다(tabs.md 2026-10-02). 다른 구역으로 옮기는 자리(HR 직원 상세 · 공유 문서)는 Line 탭,
   // 같은 메모를 거르는 자리(Desk 의 전체 · 즐겨찾기 · 오늘 · 보관함)는 Segmented Control 이다 — 모양 · 동작은 03j 의 도우미 그대로다
@@ -4833,9 +5339,9 @@ export function renderCalendar(brand) {
   return `
   <section class="section">
     <header class="section-head">
-      <div class="section-eyebrow">06 — Calendar</div>
+      <div class="section-eyebrow">06 — 일정 화면 달력(피커가 아니다)</div>
       <h2 class="section-title">${escape(cal.title)}</h2>
-      <p class="section-lede">circular day cells, ink-filled on selected — ${escape(cal.month)}.</p>
+      <p class="section-lede">일정 · 휴가 · 가계부 화면의 달 격자다 — 날짜를 고르는 Date Picker(03n)가 아니다. 이 모양(월요일 시작 · 원 40 · 고른 날 브랜드 채움 · 오늘 테두리)은 옛 모습 그대로이고, 캘린더 화면 차례에 정한다 — ${escape(cal.month)}.</p>
     </header>
     <div class="cal-card">
       <div class="cal-grid">
@@ -5474,7 +5980,7 @@ export function renderShadcnExtras(brand) {
   <section class="section">
     <header class="section-head">
       <div class="section-eyebrow">19 — Extras (v72)</div>
-      <h2 class="section-title">Snackbar · Aspect Ratio · Chart · Date Range · Time Picker</h2>
+      <h2 class="section-title">Snackbar · Aspect Ratio · Chart · 기간 · Time Picker</h2>
       <p class="section-lede">5 추가 컴포넌트 — 스낵바, 비율 wrapper, 차트, 기간/시각 선택.</p>
     </header>
     <div class="sc-grid">
@@ -5503,24 +6009,18 @@ export function renderShadcnExtras(brand) {
         </div>
         <div class="sc-note">${brand.key === "hr" ? "월별 결재 수" : brand.key === "desk" ? "주간 거래 합계" : "샘플 bar"}</div>
       </div>
+      <!-- 기간 — 옛 Date Range Picker(두 칸 · 화살표 · 브랜드 일수 알약)를 03n 의 기간 칸 하나로 -->
       <div class="sc-card">
-        <div class="sc-head">Date Range Picker</div>
-        <div class="drp">
-          <span>2026-05-12</span>
-          <span class="drp-arrow">→</span>
-          <span>2026-05-14</span>
-          <span class="drp-days">3일</span>
-        </div>
-        <div class="sc-note">presets: 오늘 / 지난 7일 / 이번 달</div>
+        <div class="sc-head">기간 — 칸 하나 · 달력 하나</div>
+        ${textField({ label: "기간", control: { kind: "inputButton", value: brand.key === "hr" ? "10월 12일~10월 14일" : brand.key === "desk" ? "9월 28일~10월 6일" : "10월 1일~10월 31일", suffixIcon: "calendarDays" } })}
+        <div class="sc-note">칸 하나를 누르면 한 달력에서 시작 · 끝을 고른다 — 1280 미만 시트는 이어지는 달, 이상 팝오버는 두 달 나란히, 위에 빠른 기간 칩(이번 주 · 이번 달 · 지난 달 …). 모양 · 쓰임은 03n — 날짜 · 시각 고르기. 옛 Date Range Picker(두 칸 · 화살표 · 일수 알약)는 걷었다.</div>
       </div>
+      <!-- Time Picker — 옛 v72(치는 칸 · 24시간 "14:30")를 03n 의 12시간 휠로 -->
       <div class="sc-card">
-        <div class="sc-head">Time Picker (5분 step)</div>
-        <div class="tp">
-          <span class="tp-hour">14</span>
-          <span class="tp-sep">:</span>
-          <span class="tp-min">30</span>
-        </div>
-        <div class="sc-note">${brand.key === "hr" ? "24h format · 결재 일정" : brand.key === "desk" ? "wheel picker · 모바일 native" : "시각 input"}</div>
+        <div class="sc-head">Time Picker — 오전·오후 · 시 · 분</div>
+        ${textField({ label: "시간", control: { kind: "inputButton", value: "오후 2:30", suffixIcon: "clock" } })}
+        ${timePicker({ label: "시간 선택", hour: 14, minute: 30, live: false })}
+        <div class="sc-note">칸 표기 "오후 2:30" 과 같은 말의 12시간 휠(44 × 5 · 글자 26) — 분 간격은 기본 5. "완료" 로 칸에 넣는다. 모양 · 쓰임은 03n — 날짜 · 시각 고르기. 옛 Time Picker(치는 칸 · 24시간 "14:30")는 걷었다.</div>
       </div>
     </div>
   </section>`;
@@ -8069,22 +8569,14 @@ export function pageCss() {
       }
     }
 
-    /* 여는 자리 그림(03h · 03k)의 달력 — 자리만 그린 것이다. 크기 · 고른 날(bg-neutral-inverted 원은 임시다)의 모양은 Date Picker 차례에 정한다.
+    /* 여는 자리 그림(03h · 03k)의 달력은 아래 Date Picker 블록의 .pdp 다(03n) — 자리만 그리던 옛 .pib-cal-* 는 걷었다.
        달력을 담는 시트 · 팝오버는 아래 Overlays 블록의 .pov-sheet · .pov-popover 다(03k). */
-    .pib-cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--spacing-x1); }
-    .pib-cal-month { font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 700; color: var(--color-fg-neutral); }
-    .pib-cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); row-gap: var(--spacing-x1); text-align: center; }
-    .pib-cal-dow { padding: var(--spacing-x1) 0; font-size: var(--text-t3); line-height: var(--text-t3--line-height); color: var(--color-fg-neutral-subtle); }
-    .pib-cal-day { display: grid; place-items: center; height: 36px; font-size: var(--text-t4); line-height: var(--text-t4--line-height); color: var(--color-fg-neutral); }
-    .pib-cal-day > span { display: grid; place-items: center; width: min(32px, 100%); aspect-ratio: 1; border-radius: var(--radius-full); }
-    .pib-cal-day--picked > span { background: var(--color-bg-neutral-inverted); color: var(--color-fg-neutral-inverted); font-weight: 700; }
-    .pib-cal-day--range > span { background: var(--color-bg-neutral-weak); }
     /* 갤러리 — 상태 표에서 Input Button 의 열림 칸은 모습이 그대로라 글로 둔다. 여럿 고른 값의 줄임을 보이는 좁은 칸(200) */
     .psel-na { font-size: var(--text-caption); line-height: 1.4; color: var(--color-text-tertiary); }
     .psel-narrow { max-width: 200px; }
 
     /* 다크 — 역할 색을 고르는 칸 · 목록 안에서만 다크 짝으로 바꾼다(.ptf-field · .psb-group 과 같다 — 전역 다크 블록은 옛 이름만 바꾼다).
-       끼운 .btn 은 제 다크 블록이 다시 바꾼다. 여는 자리 그림(달력)은 Overlays 블록의 .pov-frame 이 바꾼다.
+       끼운 .btn 은 제 다크 블록이 다시 바꾼다. 여는 자리 그림은 Overlays 블록의 .pov-frame, 그 안의 달력은 Date Picker 블록의 .pdp 가 바꾼다.
        공유 토큰(DESIGN.md)에 없는 브랜드 짝(포커스 링)은 비어서 위 대체값(중립)으로 떨어진다. */
     [data-theme="dark"] :is(.psel-trigger, .psel-list, .pib) {
       --color-stroke-neutral-weak: var(--color-stroke-neutral-weak-dark);
@@ -9753,6 +10245,249 @@ export function pageCss() {
       --shadow-s3: var(--shadow-s3-dark);
     }
 
+
+    /* === Date Picker · Time Picker · Wheel Picker — specs/components/date-picker.md · time-picker.md · wheel-picker.md(수치는 *.yaml) ===
+       구조는 SEED Date Picker · Time Picker · Wheel Picker(2026-10-03). 옛 Calendar(.cal-* 의 피커 쓰임 · 원 40 · 브랜드 채움 · 오늘 테두리) · Date Range Picker(.drp) ·
+       Time Picker v72(.tp — 치는 칸 · 24시간)를 대신한다. 03h · 03k 의 여는 자리 그림도 이 달력이다. 06 의 일정 · 가계부 달(.cal-*)은 화면 격자라 그대로다.
+       달력 .pdp — 팝오버 336(칸 48 × 7) · 두 달 696, 시트는 본문 폭(시트 폭 − 좌우 24). 머리 · 요일 줄 · 날짜 줄은 모두 48 이다.
+       날짜 칸 .pdp-cell 은 달력 폭 ÷ 7 × 48 이고 칸 전체가 누르는 버튼(.pdp-day)이다. 원 .pdp-day-visual 42 는 칸 위 3 · 가로 가운데 — 원 · 띠끼리 6 떨어진다.
+       칸이 44 보다 좁으면 원을 칸 폭 − 2 로 줄인다(--pdp-circle — 격자 .pdp-grid 를 크기 담는 그릇으로 두고 100cqw ÷ 칸 수로 잰다).
+       기간 띠는 칸의 ::before(원과 같은 높이 · 칸 위 3) — 시작 칸은 원 가운데부터 오른쪽, 끝 칸은 왼쪽부터 원 가운데까지, 사이 칸은 칸 폭 전체다(칸 끝에서 끊는다).
+       상태는 data-* 가 칠한다 — 겹치면 고름 > 기간 안 > 오늘(규칙 차례), 오늘의 굵기 700 은 남는다. --hover · --pressed · --focus 는 갤러리에서 그 순간을 고정해 보여 주는 클래스다.
+       휠 .pwheel — 항목 높이 × 보이는 수(medium 44 · small 36). 칼럼 .pwheel-col 은 항목 글 폭 + 좌우 16(연 · 월 휠은 연 120 · 월 96 고정), 칼럼 묶음은 휠 가운데. 두 항목 줄(.pwheel-track · 띠 안의 .pwheel-hl)은
+       칼럼의 --pwheel-index(가운데 항목 번호 — 굴리는 동안은 소수)만큼 함께 올라간다 — 띠에 걸친 글자만 fg-neutral, 나머지는 fg-disabled 다.
+       안개 .pwheel-fog 는 바탕색을 gradient-fade-mask 로 가린 층(위는 뒤집는다) — 높이 min(휠 × 40%, 항목 3칸). 다크 짝은 이 블록 끝의 [data-theme="dark"] 에서 바꾼다. */
+    .pdp {
+      /* 포커스 링 — 공유 토큰(DESIGN.md)에는 브랜드 역할 색이 없어 중립으로 떨어진다(.pib · .pchip 과 같은 대체 사슬) */
+      --pdp-focus-ring: var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral)));
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      background: var(--color-bg-layer-floating);
+      color: var(--color-fg-neutral);
+      font-family: var(--font-sans);
+      text-align: left;
+    }
+    .pdp--popover { width: 336px; }
+    .pdp--popover.pdp--two { width: 696px; }
+    /* 빠른 기간 — 칩 줄 아래 12(칩 사이 8 은 Chip 묶음이 둔다) */
+    .pdp-presets { flex-shrink: 0; padding-bottom: var(--spacing-x3); }
+    /* 머리 — 48. 왼쪽 연 · 월 제목(16 / 22 · 700 + 셰브론 20 · 사이 4, 글자는 머리 왼쪽에서 4 — 누르는 자리는 머리 높이 전체), 오른쪽 이전 · 다음(Button ghost 40 · 둘 사이 0) */
+    .pdp-header { display: flex; flex-shrink: 0; align-items: center; justify-content: space-between; height: 48px; }
+    .pdp-title {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-x1);
+      height: 48px;
+      margin: 0;
+      padding: 0 var(--spacing-x1);
+      border: 0;
+      border-radius: var(--radius-r2);
+      background: transparent;
+      color: var(--color-fg-neutral);
+      font-family: inherit;
+      font-size: var(--text-t5);
+      line-height: var(--text-t5--line-height);
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .pdp-title:focus-visible { outline: 2px solid var(--pdp-focus-ring); outline-offset: -2px; }
+    /* 셰브론 — 휠이 열리면 위로(180° · d3 150ms). 휠과 날짜는 모션 없이 바뀐다 */
+    .pdp-title-icon { display: flex; color: var(--color-fg-neutral); transition: rotate var(--motion-duration-d3) var(--motion-ease-easing); }
+    .pdp-title-icon > svg { width: 20px; height: 20px; }
+    .pdp-title[aria-expanded="true"] .pdp-title-icon { rotate: 180deg; }
+    .pdp-navs { display: flex; }
+    /* 격자 — 크기 담는 그릇(원 크기를 칸 폭으로 잰다). 요일 줄 · 주는 7칸(줄 견본은 --pdp-cols) */
+    .pdp-body { position: relative; }
+    .pdp-grid { container-type: inline-size; }
+    .pdp-week { display: grid; grid-template-columns: repeat(var(--pdp-cols, 7), minmax(0, 1fr)); }
+    /* 요일 — 48 · 14 / 19 · 500 · fg-neutral-subtle */
+    .pdp-weekday { display: grid; place-items: center; height: 48px; font-size: var(--text-t4); line-height: var(--text-t4--line-height); font-weight: 500; color: var(--color-fg-neutral-subtle); }
+    .pdp-cell { --pdp-circle: min(42px, calc(100cqw / var(--pdp-cols, 7) - 2px)); position: relative; height: 48px; }
+    .pdp-cell[data-band]::before { content: ""; position: absolute; top: 3px; left: 0; right: 0; height: var(--pdp-circle); background: var(--color-bg-neutral-weak); }
+    .pdp-cell[data-band="start"]::before { left: 50%; }
+    .pdp-cell[data-band="end"]::before { right: 50%; }
+    /* 날짜 — 칸 전체가 누르는 자리. 원 · 숫자는 칸 위 3 에 */
+    .pdp-day {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 3px 0 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .pdp-day:focus-visible { outline: none; }
+    .pdp-day-visual {
+      display: grid;
+      place-items: center;
+      width: var(--pdp-circle);
+      height: var(--pdp-circle);
+      border-radius: var(--radius-full);
+      background: transparent;
+      color: var(--color-fg-neutral-muted);
+      font-size: var(--text-t5);
+      line-height: var(--text-t5--line-height);
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+      transition: background-color var(--motion-duration-color-transition) var(--motion-ease-easing);
+    }
+    /* 키보드 초점 — 원 둘레 안쪽 2px(칸이 아니라 원) */
+    .pdp-day:focus-visible > .pdp-day-visual,
+    .pdp-day.pdp-day--focus > .pdp-day-visual { outline: 2px solid var(--pdp-focus-ring); outline-offset: -2px; }
+    /* 오늘 — 옅은 원 bg-neutral-weak + 숫자 700 · fg-neutral(옅은 원은 바탕과 1.08:1 이라 굵기로도 알린다) */
+    .pdp-day[data-today] > .pdp-day-visual { background: var(--color-bg-neutral-weak); color: var(--color-fg-neutral); font-weight: 700; }
+    /* 기간의 사이 날 — 원 없이 띠가 바탕. 오늘이어도 원은 그리지 않는다(굵기만 남는다) */
+    .pdp-day[data-in-range] > .pdp-day-visual { background: transparent; color: var(--color-fg-neutral-muted); }
+    /* 고름 — 짙은 원(하루 · 여러 날의 고른 날, 기간의 시작 · 끝). 오늘이어도 이 모양이 이긴다 */
+    .pdp-day[data-selected] > .pdp-day-visual { background: var(--color-bg-neutral-inverted); color: var(--color-fg-neutral-inverted); }
+    /* 읽기 전용 — 확정된 시작일, 채움을 남겨 톤을 낮춘다. 누르지 못하지만 초점은 간다 */
+    .pdp-day[data-readonly] > .pdp-day-visual { background: var(--color-stroke-neutral-solid); color: var(--color-fg-neutral-inverted); }
+    /* 앞뒤 달 — 흐린 숫자, 누르지 못한다(버튼이 아니다). 막힌 날 — 흐린 숫자 + 취소선(기간 안이면 띠는 그대로). 오늘인데 막힌 날은 원 없이
+       굵은 숫자 + 취소선, 고른 날인데 막힌 날은 고른 모양 + 취소선이다 */
+    .pdp-day[data-outside] > .pdp-day-visual { color: var(--color-fg-disabled); }
+    .pdp-day[data-disabled] > .pdp-day-visual { text-decoration: line-through; }
+    .pdp-day[data-disabled]:not([data-selected]) > .pdp-day-visual { background: transparent; color: var(--color-fg-disabled); }
+    /* 호버(고운 포인터만) · 누름 — 옅은 원 bg-layer-floating-pressed. 오늘(옅은 원) · 기간 사이 날(띠) 위에서는 한 단계 짙은 bg-neutral-weak-pressed —
+       옅은 원 · 띠와 같은 색이 되어 안 보이지 않게. 날짜는 줄지 않는다. 고른 날 · 읽기 전용 · 막힌 날 · 앞뒤 달에는 없다 */
+    @media (hover: hover) {
+      .pdp-day:not([data-selected], [data-readonly], [aria-disabled="true"], [data-outside]):hover > .pdp-day-visual { background: var(--color-bg-layer-floating-pressed); }
+      .pdp-day:is([data-today], [data-in-range]):not([data-selected], [data-readonly], [aria-disabled="true"]):hover > .pdp-day-visual { background: var(--color-bg-neutral-weak-pressed); }
+    }
+    .pdp-day:not([data-selected], [data-readonly], [aria-disabled="true"], [data-outside]):active > .pdp-day-visual,
+    .pdp-day.pdp-day--hover > .pdp-day-visual,
+    .pdp-day.pdp-day--pressed > .pdp-day-visual { background: var(--color-bg-layer-floating-pressed); }
+    .pdp-day:is([data-today], [data-in-range]):not([data-selected], [data-readonly], [aria-disabled="true"]):active > .pdp-day-visual,
+    .pdp-day:is([data-today], [data-in-range]):is(.pdp-day--hover, .pdp-day--pressed) > .pdp-day-visual { background: var(--color-bg-neutral-weak-pressed); }
+    .pdp-day[data-outside],
+    .pdp-day[data-readonly] { cursor: default; }
+    .pdp-day[data-disabled] { cursor: not-allowed; }
+    /* 연 · 월 휠 — 요일 줄 + 6주 자리(336)를 덮는다. Wheel Picker medium 7칸(308)이 가운데라 위아래 14 가 남는다 */
+    .pdp-wheel { position: absolute; inset: 0 0 auto; z-index: 2; display: flex; align-items: center; height: 336px; background: var(--color-bg-layer-floating); }
+    .pdp-wheel[hidden] { display: none; }
+    .pdp-wheel > .pwheel { flex: 1 1 auto; }
+    .pdp[data-pdp-wheel-open] .pdp-body > .pdp-grid { visibility: hidden; }
+    /* 두 달 나란히 — 336 + 24 + 336. 머리를 나누지 않는다 — 달 이름은 달마다 가운데(누르지 않는다), 이전은 첫 달 왼쪽 끝 · 다음은 둘째 달 오른쪽 끝(위 4) */
+    .pdp-header--two { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--spacing-x6); }
+    .pdp-header--two > .pdp-nav { position: absolute; top: var(--spacing-x1); }
+    .pdp-header--two > .pdp-nav:first-child { left: 0; }
+    .pdp-header--two > .pdp-nav:last-child { right: 0; }
+    .pdp-month-name { display: grid; place-items: center; height: 48px; font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 700; color: var(--color-fg-neutral); }
+    .pdp-months { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--spacing-x6); }
+    /* 이어지는 달 — 머리 없이 스크롤이 달을 넘긴다(스크롤바 숨김). 요일 줄은 맨 위에 붙고, 달마다 이름(48 · 16 · 700 · 왼쪽 4) · 달 아래 16, 아래 끝 안개 96 */
+    .pdp--continuous { flex: 1 1 auto; min-height: 0; }
+    .pdp-scroll { position: relative; flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; }
+    .pdp-scroll::-webkit-scrollbar { display: none; }
+    .pdp-weekdays--sticky { position: sticky; top: 0; z-index: 2; background: var(--color-bg-layer-floating); }
+    .pdp-month { padding-bottom: var(--spacing-x4); }
+    .pdp-month-label { display: flex; align-items: center; height: 48px; padding: 0 var(--spacing-x1); font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 700; color: var(--color-fg-neutral); }
+    .pdp-fog { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; height: 96px; background: linear-gradient(to bottom, transparent, var(--color-bg-layer-floating)); pointer-events: none; }
+    /* 보이는 달이 바뀌면 읽는 자리(aria-live) — 보이지 않는다 */
+    .pdp-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+    /* 시트 · 팝오버 안 — 이어지는 달은 시트를 화면 높이의 90% 로 열고 본문 안에서만 스크롤한다. 두 달 팝오버는 폭 744(Popover 최대 480 의 예외) */
+    .pov-sheet:has(.pdp--continuous) { height: 90%; }
+    .pov-sheet-body:has(> .pdp--continuous) { display: flex; flex-direction: column; overflow: hidden; }
+    .pov-popover:has(.pdp--two) { max-width: min(744px, 100%); }
+
+    /* Wheel Picker — medium 44 · 글자 26 / 35(t10-static) · small 36 · 20 / 27(t7-static). 글자는 글자 크기 설정을 따르지 않는 px · 500 · 숫자 폭을 같게 */
+    .pwheel {
+      --pwheel-item: 44px;
+      --pwheel-rows: 5;
+      --pwheel-h: calc(var(--pwheel-item) * var(--pwheel-rows));
+      --pwheel-pad: calc(var(--pwheel-item) * (var(--pwheel-rows) - 1) / 2);
+      --pwheel-focus-ring: var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral)));
+      position: relative;
+      display: flex;
+      justify-content: center;
+      height: var(--pwheel-h);
+      max-width: 100%;
+      overflow: hidden;
+      background: var(--color-bg-layer-floating);
+      font-family: var(--font-sans);
+      font-size: var(--text-t10-static);
+      line-height: var(--text-t10-static--line-height);
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .pwheel--small { --pwheel-item: 36px; font-size: var(--text-t7-static); line-height: var(--text-t7-static--line-height); }
+    /* 선택 띠 — 가운데 줄, 휠 좌우 끝에서 16 들인다 · 모서리 8 · bg-neutral-weak */
+    .pwheel-indicator { position: absolute; left: var(--spacing-x4); right: var(--spacing-x4); top: var(--pwheel-pad); height: var(--pwheel-item); border-radius: var(--radius-r2); background: var(--color-bg-neutral-weak); }
+    .pwheel-columns { position: relative; z-index: 1; display: flex; }
+    /* 칼럼 — 항목 글 폭 + 좌우 16(폭을 정한 칼럼은 그 폭). 손가락 · 마우스로 끌고 휠로 굴린다(페이지 끝 스크립트 — 브라우저 스크롤을 쓰지 않는다) */
+    .pwheel-col { position: relative; height: var(--pwheel-h); overflow: hidden; outline: none; touch-action: none; }
+    .pwheel-track { padding-top: var(--pwheel-pad); color: var(--color-fg-disabled); translate: 0 calc(var(--pwheel-index, 0) * var(--pwheel-item) * -1); }
+    .pwheel-item { display: flex; align-items: center; justify-content: center; height: var(--pwheel-item); padding: 0 var(--spacing-x4); white-space: nowrap; }
+    .pwheel-col--end .pwheel-item { justify-content: flex-end; }
+    .pwheel-col--start .pwheel-item { justify-content: flex-start; }
+    /* 띠 안의 짙은 사본 — 띠 자리만 보이는 창에 같은 줄을 같은 만큼 올려 둔다 */
+    .pwheel-hl { position: absolute; left: 0; right: 0; top: var(--pwheel-pad); height: var(--pwheel-item); overflow: hidden; pointer-events: none; }
+    .pwheel-hl > .pwheel-track { position: absolute; left: 0; right: 0; top: calc(var(--pwheel-pad) * -1); color: var(--color-fg-neutral); }
+    /* 안개 — 위아래 끝에서 바탕색으로. 높이는 휠 높이의 40% 와 항목 3칸 중 짧은 쪽(5칸 88 · 7칸 123 · small 72) */
+    .pwheel-fog {
+      position: absolute;
+      left: 0;
+      right: 0;
+      z-index: 2;
+      height: min(calc(var(--pwheel-h) * 0.4), calc(var(--pwheel-item) * 3));
+      background: var(--color-bg-layer-floating);
+      -webkit-mask-image: var(--gradient-fade-mask);
+      mask-image: var(--gradient-fade-mask);
+      pointer-events: none;
+    }
+    .pwheel-fog--top { top: 0; rotate: 180deg; }
+    .pwheel-fog--bottom { bottom: 0; }
+    /* 키보드 초점 — 가운데(고른) 항목 둘레 안쪽 2px · 모서리 8. 키보드로 들어올 때만(터치 · 마우스로 굴리는 동안은 없다) */
+    .pwheel-col:focus-visible::after,
+    .pwheel-col.pwheel-col--focus::after { content: ""; position: absolute; left: 0; right: 0; top: var(--pwheel-pad); z-index: 3; height: var(--pwheel-item); border-radius: var(--radius-r2); outline: 2px solid var(--pwheel-focus-ring); outline-offset: -2px; pointer-events: none; }
+    /* 막힘 — 값은 그대로, 고른 항목도 흐리게(띠는 남는다). 굴릴 수도 초점이 갈 수도 없다 */
+    .pwheel[data-disabled] .pwheel-hl > .pwheel-track { color: var(--color-fg-disabled); }
+    .pwheel[data-disabled] .pwheel-col { touch-action: auto; }
+
+    /* 갤러리 — 홀로 그린 달력 · 휠 · 날짜 칸 줄은 떠 있는 표면 바탕(.pdp-demo — 안쪽 24 · 모서리 20 · 1px 선)에 둔다. 팝오버의 달력 · 휠을 연 데스크톱 틀은
+       실제 폭(달력 336 · 두 달 744)을 지키려고 480 · 860 아래로 줄이지 않는다(03h · 03k 의 그림도) — 좁은 화면에서는 판(.cb-panel)이 가로로 밀린다.
+       336 달력 견본의 칸은 400 이상이다. 모두 갤러리 것이다 */
+    .pdp-demo { display: inline-flex; flex-direction: column; max-width: 100%; padding: var(--spacing-x6); border-radius: var(--radius-r5); background: var(--color-bg-layer-floating); box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-subtle); }
+    .pdp-demo--strip { padding: var(--spacing-x2) var(--spacing-x3); }
+    .pdt-samples--states { grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); }
+    .pdt-samples--weeks { grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr)); }
+    .pdt-samples--wide { grid-template-columns: minmax(0, 1fr); }
+    .pdt-samples--cal { grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr)); }
+    .pov-frame--desktop:has(.pov-popover :is(.pdp--popover, .pwheel)) { min-width: 480px; }
+    .pov-frame--desktop:has(.pdp--two) { min-width: 860px; }
+    /* 날짜 + 시각 — flex flex-wrap gap-x2 · 날짜 칸 min-w-max flex-1 · 시각 칸 w-[144px] shrink-0(time-picker.md). 라벨이 날짜 칸에만 있어 아래 끝을 맞춘다 */
+    .pdt-datetime { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--spacing-x2); }
+    .pdt-date { flex: 1 1 0%; min-width: max-content; }
+    .pdt-time { flex-shrink: 0; width: 144px; }
+
+    /* 다크 — 역할 색을 달력 · 휠 · 견본 안에서만 다크 짝으로 바꾼다(.pov-frame · .pchip 과 같다 — 전역 다크 블록은 옛 이름만 바꾼다).
+       끼운 .btn · .pchip 은 제 다크 블록이 다시 바꾼다. 공유 토큰(DESIGN.md)에 없는 브랜드 짝(포커스 링)은 비어서 대체값(중립)으로 떨어진다 */
+    [data-theme="dark"] :is(.pdp, .pwheel, .pdp-demo) {
+      --color-bg-layer-floating: var(--color-bg-layer-floating-dark);
+      --color-bg-layer-floating-pressed: var(--color-bg-layer-floating-pressed-dark);
+      --color-bg-neutral-weak: var(--color-bg-neutral-weak-dark);
+      --color-bg-neutral-weak-pressed: var(--color-bg-neutral-weak-pressed-dark);
+      --color-bg-neutral-inverted: var(--color-bg-neutral-inverted-dark);
+      --color-fg-neutral: var(--color-fg-neutral-dark);
+      --color-fg-neutral-inverted: var(--color-fg-neutral-inverted-dark);
+      --color-fg-neutral-muted: var(--color-fg-neutral-muted-dark);
+      --color-fg-neutral-subtle: var(--color-fg-neutral-subtle-dark);
+      --color-fg-disabled: var(--color-fg-disabled-dark);
+      --color-stroke-neutral-solid: var(--color-stroke-neutral-solid-dark);
+      --color-stroke-neutral-subtle: var(--color-stroke-neutral-subtle-dark);
+      --color-stroke-focus-ring: var(--color-stroke-focus-ring-dark);
+    }
+
     /* todo-card */
     .todo-list { display: flex; flex-direction: column; gap: 2px; }
     .todo-row {
@@ -10530,12 +11265,7 @@ export function pageCss() {
     .chart-mini { display: flex; gap: var(--spacing-xs); align-items: flex-end; height: 100px; padding: var(--spacing-sm); background: var(--color-bg-page); border-radius: var(--radius-md); }
     .chart-bar { flex: 1; border-radius: var(--radius-xs) var(--radius-xs) 0 0; min-height: 8px; }
 
-    /* Date Range Picker / Time Picker */
-    .drp { display: flex; gap: var(--spacing-sm); align-items: center; padding: var(--spacing-sm) var(--spacing-md); background: var(--color-surface-input); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); font-family: ui-monospace, monospace; font-size: var(--text-caption); }
-    .drp-arrow { color: var(--color-text-tertiary); }
-    .drp-days { margin-left: auto; padding: 2px var(--spacing-sm); background: var(--color-primary, var(--color-text-primary)); color: var(--color-text-on-accent, #fff); border-radius: var(--radius-full); font-size: 11px; }
-    .tp { display: flex; gap: var(--spacing-xs); align-items: center; padding: var(--spacing-md) var(--spacing-lg); background: var(--color-surface-input); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); justify-content: center; font-size: var(--text-title-md); font-weight: 600; font-family: ui-monospace, monospace; }
-    .tp-sep { color: var(--color-text-tertiary); }
+    /* 옛 Date Range Picker(.drp — 두 칸 · 화살표 · 브랜드 일수 알약) · Time Picker v72(.tp — 치는 칸 · 24시간)는 걷었다. 기간 · 시각은 Date Picker 블록의 .pdp · .pwheel 이다(03n) */
 
     /* ColorSwatch — color-swatch.md SoT (palette grid single-select) */
     .csw { display: grid; gap: var(--spacing-sm); }
@@ -10654,8 +11384,6 @@ export function pageCss() {
     [data-theme="dark"] .cb,
     [data-theme="dark"] .otp-cell,
     [data-theme="dark"] .otp-cell--filled,
-    [data-theme="dark"] .drp,
-    [data-theme="dark"] .tp,
     [data-theme="dark"] .ar,
     [data-theme="dark"] .car-dot { background: var(--color-surface-input-dark); }
     [data-theme="dark"] .otp-cell--filled { background: var(--color-surface-default-dark); }
@@ -10895,6 +11623,7 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     ${renderOverlayGallery(brand)}
     ${renderFeedbackGallery(brand)}
     ${renderMenuGallery(brand)}
+    ${renderDateTimeGallery(brand)}
     ${renderVignettes(brand)}
     ${renderListingDetail(brand)}
     ${renderCalendar(brand)}
@@ -11825,6 +12554,393 @@ function renderHtml(brandName, css, tokens, sourceFile) {
         tip.addEventListener("pointerleave", function () { hover(tip, "content", false); });
       });
       document.addEventListener("keydown", function (e) { if (e.key === "Escape" && openTip) hideTip(openTip); });
+    })();
+    // Wheel Picker · Time Picker (2026-10-03) — wheel-picker.tsx · time-picker.tsx 가 하는 일 가운데 그림에 필요한 것을 흉내 낸다(페이지의 모든 [data-pwheel] 휠).
+    // 칼럼의 자리는 --pwheel-index(가운데 항목 번호 — 굴리는 동안은 소수) 하나다. 반복 칼럼은 자리를 끝없이 세고(_raw) 그림만 가운데 벌로 옮겨 그린다(같은 그림).
+    // 끌기는 3px 를 넘으면 시작하고, 놓을 때 속도로 최대 3칸 더 가서 220 + 40 × 칸 수(최대 360)ms 로 맞춘다 — 끌지 않고 놓으면 누른 항목을 가운데로 옮긴다.
+    // 마우스 휠 · 트랙패드는 마지막 입력 120ms 뒤 가까운 칸으로 160ms. ↑ ↓ 는 한 칸(누르고 있으면 이어서), Home · End 는 처음 · 끝. 모션 줄이기면 모든 이동을 바로 한다.
+    // 값은 멈춘 뒤 한 번만 바뀐다 — aria-valuenow · aria-valuetext 를 고치고 pwheel-change 를 알린다. 시 칼럼이 11 ↔ 12 를 넘으면 오전 · 오후가 따라 바뀐다(분은 시를 바꾸지 않는다).
+    // pwheel-set 은 다른 그림(달력의 연 · 월 휠)이 값을 바로 놓는 자리다. [data-pwheel-done] 버튼("완료")은 휠의 값을 이어진 칸(data-pick-target)에 넣는다 — 시각 "오후 3:00" · 달 "2026년 10월".
+    (function () {
+      var reduce = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
+      function still() { return !!(reduce && reduce.matches); }
+      function count(col) { return +col.getAttribute("data-pwheel-n"); }
+      function base(col) { return col.hasAttribute("data-pwheel-base") ? +col.getAttribute("data-pwheel-base") : -1; }
+      function itemH(col) { var item = col.querySelector(".pwheel-item"); return (item && item.offsetHeight) || 44; }
+      function mod(a, n) { return ((a % n) + n) % n; }
+      // 반복이 아니면 처음 · 끝에서 멈춘다
+      function clamp(col, raw) { return base(col) < 0 ? Math.max(0, Math.min(count(col) - 1, raw)) : raw; }
+      function show(col) {
+        var n = count(col), b = base(col);
+        col.style.setProperty("--pwheel-index", String(b < 0 ? col._raw : b * n + mod(col._raw, n)));
+      }
+      function text(col, value) {
+        var b = base(col), items = col.querySelector(".pwheel-track").children;
+        return items[(b < 0 ? 0 : b * count(col)) + value].textContent;
+      }
+      // 멈춘 자리를 값으로 — 끝없이 센 자리의 차이(travel)로 시 칼럼이 11 ↔ 12 를 몇 번 넘었는지 센다
+      function commit(col) {
+        var r = Math.round(col._raw), n = count(col);
+        var value = base(col) < 0 ? Math.max(0, Math.min(n - 1, r)) : mod(r, n);
+        var prev = +col.getAttribute("aria-valuenow"), travel = r - col._done;
+        col._raw = r;
+        col._done = r;
+        col._goal = null;
+        show(col);
+        if (value === prev) return;
+        col.setAttribute("aria-valuenow", String(value));
+        col.setAttribute("aria-valuetext", text(col, value));
+        col.dispatchEvent(new CustomEvent("pwheel-change", { bubbles: true, detail: { from: prev, to: value, travel: travel } }));
+      }
+      function stop(col) {
+        if (col._frame) cancelAnimationFrame(col._frame);
+        col._frame = 0;
+      }
+      // 자리 옮기기 — ease-out cubic. 끝나면 값을 정한다
+      function glide(col, goal, ms) {
+        stop(col);
+        col._goal = goal;
+        var from = col._raw;
+        if (still() || !ms || from === goal) { col._raw = goal; commit(col); return; }
+        var t0 = performance.now();
+        function step(now) {
+          var t = Math.min(1, (now - t0) / ms);
+          col._raw = from + (goal - from) * (1 - Math.pow(1 - t, 3));
+          show(col);
+          if (t < 1) col._frame = requestAnimationFrame(step);
+          else { col._frame = 0; commit(col); }
+        }
+        col._frame = requestAnimationFrame(step);
+      }
+      var cols = Array.prototype.slice.call(document.querySelectorAll("[data-pwheel] .pwheel-col"));
+      cols.forEach(function (col) {
+        col._raw = col._done = +col.getAttribute("aria-valuenow");
+        col._goal = null;
+        // 마우스 휠 · 트랙패드 — 칼럼에만 단다(페이지 스크롤을 막지 않게)
+        col.addEventListener("wheel", function (e) {
+          e.preventDefault();
+          stop(col);
+          var h = itemH(col);
+          var dy = e.deltaMode === 1 ? e.deltaY * h : e.deltaMode === 2 ? e.deltaY * h * 5 : e.deltaY;
+          col._raw = clamp(col, col._raw + dy / h);
+          show(col);
+          clearTimeout(col._idle);
+          col._idle = setTimeout(function () { glide(col, clamp(col, Math.round(col._raw)), 160); }, 120);
+        }, { passive: false });
+        col.addEventListener("keydown", function (e) {
+          var n = count(col), value = +col.getAttribute("aria-valuenow");
+          var at = col._goal != null ? col._goal : Math.round(col._raw);
+          var goal = e.key === "ArrowUp" ? at - 1 : e.key === "ArrowDown" ? at + 1 : e.key === "Home" ? at - value : e.key === "End" ? at + (n - 1 - value) : null;
+          if (goal === null) return;
+          e.preventDefault();
+          glide(col, clamp(col, goal), 160);
+        });
+        // 끌기 · 누르기 — 손가락 · 마우스 모두 포인터로 받는다(touch-action none)
+        col.addEventListener("pointerdown", function (e) {
+          if (e.button !== 0) return;
+          stop(col);
+          clearTimeout(col._idle);
+          var h = itemH(col), y0 = e.clientY, last = e.clientY, moved = false, trail = [{ y: e.clientY, t: e.timeStamp }];
+          if (col.setPointerCapture) col.setPointerCapture(e.pointerId);
+          function move(ev) {
+            if (!moved && Math.abs(ev.clientY - y0) <= 3) return;
+            moved = true;
+            col._raw = clamp(col, col._raw - (ev.clientY - last) / h);
+            last = ev.clientY;
+            show(col);
+            trail.push({ y: ev.clientY, t: ev.timeStamp });
+            while (trail.length > 2 && ev.timeStamp - trail[0].t > 100) trail.shift();
+          }
+          function up(ev) {
+            col.removeEventListener("pointermove", move);
+            col.removeEventListener("pointerup", up);
+            col.removeEventListener("pointercancel", up);
+            if (!moved) {
+              // 보이는 항목 누르기 — 그 항목을 가운데로
+              var rect = col.getBoundingClientRect();
+              var steps = Math.round((ev.clientY - (rect.top + rect.height / 2)) / h);
+              glide(col, clamp(col, Math.round(col._raw) + steps), steps ? 220 + 40 * Math.min(3, Math.abs(steps)) : 0);
+              return;
+            }
+            // 놓을 때 속도(최근 100ms) — 최대 3칸 더 간다. 멈췄다가 놓으면 가까운 칸으로
+            var first = trail[0], end = trail[trail.length - 1], dt = end.t - first.t;
+            var v = dt > 0 && ev.timeStamp - end.t < 100 ? (end.y - first.y) / dt : 0;
+            var extra = Math.max(-3, Math.min(3, Math.round((-v * 150) / h)));
+            var goal = clamp(col, Math.round(col._raw) + extra);
+            glide(col, goal, Math.min(360, 220 + 40 * Math.round(Math.abs(goal - col._raw))));
+          }
+          col.addEventListener("pointermove", move);
+          col.addEventListener("pointerup", up);
+          col.addEventListener("pointercancel", up);
+        });
+        col.addEventListener("pwheel-set", function (e) {
+          stop(col);
+          col._raw = col._done = clamp(col, e.detail.value);
+          col._goal = null;
+          show(col);
+          col.setAttribute("aria-valuenow", String(e.detail.value));
+          col.setAttribute("aria-valuetext", text(col, e.detail.value));
+        });
+      });
+      // 시 칼럼이 11 → 12(앞으로) · 12 → 11(뒤로)을 넘은 수가 홀수면 오전 · 오후를 바꾼다. 시 값 번호는 0 = 1시 … 10 = 11시 · 11 = 12시
+      document.addEventListener("pwheel-change", function (e) {
+        var col = e.target;
+        if (col.getAttribute("data-pwheel-role") !== "hour") return;
+        var n = count(col), j, flips = 0, from = e.detail.from, travel = e.detail.travel;
+        if (travel > 0) { for (j = from; j < from + travel; j++) if (mod(j, n) === 10) flips++; }
+        else { for (j = from; j > from + travel; j--) if (mod(j, n) === 11) flips++; }
+        if (flips % 2 === 0) return;
+        var period = col.closest(".pwheel").querySelector('[data-pwheel-role="period"]');
+        if (!period) return;
+        var to = +period.getAttribute("aria-valuenow") === 0 ? 1 : 0;
+        glide(period, to, 220);
+      });
+      document.addEventListener("click", function (e) {
+        var done = e.target.closest ? e.target.closest("[data-pwheel-done]") : null;
+        if (!done) return;
+        var wheel = document.getElementById(done.getAttribute("data-pwheel-done"));
+        var target = document.getElementById(done.getAttribute("data-pick-target"));
+        if (!wheel || !target) return;
+        var v = Array.prototype.map.call(wheel.querySelectorAll(".pwheel-col"), function (c) { return c.getAttribute("aria-valuetext"); });
+        target.className = "pib-value";
+        target.textContent = wheel.getAttribute("data-pwheel-format") === "time" ? v[0] + " " + v[1] + ":" + v[2] : v[0] + " " + v[1];
+      });
+    })();
+    // Date Picker (2026-10-03) — date-picker.tsx 가 하는 일 가운데 그림에 필요한 것을 흉내 낸다(페이지의 모든 [data-pdp-live] 달력).
+    // 칸은 빌드와 같은 코드(pdpLib)로 다시 그린다. 날짜 누르기 — 하루는 고르고, 기간은 첫 탭이 시작 · 뒤의 날이 끝(앞을 누르면 새 시작 · 같은 날 두 번이면 하루짜리 ·
+    // 다 고른 뒤 다시 누르면 새로 시작), 여러 날은 고르고 푼다. 막힌 날 · 앞뒤 달은 아무 일도 없다. 달력에서 날을 누르면 빠른 기간 칩 고름이 풀린다.
+    // 이전 · 다음은 한 달씩(두 달 보기도 한 달씩), 제목은 연 · 월 휠을 열고 닫는다 — 닫으면 고른 달로 옮기고 그 달 1일이 Tab 자리다. 열린 동안 이전 · 다음은 막힌다.
+    // 칩은 그 기간을 칠하고 시작이 든 달로 옮긴다(이어지는 달은 그 달로 스크롤한다 — 범위에 걸려 막힌 칩은 건너뛴다). 키 — ← → 하루 · ↑ ↓ 한 주 · Home · End 그 주의 일 · 토 · PageUp · PageDown 한 달
+    // (두 달 보기는 두 달, Shift 면 한 해) · Enter · Space 고르기. 보이는 달 밖으로 옮기면 달이 따라 넘어가고 "2026년 11월"(두 달 보기는 "2026년 10월~2026년 11월")을 읽는다(aria-live).
+    // [data-pdp-done] "완료" 는 고른 값을 이어진 칸(data-pick-target)에 넣는다 — 하루는 고르기 전, 기간은 끝을 고르기 전에 막힌다. [data-pdp-reset] "초기화" 는 고른 것을 비운다.
+    (function () {
+      var PDP = (${pdpLib.toString()})();
+      function num(el, name) { return +(el.getAttribute(name) || 0); }
+      function list(el, name) { var v = el.getAttribute(name); return v ? v.split(",").map(Number) : []; }
+      function closest(e, selector) { return e.target && e.target.closest ? e.target.closest(selector) : null; }
+      function state(root) {
+        return {
+          view: root.getAttribute("data-pdp-view"),
+          mode: root.getAttribute("data-pdp-mode"),
+          start: num(root, "data-pdp-start"),
+          end: num(root, "data-pdp-end"),
+          picks: list(root, "data-pdp-picks"),
+          min: num(root, "data-pdp-min"),
+          max: num(root, "data-pdp-max"),
+          off: list(root, "data-pdp-off"),
+          readOnly: num(root, "data-pdp-readonly"),
+          today: num(root, "data-pdp-today"),
+        };
+      }
+      function save(root, s) {
+        root.setAttribute("data-pdp-start", String(s.start || 0));
+        root.setAttribute("data-pdp-end", String(s.end || 0));
+        root.setAttribute("data-pdp-picks", s.picks.join(","));
+      }
+      function grids(root) { return Array.prototype.slice.call(root.querySelectorAll(".pdp-grid[data-pdp-month]")); }
+      // 보이는 날짜인지 — 앞뒤 달로 채운 칸은 버튼이 아니다
+      function button(root, k) { return root.querySelector('button.pdp-day[data-date="' + k + '"]'); }
+      // Tab 자리 — 고른 날(기간은 시작), 없으면 오늘, 보이는 달에 없으면 첫 달 1일
+      function defaultTab(root) {
+        var s = state(root), first = grids(root)[0], picked = s.mode === "multiple" ? s.picks[0] : s.start;
+        var lastGrid = grids(root)[grids(root).length - 1], lk = num(lastGrid, "data-pdp-month");
+        var last = PDP.key(PDP.year(lk), PDP.month(lk), PDP.daysIn(PDP.year(lk), PDP.month(lk))), fk = num(first, "data-pdp-month");
+        var at = [picked, s.today].filter(function (k) { return k && k >= fk && k <= last; })[0];
+        return at || fk;
+      }
+      function render(root) {
+        var s = state(root);
+        s.fill = s.view !== "continuous";
+        s.tab = root._tab;
+        grids(root).forEach(function (g) {
+          var k = num(g, "data-pdp-month");
+          g.innerHTML = (s.fill ? PDP.weekdays() : "") + PDP.weeks(PDP.year(k), PDP.month(k), s);
+        });
+        sync(root);
+      }
+      // "완료" — 하루는 고른 뒤, 기간은 끝을 고른 뒤
+      function value(root) {
+        var s = state(root);
+        if (s.mode === "range") return s.start && s.end ? PDP.formatRange(s.start, s.end, s.today) : "";
+        if (s.mode === "multiple") return s.picks.length ? PDP.format(s.picks[0], s.today) + (s.picks.length > 1 ? " 외 " + (s.picks.length - 1) + "개" : "") : "";
+        return s.start ? PDP.format(s.start, s.today) : "";
+      }
+      function sync(root) {
+        var ready = !!value(root);
+        document.querySelectorAll('[data-pdp-done="' + root.id + '"]').forEach(function (b) { b.disabled = !ready; });
+      }
+      function focusDay(root, k) {
+        root._tab = k;
+        root.querySelectorAll("button.pdp-day").forEach(function (b) { b.tabIndex = +b.getAttribute("data-date") === k ? 0 : -1; });
+        var b = button(root, k);
+        if (b) b.focus({ preventScroll: root.getAttribute("data-pdp-view") !== "continuous" });
+      }
+      // 달 옮기기 — 첫 달을 [y, m] 로. 두 달 보기는 둘째 달도 따라간다
+      function go(root, y, m, tab) {
+        root.setAttribute("data-pdp-ym", String(PDP.key(y, m, 1)));
+        grids(root).forEach(function (g, i) { var ym = PDP.addMonths(y, m, i); g.setAttribute("data-pdp-month", String(PDP.key(ym[0], ym[1], 1))); });
+        var title = root.querySelector(".pdp-title-text");
+        if (title) title.textContent = PDP.title(y, m);
+        root.querySelectorAll(".pdp-month-name").forEach(function (el, i) { var ym = PDP.addMonths(y, m, i); el.textContent = PDP.title(ym[0], ym[1]); });
+        root._tab = tab || defaultTab(root);
+        render(root);
+        var sr = root.querySelector(".pdp-sr"), second = PDP.addMonths(y, m, 1);
+        if (sr) sr.textContent = root.getAttribute("data-pdp-view") === "two" ? PDP.title(y, m) + "~" + PDP.title(second[0], second[1]) : PDP.title(y, m);
+      }
+      function clearPresets(root) {
+        var chips = root.querySelectorAll("[data-pdp-preset]");
+        chips.forEach(function (c, i) { c.setAttribute("aria-checked", "false"); c.tabIndex = i === 0 ? 0 : -1; });
+      }
+      function pick(btn) {
+        var root = btn.closest("[data-pdp-live]");
+        if (btn.getAttribute("aria-disabled") === "true") return;
+        var k = +btn.getAttribute("data-date"), s = state(root);
+        if (s.mode === "single") s.start = k;
+        else if (s.mode === "multiple") {
+          var at = s.picks.indexOf(k);
+          if (at >= 0) s.picks.splice(at, 1); else s.picks.push(k);
+          s.picks.sort(function (a, b) { return a - b; });
+        } else if (s.readOnly) { s.start = s.readOnly; if (k >= s.readOnly) s.end = k; }
+        else if (!s.start || s.end) { s.start = k; s.end = 0; }
+        else if (k < s.start) s.start = k;
+        else s.end = k;
+        save(root, s);
+        clearPresets(root);
+        root._tab = k;
+        render(root);
+        focusDay(root, k);
+      }
+      function scrollToMonth(root, k) {
+        var scroller = root.querySelector(".pdp-scroll");
+        var g = root.querySelector('.pdp-grid[data-pdp-month="' + k + '"]');
+        if (!scroller || !g) return;
+        var sticky = scroller.querySelector(".pdp-weekdays--sticky");
+        scroller.scrollTop = g.parentElement.offsetTop - (sticky ? sticky.offsetHeight : 0);
+      }
+      function applyPreset(root, chip) {
+        var s = state(root), r = PDP.preset(chip.getAttribute("data-pdp-preset"), s.today);
+        s.start = r[0];
+        s.end = r[1];
+        save(root, s);
+        root.querySelectorAll("[data-pdp-preset]").forEach(function (c) { c.setAttribute("aria-checked", c === chip ? "true" : "false"); c.tabIndex = c === chip ? 0 : -1; });
+        root._tab = r[0];
+        if (s.view === "continuous") { render(root); scrollToMonth(root, PDP.key(PDP.year(r[0]), PDP.month(r[0]), 1)); }
+        else go(root, PDP.year(r[0]), PDP.month(r[0]), r[0]);
+      }
+      // 연 · 월 휠 — 열 때 보이는 달에서 시작한다(휠 칼럼에 pwheel-set). 닫으면 고른 달로 옮긴다
+      function toggleWheel(root) {
+        var title = root.querySelector(".pdp-title"), box = root.querySelector(".pdp-wheel");
+        if (!title || !box) return;
+        var open = !root.hasAttribute("data-pdp-wheel-open");
+        var cols = box.querySelectorAll(".pwheel-col");
+        var navs = root.querySelectorAll("[data-pdp-nav]");
+        if (open) {
+          var ym = num(root, "data-pdp-ym"), firstYear = parseInt(cols[0].querySelector(".pwheel-item").textContent, 10);
+          box.hidden = false;
+          cols[0].dispatchEvent(new CustomEvent("pwheel-set", { detail: { value: PDP.year(ym) - firstYear } }));
+          cols[1].dispatchEvent(new CustomEvent("pwheel-set", { detail: { value: PDP.month(ym) - 1 } }));
+          root.setAttribute("data-pdp-wheel-open", "");
+          title.setAttribute("aria-expanded", "true");
+          navs.forEach(function (b) { b.disabled = true; });
+          return;
+        }
+        var y = parseInt(cols[0].getAttribute("aria-valuetext"), 10), m = +cols[1].getAttribute("aria-valuenow") + 1;
+        box.hidden = true;
+        root.removeAttribute("data-pdp-wheel-open");
+        title.setAttribute("aria-expanded", "false");
+        navs.forEach(function (b) { b.disabled = false; });
+        go(root, y, m, PDP.key(y, m, 1));
+      }
+      document.querySelectorAll("[data-pdp-live]").forEach(function (root) {
+        var b = root.querySelector('button.pdp-day[tabindex="0"]');
+        root._tab = b ? +b.getAttribute("data-date") : defaultTab(root);
+        sync(root);
+        var to = root.querySelector("[data-pdp-scroll-to]");
+        if (to) scrollToMonth(root, num(to, "data-pdp-scroll-to"));
+      });
+      window.addEventListener("load", function () {
+        document.querySelectorAll("[data-pdp-live] [data-pdp-scroll-to]").forEach(function (to) { scrollToMonth(to.closest("[data-pdp-live]"), num(to, "data-pdp-scroll-to")); });
+      });
+      document.addEventListener("click", function (e) {
+        var day = closest(e, "[data-pdp-live] button.pdp-day");
+        if (day) { pick(day); return; }
+        var nav = closest(e, "[data-pdp-live] [data-pdp-nav]");
+        if (nav) {
+          var root = nav.closest("[data-pdp-live]"), ym = num(root, "data-pdp-ym"), next = PDP.addMonths(PDP.year(ym), PDP.month(ym), +nav.getAttribute("data-pdp-nav"));
+          go(root, next[0], next[1]);
+          return;
+        }
+        var title = closest(e, "[data-pdp-live] .pdp-title");
+        if (title) { toggleWheel(title.closest("[data-pdp-live]")); return; }
+        var chip = closest(e, "[data-pdp-live] [data-pdp-preset]");
+        if (chip) { applyPreset(chip.closest("[data-pdp-live]"), chip); return; }
+        var reset = closest(e, "[data-pdp-reset]");
+        if (reset) {
+          var r = document.getElementById(reset.getAttribute("data-pdp-reset"));
+          if (!r) return;
+          var s = state(r);
+          s.start = s.readOnly || 0;
+          s.end = 0;
+          s.picks = [];
+          save(r, s);
+          clearPresets(r);
+          render(r);
+          return;
+        }
+        var done = closest(e, "[data-pdp-done]");
+        if (done) {
+          var picker = document.getElementById(done.getAttribute("data-pdp-done"));
+          var target = document.getElementById(done.getAttribute("data-pick-target"));
+          var text = picker ? value(picker) : "";
+          if (!text || !target) return;
+          target.className = "pib-value";
+          target.textContent = text;
+        }
+      });
+      document.addEventListener("keydown", function (e) {
+        var chip = closest(e, "[data-pdp-live] [data-pdp-preset]");
+        if (chip) {
+          var step = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 : e.key === "ArrowLeft" || e.key === "ArrowUp" ? -1 : 0;
+          if (e.key === "Enter") { e.preventDefault(); return; }
+          if (!step) return;
+          e.preventDefault();
+          var root0 = chip.closest("[data-pdp-live]"), chips = Array.prototype.slice.call(root0.querySelectorAll("[data-pdp-preset]:not(:disabled)"));
+          var next = chips[(chips.indexOf(chip) + step + chips.length) % chips.length];
+          next.focus();
+          applyPreset(root0, next);
+          return;
+        }
+        var btn = closest(e, "[data-pdp-live] button.pdp-day");
+        if (!btn) return;
+        var root = btn.closest("[data-pdp-live]"), k = +btn.getAttribute("data-date"), view = root.getAttribute("data-pdp-view"), to = 0;
+        var page = view === "two" ? 2 : 1;
+        switch (e.key) {
+          case "ArrowLeft": to = PDP.addDays(k, -1); break;
+          case "ArrowRight": to = PDP.addDays(k, 1); break;
+          case "ArrowUp": to = PDP.addDays(k, -7); break;
+          case "ArrowDown": to = PDP.addDays(k, 7); break;
+          case "Home": to = PDP.addDays(k, -PDP.weekday(k)); break;
+          case "End": to = PDP.addDays(k, 6 - PDP.weekday(k)); break;
+          case "PageUp": to = PDP.shiftDay(k, e.shiftKey ? -12 : -page); break;
+          case "PageDown": to = PDP.shiftDay(k, e.shiftKey ? 12 : page); break;
+          case "Enter":
+          case " ":
+            e.preventDefault();
+            pick(btn);
+            return;
+          default:
+            return;
+        }
+        e.preventDefault();
+        if (!button(root, to) && view !== "continuous") {
+          // 보이는 달 밖 — 그 날이 보이게 달이 따라 넘어간다(두 달 보기는 넘친 만큼만)
+          var ym = num(root, "data-pdp-ym"), shown = grids(root).length;
+          var diff = (PDP.year(to) * 12 + PDP.month(to)) - (PDP.year(ym) * 12 + PDP.month(ym));
+          var first = PDP.addMonths(PDP.year(ym), PDP.month(ym), diff < 0 ? diff : diff - (shown - 1));
+          go(root, first[0], first[1], to);
+        }
+        if (button(root, to)) focusDay(root, to);
+      });
     })();
   </script>
 </body>

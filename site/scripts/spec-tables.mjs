@@ -56,6 +56,8 @@ export const PROP_LABEL = {
   'indicator.insetX': '막대 들임',
   'indicator.inset': '알약 들임',
   'trigger.chip': '칩',
+  'dayLabel.textDecoration': '취소선',
+  'wheel.columns': '칼럼',
   height: '높이',
   minHeight: '최소 높이',
   maxHeight: '최대 높이',
@@ -153,8 +155,27 @@ export const PROP_LABEL = {
   shrink: '줄어듦',
   align: '정렬',
   transform: '변형',
+  chip: '칩',
+  weeks: '주 수',
+  position: '자리',
+  items: '항목',
+  columnOrder: '칼럼 순서',
+  valueFormat: '값 형식',
+  selectedForeground: '고른 글자색',
+  numerals: '숫자 폭',
 };
 export const PROP_ORDER = Object.keys(PROP_LABEL);
+
+// 컴포넌트마다 다른 이름표 — 같은 키라도 부위의 뜻이 다르다(Tabs 의 indicator 는 막대, WheelPicker 의 indicator 는 선택 띠).
+// 키는 YAML 의 name. 칸 순서는 PROP_LABEL 의 것을 그대로 쓴다
+export const PROP_LABEL_BY_COMPONENT = {
+  WheelPicker: { 'indicator.insetX': '띠 들임' },
+};
+// `부위.속성` 의 이름표 — 컴포넌트 것 → 공용 `부위.속성` → 공용 속성 → 키 그대로
+export function propLabelFor(name, slot, prop) {
+  const key = `${slot}.${prop}`;
+  return PROP_LABEL_BY_COMPONENT[name]?.[key] ?? PROP_LABEL[key] ?? PROP_LABEL[prop] ?? prop;
+}
 
 class SpecError extends Error {}
 
@@ -341,7 +362,7 @@ function flatten(slots) {
 // root 부위는 속성 이름만, 나머지 부위는 `부위 속성` 으로 적는다(tabs 의 `list 높이`).
 function label(spec, key) {
   const [slot, prop] = key.split('.');
-  const exact = PROP_LABEL[key];
+  const exact = PROP_LABEL_BY_COMPONENT[spec.name]?.[key] ?? PROP_LABEL[key];
   if (exact) return exact;
   const name = PROP_LABEL[prop] ?? prop;
   return slot === 'root' ? name : `${slot} ${name}`;
@@ -455,7 +476,7 @@ function baseTable(spec, tokens, only, pick) {
     rows.map((r) => [
       ...(multiSlot ? [code(r.slot)] : []),
       ...(multiState ? [code(r.state)] : []),
-      PROP_LABEL[`${r.slot}.${r.prop}`] ?? PROP_LABEL[r.prop] ?? r.prop,
+      propLabelFor(spec.name, r.slot, r.prop),
       r.text,
       ...(anyNote ? [r.note ?? ''] : []),
     ]),
@@ -480,14 +501,16 @@ function axisTable(spec, tokens, axis, pick) {
   });
   const cols = orderKeys(spec, unionKeys(rows)).filter(inSlot(pick));
   const root = Object.keys(spec.slots)[0];
-  const withTouch = cols.includes(`${root}.height`);
+  // 터치 칸 — 높이가 수(px)인 줄이 하나도 없으면(전부 "—") 칸을 싣지 않는다(Date Picker 의 보이는 범위처럼 높이가 식인 축)
+  const touches = cols.includes(`${root}.height`) ? rows.map((row) => touch(tokens, row, root, hitArea(spec, root))) : [];
+  const withTouch = touches.some((t) => t !== '—');
   const withDesc = values.some((v) => descOf(spec.variants[axis], v));
   return table(
     [axis, ...cols.map((c) => label(spec, c)), ...(withTouch ? ['터치 (AA · AAA)'] : []), ...(withDesc ? ['설명'] : [])],
     rows.map((row, i) => [
       valueCell(spec, axis, values[i]),
       ...cols.map((c) => inline(tokens, row[c], fmt(spec, c))),
-      ...(withTouch ? [touch(tokens, row, root, hitArea(spec, root))] : []),
+      ...(withTouch ? [touches[i]] : []),
       ...(withDesc ? [descOf(spec.variants[axis], values[i]) ?? ''] : []),
     ]),
   );

@@ -3836,37 +3836,14 @@ Desk(B2C) — 사용자 본인 프로필 + 메모/할일 작성자 + 가계부 �
 #### Sparse 매핑
 DESIGN.md와 동일 (`avatar` chart-blue × text-on-accent, lint contrast 활성).
 
-### Calendar (v61 추가)
+### 날짜 · 시각 고르기 — Desk
 
-Desk(B2C) — 가계부 거래일·할일 due date·메모 캡처일 등 일상 기록 핵심. 모바일 우선이라 md 사이즈(36px) 기본 + 풀스크린 datepicker 패턴 위주.
+> 2026-10-03 — 모양 · 규칙은 공유 DESIGN.md 의 "날짜 · 시각 고르기" 절과 `specs/components/date-picker.md` · `time-picker.md` · `wheel-picker.md`. 옛 Calendar(v61) Desk 패턴은 걷었다.
 
-#### Desk 사용 패턴
-- **가계부 거래 dot**: 셀 하단 가운데 4×4 dot — 수입(`success` `#167F3F`), 지출(`error` `#D72323`), 이체(`info` `#1D6EC9`). 다중 거래일은 가로 3 dot 또는 누계 색만 표시.
-- **할일 due date 강조**: 마감 임박 (`warning` `#BE490D` 1px outline + 텍스트), 지난 마감 (`error` 채움 + `text-on-accent` 텍스트), 완료 (`success` checkmark icon overlay).
-- **메모 작성일 marker**: 단순 `text-tertiary` dot — 클릭 시 해당일 메모 list 모달.
-- **range 선택**: 가계부 기간 통계 조회 (예: "지난 7일") — 단 빠른 preset (오늘/이번주/이번달) 버튼 우선, range는 secondary.
-
-#### Layout 차이
-- 모바일 풀스크린: md 사이즈(36×36) — viewport 너비 기준 7등분.
-- 데스크탑/태블릿: lg(40×40) + 우측 일별 상세 패널.
-- bottom sheet datepicker: sm(32×32) — 입력 필드 옆에서 슬라이드 업.
-- month navigation: 좌우 swipe gesture 지원 (모바일) + ◁ ▷ 버튼 (데스크탑).
-
-#### Color
-- selected (single/range-start/range-end): `primary` `#0147AD` 채움 + `text-on-accent`.
-- range-mid: `primary-light` `#5FA0E5` 배경 + `text-primary`.
-- today indicator (선택 안 됐을 때): `border-focus` `#0147AD` 1px outline + `primary` 텍스트.
-
-#### Touch target
-모바일 우선 → 셀 자체 36×36 → padding `sm` (8px) 추가로 hit area `touch-comfortable` (48×48) 확보 권장. iOS Safari · Android Chrome 모두 검증.
-
-#### 모바일 gesture
-- 좌우 swipe: 월 이동 (`motion-duration-base` 200ms `motion-ease-out`).
-- 길게 누름 (long press): 셀의 거래/할일 quick preview popover.
-- pinch zoom: 비활성 — `touch-action: pan-x pan-y manipulation`.
-
-#### Sparse 매핑
-신규 yaml 컴포넌트 0. 기존 `button-primary`(selected cell), `alert-text-success/error/warning/info`(거래·할일 상태 dot), `card-light`(셀 default ground)이 contrast 페어 활성.
+- 날짜 하나: 일정 시작 · 종료(종일이 아니면 + 시각 칸), 거래 날짜(+ 시각), 할 일 마감, 저축 기한, 반복 시작 · 종료일, 환불일(거래일 ~ 오늘).
+- 기간(기간 달력 + 빠른 기간): 통계 · 가계부 필터 · 내보내기 · 검색.
+- 달만(연 · 월 휠): 예산 · 홈 · 카드 실적의 달.
+- 가계부 거래 점처럼 날짜 칸에 표시를 얹는 것은 피커가 아니라 가계부 · 캘린더 화면 격자의 일이다(그 화면 차례에).
 
 ### Field — Desk
 
@@ -4058,16 +4035,12 @@ Desk(B2C) 5 추가 컴포넌트 — 모바일 우선.
 - 모바일 친화: 차트 height 200-240, legend 하단 가로 배치.
 
 #### Date Range Picker — Desk
-- **single picker** 모바일 default — 1 calendar 표시.
-- 가계부 기간 통계: preset "이번 주" / "이번 달" / "지난 달" / "올해".
-- 메모 검색 기간 필터: preset "오늘" / "지난 7일".
-- 모바일 swipe gesture: 좌우 swipe로 월 이동.
+
+> 2026-10-03 걷었다 — 기간은 Date Picker 기간("날짜 · 시각 고르기" 절).
 
 #### Time Picker — Desk
-- **wheel picker** 모바일 default — iOS/Android native scroll wheel 활용.
-- step **15분** default — 일상 스케줄 큰 단위.
-- 12h format 옵션 — B2C 친근 톤.
-- 할일 due time: 시각 + 알림 페어 ("16:30 알림").
+
+> 2026-10-03 걷었다 — 시각은 Time Picker("날짜 · 시각 고르기" 절, 오전·오후 12시간 휠).
 
 ### Extras-2 batch (v73 추가)
 

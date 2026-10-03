@@ -7,6 +7,7 @@ import { buttonFigures } from './button';
 import { buttonGuideFigures } from './button-guides';
 import { calloutFigures } from './callout';
 import { checkboxFigures } from './checkbox';
+import { datePickerFigures } from './date-picker';
 import { chipFigures } from './chip';
 import { dialogFigures } from './dialog';
 import { fieldFigures } from './field';
@@ -27,7 +28,9 @@ import { snackbarFigures } from './snackbar';
 import { switchFigures } from './switch';
 import { tabsFigures } from './tabs';
 import { textareaFigures } from './textarea';
+import { timePickerFigures } from './time-picker';
 import { tooltipFigures } from './tooltip';
+import { wheelPickerFigures } from './wheel-picker';
 import { SpecSheet } from './spec-sheet';
 
 const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactNode>> = {
@@ -36,6 +39,7 @@ const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactN
   button: { ...buttonFigures, ...buttonGuideFigures },
   callout: calloutFigures,
   checkbox: checkboxFigures,
+  'date-picker': datePickerFigures,
   chip: chipFigures,
   dialog: dialogFigures,
   field: fieldFigures,
@@ -56,7 +60,9 @@ const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactN
   switch: switchFigures,
   tabs: tabsFigures,
   textarea: textareaFigures,
+  'time-picker': timePickerFigures,
   tooltip: tooltipFigures,
+  'wheel-picker': wheelPickerFigures,
 };
 
 export function SpecFigure({ name, id, caption }: { name: string; id: string; caption?: string }) {
