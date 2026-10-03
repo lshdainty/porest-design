@@ -10,7 +10,7 @@
 #   - 딤: SEED bg.overlay 0.455 → porest overlay-dim 0.50 · 다크 0.65(v102).
 #   - 바닥 버튼: Button large 48(SEED 예제 medium 40 — porest 모바일 바닥 CTA 규칙).
 #   - 손잡이 누름 색: SEED palette.gray-500 의 짝이 porest 역할 색에 없어(porest gray-500 은 fg-disabled) 두지 않는다.
-#   - z-index: specs/z-index.md 의 L2(딤 100 · 시트 101).
+#   - z-index: specs/z-index.md 의 L2(딤 z-modal 100 · 시트 z-modal-content 101).
 
 name: BottomSheet
 
@@ -44,7 +44,7 @@ rules:
     enabled:
       overlay:
         background: { value: $overlay-dim-light, dark: $overlay-dim-dark, note: "porest 딤(v102 — SEED 0.455 는 들이지 않았다)" }
-        zIndex: { value: 100, note: "specs/z-index.md L2 — 시트 101" }
+        zIndex: { value: 100, note: "z-modal — specs/z-index.md L2. 시트는 z-modal-content 101" }
       root:
         maxWidth: { value: 480px, note: "그보다 좁은 화면은 화면 폭 전체, 넓으면 가운데" }
         maxHeight: { value: 화면 높이의 90%, note: "넘을 내용은 시트가 아니라 페이지로 둔다(SEED) — 시트 안 스크롤로 버티지 않는다" }
@@ -52,7 +52,7 @@ rules:
         background: $color-bg-layer-floating
         shadow: { value: none, note: "그림자 없이 딤과 표면 색으로 뜬다(SEED · Elevation)" }
         paddingBottom: { value: 안전 영역, note: "바닥 버튼 아래 safe-area-inset-bottom 만큼" }
-        zIndex: { value: 101, note: "specs/z-index.md L2" }
+        zIndex: { value: 101, note: "z-modal-content — specs/z-index.md L2" }
       closeButton:
         size: { value: 28px, note: "원 — 누르는 영역은 사방 8 넓혀 44 × 44" }
         radius: $radius-full

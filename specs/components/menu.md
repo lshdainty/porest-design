@@ -228,7 +228,7 @@ import { Menu, MenuContent, MenuGroup, MenuItem, MenuTrigger } from "@/component
 - **위험 색은 porest `fg-critical`** — 떠 있는 표면 위 5.06 · 5.27 이라 SEED critical(라이트 3.76)의 대비 문제가 없다.
 - **설명 · 묶음 이름은 porest `fg-neutral-subtle`** — 5.50 · 5.27(SEED 3.42).
 - **줄은 단어 단위로 줄을 바꾼다**(v114) — SEED 는 음절에서도 바꾼다.
-- **z-index 는 specs/z-index.md 의 L3**(200) — SEED 99999 는 Alert Dialog 위로 뜬다.
+- **z-index 는 specs/z-index.md 의 L3**(`z-floating` 200) — SEED 99999 는 Alert Dialog 위로 뜬다.
 - **1280 에서 Menu Sheet 와 바뀌는 `ResponsiveMenu`** — SEED 는 둘을 따로 쓴다.
 - **트리거 끝에 맞춘다** — SEED 기본은 가운데(`bottom`)라 줄 끝 ⋮ 의 메뉴가 표 밖으로 100 넘게 나간다. porest 는 오른쪽 끝(`end`)이 기본이다.
 

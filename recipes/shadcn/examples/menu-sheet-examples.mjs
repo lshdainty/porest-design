@@ -17,7 +17,7 @@
  * 레시피는 시트의 클래스를 cn(바탕 CONTENT, SURFACE) 로 합친다 — merge() 로 똑같이 합친다(위 모서리 r6 → r5, 아래 여백 → 16 + 안전 영역).
  * vaul · Radix 가 실행 중에 붙이는 것 중 열림(data-state="open")과 vaul 의 표식(data-vaul-drawer · data-vaul-overlay · data-vaul-snap-points —
  * 클래스가 읽는다) · 이름 잇기(id · aria-labelledby · aria-describedby) · tabindex="-1" 을 그린다. 시트는 화면(fixed)에 뜬다 — 미리보기 틀(STAGE)에
- * transform 을 줘 fixed 의 기준을 틀로 바꾸고, isolation 으로 z-index(딤 100 · 시트 101)를 틀 안에 가둔다. 높이 상한 max-h-[90dvh] 는 창 높이를
+ * transform 을 줘 fixed 의 기준을 틀로 바꾸고, isolation 으로 z-index(딤 z-modal 100 · 시트 z-modal-content 101)를 틀 안에 가둔다. 높이 상한 max-h-[90dvh] 는 창 높이를
  * 따르므로 미리보기는 틀 높이의 90% 를 style 로 한 번 더 적는다(SHEET_FIT — 미리보기용 덧칠). 틀 안의 뒤 화면(메모 · 프로필 줄)은 미리보기 그림이다.
  * 사이트의 `.content p { margin: 12px 0; color: text-primary }` 는 층(@layer) 밖 규칙이라 Tailwind utility 를 늘 이긴다 — 머리 설명 <p> 에는
  * 클래스가 정한 바깥 여백 · 글자색을 style 로 한 번 더 적는다(P_FIX). 모션 클래스는 vaul 의 키프레임을 읽는데 사이트에는 vaul 의 CSS 가 없다 —
@@ -95,7 +95,7 @@ const ITEM_DESCRIPTION = "text-t3 font-medium";
 
 // 딤 — 300ms enter 로 나타나고 200ms exit 로 사라진다(모션 줄이기면 150ms). 끄는 동안은 손가락을 바로 따른다
 const OVERLAY = [
-  "fixed inset-0 z-[100] bg-[var(--overlay-dim-light)] dark:bg-[var(--overlay-dim-dark)]",
+  "fixed inset-0 z-(--z-modal) bg-[var(--overlay-dim-light)] dark:bg-[var(--overlay-dim-dark)]",
   "[animation-duration:var(--sheet-anim-duration)]! [animation-timing-function:var(--sheet-anim-ease)]!",
   "data-[state=open]:[--sheet-anim-duration:var(--motion-duration-d6)] data-[state=open]:[--sheet-anim-ease:var(--motion-ease-enter)]",
   "data-[state=closed]:[--sheet-anim-duration:var(--motion-duration-d4)] data-[state=closed]:[--sheet-anim-ease:var(--motion-ease-exit)]",
@@ -105,7 +105,7 @@ const OVERLAY = [
 
 // 시트의 바탕 — 최대 480 가운데, 위 모서리 r6, 내용만큼(최대 90%), 바닥 아래 안전 영역. Menu Sheet 는 SURFACE 로 모서리 · 여백을 덮는다
 const CONTENT = [
-  "fixed inset-x-0 bottom-0 z-[101] mx-auto flex max-h-[90dvh] w-full max-w-[480px] flex-col",
+  "fixed inset-x-0 bottom-0 z-(--z-modal-content) mx-auto flex max-h-[90dvh] w-full max-w-[480px] flex-col",
   "rounded-t-r6 bg-bg-layer-floating pb-[env(safe-area-inset-bottom)] font-sans text-fg-neutral outline-none",
   // 열림 300ms enter-expressive · 닫힘 200ms exit(vaul 의 slideFromBottom · slideToBottom 그대로, 시간 · 곡선만)
   "[animation-duration:var(--sheet-anim-duration)]! [animation-timing-function:var(--sheet-anim-ease)]!",

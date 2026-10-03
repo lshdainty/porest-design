@@ -37,7 +37,7 @@ import { cn } from "@/lib/utils";
  *   포커스 링은 띠 글자색(fg-neutral-inverted) 2px — 링이 늘 띠 위에 그려지게 액션은 바깥 2 띄우고, 띠 · 닫기는 안쪽에
  *   2 띄운다(바깥에 그리면 페이지 위라 라이트는 흰 페이지 위 흰 링, 다크는 짙은 페이지 위 짙은 링이 된다).
  *
- * 시트 · 대화상자 위 — 자리는 z L6(400, specs/z-index.md)이고 body 끝에 둔다. Radix 대화상자 · 시트가 열리면
+ * 시트 · 대화상자 위 — 자리는 z L6(z-snackbar 400, specs/z-index.md)이고 body 끝에 둔다. Radix 대화상자 · 시트가 열리면
  *   body 가 pointer-events: none 이 되므로 띠는 pointer-events: auto 로 직접 받는다. 자리는 pointerdown 을 위로 올리지
  *   않는다 — Radix 의 "바깥 누름"(document 의 pointerdown)이 띠 누름을 보지 못해 시트 · 대화상자가 닫히지 않고 액션이
  *   먹는다(dialog.tsx 는 고치지 않는다). 다른 방식으로 바깥 누름을 재는 레이어는 onPointerDownOutside 같은 자리에서
@@ -116,7 +116,7 @@ const useIsoLayoutEffect = typeof window === "undefined" ? React.useEffect : Rea
 // 자리 — 화면 아래 가운데, 좌우 · 아래 8(+ 안전 영역). 아래는 안전 영역과 피할 자리(--snackbar-avoid) 중 큰 쪽.
 // 비어 있을 때 누름을 막지 않게 자리는 pointer-events: none, 띠만 받는다
 const REGION = [
-  "pointer-events-none fixed inset-x-0 z-[400] flex flex-col items-center pb-x2",
+  "pointer-events-none fixed inset-x-0 z-(--z-snackbar) flex flex-col items-center pb-x2",
   "pl-[calc(var(--spacing-x2)_+_env(safe-area-inset-left))] pr-[calc(var(--spacing-x2)_+_env(safe-area-inset-right))]",
   "bottom-[max(env(safe-area-inset-bottom),var(--snackbar-avoid,0px))]",
   "[transition:bottom_var(--motion-duration-d4)_var(--motion-ease-easing)] motion-reduce:transition-none",

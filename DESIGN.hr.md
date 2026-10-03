@@ -2793,22 +2793,27 @@ HR은 데이터 그리드 inline action(승인/반려 row 액션, 결재 메뉴,
 
 ### Z-index (v65 추가, prose-token)
 
-레이어 stacking order 6 토큰 — DESIGN.md shared baseline과 동일.
+레이어 10 토큰(v116) — DESIGN.md shared baseline 과 같은 값이다. 층(L0 ~ L9)과 순서의 이유는 baseline 과 `specs/z-index.md` 에 있다.
 
-| 토큰 | 값 | 주 사용 |
+| 토큰 | 값 | HR 에서 쓰는 곳 |
 |---|---|---|
-| `z-base` | `0` | default 평면 |
-| `z-dropdown` | `1000` | dropdown / select / autocomplete / tooltip |
-| `z-sticky` | `1100` | sticky header / 결재 큐 sticky 패널 / sticky CTA |
-| `z-drawer` | `1200` | side drawer (직원 detail panel, 권한 설정 panel) |
-| `z-modal` | `1300` | modal dialog (휴가 신청 확인 / 결재 의견) |
-| `z-toast` | `1400` | toast (결재 승인 알림 등) |
+| `z-base` | `auto` | L0 페이지 — 데이터 그리드 · 결재 목록 |
+| `z-sticky` | `50` | L1 고정 헤더 · 결재 큐 sticky 패널 · sticky CTA |
+| `z-modal` | `100` | L2 딤 — Sheet(직원 detail · 권한 설정 옆 패널) · Dialog(휴가 신청 확인 · 결재 의견) |
+| `z-modal-content` | `101` | L2 표면 — 위 패널 · 대화상자 |
+| `z-floating` | `200` | L3 Popover · Select 목록 · Menu(결재 행 동작) — 패널 · 대화상자 안에서도 같은 값 |
+| `z-tooltip` | `210` | L4 Help Bubble · Tooltip(규정 설명) |
+| `z-alert` | `300` | L5 Alert Dialog 딤(권한 변경 확인) |
+| `z-alert-content` | `301` | L5 Alert Dialog 표면 |
+| `z-snackbar` | `400` | L6 Snackbar(결재 승인 알림 등) |
+| `z-dev` | `9999` | L9 개발 환경 표시 — 운영에서는 그리지 않는다 |
 
 #### HR 적용 가이드
 - **결재 큐 sticky 패널**: 우측 sticky list = `z-sticky` — 페이지 스크롤과 독립.
-- **직원 detail drawer**: 직원 클릭 시 우측 슬라이드 = `z-drawer` — 페이지 콘텐츠 위, 모달 아래.
-- **권한 설정 modal**: 권한 변경 확인 = `z-modal` — drawer가 열린 상태에서도 modal이 위.
-- **결재 승인 toast**: 어떤 layer 위에서도 최상단 = `z-toast`.
+- **직원 detail 패널**: 직원 클릭 시 우측 슬라이드(Sheet) = 딤 `z-modal` · 패널 `z-modal-content` — 페이지 콘텐츠 위, 확인창 아래.
+- **권한 변경 확인**: 딤 `z-alert` · 확인창 `z-alert-content` — 패널 · 대화상자가 열린 상태에서도 확인창이 위.
+- **결재 승인 snackbar**: 어떤 층 위에서도 최상단 = `z-snackbar`.
+- 패널 · 대화상자 안에서 연 Select 목록 · 메뉴는 `z-floating` 그대로 — 표면(101) 위에 뜬다.
 - isolation 권장: 데이터 그리드 inline dropdown은 `isolation: isolate`로 island 격리 — 외부 layer와 우선순위 무관.
 
 ### RTL support (v76 추가, prose-only)
@@ -2833,21 +2838,22 @@ DESIGN.md baseline 정의 참고 — CSS logical property 기반 LTR ↔ RTL 자
 
 - **Global** — 화면 전체의 구조적 층. 제품 화면 자체와 그 위를 덮는 컨테이너(시트 · 경고창).
 - **Local** — 한 층 안에서 콘텐츠끼리의 깊이. 항상 자기가 속한 Global 층 위에 놓인다.
-- 새로 덮인 층(시트)은 곧 새 기준이 된다 — 그 안의 툴팁 · 메뉴는 그 층을 바닥으로 쌓인다(페이지 위 페이지).
+- 새로 덮인 층(시트)은 곧 새 기준이 된다 — 그 안의 툴팁 · 메뉴는 그 층을 바닥으로 쌓인다(페이지 위 페이지). 메뉴 · 팝오버 · Select 목록은 `z-floating`, 툴팁 · 말풍선은 `z-tooltip` 하나씩이라 어느 층에서 열어도 그 층 위에 뜬다.
 
 | Global 층 | 무엇 | porest |
 |---|---|---|
 | 0 | 바닥 — 스크롤되는 모든 콘텐츠 뒤 | `bg-layer-basement` |
 | 1 | 기본 — 카드 · 목록 · 입력칸 · 상단 내비게이션 | `bg-layer-default` |
-| 2 | 시트 · 메뉴 시트 · 서랍 — 화면을 덮는 새 쌓임 맥락 | `z-drawer` |
-| 3 | 경고창 — 가장 급한 정보, 다른 모달보다도 위 | `z-modal` |
+| 2 | 시트 · 메뉴 시트 · 서랍 — 화면을 덮는 새 쌓임 맥락 | `z-modal` |
+| 3 | 경고창 — 가장 급한 정보, 다른 모달보다도 위 | `z-alert` |
 
 | Local 층 | 무엇 | porest |
 |---|---|---|
 | 1 | 기본 콘텐츠 — 목록 · 탭 · 알림 띠 · 상단 내비게이션 | 층의 표면 |
 | 2 | 떠 있는 동작 — 플로팅 버튼 | `z-sticky` |
-| 3 | 잠깐 뜨는 알림 — 토스트 | `z-toast` |
+| 3 | 잠깐 뜨는 알림 — 스낵바 | `z-snackbar` |
 
+- Global 2 · 3 의 토큰은 딤 자리다 — 표면은 그 바로 위 `z-modal-content` · `z-alert-content` 다. z-index 값과 이유는 Layout 의 Z-index 절(v116)에 있다.
 - 같은 층 안에서 겹칠 때(스크롤되는 목록이 상단 내비게이션 아래로)는 층을 올리지 않는다 — 그림자나 선으로 구분만 준다.
 
 #### 고도를 드러내는 세 가지

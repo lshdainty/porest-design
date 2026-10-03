@@ -18,7 +18,7 @@
  * 0 · 뒤집기 transform)와 폭 계산이 읽는 자리 변수(--radix-popper-available-width — 미리보기는 틀 폭에서 가장자리 16 씩을 뺀 값)를 그린다.
  * 레시피는 말풍선을 body 끝(portal)에 띄우고 Radix 가 감싼 div(position: fixed)로 트리거 위 12(sideOffset 4 + 화살표 8)에 놓는다 — 미리보기는
  * 감싼 div 를 틀 안의 position: absolute 로 흉내 낸다. 트리거 가운데에 맞춘 말풍선은 그 자리 그대로, 화면 가장자리 16 을 넘는 말풍선은 Radix 가
- * 민 자리(오른쪽 16)에 두고 화살표는 트리거 가운데에 맞췄다(collisionPadding · arrowPadding). 틀의 isolation 이 z-[210] 을 틀 안에 가둔다.
+ * 민 자리(오른쪽 16)에 두고 화살표는 트리거 가운데에 맞췄다(collisionPadding · arrowPadding). 틀의 isolation 이 z-(--z-tooltip) 을 틀 안에 가둔다.
  * 레시피가 cn() 으로 합치는 자리는 merge() 로 똑같이 합친다. 모션 클래스(animate-in · zoom-in-90 …)는 tw-animate-css 의 것이라 사이트에서는
  * 아무 일도 하지 않는다 — 열린 순간을 멈춘 그림이다. 레시피의 스크립트(열고 닫기 · Tab 으로 들어가고 나가기 · Esc · 바깥 누르기 · 초점 되돌리기)는
  * 정적 HTML 에 없다. 아이콘은 lucide-react 와 같은 모양의 inline SVG 다(lucide 의 class · xmlns 는 그리지 않는다).
@@ -28,7 +28,7 @@
 
 // 말풍선 — 최대 280(가용 폭까지) · 위아래 10 · 좌우 12 · 모서리 12 · 짙은 바탕 · 그림자 없음 · z 210. 화살표 끝을 기준점으로 커진다
 const BUBBLE = [
-  "relative z-[210] box-border w-max max-w-[min(280px,var(--radix-popper-available-width,280px))] rounded-r3 bg-bg-neutral-inverted px-x3 py-x2_5",
+  "relative z-(--z-tooltip) box-border w-max max-w-[min(280px,var(--radix-popper-available-width,280px))] rounded-r3 bg-bg-neutral-inverted px-x3 py-x2_5",
   "font-sans text-fg-neutral-inverted break-keep [overflow-wrap:break-word]",
   "origin-[var(--radix-popper-transform-origin)]",
   "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:[--tw-animation-duration:var(--motion-duration-d4)] data-[state=open]:ease-[var(--motion-ease-enter)] motion-safe:data-[state=open]:zoom-in-90",
@@ -194,7 +194,7 @@ const ICONS = {
   ),
 };
 
-// 미리보기 틀 — 뒤 화면 위에 말풍선. isolation 이 z-[210] 을 틀 안에 가둔다
+// 미리보기 틀 — 뒤 화면 위에 말풍선. isolation 이 z-(--z-tooltip) 을 틀 안에 가둔다
 const STAGE = (height, extra = "") =>
   `position:relative; isolation:isolate; overflow:hidden; width:100%; height:${height}px; border:1px solid var(--color-stroke-neutral-subtle); border-radius:var(--radius-r4); background:var(--color-bg-layer-default); font-family:var(--font-sans); ${extra}`;
 const PAGE_TITLE = "font-size:var(--text-t7); line-height:var(--text-t7--line-height); font-weight:700; color:var(--color-fg-neutral);";
@@ -284,7 +284,7 @@ export const helpBubbleExamples = [
         'aria-label="연차 사용 규정 안내"',
       ])}>${ICONS.info}</button>`;
       // 트리거 가운데에 맞춘 말풍선 — 위 12(sideOffset 4 + 화살표 8). 틀이 넓어 가장자리 16 안이라 밀지 않았다
-      const wrapper = `<div data-radix-popper-content-wrapper="" style="position:absolute; left:50%; bottom:calc(100% + 12px); transform:translateX(-50%); min-width:max-content; z-index:210;">${bubbleContent({
+      const wrapper = `<div data-radix-popper-content-wrapper="" style="position:absolute; left:50%; bottom:calc(100% + 12px); transform:translateX(-50%); min-width:max-content; z-index:var(--z-tooltip);">${bubbleContent({
         uid,
         title: "연차 사용 규정",
         description: "입사 1년 미만은 한 달에 1일씩 생기고, 1년이 지나면 15일이 생겨요.",
@@ -317,7 +317,7 @@ export const helpBubbleExamples = [
       ])}>${ICONS.eyeOff}</button>`;
       // 버튼(오른쪽 끝에서 24) 아래 12 — 가운데에 맞추면 오른쪽 가장자리 16 을 넘어 Radix 가 민 자리(오른쪽 16).
       // 화살표는 버튼 가운데(틀 오른쪽에서 24 + 20 = 44) — 말풍선 오른쪽에서 44 − 16 = 28 이라 span 은 오른쪽 22
-      const wrapper = `<div data-radix-popper-content-wrapper="" style="position:absolute; right:16px; top:calc(var(--spacing-x6) + 40px + 12px); min-width:max-content; z-index:210;">${bubbleContent({
+      const wrapper = `<div data-radix-popper-content-wrapper="" style="position:absolute; right:16px; top:calc(var(--spacing-x6) + 40px + 12px); min-width:max-content; z-index:var(--z-tooltip);">${bubbleContent({
         uid: "help-bubble-ex-close",
         title: "금액을 가릴 수 있어요",
         description: "누르면 화면의 금액이 모두 가려져요.",

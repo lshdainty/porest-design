@@ -140,12 +140,20 @@ function boxLook(component: Spec, brand: Brand): SelBoxLook {
   };
 }
 
-// 목록의 쌓임 — select.yaml 에는 없고 specs/z-index.md 의 L3(popover · select · menu) 줄이 정한다
-function floatingZ() {
+// 목록의 쌓임 — specs/z-index.md 의 L3(popover · select · menu) 줄이 정하고, 값은 그 줄의 토큰(DESIGN.md v116 z-floating)이 원본이다.
+// select.yaml 의 content.zIndex 도 같은 값이어야 한다
+function floatingZ(yamlZ: unknown) {
   const md = readFileSync(join(process.cwd(), '..', 'specs/z-index.md'), 'utf8');
-  const m = /\*\*L3[^|]*\|\s*`z-\[(\d+)\]`\s*\|[^|]*select/.exec(md);
-  if (!m) throw new Error('specs/z-index.md 에서 select 가 든 L3 줄(z-[N])을 찾지 못했다');
-  return Number(m[1]);
+  const row = md.split('\n').find((l) => l.startsWith('| **L3') && /`select`/.test(l));
+  if (!row) throw new Error('specs/z-index.md 에서 select 가 든 L3 줄을 찾지 못했다');
+  // | Layer | 토큰 | z-index | 컴포넌트 | 의미 |
+  const [, tokenCell = '', zCell = ''] = row.split('|').slice(1).map((c) => c.trim());
+  const token = /`(z-[a-z-]+)`/.exec(tokenCell)?.[1];
+  const z = /`(\d+)`/.exec(zCell)?.[1];
+  if (!token || !z) throw new Error(`specs/z-index.md L3 줄에서 토큰 · 값을 찾지 못했다 — ${row}`);
+  if (proseValue(token) !== z) throw new Error(`specs/z-index.md L3 의 ${z} 가 DESIGN.md ${token}(${proseValue(token)}) 와 다르다`);
+  if (String(unbox(yamlZ)) !== z) throw new Error(`select.yaml content.zIndex(${String(unbox(yamlZ))})가 specs/z-index.md L3 ${token} ${z} 와 다르다`);
+  return Number(z);
 }
 
 const cache = new Map<Brand, SelectLook>();
@@ -214,7 +222,7 @@ export function selectLook(brand: Brand = 'desk'): SelectLook {
     bg: c(base['content.background'], 'content.background'),
     shadow: shadow(base['content.shadow'], 'content.shadow'),
     motion: { open: motionOf('select', '목록 — 열 때'), close: motionOf('select', '목록 — 닫을 때'), from: numIn(String(openMotion.note ?? ''), /(0\.\d+)\s*→\s*1/, '목록 — 열 때 비고') },
-    z: floatingZ(),
+    z: floatingZ(must(base['content.zIndex'], 'content.zIndex')),
   };
 
   const look: SelectLook = {

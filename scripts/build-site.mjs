@@ -784,7 +784,7 @@ body {
 .bp-value { color: var(--color-text-tertiary); font-family: ui-monospace, monospace; font-size: var(--text-caption); }
 .bp-note { color: var(--color-text-secondary); font-size: var(--text-label-md); }
 
-.zindex-stack { position: relative; height: 280px; background: var(--color-bg-page); border-radius: var(--radius-md); padding: 16px; overflow: hidden; }
+.zindex-stack { position: relative; isolation: isolate; height: 280px; background: var(--color-bg-page); border-radius: var(--radius-md); padding: 16px; overflow: hidden; }
 .zindex-card {
   position: absolute;
   background: var(--color-surface-default);
@@ -1818,34 +1818,36 @@ ${rows}
 }
 
 function pageZIndex() {
-  const layers = [
-    { name: "z-base", value: 0, label: "default 평면" },
-    { name: "z-dropdown", value: 1000, label: "dropdown / select panel / autocomplete / tooltip" },
-    { name: "z-sticky", value: 1100, label: "sticky header / sticky reservation rail / CTA" },
-    { name: "z-drawer", value: 1200, label: "drawer / side panel / bottom sheet" },
-    { name: "z-modal", value: 1300, label: "modal dialog + overlay-dim" },
-    { name: "z-toast", value: 1400, label: "toast / snackbar (모든 layer 위)" },
-  ];
+  // v116 — 층 이름 토큰. 값은 DESIGN.md 의 "Z-index" 표에서 읽는다(여기에 옮겨 적으면 v65 값처럼 낡는다).
+  const md = readFileSync(resolve(ROOT, "DESIGN.md"), "utf8");
+  const layers = [...md.matchAll(/^\|\s*`(z-[a-z0-9-]+)`\s*\|\s*`([^`]+)`\s*\|\s*([^|\n]*)\|/gm)].map((m) => ({
+    name: m[1],
+    value: m[2].trim(),
+    label: m[3].trim(),
+  }));
+  if (layers.length === 0) throw new Error('DESIGN.md 에서 z-index 토큰 표(| `z-…` | `값` | … |)를 찾지 못했다');
   let rows = "";
   for (let i = 0; i < layers.length; i++) {
     const l = layers[i];
-    rows += `<div class="bp-row" style="--row-i: ${i};">
+    // 이름 칸 — z-modal-content · z-alert-content 가 기본 120px 를 넘는다
+    rows += `<div class="bp-row" style="--row-i: ${i}; grid-template-columns: 168px 56px 1fr;">
       <div class="bp-name">${escape(l.name)}</div>
-      <div class="bp-value">${l.value}</div>
+      <div class="bp-value">${escape(l.value)}</div>
       <div class="bp-note">${escape(l.label)}</div>
     </div>`;
   }
 
   let stackCards = "";
-  layers.slice().reverse().forEach((l, i) => {
-    const top = 16 + i * 32;
-    const left = 16 + i * 32;
-    stackCards += `<div class="zindex-card" style="top: ${top}px; left: ${left}px; z-index: ${l.value};">${escape(l.name)} — ${l.value}</div>`;
+  layers.forEach((l, i) => {
+    const top = 16 + i * 22;
+    const left = 16 + i * 26;
+    stackCards += `<div class="zindex-card" style="top: ${top}px; left: ${left}px; z-index: var(--${escape(l.name)});">${escape(l.name)} — ${escape(l.value)}</div>`;
   });
+  const order = layers.filter((l) => l.value !== "auto").reverse().map((l) => `${escape(l.name)} (${escape(l.value)})`).join(" &gt; ");
 
   const body = `
 <h1>Z-index</h1>
-<p class="lede">6단계 layering. 100 단위 간격 — 중간 layer 삽입 여유. v43 Modal / v45 Dropdown / v46 Toast 등 spec의 prose 표현(최상단/위)을 정형 numeric 토큰화.</p>
+<p class="lede">${layers.length} 단계 층(v116). 이름은 층을 부르고, 값은 <code>specs/z-index.md</code> 의 층 표(L0 ~ L9) 그대로다 — 원본은 DESIGN.md 의 Z-index 표다.</p>
 
 <h2>Layer stack</h2>
 <div class="zindex-stack">${stackCards}</div>
@@ -1853,14 +1855,14 @@ function pageZIndex() {
 <h2>토큰</h2>
 ${rows}
 
-<h2>충돌 우선순위</h2>
-<pre><code>z-toast (1400) &gt; z-modal (1300) &gt; z-drawer (1200) &gt; z-sticky (1100) &gt; z-dropdown (1000) &gt; z-base (0)</code></pre>
+<h2>쌓이는 차례</h2>
+<pre><code>${order}</code></pre>
 
-<p>직관: 사용자 알림(toast)은 모달 위, 모달은 drawer 위, drawer는 sticky 위. dropdown은 페이지 콘텐츠 위지만 다른 layered 컴포넌트보단 아래.</p>
+<p>트리거에 붙어 뜨는 팝오버 · 목록 · 메뉴(<code>z-floating</code>)는 모달(<code>z-modal</code> · <code>z-modal-content</code>) 안에서 열어도 그 위에 뜬다. 확인창(<code>z-alert</code>)은 메뉴 위, 스낵바(<code>z-snackbar</code>)는 모든 표면 위다. <code>z-base</code> 는 <code>auto</code> — 쌓임 맥락을 만들지 않는다.</p>
 
-<p>중간 layer 필요 시: dropdown 내부 nested submenu(<code>1010</code>), modal 내부 dropdown(<code>1310</code>) 등 100 단위 사이 활용. 별도 토큰 정의는 사용 사례 등장 후.</p>
+<p>Tailwind v4: <code>z-(--z-floating)</code>. 숫자 클래스(<code>z-[200]</code> · <code>z-50</code>)로 층을 적지 않는다.</p>
 
-<p>Component island 격리: 부모에 <code>isolation: isolate</code> 권장 — z-index scope를 island로 격리해 다른 island와 우선순위 충돌 회피.</p>
+<p>Component island 격리: 부모에 <code>isolation: isolate</code> — 미리보기 · 문서 그림처럼 틀 안에 가둘 때 안의 z-index 가 틀 밖의 층과 겨루지 않는다.</p>
 `;
   return page({
     title: "Z-index",

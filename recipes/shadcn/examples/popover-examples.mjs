@@ -17,7 +17,7 @@
  * Radix 가 실행 중에 붙이는 것 중 열림(data-state="open") · 자리(data-side · data-align) · id · tabindex="-1" 과, 폭 · 높이 계산이 읽는
  * 자리 변수(--radix-popover-content-available-width · -height)를 그린다 — 미리보기는 틀(STAGE)의 폭 · 높이로 적었다(100cqw · 100cqh).
  * 레시피는 표면을 body 끝(portal)에 띄우고 Radix 가 감싼 div(position: fixed)로 트리거 아래 8 에 놓는다 — 미리보기는 감싼 div 를 틀 안의
- * position: absolute 로 흉내 내 트리거 아래 8 에 둔다(옆으로 넘치면 화면 안으로 미는 계산은 하지 않는다). 틀의 isolation 이 z-[200] 을 틀 안에 가둔다.
+ * position: absolute 로 흉내 내 트리거 아래 8 에 둔다(옆으로 넘치면 화면 안으로 미는 계산은 하지 않는다). 틀의 isolation 이 z-(--z-floating) 을 틀 안에 가둔다.
  * 본문의 넘침(data-overflow — 아래 48 흐림 + 아래 48 여백 + Tab 자리) · 위로 스크롤됨(data-scrolled — 머리 아래 선)은 레시피가 재서 단다 —
  * 미리보기는 그 순간을 멈춰 속성을 적었다. 사이트의 `.content p { margin: 12px 0; color: text-primary }` 는 층(@layer) 밖 규칙이라
  * Tailwind utility 를 늘 이긴다 — <p> 에는 클래스가 정한 바깥 여백 · 글자색을 style 로 한 번 더 적는다(P_FIX — 미리보기용 덧칠).
@@ -30,7 +30,7 @@
 
 // 표면 — 폭 320 ~ 480(가용 폭까지) · 높이 600(가용 높이까지), 모서리 20 · 그림자 s3 · z 200
 const CONTENT = [
-  "relative z-[200] flex flex-col overflow-hidden rounded-r5 bg-bg-layer-floating font-sans text-fg-neutral shadow-[var(--shadow-s3)] outline-none",
+  "relative z-(--z-floating) flex flex-col overflow-hidden rounded-r5 bg-bg-layer-floating font-sans text-fg-neutral shadow-[var(--shadow-s3)] outline-none",
   // 가용 폭 · 높이는 Radix 가 자리를 잰 뒤에 들어온다 — 그 전에는 320 · 480 · 600 으로 둔다
   "min-w-[min(320px,var(--radix-popover-content-available-width,320px))] max-w-[min(480px,var(--radix-popover-content-available-width,480px))]",
   "max-h-[min(600px,var(--radix-popover-content-available-height,600px))]",
@@ -252,7 +252,7 @@ const ICONS = {
   ),
 };
 
-// 미리보기 틀 — 뒤 화면 위에 팝오버. container-type 이 자리 변수(가용 폭 · 높이)를 틀 크기로 재게 하고, isolation 이 z-[200] 을 틀 안에 가둔다
+// 미리보기 틀 — 뒤 화면 위에 팝오버. container-type 이 자리 변수(가용 폭 · 높이)를 틀 크기로 재게 하고, isolation 이 z-(--z-floating) 을 틀 안에 가둔다
 const STAGE = (height) =>
   `position:relative; isolation:isolate; container-type:size; overflow:hidden; width:100%; height:${height}px; border:1px solid var(--color-stroke-neutral-subtle); border-radius:var(--radius-r4); background:var(--color-bg-layer-basement); font-family:var(--font-sans);`;
 const PAGE = "padding:var(--spacing-x6);";
@@ -265,7 +265,7 @@ const ROW =
 const card = (rows) => `<div aria-hidden="true" style="${CARD}">${rows.map(([a, b]) => `<div style="${ROW}"><span>${a}</span><span style="color:var(--color-fg-neutral-subtle);">${b}</span></div>`).join("")}</div>`;
 // 트리거와 팝오버 — 트리거 아래 8(sideOffset). 감싼 div 는 Radix 의 popper 감싸개 자리다
 const ANCHOR = "position:relative; display:flex; flex-direction:column; align-items:flex-start;";
-const WRAPPER = "position:absolute; left:0; top:calc(100% + var(--spacing-x2)); min-width:max-content; z-index:200;";
+const WRAPPER = "position:absolute; left:0; top:calc(100% + var(--spacing-x2)); min-width:max-content; z-index:var(--z-floating);";
 // 레시피가 정하지 않은 본문 글 — 표면의 fg-neutral 을 물려받는다(크기는 본문 글 t5 로 적었다)
 const BODY_TEXT = "font-size:var(--text-t5); line-height:var(--text-t5--line-height);";
 

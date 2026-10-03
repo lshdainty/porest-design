@@ -23,8 +23,8 @@ right side example:
                             ⓐ container (w-3/4 sm:max-w-sm + shadow-xl)
 ```
 
-| ⓐ container | `fixed z-[101] gap-[var(--spacing-md)] bg-surface-default p-[var(--spacing-2xl)] transition ease-in-out` + side별 `inset-*` + slide-in 애니메이션. **box-shadow는 inline `style={{ boxShadow: "var(--shadow-xl)" }}`** (다크 모드 토큰 우회 fix). z-index 정책은 [`z-index.md`](../z-index.md) L2 modal content(101) 참조. |
-| ⓑ overlay | `fixed inset-0 z-[100] bg-[var(--overlay-dim-light)]` + `animate-in/out fade-in-0/fade-out-0`. z-index 정책은 [`z-index.md`](../z-index.md) L2 modal overlay(100) 참조. |
+| ⓐ container | `fixed z-(--z-modal-content) gap-[var(--spacing-md)] bg-surface-default p-[var(--spacing-2xl)] transition ease-in-out` + side별 `inset-*` + slide-in 애니메이션. **box-shadow는 inline `style={{ boxShadow: "var(--shadow-xl)" }}`** (다크 모드 토큰 우회 fix). z-index 정책은 [`z-index.md`](../z-index.md) L2 modal content(`z-modal-content` 101) 참조. |
+| ⓑ overlay | `fixed inset-0 z-(--z-modal) bg-[var(--overlay-dim-light)]` + `animate-in/out fade-in-0/fade-out-0`. z-index 정책은 [`z-index.md`](../z-index.md) L2 modal overlay(`z-modal` 100) 참조. |
 | ⓒ header | `flex flex-col gap-[var(--spacing-xs)] text-center sm:text-left`. title + description 묶음. |
 | ⓓ title | `text-title-md font-semibold text-text-primary` (18/600). |
 | ⓔ description (선택) | `text-body-sm text-text-secondary` (14/400). |

@@ -19,7 +19,7 @@ import {
  *   Menu              트리거에 붙어 여는 동작 목록 — open · defaultOpen · onOpenChange
  *   MenuTrigger       여는 버튼(⋮ — Button ghost · iconOnly, 이름 "{줄 이름} 더보기") — aria-haspopup="menu" · aria-expanded,
  *                     열린 동안 aria-controls
- *   MenuContent       메뉴 — 폭 200 · 모서리 20 · s3 · 위아래 8 · z 200. 트리거 아래 8(모자라면 위 · 옆), 화면 가장자리와 8.
+ *   MenuContent       메뉴 — 폭 200 · 모서리 20 · s3 · 위아래 8 · z-floating 200. 트리거 아래 8(모자라면 위 · 옆), 화면 가장자리와 8.
  *                     트리거의 오른쪽 끝에 맞춘다(align end — 줄 끝 ⋮ · 머리 더보기, SEED 기본은 가운데). 왼쪽에 놓인 트리거는
  *                     align="start". 모자라면 화면 안으로 민다
  *   MenuGroup         묶음 — 묶음 사이에만 선(좌우 16 들임, 8 + 1 + 8 · stroke-neutral-subtle). 선은 장식이라 보조 기술에 없다
@@ -194,11 +194,11 @@ const MenuTrigger = React.forwardRef<
 MenuTrigger.displayName = "MenuTrigger";
 
 // ── 모양 ─────────────────────────────────────────────────────
-// 메뉴 — 폭 200 · 모서리 20 · 떠 있는 바탕 + s3 · z 200. 열 때 150ms enter · 닫을 때 100ms exit 로 0.95 ↔ 1 · 투명도,
+// 메뉴 — 폭 200 · 모서리 20 · 떠 있는 바탕 + s3 · z-floating 200. 열 때 150ms enter · 닫을 때 100ms exit 로 0.95 ↔ 1 · 투명도,
 // 트리거 쪽 변에서 커진다. 모션 줄이기면 투명도만(크기는 motion-safe 에서만). 길이는 --tw-animation-duration 으로 준다 —
 // duration-* 는 transition-duration 도 바꿔(transition-property 의 처음 값은 all) 테마를 바꿀 때 색까지 번지게 한다
 const CONTENT = [
-  "z-[200] w-[200px] overflow-hidden rounded-r5 bg-bg-layer-floating font-sans text-fg-neutral shadow-[var(--shadow-s3)] outline-none",
+  "z-(--z-floating) w-[200px] overflow-hidden rounded-r5 bg-bg-layer-floating font-sans text-fg-neutral shadow-[var(--shadow-s3)] outline-none",
   "origin-[var(--radix-dropdown-menu-content-transform-origin)]",
   "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:[--tw-animation-duration:var(--motion-duration-d3)] data-[state=open]:ease-[var(--motion-ease-enter)] motion-safe:data-[state=open]:zoom-in-95",
   "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:[--tw-animation-duration:var(--motion-duration-d2)] data-[state=closed]:ease-[var(--motion-ease-exit)] motion-safe:data-[state=closed]:zoom-out-95",

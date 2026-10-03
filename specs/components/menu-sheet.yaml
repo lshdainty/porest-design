@@ -14,7 +14,7 @@
 #   - 막힌 줄: SEED 는 Figma 에만 있고 코드에 없다 — Menu 와 같은 규칙(전용 색 · 누르지 못함)으로 채운다.
 #     1280 에서 Menu ↔ Menu Sheet 가 바뀌어도 같은 줄이 막혀 있어야 해서다.
 #   - 보조 기술용 닫기: SEED 는 안 보이는 채로 Tab 이 선다 — porest 는 키보드 초점이 오면 보인다(기초의 "초점은 늘 보인다").
-#   - z-index: specs/z-index.md 의 L2(딤 100 · 시트 101).
+#   - z-index: specs/z-index.md 의 L2(딤 z-modal 100 · 시트 z-modal-content 101).
 
 name: MenuSheet
 
@@ -59,7 +59,7 @@ rules:
     enabled:
       overlay:
         background: { value: $overlay-dim-light, dark: $overlay-dim-dark, note: "Bottom Sheet 와 같은 porest 딤(v102)" }
-        zIndex: { value: 100, note: "specs/z-index.md L2 — 시트 101" }
+        zIndex: { value: 100, note: "z-modal — specs/z-index.md L2. 시트는 z-modal-content 101" }
       root:
         maxWidth: { value: 480px, note: "그보다 좁은 화면은 화면 폭 전체, 넓으면 가운데" }
         radius: { value: $radius-r5, note: "위 두 모서리만(Bottom Sheet 는 24)" }
@@ -69,7 +69,7 @@ rules:
         paddingX: { value: $spacing-global-gutter, note: "SEED 16 → 화면 여백 24" }
         paddingBottom: { value: $spacing-x4, note: "그 아래 안전 영역(safe-area-inset-bottom)" }
         maxHeight: { value: 화면 높이의 90%, note: "스크롤이 생기지 않게 묶음 · 줄 수를 줄인다(SEED) — 넘치면 목록만 스크롤" }
-        zIndex: { value: 101, note: "specs/z-index.md L2" }
+        zIndex: { value: 101, note: "z-modal-content — specs/z-index.md L2" }
       handle:
         width: 36px
         height: 4px

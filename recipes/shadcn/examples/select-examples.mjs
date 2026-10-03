@@ -21,7 +21,7 @@
  * 레시피는 목록을 Radix Popover 로 body 에 띄워 트리거 아래 8 에 붙인다. 정적 미리보기는 목록을 트리거 바로 뒤 흐름 안(Field 의 사이 8)에 그린다 —
  * 실제로는 떠서 아래 내용(설명 · 다음 칸)을 덮는다. Radix 가 실행 중에 붙이는 것 중 열린 트리거의 aria-controls · 목록의 id ·
  * data-state="open"(목록 클래스가 읽는다) · 폭 변수(--radix-popover-trigger-width)만 그리고, 트리거의 data-state · 목록의 data-side ·
- * data-align · 자리 변수 · 자리를 잡는 감싼 div 는 그리지 않는다. 목록의 z-[200] 이 사이트 머리 막대(z 100) 위로 올라오지 않게 미리보기 틀에 isolation 을 둔다.
+ * data-align · 자리 변수 · 자리를 잡는 감싼 div 는 그리지 않는다. 목록의 z-(--z-floating) 이 사이트 머리 막대(z 100) 위로 올라오지 않게 미리보기 틀에 isolation 을 둔다.
  * id 는 레시피의 useId 자리다 — 예제마다 앞말을 달리해 한 페이지에서 겹치지 않게 한다.
  * 아이콘은 lucide-react 와 같은 모양의 inline SVG 다(lucide 의 class · xmlns 는 그리지 않는다).
  * 레시피의 스크립트(열고 닫기 · 짚기 · 고르기 · 글자로 찾기 · 여럿 고른 글의 폭 재기 · 누르는 순간 --press-basis 재기)는 정적 HTML 에 없다 —
@@ -73,7 +73,7 @@ const CHEVRON_CLOSED = "rotate-0 [transition:rotate_var(--motion-duration-d2)_va
 
 // 목록 — 트리거 폭 · 모서리 20 · 떠 있는 바탕 + s3. 열고 닫는 모션은 Radix 의 data-state 를 읽는다
 const CONTENT = [
-  "z-[200] w-[var(--radix-popover-trigger-width)] overflow-hidden rounded-r5 bg-bg-layer-floating font-sans shadow-[var(--shadow-s3)] outline-none",
+  "z-(--z-floating) w-[var(--radix-popover-trigger-width)] overflow-hidden rounded-r5 bg-bg-layer-floating font-sans shadow-[var(--shadow-s3)] outline-none",
   "origin-[var(--radix-popover-content-transform-origin)]",
   "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:duration-[var(--motion-duration-d3)] data-[state=open]:ease-[var(--motion-ease-enter)] motion-safe:data-[state=open]:zoom-in-95",
   "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:duration-[var(--motion-duration-d2)] data-[state=closed]:ease-[var(--motion-ease-exit)] motion-safe:data-[state=closed]:zoom-out-95",
@@ -584,7 +584,7 @@ function select({
 const anchor = (html) => `<div style="display:flex; flex-direction:column; gap:var(--spacing-x2); min-width:0;">${html}</div>`;
 
 // 칸은 보통 기본 레이어(흰 면) 위에 놓인다. 사이트 미리보기 칸의 바탕(bg-page = bg-layer-basement)은 비활성 · 읽기 전용의 바탕(bg-disabled)과
-// 같은 색이라 그 위에 바로 그리면 막힌 칸이 보이지 않는다. isolation 은 목록의 z-[200] 을 이 틀 안에 가둔다
+// 같은 색이라 그 위에 바로 그리면 막힌 칸이 보이지 않는다. isolation 은 목록의 z-(--z-floating) 을 이 틀 안에 가둔다
 const SURFACE =
   "isolation:isolate; background:var(--color-bg-layer-default); border:1px solid var(--color-stroke-neutral-subtle); border-radius:var(--radius-r4); padding:var(--spacing-x5) var(--spacing-x6);";
 const surface = (html) => `<div style="${SURFACE}">${html}</div>`;

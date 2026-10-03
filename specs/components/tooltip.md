@@ -155,7 +155,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 
 - **말풍선 위로 포인터를 옮겨도 닫히지 않는다**(WCAG 1.4.13) — SEED 는 기본으로 닫히고 `keepOpenOnContentHover` 를 켜야 남는다.
 - **바탕은 porest `bg-neutral-inverted`** — Help Bubble 과 같다.
-- **z-index 는 specs/z-index.md 의 L4**(210) — SEED 는 포털 없이 99.
+- **z-index 는 specs/z-index.md 의 L4**(`z-tooltip` 210) — SEED 는 포털 없이 99.
 
 ## Migration notes
 

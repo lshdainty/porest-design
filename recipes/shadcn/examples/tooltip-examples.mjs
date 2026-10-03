@@ -16,7 +16,7 @@
  * Radix 가 실행 중에 붙이는 것 중 열림(data-state="delayed-open" · "instant-open") · 자리(data-side · data-align) · 화살표 자리(span 의 left ·
  * 아래 변 0 · translateY(100%))와 폭 계산이 읽는 자리 변수(--radix-popper-available-width)를 그린다. 레시피는 말풍선을 body 끝(portal)에 띄우고
  * Radix 가 감싼 div(position: fixed)로 트리거 위 12(sideOffset 4 + 화살표 8)에 놓는다 — 미리보기는 감싼 div 를 틀 안의 position: absolute 로
- * 흉내 내 트리거 가운데에 맞췄다. 틀의 isolation 이 z-[210] 을 틀 안에 가둔다. 레시피가 cn() 으로 합치는 자리는 merge() 로 똑같이 합친다.
+ * 흉내 내 트리거 가운데에 맞췄다. 틀의 isolation 이 z-(--z-tooltip) 을 틀 안에 가둔다. 레시피가 cn() 으로 합치는 자리는 merge() 로 똑같이 합친다.
  * 모션 클래스(animate-in · zoom-in-90 …)는 tw-animate-css 의 것이라 사이트에서는 아무 일도 하지 않는다 — 열린 순간을 멈춘 그림이다.
  * 레시피의 스크립트(200ms 뒤 열기 · 100ms 뒤 닫기 · 이어 열기 · 키보드 초점에만 열기 · Esc)는 정적 HTML 에 없다.
  * 아이콘은 lucide-react 와 같은 모양의 inline SVG 다(lucide 의 class · xmlns 는 그리지 않는다).
@@ -27,7 +27,7 @@
 // 말풍선 — 최대 280(가용 폭까지) · 위아래 10 · 좌우 12 · 모서리 12 · 짙은 바탕 · 그림자 없음 · z 210. 화살표 끝을 기준점으로 커진다.
 // 툴팁의 열림 상태 이름은 delayed-open · instant-open 이다. data-instant(이어서 열림 · 바로 닫음)면 모션이 없다
 const BUBBLE = [
-  "relative z-[210] box-border w-max max-w-[min(280px,var(--radix-popper-available-width,280px))] rounded-r3 bg-bg-neutral-inverted px-x3 py-x2_5",
+  "relative z-(--z-tooltip) box-border w-max max-w-[min(280px,var(--radix-popper-available-width,280px))] rounded-r3 bg-bg-neutral-inverted px-x3 py-x2_5",
   "font-sans text-fg-neutral-inverted break-keep [overflow-wrap:break-word]",
   "origin-[var(--radix-popper-transform-origin)]",
   "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:[--tw-animation-duration:var(--motion-duration-d4)] data-[state=open]:ease-[var(--motion-ease-enter)] motion-safe:data-[state=open]:zoom-in-90",
@@ -157,7 +157,7 @@ const ICONS = {
   rotateCcw: svg('<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>'),
 };
 
-// 미리보기 틀 — 트리거 위에 툴팁. isolation 이 z-[210] 을 틀 안에 가두고, container-type 이 가용 폭(100cqw)을 틀 폭으로 잰다
+// 미리보기 틀 — 트리거 위에 툴팁. isolation 이 z-(--z-tooltip) 을 틀 안에 가두고, container-type 이 가용 폭(100cqw)을 틀 폭으로 잰다
 const STAGE =
   "position:relative; isolation:isolate; container-type:inline-size; display:flex; align-items:flex-end; justify-content:center; width:100%; height:140px; padding-bottom:var(--spacing-x6); border:1px solid var(--color-stroke-neutral-subtle); border-radius:var(--radius-r4); background:var(--color-bg-layer-default); font-family:var(--font-sans); box-sizing:border-box;";
 // Radix 의 숨은 글(VisuallyHidden) — 보조 기술만 읽는다
@@ -178,7 +178,7 @@ function tooltipContent({ uid, text, instant = false }) {
     'style="--radix-popper-available-width:calc(100cqw - 32px);"',
   ]);
   const arrow = `<span style="position:absolute; left:calc(50% - 6px); bottom:0px; transform:translateY(100%);"><svg aria-hidden="true" width="12" height="8" viewBox="0 0 12 8" preserveAspectRatio="none" data-slot="tooltip-arrow" class="${ARROW}"><path d="${ARROW_PATH}"/></svg></span>`;
-  return `<div data-radix-popper-content-wrapper="" style="position:absolute; left:50%; bottom:calc(100% + 12px); transform:translateX(-50%); min-width:max-content; z-index:210;"><div ${content}>${esc(text)}${arrow}<span id="${uid}" role="tooltip" style="${VISUALLY_HIDDEN}">${esc(text)}</span></div></div>`;
+  return `<div data-radix-popper-content-wrapper="" style="position:absolute; left:50%; bottom:calc(100% + 12px); transform:translateX(-50%); min-width:max-content; z-index:var(--z-tooltip);"><div ${content}>${esc(text)}${arrow}<span id="${uid}" role="tooltip" style="${VISUALLY_HIDDEN}">${esc(text)}</span></div></div>`;
 }
 
 // <TooltipTrigger asChild><Button variant="ghost" layout="iconOnly" aria-label> — open 이면 aria-describedby 로 툴팁을 잇는다

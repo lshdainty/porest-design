@@ -95,7 +95,7 @@ npm run build    # site/out — 정적 사이트 + 검색 색인 + llms.txt
 | `overlay-dim` (prose-token) | 모든 파일 prose 표 | 수동 동기 | 2종: light/dark dim (alpha 채널 rgba) |
 | `breakpoint` (prose-token) | 모든 파일 prose 표 | 수동 동기 | 5종: sm/md/lg/xl/2xl (640/736/834/1069/1441 — Apple Store reference, v54) |
 | `touch-target` (prose-token) | 모든 파일 prose 표 | 수동 동기 | 5종: min/pill-w/circular/nav-h/nav-w (44/100/44/32/80 — WCAG 2.5.5 AAA, v59) |
-| `z-index` (prose-token) | 모든 파일 prose 표 | 수동 동기 | 6종: base/dropdown/sticky/drawer/modal/toast (0/1000/1100/1200/1300/1400, v65) |
+| `z-index` (prose-token) | 모든 파일 prose 표 | 수동 동기 | 10종 — 층 이름(v116, `specs/z-index.md` L0 ~ L9): base/sticky/modal/modal-content/floating/tooltip/alert/alert-content/snackbar/dev (auto/50/100/101/200/210/300/301/400/9999). Tailwind `z-(--z-modal)` |
 | `keyframes` (prose-CSS block) | DESIGN.md (baseline) | brand build fallback | 14종 단발/loop: fade-{in,out} / slide-in-{up,down,left,right} / scale-{in,out} / bounce-in / shake / spin / pulse / shimmer / ping (v74) |
 
 추가 prose 가이드:
@@ -109,7 +109,7 @@ Coverage:
 - **80+ 컴포넌트 prose spec** (shadcn/ui 카탈로그 ~100% + Banner/Tag/Popover/File Upload/Treeview 등 누락 보강)
 - **shadcn 컴포넌트 페이지 50/50** (`exports/site/components/*.html`) — Form 17 / Display 12 / Overlay 9 / Navigation 9 / Disclosure 2 / Data 4 / Status 1, 각 페이지에 Preview(토큰 적용된 라이브 렌더) + Code(JSX) 토글
 - **47개 `.tsx` 레시피** (`recipes/shadcn/components/ui/`, cva + Slot + forwardRef + Radix 표준) + 3 조립 컴포넌트(combobox / date-picker / data-table — Command/Calendar/Table 조립)
-- 14 keyframes, 6 z-index layer, 5 breakpoint, 5 touch target.
+- 14 keyframes, 10 z-index layer, 5 breakpoint, 5 touch target.
 
 ---
 

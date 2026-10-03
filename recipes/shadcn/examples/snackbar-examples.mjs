@@ -24,7 +24,7 @@
 // 자리 — 화면 아래 가운데, 좌우 · 아래 8(+ 안전 영역). 아래는 안전 영역과 피할 자리(--snackbar-avoid) 중 큰 쪽.
 // 비어 있을 때 누름을 막지 않게 자리는 pointer-events: none, 띠만 받는다
 const REGION = [
-  "pointer-events-none fixed inset-x-0 z-[400] flex flex-col items-center pb-x2",
+  "pointer-events-none fixed inset-x-0 z-(--z-snackbar) flex flex-col items-center pb-x2",
   "pl-[calc(var(--spacing-x2)_+_env(safe-area-inset-left))] pr-[calc(var(--spacing-x2)_+_env(safe-area-inset-right))]",
   "bottom-[max(env(safe-area-inset-bottom),var(--snackbar-avoid,0px))]",
   "[transition:bottom_var(--motion-duration-d4)_var(--motion-ease-easing)] motion-reduce:transition-none",

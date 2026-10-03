@@ -18,7 +18,7 @@
  * vaul · Radix 가 실행 중에 붙이는 것 중 열림(data-state="open")과 vaul 의 표식(data-vaul-drawer · data-vaul-overlay · data-vaul-snap-points —
  * 클래스가 읽는다) · 이름 잇기(id · aria-labelledby · aria-describedby) · tabindex="-1" 을 그리고, 스냅 높이로 내려 둔 자리(vaul 의 인라인
  * transform)도 그린다. 바닥 버튼의 크기(large 48)는 레시피의 Footer 가 크기를 주지 않은 버튼에 넣는다 — md 코드는 size="large" 를 적었다.
- * 시트는 화면(fixed)에 뜬다 — 미리보기 틀(STAGE)에 transform 을 줘 fixed 의 기준을 틀로 바꾸고, isolation 으로 z-index(딤 100 · 시트 101)를
+ * 시트는 화면(fixed)에 뜬다 — 미리보기 틀(STAGE)에 transform 을 줘 fixed 의 기준을 틀로 바꾸고, isolation 으로 z-index(딤 z-modal 100 · 시트 z-modal-content 101)를
  * 틀 안에 가둔다(사이트 머리 막대 위로 올라오지 않게). 높이 상한 max-h-[90dvh] · 스냅 높이 h-[90dvh] 는 창 높이를 따르므로 미리보기는
  * 틀 높이의 90% 를 style 로 한 번 더 적는다(SHEET_FIT — 미리보기용 덧칠). 틀 안의 뒤 화면(가계부 줄)은 미리보기 그림이다.
  * 사이트의 `.content p { margin: 12px 0; color: text-primary }` 는 층(@layer) 밖 규칙이라 Tailwind utility 를 늘 이긴다 — <p> 에는
@@ -31,7 +31,7 @@
 
 // 딤 — 300ms enter 로 나타나고 200ms exit 로 사라진다(모션 줄이기면 150ms). 끄는 동안은 손가락을 바로 따른다
 const OVERLAY = [
-  "fixed inset-0 z-[100] bg-[var(--overlay-dim-light)] dark:bg-[var(--overlay-dim-dark)]",
+  "fixed inset-0 z-(--z-modal) bg-[var(--overlay-dim-light)] dark:bg-[var(--overlay-dim-dark)]",
   "[animation-duration:var(--sheet-anim-duration)]! [animation-timing-function:var(--sheet-anim-ease)]!",
   "data-[state=open]:[--sheet-anim-duration:var(--motion-duration-d6)] data-[state=open]:[--sheet-anim-ease:var(--motion-ease-enter)]",
   "data-[state=closed]:[--sheet-anim-duration:var(--motion-duration-d4)] data-[state=closed]:[--sheet-anim-ease:var(--motion-ease-exit)]",
@@ -41,7 +41,7 @@ const OVERLAY = [
 
 // 시트 — 최대 480 가운데, 위 모서리 r6, 내용만큼(최대 90%), 바닥 아래 안전 영역
 const CONTENT = [
-  "fixed inset-x-0 bottom-0 z-[101] mx-auto flex max-h-[90dvh] w-full max-w-[480px] flex-col",
+  "fixed inset-x-0 bottom-0 z-(--z-modal-content) mx-auto flex max-h-[90dvh] w-full max-w-[480px] flex-col",
   "rounded-t-r6 bg-bg-layer-floating pb-[env(safe-area-inset-bottom)] font-sans text-fg-neutral outline-none",
   "[animation-duration:var(--sheet-anim-duration)]! [animation-timing-function:var(--sheet-anim-ease)]!",
   "data-[state=open]:[--sheet-anim-duration:var(--motion-duration-d6)] data-[state=open]:[--sheet-anim-ease:var(--motion-ease-enter-expressive)]",

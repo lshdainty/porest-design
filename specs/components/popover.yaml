@@ -8,7 +8,7 @@
 # SEED 와 다른 자리(popover.md 의 "SEED 와 다른 점")
 #   - 바닥 버튼: Button small 36(Button 결정 — SEED 예제 medium 40).
 #   - 반투명 색을 불투명 짝으로(v102): 닫기 버튼 누름 bg-layer-floating-pressed.
-#   - z-index: specs/z-index.md 의 L3(200) — 페이지에서도, 대화상자 · 시트 안에서도 그 위에 뜬다(SEED 99999).
+#   - z-index: specs/z-index.md 의 L3(z-floating 200) — 페이지에서도, 대화상자 · 시트 안에서도 그 위에 뜬다(SEED 99999).
 
 name: Popover
 
@@ -40,7 +40,7 @@ rules:
         background: $color-bg-layer-floating
         shadow: $shadow-s3
         offset: { value: $spacing-x2, note: "트리거와 8 — 화면 가장자리와는 16 을 남기고, 모자라면 반대편 · 옆으로 민다" }
-        zIndex: { value: 200, note: "specs/z-index.md L3" }
+        zIndex: { value: 200, note: "z-floating — specs/z-index.md L3" }
       header:
         paddingTop: $spacing-x6
         paddingX: $spacing-x6

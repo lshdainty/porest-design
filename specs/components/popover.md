@@ -138,7 +138,7 @@ import { Popover, PopoverBody, PopoverContent, PopoverTrigger } from "@/componen
 - **바닥 버튼은 Button small 36** — SEED 예제는 medium 40. Button 결정을 따랐다.
 - **반투명 색을 불투명 짝으로**(v102) — 닫기 버튼 누름 `bg-layer-floating-pressed`.
 - **1280 미만에서는 쓰지 않는다** — 같은 내용을 Bottom Sheet 로(Input Button 의 경계). SEED Popover 는 폭 규칙이 없다.
-- **z-index 는 specs/z-index.md 의 L3(200)** — SEED 99999. 대화상자 · 시트(L2) 위, 확인창(L5) 아래.
+- **z-index 는 specs/z-index.md 의 L3(`z-floating` 200)** — SEED 99999. 대화상자 · 시트(L2) 위, 확인창(L5) 아래.
 
 ## Migration notes
 

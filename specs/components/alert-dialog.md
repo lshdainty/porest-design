@@ -170,7 +170,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 
 - **1280 이상은 버튼 small 36** — Button 결정(대화상자 바닥 36)을 따랐다. 1280 미만은 SEED 와 같은 medium 40.
 - **딤은 porest 0.50 · 다크 0.65**(v102) — SEED 0.455.
-- **z-index 는 specs/z-index.md 의 L5**(딤 300 · 확인창 301) — 열린 대화상자 · 시트 위에 뜬다. SEED 는 모든 모달이 2 + layerIndex 라 DOM 순서에 기댄다.
+- **z-index 는 specs/z-index.md 의 L5**(딤 `z-alert` 300 · 확인창 `z-alert-content` 301) — 열린 대화상자 · 시트 위에 뜬다. SEED 는 모든 모달이 2 + layerIndex 라 DOM 순서에 기댄다.
 - **`Esc` 는 취소** — SEED 와 같다. 옛 porest 스펙은 `Esc` 도 막았다.
 
 ## Migration notes

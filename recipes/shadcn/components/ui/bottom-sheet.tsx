@@ -34,7 +34,7 @@ import { useInputButtonSurface } from "@/components/ui/input-button";
  * 머리 위 24 · 아래 16 · 사이 8, 제목 t8 22 / 30 · 700 · 설명 t5 fg-neutral-muted. 닫기 버튼이 있으면 제목 오른쪽 64(24 + 원 28 + 12).
  * 닫기 버튼은 28 원(bg-neutral-weak · 아이콘 14 fg-neutral) · 누르는 영역 44, 위 24 · 오른쪽 24. 누르면 bg-neutral-weak-pressed +
  * 2px 거리 축소(기준 28), 호버는 누름 색. 이름 "닫기". 본문이 맨 끝(바닥이 없을 때)이면 아래 16 을 둔다.
- * 쌓임: 딤 100 · 시트 101(specs/z-index.md L2) — 그 위에 Popover(L3) · Alert Dialog(L5).
+ * 쌓임: 딤 z-modal 100 · 시트 z-modal-content 101(specs/z-index.md L2) — 그 위에 Popover(L3) · Alert Dialog(L5).
  * 모션: 300ms enter-expressive 로 올라오고(딤 300ms enter) 200ms exit 로 내려간다(딤 200ms exit). 모션 줄이기면 150ms 서서히 나타남 ·
  * 사라짐. vaul 이 넣는 0.5s 는 덮는다 — vaul 의 CSS 는 나중에 들어오고 끌다 놓을 때는 인라인으로 넣으므로 !important 로 이긴다.
  *
@@ -217,7 +217,7 @@ BottomSheetTrigger.displayName = "BottomSheetTrigger";
 // 딤 — 300ms enter 로 나타나고 200ms exit 로 사라진다(모션 줄이기면 150ms). 끌다 놓아 제자리로 갈 때도 200ms exit 로 돌아오고,
 // 끄는 동안(바로 뒤 시트에 .vaul-dragging)은 손가락을 바로 따른다
 const OVERLAY = [
-  "fixed inset-0 z-[100] bg-[var(--overlay-dim-light)] dark:bg-[var(--overlay-dim-dark)]",
+  "fixed inset-0 z-(--z-modal) bg-[var(--overlay-dim-light)] dark:bg-[var(--overlay-dim-dark)]",
   "[animation-duration:var(--sheet-anim-duration)]! [animation-timing-function:var(--sheet-anim-ease)]!",
   "data-[state=open]:[--sheet-anim-duration:var(--motion-duration-d6)] data-[state=open]:[--sheet-anim-ease:var(--motion-ease-enter)]",
   "data-[state=closed]:[--sheet-anim-duration:var(--motion-duration-d4)] data-[state=closed]:[--sheet-anim-ease:var(--motion-ease-exit)]",
@@ -227,7 +227,7 @@ const OVERLAY = [
 
 // 시트 — 최대 480 가운데, 위 모서리 r6, 내용만큼(최대 90%), 바닥 아래 안전 영역
 const CONTENT = [
-  "fixed inset-x-0 bottom-0 z-[101] mx-auto flex max-h-[90dvh] w-full max-w-[480px] flex-col",
+  "fixed inset-x-0 bottom-0 z-(--z-modal-content) mx-auto flex max-h-[90dvh] w-full max-w-[480px] flex-col",
   "rounded-t-r6 bg-bg-layer-floating pb-[env(safe-area-inset-bottom)] font-sans text-fg-neutral outline-none",
   // 열림 300ms enter-expressive · 닫힘 200ms exit(vaul 의 slideFromBottom · slideToBottom 그대로, 시간 · 곡선만)
   "[animation-duration:var(--sheet-anim-duration)]! [animation-timing-function:var(--sheet-anim-ease)]!",

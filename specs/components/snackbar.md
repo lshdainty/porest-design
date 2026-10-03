@@ -198,7 +198,7 @@ import { SnackbarAvoidOverlap, SnackbarProvider } from "@/components/ui/snackbar
 - **보조 기술용 닫기는 키보드 초점이 오면 보인다** — SEED 는 안 보이는 채로 Tab 이 선다.
 - **포커스 링은 띠 글자색** — porest 브랜드 링은 짙은 띠 위에서 3:1 에 못 미친다.
 - **아이콘은 lucide 선 아이콘**(v106).
-- **z-index 는 specs/z-index.md 의 L6**(400).
+- **z-index 는 specs/z-index.md 의 L6**(`z-snackbar` 400).
 - **띠 안에서 닫히면 초점을 돌려준다** — 띠에 들어오기 전 자리로. SEED 는 body 로 떨어뜨려 키보드 사용자가 처음부터 다시 찾아야 한다.
 - **아래 자리는 안전 영역과 피할 자리 중 큰 쪽** — SEED 는 둘을 더해, 안전 영역을 품은 탭 바 위에서는 그만큼 더 뜬다.
 

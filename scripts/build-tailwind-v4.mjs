@@ -154,11 +154,19 @@ function parseTouchTargets(md) {
 }
 
 function parseZIndex(md) {
-  // z-* prose tokens (layering stacking order)
+  // z-* prose tokens (v116 — 층 이름: z-base · z-sticky · z-modal · z-modal-content · z-floating · z-tooltip ·
+  // z-alert · z-alert-content · z-snackbar · z-dev). 값은 정수 또는 `auto`(L0 — 쌓임 맥락을 만들지 않는다)만 받는다.
+  // 같은 이름이 다른 값으로 두 번 나오면 멈춘다 — 뒤의 표가 조용히 이기면 층 순서가 어긋나도 모른다.
   const re = /^\|\s*`(z-[a-z0-9-]+)`\s*\|\s*`([^`]+)`\s*\|/gm;
   const out = {};
   let m;
-  while ((m = re.exec(md)) !== null) out[m[1]] = m[2];
+  while ((m = re.exec(md)) !== null) {
+    const [, name, raw] = m;
+    const val = raw.trim();
+    if (!/^(auto|-?\d+)$/.test(val)) throw new Error(`z-index 토큰 ${name} 의 값 "${val}" — 정수나 auto 만 받는다`);
+    if (name in out && out[name] !== val) throw new Error(`z-index 토큰 ${name} 이 두 값(${out[name]} · ${val})으로 정의됐다`);
+    out[name] = val;
+  }
   return out;
 }
 
@@ -320,9 +328,9 @@ for (const [name, val] of Object.entries(touchTargets)) {
 }
 out += "\n";
 
-out += "  /* Z-index (from prose-token table — layering stacking order) */\n";
+out += "  /* Z-index (from prose-token table — v116 층 이름, specs/z-index.md L0 ~ L9). Tailwind: z-(--z-modal) */\n";
 for (const [name, val] of Object.entries(zIndex)) {
-  // z-modal → --z-modal
+  // z-modal → --z-modal, z-modal-content → --z-modal-content
   out += `  --${name}: ${val};\n`;
 }
 out += "}\n";

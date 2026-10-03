@@ -38,7 +38,7 @@ rules:
         background: $color-surface-default
         shadow: { value: $shadow-xl, note: "inline `var(--shadow-xl)`" }
         height: { value: content auto, note: "top/bottom — (자동)" }
-        zIndex: 50
+        zIndex: { value: 101, note: "z-modal-content — specs/z-index.md L2 표면(딤은 z-modal 100). 옛 값 50 은 층 표 · 레시피와 어긋나 있었다(v116 에서 맞춤)" }
       header:
         gap: { value: $spacing-xs, note: "title ↔ description" }
       footer:

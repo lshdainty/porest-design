@@ -2808,22 +2808,27 @@ Desk는 모든 viewport에서 `touch-min` 44 / `touch-circular` 44 strict 적용
 
 ### Z-index (v65 추가, prose-token)
 
-레이어 stacking order 6 토큰 — DESIGN.md shared baseline과 동일.
+레이어 10 토큰(v116) — DESIGN.md shared baseline 과 같은 값이다. 층(L0 ~ L9)과 순서의 이유는 baseline 과 `specs/z-index.md` 에 있다.
 
-| 토큰 | 값 | 주 사용 |
+| 토큰 | 값 | Desk 에서 쓰는 곳 |
 |---|---|---|
-| `z-base` | `0` | default 평면 |
-| `z-dropdown` | `1000` | dropdown / select / autocomplete / tooltip |
-| `z-sticky` | `1100` | sticky header / 모바일 bottom nav / sticky CTA |
-| `z-drawer` | `1200` | bottom sheet (가계부 거래 입력, 메모 attachments) |
-| `z-modal` | `1300` | modal dialog (메모 삭제 확인 / 가계부 카테고리 변경) |
-| `z-toast` | `1400` | toast (저장 완료, 동기화 실패 등) |
+| `z-base` | `auto` | L0 페이지 — 가계부 목록 · 메모 카드 |
+| `z-sticky` | `50` | L1 하단 탭바 · 고정 헤더 · 플로팅 버튼 |
+| `z-modal` | `100` | L2 딤 — Bottom Sheet(가계부 거래 입력 · 할일 추가) · Menu Sheet · Dialog |
+| `z-modal-content` | `101` | L2 표면 — 위 시트 · 대화상자 |
+| `z-floating` | `200` | L3 Popover · Select 목록 · Menu(카테고리 고르기) — 시트 안에서 열어도 같은 값 |
+| `z-tooltip` | `210` | L4 Help Bubble · Tooltip |
+| `z-alert` | `300` | L5 Alert Dialog 딤(메모 삭제 확인) |
+| `z-alert-content` | `301` | L5 Alert Dialog 표면 |
+| `z-snackbar` | `400` | L6 Snackbar(저장 완료 · 동기화 실패 등) |
+| `z-dev` | `9999` | L9 개발 환경 표시 — 운영에서는 그리지 않는다 |
 
 #### Desk 적용 가이드 (모바일 우선)
-- **bottom nav** = `z-sticky` — 페이지 스크롤 무관 항상 하단.
-- **bottom sheet** (거래 입력, 할일 추가) = `z-drawer` — bottom nav 위로 슬라이드 업.
-- **modal** (메모 삭제 확인) = `z-modal` — bottom sheet가 열린 상태에서도 modal 우선.
-- **toast** (저장 완료) = `z-toast` — 모든 layer 위, safe-area 고려.
+- **하단 탭바**(bottom nav) = `z-sticky` — 페이지 스크롤과 상관없이 늘 하단.
+- **Bottom Sheet**(거래 입력, 할일 추가) = 딤 `z-modal` · 시트 `z-modal-content` — 하단 탭바 위로 슬라이드 업.
+- **확인창**(메모 삭제 확인) = 딤 `z-alert` · 확인창 `z-alert-content` — Bottom Sheet 가 열린 상태에서도 확인창이 위.
+- **Snackbar**(저장 완료) = `z-snackbar` — 모든 층 위, safe-area 고려.
+- 시트 안에서 연 Select 목록 · 메뉴는 `z-floating` 그대로 — 시트(101) 위에 뜬다.
 - iOS Safari `position: fixed` viewport 안전 영역(notch / home indicator) — 별도 padding-top/-bottom CSS env(safe-area-inset-*) 적용.
 - isolation 권장: 메모 카드 내부 dropdown은 `isolation: isolate`로 island 격리.
 
@@ -2851,21 +2856,22 @@ DESIGN.md baseline 정의 참고 — CSS logical property 기반 LTR ↔ RTL 자
 
 - **Global** — 화면 전체의 구조적 층. 제품 화면 자체와 그 위를 덮는 컨테이너(시트 · 경고창).
 - **Local** — 한 층 안에서 콘텐츠끼리의 깊이. 항상 자기가 속한 Global 층 위에 놓인다.
-- 새로 덮인 층(시트)은 곧 새 기준이 된다 — 그 안의 툴팁 · 메뉴는 그 층을 바닥으로 쌓인다(페이지 위 페이지).
+- 새로 덮인 층(시트)은 곧 새 기준이 된다 — 그 안의 툴팁 · 메뉴는 그 층을 바닥으로 쌓인다(페이지 위 페이지). 메뉴 · 팝오버 · Select 목록은 `z-floating`, 툴팁 · 말풍선은 `z-tooltip` 하나씩이라 어느 층에서 열어도 그 층 위에 뜬다.
 
 | Global 층 | 무엇 | porest |
 |---|---|---|
 | 0 | 바닥 — 스크롤되는 모든 콘텐츠 뒤 | `bg-layer-basement` |
 | 1 | 기본 — 카드 · 목록 · 입력칸 · 상단 내비게이션 | `bg-layer-default` |
-| 2 | 시트 · 메뉴 시트 · 서랍 — 화면을 덮는 새 쌓임 맥락 | `z-drawer` |
-| 3 | 경고창 — 가장 급한 정보, 다른 모달보다도 위 | `z-modal` |
+| 2 | 시트 · 메뉴 시트 · 서랍 — 화면을 덮는 새 쌓임 맥락 | `z-modal` |
+| 3 | 경고창 — 가장 급한 정보, 다른 모달보다도 위 | `z-alert` |
 
 | Local 층 | 무엇 | porest |
 |---|---|---|
 | 1 | 기본 콘텐츠 — 목록 · 탭 · 알림 띠 · 상단 내비게이션 | 층의 표면 |
 | 2 | 떠 있는 동작 — 플로팅 버튼 | `z-sticky` |
-| 3 | 잠깐 뜨는 알림 — 토스트 | `z-toast` |
+| 3 | 잠깐 뜨는 알림 — 스낵바 | `z-snackbar` |
 
+- Global 2 · 3 의 토큰은 딤 자리다 — 표면은 그 바로 위 `z-modal-content` · `z-alert-content` 다. z-index 값과 이유는 Layout 의 Z-index 절(v116)에 있다.
 - 같은 층 안에서 겹칠 때(스크롤되는 목록이 상단 내비게이션 아래로)는 층을 올리지 않는다 — 그림자나 선으로 구분만 준다.
 
 #### 고도를 드러내는 세 가지

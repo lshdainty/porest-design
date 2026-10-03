@@ -321,7 +321,7 @@ Error — critical 알림, 즉시 발화 (`role="alert"`).
 </div>
 ```
 
-Single Toast — `role="status"` + `aria-live="polite"`. 실제 사용 시 `class="fixed bottom-4 right-4 z-toast"` 추가.
+Single Toast — `role="status"` + `aria-live="polite"`. 실제 사용 시 `class="fixed bottom-4 right-4 z-(--z-snackbar)"` 추가(v116 — L6).
 
 ```html
 <ol class="flex flex-col gap-2 max-w-sm list-none p-0 m-0" role="region" aria-label="알림">
@@ -339,7 +339,7 @@ Single Toast — `role="status"` + `aria-live="polite"`. 실제 사용 시 `clas
 </ol>
 ```
 
-Sonner stack — top-right (HR) / bottom-center (Desk 모바일) 위치. 실제 사용 시 `class="fixed top-4 right-4 z-toast"` 추가, max 3 + collapsed +N 패턴.
+Sonner stack — top-right (HR) / bottom-center (Desk 모바일) 위치. 실제 사용 시 `class="fixed top-4 right-4 z-(--z-snackbar)"` 추가, max 3 + collapsed +N 패턴.
 
 ---
 
@@ -360,7 +360,7 @@ Sonner stack — top-right (HR) / bottom-center (Desk 모바일) 위치. 실제 
 </div>
 ```
 
-Confirm dialog — `role="dialog"` + `aria-modal="true"` + `aria-labelledby`. 실제 사용 시 overlay는 `class="fixed inset-0 z-modal"`, dialog는 `class="fixed inset-0 z-modal flex items-center justify-center"`.
+Confirm dialog — `role="dialog"` + `aria-modal="true"` + `aria-labelledby`. 실제 사용 시 overlay는 `class="fixed inset-0 z-(--z-modal)"`, dialog는 `class="fixed inset-0 z-(--z-modal-content) flex items-center justify-center"`(되돌릴 수 없는 확인이면 확인창 — `z-(--z-alert)` · `z-(--z-alert-content)`).
 
 ```html
 <div class="relative bg-overlay-dim p-8 rounded-md min-h-64 flex items-center justify-center">
@@ -413,7 +413,7 @@ A11y: focus trap (Tab/Shift+Tab 내부 순환), Escape 닫기, 닫힌 후 trigge
 </div>
 ```
 
-Right drawer (HR — 직원 detail) — 우측 슬라이드. 실제 사용 시 `class="fixed top-0 right-0 bottom-0 z-drawer"` + `animate-[slide-in-left]` 추가.
+Right drawer (HR — 직원 detail) — 우측 슬라이드. 실제 사용 시 딤은 `z-(--z-modal)`, 패널은 `class="fixed top-0 right-0 bottom-0 z-(--z-modal-content)"` + `animate-[slide-in-left]` 추가.
 
 ```html
 <div class="relative bg-overlay-dim p-0 rounded-md min-h-80 overflow-hidden flex flex-col justify-end">
@@ -541,7 +541,7 @@ Hover Card — non-interactive preview. delay 700ms hover, link/avatar에 mentio
 ```html
 <div class="relative inline-block">
   <button aria-haspopup="menu" aria-expanded="true" class="w-9 h-9 rounded-md hover:bg-surface-default-hover text-text-primary text-body-lg transition-colors">⋯</button>
-  <ul role="menu" class="absolute top-full mt-1 right-0 min-w-40 bg-surface-default border border-default rounded-md shadow-md py-1 z-dropdown list-none">
+  <ul role="menu" class="absolute top-full mt-1 right-0 min-w-40 bg-surface-default border border-default rounded-md shadow-md py-1 z-(--z-floating) list-none">
     <li role="menuitem" class="px-3 py-2 text-body-lg hover:bg-surface-default-hover cursor-pointer">편집</li>
     <li role="menuitem" class="px-3 py-2 text-body-lg hover:bg-surface-default-hover cursor-pointer">복제</li>
     <li role="separator" class="border-t border-default my-1"></li>
@@ -867,7 +867,7 @@ Hover Card — non-interactive preview. delay 700ms hover, link/avatar에 mentio
 | `border-default` | `#E1E5EB` (light) / `#3D4555` (dark) |
 | `text-error` | `#DC2626` (light) / `#F87171` (dark — `error-light`) |
 | `bg-overlay-dim` | `rgba(0,0,0,0.50)` (light) / `rgba(0,0,0,0.65)` (dark) |
-| `z-toast` | `1400` |
+| `z-snackbar` | `400` (v116 — 층 이름 토큰 10개는 DESIGN.md Z-index 절 · `specs/z-index.md`) |
 | `motion-duration-base` | `200ms` |
 
 prose-token (shadow / motion / overlay / breakpoint / touch-target / z-index)은 `scripts/build-tailwind-v4.mjs`가 직접 추출 → CSS variable export.

@@ -2683,50 +2683,45 @@ touch target은 functional layout token — contrast 룰 무관. spec 외부(pro
 
 ### Z-index (v65 추가, prose-token)
 
-v116(2026-10-03) — 층 이름으로 다시 정했다. 값은 `specs/z-index.md` 의 층 표(L0 ~ L9) 그대로이고, 이름은 그 층을 부른다. 이 표가 원본이다 — 층 표 · 컴포넌트 YAML · 레시피는 여기 값을 따른다. 사용자 결정(2026-10-03 — porest 층 표를 정본으로, 새 토큰은 층 이름으로). spec 이 z-index 카테고리를 지원하지 않아 prose-token 이다(shadow · motion · overlay · breakpoint · touch-target 과 같다).
+레이어 stacking order 체계화. 각 컴포넌트(modal/toast/dropdown/drawer/sticky)가 hardcoded z-index를 사용하면 layering 충돌·예측 불가능 발생 → 정형 토큰 5종으로 명시. spec이 z-index 카테고리 미지원이라 prose-token 패턴(shadow/motion/overlay/breakpoint/touch-target과 동일).
 
-| 토큰 | 값 | 층 · 쓰는 곳 |
+| 토큰 | 값 | 주 사용 |
 |---|---|---|
-| `z-base` | `auto` | L0 페이지 — 쌓임 맥락을 만들지 않는다 |
-| `z-sticky` | `50` | L1 페이지에 붙은 것 — 고정 헤더 · 하단 탭바 · 플로팅 버튼 · 스피드 다이얼 |
-| `z-modal` | `100` | L2 딤 — Dialog · Bottom Sheet · Menu Sheet · Sheet(옆 패널) |
-| `z-modal-content` | `101` | L2 표면 — 자기 딤 바로 위 |
-| `z-floating` | `200` | L3 트리거에 붙어 뜨는 것 — Popover · Select 목록 · Menu. 페이지에서도 모달 안에서도 같은 값 |
-| `z-tooltip` | `210` | L4 말풍선 — Help Bubble · Tooltip |
-| `z-alert` | `300` | L5 Alert Dialog 딤 |
-| `z-alert-content` | `301` | L5 Alert Dialog 표면 |
-| `z-snackbar` | `400` | L6 Snackbar 자리 |
-| `z-dev` | `9999` | L9 개발 환경 표시 — 운영에서는 그리지 않는다 |
+| `z-base` | `0` | default 평면. body-lg / 일반 콘텐츠 |
+| `z-dropdown` | `1000` | dropdown / select panel / autocomplete / tooltip |
+| `z-sticky` | `1100` | sticky header / sticky reservation rail / sticky CTA |
+| `z-drawer` | `1200` | drawer / side panel / bottom sheet (페이지 내부 슬라이드) |
+| `z-modal` | `1300` | modal dialog + overlay-dim (포커스 가두기, 페이지 차단) |
+| `z-toast` | `1400` | toast / snackbar (모든 레이어 위, 사용자 피드백 최상단) |
 
-#### 왜 이 순서인가
+#### 추가 이유
+1. v43 Modal / v45 Dropdown / v46 Toast 등 컴포넌트 spec은 layering "최상단"·"위" 같은 prose 표현 — 정형 numeric 토큰 부재.
+2. preview HTML에서 `.theme-toggle z-index: 100` 같은 hardcoded 값 등장 — 향후 modal/toast 추가 시 충돌 가능.
+3. **6 토큰 (한도 5 + base)**: 기본 평면 `z-base` (0) 명시 + 5개 레이어. Material 3 / Bootstrap / Tailwind z-index scale 패턴 참고 — 100 단위로 충분 간격(추후 sub-layer 삽입 여유).
 
-- **트리거에 붙어 뜨는 것(L3)은 모달(L2) 위다** — 대화상자 · 시트 안에서 연 Select 목록 · 메뉴가 표면(101) 위에 떠야 한다. 페이지에서 열어도 같은 200 이라, 부르는 자리마다 값을 고르지 않는다. 페이지에는 L2 가 없으니 고정 헤더(50) 위로 뜨는 것도 자연스럽다.
-- **말풍선(L4)은 팝오버(L3) 위다** — 팝오버 · 메뉴 안의 ⓘ 로 연 말풍선이 가려지지 않는다.
-- **확인창(L5)은 메뉴(L3) 위다** — 되돌릴 수 없는 결정은 열린 모든 표면을 덮는다. SEED Elevation 의 "Alert Dialog 는 맨 위(Global 3)" 와 같다. SEED 의 CSS 는 팝오버 · 메뉴를 99999 로 확인창 위에 띄우지만, porest 는 문서 쪽을 따른다.
-- **스낵바(L6)는 모든 표면 위다** — 확인창이 열려 있어도 잠깐 뜨는 알림은 보인다.
-- **딤과 표면은 1 차이다**(100 · 101, 300 · 301) — 표면이 자기 딤 바로 위에 놓인다. 층과 층 사이는 넉넉히 비운다.
-- **화면 차례를 더하지 않는다** — SEED 는 대화상자 · 시트를 `2 + layerIndex`(쌓인 화면 차례 × 5)로 올리지만, porest 웹은 화면을 쌓지 않는다(주소가 바뀌면 화면이 바뀐다). 그래서 층마다 값이 하나다.
-- **앱(Flutter)은 숫자 없이 같은 순서를 따른다** — Flutter 에는 z-index 가 없고, 라우트 · 오버레이가 연 순서로 쌓인다. 페이지 → 시트 · 대화상자 → 메뉴 · 말풍선 → 확인창 → 스낵바 순서가 되게 띄운다.
+#### 사용 패턴
+- modal: `z-index: var(--z-modal);` (overlay + dialog 둘 다 동일 layer 또는 dialog만)
+- dropdown: `z-index: var(--z-dropdown);`
+- toast stack: `position: fixed; z-index: var(--z-toast);`
+- sticky header: `position: sticky; z-index: var(--z-sticky);`
+- drawer: `position: fixed; z-index: var(--z-drawer);`
+- isolation: 부모에 `isolation: isolate` 권장 — z-index scope를 component island로 격리 (다른 island와 우선순위 충돌 회피).
 
-#### 쓰는 법
+#### 레이어 충돌 우선순위
+```
+z-toast (1400) > z-modal (1300) > z-drawer (1200) > z-sticky (1100) > z-dropdown (1000) > z-base (0)
+```
 
-- CSS: `z-index: var(--z-modal);` — 딤은 `--z-modal`, 표면은 `--z-modal-content`.
-- Tailwind v4: `z-(--z-floating)`(= `z-index: var(--z-floating)`). 숫자 클래스(`z-[200]` · `z-50`)로 층을 적지 않는다.
-- 한 컴포넌트 안에서 겹침을 정리하는 작은 값(줄 끝 버튼 `z-[1]` · 포커스 칸 `z-10`)은 층이 아니다 — 토큰으로 부르지 않는다.
-- 미리보기 · 문서 그림처럼 틀 안에 가둘 때는 틀에 `isolation: isolate` 를 둔다 — 안의 값이 틀 밖의 층과 겨루지 않는다.
-- 확인창 안에서 팝오버를 띄우는 드문 자리는 호출처가 올린다 — `specs/z-index.md`.
+직관: 사용자 알림(toast)은 모달 위, 모달은 drawer 위, drawer는 sticky 위. dropdown은 페이지 콘텐츠 위지만 다른 layered 컴포넌트보단 아래.
 
-#### v65 에서 바뀐 것
-
-v65 의 6 토큰(z-base 0 · z-dropdown 1000 · z-sticky 1100 · z-drawer 1200 · z-modal 1300 · z-toast 1400)은 걷었다. 레시피 · 스펙은 그동안 층 표의 숫자(`z-[100]` …)를 따로 적어 토큰과 값이 달랐다. 이름이 남은 셋은 값이 바뀌었다 — `z-base` 0 → `auto`, `z-sticky` 1100 → 50, `z-modal` 1300 → 100(이제 딤이고 표면은 `z-modal-content`). 옛 값을 복사해 둔 제품이 토큰을 새로 받을 때는 그 이름을 부른 자리를 층으로 다시 고른다 — 같은 이름이 더 낮은 층을 가리킨다.
+#### 100 단위 간격
+중간 layer 필요 시 사용 가능 — 예: dropdown 내부 nested submenu(`1010`), modal 내부 dropdown(`1310`). 별도 토큰 정의는 사용 사례 등장 후.
 
 #### 듀얼 브랜드 — unified
-
-HR / Desk 모두 같은 10 토큰. brand-agnostic.
+HR / Desk 모두 동일 6 토큰. brand-agnostic. spec 외부 prose-token이라 lint 비대상.
 
 #### export 통합 (build-tailwind-v4.mjs)
-
-`parseZIndex` 가 이 표를 읽어 `--z-base` · `--z-sticky` · `--z-modal` · `--z-modal-content` · `--z-floating` · `--z-tooltip` · `--z-alert` · `--z-alert-content` · `--z-snackbar` · `--z-dev` 를 내보낸다. 값은 정수나 `auto` 만 받는다.
+`parseZIndex` 추가 (v54 parseBreakpoints / v59 parseTouchTargets와 동일 패턴), prose 표 직접 추출. CSS variable: `--z-base`, `--z-dropdown`, `--z-sticky`, `--z-drawer`, `--z-modal`, `--z-toast`.
 
 ### RTL support (v76 추가, prose-only)
 
@@ -2824,22 +2819,21 @@ Tailwind v4는 `me-*`/`ms-*` (margin-end/start), `pe-*`/`ps-*`, `text-start`/`te
 
 - **Global** — 화면 전체의 구조적 층. 제품 화면 자체와 그 위를 덮는 컨테이너(시트 · 경고창).
 - **Local** — 한 층 안에서 콘텐츠끼리의 깊이. 항상 자기가 속한 Global 층 위에 놓인다.
-- 새로 덮인 층(시트)은 곧 새 기준이 된다 — 그 안의 툴팁 · 메뉴는 그 층을 바닥으로 쌓인다(페이지 위 페이지). 메뉴 · 팝오버 · Select 목록은 `z-floating`, 툴팁 · 말풍선은 `z-tooltip` 하나씩이라 어느 층에서 열어도 그 층 위에 뜬다.
+- 새로 덮인 층(시트)은 곧 새 기준이 된다 — 그 안의 툴팁 · 메뉴는 그 층을 바닥으로 쌓인다(페이지 위 페이지).
 
 | Global 층 | 무엇 | porest |
 |---|---|---|
 | 0 | 바닥 — 스크롤되는 모든 콘텐츠 뒤 | `bg-layer-basement` |
 | 1 | 기본 — 카드 · 목록 · 입력칸 · 상단 내비게이션 | `bg-layer-default` |
-| 2 | 시트 · 메뉴 시트 · 서랍 — 화면을 덮는 새 쌓임 맥락 | `z-modal` |
-| 3 | 경고창 — 가장 급한 정보, 다른 모달보다도 위 | `z-alert` |
+| 2 | 시트 · 메뉴 시트 · 서랍 — 화면을 덮는 새 쌓임 맥락 | `z-drawer` |
+| 3 | 경고창 — 가장 급한 정보, 다른 모달보다도 위 | `z-modal` |
 
 | Local 층 | 무엇 | porest |
 |---|---|---|
 | 1 | 기본 콘텐츠 — 목록 · 탭 · 알림 띠 · 상단 내비게이션 | 층의 표면 |
 | 2 | 떠 있는 동작 — 플로팅 버튼 | `z-sticky` |
-| 3 | 잠깐 뜨는 알림 — 스낵바 | `z-snackbar` |
+| 3 | 잠깐 뜨는 알림 — 토스트 | `z-toast` |
 
-- Global 2 · 3 의 토큰은 딤 자리다 — 표면은 그 바로 위 `z-modal-content` · `z-alert-content` 다. z-index 값과 이유는 Layout 의 Z-index 절(v116)에 있다.
 - 같은 층 안에서 겹칠 때(스크롤되는 목록이 상단 내비게이션 아래로)는 층을 올리지 않는다 — 그림자나 선으로 구분만 준다.
 
 #### 고도를 드러내는 세 가지
@@ -4145,7 +4139,7 @@ red → orange → yellow → green → blue → indigo → violet → pink → 
 | Dialog | medium 480 · large 800 · 최대 높이 80% · `radius-r5` · 머리 24 · 제목 `t8` · 본문만 스크롤(넘치면 아래 48 흐림, 위로 스크롤하면 머리 아래 1px `stroke-neutral-subtle`) · 바닥 버튼 small 36 오른쪽 · `d4` `enter-expressive` 로 1.3 배에서 줄며 나타남 |
 | Alert Dialog | 최대 272 · `radius-r5` · 안쪽 20 · 제목 `t7` 20 · 700 · 설명 `t5` `fg-neutral`(짙은 글자) · 버튼 둘 나란히(길면 세로 · 확정 위) — 1280 미만 medium 40 · 이상 small 36 |
 | Popover | 폭 320 ~ 480 · 최대 높이 600 · `radius-r5` · `shadow-s3` · 트리거와 8 · 머리 제목 `t7` + 닫기 · `d3` `enter` 로 0.95 배에서 커진다 |
-| 쌓임 | specs/z-index.md — 시트 · 대화상자 L2(`z-modal` 100 · `z-modal-content` 101) · Popover L3(`z-floating` 200) · Alert Dialog L5(`z-alert` 300 · `z-alert-content` 301) |
+| 쌓임 | specs/z-index.md — 시트 · 대화상자 L2(100 · 101) · Popover L3(200) · Alert Dialog L5(300 · 301) |
 
 #### 쓰는 규칙
 
@@ -4225,7 +4219,7 @@ red → orange → yellow → green → blue → indigo → violet → pink → 
 | 누름 · 호버 | 좌우 8 들인 알약 `bg-layer-floating-pressed` · 내용만 축소 | 줄 `bg-neutral-weak-pressed` · 내용만 축소 — 설명은 `fg-neutral-muted` · 위험 글자는 `fg-critical-contrast` 로(누름 바탕 위 4.5:1) | 닫기 버튼만 축소 |
 | 키보드 | 알약 자리 2px 링(호버와 따로) · ↑↓ 순환 · 한 글자 찾기 | 줄 안쪽 링 · `Tab` | 닫기 버튼 안쪽 링(말풍선 글자색) |
 | 묶음 · 위험 | 묶음 사이에만 선 · 위험은 맨 아래 묶음 `fg-critical` | 묶음 사이는 간격 · 위험은 맨 아래 묶음 | — |
-| z-index | L3 `z-floating` 200 | L2 `z-modal` 100 / `z-modal-content` 101 | L4 `z-tooltip` 210 |
+| z-index | L3 200 | L2 100 / 101 | L4 210 |
 
 #### 쓰는 규칙
 
@@ -4757,14 +4751,14 @@ spec brand-neutral. brand 파일 — HR(결재 단계 horizontal, sequential), D
 
 ### Sidebar (v68 추가)
 
-좌측 nav panel — 페이지 단위 메뉴. **새 토큰 0** — surface + button + spacing 합성. 옆 패널(Sheet — `z-modal` 딤 위 `z-modal-content`)과 다름 — sidebar는 페이지 layout 고정 영역.
+좌측 nav panel — 페이지 단위 메뉴. **새 토큰 0** — surface + button + spacing 합성. Drawer(`z-drawer`)와 다름 — sidebar는 페이지 layout 고정 영역.
 
 #### Variant
 | Variant | 사용 |
 |---|---|
 | **fixed** (default) | 데스크탑 — 좌측 240-280px 고정, 페이지 scroll과 독립 |
 | **collapsible** | desktop 토글 — 펼침 240px ↔ 접힘 64px (icon만) |
-| **floating** | mobile 옆 패널 톤 — `z-modal` 딤 위 `z-modal-content` 로 slide-in (Sidebar pattern + Sheet 합성) |
+| **floating** | mobile drawer 톤 — `z-drawer` slide-in (Sidebar pattern + Drawer 합성) |
 
 #### Anatomy
 - header: 로고 + brand title (collapsible 접힘 시 logo만)
