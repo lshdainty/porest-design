@@ -14,6 +14,8 @@ import { useInputButtonSurface } from "@/components/ui/input-button";
  *   BottomSheetContent   시트 — title(늘) · description(덧붙일 말이 있을 때만). 오른쪽 위 닫기 버튼(showCloseButton, 기본 켬)
  *   BottomSheetBody      본문 — 좌우 화면 여백 24, 넘치면 이 안에서 스크롤
  *   BottomSheetFooter    바닥 — 버튼 하나면 폭 전체, 둘이면 반씩(사이 8). Button large 48 을 크기를 주지 않은 바로 아래 자식에 넣는다
+ *   BottomSheetSurface   바탕 — 딤 · 시트 · 손잡이와 닫는 길(Esc · 바깥 · 끌기 · 초점)만. 머리가 다른 시트(Menu Sheet)가 이 위에 짠다.
+ *                        BottomSheetContent 도 이것 위에 머리 · 닫기 버튼을 얹은 것이다. handle="always" 면 스냅 높이가 없어도 손잡이를 단다
  *
  * 폼 · 상세는 1280 에서 Dialog 와 바뀌는 ResponsiveDialog(dialog.tsx)로 짠다 — 늘 시트인 자리(Input Button 의 고르기)만 바로 쓴다.
  *
@@ -256,10 +258,14 @@ const HANDLE = [
   "before:absolute before:left-1/2 before:top-1/2 before:size-11 before:-translate-x-1/2 before:-translate-y-1/2 before:content-['']",
 ].join(" ");
 
-// 손잡이를 누르면 다음(더 높은) 스냅 높이로, 가장 높은 높이에서는 닫는다(SEED · vaul 의 Handle 과 같다)
-function SheetHandle() {
+// 손잡이를 누르면 다음(더 높은) 스냅 높이로, 가장 높은 높이에서는 닫는다(SEED · vaul 의 Handle 과 같다).
+// 스냅 높이가 없으면 손잡이를 달지 않는다 — always(Menu Sheet)면 달고, 누르면 닫는다(가장 높은 높이와 같다)
+function SheetHandle({ always = false }: { always?: boolean }) {
   const { snapPoints, snap, setSnap, requestClose } = useSheetContext("BottomSheetContent");
-  if (!snapPoints?.length) return null;
+  if (!snapPoints?.length) {
+    if (!always) return null;
+    return <div aria-hidden data-slot="bottom-sheet-handle" className={HANDLE} onClick={() => requestClose()} />;
+  }
   const index = snap == null ? 0 : Math.max(snapPoints.indexOf(snap), 0);
   return (
     <div
@@ -275,32 +281,14 @@ function SheetHandle() {
   );
 }
 
-export interface BottomSheetContentProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>, "title"> {
-  /** 제목 — 무엇을 하는 시트인지("거래 추가" · "기간"). 늘 둔다 */
-  title: React.ReactNode;
-  /** 설명 — 덧붙일 말이 있을 때만 한 문장 */
-  description?: React.ReactNode;
-  /** 오른쪽 위 닫기 버튼(기본 켬) — 조회 · 고르기 · 시트의 입력 폼 모두에 둔다 */
-  showCloseButton?: boolean;
+export interface BottomSheetSurfaceProps extends React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content> {
+  /** 손잡이 — snap(스냅 높이가 있을 때만, 기본) · always(늘 — Menu Sheet. 스냅 높이가 없으면 누를 때 닫는다) */
+  handle?: "snap" | "always";
 }
 
-const BottomSheetContent = React.forwardRef<React.ElementRef<typeof DrawerPrimitive.Content>, BottomSheetContentProps>(
-  (
-    {
-      title,
-      description,
-      showCloseButton = true,
-      className,
-      children,
-      onOpenAutoFocus,
-      onCloseAutoFocus,
-      onEscapeKeyDown,
-      onPointerDownOutside,
-      ...props
-    },
-    ref,
-  ) => {
+// 바탕 — 딤 · 시트(최대 480 · 위 모서리 · 모션 · 안전 영역) · 손잡이와 닫는 길. 머리 · 본문은 쓰는 쪽이 children 으로 넣는다
+const BottomSheetSurface = React.forwardRef<React.ElementRef<typeof DrawerPrimitive.Content>, BottomSheetSurfaceProps>(
+  ({ handle = "snap", className, children, onOpenAutoFocus, onCloseAutoFocus, onEscapeKeyDown, onPointerDownOutside, ...props }, ref) => {
     const ctx = useSheetContext("BottomSheetContent");
     const openerRef = React.useRef<Element | null>(null);
     return (
@@ -309,10 +297,7 @@ const BottomSheetContent = React.forwardRef<React.ElementRef<typeof DrawerPrimit
         <DrawerPrimitive.Content
           ref={mergeRefs(ref, ctx.contentRef)}
           data-slot="bottom-sheet-content"
-          data-form={ctx.form || undefined}
           aria-modal="true"
-          // 설명이 없으면 aria-describedby 를 걷는다(가리킬 곳이 없다)
-          {...(description == null ? { "aria-describedby": undefined } : null)}
           className={cn(CONTENT, ctx.snapPoints?.length && "h-[90dvh]", className)}
           // 처음 초점은 시트(본문 위) — vaul 은 기본으로 아무 데도 두지 않는다
           onOpenAutoFocus={(e) => {
@@ -348,34 +333,62 @@ const BottomSheetContent = React.forwardRef<React.ElementRef<typeof DrawerPrimit
           }}
           {...props}
         >
-          <SheetHandle />
-          <div data-slot="bottom-sheet-header" className="flex shrink-0 flex-col gap-x2 px-global-gutter pb-x4 pt-x6">
-            <DrawerPrimitive.Title
-              data-slot="bottom-sheet-title"
-              className={cn("m-0 text-t8 font-bold text-fg-neutral", showCloseButton && "pr-x10")}
-            >
-              {title}
-            </DrawerPrimitive.Title>
-            {description != null && (
-              <DrawerPrimitive.Description data-slot="bottom-sheet-description" className="m-0 text-t5 font-normal text-fg-neutral-muted">
-                {description}
-              </DrawerPrimitive.Description>
-            )}
-          </div>
-          {showCloseButton && (
-            <button
-              type="button"
-              aria-label="닫기"
-              data-slot="bottom-sheet-close"
-              className={CLOSE}
-              onClick={() => ctx.requestClose()}
-            >
-              <X aria-hidden strokeWidth={2} />
-            </button>
-          )}
+          <SheetHandle always={handle === "always"} />
           {children}
         </DrawerPrimitive.Content>
       </DrawerPrimitive.Portal>
+    );
+  },
+);
+BottomSheetSurface.displayName = "BottomSheetSurface";
+
+export interface BottomSheetContentProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>, "title"> {
+  /** 제목 — 무엇을 하는 시트인지("거래 추가" · "기간"). 늘 둔다 */
+  title: React.ReactNode;
+  /** 설명 — 덧붙일 말이 있을 때만 한 문장 */
+  description?: React.ReactNode;
+  /** 오른쪽 위 닫기 버튼(기본 켬) — 조회 · 고르기 · 시트의 입력 폼 모두에 둔다 */
+  showCloseButton?: boolean;
+}
+
+const BottomSheetContent = React.forwardRef<React.ElementRef<typeof DrawerPrimitive.Content>, BottomSheetContentProps>(
+  ({ title, description, showCloseButton = true, children, ...props }, ref) => {
+    const ctx = useSheetContext("BottomSheetContent");
+    return (
+      <BottomSheetSurface
+        ref={ref}
+        data-form={ctx.form || undefined}
+        // 설명이 없으면 aria-describedby 를 걷는다(가리킬 곳이 없다)
+        {...(description == null ? { "aria-describedby": undefined } : null)}
+        {...props}
+      >
+        <div data-slot="bottom-sheet-header" className="flex shrink-0 flex-col gap-x2 px-global-gutter pb-x4 pt-x6">
+          <DrawerPrimitive.Title
+            data-slot="bottom-sheet-title"
+            className={cn("m-0 text-t8 font-bold text-fg-neutral", showCloseButton && "pr-x10")}
+          >
+            {title}
+          </DrawerPrimitive.Title>
+          {description != null && (
+            <DrawerPrimitive.Description data-slot="bottom-sheet-description" className="m-0 text-t5 font-normal text-fg-neutral-muted">
+              {description}
+            </DrawerPrimitive.Description>
+          )}
+        </div>
+        {showCloseButton && (
+          <button
+            type="button"
+            aria-label="닫기"
+            data-slot="bottom-sheet-close"
+            className={CLOSE}
+            onClick={() => ctx.requestClose()}
+          >
+            <X aria-hidden strokeWidth={2} />
+          </button>
+        )}
+        {children}
+      </BottomSheetSurface>
     );
   },
 );
@@ -407,4 +420,4 @@ const BottomSheetFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<
 );
 BottomSheetFooter.displayName = "BottomSheetFooter";
 
-export { BottomSheet, BottomSheetTrigger, BottomSheetContent, BottomSheetBody, BottomSheetFooter };
+export { BottomSheet, BottomSheetTrigger, BottomSheetContent, BottomSheetBody, BottomSheetFooter, BottomSheetSurface };

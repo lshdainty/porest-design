@@ -11,12 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 /*
  * Porest Sidebar (shadcn 베이스 + Porest 디자인 토큰)
@@ -25,6 +20,8 @@ import {
  * - composition: SidebarProvider > Sidebar > SidebarHeader / SidebarContent / SidebarFooter
  *   SidebarContent > SidebarGroup > SidebarGroupLabel / SidebarGroupContent / SidebarMenu > SidebarMenuItem > SidebarMenuButton
  * - localStorage cookie로 collapsed 상태 영속.
+ * - 접힌 사이드바의 메뉴 버튼은 이름을 툴팁으로 보여 준다(tooltip.tsx — 마우스 200ms · 키보드 바로). 펼쳤거나 폰이면 툴팁을 끈다.
+ *   TooltipProvider 는 화면에 한 번 두는 것이라 사이드바가 따로 두지 않는다(겹치면 이어 열기가 끊긴다 — 없으면 툴팁이 혼자 쓴다).
  */
 
 const SIDEBAR_COOKIE_NAME = "sidebar:state";
@@ -137,25 +134,23 @@ const SidebarProvider = React.forwardRef<
 
     return (
       <SidebarContext.Provider value={contextValue}>
-        <TooltipProvider delayDuration={0}>
-          <div
-            style={
-              {
-                "--sidebar-width": SIDEBAR_WIDTH,
-                "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
-                ...style,
-              } as React.CSSProperties
-            }
-            className={cn(
-              "group/sidebar-wrapper flex min-h-svh w-full has-[[data-variant=inset]]:bg-bg-page",
-              className,
-            )}
-            ref={ref}
-            {...props}
-          >
-            {children}
-          </div>
-        </TooltipProvider>
+        <div
+          style={
+            {
+              "--sidebar-width": SIDEBAR_WIDTH,
+              "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
+              ...style,
+            } as React.CSSProperties
+          }
+          className={cn(
+            "group/sidebar-wrapper flex min-h-svh w-full has-[[data-variant=inset]]:bg-bg-page",
+            className,
+          )}
+          ref={ref}
+          {...props}
+        >
+          {children}
+        </div>
       </SidebarContext.Provider>
     );
   },
@@ -501,17 +496,13 @@ const SidebarMenuButton = React.forwardRef<
 
     if (!tooltip) return button;
 
-    if (typeof tooltip === "string") tooltip = { children: tooltip };
+    const content = typeof tooltip === "string" ? { children: tooltip } : tooltip;
 
+    // 접혀서 이름이 안 보일 때만 — 펼쳤거나 폰(시트)이면 이름이 이미 보인다
     return (
-      <Tooltip>
+      <Tooltip disabled={state !== "collapsed" || isMobile}>
         <TooltipTrigger asChild>{button}</TooltipTrigger>
-        <TooltipContent
-          side="right"
-          align="center"
-          hidden={state !== "collapsed" || isMobile}
-          {...tooltip}
-        />
+        <TooltipContent side="right" align="center" {...content} />
       </Tooltip>
     );
   },

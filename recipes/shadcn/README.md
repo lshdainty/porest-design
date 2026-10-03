@@ -124,6 +124,6 @@ button 다음에 만들 컴포넌트 우선순위 (Porest 사용처 기준):
 5. **Select / Combobox** — form 영역
 6. **Toast** — 시스템 알림
 7. **Tabs** — 탭 네비
-8. **Dropdown Menu** — 컨텍스트 액션
+8. **Menu** — 줄 · 화면의 동작(1280 미만은 Menu Sheet — `menu.tsx` 의 ResponsiveMenu)
 
 각 컴포넌트도 동일 패턴: shadcn 표준 코드 + Porest 토큰 + 한국어 라벨 데모.

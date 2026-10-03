@@ -44,22 +44,21 @@ import { calloutExamples } from "../recipes/shadcn/examples/callout-examples.mjs
 import { pageBannerExamples } from "../recipes/shadcn/examples/page-banner-examples.mjs";
 import { resultSectionExamples } from "../recipes/shadcn/examples/result-section-examples.mjs";
 import { tooltipExamples } from "../recipes/shadcn/examples/tooltip-examples.mjs";
+import { helpBubbleExamples } from "../recipes/shadcn/examples/help-bubble-examples.mjs";
 import { dialogExamples } from "../recipes/shadcn/examples/dialog-examples.mjs";
 import { alertDialogExamples } from "../recipes/shadcn/examples/alert-dialog-examples.mjs";
 import { popoverExamples } from "../recipes/shadcn/examples/popover-examples.mjs";
-import { hoverCardExamples } from "../recipes/shadcn/examples/hover-card-examples.mjs";
 import { sheetExamples } from "../recipes/shadcn/examples/sheet-examples.mjs";
 import { bottomSheetExamples } from "../recipes/shadcn/examples/bottom-sheet-examples.mjs";
 import { snackbarExamples } from "../recipes/shadcn/examples/snackbar-examples.mjs";
+import { menuSheetExamples } from "../recipes/shadcn/examples/menu-sheet-examples.mjs";
 import { swipeActionsExamples } from "../recipes/shadcn/examples/swipe-actions-examples.mjs";
 // Phase 4 Navigation
 import { tabsExamples } from "../recipes/shadcn/examples/tabs-examples.mjs";
 import { segmentedControlExamples } from "../recipes/shadcn/examples/segmented-control-examples.mjs";
 import { breadcrumbExamples } from "../recipes/shadcn/examples/breadcrumb-examples.mjs";
 import { paginationExamples } from "../recipes/shadcn/examples/pagination-examples.mjs";
-import { dropdownMenuExamples } from "../recipes/shadcn/examples/dropdown-menu-examples.mjs";
-import { contextMenuExamples } from "../recipes/shadcn/examples/context-menu-examples.mjs";
-import { menubarExamples } from "../recipes/shadcn/examples/menubar-examples.mjs";
+import { menuExamples } from "../recipes/shadcn/examples/menu-examples.mjs";
 import { navigationMenuExamples } from "../recipes/shadcn/examples/navigation-menu-examples.mjs";
 import { commandExamples } from "../recipes/shadcn/examples/command-examples.mjs";
 import { sidebarExamples } from "../recipes/shadcn/examples/sidebar-examples.mjs";
@@ -137,22 +136,21 @@ const SHADCN_EXAMPLES = {
   "result-section": resultSectionExamples,
   // Overlay (Phase 3)
   tooltip: tooltipExamples,
+  "help-bubble": helpBubbleExamples,
   dialog: dialogExamples,
   "alert-dialog": alertDialogExamples,
   popover: popoverExamples,
-  "hover-card": hoverCardExamples,
   sheet: sheetExamples,
   "bottom-sheet": bottomSheetExamples,
   snackbar: snackbarExamples,
+  "menu-sheet": menuSheetExamples,
   "swipe-actions": swipeActionsExamples,
   // Phase 4 Navigation
   tabs: tabsExamples,
   "segmented-control": segmentedControlExamples,
   breadcrumb: breadcrumbExamples,
   pagination: paginationExamples,
-  "dropdown-menu": dropdownMenuExamples,
-  "context-menu": contextMenuExamples,
-  menubar: menubarExamples,
+  menu: menuExamples,
   "navigation-menu": navigationMenuExamples,
   command: commandExamples,
   sidebar: sidebarExamples,
@@ -1997,19 +1995,18 @@ const SHADCN_CATALOG = [
   { slug: "alert-dialog", name: "Alert Dialog", category: "Overlay", description: "되돌릴 수 없는 일을 하기 전에 묻거나 꼭 알아야 할 일을 알리는 화면 정중앙의 확인창 (SEED Alert Dialog 구조)." },
   { slug: "bottom-sheet", name: "Bottom Sheet", category: "Overlay", description: "1280 미만에서 폼 · 상세 · 고르기를 띄우는 화면 아래의 모달 시트 (SEED Bottom Sheet 구조)." },
   { slug: "dialog", name: "Dialog", category: "Overlay", description: "1280 이상에서 입력 폼 · 상세를 화면 정중앙에 띄우고 1280 미만에서는 Bottom Sheet 로 바뀌는 대화상자 (SEED Dialog 구조)." },
-  { slug: "hover-card", name: "Hover Card", category: "Overlay", description: "호버 시 표시되는 카드 (프로필 미리보기 등)." },
+  { slug: "help-bubble", name: "Help Bubble", category: "Overlay", description: "트리거를 누르면 옆에 뜨는 짙은 도움말 말풍선 — 화면에 늘 두기에는 길고 몰라도 일은 할 수 있는 설명(규정 · 계산 방법 · 기능 안내)을 손가락으로도 연다 (SEED Help Bubble 구조)." },
+  { slug: "menu-sheet", name: "Menu Sheet", category: "Overlay", description: "1280 미만에서 Menu 대신 같은 줄 · 같은 순서로 화면 아래에서 올라오는 동작 목록 (SEED Swipeable Menu Sheet 구조)." },
   { slug: "popover", name: "Popover", category: "Overlay", description: "1280 이상에서 트리거에 붙어 부가 정보 · 고르는 패널을 띄우는 비모달 표면 (SEED Popover 구조)." },
   { slug: "sheet", name: "Sheet", category: "Overlay", description: "사이드 슬라이드 패널." },
   { slug: "snackbar", name: "Snackbar", category: "Overlay", description: "화면 아래에 잠깐 떴다 사라지는 띠(토스트) — 방금 한 일의 결과 · 뒤에서 끝난 일 · 다시 하면 되는 가벼운 실패를 한 번에 하나 알린다 (SEED Snackbar 구조)." },
   { slug: "swipe-actions", name: "Swipe Actions", category: "Data Display", description: "리스트 행을 밀어 편집·삭제에 바로 닿는 모바일 패턴." },
-  { slug: "tooltip", name: "Tooltip", category: "Overlay", description: "호버 시 짧은 설명." },
+  { slug: "tooltip", name: "Tooltip", category: "Overlay", description: "마우스를 올리거나 키보드 초점이 오면 트리거 옆에 뜨는 짧은 설명 — 아이콘 버튼 · 줄인 글이 무엇인지 보여 주는 Help Bubble 모양의 보조 (SEED Help Bubble Tooltip 구조)." },
 
-  // Navigation (10)
+  // Navigation (8)
   { slug: "breadcrumb", name: "Breadcrumb", category: "Navigation", description: "현재 위치 경로 표시." },
   { slug: "command", name: "Command", category: "Navigation", description: "Cmd+K 검색 팔레트 — cmdk 베이스." },
-  { slug: "context-menu", name: "Context Menu", category: "Navigation", description: "우클릭 / 길게 누르기 메뉴." },
-  { slug: "dropdown-menu", name: "Dropdown Menu", category: "Navigation", description: "트리거 클릭 시 드롭다운." },
-  { slug: "menubar", name: "Menubar", category: "Navigation", description: "데스크탑 앱 스타일 메뉴 바." },
+  { slug: "menu", name: "Menu", category: "Navigation", description: "트리거에 붙어 열리는 동작 목록 — 줄을 누르면 바로 실행하고 닫히며, 1280 미만에서는 같은 목록이 Menu Sheet 로 뜬다 (SEED Menu 구조)." },
   { slug: "navigation-menu", name: "Navigation Menu", category: "Navigation", description: "메가 메뉴 / 글로벌 nav." },
   { slug: "pagination", name: "Pagination", category: "Navigation", description: "페이지 분할 네비." },
   { slug: "segmented-control", name: "Segmented Control", category: "Navigation", description: "같은 내용을 2 ~ 4가지로 바로 거르거나 · 정렬하거나 · 다르게 보는 컨트롤 — 그 내용 바로 위에 하나 두고, 칸이 트랙 폭을 똑같이 나눈다 (SEED Segmented Control 구조)." },

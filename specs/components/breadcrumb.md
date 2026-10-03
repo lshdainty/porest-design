@@ -76,7 +76,7 @@ Ellipsis가 dropdown trigger일 땐 Link와 동일 hover/focus state 적용.
 **With ellipsis (긴 경로 축약)**
 
 - `홈 > ··· > UI > Breadcrumb` 패턴 — 중간 단계 dropdown으로 압축.
-- ellipsis 클릭 시 dropdown menu로 축약된 단계 노출(`DropdownMenu` 조합).
+- ellipsis 클릭 시 [Menu](menu.md)로 축약된 단계 노출(1280 미만은 Menu Sheet — Side Navigation 차례에 다시 정한다).
 - 단순 시각 표시만 필요할 땐 정적 ellipsis(클릭 불가).
 
 **Slash variant (dense)**

@@ -3724,53 +3724,13 @@ HR — 직원 정보 form(필수/선택 옵션), 권한 토글 switch, 평가 �
 - **같은 내용 조작**(캘린더 보기 전환 등 2 ~ 4개)은 Segmented Control.
 - 앱 적용 때 정할 자리 — 회사(모바일) 부서 관리 · 조직도, 캘린더 필터 팝오버의 사용자 · 유형.
 
-### Dropdown (Menu / Select 공통 패턴)
+### 메뉴 · 메뉴 시트 · 도움말 말풍선 · 툴팁
 
-> Select(폼 값 고르기)는 2026-10-01 Select · Input Button 절로 옮겼다(SEED Select · Input Button) — 이 절의 select · multi-select · combobox 줄은 옛 기준이고 쓰지 않는다. Menu 는 그 차례에 다시 정한다.
+> 모양 · 쓰는 규칙은 DESIGN.md 의 같은 이름 절(2026-10-02 SEED). HR 의 쓰는 자리만 적는다.
 
-HR — 직원 선택, 부서 선택, 결재 액션 메뉴(승인/반려/위임), 평가 등급 선택, 필터 옵션 등에서 광범위 사용.
-
-#### Structure (신규 토큰 없음)
-- panel: `surface-default` + `outline-strong-light` 1px + `shadow-md` + `radius-md`
-- item: height 36px, padding `sm`/`md`, text `body-md` (15/400)
-- hover `surface-input`, selected primary 좌측 stroke 또는 ✓ (`#357B5F`)
-
-#### Variant
-- menu(action), select(form), multi-select(checkbox item), combobox(search input + filter)
-
-#### Layout
-- panel max-height 400px (초과 시 scroll), min-width trigger width 또는 `lg` (16rem)
-- offset `xs` (4px), 자동 flip
-
-#### Motion
-- 등장 scale+fade `motion-duration-fast`, 사라짐 동일
-
-#### A11y
-- role: menu/menuitem 또는 combobox/listbox/option, trigger `aria-expanded`+`aria-haspopup`
-- 키보드: ↑↓/Home/End/Enter/Esc/typeahead
-- focus: 열릴 때 첫 item, 닫힐 때 trigger return
-- dismiss: 외부 click/Esc/trigger 재click
-
-### Tooltip
-
-HR — icon-only action button(승인/반려/편집/삭제 icon) 의미 설명, 데이터 테이블 cell truncated 텍스트, 키보드 단축키 안내. desktop 우선이라 hover-driven tooltip이 광범위 사용.
-
-#### Structure (신규 토큰 없음)
-- 표면: `surface-default-dark` + `text-primary-dark` (11.40:1 AAA)
-- shadow `shadow-sm`, radius `radius-sm`, padding xs/sm
-
-#### Layout
-- text: `caption` (12/400), max-width 240px, max 2줄
-- arrow optional, offset `xs` (4px) gap
-
-#### Motion
-- hover delay 500ms, focus 0ms 즉시
-- 등장: fade-in `motion-duration-fast`, 사라짐 동일
-
-#### A11y
-- WCAG 1.4.13: dismissible(Esc), hoverable, persistent
-- icon-only button: tooltip + `aria-label` 동시 (screen reader 보강)
-- 데이터 그리드 truncated cell: hover 시 tooltip + 키보드 focus도 동등
+- **표의 줄 동작** — 직원 · 휴가 · 업무 코드 줄 끝 ⋮ + Menu(수정 · 비밀번호 초기화 · 삭제 — 위험은 맨 아래). 줄 아이콘 묶음(업무 코드 · 부서 · 역할)도 ⋮ 로 옮긴다.
+- **규정 안내** — 휴가 신청 · 정책의 ⓘ 는 Help Bubble(긴 표가 있는 규정은 Popover).
+- **툴팁** — 접힌 사이드바 메뉴 이름 · 아이콘 버튼의 이름. 브랜드 파랑 툴팁은 걷는다.
 
 ### 알림 메시지 — Snackbar · Callout · Page Banner · Result Section
 
@@ -3939,9 +3899,8 @@ HR(B2B) 5 navigation 컴포넌트 — DESIGN.md 공통 spec 외 brand-specific �
 - 데이터 그리드 페이지 위주라 hover preview 같은 광고성 mega 패턴 부적절.
 
 #### Menubar — HR
-- 데스크탑 application 메타포 강조 — File / Edit / View / Tools / Help.
-- HR-specific: **결재 메뉴** (Alt+A — Approve), **평가 메뉴** (Alt+E — Evaluate), **내보내기** (Cmd+E — Export to PDF/Excel).
-- keyboard shortcut 적극 — power user (관리자, 본부장 등) 빠른 처리.
+
+> 2026-10-02 걷었다 — 쓰는 곳이 없다("메뉴 · 메뉴 시트 · 도움말 말풍선 · 툴팁" 절).
 
 #### Command (Cmd+K) — HR
 - 결재 빠른 처리: "김지원 휴가 승인" / "5월 평가 시작" 자연어 명령.
@@ -3988,13 +3947,12 @@ HR(B2B) 5 disclosure/overlay 컴포넌트.
 - **권한 detail "더 보기"**: 기본 정보 + collapse된 추가 권한.
 
 #### Hover Card — HR
-- **직원 mini profile**: 직원 이름 hover → avatar + 부서 + 직급 + 이메일 + 결재라인 가능 여부 + "쪽지" 버튼.
-- **결재 라인 hover**: 결재자 이름 hover → 본인 외 결재 가능자 list.
+
+> 2026-10-02 걷었다 — 쓰는 곳이 없다("메뉴 · 메뉴 시트 · 도움말 말풍선 · 툴팁" 절).
 
 #### Context Menu — HR
-- **결재 row right-click**: 승인 / 반려 / 보류 / 위임 / 삭제 (destructive 우측 분리).
-- **직원 grid right-click**: 메시지 / 결재 위임 / 권한 변경 / 정보 export.
-- 데이터 그리드 power user (관리자) 빠른 action.
+
+> 2026-10-02 걷었다 — 쓰는 곳이 없다("메뉴 · 메뉴 시트 · 도움말 말풍선 · 툴팁" 절).
 
 #### Alert Dialog — HR
 2026-10-02 SEED Alert Dialog 로 다시 정했다 — 위 "시트 · 대화상자 · 확인창 · 팝오버" 절.

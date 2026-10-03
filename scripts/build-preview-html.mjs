@@ -808,9 +808,9 @@ export function renderButtonGallery(brand) {
     star: svg('<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>'),
     trash: svg('<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>'),
   };
-  // 라벨은 <span> 에 싼다 — 로딩이면 숨기기만 해 폭이 그대로다. 아이콘만이면 이름(aria-label)을 단다.
+  // 라벨은 <span> 에 싼다 — 로딩이면 숨기기만 해 폭이 그대로다. 아이콘만이면 이름(aria-label)을 단다 — 네이티브 title 은 쓰지 않는다(tooltip.md)
   const btn = ({ cls, label = "", prefix = "", suffix = "", name = "", attrs = "" }) => {
-    const aria = name ? ` aria-label="${escape(name)}" title="${escape(name)}"` : "";
+    const aria = name ? ` aria-label="${escape(name)}"` : "";
     return `<button class="btn ${cls}" type="button"${aria}${attrs}>${prefix}${label ? `<span>${escape(label)}</span>` : ""}${suffix}</button>`;
   };
   const head = (first, cols, mod = "") => `<div class="btn-row btn-row--head${mod}"><div class="btn-cell-head">${escape(first)}</div>${
@@ -1404,6 +1404,7 @@ const LIST_ICON = {
   bus: listSvg('<path d="M8 6v6"/><path d="M15 6v6"/><path d="M2 12h19.6"/><path d="M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3"/><circle cx="7" cy="18" r="2"/><path d="M9 18h5"/><circle cx="16" cy="18" r="2"/>'),
   bag: listSvg('<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>'),
   more: listSvg('<circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>'),
+  moreVertical: listSvg('<circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>'),
   chevron: listSvg('<path d="m9 18 6-6-6-6"/>'),
 };
 
@@ -1473,9 +1474,9 @@ export function renderListGallery(brand) {
   const radio24 = (args = {}) => asRowAction(radio({ size: "large", ...args }), args.disabled);
   // 가계부 금액은 그 화면이 정한 자리다(list.md Suffix — 16 · 700) — List 의 값 글자가 아니다
   const amount = (v) => `<span class="plst-amount">${escape(v)}</span>`;
-  // 작은 버튼 — Button 갤러리의 xsmall 32. 글자는 neutralWeak, 아이콘만은 ghost · neutralSubtle 에 이름(aria-label)을 단다
+  // 작은 버튼 — Button 갤러리의 xsmall 32. 글자는 neutralWeak, 아이콘만은 ghost · neutralSubtle 에 이름(aria-label)을 단다 — 네이티브 title 은 쓰지 않는다(tooltip.md)
   const smallButton = (label) => `<button class="btn btn-neutral-weak btn-size-xsmall" type="button"><span>${escape(label)}</span></button>`;
-  const iconButton = (name, label) => `<button class="btn btn-ghost btn-ghost-subtle btn-icon-only btn-size-xsmall" type="button" aria-label="${escape(label)}" title="${escape(label)}">${icon(name)}</button>`;
+  const iconButton = (name, label) => `<button class="btn btn-ghost btn-ghost-subtle btn-icon-only btn-size-xsmall" type="button" aria-label="${escape(label)}">${icon(name)}</button>`;
 
   // 1. 줄의 종류 넷
   const kindsPanel = panel(
@@ -1537,7 +1538,7 @@ export function renderListGallery(brand) {
       ])),
       listFrame("작은 버튼 — 따로 눌린다", "suffix button", listOf([
         listRow({ kind: "button", prefix: listTile("indigo", "card"), title: "신한카드", detail: "이번 달 452,300원", suffix: smallButton("결제") + listChevron() }),
-        listRow({ prefix: listTile("gray", "receipt"), title: "월세", detail: "매월 25일 반복 이체", suffix: iconButton("more", "더보기") }),
+        listRow({ prefix: listTile("gray", "receipt"), title: "월세", detail: "매월 25일 반복 이체", suffix: iconButton("moreVertical", "월세 더보기") }),
       ])),
       listFrame("스위치 32", "ListSwitchItem", listOf([
         listRow({ kind: "control", prefix: icon("bell"), title: "결제 알림", detail: "결제 예정일 D-1, 결제일 당일 알림", suffix: switch32({ checked: true }) }),
@@ -3540,11 +3541,12 @@ export function overlayPopover({ id = nextOverlayId("pov-pop"), title = "", desc
 // 화면 틀 — phone(폭 360 까지 · 아래 홈 표시줄 안전 영역 34) · desktop(브라우저 창). 갤러리 것이고 컴포넌트의 일부가 아니다.
 //   page    뒤 화면(overlayPage) — 모달(layers)을 얹으면 inert 로 둔다
 //   layers  그 위의 딤 · 표면(overlayScrim · overlayLayer) — 쓴 차례로 쌓인다
+//   floats  뒤 화면을 막지 않는 떠 있는 층(03m 의 말풍선) — 뒤 화면을 inert 로 두지 않는다
 //   height  화면 높이 — 시트 90% · 대화상자 80% 상한이 이 높이를 따른다
-export function overlayFrame({ device = "phone", height = 600, page = "", layers = [] } = {}) {
+export function overlayFrame({ device = "phone", height = 600, page = "", layers = [], floats = [] } = {}) {
   const bar = device === "desktop" ? '<div class="pov-frame-bar" aria-hidden="true"><span></span><span></span><span></span></div>' : "";
   const home = device === "phone" ? '<div class="pov-home" aria-hidden="true"></div>' : "";
-  return `<div class="pov-frame pov-frame--${device}">${bar}<div class="pov-viewport" style="--pov-h: ${height}px;"><div class="pov-page"${layers.length ? " inert" : ""}>${page}</div>${layers.join("")}${home}</div></div>`;
+  return `<div class="pov-frame pov-frame--${device}">${bar}<div class="pov-viewport" style="--pov-h: ${height}px;"><div class="pov-page"${layers.length ? " inert" : ""}>${page}</div>${layers.join("")}${floats.join("")}${home}</div></div>`;
 }
 // 딤 — modal(시트 · 대화상자 L2 100) · alert(확인창 L5 300). overlay-dim 0.50 · 다크 0.65
 const overlayScrim = (level = "modal") => `<div class="pov-scrim${level === "alert" ? " pov-scrim--alert" : ""}" aria-hidden="true"></div>`;
@@ -4159,6 +4161,427 @@ export function renderFeedbackGallery(brand) {
     ${bannerTonePanel}
     ${bannerPlacePanel}
     ${resultPanel}
+  </section>`;
+}
+
+// Menu · Menu Sheet · Help Bubble · Tooltip — spec: specs/components/menu.md · menu-sheet.md · help-bubble.md · tooltip.md · 수치 menu.yaml · menu-sheet.yaml ·
+// help-bubble.yaml(Tooltip 도 이 파일의 opens: hover) · 쌓임 specs/z-index.md. 구조는 SEED Menu · Swipeable Menu Sheet · Help Bubble · Help Bubble Tooltip(2026-10-02).
+// 메뉴 .pmenu(role=menu)는 묶음 .pmenu-group(role=group) · 묶음 이름 .pmenu-label · 선 .pmenu-divider(묶음 사이에만 — 장식이라 보조 기술에 숨긴다) · 줄 .pmenu-item(role=menuitem)으로 짠다.
+// 메뉴 시트 .pmsheet 는 손잡이 · 머리(가운데) · 묶음 .pmsheet-group(옅은 회색 상자) · 줄 .pmsheet-item(<button>) · 보조 기술용 닫기 .pmsheet-close 다.
+// 말풍선 .pbub 는 Help Bubble(role=dialog — 제목 · 설명 · 닫기 버튼)과 Tooltip(role=tooltip — 글 하나)이 함께 쓴다.
+// 그림은 열린 순간을 멈춘 것이다 — 03k 의 화면 틀(overlayFrame) 안에 뒤 화면을 그리고, 메뉴는 트리거 아래 8 · 오른쪽 맞춤으로 붙이고(.pmenu-anchor), 시트는 딤 위에,
+// 말풍선은 틀에 뜬 층(floats)으로 얹는다. 말풍선의 자리(트리거 위 · 아래 12, 가장자리 16, 화살표는 트리거 가운데)는 페이지 끝 스크립트가 잰다 — 레시피의 Floating UI 자리다.
+// 표면은 레시피와 같은 role 이다 — 메뉴 · 말풍선은 비모달이라 뒤 화면을 막지 않는다. 메뉴 시트만 03k 처럼 role=group 으로 두고 뒤 화면을 inert 로 둔다(레시피는 dialog + aria-modal).
+// 호버 · 누름 · 포커스는 그 순간을 멈춘 클래스(--hover · --pressed · --focus)로 그렸고, data-pmenu-live · data-pbub-live · data-ptip 은 페이지 끝 스크립트가 실제로 열고 닫는다.
+// 아이콘은 lucide(선 2)다 — 크기는 놓인 자리가 정한다(메뉴 18 · 뒤 16 · 시트 22 · 닫기 14)
+const MENU_ICON = {
+  ellipsisVertical: listSvg('<circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>'),
+  pin: listSvg('<path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/>'),
+  pencil: listSvg('<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/>'),
+  copy: listSvg('<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>'),
+  trash: listSvg('<path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>'),
+  archive: listSvg('<rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/>'),
+  folderInput: listSvg('<path d="M2 9V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-1"/><path d="M2 13h10"/><path d="m9 16 3-3-3-3"/>'),
+  folderOutput: listSvg('<path d="M2 7.5V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-1.5"/><path d="M2 13h10"/><path d="m5 10-3 3 3 3"/>'),
+  arrowDownUp: listSvg('<path d="m3 16 4 4 4-4"/><path d="M7 20V4"/><path d="m21 8-4-4-4 4"/><path d="M17 4v16"/>'),
+  externalLink: listSvg('<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>'),
+  eyeOff: listSvg('<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/>'),
+  search: listSvg('<path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/>'),
+  rotateCcw: CHIP_ICON.rotateCcw,
+  info: OVERLAY_ICON.info,
+  x: OVERLAY_ICON.x,
+};
+// 그 순간을 멈춘 줄 — 메뉴 · 시트 줄은 hover · pressed · focus, 말풍선 닫기는 pressed · focus
+const MENU_INTERACTIONS = ["hover", "pressed", "focus"];
+const BUBBLE_CLOSE_INTERACTIONS = ["pressed", "focus"];
+let menuSeq = 0;
+const nextMenuId = (prefix) => `${prefix}-${(menuSeq += 1)}`;
+
+// Menu 줄 하나 — 글(label · description)은 여기서 escape 한다. 줄은 div role=menuitem(tabindex -1 — 열린 메뉴에서는 화살표 키가 초점을 옮긴다).
+//   icon · suffixIcon  앞 · 뒤 아이콘(MENU_ICON 이름) — 앞 아이콘은 모든 줄에 두거나 모두 뺀다, 뒤 아이콘은 바깥 링크처럼 방향을 알릴 때만
+//   tone         neutral(기본) · critical(이름 · 아이콘만 fg-critical — 맨 아래 묶음)
+//   disabled     막힌 줄 — aria-disabled. 눌러도 실행하지 않고 닫히지 않으며 화살표 키가 건너뛴다
+//   interaction  hover · pressed · focus — 그 순간을 멈춘 줄(갤러리 전용). focus 는 키보드로 옮긴 줄이다
+const menuItem = ({ label, description = "", icon = "", suffixIcon = "", tone = "neutral", disabled = false, interaction = "" }) => {
+  const cls = ["pmenu-item", tone === "critical" && "pmenu-item--critical", MENU_INTERACTIONS.includes(interaction) && `pmenu-item--${interaction}`].filter(Boolean).join(" ");
+  const slot = (name, svgName) => (svgName ? `<span class="pmenu-item-${name}" aria-hidden="true">${MENU_ICON[svgName]}</span>` : "");
+  const desc = description ? `<span class="pmenu-item-desc">${escape(description)}</span>` : "";
+  return `<div class="${cls}" role="menuitem" tabindex="-1"${disabled ? ' aria-disabled="true"' : ""}><span class="pmenu-item-content">${slot("icon", icon)}<span class="pmenu-item-body"><span class="pmenu-item-label">${escape(label)}</span>${desc}</span>${slot("suffix", suffixIcon)}</span></div>`;
+};
+
+// Menu(MenuContent) — 묶음(group)마다 줄을 쌓고 묶음 사이에만 선을 긋는다.
+//   groups      [{ label, items: [menuItem 인자] }] — 묶음 이름(label)은 묶음이 무엇인지 말해야 할 때만
+//   labelledby  트리거 id(메뉴의 이름 — 트리거에서 잇는다) · label  트리거가 없는 견본(상태 표)의 이름
+//   hidden      닫힌 메뉴(직접 열어 보는 그림 — 페이지 끝 스크립트가 연다)
+export function menuContent({ id = nextMenuId("pmenu"), labelledby = "", label = "", groups = [], hidden = false } = {}) {
+  const body = groups.map((group, gi) => {
+    const headId = group.label ? `${id}-g${gi}` : "";
+    const head = group.label ? `<div class="pmenu-label" id="${headId}">${escape(group.label)}</div>` : "";
+    const divider = gi > 0 ? '<div class="pmenu-divider" aria-hidden="true"></div>' : "";
+    return `${divider}<div class="pmenu-group" role="group"${headId ? ` aria-labelledby="${headId}"` : ""}>${head}${group.items.map(menuItem).join("")}</div>`;
+  }).join("");
+  return `<div ${attrsOf([
+    'class="pmenu"',
+    'role="menu"',
+    `id="${id}"`,
+    'aria-orientation="vertical"',
+    'tabindex="-1"',
+    labelledby ? `aria-labelledby="${labelledby}"` : label && `aria-label="${escape(label)}"`,
+    `data-state="${hidden ? "closed" : "open"}"`,
+    hidden && "hidden",
+  ])}>${body}</div>`;
+}
+
+// 메뉴를 여는 ⋮ — Button ghost · iconOnly(medium 40), 이름은 "{줄 이름} 더보기". menu(묶음 목록)를 주면 열린 채로 그리고(aria-expanded · aria-controls)
+// 메뉴를 트리거 아래 8 · 오른쪽 맞춤에 붙인다(.pmenu-anchor). live 면 닫힌 채로 두고 페이지 끝 스크립트가 연다
+const menuTrigger = ({ name, menu = null, live = false }) => {
+  const id = nextMenuId("pmenu-trigger");
+  const menuId = nextMenuId("pmenu");
+  const open = !!menu && !live;
+  const button = `<button ${attrsOf([
+    'class="btn btn-ghost btn-icon-only"',
+    'type="button"',
+    `id="${id}"`,
+    `aria-label="${escape(name)}"`,
+    'aria-haspopup="menu"',
+    `aria-expanded="${open ? "true" : "false"}"`,
+    open && `aria-controls="${menuId}"`,
+    `data-state="${open ? "open" : "closed"}"`,
+    live && "data-pmenu-trigger",
+  ])}>${MENU_ICON.ellipsisVertical}</button>`;
+  return menu ? `<span class="pmenu-anchor">${button}${menuContent({ id: menuId, labelledby: id, groups: menu, hidden: live })}</span>` : button;
+};
+
+// Menu Sheet 줄 — <button>(막히면 disabled). 글은 여기서 escape 한다. 인자는 menuItem 과 같다(뒤 아이콘은 없다).
+// textOnly 시트에는 아이콘 · 설명을 넘기지 않는다
+const menuSheetItem = ({ label, description = "", icon = "", tone = "neutral", disabled = false, interaction = "" }) => {
+  const cls = ["pmsheet-item", tone === "critical" && "pmsheet-item--critical", MENU_INTERACTIONS.includes(interaction) && `pmsheet-item--${interaction}`].filter(Boolean).join(" ");
+  const icn = icon ? `<span class="pmsheet-item-icon" aria-hidden="true">${MENU_ICON[icon]}</span>` : "";
+  const desc = description ? `<span class="pmsheet-item-desc">${escape(description)}</span>` : "";
+  return `<button type="button" class="${cls}"${disabled ? " disabled" : ""}><span class="pmsheet-item-content">${icn}<span class="pmsheet-item-body"><span class="pmsheet-item-label">${escape(label)}</span>${desc}</span></span></button>`;
+};
+
+// Menu Sheet(MenuSheetContent) — 손잡이(늘) · 머리(제목 · 설명 — 가운데) · 묶음(사이 10) · 줄 · 보조 기술용 닫기. 글은 여기서 escape 한다.
+//   layout   textWithIcon(기본 — 아이콘 + 글, 왼쪽 정렬) · textOnly(글만 — 가운데 정렬, 줄 설명 없음). 한 시트에서 섞지 않는다
+//   groups   [{ items: [menuSheetItem 인자] }] — 묶음 안 줄 사이에 선(마지막 줄 아래는 없다)
+//   label    제목이 없을 때의 이름(aria-label — 트리거 이름)
+//   closeInteraction  focus — 보조 기술용 닫기에 키보드 초점이 온 순간(갤러리 전용 — 평소에는 보이지 않는다)
+export function menuSheet({ id = nextMenuId("pmsheet"), title = "", description = "", label = "", layout = "textWithIcon", groups = [], closeInteraction = "" } = {}) {
+  const titleId = title ? `${id}-title` : "";
+  const descId = title && description ? `${id}-desc` : "";
+  const head = title ? `<div class="pmsheet-header"><div class="pmsheet-title" id="${titleId}">${escape(title)}</div>${descId ? `<p class="pmsheet-desc" id="${descId}">${escape(description)}</p>` : ""}</div>` : "";
+  const list = groups.map(g => `<div class="pmsheet-group">${g.items.map(menuSheetItem).join("")}</div>`).join("");
+  const close = `<button type="button" class="pmsheet-close${closeInteraction === "focus" ? " pmsheet-close--focus" : ""}">닫기</button>`;
+  return `<div class="pmsheet${layout === "textOnly" ? " pmsheet--text-only" : ""}" role="group" ${overlayNameAttrs(titleId, descId, label)}><div class="pmsheet-handle" aria-hidden="true"></div>${head}<div class="pmsheet-list">${list}</div>${close}</div>`;
+}
+
+// 말풍선 — Help Bubble(kind bubble — 제목 + 설명, 닫기 버튼을 둘 수 있다) · Tooltip(kind tooltip — 글 하나). 글은 여기서 escape 한다.
+//   trigger  가리킬 트리거 id — 페이지 끝 스크립트가 그 트리거 가운데로 화살표를 맞추고 자리를 잡는다
+//   side     top(기본) · bottom — 바라는 자리. 놓인 틀이 경계이고, 모자라면 스크립트가 뒤집는다
+//   close    닫기 버튼(Help Bubble 만) · closeInteraction pressed · focus — 그 순간을 멈춘 닫기(갤러리 전용)
+//   live     직접 열고 닫는 말풍선(data-pbub-live) · hidden  닫힌 채로 그린다(툴팁 — 페이지 끝 스크립트가 연다)
+//   focused  Tab 으로 들어온 말풍선(닫기 버튼이 없을 때 — 바깥 2px 링, 갤러리 전용)
+export function bubble({ id = nextMenuId("pbub"), kind = "bubble", title = "", description = "", trigger = "", side = "top", close = false, closeInteraction = "", live = false, hidden = false, focused = false } = {}) {
+  const tip = kind === "tooltip";
+  const titleId = tip ? "" : `${id}-title`;
+  const descId = !tip && description ? `${id}-desc` : "";
+  const cls = ["pbub", tip && "pbub--tooltip", close && "pbub--close", focused && "pbub--focus"].filter(Boolean).join(" ");
+  const closeCls = ["pbub-close", BUBBLE_CLOSE_INTERACTIONS.includes(closeInteraction) && `pbub-close--${closeInteraction}`].filter(Boolean).join(" ");
+  const attrs = attrsOf([
+    `class="${cls}"`,
+    `id="${id}"`,
+    `role="${tip ? "tooltip" : "dialog"}"`,
+    !tip && 'tabindex="-1"',
+    titleId && `aria-labelledby="${titleId}"`,
+    descId && `aria-describedby="${descId}"`,
+    trigger && `data-pbub-for="${trigger}"`,
+    `data-pbub-side="${side}"`,
+    `data-side="${side}"`,
+    `data-state="${hidden ? "closed" : "open"}"`,
+    live && "data-pbub-live",
+    hidden && "hidden",
+  ]);
+  const text = `<div class="pbub-title"${titleId ? ` id="${titleId}"` : ""}>${escape(title)}</div>${descId ? `<p class="pbub-desc" id="${descId}">${escape(description)}</p>` : ""}`;
+  const closeBtn = close ? `<button type="button" class="${closeCls}" aria-label="닫기">${MENU_ICON.x}</button>` : "";
+  return `<div ${attrs}>${text}${closeBtn}<svg class="pbub-arrow" viewBox="0 0 12 8" aria-hidden="true"><path d="M0,0 H12 L8,6 Q6,8 4,6 Z"/></svg></div>`;
+}
+
+// 도움말 ⓘ — Button ghost · neutralSubtle · iconOnly(medium 40), 이름은 "{무엇} 안내". 연 말풍선을 aria-controls 로 잇는다.
+// data-pbub-trigger 는 페이지 끝 스크립트가 누를 때 여닫을 말풍선이다
+const helpTrigger = ({ id, name, controls, open = true }) => `<button ${attrsOf([
+  'class="btn btn-ghost btn-ghost-subtle btn-icon-only"',
+  'type="button"',
+  `id="${id}"`,
+  `aria-label="${escape(name)}"`,
+  'aria-haspopup="dialog"',
+  `aria-expanded="${open ? "true" : "false"}"`,
+  open && `aria-controls="${controls}"`,
+  `data-state="${open ? "open" : "closed"}"`,
+  `data-pbub-trigger="${controls}"`,
+])}>${MENU_ICON.info}</button>`;
+
+// 아이콘 버튼 — Button ghost · iconOnly(medium 40), 이름은 aria-label. tip 을 주면 열린 툴팁을 aria-describedby 로 잇고, live 면 data-ptip 으로 페이지 끝 스크립트가 연다
+const toolButton = ({ id, icon, name, tip = "", live = "" }) => `<button ${attrsOf([
+  'class="btn btn-ghost btn-icon-only"',
+  'type="button"',
+  `id="${id}"`,
+  `aria-label="${escape(name)}"`,
+  tip && `aria-describedby="${tip}"`,
+  live && `data-ptip="${live}"`,
+])}>${MENU_ICON[icon]}</button>`;
+
+// 뒤 화면 — 제목(오른쪽에 버튼을 둘 수 있다) + 내용. desktop 은 03k 처럼 회색 바탕 위 흰 카드에 내용을 둔다. 2026년 10월 1일은 목요일이다
+const menuPage = ({ title, action = "", body = "", desktop = false }) =>
+  `<div class="pmenu-page-head"><div class="pov-page-title">${escape(title)}</div>${action}</div>${desktop ? `<div class="pov-page-card">${body}</div>` : body}`;
+// 줄 끝 ⋮ 목록 — 누르는 줄(줄을 누르면 상세)이고 줄마다 ⋮ 를 둔다. open 번째 줄의 ⋮ 에 메뉴를 붙이고, live 면 모든 줄의 ⋮ 가 직접 열린다
+const moreRows = (rows, { open = -1, menu = null, live = false } = {}) => listOf(rows.map((r, i) => listRow({
+  kind: "button",
+  title: r.title,
+  detail: r.detail,
+  suffix: menuTrigger({ name: `${r.title} 더보기`, menu: live || i === open ? menu : null, live }),
+})));
+
+const MENU_MEMOS = [
+  { title: "주간 회의 메모", detail: "10월 1일 (목) · 회의" },
+  { title: "장보기 목록", detail: "9월 30일 (수)" },
+  { title: "여행 준비", detail: "9월 28일 (월)" },
+  { title: "읽을 책", detail: "9월 25일 (금)" },
+];
+const MENU_STAFF = [
+  { title: "김하늘", detail: "디자인 본부 · 매니저" },
+  { title: "박서준", detail: "프로덕트 본부 · 팀장" },
+  { title: "이도윤", detail: "운영 본부 · 팀원" },
+];
+// 메모 줄의 동작 — menu.md 코드 예와 같다. hover · focus 는 그 순간을 멈출 줄 이름이다
+const memoMenu = ({ hover = "", focus = "" } = {}) => [
+  { items: [{ label: "고정", icon: "pin" }, { label: "수정", icon: "pencil" }, { label: "복사해 새로 쓰기", icon: "copy" }]
+    .map(i => ({ ...i, interaction: i.label === hover ? "hover" : i.label === focus ? "focus" : "" })) },
+  { items: [{ label: "삭제", icon: "trash", tone: "critical" }] },
+];
+// 직원 줄의 동작 — menu.md 코드 예와 같다(설명 · 막힌 줄)
+const STAFF_MENU = [
+  { items: [{ label: "수정" }, { label: "비밀번호 초기화", description: "새 비밀번호를 메일로 보내요." }, { label: "휴가 내역 내보내기", disabled: true }] },
+  { items: [{ label: "삭제", tone: "critical" }] },
+];
+// 가계부 표의 머리 더보기 — 같은 동작이 범위마다 있어 묶음 이름이 묶음을 말한다. 바깥으로 나가는 줄만 뒤 아이콘
+const LEDGER_MENU = [
+  { label: "10월 거래", items: [{ label: "엑셀로 저장" }, { label: "인쇄" }] },
+  { label: "모든 거래", items: [{ label: "엑셀로 저장" }, { label: "백업 만들기" }] },
+  { items: [{ label: "도움말", suffixIcon: "externalLink" }] },
+];
+const memoSheetGroups = (states = {}) => [
+  { items: [{ label: "고정", icon: "pin" }, { label: "수정", icon: "pencil" }, { label: "복사해 새로 쓰기", icon: "copy" }].map(i => ({ ...i, interaction: states[i.label] || "" })) },
+  { items: [{ label: "삭제", icon: "trash", tone: "critical", interaction: states["삭제"] || "" }] },
+];
+
+// Menu · Menu Sheet · Help Bubble · Tooltip 갤러리 — Menu · Menu Sheet · 상태 · Help Bubble · Tooltip 다섯 판을 흰 표면(.vignette-card) 위에 그린다.
+// 견본 틀(.ptf-samples · .ptf-cap)과 상태 표(.cb-matrix)는 Text Field 갤러리 것, 화면 틀은 03k 것을 그대로 쓴다. 글은 Desk(메모 · 가계부 · 사진 · 금액 가리기)와
+// HR(직원 · 휴가)에서 빌렸다 — menu.md · menu-sheet.md · help-bubble.md · tooltip.md 코드 예와 같은 글이다.
+// 그림은 열린 순간을 멈췄다 — 줄 · 버튼은 실제로 올리고 눌러 볼 수 있고, "직접" 견본과 말풍선은 페이지 끝 스크립트로 실제로 열고 닫힌다.
+export function renderMenuGallery(brand) {
+  const panel = (title, sub, body) => `
+    <div class="vignette-card cb-panel">
+      <div class="vignette-head">
+        <div class="vignette-title">${escape(title)}</div>
+        <div class="vignette-sub">${escape(sub)}</div>
+      </div>${body}
+    </div>`;
+  const samples = (items, cls = "ptf-samples") => `
+      <div class="${cls}">${items.join("")}
+      </div>`;
+  const sample = (cap, en, body) => `
+        <div class="ptf-sample">
+          <div class="ptf-cap">${escape(cap)}<span>${escape(en)}</span></div>
+          ${body}
+        </div>`;
+  const DESKTOP = "ptf-samples pov-samples--desktop";
+  // 상태 표 — 줄(상태) × 칸. 칸에는 이름(data-col)을 달아 폰 폭에서 칸을 세로로 쌓을 때 칸 이름을 위에 보인다
+  const matrix = (cls, first, cols, rows, cell) => `
+      <div class="cb-matrix ${cls}" style="--cb-cols: ${cols.length};">
+        <div class="cb-matrix-row cb-matrix-row--head"><div class="cb-matrix-head">${escape(first)}</div>${
+          cols.map(c => `<div class="cb-matrix-head">${escape(c.ko)}<span>${escape(c.en)}</span></div>`).join("")
+        }</div>${rows.map(r => `
+        <div class="cb-matrix-row"><div class="cb-matrix-label">${escape(r.ko)}<span>${escape(r.en)}</span></div>${
+          cols.map(c => `<div class="cb-matrix-cell" data-col="${escape(c.ko)}">${cell(r, c)}</div>`).join("")
+        }</div>`).join("")}
+      </div>`;
+
+  // 1. Menu — 데스크톱 줄의 ⋮(메모 · 직원) · 표의 머리 더보기(묶음 이름 · 뒤 아이콘) · 직접 열어 보기
+  const memoFrame = overlayFrame({
+    device: "desktop",
+    height: 400,
+    page: menuPage({ title: "메모", desktop: true, body: moreRows(MENU_MEMOS, { open: 0, menu: memoMenu({ hover: "수정", focus: "복사해 새로 쓰기" }) }) }),
+  });
+  const staffFrame = overlayFrame({
+    device: "desktop",
+    height: 400,
+    page: menuPage({ title: "직원", desktop: true, body: moreRows(MENU_STAFF, { open: 0, menu: STAFF_MENU }) }),
+  });
+  const ledgerFrame = overlayFrame({
+    device: "desktop",
+    height: 440,
+    page: menuPage({ title: "가계부", desktop: true, action: menuTrigger({ name: "가계부 더보기", menu: LEDGER_MENU }), body: listOf(OVERLAY_LEDGER.map(overlayRow)) }),
+  });
+  const liveFrame = overlayFrame({
+    device: "desktop",
+    height: 400,
+    page: menuPage({ title: "메모", desktop: true, body: moreRows(MENU_MEMOS.slice(0, 3), { menu: memoMenu(), live: true }) }),
+  });
+  const menuPanel = panel(
+    "Menu — 줄의 ⋮ · 묶음 · 위험한 동작",
+    "데스크톱 목록 · 표의 줄에서 동작은 줄 끝 ⋮ 하나로 연다 — 버튼 이름은 \"{줄 이름} 더보기\"(Button ghost · iconOnly)이고, 줄 자체를 누르면 상세 · 수정이 열린다. 메뉴는 트리거 아래 8 · 오른쪽 끝에 맞춰(align end — SEED 기본은 가운데) 붙는 폭 200 의 떠 있는 표면이다 — bg-layer-floating · 모서리 20 · shadow-s3 · 위아래 8 이고, 딤이 없고 뒤 화면을 숨기지 않는다(비모달 · L3 200). 아래가 모자라면 위로 연다. 줄은 위아래 10 · 좌우 16 · 이름 14/19 · 앞 아이콘 18(사이 8)이라 한 줄이면 39, 설명(12/16 · fg-neutral-subtle · 사이 2)이 붙으면 57 이다 — 글이 길면 말줄임 없이 단어 단위로 줄을 바꾼다. 선은 묶음 사이에만 긋는다 — 1px stroke-neutral-subtle · 좌우 16 들임 · 위아래 8. 묶음 이름(13/18 · fg-neutral-subtle · 위아래 8)은 같은 동작이 범위마다 있을 때처럼 묶음이 무엇인지 말해야 할 때만 둔다. 마우스를 올린 줄은 좌우 8 들인 알약(모서리 12 · bg-layer-floating-pressed)이고, 키보드로 옮긴 줄은 같은 자리에 2px 링만 그린다 — 마우스와 키보드 위치가 다르면 둘 다 보인다(메모 그림의 수정 · 복사해 새로 쓰기). 되돌릴 수 없는 동작은 맨 아래 묶음에 critical(이름 · 아이콘만 fg-critical)로 두고, 막힌 줄은 fg-disabled 로 눌러도 실행하지 않고 닫히지 않는다. 뒤 아이콘(16)은 바깥 링크처럼 방향을 알릴 때만 둔다. 메뉴에는 고른 표시 · 단축키 · 하위 메뉴가 없다 — 값을 고르는 일은 Select · Segmented Control 이다. 마지막 그림은 실제로 열고, 키보드로 옮기고, 눌러 닫을 수 있다.",
+    samples([
+      sample("Desk 메모 — 줄의 ⋮ 를 연 순간", "ResponsiveMenu · 1280 이상 — 호버 알약(수정) · 키보드 링(복사해 새로 쓰기) · critical 묶음", memoFrame),
+      sample("HR 직원 — 설명 · 막힌 줄", "MenuItem description · disabled — 한 줄 39 · 설명 57", staffFrame),
+      sample("표의 머리 더보기 — 묶음 이름 · 뒤 아이콘", "MenuGroup label — 같은 동작이 범위마다 · suffixIcon 은 바깥 링크만", ledgerFrame),
+      sample("직접 열어 보기", "누르기 · Enter · ↓ 로 열고 ↑ ↓ · Home · End · 글자로 옮긴다 — 줄 누르기 · Esc · 바깥으로 닫힌다", liveFrame),
+    ], DESKTOP),
+  );
+
+  // 2. Menu Sheet — 폰. 같은 메모 줄 동작(아이콘 + 글) · 글만(가운데) · 머리 더보기(설명 · 보조 기술용 닫기)
+  const sheetFrame = (page, sheet, height = 600) => overlayFrame({ device: "phone", height, page, layers: [overlayScrim(), overlayLayer("sheet", sheet)] });
+  const memoPhone = menuPage({ title: "메모", body: moreRows(MENU_MEMOS) });
+  const profilePhone = menuPage({ title: "프로필", body: listOf([["이름", "김지원"], ["이메일", "porest@example.com"], ["가입일", "2026년 3월 2일"]].map(([title, value]) => listRow({ title, suffix: escape(value) }))) });
+  const sheetPanel = panel(
+    "Menu Sheet — 손잡이 · 가운데 제목 · 묶음 · 글만",
+    "1280 미만에서는 같은 목록이 화면 아래에서 올라오는 메뉴 시트로 뜬다 — 같은 줄 · 같은 순서 · 같은 막힘이고, 코드는 폭을 보고 둘 중 하나를 그리는 ResponsiveMenu 하나다. 시트는 최대 480 · 위 두 모서리 20 · 위 24(손잡이 자리) · 좌우 화면 여백 24 · 아래 16 + 안전 영역이고, 그림자 없이 딤(0.50 · 다크 0.65) 위의 떠 있는 표면이다(L2 딤 100 · 시트 101). 손잡이(36 × 4 · stroke-neutral-weak · 위 6)는 늘 있고 위 닫기 버튼 · 바닥 취소는 없다 — 딤 · 끌어내리기 · Esc · 뒤로 가기로 닫는다. 머리는 가운데 정렬이다 — 제목 18/24 · 700(무엇의 동작인지), 설명 14/19 · fg-neutral-muted(사이 4), 그 아래 16. 묶음은 옅은 회색 상자(bg-neutral-weak · 모서리 16)이고 묶음 사이는 선 없이 10 이다. 줄은 최소 52 · 위아래 14 · 좌우 16 · 이름 16/22 · 아이콘 22(사이 14)이고, 줄 사이에 1px stroke-neutral-weak 선을 긋는다(묶음의 마지막 줄 아래는 없다). 아이콘 없이 글만 쓰면 가운데 정렬이고 줄 설명을 두지 않는다 — 한 시트에서 섞지 않는다. 위험한 동작은 맨 아래 묶음에 둔다. 줄을 누르면 시트를 닫고 실행한다. 보조 기술용 닫기는 목록 뒤에 있고 평소에는 보이지 않다가 키보드 초점이 오면 52 높이 · bg-neutral-weak · 모서리 12 버튼으로 보인다.",
+    samples([
+      sample("메모 줄 ⋮ — 아이콘 + 글", "ResponsiveMenu · 1280 미만 Menu Sheet — 손잡이 · 제목 가운데 · critical 묶음", sheetFrame(memoPhone, menuSheet({ title: "주간 회의 메모", groups: memoSheetGroups() }))),
+      sample("글만 — 가운데 정렬", "layout=\"textOnly\" — 줄 설명 없음", sheetFrame(profilePhone, menuSheet({ title: "사진", layout: "textOnly", groups: [
+        { items: [{ label: "앨범에서 고르기" }, { label: "사진 찍기" }] },
+        { items: [{ label: "사진 지우기", tone: "critical" }] },
+      ] }))),
+      sample("머리 더보기 — 설명 · 보조 기술용 닫기", "MenuSheet — 머리 설명 · 키보드 초점이 온 닫기", sheetFrame(memoPhone, menuSheet({ title: "메모", description: "메모 12개", closeInteraction: "focus", groups: [
+        { items: [{ label: "가져오기", icon: "folderInput" }, { label: "내보내기", icon: "folderOutput" }, { label: "정렬 바꾸기", icon: "arrowDownUp" }] },
+      ] }))),
+    ]),
+  );
+
+  // 3. 상태 — Menu(알약 · 링) · Menu Sheet(줄 바탕 · 줄 안쪽 링). 호버 · 누름 · 포커스는 그 순간을 멈췄다
+  const states = [
+    { ko: "기본", en: "enabled" },
+    { ko: "호버", en: "hovered — 마우스만", interaction: "hover" },
+    { ko: "누름", en: "pressed — 바탕 + 2px 축소", interaction: "pressed" },
+    { ko: "포커스", en: "focused — 키보드만 · 링 2px", interaction: "focus" },
+    { ko: "막힘", en: "disabled", disabled: true },
+  ];
+  const menuCols = [
+    { ko: "아이콘 + 이름", en: "neutral — 앞 아이콘 18 · 39", item: { label: "수정", icon: "pencil" } },
+    { ko: "위험한 동작", en: "critical — 이름 · 아이콘 fg-critical", item: { label: "삭제", icon: "trash", tone: "critical" } },
+    { ko: "설명", en: "57 — 설명 12/16 fg-neutral-subtle", item: { label: "비밀번호 초기화", description: "새 비밀번호를 메일로 보내요." } },
+  ];
+  const sheetCols = [
+    { ko: "아이콘 + 글", en: "textWithIcon — 아이콘 22 · 52", item: { label: "고정", icon: "pin" } },
+    { ko: "위험한 동작", en: "critical — 누르는 동안 fg-critical-contrast", item: { label: "삭제", icon: "trash", tone: "critical" } },
+    { ko: "글만", en: "textOnly — 가운데 정렬", item: { label: "사진 찍기" }, textOnly: true },
+    { ko: "설명", en: "13/18 · 500 — 누르는 동안 fg-neutral-muted", item: { label: "보관", icon: "archive", description: "목록에서 숨기고 보관함으로 옮겨요." } },
+  ];
+  const menuCell = (s, c) => menuContent({ label: `${c.item.label} — ${s.ko}`, groups: [{ items: [{ ...c.item, interaction: s.interaction || "", disabled: !!s.disabled }] }] });
+  const sheetCell = (s, c) => `<div class="pmsheet-demo${c.textOnly ? " pmsheet--text-only" : ""}"><div class="pmsheet-group">${menuSheetItem({ ...c.item, interaction: s.interaction || "", disabled: !!s.disabled })}</div></div>`;
+  const statePanel = panel(
+    "상태 — 호버 · 누름 · 키보드 포커스 · 막힌 줄",
+    "Menu 는 마우스를 올린 줄에 좌우 8 들인 알약(모서리 12 · bg-layer-floating-pressed)을 칠하고, 누르면 같은 알약에 아이콘 · 글만 2px 거리로 준다(알약은 그대로 — 기준 max(높이, 폭 ÷ 4, 24), 모션 줄이기면 줄지 않는다). 키보드로 옮긴 줄은 바탕 없이 알약 자리 안쪽에 2px 링이다 — 마우스로 연 메뉴에는 링이 없다. 메뉴 시트는 줄 전체를 bg-neutral-weak-pressed 로 칠하고 누르면 아이콘 · 글만 준다 — 칠한 동안 설명은 fg-neutral-muted, 위험한 줄의 이름 · 아이콘은 fg-critical-contrast 로 짙어진다(누름 바탕 위 4.5:1 — fg-critical 은 4.39 · 다크 3.91, fg-neutral-subtle 은 다크 3.91 이다). 키보드 포커스는 줄 안쪽 2px 링이고 묶음 상자가 넘친 링을 자른다. 막힌 줄은 둘 다 아이콘 · 이름 · 설명이 fg-disabled 이고 호버 · 누름이 없다 — 화살표 키가 건너뛴다. 위험한 줄의 설명은 그대로 fg-neutral-subtle 이다. 호버 · 누름 · 포커스는 그 순간을 멈춰 그렸다 — 줄은 실제로 올리고 눌러 볼 수 있다.",
+    `<div class="pmenu-matrix-cap">Menu — 1280 이상</div>${matrix("pmenu-matrix", "상태", menuCols, states, menuCell)}
+      <div class="pmenu-matrix-cap pmenu-matrix-cap--next">Menu Sheet — 1280 미만</div>${matrix("pmenu-matrix pmsheet-matrix", "상태", sheetCols, states, sheetCell)}`,
+  );
+
+  // 4. Help Bubble — ⓘ 를 눌러 여는 도움말(데스크톱 · 폰) · 처음부터 열어 두는 안내(닫기 버튼) · 닫기 버튼 상태
+  const RULE = "입사 1년 미만은 한 달에 1일씩 생기고, 1년이 지나면 15일이 생겨요.";
+  const leaveHelp = (device) => {
+    const tid = nextMenuId("pbub-trigger");
+    const bid = nextMenuId("pbub");
+    const lead = `<div class="pmenu-lead">남은 연차 8.5일${helpTrigger({ id: tid, name: "연차 사용 규정 안내", controls: bid })}</div>`;
+    const body = `${listOf(OVERLAY_LEAVE.map(overlayRow))}`;
+    return overlayFrame({
+      device,
+      height: device === "desktop" ? 400 : 460,
+      page: `${menuPage({ title: "휴가", desktop: device === "desktop", body })}${lead}`,
+      floats: [bubble({ id: bid, title: "연차 사용 규정", description: RULE, trigger: tid, live: true })],
+    });
+  };
+  const hideTid = nextMenuId("pbub-anchor");
+  const hideBid = nextMenuId("pbub");
+  const hideFrame = overlayFrame({
+    device: "phone",
+    height: 440,
+    page: menuPage({ title: "가계부", action: toolButton({ id: hideTid, icon: "eyeOff", name: "금액 가리기" }), body: listOf(OVERLAY_LEDGER.map(overlayRow)) }),
+    floats: [bubble({ id: hideBid, title: "금액을 가릴 수 있어요", description: "누르면 화면의 금액이 모두 가려져요.", trigger: hideTid, side: "bottom", close: true, live: true })],
+  });
+  const closeCols = [
+    { ko: "기본", en: "enabled" },
+    { ko: "누름", en: "pressed — 닫기만 2px 축소", interaction: "pressed" },
+    { ko: "포커스", en: "focused — 키보드만", interaction: "focus" },
+    { ko: "누르는 영역", en: "점선 — 닫기 44(사방 3)", target: true },
+  ];
+  // 말풍선 줄 — 닫기 버튼이 없는 말풍선. 누를 것이 없어 누름 · 누르는 영역이 없다. 포커스는 Tab 으로 들어온 순간을 멈췄다
+  const bubbleCell = (c) => (c.interaction === "focus" ? `<span class="pbub-demo">${bubble({ title: "안내", focused: true })}</span>`
+    : c.interaction || c.target ? '<span class="pbub-na">없음 — 누를 것이 없다</span>'
+    : `<span class="pbub-demo">${bubble({ title: "안내" })}</span>`);
+  const bubblePanel = panel(
+    "Help Bubble — ⓘ 를 눌러 여는 도움말 · 닫기 버튼",
+    "몰라도 일은 할 수 있는 설명(규정 · 계산 방법 · 기능 안내)을 ⓘ 아이콘 버튼(이름 \"{무엇} 안내\")을 눌러 띄운다 — 손가락으로도 열려 폰에서도 읽어야 하는 설명은 이것이다. 말풍선은 짙은 바탕(bg-neutral-inverted — 다크에서는 밝은 바탕) · 모서리 12 · 위아래 10 · 좌우 12 · 그림자 없음이고, 폭은 내용만큼 최대 280 이다. 제목 13/18 · 700, 설명 13/18 · 400(사이 2) — 한 줄이면 38, 설명이 있으면 58. 기본은 트리거 위다 — 화살표(12 × 8) 끝과 트리거는 4, 몸통과는 12 떨어진다. 자리가 모자라면 반대편으로 뒤집고 옆으로 밀어 화면 가장자리와 16 을 남긴다 — 화살표는 늘 트리거 가운데를 가리키고 말풍선 모서리와 14 를 남긴다(폰 그림은 밀었다). 비모달이라 뒤 화면을 숨기지 않는다(L4 210). ⓘ 를 다시 누르거나 바깥 · Esc 로 닫힌다. 닫기 버튼은 처음부터 열어 두는 안내에만 둔다 — 오른쪽 위 모서리의 투명 38 상자(아이콘 14 · 위 12 · 오른쪽 12 · 글과 4, 누르는 영역 44)이고, 누르면 아이콘만 2px 거리로 준다. 키보드 링은 말풍선 글자색이다 — 브랜드 링은 짙은 말풍선 위에서 3:1 에 못 미친다. 말풍선 안에 링크 · 버튼을 두지 않는다(닫기 버튼만). 열려 있을 때 트리거에서 Tab 을 누르면 말풍선으로 들어간다 — 닫기 버튼이 있으면 그 버튼으로, 없으면 말풍선 자체로 가고 둘레 바깥 2px 링(띄움 2 · stroke-focus-ring · 모서리를 따라)이 선다(페이지 위에 그려져 브랜드 링이다). 다시 Tab 으로 나가면 닫히고 초점은 트리거 다음 칸으로, Shift+Tab 은 트리거로 간다. 그림의 말풍선도 실제로 닫고 다시 열 수 있다.",
+    `${samples([
+      sample("폰 — ⓘ 연차 사용 규정", "HelpBubble — 손가락으로 눌러 연다 · 가장자리 16 을 남기고 밀었다 · 화살표는 ⓘ 가운데", leaveHelp("phone")),
+      sample("데스크톱 — 같은 말풍선", "제목 + 설명 · 트리거 위 · 비모달", leaveHelp("desktop")),
+    ], "ptf-samples ptf-samples--forms")}${samples([
+      sample("처음부터 열어 두는 안내 — 닫기 버튼", "HelpBubbleAnchor · showCloseButton · side=\"bottom\" — 닫으면 다시 열지 않는다", hideFrame),
+    ], "ptf-samples pov-samples--next")}
+      <div class="cb-matrix pov-close-matrix pbub-close-matrix" style="--cb-cols: ${closeCols.length};">
+        <div class="cb-matrix-row cb-matrix-row--head"><div class="cb-matrix-head">Tab 이 서는 자리</div>${
+          closeCols.map(c => `<div class="cb-matrix-head">${escape(c.ko)}<span>${escape(c.en)}</span></div>`).join("")
+        }</div>
+        <div class="cb-matrix-row"><div class="cb-matrix-label">닫기 버튼 — 투명 38 상자<span>아이콘 14 · 링 안쪽 2px fg-neutral-inverted</span></div>${
+          closeCols.map(c => `<div class="cb-matrix-cell"><span class="pbub-close-demo${c.target ? " pbub-close-demo--target" : ""}"><button type="button" class="pbub-close${c.interaction ? ` pbub-close--${c.interaction}` : ""}" aria-label="닫기">${MENU_ICON.x}</button></span></div>`).join("")
+        }</div>
+        <div class="cb-matrix-row"><div class="cb-matrix-label">말풍선 — 닫기 없음<span>링 바깥 2px · 띄움 2 stroke-focus-ring</span></div>${
+          closeCols.map(c => `<div class="cb-matrix-cell">${bubbleCell(c)}</div>`).join("")
+        }</div>
+      </div>`,
+  );
+
+  // 5. Tooltip — 아이콘 버튼의 이름(그 순간) · 이어서 옮기기(그 순간) · 직접 올려 보기 · 막힌 버튼의 이유
+  const TOOLS = [{ icon: "search", name: "검색" }, { icon: "eyeOff", name: "금액 가리기" }, { icon: "rotateCcw", name: "필터 초기화" }];
+  const toolFrame = ({ open = "", live = false }) => {
+    const ids = TOOLS.map(() => nextMenuId("ptip-trigger"));
+    const tips = TOOLS.map(() => nextMenuId("ptip"));
+    const at = TOOLS.findIndex(t => t.name === open);
+    const tools = `<div class="pmenu-tools">${TOOLS.map((t, i) => toolButton({ id: ids[i], icon: t.icon, name: t.name, tip: i === at ? tips[i] : "", live: live ? tips[i] : "" })).join("")}</div>`;
+    const floats = TOOLS.map((t, i) => (live || i === at ? bubble({ id: tips[i], kind: "tooltip", title: t.name, trigger: ids[i], hidden: live }) : "")).filter(Boolean);
+    return overlayFrame({
+      device: "desktop",
+      height: 340,
+      page: menuPage({ title: "가계부", desktop: true, body: `<div class="pmenu-card-head"><span>10월 거래</span>${tools}</div>${listOf(OVERLAY_LEDGER.slice(0, 3).map(overlayRow))}` }),
+      floats,
+    });
+  };
+  const reasonId = nextMenuId("pmenu-reason");
+  const reason = `<div class="pmenu-reason"><button class="btn btn-neutral-weak" type="button" disabled aria-describedby="${reasonId}"><span>지난달 예산 복사</span></button><p class="pmenu-reason-text" id="${reasonId}">복사할 지난달 예산이 없어요.</p></div>`;
+  const tooltipPanel = panel(
+    "Tooltip — 아이콘 버튼의 이름 · 이어서 옮기기",
+    "툴팁은 Help Bubble 과 같은 말풍선을 마우스 · 키보드로 여는 보조다 — 글 하나(13/18 · 700)만 두고 누를 것이 없다(role=tooltip · 트리거의 aria-describedby). 마우스를 올리면 200ms 뒤에 열고, 트리거와 말풍선을 모두 벗어나면 100ms 뒤에 닫는다 — 말풍선 위로 옮겨도 닫히지 않는다(WCAG 1.4.13). 키보드 초점이 오면 바로 열고, 하나가 열린 뒤 옆 트리거로 옮기면 기다리지 않고 모션 없이 바로 바꿔 연다. 트리거를 누르거나 Esc 로 닫는다. 손가락으로 누르면 열지 않는다 — 그래서 아이콘 버튼의 이름은 늘 aria-label 에 두고 툴팁은 그 이름을 보여 줄 뿐이며, 막힌 버튼의 이유는 툴팁이 아니라 가까운 글로 보인다(막힌 버튼은 초점을 받지 못해 키보드로 툴팁을 열 수 없다). 글자가 이미 보이는 버튼에는 두지 않고, 네이티브 title 은 쓰지 않는다. 폰에서도 읽어야 하는 설명은 Help Bubble 이다. 셋째 그림의 툴바는 직접 올리고 Tab 으로 옮겨 볼 수 있다.",
+    `${samples([
+      sample("아이콘 버튼의 이름 — 데스크톱", "TooltipContent — aria-label 과 같은 글 · 트리거 위 · 200ms 뒤", toolFrame({ open: "금액 가리기" })),
+      sample("이어서 옮기기 — 옆 트리거로", "TooltipProvider — 하나가 열린 뒤 옆으로 옮기면 기다리지 않고 모션 없이 바로", toolFrame({ open: "필터 초기화" })),
+      sample("직접 올려 보기", "마우스 200ms · 키보드 바로 · 옆으로 옮기면 바로 · 손가락은 열지 않는다", toolFrame({ live: true })),
+      sample("막힌 버튼 — 이유는 툴팁이 아니라 가까운 글", "disabled · aria-describedby — 툴팁에만 두지 않는다", reason),
+    ], DESKTOP)}`,
+  );
+
+  const lede = "SEED Menu · Swipeable Menu Sheet · Help Bubble · Help Bubble Tooltip 구조 — 메뉴 가족이다. 줄 · 화면의 동작은 1280 이상에서 트리거(줄 끝 ⋮ · 머리의 더보기)에 붙는 Menu(폭 200 · 줄 39 · 비모달), 1280 미만에서 같은 목록의 Menu Sheet(줄 52 · 손잡이 · 딤)다 — 메뉴는 누르면 바로 실행하고 닫히는 동작만 담고, 값을 고르는 일은 Select · Segmented Control 이다. 도움말은 짙은 말풍선 하나(최대 280 · 13 · 모서리 12 · 화살표)를 두 가지로 연다 — 눌러서 여는 Help Bubble(터치에서도 닿는다)과 마우스 · 키보드로 여는 Tooltip(보조). 쌓임은 specs/z-index.md — 메뉴 L3(200) · 시트 L2(100 · 101) · 말풍선 L4(210). 그림은 열린 순간을 멈춘 것이고, 화면 틀은 03k 것이다. 옛 Dropdown Menu(160 · 줄 32 · 1px 테두리 · 체크 · 라디오 · 단축키 · 하위 메뉴) · Context Menu · Menubar · Hover Card · 옛 툴팁(반전 · 모서리 2 · 그림자)은 걷었다."
+    + (brand.key === "shared" ? " 공유 토큰에는 브랜드 역할 색이 없어 포커스 링이 여기서는 중립(fg-neutral)으로 보인다 — HR · Desk 미리보기에서 브랜드 색이다." : "");
+
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">03m — Menu · Menu Sheet · Help Bubble · Tooltip</div>
+      <h2 class="section-title">메뉴 · 메뉴 시트 · 도움말 · 툴팁 — 1280&nbsp;에서 바뀌는 동작 목록 · 짙은 말풍선 하나</h2>
+      <p class="section-lede">${escape(lede)}</p>
+    </header>
+    ${menuPanel}
+    ${sheetPanel}
+    ${statePanel}
+    ${bubblePanel}
+    ${tooltipPanel}
   </section>`;
 }
 
@@ -4816,8 +5239,8 @@ export function renderShadcnNav(brand) {
   <section class="section">
     <header class="section-head">
       <div class="section-eyebrow">15 — Navigation (v68)</div>
-      <h2 class="section-title">Breadcrumb · Sidebar · Nav Menu · Menubar · Command</h2>
-      <p class="section-lede">5 navigation 컴포넌트 — 페이지 위계, 좌측 nav, 데스크탑 menu, 전역 command.</p>
+      <h2 class="section-title">Breadcrumb · Sidebar · Nav Menu · Command</h2>
+      <p class="section-lede">4 navigation 컴포넌트 — 페이지 위계, 좌측 nav, 데스크탑 menu, 전역 command. 옛 Menubar 는 걷었다 — 동작 목록은 03m 의 Menu 다.</p>
     </header>
     <div class="sc-grid">
       <div class="sc-card">
@@ -4849,15 +5272,6 @@ export function renderShadcnNav(brand) {
         </nav>
       </div>
       <div class="sc-card">
-        <div class="sc-head">Menubar</div>
-        <div class="mb">
-          <button class="mb-item">File <span class="mb-key">⌘N</span></button>
-          <button class="mb-item">Edit <span class="mb-key">⌘E</span></button>
-          <button class="mb-item">View <span class="mb-key">⌘V</span></button>
-          <button class="mb-item">Help</button>
-        </div>
-      </div>
-      <div class="sc-card sc-card--full">
         <div class="sc-head">Command (⌘K) — 전역 search/action</div>
         <div class="cmd">
           <input class="cmd-input" placeholder="명령 또는 검색..." readonly>
@@ -4948,8 +5362,8 @@ export function renderShadcnDisclose(brand) {
   <section class="section">
     <header class="section-head">
       <div class="section-eyebrow">17 — Disclosure (v70)</div>
-      <h2 class="section-title">Accordion · Collapsible · Hover Card · Context Menu · Alert Dialog</h2>
-      <p class="section-lede">5 disclosure/overlay 컴포넌트 — 접기/펼치기, hover preview, right-click, destructive confirm.</p>
+      <h2 class="section-title">Accordion · Collapsible · Alert Dialog</h2>
+      <p class="section-lede">3 disclosure/overlay 컴포넌트 — 접기/펼치기, destructive confirm. 옛 Hover Card · Context Menu 는 걷었다 — 동작 목록은 03m 의 Menu 다.</p>
     </header>
     <div class="sc-grid">
       <div class="sc-card">
@@ -4971,26 +5385,6 @@ export function renderShadcnDisclose(brand) {
         <div class="sc-head">Collapsible</div>
         <button class="col-trigger">${brand.key === "hr" ? "첨부 3개" : brand.key === "desk" ? "자세히 보기" : "더 보기"} <span>▾</span></button>
         <div class="sc-note">단일 toggle — Accordion보다 가벼움</div>
-      </div>
-      <div class="sc-card">
-        <div class="sc-head">Hover Card</div>
-        <div class="hc">
-          <div class="hc-avatar">${brand.key === "hr" ? "박" : brand.key === "desk" ? "김" : "P"}</div>
-          <div class="hc-body">
-            <div class="hc-name">${brand.key === "hr" ? "박서연 · 본부장" : brand.key === "desk" ? "김지원 · 사용자" : "Porest"}</div>
-            <div class="hc-bio">${brand.key === "hr" ? "디자인 시스템 매니저, 6년차" : brand.key === "desk" ? "메모 234건 · 할일 58건" : "shared baseline"}</div>
-          </div>
-        </div>
-      </div>
-      <div class="sc-card">
-        <div class="sc-head">Context Menu</div>
-        <div class="ctx">
-          <div class="ctx-item">${brand.key === "hr" ? "승인" : brand.key === "desk" ? "즐겨찾기" : "Edit"}</div>
-          <div class="ctx-item">${brand.key === "hr" ? "반려" : brand.key === "desk" ? "보관" : "Duplicate"}</div>
-          <div class="ctx-sep"></div>
-          <div class="ctx-item ctx-item--destructive">${brand.key === "hr" ? "삭제" : brand.key === "desk" ? "삭제" : "Delete"}</div>
-        </div>
-        <div class="sc-note">right-click / long-press</div>
       </div>
       <!-- Alert Dialog — 옛 모양(모서리 12 · shadow-xl · 합니다체 · 처음 초점 취소)은 걷고 03k 의 확인창으로 그린다(alert-dialog.md, 2026-10-02) -->
       <div class="sc-card sc-card--full">
@@ -8968,6 +9362,397 @@ export function pageCss() {
       .pfb-live { grid-template-columns: minmax(0, 1fr); }
     }
 
+    /* === Menu · Menu Sheet · Help Bubble · Tooltip — specs/components/menu.md · menu-sheet.md · help-bubble.md · tooltip.md(수치는 menu.yaml · menu-sheet.yaml ·
+       help-bubble.yaml) · specs/z-index.md ===
+       구조는 SEED Menu · Swipeable Menu Sheet · Help Bubble · Help Bubble Tooltip(2026-10-02).
+       메뉴 .pmenu(role=menu)는 폭 200 · bg-layer-floating · 모서리 20 · shadow-s3 · 위아래 8 의 떠 있는 표면이다(L3 200 · 비모달 — 글이 길면 폭을 늘리지 않고 줄을 바꾼다).
+       묶음 .pmenu-group 사이에만 선 .pmenu-divider(1px stroke-neutral-subtle · 좌우 16 들임 · 위아래 8)를 긋고, 묶음 이름 .pmenu-label 은 t3 · fg-neutral-subtle · 위아래 8 · 좌우 16 이다.
+       줄 .pmenu-item 은 위아래 10 · 좌우 16 이고 콘텐츠 .pmenu-item-content(앞 아이콘 18 · 이름 t4 · 설명 t2 · 뒤 아이콘 16, 사이 8)는 누르면 2px 거리로 준다 — 한 줄 39 · 설명이 붙으면 57.
+       알약(호버 · 누름 바탕)은 ::before 가 좌우 8 들여 모서리 12 · bg-layer-floating-pressed 로 칠하고, 키보드 링은 ::after 가 같은 자리 안쪽에 2px 로 그린다(바탕 없음) —
+       호버와 키보드 위치는 따로 움직여 둘 다 보일 수 있다. 위험한 줄(--critical)은 이름 · 아이콘만 fg-critical, 막힌 줄(aria-disabled)은 fg-disabled 이고 알약이 생기지 않는다.
+       메뉴 시트 .pmsheet 는 최대 480 · 위 두 모서리 20 · 위 24 · 좌우 24 · 아래 16 + 안전 영역, 그림자 없음이다(L2 시트 101 — 딤은 03k 의 .pov-scrim). 손잡이 .pmsheet-handle(36 × 4 · 위 6) ·
+       머리 .pmsheet-header(가운데 — 제목 t6 700 · 설명 t4 fg-neutral-muted · 사이 4 · 아래 16) · 목록 .pmsheet-list(묶음 사이 10) · 묶음 .pmsheet-group(bg-neutral-weak · 모서리 16) ·
+       줄 .pmsheet-item(최소 52 · 위아래 14 · 좌우 16 · 아이콘 22 · 이름 t5 · 설명 t3 500 · 사이 14, 줄 사이 1px stroke-neutral-weak 를 줄 안쪽 아래에 — 묶음의 마지막 줄은 없다) ·
+       보조 기술용 닫기 .pmsheet-close(평소에는 화면에서 숨기고 초점이 오면 보인다 — 링은 바깥 2px)로 짠다. 호버 · 누름은 줄 바탕 bg-neutral-weak-pressed 이고, 그동안 설명은 fg-neutral-muted ·
+       위험한 줄의 이름 · 아이콘은 fg-critical-contrast 다(누름 바탕 위 4.5:1). 키보드 링은 줄 안쪽 2px 이고 묶음 상자가 자른다. 글만(--text-only)은 가운데 정렬이다.
+       말풍선 .pbub 는 Help Bubble 과 Tooltip(--tooltip)이 함께 쓴다 — bg-neutral-inverted · 모서리 12 · 위아래 10 · 좌우 12 · 최대 280 · 그림자 없음, 제목 t3 700 · 설명 t3 400(사이 2),
+       화살표 .pbub-arrow 12 × 8 · 끝 모서리 2(L4 210). 닫기 .pbub-close 는 오른쪽 위 모서리의 투명 38 상자(아이콘 14 · 누르는 영역 44)이고 링은 말풍선 글자색이다.
+       말풍선은 놓인 틀(.pov-viewport)에 뜬 층이다 — 자리(left · top · --pbub-arrow-x · data-side)는 페이지 끝 스크립트가 트리거로 잰다.
+       누름 배율 = (기준 − 2) ÷ 기준, 기준 = max(높이, 폭 ÷ 4, 24) — 페이지 끝 스크립트가 누르는 순간 재서 --press-basis 로 넘긴다(재기 전에는 줄 높이).
+       --hover · --pressed · --focus 는 갤러리에서 그 순간을 고정해 보여 주는 클래스다. 다크 짝은 이 블록 끝의 [data-theme="dark"] 에서 바꾼다. */
+
+    /* Menu — 트리거 아래 8 · 오른쪽 맞춤(.pmenu-anchor). 아래가 모자라 위로 연 메뉴는 data-side="top" 이다 */
+    .pmenu-anchor { position: relative; display: inline-flex; }
+    .pmenu-anchor > .pmenu { position: absolute; top: calc(100% + var(--spacing-x2)); right: 0; }
+    .pmenu-anchor > .pmenu[data-side="top"] { top: auto; bottom: calc(100% + var(--spacing-x2)); }
+    .pmenu {
+      --pmenu-focus-ring: var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral)));
+      position: relative;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+      width: 200px;
+      max-height: 480px;
+      overflow-y: auto;
+      padding: var(--spacing-x2) 0;
+      border-radius: var(--radius-r5);
+      background: var(--color-bg-layer-floating);
+      box-shadow: var(--shadow-s3);
+      font-family: var(--font-sans);
+      font-size: var(--text-t4);
+      line-height: var(--text-t4--line-height);
+      font-weight: 400;
+      color: var(--color-fg-neutral);
+      text-align: left;
+      outline: none;
+    }
+    .pmenu[hidden] { display: none; }
+    .pmenu-group { display: flex; flex-direction: column; }
+    .pmenu-label { padding: var(--spacing-x2) var(--spacing-x4); font-size: var(--text-t3); line-height: var(--text-t3--line-height); font-weight: 400; color: var(--color-fg-neutral-subtle); }
+    .pmenu-divider { flex-shrink: 0; height: 1px; margin: var(--spacing-x2) var(--spacing-x4); background: var(--color-stroke-neutral-subtle); }
+    .pmenu-item {
+      --press-basis: 39;
+      position: relative;
+      display: flex;
+      padding: var(--spacing-x2_5) var(--spacing-x4);
+      cursor: pointer;
+      user-select: none;
+      outline: none;
+    }
+    /* 알약(::before) · 링(::after) — 모서리 12. 알약은 쉴 때 줄 폭 그대로 투명하고, 호버 · 누름에 좌우 8 들어오며 칠한다(바탕 · 들임이 함께 —
+       menu.tsx 의 PILL · PILL_ON). 링은 늘 좌우 8 들인 알약 자리다 */
+    .pmenu-item::before,
+    .pmenu-item::after {
+      content: "";
+      position: absolute;
+      inset-block: 0;
+      inset-inline: var(--spacing-x2);
+      border-radius: var(--radius-r3);
+      pointer-events: none;
+    }
+    .pmenu-item::before {
+      inset-inline: 0;
+      background: transparent;
+      transition:
+        background-color var(--motion-duration-color-transition) var(--motion-ease-easing),
+        inset var(--motion-duration-color-transition) var(--motion-ease-easing);
+    }
+    @media (hover: hover) {
+      .pmenu-item:not([aria-disabled="true"]):hover::before { inset-inline: var(--spacing-x2); background: var(--color-bg-layer-floating-pressed); }
+    }
+    .pmenu-item:not([aria-disabled="true"]):active::before,
+    .pmenu-item.pmenu-item--hover::before,
+    .pmenu-item.pmenu-item--pressed::before { inset-inline: var(--spacing-x2); background: var(--color-bg-layer-floating-pressed); }
+    /* 키보드 링 — 키보드로 옮긴 줄에만 알약 자리 안쪽 2px(바탕은 칠하지 않는다). 마우스로 연 메뉴의 초점에는 그리지 않는다 */
+    .pmenu-item:focus-visible::after,
+    .pmenu-item.pmenu-item--focus::after { outline: 2px solid var(--pmenu-focus-ring); outline-offset: -2px; }
+    /* 콘텐츠 — 앞 아이콘 · 이름(설명) · 뒤 아이콘, 사이 8. 여러 줄이면 아이콘은 세로 가운데. 누르는 동안만 이 층이 준다 */
+    .pmenu-item-content {
+      position: relative;
+      display: flex;
+      flex: 1;
+      align-items: center;
+      gap: var(--spacing-x2);
+      min-width: 0;
+      transition: scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    .pmenu-item:not([aria-disabled="true"]):active > .pmenu-item-content,
+    .pmenu-item.pmenu-item--pressed > .pmenu-item-content { scale: calc(1 - 2 / var(--press-basis)); }
+    @media (prefers-reduced-motion: reduce) {
+      .pmenu-item:not([aria-disabled="true"]):active > .pmenu-item-content,
+      .pmenu-item.pmenu-item--pressed > .pmenu-item-content { scale: 1; }
+    }
+    .pmenu-item-icon,
+    .pmenu-item-suffix { display: flex; flex-shrink: 0; color: var(--color-fg-neutral); }
+    .pmenu-item-icon > svg { width: 18px; height: 18px; }
+    .pmenu-item-suffix > svg { width: 16px; height: 16px; }
+    .pmenu-item-body { display: flex; flex: 1; flex-direction: column; gap: var(--spacing-x0_5); min-width: 0; }
+    .pmenu-item-label { font-size: var(--text-t4); line-height: var(--text-t4--line-height); font-weight: 400; color: var(--color-fg-neutral); }
+    .pmenu-item-desc { font-size: var(--text-t2); line-height: var(--text-t2--line-height); font-weight: 400; color: var(--color-fg-neutral-subtle); }
+    /* 위험한 동작 — 이름 · 아이콘만 fg-critical(설명은 그대로). 막힌 줄 — 전용 색 fg-disabled · 알약 없음(흐리게 하지 않는다) */
+    .pmenu-item--critical :is(.pmenu-item-icon, .pmenu-item-label, .pmenu-item-suffix) { color: var(--color-fg-critical); }
+    .pmenu-item[aria-disabled="true"] { cursor: not-allowed; }
+    .pmenu-item[aria-disabled="true"] :is(.pmenu-item-icon, .pmenu-item-label, .pmenu-item-desc, .pmenu-item-suffix) { color: var(--color-fg-disabled); }
+    /* 열림 150ms(d3) enter — 트리거 쪽 변(오른쪽 위 · 위로 열면 오른쪽 아래)에서 0.95 배부터. 페이지 끝 스크립트가 직접 연 메뉴에만 단다 */
+    @keyframes pmenu-in { from { opacity: 0; scale: 0.95; } }
+    .pmenu[data-motion="in"] { transform-origin: top right; animation: pmenu-in var(--motion-duration-d3) var(--motion-ease-enter); }
+    .pmenu[data-motion="in"][data-side="top"] { transform-origin: bottom right; }
+
+    /* Menu Sheet — 최대 480 · 화면 높이의 90% 까지 · 위 두 모서리 20 · 그림자 없음. 위 24(손잡이 자리) · 좌우 24 · 아래 16 + 안전 영역. L2 시트 101 */
+    /* 포커스 링 — 공유 토큰(DESIGN.md)에는 브랜드 역할 색이 없어 중립으로 떨어진다(.pmenu · .pov-close 와 같은 대체 사슬). 상태 표의 칸(.pmsheet-demo)에도 둔다 */
+    .pmsheet,
+    .pmsheet-demo { --pmsheet-focus-ring: var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral))); }
+    .pmsheet {
+      position: relative;
+      z-index: 101;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 480px;
+      max-height: 90%;
+      padding: var(--spacing-x6) var(--spacing-global-gutter) calc(var(--spacing-x4) + var(--pov-safe-bottom, 0px));
+      border-radius: var(--radius-r5) var(--radius-r5) 0 0;
+      background: var(--color-bg-layer-floating);
+      color: var(--color-fg-neutral);
+      font-family: var(--font-sans);
+      text-align: left;
+    }
+    .pmsheet-handle { position: absolute; top: var(--spacing-x1_5); left: 50%; width: 36px; height: 4px; translate: -50% 0; border-radius: var(--radius-full); background: var(--color-stroke-neutral-weak); }
+    .pmsheet-header { display: flex; flex-shrink: 0; flex-direction: column; gap: var(--spacing-x1); padding-bottom: var(--spacing-x4); text-align: center; }
+    .pmsheet-title { font-size: var(--text-t6); line-height: var(--text-t6--line-height); font-weight: 700; color: var(--color-fg-neutral); }
+    .pmsheet-desc { margin: 0; font-size: var(--text-t4); line-height: var(--text-t4--line-height); font-weight: 400; color: var(--color-fg-neutral-muted); }
+    /* 목록 — 묶음 사이 10(선 없이 간격만). 넘치면 목록만 스크롤한다 */
+    .pmsheet-list { display: flex; flex-direction: column; gap: var(--spacing-x2_5); min-height: 0; overflow-y: auto; }
+    .pmsheet-group { display: flex; flex-shrink: 0; flex-direction: column; overflow: hidden; border-radius: var(--radius-r4); background: var(--color-bg-neutral-weak); }
+    /* 줄 — 최소 52 · 위아래 14 · 좌우 16. 줄 사이 선은 줄 안쪽 아래 1px(안쪽 그림자 — 줄 높이를 바꾸지 않는다), 묶음의 마지막 줄에는 없다 */
+    .pmsheet-item {
+      --press-basis: 52;
+      position: relative;
+      display: flex;
+      align-items: center;
+      box-sizing: border-box;
+      width: 100%;
+      min-height: var(--spacing-x13);
+      margin: 0;
+      padding: var(--spacing-x3_5) var(--spacing-x4);
+      border: 0;
+      background: transparent;
+      box-shadow: inset 0 -1px 0 0 var(--color-stroke-neutral-weak);
+      font: inherit;
+      color: inherit;
+      text-align: left;
+      cursor: pointer;
+      outline: none;
+      transition: background-color var(--motion-duration-color-transition) var(--motion-ease-easing);
+    }
+    .pmsheet-item:last-child { box-shadow: none; }
+    @media (hover: hover) {
+      .pmsheet-item:not(:disabled):hover { background: var(--color-bg-neutral-weak-pressed); }
+    }
+    .pmsheet-item:not(:disabled):active,
+    .pmsheet-item.pmsheet-item--hover,
+    .pmsheet-item.pmsheet-item--pressed { background: var(--color-bg-neutral-weak-pressed); }
+    /* 키보드 링 — 줄 안쪽 2px. 묶음 상자(모서리 16 · overflow hidden)가 넘친 링을 자른다 */
+    .pmsheet-item:focus-visible,
+    .pmsheet-item.pmsheet-item--focus { outline: 2px solid var(--pmsheet-focus-ring); outline-offset: -2px; }
+    .pmsheet-item-content {
+      display: flex;
+      flex: 1;
+      align-items: center;
+      gap: var(--spacing-x3_5);
+      min-width: 0;
+      transition: scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    .pmsheet-item:not(:disabled):active > .pmsheet-item-content,
+    .pmsheet-item.pmsheet-item--pressed > .pmsheet-item-content { scale: calc(1 - 2 / var(--press-basis)); }
+    @media (prefers-reduced-motion: reduce) {
+      .pmsheet-item:not(:disabled):active > .pmsheet-item-content,
+      .pmsheet-item.pmsheet-item--pressed > .pmsheet-item-content { scale: 1; }
+    }
+    .pmsheet-item-icon { display: flex; flex-shrink: 0; color: var(--color-fg-neutral); }
+    .pmsheet-item-icon > svg { width: 22px; height: 22px; }
+    .pmsheet-item-body { display: flex; flex: 1; flex-direction: column; gap: var(--spacing-x0_5); min-width: 0; }
+    .pmsheet-item-label { font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 400; color: var(--color-fg-neutral); }
+    .pmsheet-item-desc { font-size: var(--text-t3); line-height: var(--text-t3--line-height); font-weight: 500; color: var(--color-fg-neutral-subtle); }
+    .pmsheet-item--critical :is(.pmsheet-item-icon, .pmsheet-item-label) { color: var(--color-fg-critical); }
+    /* 호버 · 누름 바탕(bg-neutral-weak-pressed) 위 — 설명은 fg-neutral-muted, 위험한 줄의 이름 · 아이콘은 fg-critical-contrast(둘 다 4.5:1) */
+    @media (hover: hover) {
+      .pmsheet-item:not(:disabled):hover .pmsheet-item-desc { color: var(--color-fg-neutral-muted); }
+      .pmsheet-item--critical:not(:disabled):hover :is(.pmsheet-item-icon, .pmsheet-item-label) { color: var(--color-fg-critical-contrast); }
+    }
+    .pmsheet-item:not(:disabled):active .pmsheet-item-desc,
+    .pmsheet-item.pmsheet-item--hover .pmsheet-item-desc,
+    .pmsheet-item.pmsheet-item--pressed .pmsheet-item-desc { color: var(--color-fg-neutral-muted); }
+    .pmsheet-item--critical:not(:disabled):active :is(.pmsheet-item-icon, .pmsheet-item-label),
+    .pmsheet-item--critical.pmsheet-item--hover :is(.pmsheet-item-icon, .pmsheet-item-label),
+    .pmsheet-item--critical.pmsheet-item--pressed :is(.pmsheet-item-icon, .pmsheet-item-label) { color: var(--color-fg-critical-contrast); }
+    .pmsheet-item:disabled { cursor: not-allowed; }
+    .pmsheet-item:disabled :is(.pmsheet-item-icon, .pmsheet-item-label, .pmsheet-item-desc) { color: var(--color-fg-disabled); }
+    /* 글만 — 가운데 정렬(줄 설명은 두지 않는다) */
+    .pmsheet--text-only .pmsheet-item-content { justify-content: center; }
+    .pmsheet--text-only .pmsheet-item-body { flex: 0 1 auto; align-items: center; text-align: center; }
+    /* 보조 기술용 닫기 — 목록 뒤. 평소에는 화면에서 숨기고(보조 기술은 읽는다) 초점이 오면 최소 52 · 좌우 20 · 모서리 12 · bg-neutral-weak · t5 500 으로 보인다(위 10) */
+    .pmsheet-close {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      clip-path: inset(50%);
+      border: 0;
+      white-space: nowrap;
+    }
+    .pmsheet-close:focus,
+    .pmsheet-close.pmsheet-close--focus {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: auto;
+      min-height: var(--spacing-x13);
+      margin: var(--spacing-x2_5) 0 0;
+      padding: 0 var(--spacing-x5);
+      overflow: visible;
+      clip-path: none;
+      white-space: normal;
+      border-radius: var(--radius-r3);
+      background: var(--color-bg-neutral-weak);
+      font-family: var(--font-sans);
+      font-size: var(--text-t5);
+      line-height: var(--text-t5--line-height);
+      font-weight: 500;
+      color: var(--color-fg-neutral);
+      cursor: pointer;
+      outline: none;
+      transition: background-color var(--motion-duration-color-transition) var(--motion-ease-easing);
+    }
+    @media (hover: hover) {
+      .pmsheet-close:hover { background: var(--color-bg-neutral-weak-pressed); }
+    }
+    .pmsheet-close:active { background: var(--color-bg-neutral-weak-pressed); }
+    /* 링 — 바깥 2px · 띄움 2px(버튼과 같다 — 줄이 아니라 묶음 상자 밖에 선다) */
+    .pmsheet-close:focus-visible,
+    .pmsheet-close.pmsheet-close--focus { outline: 2px solid var(--pmsheet-focus-ring); outline-offset: 2px; }
+
+    /* 말풍선 — 짙은 바탕(다크에서는 밝은 바탕) · 모서리 12 · 위아래 10 · 좌우 12 · 폭은 내용만큼 최대 280 · 그림자 없음, 제목 ↔ 설명 2. L4 210.
+       놓인 틀(.pov-viewport)에 뜬 층이다 — 자리는 페이지 끝 스크립트가 트리거로 잰다(재기 전에는 틀 왼쪽 위) */
+    .pbub {
+      --pbub-arrow-x: 50%;
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 210;
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-x0_5);
+      box-sizing: border-box;
+      width: max-content;
+      max-width: 280px;
+      padding: var(--spacing-x2_5) var(--spacing-x3);
+      border-radius: var(--radius-r3);
+      background: var(--color-bg-neutral-inverted);
+      color: var(--color-fg-neutral-inverted);
+      font-family: var(--font-sans);
+      text-align: left;
+    }
+    .pbub[hidden] { display: none; }
+    /* 포커스 — 닫기 버튼이 없는 말풍선에 Tab 으로 들어오면 둘레 바깥 2px 링 · 띄움 2px(모서리를 따라). 페이지 위에 그려져 브랜드 링이다 —
+       공유 토큰(DESIGN.md)에는 브랜드 역할 색이 없어 중립으로 떨어진다(.pmenu · .pov-close 와 같은 대체 사슬) */
+    .pbub { --pbub-focus-ring: var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral))); }
+    .pbub:focus { outline: none; }
+    .pbub:focus-visible,
+    .pbub.pbub--focus { outline: 2px solid var(--pbub-focus-ring); outline-offset: 2px; }
+    .pbub-title { font-size: var(--text-t3); line-height: var(--text-t3--line-height); font-weight: 700; }
+    .pbub-desc { margin: 0; font-size: var(--text-t3); line-height: var(--text-t3--line-height); font-weight: 400; }
+    /* 닫기가 있으면 글은 닫기 상자 앞 4 까지 — 상자 38 + 4(help-bubble.tsx 의 CLOSE 는 흐름 안에서 모서리로 당긴 38 상자 · ml-x1) */
+    .pbub--close { padding-right: calc(38px + var(--spacing-x1)); }
+    /* 화살표 — 12 × 8 · 끝 모서리 2 · 말풍선과 같은 색. 늘 트리거 가운데(--pbub-arrow-x)를 가리킨다 */
+    .pbub-arrow { position: absolute; left: var(--pbub-arrow-x); width: 12px; height: 8px; translate: -50% 0; fill: var(--color-bg-neutral-inverted); }
+    .pbub[data-side="top"] > .pbub-arrow { top: 100%; }
+    .pbub[data-side="bottom"] > .pbub-arrow { bottom: 100%; rotate: 180deg; }
+    /* 닫기 — 오른쪽 위 모서리의 투명 38 상자 · 아이콘 14(위 12 · 오른쪽 12) · 누르는 영역 44(사방 3). 누르면 바탕 없이 아이콘만 2px 거리로 준다 */
+    .pbub-close {
+      --press-basis: 38;
+      position: absolute;
+      top: 0;
+      right: 0;
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: var(--radius-r3);
+      background: transparent;
+      color: var(--color-fg-neutral-inverted);
+      cursor: pointer;
+      transition: scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    .pbub-close::before { content: ""; position: absolute; inset: -3px; }
+    .pbub-close > svg { width: 14px; height: 14px; }
+    .pbub-close:active,
+    .pbub-close.pbub-close--pressed { scale: calc(1 - 2 / var(--press-basis)); }
+    @media (prefers-reduced-motion: reduce) {
+      .pbub-close:active,
+      .pbub-close.pbub-close--pressed { scale: 1; }
+    }
+    /* 포커스 — 키보드에만 닫기 안쪽 2px, 말풍선 글자색(브랜드 링은 짙은 말풍선 위 3:1 미달) */
+    .pbub-close:focus { outline: none; }
+    .pbub-close:focus-visible,
+    .pbub-close.pbub-close--focus { outline: 2px solid var(--color-fg-neutral-inverted); outline-offset: -2px; }
+    /* 열림 200ms(d4) enter — 화살표 끝에서 0.9 배부터. 툴팁을 이어서 열면 모션 없이 바로다. 페이지 끝 스크립트가 직접 연 말풍선에만 단다 */
+    @keyframes pbub-in { from { opacity: 0; scale: 0.9; } }
+    .pbub[data-motion="in"] { transform-origin: var(--pbub-arrow-x) 100%; animation: pbub-in var(--motion-duration-d4) var(--motion-ease-enter); }
+    .pbub[data-motion="in"][data-side="bottom"] { transform-origin: var(--pbub-arrow-x) 0; }
+    @media (prefers-reduced-motion: reduce) {
+      .pmenu[data-motion="in"],
+      .pbub[data-motion="in"] { animation: none; }
+    }
+
+    /* 갤러리 — 화면 틀 안 머리(제목 + 오른쪽 버튼) · 카드 머리의 툴바 · 남은 연차 줄 · 막힌 버튼의 이유, 상태 표 · 닫기 견본. 모두 갤러리 것이다 */
+    .pmenu-page-head { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-x3); margin-bottom: var(--spacing-x4); padding: 0 var(--spacing-global-gutter); }
+    .pmenu-page-head > .pov-page-title { margin-bottom: 0; padding: 0; }
+    .pov-frame--desktop .pmenu-page-head { padding: 0; }
+    .pmenu-card-head { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-x3); padding: var(--spacing-x1) var(--spacing-global-gutter); font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 700; color: var(--color-fg-neutral); }
+    .pmenu-tools { display: flex; gap: var(--spacing-x1); }
+    .pmenu-lead { display: flex; align-items: center; gap: var(--spacing-x1); margin-top: var(--spacing-x4); padding: 0 var(--spacing-global-gutter); font-family: var(--font-sans); font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 500; color: var(--color-fg-neutral); }
+    .pov-frame--desktop .pmenu-lead { padding: 0; }
+    .pmenu-reason { display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-x1_5); }
+    .pmenu-reason-text { margin: 0; font-family: var(--font-sans); font-size: var(--text-t3); line-height: var(--text-t3--line-height); color: var(--color-fg-neutral-subtle); }
+    /* 상태 표 — Menu 칸은 메뉴 폭 200 + 여유, Menu Sheet 칸은 칸 폭 그대로(시트 표면 .pmsheet-demo 위 묶음 상자). 줄 사이를 띄운다 */
+    .pmenu-matrix-cap { margin-bottom: var(--spacing-sm); font-size: var(--text-caption); font-weight: 600; line-height: 1.4; color: var(--color-text-secondary); }
+    .pmenu-matrix-cap--next { margin-top: var(--spacing-xl); }
+    .pmenu-matrix .cb-matrix-row { grid-template-columns: 168px repeat(var(--cb-cols), minmax(216px, 1fr)); }
+    .pmsheet-matrix .cb-matrix-row { grid-template-columns: 168px repeat(var(--cb-cols), minmax(0, 1fr)); }
+    .pmenu-matrix .cb-matrix-cell { padding: var(--spacing-xs) 0; }
+    .pmsheet-demo { width: 100%; padding: var(--spacing-x2); border-radius: var(--radius-r3); background: var(--color-bg-layer-floating); box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-subtle); }
+    /* 닫기 견본 — 말풍선 바탕 위에 닫기를 제자리에 둔다. --target 은 누르는 영역 44 를 점선으로 보인다 */
+    .pbub-close-matrix { margin-top: var(--spacing-xl); }
+    .pbub-close-demo { position: relative; display: inline-grid; place-items: center; width: 84px; height: 76px; border-radius: var(--radius-r3); background: var(--color-bg-neutral-inverted); }
+    .pbub-close-demo > .pbub-close { position: relative; top: auto; right: auto; }
+    .pbub-close-demo--target > .pbub-close::before { outline: 1px dashed var(--color-fg-neutral-inverted); }
+    .pbub-demo { display: inline-grid; place-items: center; min-height: 76px; padding-bottom: 8px; }
+    .pbub-demo > .pbub { position: relative; left: auto; top: auto; }
+    .pbub-na { font-size: var(--text-caption); line-height: 1.4; color: var(--color-text-tertiary); }
+    @media (max-width: 900px) {
+      .pmenu-matrix .cb-matrix-row { grid-template-columns: 120px repeat(var(--cb-cols), minmax(216px, 1fr)); }
+      .pmsheet-matrix .cb-matrix-row { grid-template-columns: 120px repeat(var(--cb-cols), minmax(0, 1fr)); }
+    }
+    /* 폰 폭 — 상태 줄마다 상태 이름을 한 줄 전체로 올리고 칸을 그 아래 세로로 쌓는다(칸 이름은 칸 위에 — data-col). 머리 줄은 숨긴다 */
+    @media (max-width: 600px) {
+      .pmenu-matrix .cb-matrix-row { grid-template-columns: minmax(0, 1fr); }
+      .pmenu-matrix .cb-matrix-row--head { display: none; }
+      .pmenu-matrix .cb-matrix-cell { flex-direction: column; align-items: flex-start; gap: var(--spacing-xs); }
+      .pmenu-matrix .cb-matrix-cell::before { content: attr(data-col); font-size: 11px; line-height: 1.4; color: var(--color-text-tertiary); }
+      .pbub-close-demo { width: 100%; max-width: 84px; }
+    }
+
+    /* 다크 — 역할 색을 메뉴 · 시트 · 말풍선 · 견본 안에서만 다크 짝으로 바꾼다(.pov-frame · .psel-list 와 같다 — 전역 다크 블록은 옛 이름만 바꾼다).
+       공유 토큰(DESIGN.md)에 없는 브랜드 짝(포커스 링)은 비어서 대체값(중립)으로 떨어진다 */
+    [data-theme="dark"] :is(.pmenu, .pmsheet, .pmsheet-demo, .pbub, .pbub-close-demo, .pmenu-reason) {
+      --color-bg-layer-floating: var(--color-bg-layer-floating-dark);
+      --color-bg-layer-floating-pressed: var(--color-bg-layer-floating-pressed-dark);
+      --color-bg-neutral-weak: var(--color-bg-neutral-weak-dark);
+      --color-bg-neutral-weak-pressed: var(--color-bg-neutral-weak-pressed-dark);
+      --color-bg-neutral-inverted: var(--color-bg-neutral-inverted-dark);
+      --color-fg-neutral: var(--color-fg-neutral-dark);
+      --color-fg-neutral-inverted: var(--color-fg-neutral-inverted-dark);
+      --color-fg-neutral-muted: var(--color-fg-neutral-muted-dark);
+      --color-fg-neutral-subtle: var(--color-fg-neutral-subtle-dark);
+      --color-fg-critical: var(--color-fg-critical-dark);
+      --color-fg-critical-contrast: var(--color-fg-critical-contrast-dark);
+      --color-fg-disabled: var(--color-fg-disabled-dark);
+      --color-stroke-neutral-weak: var(--color-stroke-neutral-weak-dark);
+      --color-stroke-neutral-subtle: var(--color-stroke-neutral-subtle-dark);
+      --color-stroke-focus-ring: var(--color-stroke-focus-ring-dark);
+      --shadow-s3: var(--shadow-s3-dark);
+    }
+
     /* todo-card */
     .todo-list { display: flex; flex-direction: column; gap: 2px; }
     .todo-row {
@@ -9648,11 +10433,7 @@ export function pageCss() {
     .nm-item:hover { background: var(--color-surface-input); color: var(--color-text-primary); }
     .nm-item--active { color: var(--color-text-primary); font-weight: 600; }
 
-    /* Menubar */
-    .mb { display: flex; gap: 0; background: var(--color-bg-page); border-radius: var(--radius-md); padding: var(--spacing-xs); }
-    .mb-item { display: flex; gap: var(--spacing-sm); align-items: center; padding: var(--spacing-xs) var(--spacing-md); border: none; background: transparent; color: var(--color-text-secondary); cursor: pointer; font-size: var(--text-caption); font-family: inherit; border-radius: var(--radius-sm); }
-    .mb-item:hover { background: var(--color-surface-input); color: var(--color-text-primary); }
-    .mb-key { font-family: ui-monospace, monospace; font-size: 11px; color: var(--color-text-tertiary); }
+    /* 옛 Menubar(.mb-* — 단축키 표기 막대)는 걷었다. 동작 목록은 Menu 블록의 .pmenu 다(03m) */
 
     /* Command (⌘K) */
     .cmd { background: var(--color-bg-page); border-radius: var(--radius-md); padding: var(--spacing-md); }
@@ -9709,20 +10490,7 @@ export function pageCss() {
     .col-trigger { padding: var(--spacing-sm) var(--spacing-md); border: 1px solid var(--color-border-default); background: transparent; border-radius: var(--radius-md); cursor: pointer; font-family: inherit; font-size: var(--text-body-md); display: inline-flex; gap: var(--spacing-sm); }
     .col-trigger:hover { background: var(--color-surface-input); }
 
-    /* Hover Card */
-    .hc { display: flex; gap: var(--spacing-md); padding: var(--spacing-md); background: var(--color-bg-page); border-radius: var(--radius-md); align-items: flex-start; }
-    /* avatar.md SoT — md 40px + text-title-sm + 600 (preview 화면샷 패턴) */
-    .hc-avatar { width: 40px; height: 40px; border-radius: var(--radius-full); background: var(--color-primary, var(--color-text-primary)); color: var(--color-text-on-accent, #fff); display: flex; align-items: center; justify-content: center; font-size: var(--text-title-sm); font-weight: 600; flex-shrink: 0; }
-    .hc-name { font-weight: 600; font-size: var(--text-body-md); color: var(--color-text-primary); }
-    .hc-bio { color: var(--color-text-secondary); font-size: var(--text-caption); margin-top: var(--spacing-xs); }
-
-    /* Context Menu */
-    .ctx { display: inline-flex; flex-direction: column; background: var(--color-surface-default); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); box-shadow: var(--shadow-md); padding: var(--spacing-xs); min-width: 160px; }
-    .ctx-item { padding: var(--spacing-sm) var(--spacing-md); border-radius: var(--radius-sm); cursor: pointer; font-size: var(--text-body-md); }
-    .ctx-item:hover { background: var(--color-surface-input); }
-    .ctx-item--destructive { color: var(--color-error); }
-    .ctx-item--destructive:hover { background: color-mix(in srgb, var(--color-error) 12%, transparent); }
-    .ctx-sep { height: 1px; background: var(--color-border-default); margin: var(--spacing-xs) 0; }
+    /* 옛 Hover Card(.hc-* — 호버로 여는 프로필 카드) · Context Menu(.ctx-* — 160 · 1px 테두리 · shadow-md)는 걷었다. 동작 목록은 Menu 블록의 .pmenu 다(03m) */
 
     /* 옛 Alert Dialog(.ad-* — 아이콘 원 · 오른쪽 버튼)는 걷었다. 확인창은 Overlays 블록의 .pov-alert 다(03k) */
 
@@ -9865,7 +10633,6 @@ export function pageCss() {
     [data-theme="dark"] .batch-card,
     [data-theme="dark"] .drw-side,
     [data-theme="dark"] .sc-card,
-    [data-theme="dark"] .ctx,
     [data-theme="dark"] .car-arrow,
     [data-theme="dark"] .sl,
     [data-theme="dark"] .ipk-trigger,
@@ -9879,9 +10646,7 @@ export function pageCss() {
     [data-theme="dark"] .sl-row:hover,
     [data-theme="dark"] .ipk-cell:hover { background: var(--color-surface-input-dark); }
     [data-theme="dark"] .sb,
-    [data-theme="dark"] .mb,
     [data-theme="dark"] .cmd,
-    [data-theme="dark"] .hc,
     [data-theme="dark"] .car-frame,
     [data-theme="dark"] .sa,
     [data-theme="dark"] .chart-mini,
@@ -9894,7 +10659,6 @@ export function pageCss() {
     [data-theme="dark"] .ar,
     [data-theme="dark"] .car-dot { background: var(--color-surface-input-dark); }
     [data-theme="dark"] .otp-cell--filled { background: var(--color-surface-default-dark); }
-    [data-theme="dark"] .ctx,
     [data-theme="dark"] .col-trigger,
     [data-theme="dark"] .car-arrow,
     [data-theme="dark"] .tg,
@@ -9910,10 +10674,8 @@ export function pageCss() {
     [data-theme="dark"] .tgg-item:hover,
     [data-theme="dark"] .col-trigger:hover,
     [data-theme="dark"] .nm-item:hover,
-    [data-theme="dark"] .mb-item:hover,
     [data-theme="dark"] .cmd-item:hover,
     [data-theme="dark"] .car-arrow:hover,
-    [data-theme="dark"] .ctx-item:hover,
     [data-theme="dark"] .sb-item:hover { background: var(--color-surface-input-dark); }
     /* solid segmented active 는 다크에서도 primary 유지(subtle dark override 보다 specificity 우선). */
     [data-theme="dark"] .tgg--solid .tgg-item--active { background: var(--color-primary); color: var(--color-text-on-accent, #fff); }
@@ -10132,6 +10894,7 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     ${renderTabsGallery(brand)}
     ${renderOverlayGallery(brand)}
     ${renderFeedbackGallery(brand)}
+    ${renderMenuGallery(brand)}
     ${renderVignettes(brand)}
     ${renderListingDetail(brand)}
     ${renderCalendar(brand)}
@@ -10763,6 +11526,305 @@ function renderHtml(brandName, css, tokens, sourceFile) {
           host.focus({ preventScroll: true });
         }, 1200);
       });
+    })();
+    // Menu · Menu Sheet · Help Bubble · Tooltip (2026-10-02) — menu.tsx · menu-sheet.tsx · help-bubble.tsx · tooltip.tsx 가 하는 일 가운데 그림에 필요한 것을 흉내 낸다.
+    // 누름 배율의 기준 = max(높이, 폭 ÷ 4, 24) — 줄 폭이 놓인 자리마다 달라 누르는 순간(포인터 · 키) 재서 --press-basis 로 넘긴다. 그 순간을 멈춘 누름 줄은 그릴 때 잰다.
+    // 말풍선 자리(Floating UI 의 offset · flip · shift · arrow · size) — 놓인 틀(.pov-viewport)이 경계다. 바라는 쪽(data-pbub-side — 기본 위)에 트리거와 12(화살표 8 + 4)
+    // 떨어뜨리고, 그쪽이 모자라면(가장자리 16 을 넘으면) 반대편으로 뒤집는다. 가로는 트리거 가운데에 맞추고 틀 가장자리와 16 을 남기게 민다 — 틀이 좁으면 폭을 그만큼 줄인다.
+    // 화살표는 트리거 가운데를 가리키되 말풍선 모서리와 14 를 남긴다. 틀 폭이 바뀌거나 글꼴이 들어오면 다시 잰다.
+    // data-pmenu-trigger 메뉴 — 누르기 · Enter · Space · ↓ 는 열고 첫 줄로(마우스로 열면 메뉴에 초점만 두고 링이 없다), ↑ 는 마지막 줄로 연다. 열린 메뉴는 ↑ ↓(끝에서 처음으로 돈다) ·
+    // Home · End · 글자(그 글자로 시작하는 줄)로 옮기고 막힌 줄은 건너뛴다. 줄 누르기 · Enter · Space 는 닫고 초점을 트리거로 돌려준다(막힌 줄은 아무 일도 없다).
+    // Esc 도 같고, Tab 은 닫고 다음 요소로 간다. 바깥을 누르면 닫는다. 마우스를 올린 줄은 알약만 칠하고(CSS) 키보드 위치는 옮기지 않는다. 아래가 모자라면 위로 연다.
+    // data-pbub-live 말풍선 — ⓘ(data-pbub-trigger)를 누르면 열고 닫는다. 같은 틀의 바깥을 누르거나 Esc 로 닫히고(닫기 버튼이 있는 말풍선은 닫기 버튼 · Esc 로만),
+    // 닫기 버튼은 닫고 초점을 트리거로 돌려준다. 열린 동안 트리거 · 기준의 Tab 은 말풍선 안으로 들어가고, 말풍선에서 나가는 Tab 은 닫는다. data-ptip 툴팁 — 마우스를 올리면 200ms 뒤 · 키보드 초점이면 바로 열고, 트리거와 말풍선을 모두 벗어나면 100ms 뒤
+    // 닫는다(키보드로 연 툴팁은 초점이 떠날 때). 하나가 열려 있거나 닫힌 지 300ms 안에 옆 트리거로 옮기면 기다리지 않고 모션 없이 바로 연다. Esc 로 닫고, 트리거를
+    // 누르면 기다리던 열기만 거둔다(열린 툴팁은 그대로 — 누름은 트리거의 동작). 손가락으로는 열지 않는다.
+    (function () {
+      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var PRESS = ".pmenu-item, .pmsheet-item";
+      function measure(el) { el.style.setProperty("--press-basis", String(Math.max(el.offsetHeight, el.offsetWidth / 4, 24))); }
+      function closest(e, selector) { return e.target && e.target.closest ? e.target.closest(selector) : null; }
+      document.addEventListener("pointerdown", function (e) { var el = closest(e, PRESS); if (el) measure(el); }, true);
+      document.addEventListener("keydown", function (e) { var el = closest(e, PRESS); if (el) measure(el); }, true);
+      var frozen = document.querySelectorAll(".pmenu-item--pressed, .pmsheet-item--pressed");
+      frozen.forEach(measure);
+
+      // 말풍선 자리
+      var EDGE = 16, GAP = 12, ARROW = 20;
+      function place(bub) {
+        if (bub.hidden) return;
+        var trigger = document.getElementById(bub.getAttribute("data-pbub-for"));
+        var box = bub.offsetParent;
+        if (!trigger || !box) return;
+        var b = box.getBoundingClientRect();
+        var t = trigger.getBoundingClientRect();
+        // 폭은 최대 280, 틀이 좁으면 가장자리 16 씩을 뺀 폭까지(help-bubble.tsx 의 --radix-popper-available-width)
+        bub.style.maxWidth = b.width - EDGE * 2 < 280 ? (b.width - EDGE * 2) + "px" : "";
+        var w = bub.offsetWidth, h = bub.offsetHeight;
+        var want = bub.getAttribute("data-pbub-side") || "top";
+        var above = t.top - b.top - GAP - h;
+        var below = t.bottom - b.top + GAP;
+        var fitsAbove = above >= EDGE, fitsBelow = below + h <= b.height - EDGE;
+        var side = want === "top" ? (fitsAbove || !fitsBelow ? "top" : "bottom") : (fitsBelow || !fitsAbove ? "bottom" : "top");
+        var cx = t.left + t.width / 2 - b.left;
+        var x = Math.max(Math.min(cx - w / 2, b.width - EDGE - w), EDGE);
+        var ax = Math.min(Math.max(cx - x, ARROW), w - ARROW);
+        bub.style.left = Math.round(x) + "px";
+        bub.style.top = Math.round(side === "top" ? above : below) + "px";
+        bub.style.setProperty("--pbub-arrow-x", Math.round(ax) + "px");
+        bub.setAttribute("data-side", side);
+      }
+      var bubbles = Array.prototype.slice.call(document.querySelectorAll(".pbub[data-pbub-for]"));
+      function placeAll() { bubbles.forEach(place); }
+      placeAll();
+      window.addEventListener("load", placeAll);
+      window.addEventListener("resize", placeAll);
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(placeAll);
+      if (window.ResizeObserver) {
+        var seen = new WeakMap();
+        var ro = new ResizeObserver(function (entries) {
+          entries.forEach(function (entry) {
+            var key = entry.target.offsetWidth + "x" + entry.target.offsetHeight;
+            if (seen.get(entry.target) === key) return;
+            seen.set(entry.target, key);
+            requestAnimationFrame(placeAll);
+          });
+        });
+        bubbles.forEach(function (bub) { if (bub.offsetParent) ro.observe(bub.offsetParent); });
+      }
+      function animate(el, on) {
+        el.removeAttribute("data-motion");
+        if (!on || reduce) return;
+        void el.offsetWidth;
+        el.setAttribute("data-motion", "in");
+      }
+      document.addEventListener("animationend", function (e) { if (e.target.hasAttribute && e.target.hasAttribute("data-motion")) e.target.removeAttribute("data-motion"); });
+
+      // 메뉴
+      var openMenu = null;
+      function menuOf(trigger) { return trigger.parentElement.querySelector(":scope > .pmenu"); }
+      function triggerOf(menu) { return document.getElementById(menu.getAttribute("aria-labelledby")); }
+      function itemsOf(menu) {
+        return Array.prototype.filter.call(menu.querySelectorAll(".pmenu-item"), function (it) { return it.getAttribute("aria-disabled") !== "true"; });
+      }
+      function showMenu(trigger, focusAt) {
+        var menu = menuOf(trigger);
+        if (openMenu && openMenu !== menu) hideMenu(openMenu, false);
+        menu.hidden = false;
+        menu.setAttribute("data-state", "open");
+        menu.removeAttribute("data-side");
+        trigger.setAttribute("aria-expanded", "true");
+        trigger.setAttribute("aria-controls", menu.id);
+        trigger.setAttribute("data-state", "open");
+        var box = trigger.closest(".pov-viewport");
+        if (box && menu.getBoundingClientRect().bottom > box.getBoundingClientRect().bottom - 8) menu.setAttribute("data-side", "top");
+        animate(menu, true);
+        openMenu = menu;
+        var items = itemsOf(menu);
+        var target = focusAt === "first" ? items[0] : focusAt === "last" ? items[items.length - 1] : null;
+        (target || menu).focus();
+      }
+      function hideMenu(menu, refocus) {
+        var trigger = triggerOf(menu);
+        menu.hidden = true;
+        menu.setAttribute("data-state", "closed");
+        animate(menu, false);
+        if (trigger) {
+          trigger.setAttribute("aria-expanded", "false");
+          trigger.removeAttribute("aria-controls");
+          trigger.setAttribute("data-state", "closed");
+          if (refocus) trigger.focus();
+        }
+        if (openMenu === menu) openMenu = null;
+      }
+      function move(menu, current, step) {
+        var items = itemsOf(menu);
+        if (!items.length) return;
+        var at = items.indexOf(current);
+        var next = at < 0 ? (step > 0 ? items[0] : items[items.length - 1]) : items[(at + step + items.length) % items.length];
+        next.focus();
+      }
+      function typeahead(menu, current, key) {
+        var items = itemsOf(menu);
+        var start = items.indexOf(current);
+        for (var i = 1; i <= items.length; i++) {
+          var it = items[(start + i + items.length) % items.length];
+          var label = it.querySelector(".pmenu-item-label");
+          if (label && label.textContent.trim().toLowerCase().indexOf(key.toLowerCase()) === 0) { it.focus(); return; }
+        }
+      }
+      document.addEventListener("click", function (e) {
+        var trigger = closest(e, "[data-pmenu-trigger]");
+        if (trigger) {
+          var menu = menuOf(trigger);
+          if (!menu.hidden) hideMenu(menu, false);
+          else showMenu(trigger, e.detail === 0 ? "first" : "");
+          return;
+        }
+        var item = closest(e, ".pmenu-item");
+        if (item && openMenu && openMenu.contains(item)) {
+          if (item.getAttribute("aria-disabled") === "true") return;
+          hideMenu(openMenu, true);
+        }
+      });
+      document.addEventListener("pointerdown", function (e) {
+        if (!openMenu) return;
+        var anchor = openMenu.parentElement;
+        if (!anchor.contains(e.target)) hideMenu(openMenu, false);
+      });
+      document.addEventListener("keydown", function (e) {
+        var trigger = closest(e, "[data-pmenu-trigger]");
+        if (trigger && (e.key === "ArrowDown" || e.key === "ArrowUp")) {
+          e.preventDefault();
+          showMenu(trigger, e.key === "ArrowDown" ? "first" : "last");
+          return;
+        }
+        var menu = closest(e, ".pmenu");
+        if (!menu || menu !== openMenu) return;
+        var item = closest(e, ".pmenu-item");
+        if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); move(menu, item, e.key === "ArrowDown" ? 1 : -1); }
+        else if (e.key === "Home" || e.key === "End") { e.preventDefault(); var items = itemsOf(menu); if (items.length) items[e.key === "Home" ? 0 : items.length - 1].focus(); }
+        else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); if (item && item.getAttribute("aria-disabled") !== "true") hideMenu(menu, true); }
+        else if (e.key === "Escape") { e.preventDefault(); hideMenu(menu, true); }
+        else if (e.key === "Tab") hideMenu(menu, false);
+        else if (e.key.length === 1 && !e.altKey && !e.ctrlKey && !e.metaKey) typeahead(menu, item, e.key);
+      });
+
+      // 말풍선(Help Bubble)
+      function triggerFor(bub) { return document.querySelector('[data-pbub-trigger="' + bub.id + '"]'); }
+      function showBubble(bub) {
+        bub.hidden = false;
+        bub.setAttribute("data-state", "open");
+        place(bub);
+        animate(bub, true);
+        var trigger = triggerFor(bub);
+        if (trigger) { trigger.setAttribute("aria-expanded", "true"); trigger.setAttribute("aria-controls", bub.id); trigger.setAttribute("data-state", "open"); }
+      }
+      function hideBubble(bub, refocus) {
+        var inside = bub.contains(document.activeElement);
+        bub.hidden = true;
+        bub.setAttribute("data-state", "closed");
+        animate(bub, false);
+        var trigger = triggerFor(bub) || document.getElementById(bub.getAttribute("data-pbub-for"));
+        var toggle = triggerFor(bub);
+        if (toggle) { toggle.setAttribute("aria-expanded", "false"); toggle.removeAttribute("aria-controls"); toggle.setAttribute("data-state", "closed"); }
+        if ((refocus || inside) && trigger) trigger.focus();
+      }
+      document.addEventListener("click", function (e) {
+        var toggle = closest(e, "[data-pbub-trigger]");
+        if (toggle) {
+          var bub = document.getElementById(toggle.getAttribute("data-pbub-trigger"));
+          if (bub) { if (bub.hidden) showBubble(bub); else hideBubble(bub, false); }
+          return;
+        }
+        var close = closest(e, ".pbub-close");
+        var owner = close && close.closest(".pbub[data-pbub-live]");
+        if (owner) hideBubble(owner, true);
+      });
+      document.addEventListener("pointerdown", function (e) {
+        document.querySelectorAll(".pbub[data-pbub-live]:not([hidden]):not(.pbub--close)").forEach(function (bub) {
+          var trigger = document.getElementById(bub.getAttribute("data-pbub-for"));
+          var box = bub.offsetParent;
+          if (!box || !box.contains(e.target) || bub.contains(e.target) || (trigger && trigger.contains(e.target))) return;
+          hideBubble(bub, false);
+        });
+      });
+      document.addEventListener("keydown", function (e) {
+        if (e.key !== "Escape") return;
+        document.querySelectorAll(".pbub[data-pbub-live]:not([hidden])").forEach(function (bub) {
+          var trigger = document.getElementById(bub.getAttribute("data-pbub-for"));
+          if (bub.contains(e.target) || (trigger && trigger.contains(e.target))) hideBubble(bub, false);
+        });
+      });
+      // Tab — 열린 말풍선의 트리거 · 기준에서 Tab 은 말풍선 안으로(닫기 버튼, 없으면 말풍선 — 바깥 2px 링). 말풍선은 틀 끝에 있어
+      // 브라우저에 맡기면 건너뛴다. 말풍선에서 Shift+Tab 은 트리거로, 마지막 칸(닫기 버튼, 없으면 말풍선)에서 Tab 은 닫고 초점을 트리거에 둬
+      // 브라우저가 트리거 다음 칸으로 보낸다(help-bubble.tsx 의 useEnterOnTab · 말풍선의 Tab 처리)
+      function openBubbleOf(origin) {
+        var id = origin.getAttribute("data-pbub-trigger");
+        var bub = id ? document.getElementById(id) : origin.id ? document.querySelector('.pbub[data-pbub-live][data-pbub-for="' + origin.id + '"]') : null;
+        return bub && !bub.hidden ? bub : null;
+      }
+      document.addEventListener("keydown", function (e) {
+        if (e.key !== "Tab" || e.altKey || e.ctrlKey || e.metaKey || !e.target.closest) return;
+        var inside = e.target.closest(".pbub[data-pbub-live]");
+        if (inside) {
+          var origin = document.getElementById(inside.getAttribute("data-pbub-for"));
+          if (e.shiftKey) { e.preventDefault(); if (origin) origin.focus(); return; }
+          var close = inside.querySelector(".pbub-close");
+          if (close && e.target !== close) return;
+          if (origin) origin.focus();
+          hideBubble(inside, false);
+          return;
+        }
+        if (e.shiftKey) return;
+        var bub = openBubbleOf(e.target);
+        if (!bub) return;
+        e.preventDefault();
+        (bub.querySelector(".pbub-close") || bub).focus();
+      });
+
+      // 툴팁
+      var openTip = null, closedAt = 0, openTimer = 0, closeTimer = 0;
+      var hovered = { trigger: false, content: false }, focused = false;
+      function tipOf(trigger) { return document.getElementById(trigger.getAttribute("data-ptip")); }
+      function showTip(trigger, instant) {
+        clearTimeout(openTimer);
+        clearTimeout(closeTimer);
+        var tip = tipOf(trigger);
+        if (!tip || openTip === tip) return;
+        if (openTip) hideTip(openTip);
+        tip.hidden = false;
+        tip.setAttribute("data-state", "open");
+        trigger.setAttribute("aria-describedby", tip.id);
+        place(tip);
+        animate(tip, !instant);
+        openTip = tip;
+      }
+      function hideTip(tip) {
+        tip.hidden = true;
+        tip.setAttribute("data-state", "closed");
+        animate(tip, false);
+        var trigger = document.getElementById(tip.getAttribute("data-pbub-for"));
+        if (trigger) trigger.removeAttribute("aria-describedby");
+        if (openTip === tip) { openTip = null; closedAt = Date.now(); }
+      }
+      function hover(tip, part, inside) {
+        hovered[part] = inside;
+        clearTimeout(closeTimer);
+        if (inside || openTip !== tip) return;
+        closeTimer = setTimeout(function () { if (!hovered.trigger && !hovered.content && !focused && openTip === tip) hideTip(tip); }, 100);
+      }
+      document.querySelectorAll("[data-ptip]").forEach(function (trigger) {
+        var tip = tipOf(trigger);
+        if (!tip) return;
+        trigger.addEventListener("pointerenter", function (e) {
+          if (e.pointerType === "touch") return;
+          hover(tip, "trigger", true);
+          if (openTip === tip) return;
+          clearTimeout(openTimer);
+          if (openTip || Date.now() - closedAt < 300) showTip(trigger, true);
+          else openTimer = setTimeout(function () { showTip(trigger, false); }, 200);
+        });
+        trigger.addEventListener("pointerleave", function (e) {
+          if (e.pointerType === "touch") return;
+          clearTimeout(openTimer);
+          hover(tip, "trigger", false);
+        });
+        trigger.addEventListener("pointerdown", function () { clearTimeout(openTimer); });
+        trigger.addEventListener("focus", function () {
+          if (!trigger.matches(":focus-visible")) return;
+          focused = true;
+          showTip(trigger, !!openTip || Date.now() - closedAt < 300);
+        });
+        trigger.addEventListener("blur", function () {
+          focused = false;
+          clearTimeout(openTimer);
+          if (openTip === tip) hideTip(tip);
+        });
+        tip.addEventListener("pointerenter", function () { hover(tip, "content", true); });
+        tip.addEventListener("pointerleave", function () { hover(tip, "content", false); });
+      });
+      document.addEventListener("keydown", function (e) { if (e.key === "Escape" && openTip) hideTip(openTip); });
     })();
   </script>
 </body>

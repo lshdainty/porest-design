@@ -1,0 +1,156 @@
+// Help Bubble · Tooltip 페이지가 같이 쓰는 그림 조각(서버) — 트리거에 붙인 말풍선, HR 휴가 · Desk 자산 화면, 접힌 사이드바.
+// 말풍선은 help-bubble.yaml 을 푼 값(menuKit().bubble — menu-view 의 BubbleView)으로, 버튼은 button.yaml 로 그린다.
+import type { CSSProperties, ReactNode } from 'react';
+import { CalendarDays, House, Info, NotebookPen, Wallet } from 'lucide-react';
+import { ButtonView, type IconName } from './button-view';
+import { HIDE_TIP, LEAVE_RULE, SIDE_NAV, TOOLBAR } from './menu-data';
+import type { BubbleSide } from './menu-look';
+import { iconBtn, mk, type Brand } from './menu-screens';
+import { BubbleView, type BubbleViewProps } from './menu-view';
+import { GestureMark } from './overlay-view';
+import { Phone, WebWindow, rc, type Mode } from './kit';
+
+export const bl = (brand: Brand = 'desk') => mk(brand).bubble;
+export const TOOL_ICON: Record<(typeof TOOLBAR)[number]['value'], IconName> = { search: 'search', hide: 'eye-off', reset: 'rotate-ccw' };
+
+// 말풍선(멈춘 그림) — 값은 help-bubble.yaml
+export function Bubble({ brand = 'desk', ...p }: Omit<BubbleViewProps, 'look'> & { brand?: Brand }) {
+  return <BubbleView look={bl(brand)} {...p} />;
+}
+
+// 트리거에 붙인 말풍선 — side 쪽으로 몸통 거리(화살표 끝 4 + 화살표 8), 화살표는 트리거 가운데.
+// align='end' 면 말풍선 끝 변을 트리거 끝 변에 맞추고 화살표를 트리거 가운데로(가장자리에 붙은 트리거)
+export function BubbleAt({ trigger, side = 'top', align = 'center', triggerSize = 40, brand = 'desk', bubble, zIndex = 6 }: { trigger: ReactNode; side?: BubbleSide; align?: 'center' | 'end'; triggerSize?: number; brand?: Brand; bubble: (p: { side: BubbleSide; arrowEnd?: number }) => ReactNode; zIndex?: number }) {
+  const off = bl(brand).bodyOffset;
+  const vertical = side === 'top' || side === 'bottom';
+  const along: CSSProperties = align === 'end' ? (vertical ? { right: 0 } : { bottom: 0 }) : vertical ? { left: '50%', transform: 'translateX(-50%)' } : { top: '50%', transform: 'translateY(-50%)' };
+  const place: CSSProperties =
+    side === 'top' ? { bottom: `calc(100% + ${off}px)`, ...along } : side === 'bottom' ? { top: `calc(100% + ${off}px)`, ...along } : side === 'left' ? { right: `calc(100% + ${off}px)`, ...along } : { left: `calc(100% + ${off}px)`, ...along };
+  return (
+    <span style={{ position: 'relative', display: 'inline-flex', flexShrink: 0 }}>
+      {trigger}
+      <span style={{ position: 'absolute', zIndex, ...place }}>{bubble({ side, arrowEnd: align === 'end' ? triggerSize / 2 : undefined })}</span>
+    </span>
+  );
+}
+
+export const InfoButton = ({ mode = 'auto', brand = 'hr', label = '연차 사용 규정 안내', state = 'enabled' }: { mode?: Mode; brand?: Brand; label?: string; state?: 'enabled' | 'pressed' | 'focused' | 'hovered' }) => (
+  <ButtonView look={iconBtn(brand, 'neutralSubtle')} mode={mode} state={state} icon="info" ariaLabel={label} />
+);
+export const ToolButton = ({ icon, label, mode = 'auto', brand = 'desk', state = 'enabled' }: { icon: IconName; label: string; mode?: Mode; brand?: Brand; state?: 'enabled' | 'pressed' | 'focused' | 'hovered' }) => (
+  <ButtonView look={iconBtn(brand)} mode={mode} state={state} icon={icon} ariaLabel={label} />
+);
+
+// HR 휴가 요약 — 남은 연차 + ⓘ(눌러서 여는 규정 안내). ⓘ 를 판 가운데에 두어 말풍선이 가운데로 열린다
+// bubbleMax — 말풍선 최대 폭(화면이 좁으면 화면 − 가장자리 둘, 실제 말풍선과 같은 규칙)
+export function LeaveSummary({ mode = 'auto', open = true, desc = true, gesture, bubbleMax }: { mode?: Mode; open?: boolean; desc?: boolean; gesture?: 'tap' | 'click'; bubbleMax?: number }) {
+  // 누르는 손가락 · 마우스 표시는 ⓘ 오른쪽 아래에 걸친다(ⓘ 가 가려지지 않게)
+  const info = (
+    <span style={{ position: 'relative', display: 'inline-flex' }}>
+      <InfoButton mode={mode} />
+      {gesture && <GestureMark kind={gesture} x="95%" y="100%" />}
+    </span>
+  );
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+      <span style={{ fontSize: 13, lineHeight: '18px', color: rc('fg-neutral-subtle', mode, 'hr') }}>남은 연차</span>
+      <span style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', width: '100%' }}>
+        <span style={{ justifySelf: 'end', fontSize: 22, lineHeight: '30px', fontWeight: 700, color: rc('fg-neutral', mode, 'hr') }}>11일</span>
+        {open ? <BubbleAt brand="hr" trigger={info} bubble={(p) => <Bubble brand="hr" mode={mode} title={LEAVE_RULE.title} description={desc ? LEAVE_RULE.description : undefined} maxWidth={bubbleMax} {...p} />} /> : info}
+        <span />
+      </span>
+    </div>
+  );
+}
+export function LeaveWindow({ mode = 'auto', w = 460, h = 280, overlay, gesture }: { mode?: Mode; w?: number; h?: number; overlay?: ReactNode; gesture?: 'tap' | 'click' }) {
+  return (
+    <WebWindow mode={mode} w={w} h={h} url="hr.porest.app">
+      <div style={{ height: '100%', boxSizing: 'border-box', padding: '22px 28px', background: rc('bg-layer-basement', mode, 'hr') }}>
+        <div style={{ fontSize: 20, lineHeight: '28px', fontWeight: 700, color: rc('fg-neutral', mode, 'hr'), paddingBottom: 14 }}>휴가</div>
+        <div style={{ borderRadius: 12, padding: '96px 20px 18px', background: rc('bg-layer-default', mode, 'hr') }}>
+          <LeaveSummary mode={mode} gesture={gesture} />
+        </div>
+      </div>
+      {overlay}
+    </WebWindow>
+  );
+}
+
+// Desk 자산(폰) — 머리 오른쪽 금액 가리기 버튼 아래에 처음부터 열린 안내(닫기 버튼)
+const ASSETS: [string, string][] = [
+  ['국민 주계좌', '1,250,000원'],
+  ['현대카드 M', '-352,400원'],
+  ['토스뱅크 통장', '820,000원'],
+];
+export function AssetsPhone({ mode = 'auto', scale = 0.62, h = 560, bubble = true }: { mode?: Mode; scale?: number; h?: number; bubble?: boolean }) {
+  const btn = <ToolButton icon="eye-off" label="금액 가리기" mode={mode} />;
+  return (
+    <Phone
+      title="자산"
+      back={false}
+      mode={mode}
+      scale={scale}
+      h={h}
+      bg="bg-layer-default"
+      right={bubble ? <BubbleAt side="bottom" align="end" trigger={btn} bubble={(p) => <Bubble mode={mode} title={HIDE_TIP.title} description={HIDE_TIP.description} close {...p} />} /> : btn}
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', padding: '12px 24px 0' }}>
+        {ASSETS.map(([name, amount], i) => (
+          <div key={name} style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '12px 0', borderBottom: i === ASSETS.length - 1 ? 'none' : `1px solid ${rc('stroke-neutral-subtle', mode)}` }}>
+            <span style={{ fontSize: 15, lineHeight: '20px', color: rc('fg-neutral', mode) }}>{name}</span>
+            <span style={{ fontSize: 15, lineHeight: '20px', fontWeight: 600, color: rc('fg-neutral', mode) }}>{amount}</span>
+          </div>
+        ))}
+      </div>
+    </Phone>
+  );
+}
+
+// Desk 웹 — 접힌 사이드바(아이콘) + 머리 툴바. tip 은 툴팁이 뜬 자리
+const NAV_ICONS = { home: House, ledger: Wallet, calendar: CalendarDays, memo: NotebookPen };
+export function DeskToolWindow({ mode = 'auto', tip, w = 460, h = 300 }: { mode?: Mode; tip: 'toolbar' | 'sidebar'; w?: number; h?: number }) {
+  const b = bl();
+  return (
+    <WebWindow mode={mode} w={w} h={h}>
+      <div style={{ display: 'flex', height: '100%' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, width: 64, flexShrink: 0, padding: '16px 0', boxSizing: 'border-box', background: rc('bg-layer-default', mode), borderRight: `1px solid ${rc('stroke-neutral-weak', mode)}` }}>
+          {SIDE_NAV.map((n) => {
+            const I = NAV_ICONS[n.value];
+            const on = n.value === 'ledger';
+            const icon = (
+              <span aria-label={n.label} role="img" style={{ display: 'grid', placeItems: 'center', width: 40, height: 40, borderRadius: 10, background: on ? rc('bg-layer-default-pressed', mode) : 'transparent', color: rc(on ? 'fg-neutral' : 'fg-neutral-subtle', mode) }}>
+                <I size={20} strokeWidth={2} />
+              </span>
+            );
+            return tip === 'sidebar' && on ? <BubbleAt key={n.value} side="right" trigger={icon} bubble={(p) => <Bubble mode={mode} title={n.label} {...p} />} /> : <span key={n.value}>{icon}</span>;
+          })}
+        </div>
+        <div style={{ flex: '1 1 0%', minWidth: 0, padding: '16px 24px', background: rc('bg-layer-basement', mode) }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+            <span style={{ fontSize: 20, lineHeight: '28px', fontWeight: 700, color: rc('fg-neutral', mode) }}>가계부</span>
+            <span style={{ display: 'flex', gap: 2 }}>
+              {TOOLBAR.map((t) =>
+                tip === 'toolbar' && t.value === 'hide' ? (
+                  <BubbleAt key={t.value} side="bottom" trigger={<ToolButton icon={TOOL_ICON[t.value]} label={t.label} mode={mode} state="hovered" />} bubble={(p) => <Bubble mode={mode} title={t.label} {...p} />} />
+                ) : (
+                  <ToolButton key={t.value} icon={TOOL_ICON[t.value]} label={t.label} mode={mode} />
+                ),
+              )}
+            </span>
+          </div>
+          <div style={{ marginTop: 18 + (tip === 'toolbar' ? b.height : 0), display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {[72, 56, 64].map((wd, i) => (
+              <span key={i} style={{ display: 'block', height: 44, borderRadius: 10, background: rc('bg-layer-default', mode), width: `${wd}%` }} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </WebWindow>
+  );
+}
+
+// 터치 · 키보드에서 뜨지 않는 브라우저 기본 title(나쁜 예의 그림 — 브라우저가 그리는 모양이라 토큰이 아니다)
+export function NativeTitle({ children }: { children: ReactNode }) {
+  return <span style={{ display: 'inline-block', padding: '2px 6px', fontFamily: 'system-ui, sans-serif', fontSize: 12, lineHeight: '16px', color: '#000000', background: '#F7F7F7', border: '1px solid #767676', boxShadow: '1px 1px 3px rgba(0,0,0,0.25)', whiteSpace: 'nowrap' }}>{children}</span>;
+}
+export const InfoGlyph = ({ size = 16, color }: { size?: number; color?: string }) => <Info size={size} strokeWidth={2} color={color} aria-hidden />;

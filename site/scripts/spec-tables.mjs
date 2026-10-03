@@ -50,6 +50,9 @@ export const PROP_LABEL = {
   'focusRing.offset': '링 간격',
   'focusRing.color': '링 색',
   'focusRing.actionOffset': '액션 링 간격',
+  'focusRing.closeButtonOffset': '닫기 링 간격',
+  'focusRing.rootOffset': '말풍선 링 간격',
+  'focusRing.rootColor': '말풍선 링 색',
   'indicator.insetX': '막대 들임',
   'indicator.inset': '알약 들임',
   'trigger.chip': '칩',
@@ -127,6 +130,9 @@ export const PROP_LABEL = {
   transitionEasing: '전환 곡선',
   transitionDelay: '전환 지연',
   duration: '보이는 시간',
+  openDelay: '열림 지연',
+  closeDelay: '닫힘 지연',
+  skipDelay: '이어 열기 시간',
   scaleDuration: '축소 시간',
   scaleEasing: '축소 곡선',
   press: '누름',
@@ -145,6 +151,8 @@ export const PROP_LABEL = {
   scrollPadding: '스크롤 여유',
   textAlign: '글 맞춤',
   shrink: '줄어듦',
+  align: '정렬',
+  transform: '변형',
 };
 export const PROP_ORDER = Object.keys(PROP_LABEL);
 

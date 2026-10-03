@@ -16,9 +16,10 @@ import { Dialog, DialogContent, type DialogProps } from "@/components/ui/dialog"
  *
  * 시각 정합:
  * - Input: Input.md md spec 정합 (h-10 + body-md + token padding + font-sans)
- * - Item: DropdownMenu/ContextMenu와 동일 (rounded-sm + body-md + padding-sm/md,
- *         selected: surface-input)
- * - Group heading / Separator: DropdownMenu Label/Separator와 동일 패턴
+ * - Item: 옛 Dropdown Menu · Context Menu 의 줄 모양 (rounded-sm + body-md + padding-sm/md,
+ *         selected: surface-input). 2026-10-02 Menu(menu.tsx)가 SEED 모양(좌우 8 들인 알약 · t4)으로 바뀌어 지금은 같지 않다 —
+ *         Command 를 SEED 로 옮길 때 맞춘다(Context Menu 는 걷었다)
+ * - Group heading / Separator: 옛 Dropdown Menu 의 Label / Separator 패턴
  */
 
 const Command = React.forwardRef<

@@ -2,54 +2,354 @@ import * as React from "react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 
 import { cn } from "@/lib/utils";
+import { BUBBLE, BUBBLE_POSITION, BUBBLE_TITLE, BubbleArrow } from "@/components/ui/help-bubble";
 
 /*
- * Porest Tooltip (shadcn 베이스 + Porest 디자인 토큰)
- * spec: specs/components/tooltip.md (단일 SoT)
+ * Porest Tooltip — 구조는 SEED Help Bubble Tooltip(2026-10-02). 수치 원본은 specs/components/help-bubble.yaml 의 opens: hover.
+ * Radix Tooltip 위에 짰고, 말풍선의 모양은 Help Bubble 의 것(help-bubble.tsx 의 BUBBLE · BubbleArrow)을 그대로 쓴다 — 한 벌이다.
  *
- * - Radix Tooltip 베이스. Provider로 delay 기본 설정.
- * - composition: TooltipProvider > Tooltip > TooltipTrigger + TooltipContent
- * - True inverted tooltip — light 모드는 dark 배경, dark 모드는 light 배경.
- *   페이지 surface와 항상 반대 톤이라 즉시 식별. (Toss/Apple inverted dark는
- *   양 모드 stable dark였지만, 여기선 양방향 inverse — 다크 모드에서도 페이지와
- *   대비 유지.)
+ *   TooltipProvider   화면에 한 번 둔다 — 하나가 열린 뒤 옆 트리거로 옮기면 기다리지 않는다. 지연 값은 고정이다(바꾸지 않는다)
+ *   Tooltip           open · defaultOpen · onOpenChange · disabled(열지 않는다 — 접힌 사이드바처럼 상태에 따라 필요 없을 때).
+ *                     Provider 밖에 두면 혼자 쓴다(이어 열기만 없다)
+ *   TooltipTrigger    트리거 — 이름은 aria-label · 보이는 글이다(툴팁은 그 이름을 보여 줄 뿐 대신하지 않는다). 열린 동안 aria-describedby
+ *   TooltipContent    글 하나 — 굵게(Help Bubble 의 제목 자리). side(기본 top) · align. 누를 것을 두지 않는다
  *
- * Style 결정:
- * - bg: `var(--color-text-primary)` 사용 — light(#1A1F2E dark) / dark(#F5F6FA
- *   light) 자동 swap이라 양방향 inverse 자연스럽게 성립.
- * - text: `var(--color-surface-default)` 사용 — light(#FFFFFF) / dark(#242938)
- *   자동 swap. bg와 정확히 반대로 swap되어 두 모드 모두 충분한 대비.
- * - box-shadow도 inline — Tailwind v4 `--tw-shadow-*` 분해 처리가 다크 모드 CSS
- *   변수 override를 우회하는 문제 fix (Card/Dialog/Drawer/Popover/Sonner와 동일).
- * - border 불필요 — 페이지와 강한 대비(16:1+)로 시각 식별 충분.
+ * 여는 방식 — 툴팁은 마우스 · 키보드의 보조다. 손가락으로는 열지 않는다(이름 · 막힌 이유는 툴팁에만 두지 않는다).
+ *   - 마우스를 올리면 200ms 뒤 연다. 하나가 열려 있거나 닫힌 지 300ms 안이면 옆 트리거는 기다리지 않고 모션 없이 바로 연다 —
+ *     앞의 툴팁은 그때 바로(모션 없이) 닫는다. 한 번에 하나만 열린다.
+ *   - 트리거와 말풍선을 모두 벗어나면 100ms 뒤 닫는다 — 말풍선 위로 옮기는 동안은 열어 둔다(WCAG 1.4.13). 키보드로 연 툴팁은
+ *     포인터가 지나가도 닫지 않는다(초점이 떠나면 닫는다).
+ *   - 키보드 초점(focus-visible)이 오면 바로 연다. 손가락 · 마우스로 눌러 생긴 초점에는 열지 않는다.
+ *   - Esc 는 닫고 초점은 트리거에 그대로. 트리거를 눌러도 열거나 닫지 않는다(누름은 트리거의 동작) — 마우스를 올려 기다리던 열기는
+ *     거둔다(누른 채 200ms 를 넘겨도 열지 않는다). 트리거를 떠났다가 다시 올리면 다시 기다린다. 스크롤하면 트리거를 따라간다.
+ *   기다림(200ms · 이어 열기 300ms)은 레시피가 잰다 — Radix 의 기다림은 0 으로 두고 그 여는 요청을 위 규칙대로 받는다.
+ *   Radix 는 포인터가 떠나는 순간 · 누를 때 · 스크롤할 때 · 다른 툴팁이 열릴 때 닫으려 한다 — 그 요청은 받지 않고 위 규칙대로 닫는다
+ *   (Esc · 초점 떠남만 받는다).
+ *
+ * 모양 · 쌓임 · 모션은 Help Bubble 과 같다 — 최대 280 · 위아래 10 · 좌우 12 · 모서리 12 · bg-neutral-inverted · 글 t3 13 / 18 · 700 ·
+ * fg-neutral-inverted, 화살표 12 × 8(늘 트리거 가운데) · 화살표 끝 ↔ 트리거 4 · 화면 가장자리 16, z 210(팝오버 · 메뉴 위).
+ * 열림 200ms enter 로 화살표 끝에서 0.9 → 1 · 투명도, 닫힘 200ms easing 으로 투명도만 — 이어서 열 때는 모션 없이.
+ * ARIA: 말풍선 role="tooltip"(Radix 가 숨은 사본에 단다) — 트리거의 aria-describedby 가 가리킨다.
  */
 
-const TooltipProvider = TooltipPrimitive.Provider;
+const OPEN_DELAY = 200;
+const CLOSE_DELAY = 100;
+const SKIP_DELAY = 300;
 
-const Tooltip = TooltipPrimitive.Root;
+type OpenChange = (open: boolean) => void;
 
-const TooltipTrigger = TooltipPrimitive.Trigger;
+// 열림 — 같은 값을 거듭 청하면(닫으면서 Radix 도 닫기를 청한다) 한 번만 알린다
+function useOpenState(prop: boolean | undefined, defaultOpen: boolean | undefined, onChange: OpenChange | undefined) {
+  const [inner, setInner] = React.useState(defaultOpen ?? false);
+  const controlled = prop !== undefined;
+  const value = controlled ? prop : inner;
+  const onChangeRef = React.useRef(onChange);
+  const lastRef = React.useRef(value);
+  React.useLayoutEffect(() => {
+    onChangeRef.current = onChange;
+    lastRef.current = value;
+  });
+  const setOpen = React.useCallback(
+    (next: boolean) => {
+      if (next === lastRef.current) return;
+      lastRef.current = next;
+      if (!controlled) setInner(next);
+      onChangeRef.current?.(next);
+    },
+    [controlled],
+  );
+  return [value, setOpen] as const;
+}
 
-const TooltipContent = React.forwardRef<
-  React.ElementRef<typeof TooltipPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
->(({ className, sideOffset = 4, style, ...props }, ref) => (
-  <TooltipPrimitive.Content
-    ref={ref}
-    sideOffset={sideOffset}
-    className={cn(
-      "z-[210] overflow-hidden rounded-xs px-[var(--spacing-md)] py-[var(--spacing-xs)] text-label-sm animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-      className,
-    )}
-    style={{
-      backgroundColor: "var(--color-text-primary)",
-      color: "var(--color-surface-default)",
-      boxShadow: "var(--shadow-sm)",
-      ...style,
-    }}
-    {...props}
-  />
-));
-TooltipContent.displayName = TooltipPrimitive.Content.displayName;
+// 지금 열린 툴팁 — 하나가 열리면 앞의 것을 바로(모션 없이) 닫는다. 마지막으로 닫힌 시각은 이어 여는 툴팁이 모션을 건너뛸지 정한다
+type Owner = { close: () => void };
+const shown: { owner: Owner | null; closedAt: number } = { owner: null, closedAt: Number.NEGATIVE_INFINITY };
+
+// ── Provider ─────────────────────────────────────────────────
+const ProviderContext = React.createContext(false);
+
+// Radix 의 기다림은 0 으로 두고 레시피가 잰다(200ms · 이어 열기 300ms) — Radix 의 이어 열기는 Radix 가 닫는 것만 세어서,
+// 레시피가 닫거나 받지 않은 열기(막힌 툴팁 · 누름)가 있으면 그 뒤로 모든 툴팁이 기다리지 않고 열린다
+function TooltipProvider({ children }: { children?: React.ReactNode }) {
+  return (
+    <TooltipPrimitive.Provider delayDuration={0} skipDelayDuration={0}>
+      <ProviderContext.Provider value={true}>{children}</ProviderContext.Provider>
+    </TooltipPrimitive.Provider>
+  );
+}
+TooltipProvider.displayName = "TooltipProvider";
+
+// ── 툴팁 ─────────────────────────────────────────────────────
+type CloseReason = "escape" | "blur" | "press";
+
+type TooltipContextValue = {
+  /** 이어서 열렸다 · 바로 닫힌다 — 모션 없이 */
+  instant: boolean;
+  /** 포인터가 트리거 · 말풍선에 들어왔다 · 나갔다 */
+  hover: (part: "trigger" | "content", inside: boolean) => void;
+  /** 다음 닫기 요청의 까닭 — 같은 처리 안에서 Radix 가 부르는 닫기에만 붙는다 */
+  flag: (reason: CloseReason) => void;
+  /** 키보드 초점으로 열었다 · 초점이 떠났다 */
+  setFocused: (focused: boolean) => void;
+  /** 트리거를 눌렀다 — 아직 열리지 않았으면 기다리던 열기를 거둔다 */
+  press: () => void;
+};
+const TooltipContext = React.createContext<TooltipContextValue | null>(null);
+
+function useTooltip(name: string) {
+  const ctx = React.useContext(TooltipContext);
+  if (!ctx) throw new Error(`${name} 는 Tooltip 안에 둔다.`);
+  return ctx;
+}
+
+export interface TooltipProps {
+  open?: boolean;
+  defaultOpen?: boolean;
+  onOpenChange?: OpenChange;
+  /** 열지 않는다 — 트리거는 그대로 두고 툴팁만 끈다(펼친 사이드바처럼 이름이 이미 보일 때) */
+  disabled?: boolean;
+  children?: React.ReactNode;
+}
+
+function Tooltip({ open: openProp, defaultOpen, onOpenChange, disabled = false, children }: TooltipProps) {
+  const inProvider = React.useContext(ProviderContext);
+  const [open, setOpenState] = useOpenState(openProp, defaultOpen, onOpenChange);
+  const [instant, setInstant] = React.useState(false);
+  const openRef = React.useRef(open);
+  React.useLayoutEffect(() => {
+    openRef.current = open;
+  }, [open]);
+  const reasonRef = React.useRef<CloseReason | null>(null);
+  // 열리기 전에 트리거를 눌렀다 — 이번에 올린 마우스의 열기를 거둔다(트리거를 떠나면 풀린다)
+  const pressedRef = React.useRef(false);
+  const hoverRef = React.useRef({ trigger: false, content: false });
+  const focusedRef = React.useRef(false);
+  // 이번 열기 요청이 키보드 초점에서 왔다 — 기다리지 않는다
+  const focusRequestRef = React.useRef(false);
+  const openTimerRef = React.useRef<number | undefined>(undefined);
+  const timerRef = React.useRef<number | undefined>(undefined);
+  const owner = React.useRef<Owner>({ close: () => undefined }).current;
+  const disabledRef = React.useRef(disabled);
+  React.useLayoutEffect(() => {
+    disabledRef.current = disabled;
+  }, [disabled]);
+
+  const hide = React.useCallback(
+    (jump: boolean) => {
+      window.clearTimeout(timerRef.current);
+      window.clearTimeout(openTimerRef.current);
+      if (!openRef.current) return;
+      openRef.current = false;
+      if (shown.owner === owner) {
+        shown.owner = null;
+        shown.closedAt = Date.now();
+      }
+      setInstant(jump);
+      setOpenState(false);
+    },
+    [owner, setOpenState],
+  );
+  React.useLayoutEffect(() => {
+    owner.close = () => hide(true);
+  }, [owner, hide]);
+
+  const show = React.useCallback(() => {
+    window.clearTimeout(timerRef.current);
+    window.clearTimeout(openTimerRef.current);
+    if (disabledRef.current || openRef.current) return;
+    const other = shown.owner && shown.owner !== owner ? shown.owner : null;
+    const jump = other !== null || Date.now() - shown.closedAt < SKIP_DELAY;
+    other?.close();
+    shown.owner = owner;
+    openRef.current = true;
+    setInstant(jump);
+    setOpenState(true);
+  }, [owner, setOpenState]);
+
+  // 하나가 열려 있거나 닫힌 지 300ms 안이다 — 옆 트리거는 기다리지 않는다
+  const warm = () => (shown.owner !== null && shown.owner !== owner) || Date.now() - shown.closedAt < SKIP_DELAY;
+
+  // Radix 의 열고 닫기 요청 — 여는 것은 키보드 초점이면 바로, 마우스면 200ms 뒤(이어 열기면 바로 · 눌렀으면 거둔다).
+  // 닫는 것은 Esc · 초점 떠남만 받는다(머리 주석)
+  const onRadixOpenChange = (next: boolean) => {
+    const reason = reasonRef.current;
+    reasonRef.current = null;
+    if (!next) {
+      if (reason === "escape" || reason === "blur") hide(false);
+      return;
+    }
+    if (disabledRef.current) return;
+    if (focusRequestRef.current) {
+      focusRequestRef.current = false;
+      show();
+      return;
+    }
+    if (pressedRef.current || !hoverRef.current.trigger) return;
+    if (warm()) {
+      show();
+      return;
+    }
+    window.clearTimeout(openTimerRef.current);
+    openTimerRef.current = window.setTimeout(() => {
+      if (hoverRef.current.trigger && !pressedRef.current) show();
+    }, OPEN_DELAY);
+  };
+
+  const value = React.useMemo<TooltipContextValue>(
+    () => ({
+      instant,
+      hover: (part, inside) => {
+        hoverRef.current[part] = inside;
+        // 트리거에 새로 올렸다 · 떠났다 — 누름으로 거둔 열기를 푼다. 떠나면 기다리던 열기도 거둔다
+        if (part === "trigger") {
+          pressedRef.current = false;
+          if (!inside) window.clearTimeout(openTimerRef.current);
+        }
+        window.clearTimeout(timerRef.current);
+        if (inside || !openRef.current) return;
+        timerRef.current = window.setTimeout(() => {
+          if (!hoverRef.current.trigger && !hoverRef.current.content && !focusedRef.current) hide(false);
+        }, CLOSE_DELAY);
+      },
+      flag: (reason) => {
+        reasonRef.current = reason;
+        queueMicrotask(() => {
+          if (reasonRef.current === reason) reasonRef.current = null;
+        });
+      },
+      setFocused: (focused) => {
+        focusedRef.current = focused;
+        if (!focused) return;
+        // 키보드 초점은 늘 바로 연다 — 앞서 마우스로 눌러 거둔 열기와 상관없다. Radix 가 같은 처리 안에서 여는 요청을 보낸다
+        pressedRef.current = false;
+        focusRequestRef.current = true;
+        queueMicrotask(() => {
+          focusRequestRef.current = false;
+        });
+      },
+      press: () => {
+        if (openRef.current) return;
+        pressedRef.current = true;
+        window.clearTimeout(openTimerRef.current);
+      },
+    }),
+    [instant, hide],
+  );
+
+  // 막히면 바로 닫는다 · 사라지면 지운다
+  React.useEffect(() => {
+    if (disabled) hide(true);
+  }, [disabled, hide]);
+  React.useEffect(
+    () => () => {
+      window.clearTimeout(timerRef.current);
+      window.clearTimeout(openTimerRef.current);
+      if (shown.owner === owner) shown.owner = null;
+    },
+    [owner],
+  );
+
+  const root = (
+    <TooltipContext.Provider value={value}>
+      <TooltipPrimitive.Root open={open} onOpenChange={onRadixOpenChange}>
+        {children}
+      </TooltipPrimitive.Root>
+    </TooltipContext.Provider>
+  );
+  return inProvider ? (
+    root
+  ) : (
+    <TooltipPrimitive.Provider delayDuration={0} skipDelayDuration={0}>
+      {root}
+    </TooltipPrimitive.Provider>
+  );
+}
+Tooltip.displayName = "Tooltip";
+
+const TooltipTrigger = React.forwardRef<
+  React.ElementRef<typeof TooltipPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Trigger>
+>(({ onPointerEnter, onPointerLeave, onPointerDown, onClick, onFocus, onBlur, ...props }, ref) => {
+  const ctx = useTooltip("TooltipTrigger");
+  return (
+    <TooltipPrimitive.Trigger
+      ref={ref}
+      data-slot="tooltip-trigger"
+      onPointerEnter={(e) => {
+        onPointerEnter?.(e);
+        if (e.pointerType !== "touch") ctx.hover("trigger", true);
+      }}
+      onPointerLeave={(e) => {
+        onPointerLeave?.(e);
+        if (e.pointerType !== "touch") ctx.hover("trigger", false);
+      }}
+      // 누름은 트리거의 동작 — Radix 가 누를 때 닫으려는 요청을 받지 않고, 아직 열리지 않았으면 기다리던 열기를 거둔다
+      onPointerDown={(e) => {
+        onPointerDown?.(e);
+        ctx.flag("press");
+        ctx.press();
+      }}
+      onClick={(e) => {
+        onClick?.(e);
+        ctx.flag("press");
+      }}
+      // 키보드 초점(focus-visible)에만 연다 — 손가락 · 마우스로 눌러 생긴 초점에는 열지 않는다(Radix 의 열기를 건너뛴다)
+      onFocus={(e) => {
+        onFocus?.(e);
+        if (e.defaultPrevented) return;
+        if (e.currentTarget.matches(":focus-visible")) ctx.setFocused(true);
+        else e.preventDefault();
+      }}
+      onBlur={(e) => {
+        onBlur?.(e);
+        ctx.setFocused(false);
+        ctx.flag("blur");
+      }}
+      {...props}
+    />
+  );
+});
+TooltipTrigger.displayName = "TooltipTrigger";
+
+export interface TooltipContentProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>, "sideOffset" | "arrowPadding" | "collisionPadding"> {}
+
+const TooltipContent = React.forwardRef<React.ElementRef<typeof TooltipPrimitive.Content>, TooltipContentProps>(
+  ({ className, children, side = "top", align = "center", onPointerEnter, onPointerLeave, onEscapeKeyDown, ...props }, ref) => {
+    const ctx = useTooltip("TooltipContent");
+    return (
+      <TooltipPrimitive.Portal>
+        <TooltipPrimitive.Content
+          ref={ref}
+          data-slot="tooltip-content"
+          data-instant={ctx.instant ? "" : undefined}
+          side={side}
+          align={align}
+          {...BUBBLE_POSITION}
+          className={cn(BUBBLE, BUBBLE_TITLE, className)}
+          onPointerEnter={(e) => {
+            onPointerEnter?.(e);
+            if (e.pointerType !== "touch") ctx.hover("content", true);
+          }}
+          onPointerLeave={(e) => {
+            onPointerLeave?.(e);
+            if (e.pointerType !== "touch") ctx.hover("content", false);
+          }}
+          onEscapeKeyDown={(e) => {
+            onEscapeKeyDown?.(e);
+            ctx.flag("escape");
+          }}
+          {...props}
+        >
+          {children}
+          <TooltipPrimitive.Arrow asChild width={12} height={8}>
+            <BubbleArrow data-slot="tooltip-arrow" />
+          </TooltipPrimitive.Arrow>
+        </TooltipPrimitive.Content>
+      </TooltipPrimitive.Portal>
+    );
+  },
+);
+TooltipContent.displayName = "TooltipContent";
 
 export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider };

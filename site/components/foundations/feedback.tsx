@@ -4,6 +4,8 @@ import type { CSSProperties, ReactNode } from 'react';
 import { color, design, pressScale, proseTokenSet, proseValue, px, roleColors, sectionCode, specDefault, specPartSize, specSize, type Brand } from '@/lib/design-tokens';
 import { Figure, Panel, Swatch, Table, Token, Verdict } from './ui';
 import { PressDemo } from './press-demo';
+import { menuKit } from '../specs/menu-look';
+import { MenuPanel } from '../specs/menu-view';
 
 type Mode = 'light' | 'dark';
 const rc = (name: string, mode: Mode = 'light', brand: Brand = 'desk') => (name === 'static-white' ? color(name, brand) : color(mode === 'dark' ? `${name}-dark` : name, brand));
@@ -132,21 +134,17 @@ export function PressColorFigure() {
   );
 }
 
+// 메모 줄의 메뉴(menu.yaml — 알약 · 줄 · 글자 · 아이콘) — 가운데 줄을 누르는 순간. 나쁜 예는 글자 · 아이콘까지 흐려진다
 function Menu({ pressedText }: { pressedText: boolean }) {
-  const items = ['메모 고정', '복사', '공유'];
+  const faded: CSSProperties = { color: rc('fg-disabled') };
   return (
-    <div className="w-[190px] rounded-xl py-1.5" style={{ background: rc('bg-layer-floating'), boxShadow: proseValue('shadow-s2') }}>
-      {items.map((it, i) => {
-        const on = i === 1;
-        const fg = on && pressedText ? rc('fg-disabled') : rc('fg-neutral');
-        return (
-          <div key={it} className="mx-1.5 flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-[14px]" style={{ background: on ? rc('bg-layer-floating-pressed') : undefined, color: fg }}>
-            <span className="block h-4 w-4 rounded" style={{ border: `1.5px solid ${fg}` }} />
-            {it}
-          </div>
-        );
-      })}
-    </div>
+    <MenuPanel
+      look={menuKit('desk').menu}
+      mode="light"
+      groups={[{ items: [{ value: 'pin', label: '고정', icon: 'pin' }, { value: 'duplicate', label: '복사해 새로 쓰기', icon: 'copy' }, { value: 'edit', label: '수정', icon: 'pencil' }] }]}
+      states={{ duplicate: 'pressed' }}
+      marks={pressedText ? { items: { duplicate: { label: faded, icon: faded } } } : undefined}
+    />
   );
 }
 export function SurfaceOnlyFigure() {

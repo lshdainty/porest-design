@@ -45,7 +45,7 @@ Porest Sidebar는 **2 sides × 3 variants × 3 collapsible modes × menu item �
 - 모바일(`<768px`) 자동 fallback — [`Sheet`](sheet.md) `side={side}` portal로 변경. 사용자 인지 부담 ↓.
 - `Ctrl/⌘ + B` 토글 단축키 자동 — power user 친화.
 - Menu item의 icon은 16×16 — 라벨과 시각 위계 균형. icon-only(collapsed) 시 `size-8` 정사각.
-- Active state는 **`bg-surface-input` fill + `font-medium`** — menu family([`Dropdown Menu`](dropdown-menu.md) / [`Context Menu`](context-menu.md))와 시각 통일. preview의 `border-left 3px primary` 패턴은 옵션(`data-[active=true]:border-l-[3px] border-l-primary` className으로 추가).
+- Active state는 **`bg-surface-input` fill + `font-medium`** — menu family([`Menu`](menu.md))와 시각 통일. preview의 `border-left 3px primary` 패턴은 옵션(`data-[active=true]:border-l-[3px] border-l-primary` className으로 추가).
 - Group label은 `text-caption` + `uppercase` + `tracking-wide` + `text-tertiary` — preview `.sb-group` 정합. shadcn 기본 `text-label-sm`(13)보다 작아 group 위계 명확.
 - Logo row는 `size="lg"` (`h-12`) — 메뉴 item(`h-8`)보다 크게.
 
@@ -174,7 +174,7 @@ Sidebar는 자체 size 없음 — width는 CSS variable.
 
 - **2026-09-30** — SidebarTrigger 를 [`Button`](button.md) `ghost` · `neutralSubtle` · `small` · `iconOnly` 로 옮겼다. 옛 `ghost` + `icon` 이 주던 보조 글자색 · 모서리 8 · 아이콘 16 을 그대로 지킨다(28×28 은 className).
 - 기존 `sidebar.tsx`는 shadcn 기본 + Porest 색 토큰 일부 정합. 추가 정정:
-  - SidebarMenuButton `rounded-xs` (2px) → **`rounded-sm`** (4px) — menu family([`Dropdown Menu`](dropdown-menu.md)) 정합.
+  - SidebarMenuButton `rounded-xs` (2px) → **`rounded-sm`** (4px) — menu family([`Menu`](menu.md)) 정합.
   - SidebarMenuButton `text-title-sm` (16) → **`text-body-md`** (15) — menu item은 본문급 가독성.
   - SidebarMenuButton `gap-2 p-2` (Tailwind 8) → `gap-[var(--spacing-sm)] p-[var(--spacing-sm)]` 토큰 직접 인용.
   - SidebarMenuButton `transition-[width,height,padding]` → `transition-colors duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]` 추가(motion 토큰).
