@@ -1,6 +1,6 @@
 /*
  * shadcn Table 예제 — table.md SoT 정합.
- * 일반 HTML <table> + 토큰화. data table 패턴은 Checkbox/Badge/Button 합성.
+ * 일반 HTML <table> + 토큰화. data table 패턴은 Checkbox/Badge/Button 합성. 상태 칸은 Badge weak(badge.md — 한 목록은 한 변형, 뜻은 톤으로)다.
  * 한국 도메인(Desk 메모 보관함 sortable+selectable / HR 결재 list / Order Footer) 3종.
  */
 
@@ -25,12 +25,32 @@ const INDETERMINATE_ICON = '<svg width="12" height="12" viewBox="0 0 24 24" fill
 const SORT_HEAD = `${HEAD} color:var(--color-text-primary); cursor:pointer;`;
 const SORT_ARROW = '<span style="margin-left:4px;">↑</span>';
 
-const BADGE_BASE = "display:inline-flex; align-items:center; padding:2px var(--spacing-sm); border-radius:var(--radius-full); border:1px solid transparent; font-size:var(--text-badge); font-weight:600; line-height:var(--text-badge--line-height, 1.2);";
-const BADGE_SUCCESS = `${BADGE_BASE} background:color-mix(in srgb, var(--color-success) 16%, transparent); color:var(--color-success);`;
-const BADGE_WARNING = `${BADGE_BASE} background:color-mix(in srgb, var(--color-warning) 16%, transparent); color:var(--color-warning);`;
-const BADGE_SECONDARY = `${BADGE_BASE} background:var(--color-surface-input); color:var(--color-text-secondary);`;
-const BADGE_INFO = `${BADGE_BASE} background:color-mix(in srgb, var(--color-info) 16%, transparent); color:var(--color-info);`;
-const BADGE_ERROR = `${BADGE_BASE} background:color-mix(in srgb, var(--color-error) 16%, transparent); color:var(--color-error);`;
+// ── badge.tsx 의 cva 와 같은 값(이 파일이 쓰는 weak · medium 과 그 톤만 — badge-examples.mjs 의 것과 같다) ──
+// 옛 배지(알약 · text-badge 11/600 · 16% 섞은 의미 색 · soft 넷)는 걷었다 — 표의 상태는 Badge weak, 뜻은 톤으로 가른다
+const BADGE_BASE = "inline-flex min-w-0 cursor-default items-center gap-x0_5 overflow-hidden whitespace-nowrap font-sans";
+const BADGE_VARIANTS = {
+  variant: { weak: "font-medium" },
+  tone: { neutral: "", informative: "", positive: "", critical: "" },
+  size: { medium: "min-h-x5 rounded-r1 px-x1_5 py-x0_5 text-t1" },
+};
+const BADGE_COMPOUND = [
+  { variant: "weak", tone: "neutral", className: "bg-bg-neutral-weak text-fg-neutral-muted" },
+  { variant: "weak", tone: "informative", className: "bg-bg-informative-weak text-fg-informative-contrast" },
+  { variant: "weak", tone: "positive", className: "bg-bg-positive-weak text-fg-positive-contrast" },
+  { variant: "weak", tone: "critical", className: "bg-bg-critical-weak text-fg-critical-contrast" },
+];
+const BADGE_LABEL = "min-w-0 truncate";
+// <Badge> — base → 축 → 맞는 compound(cva 와 같은 차례)
+const badge = (text, { variant = "weak", tone = "neutral", size = "medium" } = {}) => {
+  const cls = [
+    BADGE_BASE,
+    BADGE_VARIANTS.variant[variant],
+    BADGE_VARIANTS.tone[tone],
+    BADGE_VARIANTS.size[size],
+    ...BADGE_COMPOUND.filter((c) => c.variant === variant && c.tone === tone).map((c) => c.className),
+  ].filter(Boolean).join(" ");
+  return `<span data-slot="badge" class="${cls}"><span data-slot="badge-label" class="${BADGE_LABEL}">${text}</span></span>`;
+};
 
 export const tableExamples = [
   {
@@ -98,7 +118,7 @@ export const tableExamples = [
 
   {
     title: "Desk — Data Table (sortable + selectable + bulk action)",
-    description: "메모 보관함 — selection column(Checkbox indeterminate/checked) + sortable header(↑/↓) + status Badge soft(공개=success / 초안=warning / 보관=secondary). 선택 ≥ 1 시 bulk action bar(primary 10% mix bg) 노출.",
+    description: "메모 보관함 — selection column(Checkbox indeterminate/checked) + sortable header(↑/↓) + 상태 Badge weak(공개 positive · 초안 · 보관 neutral — 한 목록은 한 변형, 뜻은 톤으로). 선택 ≥ 1 시 bulk action bar(primary 10% mix bg) 노출.",
     jsx: `<div className="flex flex-col gap-[var(--spacing-sm)]">
   {selectedCount > 0 && (
     <div className="flex gap-[var(--spacing-md)] items-center px-[var(--spacing-md)] py-[var(--spacing-xs)] rounded-sm bg-[color-mix(in_srgb,var(--color-primary)_10%,transparent)] text-body-sm">
@@ -121,7 +141,7 @@ export const tableExamples = [
           </Button>
         </TableHead>
         <TableHead>수정일</TableHead>
-        <TableHead>태그</TableHead>
+        <TableHead>상태</TableHead>
       </TableRow>
     </TableHeader>
     <TableBody>
@@ -130,7 +150,7 @@ export const tableExamples = [
           <TableCell><Checkbox checked={selected[m.id]} /></TableCell>
           <TableCell className="font-medium">{m.title}</TableCell>
           <TableCell className="text-text-secondary">{m.updatedAt}</TableCell>
-          <TableCell><Badge variant={m.tagVariant}>{m.tag}</Badge></TableCell>
+          <TableCell><Badge tone={m.statusTone}>{m.status}</Badge></TableCell>
         </TableRow>
       ))}
     </TableBody>
@@ -149,26 +169,26 @@ export const tableExamples = [
       <th style="${HEAD} width:48px;"><span style="${CHECKBOX_CHECKED}">${INDETERMINATE_ICON}</span></th>
       <th style="${SORT_HEAD}">제목${SORT_ARROW}</th>
       <th style="${HEAD}">수정일</th>
-      <th style="${HEAD}">태그</th>
+      <th style="${HEAD}">상태</th>
     </tr></thead>
     <tbody>
       <tr style="${ROW} background:var(--color-surface-input);">
         <td style="${CELL}"><span style="${CHECKBOX_CHECKED}">${CHECK_ICON}</span></td>
         <td style="${CELL} font-weight:500;">Porest 톤</td>
         <td style="${CELL} color:var(--color-text-secondary);">2시간 전</td>
-        <td style="${CELL}"><span style="${BADGE_SUCCESS}">공개</span></td>
+        <td style="${CELL}">${badge("공개", { tone: "positive" })}</td>
       </tr>
       <tr style="${ROW} background:var(--color-surface-input);">
         <td style="${CELL}"><span style="${CHECKBOX_CHECKED}">${CHECK_ICON}</span></td>
         <td style="${CELL} font-weight:500;">5월 회고</td>
         <td style="${CELL} color:var(--color-text-secondary);">어제</td>
-        <td style="${CELL}"><span style="${BADGE_WARNING}">초안</span></td>
+        <td style="${CELL}">${badge("초안")}</td>
       </tr>
       <tr style="${ROW} background:var(--color-surface-input);">
         <td style="${CELL}"><span style="${CHECKBOX_CHECKED}">${CHECK_ICON}</span></td>
         <td style="${CELL} font-weight:500;">참고 자료</td>
         <td style="${CELL} color:var(--color-text-secondary);">3일 전</td>
-        <td style="${CELL}"><span style="${BADGE_SECONDARY}">보관</span></td>
+        <td style="${CELL}">${badge("보관")}</td>
       </tr>
     </tbody>
   </table>
@@ -176,8 +196,8 @@ export const tableExamples = [
   },
 
   {
-    title: "HR — 결재 list (status Badge soft 통일)",
-    description: "결재 항목 — 신청자 + 부서 + 신청일 + 결재 상태(Badge soft semantic 4종 — 같은 카테고리는 한 style 통일). 같은 카테고리(결재 상태)는 의미 분기를 색으로만.",
+    title: "HR — 결재 list (상태 Badge weak 통일)",
+    description: "결재 항목 — 신청자 + 부서 + 신청일 + 결재 상태(Badge weak — 같은 목록은 한 변형으로 맞추고 뜻은 톤으로 가른다: 승인 positive · 대기 neutral · 반려 critical · 진행 informative). 색만으로 알리지 않는다 — 뜻은 배지 글이 말한다.",
     jsx: `<Table>
   <TableHeader>
     <TableRow>
@@ -193,7 +213,7 @@ export const tableExamples = [
         <TableCell className="font-medium">{a.name}</TableCell>
         <TableCell className="text-text-secondary">{a.dept}</TableCell>
         <TableCell className="text-text-secondary">{a.date}</TableCell>
-        <TableCell><Badge variant={a.statusVariant}>{a.status}</Badge></TableCell>
+        <TableCell><Badge tone={a.statusTone}>{a.status}</Badge></TableCell>
       </TableRow>
     ))}
   </TableBody>
@@ -210,25 +230,25 @@ export const tableExamples = [
       <td style="${CELL} font-weight:500;">김지원</td>
       <td style="${CELL} color:var(--color-text-secondary);">디자인 본부</td>
       <td style="${CELL} color:var(--color-text-secondary);">2026-05-12</td>
-      <td style="${CELL}"><span style="${BADGE_INFO}">승인</span></td>
+      <td style="${CELL}">${badge("승인", { tone: "positive" })}</td>
     </tr>
     <tr style="${ROW}">
       <td style="${CELL} font-weight:500;">이도현</td>
       <td style="${CELL} color:var(--color-text-secondary);">엔지니어링</td>
       <td style="${CELL} color:var(--color-text-secondary);">2026-05-11</td>
-      <td style="${CELL}"><span style="${BADGE_WARNING}">대기</span></td>
+      <td style="${CELL}">${badge("대기")}</td>
     </tr>
     <tr style="${ROW}">
       <td style="${CELL} font-weight:500;">최가람</td>
       <td style="${CELL} color:var(--color-text-secondary);">운영</td>
       <td style="${CELL} color:var(--color-text-secondary);">2026-05-10</td>
-      <td style="${CELL}"><span style="${BADGE_ERROR}">반려</span></td>
+      <td style="${CELL}">${badge("반려", { tone: "critical" })}</td>
     </tr>
     <tr style="${ROW}">
       <td style="${CELL} font-weight:500;">박서연</td>
       <td style="${CELL} color:var(--color-text-secondary);">HR</td>
       <td style="${CELL} color:var(--color-text-secondary);">2026-05-09</td>
-      <td style="${CELL}"><span style="${BADGE_SUCCESS}">완료</span></td>
+      <td style="${CELL}">${badge("진행", { tone: "informative" })}</td>
     </tr>
   </tbody>
 </table>`,

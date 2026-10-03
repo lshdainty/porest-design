@@ -543,7 +543,7 @@ export const buttonExamples = [
   {
     title: "반반 바(split bar)",
     description:
-      "무게가 같은 액션 둘을 한 묶음으로 — 본문 폭을 채운 네모 바를 반으로 갈라 각 칸에 ghost 버튼을 하나씩 둔다. 높이는 xsmall(32)이고 모서리는 네모(radius-r2)다 — 알약은 segmented 와 헷갈린다. 트랙은 bg-layer-basement(segmented 와 같은 톤), 칸 사이 구분선은 글자 높이만큼만 긋는다. 선택이 아니라 실행이라 눌린 상태가 없고, 셋 이상으로 나누지 않는다.",
+      "무게가 같은 액션 둘을 한 묶음으로 — 본문 폭을 채운 네모 바를 반으로 갈라 각 칸에 ghost 버튼을 하나씩 둔다. 높이는 xsmall(32)이고 모서리는 네모(radius-r2)다 — 알약은 segmented 와 헷갈린다. 트랙은 bg-layer-basement(segmented 와 같은 톤), 칸 사이는 Divider 세로(1px stroke-neutral-subtle — 장식)를 글자 높이만큼만 긋는다. 선택이 아니라 실행이라 눌린 상태가 없고, 셋 이상으로 나누지 않는다.",
     jsx: `import { Plus, Scissors } from "lucide-react"
 
 <SplitActions>
@@ -562,16 +562,18 @@ export const buttonExamples = [
                 border border-stroke-neutral-weak bg-bg-layer-basement
                 [&>button]:flex-1 [&>button]:rounded-none">
   {left}
-  <Separator orientation="vertical" className="h-[var(--text-t3)]" />
+  <Divider orientation="vertical" className="h-[var(--text-t3)]" />
   {right}
 </div>`,
     render: () => {
+      // 칸 사이 선 — Divider 세로(divider.tsx 의 dividerVariants({ orientation: "vertical" }) + className). 선 색은 stroke-neutral-subtle 하나다(divider.md)
+      const SPLIT_DIVIDER = "shrink-0 bg-stroke-neutral-subtle w-px self-stretch h-[var(--text-t3)]";
       const bar =
         "display:flex; align-items:center; width:100%; background:var(--color-bg-layer-basement); border:1px solid var(--color-stroke-neutral-weak); border-radius:var(--radius-r2); overflow:hidden;";
       const cell = (children) => btn({ variant: "ghost", size: "xsmall", extra: "flex-1 rounded-none", children });
       return surface(`<div style="${bar}">
   ${cell(`${ICONS.plus}항목 추가`)}
-  <span aria-hidden="true" style="flex:none; width:1px; height:var(--text-t3); background:var(--color-stroke-neutral-weak);"></span>
+  <div data-slot="divider" data-orientation="vertical" aria-hidden="true" class="${SPLIT_DIVIDER}"></div>
   ${cell(`${ICONS.scissors}균등 분할`)}
 </div>`);
     },

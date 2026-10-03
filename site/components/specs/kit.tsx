@@ -1,6 +1,6 @@
 // 컴포넌트 페이지의 화면 예시 조각 — Desk · HR 화면을 실제 크기로 그린다(SEED 가이드의 앱 화면 그림 자리).
 // 색은 역할 색(DESIGN*.md)에서, 글자 크기는 화면 예시라 그림 안에서 정한다(컴포넌트 자체의 값은 YAML 에서 온다).
-import type { CSSProperties, ReactNode } from 'react';
+import { Fragment, type CSSProperties, type ReactNode } from 'react';
 import { ChevronLeft, ChevronRight, House, Wallet, CalendarDays, NotebookPen, Menu, Signal, Wifi, BatteryFull } from 'lucide-react';
 import { color, design, type Brand } from '@/lib/design-tokens';
 import { buttonLook } from './button-look';
@@ -131,7 +131,7 @@ export function Card({ children, mode = 'auto', style, pad = 20 }: { children: R
   );
 }
 
-// 목록 줄 — 앞 동그라미(카테고리 색) · 제목 · 부제 · 뒤 금액
+// 목록 줄 — 앞 타일(카테고리 색 · 첫 글자) · 제목 · 부제 · 뒤 금액. 물건 · 분류는 각진 타일이다(원은 사람 Avatar — avatar.md) — 모서리는 크기 × 0.3(list.yaml 타일)
 export function Row({
   title,
   sub,
@@ -149,16 +149,29 @@ export function Row({
 }) {
   return (
     <div className="flex items-center gap-3 py-2.5">
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[15px] font-bold" style={{ background: rc(`chart-${hue}-weak`, mode), color: rc(`chart-${hue}-contrast`, mode) }}>
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] text-[15px] font-bold" style={{ background: rc(`chart-${hue}-weak`, mode), color: rc(`chart-${hue}-contrast`, mode) }}>
         {title.slice(0, 1)}
       </span>
       <span className="flex min-w-0 flex-1 flex-col">
         <span className="truncate text-[15px] font-medium" style={{ color: rc('fg-neutral', mode) }}>
           {title}
         </span>
+        {/* 설명 줄 — 여러 메타를 " · " 로 이으면 Tag Group 의 모양(구분은 fg-disabled · 보조 기술에는 ", " — tag-group.yaml) */}
         {sub && (
           <span className="truncate text-[13px]" style={{ color: rc('fg-neutral-subtle', mode) }}>
-            {sub}
+            {sub.split(' · ').map((part, i) => (
+              <Fragment key={i}>
+                {i > 0 && (
+                  <>
+                    <span aria-hidden style={{ color: rc('fg-disabled', mode) }}>
+                      {'\u00A0·\u0020'}
+                    </span>
+                    <span className="sr-only">, </span>
+                  </>
+                )}
+                {part}
+              </Fragment>
+            ))}
           </span>
         )}
       </span>

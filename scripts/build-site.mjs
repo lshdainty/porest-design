@@ -29,10 +29,12 @@ import { selectBoxExamples } from "../recipes/shadcn/examples/select-box-example
 import { switchExamples } from "../recipes/shadcn/examples/switch-examples.mjs";
 import { chipExamples } from "../recipes/shadcn/examples/chip-examples.mjs";
 import { badgeExamples } from "../recipes/shadcn/examples/badge-examples.mjs";
+import { notificationBadgeExamples } from "../recipes/shadcn/examples/notification-badge-examples.mjs";
+import { tagGroupExamples } from "../recipes/shadcn/examples/tag-group-examples.mjs";
 import { avatarExamples } from "../recipes/shadcn/examples/avatar-examples.mjs";
 import { cardExamples } from "../recipes/shadcn/examples/card-examples.mjs";
 import { listExamples } from "../recipes/shadcn/examples/list-examples.mjs";
-import { separatorExamples } from "../recipes/shadcn/examples/separator-examples.mjs";
+import { dividerExamples } from "../recipes/shadcn/examples/divider-examples.mjs";
 import { skeletonExamples } from "../recipes/shadcn/examples/skeleton-examples.mjs";
 import { aspectRatioExamples } from "../recipes/shadcn/examples/aspect-ratio-examples.mjs";
 import { progressExamples } from "../recipes/shadcn/examples/progress-examples.mjs";
@@ -120,10 +122,12 @@ const SHADCN_EXAMPLES = {
   chip: chipExamples,
   // Display (Phase 2)
   badge: badgeExamples,
+  "notification-badge": notificationBadgeExamples,
+  "tag-group": tagGroupExamples,
   avatar: avatarExamples,
   card: cardExamples,
   list: listExamples,
-  separator: separatorExamples,
+  divider: dividerExamples,
   skeleton: skeletonExamples,
   "aspect-ratio": aspectRatioExamples,
   progress: progressExamples,
@@ -1978,22 +1982,24 @@ const SHADCN_CATALOG = [
   { slug: "toggle-group", name: "Toggle Group", category: "Form", description: "단일 또는 복수 선택 토글 그룹." },
   { slug: "wheel-picker", name: "Wheel Picker", category: "Form", description: "순서가 있는 값을 세로로 굴려 고르는 휠 — 칼럼 · 항목 · 가운데 선택 띠 · 위아래 안개. Time Picker 의 바탕이고, 달력의 연 · 월 휠 · 달만 고르는 자리에 쓴다 (SEED Wheel Picker 구조)." },
 
-  // Display (16)
+  // Display (18)
   { slug: "aspect-ratio", name: "Aspect Ratio", category: "Display", description: "고정 비율 컨테이너 (16:9, 4:3 등)." },
-  { slug: "avatar", name: "Avatar", category: "Display", description: "프로필 이미지 + fallback 텍스트." },
-  { slug: "badge", name: "Badge", category: "Display", description: "상태·카테고리 마이크로 라벨." },
+  { slug: "avatar", name: "Avatar", category: "Display", description: "사람 한 명을 보이는 원 — 사진이 있으면 사진, 없으면 이니셜 + 이름 색이고, 여러 사람은 지름 1/4 을 겹친 묶음(Avatar Stack — 앞 4명 + \"+N\")이다 (SEED Avatar 구조)." },
+  { slug: "badge", name: "Badge", category: "Display", description: "대상의 상태 · 분류를 한두 낱말로 보이는 누르지 않는 작은 라벨(예정 · 연체 · 승인). weak · outline · solid × 톤 6 × medium 20 · large 24 (SEED Badge 구조)." },
   { slug: "callout", name: "Callout", category: "Display", description: "화면 안, 그 기능 · 내용 가까이에 늘 보이는 안내 상자 — 팁 · 제약 · 주의와 그 자리에서 난 오류(저장 실패)를 알린다 (SEED Callout 구조)." },
   { slug: "card", name: "Card", category: "Display", description: "콘텐츠 컨테이너 (header / content / footer)." },
   { slug: "carousel", name: "Carousel", category: "Display", description: "슬라이드 갤러리 — Embla 베이스." },
+  { slug: "divider", name: "Divider", category: "Display", description: "내용 사이를 나누는 1px 선 — 같은 묶음 안은 들인 선, 묶음 사이는 끝까지 선이고, 크게 다른 내용 사이는 선이 아니라 8 간격이다 (SEED Divider 구조)." },
   { slug: "list", name: "List", category: "Display", description: "설정 · 메뉴 · 선택 · 내용 줄을 세로로 잇는 목록 (SEED List 구조)." },
+  { slug: "notification-badge", name: "Notification Badge", category: "Display", description: "안 읽은 알림 · 확인하지 않은 새 것이 있다는 신호 — 점(있음)과 숫자(몇 개 · 99+)를 아이콘 버튼 · 탭 글에 붙이고, 보면 사라진다 (SEED Notification Badge 구조)." },
   { slug: "page-banner", name: "Page Banner", category: "Display", description: "페이지 머리 바로 아래 화면 폭 전체로 놓여 그 페이지 전체의 상태(연결 끊김 · 만료 예정 · 새 버전)를 알리는 띠 — 한 화면에 하나 (SEED Page Banner 구조)." },
   { slug: "progress", name: "Progress", category: "Display", description: "진행률 막대 (determinate / indeterminate)." },
   { slug: "spinner", name: "Spinner", category: "Display", description: "원형 indeterminate 인디케이터 (shadcn 카탈로그 외, Porest 자체 정의)." },
   { slug: "resizable", name: "Resizable", category: "Display", description: "드래그로 크기 조절 가능 패널." },
   { slug: "result-section", name: "Result Section", category: "Display", description: "화면이나 그 영역 가운데에 놓는 결과 — 비어 있음 · 불러오기 실패 · 완료 · 찾을 수 없는 페이지 · 화면 오류를 한 틀로 그린다 (SEED Result Section 구조)." },
   { slug: "scroll-area", name: "Scroll Area", category: "Display", description: "스타일된 스크롤 컨테이너." },
-  { slug: "separator", name: "Separator", category: "Display", description: "콘텐츠 사이 구분선." },
   { slug: "skeleton", name: "Skeleton", category: "Display", description: "로딩 placeholder (shimmer)." },
+  { slug: "tag-group", name: "Tag Group", category: "Display", description: "여러 메타 정보(카테고리 이름 · 자산 · 시각 · 거리 · 개수 · 금액)를 \" · \" 로 이어 한 줄로 보이는 글줄 — 읽기만 하고, 넘치면 낱말 단위로 줄을 바꾸거나 한 줄에서 말줄임한다 (SEED Tag Group 구조)." },
   { slug: "typography", name: "Typography", category: "Display", description: "텍스트 위계 (h1~h4, p, blockquote, code)." },
 
   // Overlay (9)

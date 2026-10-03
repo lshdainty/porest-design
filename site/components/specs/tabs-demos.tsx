@@ -14,7 +14,7 @@ const t = (look: TabsLook, name: TabsTone, mode: ViewMode) => tcv(look.tone[name
 export function DemoRow({ look, mode, title, sub, amount, hue = 'blue', trailing }: { look: TabsLook; mode: ViewMode; title: string; sub?: string; amount?: string; hue?: Hue; trailing?: ReactNode }) {
   return (
     <li className="flex items-center gap-3 py-2.5">
-      <span aria-hidden className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[14px] font-bold" style={{ background: t(look, `chart-${hue}-weak` as TabsTone, mode), color: t(look, `chart-${hue}-contrast` as TabsTone, mode) }}>
+      <span aria-hidden className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[11px] text-[14px] font-bold" style={{ background: t(look, `chart-${hue}-weak` as TabsTone, mode), color: t(look, `chart-${hue}-contrast` as TabsTone, mode) }}>
         {title.slice(0, 1)}
       </span>
       <span className="flex min-w-0 flex-1 flex-col">

@@ -6,6 +6,7 @@ import { listLook, LIST_STATES, type ListState, type RowSpec } from './list-look
 import { ListHeaderView, ListView, type ViewMode } from './list-view';
 import { ListPlayground } from './list-playground';
 import { Card, Phone, Verdict, rc, type Mode } from './kit';
+import { PhoneBoard, T, TX, items, txRow, type Tx } from './display-screens';
 
 type Fig = (p: { caption?: string }) => ReactNode;
 const look = () => listLook('desk');
@@ -61,11 +62,14 @@ const CURRENCY: RowSpec[] = [
   { kind: 'radio', title: '유로', detail: 'EUR', value: 'EUR' },
   { kind: 'radio', title: '일본 엔', detail: 'JPY', value: 'JPY' },
 ];
-const LEDGER: RowSpec[] = [
-  { kind: 'button', prefix: { tile: 'brown', icon: 'coffee' }, title: '스타벅스 강남점', detail: '카페 · 신한카드', suffix: { amount: '−5,800원' } },
-  { kind: 'button', prefix: { tile: 'blue', icon: 'bus' }, title: '지하철', detail: '교통 · 체크카드', suffix: { amount: '−1,450원' } },
-  { kind: 'button', prefix: { tile: 'green', icon: 'wallet' }, title: '급여', detail: '수입 · 국민은행', suffix: { amount: '+3,200,000원' } },
+// 거래 줄의 설명은 Tag Group(t3 · 한 줄 말줄임 — list.md Detail). 그림의 모드를 따라 그린다
+const meta = (mode: ViewMode, ...labels: string[]) => <T items={items(...labels)} size="t3" truncate mode={mode} />;
+const ledger = (mode: ViewMode = 'auto'): RowSpec[] => [
+  { kind: 'button', prefix: { tile: 'brown', icon: 'coffee' }, title: '스타벅스 강남점', detailNode: meta(mode, '카페', '신한카드'), suffix: { amount: '−5,800원' } },
+  { kind: 'button', prefix: { tile: 'blue', icon: 'bus' }, title: '지하철', detailNode: meta(mode, '교통', '체크카드'), suffix: { amount: '−1,450원' } },
+  { kind: 'button', prefix: { tile: 'green', icon: 'wallet' }, title: '급여', detailNode: meta(mode, '수입', '국민은행'), suffix: { amount: '+3,200,000원' } },
 ];
+const LEDGER = ledger();
 const ALERTS: RowSpec[] = [
   { kind: 'button', highlighted: true, prefix: { tile: 'orange', icon: 'piggy-bank' }, title: '예산 80% 도달', detail: '식비 예산의 80%를 썼어요 · 방금' },
   { kind: 'button', highlighted: true, prefix: { tile: 'blue', icon: 'credit-card' }, title: '내일 카드 결제', detail: '신한카드 125,000원 · 1시간 전' },
@@ -97,7 +101,7 @@ const Hero: Fig = ({ caption }) => (
       <Screen title="알림" mode="light" h={500}>
         <L rows={ALERTS} mode="light" live={false} />
         <H title="이번 주" mode="light" />
-        <L rows={LEDGER.slice(0, 2)} mode="light" live={false} />
+        <L rows={ledger('light').slice(0, 2)} mode="light" live={false} />
       </Screen>
     </div>
   </Figure>
@@ -276,7 +280,7 @@ const Prefix: Fig = ({ caption }) => (
           rows={[
             { kind: 'button', prefix: { icon: 'bell' }, title: '알림', detail: '아이콘 22 — 설정 · 메뉴 줄', suffix: { chevron: true } },
             { kind: 'button', prefix: { tile: 'orange', icon: 'utensils' }, title: '점심 식사', detail: '타일 40 — 색이 뜻을 가진 내용 줄', suffix: { amount: '−12,000원' } },
-            { kind: 'button', prefix: { avatar: '김', hue: 'violet' }, title: '김포레', detail: '아바타 — 사람', suffix: { chevron: true } },
+            { kind: 'button', prefix: { person: '김포레' }, title: '김포레', detail: `아바타 ${look().avatarSize.two} — 사람(한 줄이면 ${look().avatarSize.one})`, suffix: { chevron: true } },
             { kind: 'check', title: '거래 내역', detail: '체크 24 — 여럿 고르기', checked: true },
           ]}
         />
@@ -368,7 +372,7 @@ const AllRows: Fig = ({ caption }) => (
         <H title="오늘" variant="boldSolid" />
         <L rows={LEDGER} live={false} />
         <H title="어제" variant="boldSolid" />
-        <L rows={[{ kind: 'button', prefix: { tile: 'orange', icon: 'utensils' }, title: '점심 식사', detail: '식비 · 현대카드', suffix: { amount: '−12,000원' } }, { kind: 'button', prefix: { tile: 'pink', icon: 'shopping-bag' }, title: '올리브영', detail: '쇼핑 · 네이버페이', suffix: { amount: '−23,400원' } }]} live={false} />
+        <L rows={[{ kind: 'button', prefix: { tile: 'orange', icon: 'utensils' }, title: '점심 식사', detailNode: meta('auto', '식비', '현대카드'), suffix: { amount: '−12,000원' } }, { kind: 'button', prefix: { tile: 'pink', icon: 'shopping-bag' }, title: '올리브영', detailNode: meta('auto', '쇼핑', '네이버페이'), suffix: { amount: '−23,400원' } }]} live={false} />
       </Screen>
     </div>
   </Figure>
@@ -554,10 +558,45 @@ const PrefixGuide: Fig = ({ caption }) => (
       </Verdict>
       <Verdict ok={false} note="한 목록에 아이콘 · 타일 · 앞 없음이 섞였다 — 글자의 왼쪽 줄이 어긋난다">
         <Surface className="w-full">
-          <L rows={[SETTINGS[0], LEDGER[0], { kind: 'button', title: '지하철', detail: '교통 · 체크카드', suffix: { amount: '−1,450원' } }, SETTINGS[1]]} />
+          <L rows={[SETTINGS[0], LEDGER[0], { kind: 'button', title: '지하철', detailNode: meta('auto', '교통', '체크카드'), suffix: { amount: '−1,450원' } }, SETTINGS[1]]} />
         </Surface>
       </Verdict>
     </Pair>
+  </Panel>
+);
+
+// 합계에 안 드는 줄 — 예정 · 환불(제목 · 금액만 옅게, 환불 금액 취소선, 배지는 보통 대비) · 줄 전체를 불투명도로 흐린 옛 모습
+function ExcludedList({ dim = false }: { dim?: boolean }) {
+  const ex = (tx: Tx) => (dim ? txRow({ ...tx, excluded: undefined }) : txRow(tx));
+  return (
+    <PhoneBoard pad={8}>
+      <div className="flex items-baseline justify-between px-6 pb-1 pt-2">
+        <span className="text-[13px] leading-[18px] pk-muted">10월 지출 · 합계에 드는 줄만</span>
+        <span className="text-[17px] font-bold tabular-nums pk-text">−17,600원</span>
+      </div>
+      <L rows={[txRow(TX.starbucks)]} live={false} />
+      {dim ? (
+        <div style={{ opacity: 0.6 }}>
+          <L rows={[ex(TX.netflix), ex(TX.coupang)]} live={false} />
+        </div>
+      ) : (
+        <L rows={[ex(TX.netflix), ex(TX.coupang)]} live={false} />
+      )}
+      <L rows={[txRow(TX.lunch)]} live={false} />
+    </PhoneBoard>
+  );
+}
+const ExcludedRows: Fig = ({ caption }) => (
+  <Panel caption={caption}>
+    {/* 금액이 있는 거래 줄이라 늘 위아래로 — 둘로 나누면 줄이 눌린다 */}
+    <div className="mx-auto flex w-full max-w-[560px] flex-col gap-4">
+      <Verdict ok note="제목 · 금액만 옅게(환불은 금액에 취소선) — 배지는 보통 대비라 줄을 가르는 단서가 또렷하다">
+        <ExcludedList />
+      </Verdict>
+      <Verdict ok={false} note="줄 전체를 불투명도로 흐린다 — 그 줄을 가르는 배지까지 흐려진다">
+        <ExcludedList dim />
+      </Verdict>
+    </div>
   </Panel>
 );
 
@@ -631,6 +670,7 @@ export const listFigures: Record<string, Fig> = {
   'surface-guide': SurfaceGuide,
   'concentric-guide': ConcentricGuide,
   'prefix-guide': PrefixGuide,
+  'excluded-rows': ExcludedRows,
   'ex-basic': ExBasic,
   'ex-button': ExButton,
   'ex-switch': ExSwitch,

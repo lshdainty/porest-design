@@ -23,6 +23,30 @@ const BTN_PRIMARY =
 const BTN_OUTLINE =
   "inline-flex items-center justify-center gap-[var(--spacing-sm)] whitespace-nowrap rounded-sm font-sans font-medium transition-[box-shadow] duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)] disabled:pointer-events-none disabled:opacity-50 border border-border-default bg-surface-default text-text-primary hover:bg-surface-input h-10 px-[var(--spacing-md)] text-body-md";
 
+// ── badge.tsx 의 cva 와 같은 값(이 파일이 쓰는 outline · neutral · medium 만 — badge-examples.mjs 의 것과 같다) ──
+// 옛 배지(알약 · text-badge · 테두리 border-default)는 걷었다 — 배지는 둥근 사각 · 누르지 않는다(badge.md)
+const BADGE_BASE = "inline-flex min-w-0 cursor-default items-center gap-x0_5 overflow-hidden whitespace-nowrap font-sans";
+const BADGE_VARIANTS = {
+  variant: { outline: "bg-transparent font-bold" },
+  tone: { neutral: "" },
+  size: { medium: "min-h-x5 rounded-r1 px-x1_5 py-x0_5 text-t1" },
+};
+const BADGE_COMPOUND = [
+  { variant: "outline", tone: "neutral", className: "text-fg-neutral-muted shadow-[inset_0_0_0_1px_var(--color-stroke-neutral-weak)]" },
+];
+const BADGE_LABEL = "min-w-0 truncate";
+// <Badge> — base → 축 → 맞는 compound(cva 와 같은 차례)
+const badge = (text, { variant = "outline", tone = "neutral", size = "medium" } = {}) => {
+  const cls = [
+    BADGE_BASE,
+    BADGE_VARIANTS.variant[variant],
+    BADGE_VARIANTS.tone[tone],
+    BADGE_VARIANTS.size[size],
+    ...BADGE_COMPOUND.filter((c) => c.variant === variant && c.tone === tone).map((c) => c.className),
+  ].filter(Boolean).join(" ");
+  return `<span data-slot="badge" class="${cls}"><span data-slot="badge-label" class="${BADGE_LABEL}">${text}</span></span>`;
+};
+
 export const cardExamples = [
   {
     title: "Default",
@@ -109,7 +133,7 @@ export const cardExamples = [
 
   {
     title: "Memo card (Desk 시나리오)",
-    description: "메모 + 메타 + 태그 — 콘텐츠 카드 패턴.",
+    description: "메모 + 메타 + 분류 배지 — 콘텐츠 카드 패턴. 메모의 분류(\"회고\")는 Badge outline · neutral(투명 + 안쪽 1px stroke-neutral-weak + fg-neutral-muted · 700 · 20 · 모서리 4)이다 — 상세 · 본문의 중간 강조라 outline 이고, 누르지 않는다.",
     jsx: `<Card className="max-w-md">
   <CardHeader>
     <div className="flex items-center justify-between">
@@ -127,7 +151,7 @@ export const cardExamples = [
     render: () => `<div class="${CARD}" style="${CARD_SHADOW} max-width:448px;">
   <div class="${HEADER}">
     <div style="display:flex; align-items:center; justify-content:space-between;">
-      <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-badge font-semibold border-border-default text-text-primary">회고</div>
+      ${badge("회고")}
       <span style="font-size:var(--text-caption); line-height:var(--text-caption--line-height); color:var(--color-text-tertiary);">5/10 · 어제</span>
     </div>
     <h3 class="${TITLE}">5월 회고: 일관성 있는 글쓰기</h3>

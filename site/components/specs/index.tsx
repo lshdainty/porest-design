@@ -2,6 +2,8 @@
 // scripts/gen-content.mjs 에서 <SpecFigure name id caption /> 가 되고, 여기서 그 그림을 찾아 그린다.
 import type { ReactNode } from 'react';
 import { alertDialogFigures } from './alert-dialog';
+import { avatarFigures } from './avatar';
+import { badgeFigures } from './badge';
 import { bottomSheetFigures } from './bottom-sheet';
 import { buttonFigures } from './button';
 import { buttonGuideFigures } from './button-guides';
@@ -10,6 +12,7 @@ import { checkboxFigures } from './checkbox';
 import { datePickerFigures } from './date-picker';
 import { chipFigures } from './chip';
 import { dialogFigures } from './dialog';
+import { dividerFigures } from './divider';
 import { fieldFigures } from './field';
 import { helpBubbleFigures } from './help-bubble';
 import { inputFigures } from './input';
@@ -17,6 +20,7 @@ import { inputButtonFigures } from './input-button';
 import { listFigures } from './list';
 import { menuFigures } from './menu';
 import { menuSheetFigures } from './menu-sheet';
+import { notificationBadgeFigures } from './notification-badge';
 import { popoverFigures } from './popover';
 import { pageBannerFigures } from './page-banner';
 import { radioGroupFigures } from './radio-group';
@@ -26,6 +30,7 @@ import { selectBoxFigures } from './select-box';
 import { segmentedControlFigures } from './segmented-control';
 import { snackbarFigures } from './snackbar';
 import { switchFigures } from './switch';
+import { tagGroupFigures } from './tag-group';
 import { tabsFigures } from './tabs';
 import { textareaFigures } from './textarea';
 import { timePickerFigures } from './time-picker';
@@ -35,6 +40,8 @@ import { SpecSheet } from './spec-sheet';
 
 const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactNode>> = {
   'alert-dialog': alertDialogFigures,
+  avatar: avatarFigures,
+  badge: badgeFigures,
   'bottom-sheet': bottomSheetFigures,
   button: { ...buttonFigures, ...buttonGuideFigures },
   callout: calloutFigures,
@@ -42,6 +49,7 @@ const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactN
   'date-picker': datePickerFigures,
   chip: chipFigures,
   dialog: dialogFigures,
+  divider: dividerFigures,
   field: fieldFigures,
   'help-bubble': helpBubbleFigures,
   input: inputFigures,
@@ -49,6 +57,7 @@ const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactN
   list: listFigures,
   menu: menuFigures,
   'menu-sheet': menuSheetFigures,
+  'notification-badge': notificationBadgeFigures,
   popover: popoverFigures,
   'page-banner': pageBannerFigures,
   'radio-group': radioGroupFigures,
@@ -58,6 +67,7 @@ const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactN
   'segmented-control': segmentedControlFigures,
   snackbar: snackbarFigures,
   switch: switchFigures,
+  'tag-group': tagGroupFigures,
   tabs: tabsFigures,
   textarea: textareaFigures,
   'time-picker': timePickerFigures,

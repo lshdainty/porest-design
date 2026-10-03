@@ -1,12 +1,13 @@
 // List 의 모양 — specs/components/list.yaml · list-header.yaml 을 강조 · 모드 · 상태마다 풀어 둔다(서버, 빌드 때).
 // 그림(ListView)은 이 값만 받아 그린다. 줄에 끼우는 스위치 · 체크 · 라디오는 그 컴포넌트의 YAML 에서 온다.
-import { axisValues, loadComponentSpec, num, resolveState, tokenValue, type TypeValue } from '@/lib/component-spec';
+import { axisDesc, axisValues, loadComponentSpec, num, resolveState, tokenValue, type TypeValue } from '@/lib/component-spec';
 import type { Mode } from '@/lib/component-spec';
 import { CHART_ORDER, color, design, pressScale, type Brand } from '@/lib/design-tokens';
 import { buttonLook } from './button-look';
 import { checkLook } from './checkbox-look';
 import { radioLook } from './radio-group-look';
 import { switchLook } from './switch-look';
+import { avatarLook } from './display-look';
 import { HEADER_VARIANTS, LIST_HIGHLIGHTS, LIST_STATES, type HeaderFace, type ListFace, type ListLook, type ListState, type ListType, type TileColor } from './list-shared';
 export * from './list-shared';
 
@@ -101,6 +102,10 @@ export function listLook(brand: Brand = 'desk'): ListLook {
   const tiles: Record<string, TileColor> = {};
   for (const hue of CHART_ORDER) tiles[hue] = { bg: pick(`chart-${hue}-weak`), fg: pick(`chart-${hue}`), contrast: pick(`chart-${hue}-contrast`) };
 
+  // 사람 줄의 아바타 — avatar.yaml 의 자리 설명이 "한 줄 목록 줄" 36 · "두 줄 목록 줄" 42 인지(바뀌면 여기서 멈춘다)
+  const aspec = loadComponentSpec('avatar');
+  if (!axisDesc(aspec, 'size', '36')?.includes('한 줄 목록 줄') || !axisDesc(aspec, 'size', '42')?.includes('두 줄 목록 줄')) throw new Error('avatar.yaml 의 36 · 42 자리 설명이 목록 줄(한 줄 · 두 줄)이 아니다 — list-look 의 avatarSize 를 고친다');
+
   const { distance, widthDivisor, minBasis } = pressScale();
   const look: ListLook = {
     faces,
@@ -117,6 +122,9 @@ export function listLook(brand: Brand = 'desk'): ListLook {
       iconButton: buttonLook({ variant: 'ghost', ghostColor: 'neutralSubtle', size: 'xsmall', layout: 'iconOnly' }, brand),
     },
     surface: { default: pick('bg-layer-default'), basement: pick('bg-layer-basement'), floating: pick('bg-layer-floating') },
+    avatar: avatarLook(brand),
+    avatarSize: { one: '36', two: '42' },
+    titleGap: must(num(design().front.spacing.x1_5), 'spacing x1_5'),
   };
   cache.set(brand, look);
   return look;

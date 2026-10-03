@@ -5091,7 +5091,442 @@ export function renderDateTimeGallery(brand) {
   </section>`;
 }
 
+// 표시 — Badge · Notification Badge · Tag Group · Avatar · Avatar Stack · Divider. spec: specs/components/badge.md · notification-badge.md · tag-group.md ·
+// avatar.md · divider.md · 수치 badge.yaml · notification-badge.yaml · tag-group.yaml · avatar.yaml · avatar-stack.yaml · divider.yaml. 구조는 SEED(2026-10-03).
+// 모두 누르지 않는다 — 상태가 enabled 하나다(누르는 자리는 감싼 버튼 · 줄이 가진다).
+// 배지 .pbadge(span) > 앞 아이콘 .pbadge-icon · 글 .pbadge-label. 변형 .pbadge--weak · --solid · --outline × 톤 .pbadge--neutral · --brand · --informative ·
+//   --positive · --warning · --critical × 크기 .pbadge--medium · --large. 묶음 .pbadge-group(사이 4).
+// 알림 배지 .pnb(붙을 대상 — 아이콘 · 글 — 을 감싼다) > 대상 + .pnb-badge(점 --small · 숫자 알약 --large). 붙는 자리 .pnb--icon · .pnb--text. 점 · 숫자는 aria-hidden 이고
+//   이름은 붙은 버튼 · 탭에 단다. 0 이면 그리지 않고 100 이상은 "99+"(formatNotificationCount — 레시피와 같은 함수).
+// 태그 묶음 .ptag(span) > 항목 .ptag-item(+ 아이콘 .ptag-icon · 읽을 글 srLabel) · 구분 .ptag-sep(" · " — 앞 공백 U+00A0 · aria-hidden) · 보이지 않는 ", " .ptag-sr.
+//   크기 .ptag--t2 · --t3 · --t4, 한 줄 말줄임 .ptag--truncate(항목마다 --ptag-shrink). 톤 · 굵기는 항목마다 .ptag-item--neutral · --brand · --bold.
+// 아바타 .pavatar(원 — 크기 .pavatar--{지름}) > 이니셜 .pavatar-initial(이름 색 .pavatar--{색}) 위에 사진 .pavatar-img 를 덮고, 1px 안쪽 테두리는 ::after 다.
+//   묶음 .pav-stack(크기 .pav-stack--{지름}) — 아바타마다 바깥 링 · 겹침, 넘치면 끝에 "+N" .pav-more. 시트 · 대화상자 안이면 .pav-stack--floating(링이 그 바탕색).
+// 구분선 .pdivider(div) — 가로(기본) · 세로 --vertical, 들임 --inset(16). 장식이 기본(aria-hidden), 이름 있는 구획만 role=separator.
+// 이니셜 · 이름 색은 avatarLib 이 정한다 — 빌드(그림)와 페이지 끝 스크립트(이름 바꿔 보기)가 같은 코드를 쓴다. 페이지에는 toString 으로 옮기므로 바깥 이름을 부르지 않고 ES5 로 쓴다.
+function avatarLib() {
+  // 이름 색 순서 — 차트 10색(v110) 그대로. 코드 포인트 합 % 10 이 이 차례의 번호다
+  var HUES = ["blue", "green", "orange", "violet", "pink", "indigo", "red", "yellow", "brown", "gray"];
+  // 표시 이름 — 서버가 준 이름에서 앞뒤 공백만 뺀다(정규화 · 바꾸기 없음)
+  function display(name) { return String(name == null ? "" : name).trim(); }
+  // 이니셜 — 첫 글자 하나(사용자가 보는 글자 단위 — Intl.Segmenter). 로마자는 대문자, 한글 · 숫자 · 그림 글자는 그대로다
+  function initial(name) {
+    var n = display(name);
+    if (!n) return "";
+    var first = typeof Intl !== "undefined" && Intl.Segmenter ? Array.from(new Intl.Segmenter("ko", { granularity: "grapheme" }).segment(n))[0].segment : Array.from(n)[0];
+    return first.toUpperCase();
+  }
+  // 코드 포인트 합 — UTF-16 단위가 아니라 코드 포인트(for…of 와 같다)
+  function sum(name) {
+    var n = display(name), s = 0;
+    Array.from(n).forEach(function (ch) { s += ch.codePointAt(0); });
+    return s;
+  }
+  // 이름 색 — 이름이 비면(정상 흐름에는 없다) 회색 원에 글자를 넣지 않는다
+  function hue(name) { var n = display(name); return n ? HUES[sum(n) % 10] : "gray"; }
+  return { HUES: HUES, display: display, initial: initial, sum: sum, hue: hue };
+}
+const AVATAR = avatarLib();
+// 크기 10단계 — 이니셜 글자(지름의 40%, 가장 작아도 10) · 묶음의 겹침 · 링 · "+N" 글자(지름의 36%, 가장 작아도 10). avatar.yaml · avatar-stack.yaml 의 크기 규칙
+const AVATAR_SIZES = [20, 24, 36, 42, 48, 56, 64, 80, 96, 108];
+const AVATAR_FONT = { 20: 10, 24: 10, 36: 14, 42: 17, 48: 19, 56: 22, 64: 26, 80: 32, 96: 38, 108: 43 };
+const AVATAR_STACK = { 20: [5, 1, 10], 24: [6, 1, 10], 36: [8, 2, 13], 42: [10, 2, 15], 48: [12, 2, 17], 56: [13, 3, 20], 64: [16, 3, 23], 80: [20, 4, 29], 96: [24, 5, 35], 108: [27, 5, 39] };
+// 아바타 크기마다 SEED 와 porest 의 자리(avatar.yaml variants.size)
+const AVATAR_PLACE = { 20: "글 한 줄 안", 24: "줄 안 묶음", 36: "한 줄 목록", 42: "두 줄 목록", 48: "작은 목록", 56: "큰 목록", 64: "프로필 상세", 80: "계정 머리", 96: "HR 큰 사진", 108: "사진 수정" };
+
+// 아이콘 — lucide 그림(선 2). 크기는 놓인 자리가 정한다(배지 12 · 14 · 태그 12 · 13 · 14 · 알림 아이콘 18 · 24)
+const DISPLAY_ICON = {
+  bell: LIST_ICON.bell,
+  pencil: listSvg('<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/>'),
+  eye: listSvg('<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>'),
+  split: listSvg('<path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3"/><path d="m15 9 6-6"/>'),
+  coffee: PICK_ICON.coffee,
+  tv: listSvg('<rect width="20" height="15" x="2" y="7" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/>'),
+  bag: PICK_ICON.shoppingBag,
+  bus: LIST_ICON.bus,
+  wallet: LIST_ICON.wallet,
+  card: PICK_ICON.creditCard,
+  menu: listSvg('<line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/>'),
+  search: TEXT_FIELD_ICON.search,
+};
+
+// 배지 하나 — 글은 여기서 escape 한다. icon 은 DISPLAY_ICON 이름(앞 아이콘 — 글자색을 따르고 보조 기술에는 숨긴다)
+function badge({ text, variant = "weak", tone = "neutral", size = "medium", icon = "" } = {}) {
+  const pre = icon ? `<span class="pbadge-icon" aria-hidden="true">${DISPLAY_ICON[icon]}</span>` : "";
+  return `<span class="pbadge pbadge--${variant} pbadge--${tone} pbadge--${size}">${pre}<span class="pbadge-label">${escape(text)}</span></span>`;
+}
+// 배지 묶음 — 한 대상에 둘까지, 사이 4. 넘쳐도 줄을 바꾸지 않는다
+const badgeGroup = (items) => `<span class="pbadge-group">${items.join("")}</span>`;
+
+// 알림 숫자 표기 — notification-badge.tsx 의 formatNotificationCount 와 같다(0 이하 null · 100 이상 "99+")
+const formatNotificationCount = (count) => {
+  const n = Math.floor(count);
+  return !(n > 0) ? null : n >= 100 ? "99+" : String(n);
+};
+// 알림 배지 — target(아이콘 svg · 글 HTML)을 감싸고 그 상자 위에 점 · 숫자를 놓는다. size small(점 — visible 이 false 면 없다) · large(숫자 — count 0 이하면 없다).
+// attach icon · text. guide 는 대상의 상자를 점선으로 보인다(갤러리 전용). data 는 페이지 끝 스크립트가 읽는 속성
+function notificationBadge({ target, size = "small", attach = "icon", count = 0, visible = true, guide = false, data = "" } = {}) {
+  const text = size === "large" ? formatNotificationCount(count) : null;
+  const show = size === "large" ? text !== null : visible;
+  const mark = show ? `<span class="pnb-badge pnb-badge--${size}" aria-hidden="true">${text === null ? "" : escape(text)}</span>` : "";
+  return `<span class="pnb pnb--${attach}${guide ? " pnb--guide" : ""}"${data ? ` ${data}` : ""}>${target}${mark}</span>`;
+}
+
+// 태그 묶음 — items [{ text, tone(neutralSubtle · neutral · brand), weight(regular · bold), prefixIcon · suffixIcon(하나만), shrink(truncate 의 줄어드는 차례, 기본 1),
+// srLabel(보조 기술이 읽을 글 — 주면 보이는 글을 숨긴다) }]. 빈 항목(null · "")은 건너뛴다. 짜임은 tag-group.tsx 와 같다 — 칸 .ptag-unit(항목 + 뒤 구분) >
+// 항목 .ptag-item(앞 아이콘 · 글 .ptag-label · 뒤 아이콘 · 읽을 글) · 구분 .ptag-sep(보이는 " · " — aria-hidden, 앞 공백 U+00A0 + 보이지 않는 ", ")
+function tagGroup({ size = "t2", truncate = false, items = [] } = {}) {
+  const list = items.filter(it => it && it.text != null && it.text !== "");
+  const icon = (name, side) => (name ? `<span class="ptag-icon ptag-icon--${side}" aria-hidden="true">${DISPLAY_ICON[name]}</span>` : "");
+  const units = list.map((it, i) => {
+    const cls = ["ptag-item", it.tone === "neutral" && "ptag-item--neutral", it.tone === "brand" && "ptag-item--brand", it.weight === "bold" && "ptag-item--bold"].filter(Boolean).join(" ");
+    const style = truncate && it.shrink != null && it.shrink !== 1 ? ` style="flex-shrink: ${it.shrink};"` : "";
+    // 줄바꿈(wrap)의 뒤 아이콘 — 글 안으로 넣어 마지막 낱말과 같은 줄이 안 바뀌는 칸에 둔다(아이콘이 홀로 다음 줄로 가지 않게 —
+    // tag-group.tsx 의 withSuffixIcon). 한 줄 말줄임(truncate)은 아이콘이 글 밖이다(글만 말줄임)
+    const text = String(it.text);
+    const cut = text.search(/\s\S+\s*$/) + 1;
+    const glued = !truncate && !!it.suffixIcon;
+    const body = glued ? `${escape(text.slice(0, cut))}<span class="ptag-nowrap">${escape(text.slice(cut))}${icon(it.suffixIcon, "suffix")}</span>` : escape(text);
+    const label = `<span class="ptag-label"${it.srLabel ? ' aria-hidden="true"' : ""}>${body}</span>`;
+    const sr = it.srLabel ? `<span class="ptag-sr">${escape(it.srLabel)}</span>` : "";
+    const sep = i < list.length - 1 ? `<span class="ptag-sep"><span aria-hidden="true">\u00A0\u00B7 </span><span class="ptag-sr">, </span></span>` : "";
+    return `<span class="ptag-unit"><span class="${cls}"${style}>${icon(it.prefixIcon, "prefix")}${label}${glued ? "" : icon(it.suffixIcon, "suffix")}${sr}</span>${sep}</span>`;
+  });
+  return `<span class="ptag ptag--${size}${truncate ? " ptag--truncate" : ""}">${units.join("")}</span>`;
+}
+// 보조 기술이 읽는 글 — 항목(또는 srLabel)을 ", " 로 잇는다(갤러리의 설명 글)
+const tagReading = (items) => items.filter(it => it && it.text).map(it => it.srLabel || it.text).join(", ");
+
+// 사진 자리 — 사람 사진처럼 칠한 그림(실제 사진 · 사람이 아니다). 사진은 테마와 관계없이 같다
+function avatarPhoto(n = 0) {
+  const sets = [["#b9c9d9", "#7d8fa3", "#3d342e"], ["#e3c9b0", "#c19a7a", "#2b2320"], ["#cfd8c8", "#94a38b", "#4a3a2c"]];
+  const [a, b, hair] = sets[n % sets.length];
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="96" height="96" fill="url(#g)"/><circle cx="48" cy="40" r="18" fill="#f1d5bd"/><path d="M29 37c0-13 9-20 19-20s19 7 19 20c-4-4-10-6-19-6s-15 2-19 6Z" fill="${hair}"/><path d="M12 96c0-21 16-35 36-35s36 14 36 35Z" fill="#f4f4f4"/></svg>`;
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+}
+// 아바타 하나 — 이니셜을 먼저 그리고 사진이 있으면 덮는다(사진을 못 불러와도 이니셜이 남는다). decorative 면 보조 기술에 숨기고(옆에 이름이 있을 때 — 기본),
+// 아니면 role=img + 이름. hue 는 갤러리에서 색을 직접 고를 때만(이름 색 표 — 보통은 이름이 정한다). data 는 페이지 끝 스크립트가 읽는 속성
+function avatar({ name = "", size = 48, photo = "", decorative = true, hue = "", data = "" } = {}) {
+  const color = hue || AVATAR.hue(name);
+  const label = decorative ? 'aria-hidden="true"' : `role="img" aria-label="${escape(AVATAR.display(name))}"`;
+  const img = photo ? `<img class="pavatar-img" src="${photo}" alt="">` : "";
+  return `<span class="pavatar pavatar--${size}" ${label}${data ? ` ${data}` : ""}><span class="pavatar-initial pavatar--${color}" aria-hidden="true">${escape(AVATAR.initial(name))}</span>${img}</span>`;
+}
+// 아바타 묶음 — 앞 max 명 + 넘친 수 "+N"(99 를 넘으면 "+99"). label 이 있으면 그림 하나(role=img)로 읽고, 없으면 장식(옆 글이 수를 말한다)
+function avatarStack({ size = 24, people = [], max = 4, surface = "default", label = "" } = {}) {
+  const shown = people.length > max ? people.slice(0, max) : people;
+  const more = people.length - shown.length;
+  const items = shown.map(p => avatar({ name: p.name, size, photo: p.photo || "" }));
+  if (more > 0) items.push(`<span class="pav-more" aria-hidden="true">+${Math.min(more, 99)}</span>`);
+  const name = label ? `role="img" aria-label="${escape(label)}"` : 'aria-hidden="true"';
+  return `<span class="pav-stack pav-stack--${size}${surface === "floating" ? " pav-stack--floating" : ""}" ${name}>${items.join("")}</span>`;
+}
+
+// 구분선 — 장식(aria-hidden)이 기본이고, decorative 가 false 면 role=separator(세로는 aria-orientation)
+function divider({ orientation = "horizontal", inset = false, decorative = true } = {}) {
+  const cls = ["pdivider", orientation === "vertical" && "pdivider--vertical", inset && "pdivider--inset"].filter(Boolean).join(" ");
+  const role = decorative ? 'aria-hidden="true"' : `role="separator"${orientation === "vertical" ? ' aria-orientation="vertical"' : ""}`;
+  return `<div class="${cls}" ${role}></div>`;
+}
+
+// 표시 갤러리 — 배지 넷 · 알림 배지 둘 · 태그 묶음 둘 · 아바타 셋 · 구분선 하나, 열두 판을 흰 표면(.vignette-card) 위에 그린다. 견본 틀(.ptf-samples · .ptf-cap)은
+// Text Field 갤러리 것, 목록 줄(.plst-*)은 03e 것, 버튼 · 칩은 03 · 03i 것이다. 화면 틀(.pdsp-phone · .pdsp-desk)과 라이트 · 다크 나란히 틀(.pdsp-theme)은 갤러리 것이다.
+// 글은 Desk(가계부 · 카드 · 캘린더 공유 · 더치페이 · 거래 상세)와 HR(휴가 결재 · 인사팀 · 공지)에서 빌렸다 — 다섯 스펙의 코드 예 · 그림과 같은 글이다.
+// 알림 숫자 · 아바타 이름은 직접 바꿔 볼 수 있다(페이지 끝 스크립트).
+export function renderDisplayGallery(brand) {
+  const panel = (title, sub, body) => `
+    <div class="vignette-card cb-panel">
+      <div class="vignette-head">
+        <div class="vignette-title">${escape(title)}</div>
+        <div class="vignette-sub">${escape(sub)}</div>
+      </div>${body}
+    </div>`;
+  const samples = (items, cls = "ptf-samples") => `
+      <div class="${cls}">${items.join("")}
+      </div>`;
+  const sample = (cap, en, body) => `
+        <div class="ptf-sample">
+          <div class="ptf-cap">${escape(cap)}<span>${escape(en)}</span></div>
+          ${body}
+        </div>`;
+  // 라이트 · 다크 나란히 — 페이지 테마와 관계없이 그 테마로 그린다(같은 내용을 두 번)
+  const pair = (body) => `<div class="pdsp-pair">${["light", "dark"].map(t => `<div class="pdsp-theme pdsp-theme--${t}"><div class="pdsp-theme-cap">${t === "light" ? "라이트" : "다크"}</div>${body}</div>`).join("")}</div>`;
+  const surface = (body, cls = "") => `<div class="pdsp-surface${cls ? ` ${cls}` : ""}">${body}</div>`;
+  const row = (items, cls = "") => `<div class="pdsp-row${cls ? ` ${cls}` : ""}">${items.join("")}</div>`;
+  const note = (text) => `<div class="pdsp-note">${escape(text)}</div>`;
+  // 폰 화면(360) · 데스크톱 웹 카드 — 머리(제목 · 오른쪽 버튼) + 안. 갤러리 것이다
+  const phone = (title, body, { action = "", bar = "" } = {}) => `<div class="pdsp-phone">${bar || `<div class="pdsp-screen-head"><div class="ptf-screen-title">${escape(title)}</div>${action}</div>`}${body}</div>`;
+  const desk = (title, body, { action = "" } = {}) => `<div class="pdsp-desk"><div class="pdsp-screen-head pdsp-screen-head--desk"><div class="ptf-screen-title">${escape(title)}</div>${action}</div>${body}</div>`;
+  const tile = (color, icon) => `<span class="plst-tile plst-tile--${color}">${DISPLAY_ICON[icon]}</span>`;
+  // 내용 줄 — 앞 타일 · 제목(+ 배지) · 설명 줄(Tag Group t3 한 줄) · 금액. excluded 는 합계에 안 드는 줄, refunded 는 환불 금액 취소선(list.md "합계에 안 드는 줄")
+  const ledgerRow = ({ color, icon, title, badges = [], tags = [], amount = "", excluded = false, refunded = false }) => `<li class="plst-row${excluded ? " pdsp-excluded" : ""}"><div class="plst-content"><span class="plst-prefix">${tile(color, icon)}</span><span class="plst-body"><span class="pdsp-title-line"><span class="plst-title pdsp-title">${escape(title)}</span>${badges.join("")}</span>${tagGroup({ size: "t3", truncate: true, items: tags })}</span><span class="plst-suffix"><span class="plst-amount${refunded ? " pdsp-refunded" : ""}">${escape(amount)}</span></span></div></li>`;
+  // 사람 줄 — 앞 아바타(장식 — 옆에 이름) · 이름(+ 배지) · 설명 · 뒤
+  const personRow = ({ name, size = 36, photo = "", badges = [], detail = "", suffix = "" }) => `<li class="plst-row"><div class="plst-content"><span class="plst-prefix">${avatar({ name, size, photo })}</span><span class="plst-body"><span class="pdsp-title-line"><span class="plst-title pdsp-title">${escape(name)}</span>${badges.join("")}</span>${detail ? `<span class="plst-detail">${escape(detail)}</span>` : ""}</span>${suffix ? `<span class="plst-suffix">${suffix}</span>` : ""}</div></li>`;
+  const shared = brand.key === "shared";
+
+  // 1. Badge — 변형 3 × 톤 6. 라이트 · 다크 나란히
+  const BADGE_TONES = [
+    ["neutral", "중립", "예정"], ["brand", "브랜드", "Pro"], ["informative", "안내", "읽기 전용"],
+    ["positive", "긍정", "승인"], ["warning", "주의", "만료 임박"], ["critical", "위험", "연체"],
+  ];
+  const BADGE_VARIANTS = [["weak", "weak · 기본"], ["outline", "outline"], ["solid", "solid"]];
+  const badgeMatrix = `<div class="pdsp-matrix"><span></span>${BADGE_VARIANTS.map(([, ko]) => `<span class="pdsp-matrix-head">${escape(ko)}</span>`).join("")}${
+    BADGE_TONES.map(([tone, ko, text]) => `<span class="pdsp-matrix-head">${escape(ko)}<span>${tone}</span></span>${BADGE_VARIANTS.map(([variant]) => `<span>${badge({ text, variant, tone })}</span>`).join("")}`).join("")
+  }</div>`;
+  const variantPanel = panel(
+    "Badge — 변형 3 × 톤 6",
+    "같은 톤이면 weak → outline → solid 순으로 강해진다. weak(기본)는 옅은 바탕 bg-{톤}-weak + 진한 글자 fg-{톤}-contrast · 500, outline 은 투명 + 안쪽 1px 옅은 선 stroke-{톤}-weak(v117 — 다크는 팔레트 400) + 의미 색 글자 fg-{톤} · 700, solid 는 채움 bg-{톤}-solid + 흰 글자 · 700 이다. 중립만 짝이 다르다 — weak 는 bg-neutral-weak + fg-neutral-muted, solid 는 bg-neutral-inverted + fg-neutral-inverted(다크는 밝은 면 + 짙은 글자), outline 은 stroke-neutral-weak + fg-neutral-muted. 주의 solid 는 SEED 의 노랑 + 검은 글자가 아니라 주황 + 흰 글자(5.06 · 5.79:1)다. 글자는 모두 4.5:1 을 넘는다 — weak 5.65 ~ 8.74, solid 5.06 ~ 16.41, outline(흰 표면 위) 5.06 ~ 8.38. 바탕(1.08 ~ 1.30) · 옅은 선(1.23 ~ 1.73)은 배지를 알리는 유일한 표시가 아니다 — 글이 알린다. 두 틀은 페이지 테마와 관계없이 라이트 · 다크로 그렸다."
+      + (shared ? " 공유 토큰에는 브랜드 역할 색이 없어 brand 톤이 여기서는 중립으로 보인다 — HR · Desk 미리보기에서 브랜드 색이다." : ""),
+    pair(badgeMatrix),
+  );
+
+  // 2. Badge — 크기 · 앞 아이콘 · 묶음 · 글자 크기 · 말줄임
+  const badgeSet = (size) => row([
+    badge({ text: "예정", size }),
+    badge({ text: "연체 3", tone: "critical", size }),
+    badge({ text: "편집 가능", variant: "outline", tone: "positive", icon: "pencil", size }),
+    badge({ text: "단종", variant: "solid", size }),
+  ], "pdsp-row--badges");
+  const sizePanel = panel(
+    "Badge — 크기 · 앞 아이콘 · 묶음",
+    "medium 20(기본)은 목록 줄 · 표 · 이름 옆, large 24 는 상세 머리 · 카드 제목 옆이다. medium 은 좌우 6 · 위아래 2 · 모서리 4 · 글 t1 11 / 15 · 앞 아이콘 12, large 는 좌우 8 · 위아래 4 · 모서리 6 · 글 t2 12 / 16 · 아이콘 14 이고, 아이콘과 글 사이는 2 다. 앞 아이콘은 글자색을 따르고 보조 기술에 숨긴다. 글은 rem 이라 글자 크기 설정을 따른다 — 최소 높이(20 · 24)는 그대로 두고 상자가 글을 따라 커진다(그림은 글을 130% 로 키웠다). 줄을 바꾸지 않고 최대 폭이 없다 — 부모가 좁을 때만 글이 한 줄 말줄임(…)이고, 글 전체는 보조 기술이 읽는다. 한 대상에는 둘까지(BadgeGroup — 사이 4, 줄바꿈하지 않는다). 상태는 enabled 하나다 — 누르지 않아 호버 · 누름 · 포커스가 없다.",
+    samples([
+      sample("medium 20 — 줄 안 · 표 · 이름 옆", "size=\"medium\"(기본) · 좌우 6 · 위아래 2 · 모서리 4 · t1 11/15 · 아이콘 12", surface(badgeSet("medium"))),
+      sample("large 24 — 상세 머리 · 카드 제목 옆", "size=\"large\" · 좌우 8 · 위아래 4 · 모서리 6 · t2 12/16 · 아이콘 14", surface(badgeSet("large"))),
+      sample("묶음 — 한 대상에 둘까지 · 사이 4", "BadgeGroup — 줄바꿈하지 않는다", surface(badgeGroup([badge({ text: "신용", size: "large" }), badge({ text: "단종", variant: "solid", size: "large" })]))),
+      sample("글자 크기 130% — 상자가 글을 따라 커진다", "글 rem · 최소 높이 20 · 24 는 그대로", surface(`<div class="pdsp-text-scale">${row([badge({ text: "예정" }), badge({ text: "연체 3", tone: "critical" }), badge({ text: "신용", size: "large" })], "pdsp-row--badges")}</div>`)),
+      sample("부모가 좁을 때만 — 글 한 줄 말줄임", "최대 폭 없음 · min-width 0 — 칸 44 에 \"만료 임박\"", surface(`<div class="pdsp-narrow">${badge({ text: "만료 임박", tone: "warning" })}</div>`)),
+    ]),
+  );
+
+  // 3. Badge — 쓰이는 자리: 카드 상세 머리(large 둘) · 캘린더 공유 권한(outline + 앞 아이콘) · HR 휴가 결재 표(weak — 한 목록은 한 변형)
+  const cardPhone = phone("현대카드 M", `<div class="pdsp-pad">${badgeGroup([badge({ text: "신용", size: "large" }), badge({ text: "단종", variant: "solid", size: "large" })])}</div>${listOf([
+    listRow({ title: "결제일", suffix: escape("매월 15일") }),
+    listRow({ title: "이번 달 사용", suffix: escape("452,300원") }),
+    listRow({ title: "혜택", suffix: escape("포인트형") }),
+  ])}`);
+  const sharePhone = phone("캘린더 공유", listOf([
+    personRow({ name: "김민수", badges: [badge({ text: "소유자", variant: "outline" })], detail: "minsu@example.com" }),
+    personRow({ name: "이서연", badges: [badge({ text: "편집 가능", variant: "outline", tone: "positive", icon: "pencil" })], detail: "seoyeon@example.com" }),
+    personRow({ name: "박지훈", badges: [badge({ text: "읽기 전용", variant: "outline", tone: "informative", icon: "eye" })], detail: "jihun@example.com" }),
+  ]));
+  const LEAVE_ROWS = [
+    ["윤재현", "연차 · 10월 12일~14일", ["대기", "neutral"], avatarPhoto(0)],
+    ["서다은", "반차(오전) · 10월 8일", ["진행", "informative"], avatarPhoto(1)],
+    ["강도윤", "연차 · 10월 5일", ["승인", "positive"], ""],
+    ["정하늘", "병가 · 9월 30일", ["반려", "critical"], ""],
+    ["한지우", "연차 · 9월 24일", ["취소", "neutral"], ""],
+  ];
+  const leaveDesk = desk("휴가 결재", `<table class="pdsp-table"><thead><tr><th scope="col">신청자</th><th scope="col">내용</th><th scope="col">상태</th></tr></thead><tbody>${
+    LEAVE_ROWS.map(([name, what, [status, tone], photo], i) => `<tr><td><span class="pdsp-cell-person">${avatar({ name, size: 36, photo })}<span class="pdsp-cell-name">${escape(name)}</span>${i === 0 ? badge({ text: "나", tone: "brand" }) : ""}</span></td><td class="pdsp-cell-sub">${escape(what)}</td><td>${badge({ text: status, tone })}</td></tr>`).join("")
+  }</tbody></table>`);
+  const placePanel = panel(
+    "Badge — 화면에서: 상세 머리 · 권한 · 결재 상태",
+    "상태 · 분류만 배지로 둔다 — 시간 · 개수 · 금액 같은 메타 정보는 Tag Group(아래 판), 고르기 · 거르기는 Chip(알약)이다. 반복되는 줄은 weak 이고 한 목록 안에서는 한 변형으로 맞추고 뜻은 톤으로 가른다(결재 표 — 대기 · 취소 neutral · 진행 informative · 승인 positive · 반려 critical). solid 는 꼭 눈에 띄어야 할 상태 하나(단종)에, outline 은 상세 · 본문의 중간 강조(공유 권한 — 앞 아이콘)에 쓴다. brand 는 브랜드와 닿는 자리(요금제 · 본인 표시 \"나\")에만 아낀다. 배지는 흰 표면(bg-layer-default) 위에 둔다 — 중립 weak 바탕은 회색 바탕(bg-layer-basement)과 같은 색이다. 배지는 <span> · 역할 없음이라 줄 이름과 이어 읽힌다(\"이서연 편집 가능\").",
+    samples([
+      sample("폰 — 카드 상세 머리 · large 둘", "BadgeGroup — 신용(weak neutral) · 단종(solid neutral)", cardPhone),
+      sample("폰 — 캘린더 공유 · outline + 앞 아이콘", "variant=\"outline\" · prefixIcon={<Pencil />} · {<Eye />}", sharePhone),
+    ]) + samples([
+      sample("데스크톱 웹 — HR 휴가 결재 · 한 변형(weak) · 톤으로 가른다", "대기 · 취소 neutral · 진행 informative · 승인 positive · 반려 critical · 본인 표시 \"나\" brand", leaveDesk),
+    ], "ptf-samples pov-samples--next pdsp-samples--wide"),
+  );
+
+  // 4. 합계에 안 드는 줄 — 예정 · 환불(list.md). 줄을 흐리지 않고 제목 · 금액만 옅게, 환불 금액은 취소선, 배지는 보통 대비
+  const ledger = phone("가계부", `<div class="pdsp-total"><span class="pdsp-total-label">10월 지출</span><span class="pdsp-total-value">17,900원</span></div>${listOf([
+    ledgerRow({ color: "orange", icon: "coffee", title: "스타벅스 강남역점", tags: [{ text: "카페" }, { text: "신한카드" }, { text: "오후 2:10", shrink: 0 }], amount: "5,600원" }),
+    ledgerRow({ color: "violet", icon: "tv", title: "넷플릭스", badges: [badge({ text: "예정" })], tags: [{ text: "구독" }, { text: "현대카드" }, { text: "10월 18일", shrink: 0 }], amount: "17,000원", excluded: true }),
+    ledgerRow({ color: "blue", icon: "bag", title: "쿠팡", badges: [badge({ text: "환불됨" })], tags: [{ text: "쇼핑" }, { text: "국민카드" }, { text: "10월 2일", shrink: 0 }], amount: "32,000원", excluded: true, refunded: true }),
+    ledgerRow({ color: "gray", icon: "bus", title: "버스", tags: [{ text: "교통" }, { text: "체크카드" }, { text: "오전 8:42", shrink: 0 }], amount: "1,500원" }),
+    ledgerRow({ color: "indigo", icon: "wallet", title: "다이소", tags: [{ text: "생활" }, { text: "현금" }, { text: "오전 11:05", shrink: 0 }], amount: "10,800원" }),
+  ])}`);
+  const excludedPanel = panel(
+    "합계에 안 드는 줄 — 예정 · 환불",
+    "예정(아직 빠지지 않은 돈) · 환불(취소된 돈) 거래는 합계에 들지 않는다 — 위 \"10월 지출\" 17,900원은 보통 줄 셋의 합이다. 그 줄은 불투명도로 흐리지 않는다 — 줄 전체를 흐리면 그 줄을 가르는 단서인 배지까지 흐려진다(지금 제품은 0.6 으로 흐려 \"예정\" 이 2.30 · 다크 2.77:1). 대신 제목 · 금액만 fg-neutral-subtle(흰 바탕 5.50 · 다크 6.09)로 옅게 하고, 환불 금액은 취소선을 긋는다 — 취소선은 보조 기술이 읽지 않으므로 뜻은 배지 글(\"환불됨\")이 말한다. 배지(weak neutral)는 보통 대비 그대로(6.58 · 5.93), 앞 타일 · 설명 줄은 보통 줄과 같고, 누름 · 호버 · 포커스도 보통 줄과 같다(막힌 줄이 아니다). 설명 줄은 Tag Group(t3 · 한 줄 말줄임 — 시각은 줄지 않는다)이다.",
+    samples([
+      sample("폰 — 가계부", "제목 · 금액 fg-neutral-subtle · 환불 금액 취소선 · 배지는 보통 대비", ledger),
+    ]),
+  );
+
+  // 5. Notification Badge — 점 6 · 숫자 18 · 99+. 24 아이콘의 상자(점선)에서 잰 자리. 라이트 · 다크 나란히
+  const bell24 = (size, count, visible = true) => notificationBadge({ target: DISPLAY_ICON.bell, size, count, visible, guide: true });
+  const nbCell = (body, cap) => `<span class="pdsp-nb-cell"><span class="pdsp-icon24">${body}</span><span class="pdsp-cap">${escape(cap)}</span></span>`;
+  const nbSizes = row([
+    nbCell(bell24("small", 0, false), "없음"),
+    nbCell(bell24("small"), "점 6"),
+    nbCell(bell24("large", 1), "1"),
+    nbCell(bell24("large", 12), "12"),
+    nbCell(bell24("large", 128), "128 → 99+"),
+  ], "pdsp-row--nb");
+  const nbSizePanel = panel(
+    "Notification Badge — 점 6 · 숫자 18 · 99+",
+    "안 읽은 알림이 있다는 신호다. small(기본)은 점 6 — 새 것이 있는지만, large 는 숫자 알약 18 — 몇 개인지가 판단에 필요할 때만 쓴다. 점은 브랜드 글자색 fg-brand(다크는 밝은 짝 — 표면 위 Desk 8.38 · 6.10 · HR 5.06 · 6.23:1)이고, 숫자 알약은 브랜드 채움 bg-brand-solid + 흰 숫자 11 / 15 · 700(숫자 폭을 같게)이다 — 알림은 오류가 아니라 빨강을 쓰지 않는다. 숫자는 글자 크기 설정을 따르지 않는 px 라(t1-static) 커져도 아이콘을 덮지 않는다. 알약은 최소 폭 18 · 좌우 4 — 한 자리 18 × 18, 두 자리 약 22, \"99+\" 약 32 다. 0 이면 없고 100 이상은 \"99+\" 다. 자리는 아이콘 상자(점선 — 24)에서 잰다 — 점은 위 1 · 오른쪽 1(x 17 ~ 23 · y 1 ~ 7), 숫자는 알약의 왼쪽 아래 꼭짓점이 (아이콘 폭 − 8, 14) = (16, 14)라 위로 4, 오른쪽으로 튀어나오고 숫자가 길수록 오른쪽으로 자란다. 점 · 숫자는 자리를 차지하지 않고(아이콘 크기가 그대로다) 나타나고 사라질 때 모션이 없다. 두 틀은 페이지 테마와 관계없이 라이트 · 다크로 그렸다."
+      + (shared ? " 공유 토큰에는 브랜드 역할 색이 없어 점 · 알약이 여기서는 중립으로 보인다 — HR · Desk 미리보기에서 브랜드 색이다." : ""),
+    pair(nbSizes),
+  );
+
+  // 6. Notification Badge — 붙는 자리 · 이름: 상단 바(폰 점 · 데스크톱 숫자) · 글 · 직접 바꿔 보기
+  const bellButton = ({ size = "small", count = 0, visible = true, id = "", data = "" }) => {
+    const name = size === "large" ? (count > 0 ? `알림, 새 알림 ${count}개` : "알림") : visible ? "알림, 새 알림 있음" : "알림";
+    return `<button class="btn btn-ghost btn-icon-only btn-size-medium" type="button" aria-label="${escape(name)}"${id ? ` id="${id}"` : ""}>${notificationBadge({ target: DISPLAY_ICON.bell, size, count, visible, data })}</button>`;
+  };
+  const topBar = (title, buttons) => `<div class="pdsp-bar"><div class="pdsp-bar-title">${escape(title)}</div><div class="pdsp-bar-actions">${buttons.join("")}</div></div>`;
+  const nbPhone = phone("", listOf([
+    listRow({ prefix: tile("orange", "coffee"), title: "스타벅스 강남역점", detail: "카페 · 신한카드", suffix: '<span class="plst-amount">5,600원</span>' }),
+    listRow({ prefix: tile("gray", "bus"), title: "버스", detail: "교통 · 체크카드", suffix: '<span class="plst-amount">1,500원</span>' }),
+  ]), { bar: topBar("가계부", [bellButton({ size: "small" })]) });
+  const nbDesk = `<div class="pdsp-desk">${topBar("porest", [`<button class="btn btn-ghost btn-icon-only btn-size-medium" type="button" aria-label="검색">${DISPLAY_ICON.search}</button>`, bellButton({ size: "large", count: 3 })])}<div class="pdsp-desk-body">${note("한 자리 숫자는 아이콘 버튼(40) 안에 들고, 두 자리 · \"99+\" 는 버튼 오른쪽 밖으로 나간다.")}</div></div>`;
+  const textAttach = surface(row([
+    `<span class="pdsp-text-target">${notificationBadge({ target: "공지", attach: "text" })}</span>`,
+    `<span class="pdsp-text-target">${notificationBadge({ target: "받은 결재", attach: "text", size: "large", count: 2 })}</span>`,
+  ], "pdsp-row--text"));
+  // 직접 바꿔 보기 — 숫자를 고르면 알약 · 버튼 이름이 바뀐다(0 이면 없고 100 이상 "99+")
+  const liveId = "pdsp-nb-live";
+  const counts = [0, 1, 12, 99, 100, 128];
+  const live = surface(`<div class="pdsp-live">${bellButton({ size: "large", count: 12, id: `${liveId}-button`, data: `data-pnb-live="${liveId}"` })}<div class="pdsp-cap" id="${liveId}-name">버튼 이름 — "알림, 새 알림 12개"</div></div>${chipGroup({ role: "radiogroup", label: "새 알림 수", live: true, items: counts.map((n) => chip({ kind: "radio", size: "small", label: String(n), selected: n === 12, tabindex: n === 12 ? 0 : -1, data: `data-pnb-count="${n}" data-pnb-target="${liveId}"` })) })}`);
+  const nbPlacePanel = panel(
+    "Notification Badge — 붙는 자리 · 이름",
+    "상단 바 알림은 Button ghost · 아이콘만(40 · 아이콘 18 · 누르는 영역 44)의 아이콘을 감싼다 — 자리는 버튼이 아니라 아이콘 상자에서 잰다(18 아이콘이면 점이 x 11 ~ 17). 점이 기본이고 숫자는 몇 개인지가 필요할 때만 쓴다. 글에 붙으면 마지막 글자 뒤 2 · 줄 상자 위 끝이고 탭 · 칸 폭과 줄 높이를 바꾸지 않는다(탭 · Segmented Control 의 알림 점이 이것 — 03j). 점 · 숫자는 보조 기술에 숨기고 붙은 버튼 · 탭의 이름에 넣는다 — \"알림, 새 알림 있음\" · \"알림, 새 알림 3개\"(줄이지 않은 수 — \"새 알림 128개\"). 수가 바뀌어도 소리로 알리지 않는다(라이브 영역 없음) — 버튼에 초점이 오면 새 이름을 읽는다. 사용자가 그 내용을 보면(목록을 열면 · 탭을 고르면) 바로 사라진다. 한 화면에 하나 둘만 둔다. 아래 숫자를 골라 보면 0 이면 사라지고 100 이상은 \"99+\" 로 줄며, 버튼 이름은 줄이지 않은 수를 말한다."
+      + (shared ? " 공유 토큰에는 브랜드 역할 색이 없어 점 · 알약이 여기서는 중립으로 보인다." : ""),
+    samples([
+      sample("폰 — 상단 바 · 점", "size=\"small\" · 이름 \"알림, 새 알림 있음\"", nbPhone),
+      sample("데스크톱 웹 — 상단 바 · 숫자", "size=\"large\" count={3} · 이름 \"알림, 새 알림 3개\"", nbDesk),
+    ], "ptf-samples ptf-samples--forms") + samples([
+      sample("글에 붙을 때 — 마지막 글자 뒤 2 · 줄 상자 위 끝", "attach=\"text\" — 점 · 숫자", textAttach),
+      sample("직접 바꿔 보기 — 0 은 없음 · 100 이상 \"99+\"", "formatNotificationCount(count) · 이름은 줄이지 않은 수", live),
+    ], "ptf-samples pov-samples--next"),
+  );
+
+  // 7. Tag Group — 크기 · 톤 · 굵기 · 아이콘. 보조 기술이 읽는 글을 곁에 적는다
+  const tagSample = (items, opts = {}) => `${tagGroup({ items, ...opts })}<div class="pdsp-cap pdsp-reading">읽는 글 — "${escape(tagReading(items))}"</div>`;
+  const TX_TAGS = [{ text: "식비" }, { text: "신한카드" }, { text: "오후 2:10" }];
+  const tagSizePanel = panel(
+    "Tag Group — 크기 · 톤 · 굵기 · 아이콘",
+    "여러 메타 정보(카테고리 · 자산 · 시각 · 거리 · 개수 · 금액)를 \" · \" 로 이어 한 줄로 보이는 글줄이다 — 읽기만 한다. 크기는 묶음에 하나다 — t2 12 / 16(기본 — 카드 · 상세 머리의 메타) · t3 13 / 18(목록 줄의 설명 줄) · t4 14 / 19, 아이콘 12 · 13 · 14 · 글과 2. 글은 글자 크기 설정을 따른다. 톤 · 굵기는 항목마다 — 기본 fg-neutral-subtle · 400(흰 바탕 5.50 · 다크 6.09:1), 금액 · 핵심 수치처럼 앞세울 항목 하나만 fg-neutral · 700, brand 는 아껴 쓴다. 구분 \" · \" 는 글자다(2px 점 · \"•\" · \"|\" 가 아니다) — 톤과 관계없이 fg-disabled · 400 으로 글보다 한 단계 흐리다. 아이콘은 항목의 앞 또는 뒤 하나, 글자색을 따른다. 보조 기술에는 구분을 숨기고 그 자리의 보이지 않는 \", \" 로 끊어 읽게 하며, 아이콘이 뜻을 가진 항목은 읽을 글(srLabel — \"조회 12\")을 따로 준다."
+      + (shared ? " 공유 토큰에는 브랜드 역할 색이 없어 brand 항목이 여기서는 중립(fg-neutral)으로 보인다." : ""),
+    samples([
+      sample("t2 12/16 — 기본", "size=\"t2\" · 카드 · 상세 머리의 메타", surface(tagSample(TX_TAGS))),
+      sample("t3 13/18 — 목록 줄의 설명 줄", "size=\"t3\"", surface(tagSample(TX_TAGS, { size: "t3" }))),
+      sample("t4 14/19", "size=\"t4\" — 상세 본문 위 · 넓은 화면", surface(tagSample(TX_TAGS, { size: "t4" }))),
+      sample("앞세울 항목 하나만 — neutral · bold", "tone=\"neutral\" weight=\"bold\" — 카드 혜택 조건", surface(tagSample([{ text: "전월 30만원 이상", tone: "neutral", weight: "bold" }, { text: "할인형" }, { text: "연회비 2만원" }]))),
+      sample("brand — 아껴서", "tone=\"brand\" — 내 항목 표시", surface(tagSample([{ text: "내가 씀", tone: "brand" }, { text: "인사팀" }, { text: "3분 전" }]))),
+      sample("앞 · 뒤 아이콘 — 읽을 글을 따로", "prefixIcon={<Eye />} srLabel=\"조회 12\" · suffixIcon={<Split />} srLabel=\"분할 2건\"", surface(`${tagSample([{ text: "인사팀" }, { text: "10월 2일" }, { text: "12", prefixIcon: "eye", srLabel: "조회 12" }])}<div class="pdsp-gap"></div>${tagSample([{ text: "식비" }, { text: "신한카드" }, { text: "2", suffixIcon: "split", srLabel: "분할 2건" }], { size: "t3" })}`)),
+    ]),
+  );
+
+  // 8. Tag Group — 줄바꿈 · 한 줄 말줄임 · 줄어드는 차례
+  const wrapTags = [{ text: "서울 서초구 서초4동" }, { text: "500m" }, { text: "어제" }, { text: "조회수 128" }];
+  const longTags = (shrink) => [{ text: "교통", shrink: shrink ? 0 : 1 }, { text: "신한카드 Deep Dream 체크(1234)", shrink: shrink ? 2 : 1 }, { text: "오후 2:10", shrink: shrink ? 0 : 1 }];
+  const tagOverflowPanel = panel(
+    "Tag Group — 줄바꿈 · 한 줄 말줄임 · 줄어드는 차례",
+    "넘치면 기본(wrap)은 낱말 단위로 줄을 바꾼다(v114 — keep-all · break-word) — 구분은 앞 공백이 줄이 안 바뀌는 공백(U+00A0)이라 앞 항목에 붙어 줄 끝에 남고, 다음 줄은 항목으로 시작한다(SEED 웹은 \"3시 / 간 전\" 처럼 음절에서 끊고 구분이 줄 첫머리에 남는다). 가게 이름 · 주소처럼 말줄임하면 읽기 어려운 자리는 줄바꿈이 낫다. 목록 줄처럼 높이가 늘면 안 되는 자리만 truncate 로 한 줄에 두고 항목 글이 각자 말줄임(…)한다 — 줄어드는 차례는 항목마다 shrink(0 은 줄지 않고, 수가 클수록 먼저 · 많이 준다)이고 구분은 줄지 않는다. 시각 · 금액처럼 꼭 보일 항목은 shrink={0} 이다. 말줄임해도 보조 기술은 글 전체를 읽는다.",
+    samples([
+      sample("wrap — 낱말 단위 · 구분은 줄 끝에", "기본 — 칸 200", surface(`<div class="pdsp-w200">${tagGroup({ items: wrapTags })}</div>`)),
+      sample("truncate — 모두 shrink 1", "한 줄 · 항목이 함께 준다 — 칸 240", surface(`<div class="pdsp-w240">${tagGroup({ size: "t3", truncate: true, items: longTags(false) })}</div>`)),
+      sample("truncate — 긴 자산 이름만 먼저", "shrink={0} · {2} · {0} — 칸 240", surface(`<div class="pdsp-w240">${tagGroup({ size: "t3", truncate: true, items: longTags(true) })}</div>`)),
+    ]),
+  );
+
+  // 9. Avatar — 크기 10단계(같은 사람 — 김민수 · blue)
+  const avatarSizePanel = panel(
+    "Avatar — 크기 10단계 · 자리마다 대표 크기",
+    "크기는 SEED 의 10단계 20 · 24 · 36 · 42 · 48 · 56 · 64 · 80 · 96 · 108 이고 이 밖의 크기를 만들지 않는다. 같은 자리는 어느 화면에서나 같은 크기다 — 글 한 줄 안 20, 줄 안 묶음 24, 한 줄 목록 36, 이름 + 설명 두 줄 목록 42, Desk 계정 머리 80, HR 큰 사진 96, 사진 수정 108. 원(폭 = 높이)이고 모든 크기에 1px 안쪽 테두리(stroke-neutral-subtle — 흰 사진이 흰 바탕에 묻히지 않게)를 겹친다. 이니셜은 지름의 40%(가장 작아도 10)이고 글자 크기 설정을 따르지 않는 px 다(원 안에서 넘치지 않게). 누르지 않는다 — 누르는 자리(프로필 열기)는 감싼 버튼 · 링크가 누름 · 포커스를 가진다.",
+    surface(`<div class="pdsp-ladder">${AVATAR_SIZES.map(s => `<span class="pdsp-ladder-item">${avatar({ name: "김민수", size: s })}<span class="pdsp-cap">${s} · 글자 ${AVATAR_FONT[s]}<br>${escape(AVATAR_PLACE[s])}</span></span>`).join("")}</div>`),
+  );
+
+  // 10. Avatar — 사진 · 이니셜 · 이름 색. 이름 색 열 가지(라이트 · 다크 나란히) · 사진 · 직접 바꿔 보기
+  const HUE_PEOPLE = ["김민수", "박지훈", "한지우", "강도윤", "윤재현", "Kim Minsu", "권나래", "정하늘", "이서연", "유승우"];
+  const hueRow = `<div class="pdsp-hues">${HUE_PEOPLE.map((n, i) => `<span class="pdsp-hue">${avatar({ name: n, size: 42 })}<span class="pdsp-cap">${escape(n)}<br>${i} ${AVATAR.HUES[i]}</span></span>`).join("")}</div>`;
+  const nameId = "pdsp-av-live";
+  const liveAvatar = surface(`<div class="pdsp-live pdsp-live--avatar">${avatar({ name: "김민수", size: 64, data: `data-pav-live="${nameId}"` })}<div class="pdsp-live-field">${textInput({ id: `${nameId}-input`, size: "medium", label: "이름", value: "김민수", placeholder: "이름" })}<div class="pdsp-cap" id="${nameId}-rule">코드 포인트 합 ${AVATAR.sum("김민수")} · % 10 = ${AVATAR.sum("김민수") % 10} → ${AVATAR.hue("김민수")} · 이니셜 "${escape(AVATAR.initial("김민수"))}"</div></div></div>`);
+  const photoRow = surface(row([
+    `<span class="pdsp-hue">${avatar({ name: "윤재현", size: 56, photo: avatarPhoto(0) })}<span class="pdsp-cap">사진</span></span>`,
+    `<span class="pdsp-hue">${avatar({ name: "서다은", size: 56, photo: avatarPhoto(1) })}<span class="pdsp-cap">사진</span></span>`,
+    `<span class="pdsp-hue">${avatar({ name: "강도윤", size: 56 })}<span class="pdsp-cap">사진 없음 · 실패</span></span>`,
+    `<span class="pdsp-hue">${avatar({ name: "", size: 56 })}<span class="pdsp-cap">이름 없음</span></span>`,
+  ], "pdsp-row--avatars"));
+  const avatarColorPanel = panel(
+    "Avatar — 사진 · 이니셜 · 이름 색",
+    "사진이 있으면 사진(HR 프로필 사진)이다. 사진이 없거나 · 불러오는 동안이거나 · 불러오지 못하면 이니셜이 보인다 — 이니셜이 먼저 그려지고 사진이 오면 덮는다(깨진 그림 · 빈 원이 보이지 않는다). 이니셜은 표시 이름(앞뒤 공백만 뺀)의 첫 글자 하나 — 로마자는 대문자(\"Kim Minsu\" → \"K\"), 한글 · 숫자는 그대로다. 이름 색은 표시 이름의 유니코드 코드 포인트를 모두 더해 10 으로 나눈 나머지로 차트 10색(v110 순서 — blue · green · orange · violet · pink · indigo · red · yellow · brown · gray)을 고른다 — 웹 · 앱이 같은 규칙이라 같은 사람은 어디서나 같은 색이다(김민수 142420 → 0 blue · 이서연 151168 → 8 brown · Kim Minsu 845 → 5 indigo). 바탕은 라이트 700 · 다크 800-dark, 글자는 fg-neutral-inverted · 700(라이트 흰 · 다크 짙은 글자 — 4.55 ~ 7.70:1, 다크에서 흰 글자는 1.88 ~ 2.39 라 쓰지 않는다). 색은 뜻이 없다(장식) — 상태(안 낸 사람 · 나간 사람)는 흐리게 하지 않고 이름 옆 글 · 배지로 알린다. 이름이 비면 회색 원에 글자를 넣지 않는다. 사람 그림 · 회색 한 색 · 브랜드 채움 이니셜은 쓰지 않는다. 이름 색 열 가지는 페이지 테마와 관계없이 라이트 · 다크로 그렸다 — 아래 칸에 이름을 써 보면 이니셜과 색이 규칙대로 바뀐다.",
+    `${pair(hueRow)}${samples([
+      sample("사진 · 이니셜", "src 가 있으면 사진, 없거나 실패하면 이니셜 · 이름이 비면 회색", photoRow),
+      sample("직접 바꿔 보기 — 이름 → 이니셜 · 이름 색", "avatarInitial(name) · avatarHue(name)", liveAvatar),
+    ], "ptf-samples pov-samples--next")}`,
+  );
+
+  // 11. Avatar Stack — 크기마다 겹침 · 링 · "+N", 놓인 바탕 · 화면(더치페이 · HR 구성원)
+  const DUTCH = ["김민수", "이서연", "박지훈", "최유진", "정하늘", "한지우"].map(name => ({ name }));
+  const stackLadder = `<div class="pdsp-stacks">${AVATAR_SIZES.map(s => `<div class="pdsp-stack-row"><span class="pdsp-cap">${s} · 겹침 ${AVATAR_STACK[s][0]} · 링 ${AVATAR_STACK[s][1]} · "+N" ${AVATAR_STACK[s][2]}</span>${avatarStack({ size: s, people: DUTCH })}</div>`).join("")}</div>`;
+  const surfaces = row([
+    `<span class="pdsp-stack-on">${avatarStack({ size: 36, people: DUTCH.slice(0, 4) })}<span class="pdsp-cap">넷 — "+N" 없음 · bg-layer-default 위</span></span>`,
+    `<span class="pdsp-stack-on pdsp-stack-on--floating">${avatarStack({ size: 36, people: DUTCH, surface: "floating" })}<span class="pdsp-cap">시트 안 — 링 bg-layer-floating</span></span>`,
+  ], "pdsp-row--stacks");
+  const dutchPhone = phone("더치페이", listOf([
+    `<li class="plst-row"><div class="plst-content"><span class="plst-body"><span class="plst-title">제주 여행</span><span class="pdsp-stack-line">${avatarStack({ size: 24, people: DUTCH })}<span class="pdsp-stack-count">6명 · 412,000원</span></span></span><span class="plst-suffix">10월 3일</span></div></li>`,
+    `<li class="plst-row"><div class="plst-content"><span class="plst-body"><span class="plst-title">팀 점심</span><span class="pdsp-stack-line">${avatarStack({ size: 24, people: DUTCH.slice(0, 3) })}<span class="pdsp-stack-count">3명 · 48,000원</span></span></span><span class="plst-suffix">9월 26일</span></div></li>`,
+  ]) + listHeader({ text: "제주 여행 참가자", id: "pdsp-dutch-people" }) + listOf([
+    personRow({ name: "김민수", badges: [badge({ text: "결제자", tone: "brand" })], suffix: '<span class="plst-amount">103,000원</span>' }),
+    personRow({ name: "이서연", suffix: '<span class="plst-amount">103,000원</span>' }),
+    personRow({ name: "박지훈", badges: [badge({ text: "안 냄" })], suffix: '<span class="plst-amount">103,000원</span>' }),
+  ], ' aria-labelledby="pdsp-dutch-people"'));
+  const teamDesk = desk("인사팀 구성원", listOf([
+    personRow({ name: "윤재현", size: 42, photo: avatarPhoto(0), detail: "인사팀 · 팀장" }),
+    personRow({ name: "서다은", size: 42, photo: avatarPhoto(1), detail: "인사팀 · 매니저" }),
+    personRow({ name: "강도윤", size: 42, detail: "인사팀 · 사원" }),
+  ]), { action: avatarStack({ size: 24, people: [{ name: "윤재현", photo: avatarPhoto(0) }, { name: "서다은", photo: avatarPhoto(1) }, { name: "강도윤" }, { name: "오세훈" }, { name: "임채원" }], label: "인사팀 5명: 윤재현, 서다은, 강도윤, 오세훈 외 1명" }) });
+  const stackPanel = panel(
+    "Avatar Stack — 겹침 · 바탕색 링 · 앞 4명 + \"+N\"",
+    "여러 사람은 겹쳐 묶는다 — 다음 아바타가 지름의 약 1/4(−5 ~ −27) 왼쪽으로 겹치고, 놓인 바탕색 링(1 ~ 5 — 바깥 box-shadow 라 크기가 그대로다)으로 앞 아바타를 끊으며, 뒤에 오는 아바타가 위에 그려진다. 5명 이상이면 앞 4명 + 끝에 \"+N\" 원이다 — 같은 크기 · 같은 링 · 옅은 면 bg-neutral-weak + fg-neutral-muted 700(6.58 · 5.93:1), 글자는 지름의 36%(가장 작아도 10), N = 전체 − 4(99 를 넘으면 \"+99\"). 4명 이하면 모두 보이고 \"+N\" 이 없다. 크기는 묶음이 정하고 안의 아바타가 모두 따른다. 링은 놓인 바탕과 같은 색 — 시트 · 대화상자 · 팝오버 안이면 bg-layer-floating 이다(다크에서 #242938 · #2D3346 으로 다르다). 묶음 옆에 전체 수를 글로 두면(\"6명 · 412,000원\") 묶음은 장식이고, 묶음만 있으면 묶음이 이름을 가진다(role=img — \"인사팀 5명: 윤재현, 서다은, 강도윤, 오세훈 외 1명\"). 안의 아바타 · \"+N\" 은 따로 읽지 않는다. 이름 옆 아바타는 장식이라 이름을 한 번만 읽는다(\"김 김민수\" 가 아니다).",
+    `${surface(stackLadder, "pdsp-surface--scroll")}${samples([
+      sample("놓인 바탕 — 링 색", "surface=\"default\"(기본) · \"floating\"", surface(surfaces)),
+    ], "ptf-samples pov-samples--next")}${samples([
+      sample("폰 — 더치페이 · 24 묶음 + \"6명\" · 참가자 36", "묶음은 장식(옆 글이 수를 말한다) · 상태는 흐리지 않고 배지로", dutchPhone),
+      sample("데스크톱 웹 — HR 인사팀 · 두 줄 목록 42 · 사진", "머리의 묶음은 이름을 가진다(aria-label)", teamDesk),
+    ], "ptf-samples ptf-samples--forms pov-samples--next")}`,
+  );
+
+  // 12. Divider — 들인 선 · 끝까지 선 · 세로 · 8 간격(선이 아니다)
+  const kv = (k, v) => `<div class="pdsp-kv"><span>${escape(k)}</span><span>${escape(v)}</span></div>`;
+  const detailPhone = `<div class="pdsp-phone pdsp-phone--basement"><div class="pdsp-layer"><div class="pdsp-screen-head"><div class="ptf-screen-title">스타벅스 강남역점</div></div><div class="pdsp-amount-big">5,600원</div><div class="pdsp-pad-x">${tagGroup({ items: [{ text: "카페" }, { text: "10월 3일 (토) 오후 2:10" }] })}</div><div class="pdsp-gap"></div><div class="pdsp-kv-group">${kv("결제 수단", "신한카드")}${divider({ inset: true })}${kv("할부", "일시불")}${divider({ inset: true })}${kv("카테고리", "카페")}</div>${divider()}<div class="pdsp-memo"><div class="pdsp-memo-title">메모</div><div class="pdsp-memo-body">회의 전 커피 — 팀 4명</div></div></div><div class="pdsp-layer"><div class="pdsp-stats">${[["수입", "3,200,000원"], ["지출", "1,284,500원"], ["남은 돈", "1,915,500원"]].map(([k, v], i) => `${i ? divider({ orientation: "vertical", inset: true }) : ""}<div class="pdsp-stat"><span>${escape(k)}</span><strong>${escape(v)}</strong></div>`).join("")}</div></div></div>`;
+  const dividerSpecs = (cls) => samples([
+    sample("가로 · 끝까지 — 묶음 사이", "<Divider /> — 부모 폭 · 1px stroke-neutral-subtle", surface(`<div class="pdsp-divider-demo">${divider()}</div>`, "pdsp-surface--flush")),
+    sample("가로 · 들임 — 같은 묶음 안", "<Divider inset /> — 양끝 16", surface(`<div class="pdsp-divider-demo">${divider({ inset: true })}</div>`, "pdsp-surface--flush")),
+    sample("세로 — 칸 사이", "orientation=\"vertical\" — 부모 높이 · inset 이면 위아래 16", surface(`<div class="pdsp-divider-demo pdsp-divider-demo--row">${divider({ orientation: "vertical" })}${divider({ orientation: "vertical", inset: true })}</div>`, "pdsp-surface--flush")),
+    sample("의미 있는 구분선 — 읽힌다", "decorative={false} → role=\"separator\"", surface(`<div class="pdsp-divider-demo">${divider({ decorative: false })}</div>`, "pdsp-surface--flush")),
+  ], cls);
+  const dividerPanel = panel(
+    "Divider — 들인 선 · 끝까지 선 · 세로 · 8 간격",
+    "선은 하나다 — 1px stroke-neutral-subtle(흰 바탕 1.15 · 다크 1.30, SEED 기본과 같은 진하기)이고 바깥 여백이 없다(사이 간격은 쓰는 자리가 정한다). 굵은 선 · 짙은 선 · 점선을 두지 않는다. 나누는 세기는 셋 — 같은 묶음 안은 들인 선(inset — 양끝 16, 세로는 위아래 16), 묶음 사이 · 액션 영역 위는 끝까지 선, 크게 다른 내용 사이는 선이 아니라 8 간격이다(회색 바탕 bg-layer-basement 위에 흰 층 bg-layer-default 묶음을 8 띄워 놓는다 — \"8px 구분선\" 은 없다). 세로선은 가로로 놓인 칸 사이(통계 세 칸)이고 높이는 부모가 정한다. 선은 내용 사이에만 두고 화면 · 묶음의 마지막 아래에는 두지 않는다. 반복되는 목록 줄 사이는 Divider 가 아니라 List 의 줄 사이 선(필요할 때만 — 03e)이다. 선은 장식이라 보조 기술에 숨기고(<div aria-hidden>), 보조 기술도 \"구분선\" 을 알아야 하는 자리만 role=\"separator\" 다.",
+    `${samples([
+      sample("폰 — 거래 상세 · 들인 선 · 끝까지 선 · 8 간격 · 세로선", "키-값 묶음 안은 inset(묶음이 좌우 8 을 더해 선이 글 24 와 맞는다) · 메모 앞은 끝까지 · 통계 층과는 8 간격", detailPhone),
+    ])}${dividerSpecs("ptf-samples pov-samples--next")}`,
+  );
+
+  const lede = "SEED Badge · Notification Badge · Tag Group · Avatar · Avatar Stack · Divider 구조 — 대상의 상태 · 분류 · 사람 · 메타 정보를 보이는 부품이고 모두 누르지 않는다. 배지는 둥근 사각(medium 20 · 모서리 4 · 11/15, large 24 · 모서리 6 · 12/16)이고 weak · outline · solid × 톤 여섯이다 — 반복되는 줄은 weak, 알약은 누르는 Chip 에만 남긴다. 합계에 안 드는 줄(예정 · 환불)은 흐리지 않고 제목 · 금액만 옅게 한다. 알림 배지는 점 6 · 숫자 18(99+) · 브랜드 색이고 이름은 붙은 버튼에 넣는다. 메타 줄은 Tag Group — \" · \" 글자 · 12/16 기본 · fg-neutral-subtle · 구분 fg-disabled, 낱말 단위 줄바꿈 또는 한 줄 말줄임이다. 아바타는 원 · 1px 안쪽 테두리 · 크기 10단계이고 사진이 없으면 이니셜 + 이름 색(차트 10색 — 코드 포인트 합 % 10), 묶음은 지름 1/4 겹침 · 바탕색 링 · 앞 4명 + \"+N\" 이다. 구분선은 1px stroke-neutral-subtle 하나 — 들임 16 · 끝까지 · 세로, 크게 다른 내용 사이는 8 간격이다. 옛 Badge(알약 · 11/600 · solid · soft · outline 12변형 · 누르는 배지) · 옛 Avatar(32 · 40 · 48 · 64 · 회색 · 브랜드 채움) · 옛 Separator(border-default)는 걷었다.";
+
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">03o — 표시</div>
+      <h2 class="section-title">Badge · Notification Badge · Tag Group · Avatar · Divider — 상태 · 알림 · 메타 줄 · 사람 · 구분선</h2>
+      <p class="section-lede">${escape(lede)}</p>
+    </header>
+    ${variantPanel}
+    ${sizePanel}
+    ${placePanel}
+    ${excludedPanel}
+    ${nbSizePanel}
+    ${nbPlacePanel}
+    ${tagSizePanel}
+    ${tagOverflowPanel}
+    ${avatarSizePanel}
+    ${avatarColorPanel}
+    ${stackPanel}
+    ${dividerPanel}
+  </section>`;
+}
+
 export function renderVignettes(brand) {
+  // 배지 — 옛 .badge(알약 · 대문자)는 걷고 03o 의 Badge 로 그린다. HR 결재 상태는 대기 neutral · 진행 informative · 승인 positive · 반려 critical(badge.md Migration notes).
   // 탭 — 옛 underline · pills 그림(브랜드 색 밑줄 · 채움)은 걷었다(tabs.md 2026-10-02). 다른 구역으로 옮기는 자리(HR 직원 상세 · 공유 문서)는 Line 탭,
   // 같은 메모를 거르는 자리(Desk 의 전체 · 즐겨찾기 · 오늘 · 보관함)는 Segmented Control 이다 — 모양 · 동작은 03j 의 도우미 그대로다
   const t = brand.tabs;
@@ -5144,7 +5579,7 @@ export function renderVignettes(brand) {
             <div class="approval-dept">${escape(r.dept)}</div>
           </div>
           <div class="approval-days">${escape(r.days)}</div>
-          <span class="badge badge-warning">${escape(r.status)}</span>
+          ${badge({ text: r.status })}
           <div class="approval-actions">
             <button class="btn btn-primary btn-size-sm">승인</button>
             <button class="btn btn-outline btn-size-sm">반려</button>
@@ -5176,11 +5611,13 @@ export function renderVignettes(brand) {
         </div>`;
     }
     if (v.kind === "todo-card") {
+      // 우선순위 — 영어 코드값(high · medium · low)을 그대로 내지 않는다(badge.md "글"). 톤은 옛 비뇨트의 짝(error · warning · info) 그대로 weak 다
+      const TODO_PRIORITY = { high: { text: "높음", tone: "critical" }, medium: { text: "보통", tone: "warning" }, low: { text: "낮음", tone: "informative" } };
       const items = v.items.map(i => `
         <div class="todo-row ${i.done ? "todo-row--done" : ""}">
           <span class="todo-check ${i.done ? "todo-check--on" : ""}" aria-hidden="true">${i.done ? "✓" : ""}</span>
           <div class="todo-text">${escape(i.text)}</div>
-          <span class="badge badge-${i.priority === "high" ? "error" : i.priority === "medium" ? "warning" : "info"}">${escape(i.priority)}</span>
+          ${badge({ text: TODO_PRIORITY[i.priority].text, tone: TODO_PRIORITY[i.priority].tone })}
           <div class="todo-due">${escape(i.due)}</div>
         </div>`).join("");
       return `
@@ -5277,7 +5714,7 @@ export function renderListingDetail(brand) {
 
   const hostHtml = ld.host ? `
     <div class="ld-host">
-      <div class="ld-host-avatar" aria-hidden="true">${escape((ld.host.name || "?").slice(0, 1))}</div>
+      ${avatar({ name: ld.host.name, size: 42 })}
       <div class="ld-host-text">
         <div class="ld-host-name">${escape(ld.host.name)}<span class="ld-host-role"> · ${escape(ld.host.role)}</span></div>
         <div class="ld-host-bio">${escape(ld.host.bio)}</div>
@@ -5924,7 +6361,7 @@ export function renderShadcnDisclose(brand) {
 }
 
 export function renderShadcnData(brand) {
-  // v71 Data 5
+  // v71 Data 5. 표의 상태는 03o 의 Badge(weak — 한 목록은 한 변형, 뜻은 톤으로)다 — 옛 .dt-badge(알약 · 채운 의미 색 + 흰 글자)는 걷었다
   return `
   <section class="section">
     <header class="section-head">
@@ -5938,11 +6375,11 @@ export function renderShadcnData(brand) {
         <div class="dt">
           <div class="dt-bulk">3개 선택됨 · <button class="dt-bulk-btn">${brand.key === "hr" ? "일괄 승인" : brand.key === "desk" ? "보관" : "Export"}</button> · <button class="dt-bulk-btn">삭제</button></div>
           <table class="dt-table">
-            <thead><tr><th>${cbox({ state: "indeterminate", name: "모두 선택" })}</th><th>${brand.key === "hr" ? "신청자" : brand.key === "desk" ? "제목" : "Token"} <span class="dt-sort">↑</span></th><th>${brand.key === "hr" ? "기간" : brand.key === "desk" ? "수정일" : "Value"}</th><th>${brand.key === "hr" ? "상태" : brand.key === "desk" ? "태그" : "Type"}</th></tr></thead>
+            <thead><tr><th>${cbox({ state: "indeterminate", name: "모두 선택" })}</th><th>${brand.key === "hr" ? "신청자" : brand.key === "desk" ? "제목" : "Token"} <span class="dt-sort">↑</span></th><th>${brand.key === "hr" ? "기간" : brand.key === "desk" ? "수정일" : "Value"}</th><th>${brand.key === "hr" ? "상태" : brand.key === "desk" ? "상태" : "Type"}</th></tr></thead>
             <tbody>
-              <tr><td>${cbox({ state: "checked", name: "이 행 선택" })}</td><td>${brand.key === "hr" ? "김지원" : brand.key === "desk" ? "Porest 톤" : "primary"}</td><td>${brand.key === "hr" ? "5/12-14" : brand.key === "desk" ? "2시간 전" : "#357B5F"}</td><td><span class="dt-badge dt-badge--success">${brand.key === "hr" ? "승인" : brand.key === "desk" ? "공개" : "color"}</span></td></tr>
-              <tr><td>${cbox({ state: "checked", name: "이 행 선택" })}</td><td>${brand.key === "hr" ? "이도현" : brand.key === "desk" ? "5월 회고" : "primary-light"}</td><td>${brand.key === "hr" ? "5/15-16" : brand.key === "desk" ? "어제" : "#5DAD86"}</td><td><span class="dt-badge dt-badge--warning">${brand.key === "hr" ? "대기" : brand.key === "desk" ? "초안" : "color"}</span></td></tr>
-              <tr><td>${cbox({ state: "checked", name: "이 행 선택" })}</td><td>${brand.key === "hr" ? "최가람" : brand.key === "desk" ? "참고 자료" : "border-focus"}</td><td>${brand.key === "hr" ? "5/20" : brand.key === "desk" ? "3일 전" : "#357B5F"}</td><td><span class="dt-badge">${brand.key === "hr" ? "반려" : brand.key === "desk" ? "보관" : "color"}</span></td></tr>
+              <tr><td>${cbox({ state: "checked", name: "이 행 선택" })}</td><td>${brand.key === "hr" ? "김지원" : brand.key === "desk" ? "Porest 톤" : "primary"}</td><td>${brand.key === "hr" ? "5/12-14" : brand.key === "desk" ? "2시간 전" : "#357B5F"}</td><td>${badge({ text: brand.key === "hr" ? "승인" : brand.key === "desk" ? "공개" : "색", tone: brand.key === "shared" ? "neutral" : "positive" })}</td></tr>
+              <tr><td>${cbox({ state: "checked", name: "이 행 선택" })}</td><td>${brand.key === "hr" ? "이도현" : brand.key === "desk" ? "5월 회고" : "primary-light"}</td><td>${brand.key === "hr" ? "5/15-16" : brand.key === "desk" ? "어제" : "#5DAD86"}</td><td>${badge({ text: brand.key === "hr" ? "대기" : brand.key === "desk" ? "초안" : "색" })}</td></tr>
+              <tr><td>${cbox({ state: "checked", name: "이 행 선택" })}</td><td>${brand.key === "hr" ? "최가람" : brand.key === "desk" ? "참고 자료" : "border-focus"}</td><td>${brand.key === "hr" ? "5/20" : brand.key === "desk" ? "3일 전" : "#357B5F"}</td><td>${badge({ text: brand.key === "hr" ? "반려" : brand.key === "desk" ? "보관" : "색", tone: brand.key === "hr" ? "critical" : "neutral" })}</td></tr>
             </tbody>
           </table>
         </div>
@@ -6231,11 +6668,11 @@ export function renderBatchSpecs5(brand) {
   ];
   const slRows = cards.map((c, i) => {
     const active = i === 0;
-    const dim = c.discontinued && !active ? "opacity:0.7;" : "";
-    return `<button type="button" class="sl-row${active ? " sl-row--active" : ""}" style="${dim}" aria-pressed="${active}">
+    // 단종은 배지(weak neutral)가 알린다 — 줄을 불투명도로 흐리지 않는다(배지까지 흐려진다 — badge.md Don't)
+    return `<button type="button" class="sl-row${active ? " sl-row--active" : ""}" aria-pressed="${active}">
       <span class="sl-thumb" style="background:${c.color};">${c.initial}</span>
       <span class="sl-body">
-        <span class="sl-title"><span class="sl-title-text">${c.name}</span>${c.discontinued ? `<span class="sl-badge">단종</span>` : ""}</span>
+        <span class="sl-title"><span class="sl-title-text">${c.name}</span>${c.discontinued ? badge({ text: "단종" }) : ""}</span>
         <span class="sl-sub">${c.company} · ${c.type}${c.fee > 0 ? ` · 연회비 ${c.fee.toLocaleString("ko-KR")}원` : ""}</span>
       </span>
     </button>`;
@@ -6888,28 +7325,7 @@ export function pageCss() {
     .approval-days { font-size: var(--text-caption); color: var(--color-text-secondary); }
     .approval-actions { display: flex; gap: var(--spacing-xs); }
 
-    /* === Badge === badge.md SoT — text-badge(11/600/1.2) + pill + soft semantic 16% mix
-       brand vignette 라벨용 uppercase + letter-spacing은 dense 시각 톤(영문 약어 위주)이라 보존,
-       Badge tsx/examples는 base에서 uppercase 제거(한국어 라벨 친화). */
-    .badge {
-      display: inline-flex; align-items: center;
-      font-size: var(--text-badge);
-      font-weight: var(--text-badge--font-weight, 600);
-      line-height: var(--text-badge--line-height, 1.2);
-      padding: 2px var(--spacing-sm);
-      border-radius: var(--radius-full);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      white-space: nowrap;
-    }
-    .badge-success { background: var(--color-bg-positive-weak); color: var(--color-fg-positive-contrast); }
-    [data-theme="dark"] .badge-success { background: var(--color-bg-positive-weak-dark); color: var(--color-fg-positive-contrast-dark); }
-    .badge-error { background: var(--color-bg-critical-weak); color: var(--color-fg-critical-contrast); }
-    [data-theme="dark"] .badge-error { background: var(--color-bg-critical-weak-dark); color: var(--color-fg-critical-contrast-dark); }
-    .badge-warning { background: var(--color-bg-warning-weak); color: var(--color-fg-warning-contrast); }
-    [data-theme="dark"] .badge-warning { background: var(--color-bg-warning-weak-dark); color: var(--color-fg-warning-contrast-dark); }
-    .badge-info { background: var(--color-bg-informative-weak); color: var(--color-fg-informative-contrast); }
-    [data-theme="dark"] .badge-info { background: var(--color-bg-informative-weak-dark); color: var(--color-fg-informative-contrast-dark); }
+    /* 옛 .badge(알약 · text-badge 11/600 · 대문자 · 자간 · soft 넷)는 걷었다. 배지는 03o 의 .pbadge 다(badge.md — SEED Badge, 2026-10-03) */
 
     /* kpi-card */
     .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-md); }
@@ -10488,6 +10904,391 @@ export function pageCss() {
       --color-stroke-focus-ring: var(--color-stroke-focus-ring-dark);
     }
 
+    /* === 표시 — Badge · Notification Badge · Tag Group · Avatar · Avatar Stack · Divider ===
+       specs/components/badge.md · notification-badge.md · tag-group.md · avatar.md · divider.md(수치 원본은 같은 이름의 .yaml · avatar-stack.yaml). 구조는 SEED(2026-10-03).
+       모두 누르지 않는다 — 상태가 enabled 하나라 호버 · 누름 · 포커스 규칙이 없다(누르는 자리는 감싼 버튼 · 줄이 가진다).
+       다크 짝은 이 블록 끝의 [data-theme="dark"] 에서 바꾼다 — 갤러리의 라이트 · 다크 나란히 틀(.pdsp-theme--light · --dark)은 페이지 테마와 관계없이 그 테마로 그린다. */
+
+    /* Badge — badge.tsx 와 같은 짜임 · 값. 상자 .pbadge(span) · 앞 아이콘 .pbadge-icon · 글 .pbadge-label. 변형은 색을 --pbadge-bg · --pbadge-fg · --pbadge-stroke 에 담고,
+       톤이 변형마다의 값을 준다(레시피의 variant × tone 조합 18개와 같은 색). medium 20(좌우 6 · 위아래 2 · 모서리 4 · t1 11/15 · 앞 아이콘 12) ·
+       large 24(좌우 8 · 위아래 4 · 모서리 6 · t2 12/16 · 아이콘 14), 앞 아이콘 ↔ 글 2. 글은 rem(글자 크기 설정을 따른다)이고 최소 높이만 정해
+       글이 커지면 상자가 따라 커진다. 최대 폭은 없고 한 줄이다 — 부모가 좁을 때만(min-width 0 · overflow hidden) 글이 말줄임한다.
+       outline 테두리는 안쪽 1px(inset box-shadow) — 상자 크기가 변하지 않는다. 굵기 weak 500 · solid · outline 700. 커서는 기본(누르지 않는다) */
+    .pbadge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-x0_5);
+      box-sizing: border-box;
+      min-width: 0;
+      min-height: 20px;
+      padding: var(--spacing-x0_5) var(--spacing-x1_5);
+      overflow: hidden;
+      border-radius: var(--radius-r1);
+      background: var(--pbadge-bg);
+      box-shadow: inset 0 0 0 var(--pbadge-stroke-w, 0px) var(--pbadge-stroke, transparent);
+      color: var(--pbadge-fg);
+      font-family: var(--font-sans);
+      font-size: var(--text-t1);
+      line-height: var(--text-t1--line-height);
+      font-weight: 500;
+      white-space: nowrap;
+      cursor: default;
+    }
+    .pbadge-icon { display: flex; flex-shrink: 0; align-items: center; justify-content: center; }
+    .pbadge-icon > svg { flex-shrink: 0; width: 12px; height: 12px; }
+    .pbadge-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pbadge--large { min-height: 24px; padding: var(--spacing-x1) var(--spacing-x2); border-radius: var(--radius-r1_5); font-size: var(--text-t2); line-height: var(--text-t2--line-height); }
+    .pbadge--large .pbadge-icon > svg { width: 14px; height: 14px; }
+    /* 변형 — weak 옅은 바탕 + 진한 글자, solid 채움 + 흰 글자(중립은 반전 짝), outline 투명 + 안쪽 1px 옅은 선 + 의미 색 글자 */
+    .pbadge--weak { --pbadge-bg: var(--pbadge-weak-bg); --pbadge-fg: var(--pbadge-weak-fg); }
+    .pbadge--solid { --pbadge-bg: var(--pbadge-solid-bg); --pbadge-fg: var(--pbadge-solid-fg); font-weight: 700; }
+    .pbadge--outline { --pbadge-bg: transparent; --pbadge-fg: var(--pbadge-outline-fg); --pbadge-stroke: var(--pbadge-outline-stroke); --pbadge-stroke-w: 1px; font-weight: 700; }
+    /* 톤 — 변형마다의 바탕 · 글자 · 선. 브랜드 역할 색은 공유 토큰(DESIGN.md)에 없어 중립으로 떨어진다(.btn 과 같은 대체 사슬 — 채움 위 흰 글자도 중립 반전 글자로) */
+    .pbadge--neutral {
+      --pbadge-weak-bg: var(--color-bg-neutral-weak); --pbadge-weak-fg: var(--color-fg-neutral-muted);
+      --pbadge-solid-bg: var(--color-bg-neutral-inverted); --pbadge-solid-fg: var(--color-fg-neutral-inverted);
+      --pbadge-outline-stroke: var(--color-stroke-neutral-weak); --pbadge-outline-fg: var(--color-fg-neutral-muted);
+    }
+    .pbadge--brand {
+      --pbadge-brand-white: color-mix(in srgb, var(--color-bg-brand-solid) 0%, var(--color-static-white));
+      --pbadge-weak-bg: var(--color-bg-brand-weak, var(--color-bg-neutral-weak)); --pbadge-weak-fg: var(--color-fg-brand-contrast, var(--color-fg-neutral-muted));
+      --pbadge-solid-bg: var(--color-bg-brand-solid, var(--color-bg-neutral-inverted)); --pbadge-solid-fg: var(--pbadge-brand-white, var(--color-fg-neutral-inverted));
+      --pbadge-outline-stroke: var(--color-stroke-brand-weak, var(--color-stroke-neutral-weak)); --pbadge-outline-fg: var(--color-fg-brand, var(--color-fg-neutral-muted));
+    }
+    .pbadge--informative {
+      --pbadge-weak-bg: var(--color-bg-informative-weak); --pbadge-weak-fg: var(--color-fg-informative-contrast);
+      --pbadge-solid-bg: var(--color-bg-informative-solid); --pbadge-solid-fg: var(--color-static-white);
+      --pbadge-outline-stroke: var(--color-stroke-informative-weak); --pbadge-outline-fg: var(--color-fg-informative);
+    }
+    .pbadge--positive {
+      --pbadge-weak-bg: var(--color-bg-positive-weak); --pbadge-weak-fg: var(--color-fg-positive-contrast);
+      --pbadge-solid-bg: var(--color-bg-positive-solid); --pbadge-solid-fg: var(--color-static-white);
+      --pbadge-outline-stroke: var(--color-stroke-positive-weak); --pbadge-outline-fg: var(--color-fg-positive);
+    }
+    .pbadge--warning {
+      --pbadge-weak-bg: var(--color-bg-warning-weak); --pbadge-weak-fg: var(--color-fg-warning-contrast);
+      --pbadge-solid-bg: var(--color-bg-warning-solid); --pbadge-solid-fg: var(--color-static-white);
+      --pbadge-outline-stroke: var(--color-stroke-warning-weak); --pbadge-outline-fg: var(--color-fg-warning);
+    }
+    .pbadge--critical {
+      --pbadge-weak-bg: var(--color-bg-critical-weak); --pbadge-weak-fg: var(--color-fg-critical-contrast);
+      --pbadge-solid-bg: var(--color-bg-critical-solid); --pbadge-solid-fg: var(--color-static-white);
+      --pbadge-outline-stroke: var(--color-stroke-critical-weak); --pbadge-outline-fg: var(--color-fg-critical);
+    }
+    /* 묶음 — 한 대상에 둘까지, 사이 4. 넘쳐도 줄을 바꾸지 않는다(배지가 글을 말줄임 — 셋 이상이면 중요한 것만 남긴다) */
+    .pbadge-group { display: inline-flex; flex-wrap: nowrap; align-items: center; gap: var(--spacing-x1); min-width: 0; max-width: 100%; }
+
+    /* Notification Badge — notification-badge.tsx 와 같은 짜임 · 값. 붙을 대상(아이콘 · 글)을 감싼 .pnb(relative inline-flex — 상자가 곧 아이콘 · 글의 상자)
+       위에 점 · 숫자 .pnb-badge 를 겹친다(자리를 차지하지 않는다 — 아이콘 크기 · 줄 높이가 그대로다).
+       점 small 6 · fg-brand(다크 밝은 짝), 숫자 large 알약 — 최소 18 × 18 · 좌우 4 · bg-brand-solid + 흰 숫자 11/15 · 700 · 숫자 폭 같게. 숫자는 글자 크기 설정을 따르지 않는 px(t1-static)다.
+       자리는 대상의 상자에서 잰다 — 아이콘 · 점: 위 1 · 오른쪽 1(24 아이콘이면 x 17 ~ 23 · y 1 ~ 7). 아이콘 · 숫자: 알약의 왼쪽 아래 꼭짓점이 (아이콘 폭 − 8, 14) —
+       위로 4, 오른쪽으로 튀어나와 숫자가 길수록 오른쪽으로 자란다. 글: 마지막 글자 뒤 2 · 줄 상자 위 끝. 점 · 숫자는 aria-hidden 이고 이름은 붙은 버튼 · 탭에 단다. 모션 없음 */
+    .pnb {
+      --pnb-dot: var(--color-fg-brand, var(--color-fg-neutral));
+      --pnb-pill: var(--color-bg-brand-solid, var(--color-bg-neutral-inverted));
+      --pnb-brand-white: color-mix(in srgb, var(--color-bg-brand-solid) 0%, var(--color-static-white));
+      --pnb-pill-fg: var(--pnb-brand-white, var(--color-fg-neutral-inverted));
+      position: relative;
+      display: inline-flex;
+    }
+    .pnb--icon > svg { display: block; }
+    .pnb-badge { position: absolute; box-sizing: border-box; pointer-events: none; }
+    .pnb-badge--small { width: 6px; height: 6px; border-radius: var(--radius-full); background: var(--pnb-dot); }
+    .pnb-badge--large {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 18px;
+      min-height: 18px;
+      padding: 0 var(--spacing-x1);
+      border-radius: var(--radius-full);
+      background: var(--pnb-pill);
+      color: var(--pnb-pill-fg);
+      font-family: var(--font-sans);
+      font-size: var(--text-t1-static);
+      line-height: var(--text-t1-static--line-height);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    .pnb--icon > .pnb-badge--small { top: 1px; right: 1px; }
+    .pnb--icon > .pnb-badge--large { left: calc(100% - 8px); bottom: calc(100% - 14px); }
+    .pnb--text > .pnb-badge { top: 0; left: calc(100% + 2px); }
+    /* 갤러리 — 대상의 상자를 점선으로 보인다(자리를 재는 기준) */
+    .pnb--guide { outline: 1px dashed var(--color-fg-disabled); outline-offset: 0; }
+
+    /* Tag Group — tag-group.tsx 와 같은 짜임 · 값. 묶음 .ptag(span) > 칸 .ptag-unit(항목 + 뒤 구분) > 항목 .ptag-item(앞 · 뒤 아이콘 .ptag-icon · 글 .ptag-label · 읽을 글) ·
+       구분 .ptag-sep(보이는 " · " — aria-hidden, 앞 공백 U+00A0 이라 앞 항목에 붙는다 + 보이지 않는 ", " .ptag-sr — 끊어 읽게). 크기는 묶음에 하나(t2 12/16 기본 · t3 13/18 · t4 14/19,
+       아이콘 12 · 13 · 14 · 글과 2 — 아이콘 상자는 줄 높이), 톤 · 굵기는 항목마다 — 기본 fg-neutral-subtle · 400, 앞세울 항목 하나만 fg-neutral · 700, brand 는 fg-brand.
+       구분은 늘 fg-disabled · 400. 넘치면(기본 wrap) 낱말 단위로 줄을 바꾼다 — 묶음은 inline-block · keep-all · break-word(v114)이고, 칸은 nowrap 이라
+       아이콘 ↔ 글 · 글 ↔ 구분 사이에서는 줄이 바뀌지 않고 글 안 · 구분 뒤 띄어쓰기에서만 바뀐다(구분은 앞 줄 끝에 남는다).
+       --truncate 는 한 줄(inline-flex · 최소 폭 0 · 최대 폭 100% — flex 줄의 칸이어도 줄어든다) — 칸을 contents 로 지워 항목 · 구분이 flex 칸이 되고, 항목 글이 각자 말줄임한다(항목의 flex-shrink — 0 은 줄지 않는다).
+       구분은 줄지 않고 앞뒤 공백을 지키게 pre 다 */
+    .ptag { --ptag-icon: 12px; display: inline-block; font-family: var(--font-sans); font-size: var(--text-t2); line-height: var(--text-t2--line-height); word-break: keep-all; overflow-wrap: break-word; }
+    .ptag--t3 { --ptag-icon: 13px; font-size: var(--text-t3); line-height: var(--text-t3--line-height); }
+    .ptag--t4 { --ptag-icon: 14px; font-size: var(--text-t4); line-height: var(--text-t4--line-height); }
+    .ptag-unit { white-space: nowrap; }
+    .ptag-item { color: var(--color-fg-neutral-subtle); font-weight: 400; }
+    .ptag-item--neutral { color: var(--color-fg-neutral); }
+    .ptag-item--brand { color: var(--color-fg-brand, var(--color-fg-neutral)); }
+    .ptag-item--bold { font-weight: 700; }
+    .ptag-icon { display: inline-flex; flex-shrink: 0; align-items: center; height: 1lh; vertical-align: top; }
+    .ptag-icon > svg { flex-shrink: 0; width: var(--ptag-icon); height: var(--ptag-icon); }
+    .ptag-icon--prefix { margin-right: var(--spacing-x0_5); }
+    .ptag-icon--suffix { margin-left: var(--spacing-x0_5); }
+    .ptag-label { white-space: normal; }
+    .ptag-nowrap { white-space: nowrap; }
+    .ptag-sep { color: var(--color-fg-disabled); font-weight: 400; white-space: normal; }
+    .ptag-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+    .ptag--truncate { display: inline-flex; align-items: center; min-width: 0; max-width: 100%; white-space: nowrap; }
+    .ptag--truncate .ptag-unit { display: contents; }
+    .ptag--truncate .ptag-item { display: inline-flex; align-items: center; min-width: 0; }
+    .ptag--truncate .ptag-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ptag--truncate .ptag-sep { flex-shrink: 0; white-space: pre; }
+
+    /* Avatar — avatar.tsx 와 같은 짜임 · 값. 원 .pavatar(폭 = 높이) > 이니셜 .pavatar-initial(이름 색 바탕 chart-{색} — 라이트 700 · 다크 800-dark · fg-neutral-inverted · 700 · 줄 높이 1 ·
+       글자 지름의 40%, 가장 작아도 10 · 글자 크기 설정을 따르지 않는 px) 위에 사진 .pavatar-img(원을 채운다 — object-fit cover), 1px 안쪽 테두리 stroke-neutral-subtle(::after —
+       사진 · 이니셜 위에 겹친다). 레시피는 사진을 다 불러오면 이니셜을 걷는다 — 미리보기는 사진이 늘 불러와져 이니셜 위에 덮는다.
+       크기 10단계 20 · 24 · 36 · 42 · 48 · 56 · 64 · 80 · 96 · 108 — 글자 10 · 10 · 14 · 17 · 19 · 22 · 26 · 32 · 38 · 43 */
+    .pavatar {
+      position: relative;
+      display: inline-flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      width: var(--pav-size);
+      height: var(--pav-size);
+      overflow: hidden;
+      border-radius: var(--radius-full);
+      vertical-align: middle;
+      user-select: none;
+    }
+    .pavatar::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius-full); box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-subtle); pointer-events: none; }
+    .pavatar-initial { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background: var(--pav-bg); color: var(--color-fg-neutral-inverted); font-family: var(--font-sans); font-size: var(--pav-font); line-height: 1; font-weight: 700; text-transform: uppercase; }
+    .pavatar-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .pavatar--20 { --pav-size: 20px; --pav-font: 10px; }
+    .pavatar--24 { --pav-size: 24px; --pav-font: 10px; }
+    .pavatar--36 { --pav-size: 36px; --pav-font: 14px; }
+    .pavatar--42 { --pav-size: 42px; --pav-font: 17px; }
+    .pavatar--48 { --pav-size: 48px; --pav-font: 19px; }
+    .pavatar--56 { --pav-size: 56px; --pav-font: 22px; }
+    .pavatar--64 { --pav-size: 64px; --pav-font: 26px; }
+    .pavatar--80 { --pav-size: 80px; --pav-font: 32px; }
+    .pavatar--96 { --pav-size: 96px; --pav-font: 38px; }
+    .pavatar--108 { --pav-size: 108px; --pav-font: 43px; }
+    /* 이름 색 — 코드 포인트 합 % 10 → 차트 10색(v110 순서). 색은 뜻이 없다(장식) */
+    .pavatar--blue { --pav-bg: var(--color-chart-blue); }
+    .pavatar--green { --pav-bg: var(--color-chart-green); }
+    .pavatar--orange { --pav-bg: var(--color-chart-orange); }
+    .pavatar--violet { --pav-bg: var(--color-chart-violet); }
+    .pavatar--pink { --pav-bg: var(--color-chart-pink); }
+    .pavatar--indigo { --pav-bg: var(--color-chart-indigo); }
+    .pavatar--red { --pav-bg: var(--color-chart-red); }
+    .pavatar--yellow { --pav-bg: var(--color-chart-yellow); }
+    .pavatar--brown { --pav-bg: var(--color-chart-brown); }
+    .pavatar--gray { --pav-bg: var(--color-chart-gray); }
+
+    /* Avatar Stack — avatar.tsx 의 AvatarStack 과 같은 짜임 · 값. 다음 아바타가 지름의 약 1/4 왼쪽으로 겹치고(바깥 여백 −5 ~ −27) 놓인 바탕색 링(바깥 box-shadow 1 ~ 5 —
+       크기를 바꾸지 않는다)으로 앞 아바타를 끊는다 — 뒤에 오는 아바타가 위에 그려진다. 5명 이상이면 앞 4명 + "+N" .pav-more(같은 크기 · 같은 링 ·
+       bg-neutral-weak + fg-neutral-muted 700 · 글자 지름의 36%, 가장 작아도 10). 크기는 묶음이 정하고 안의 아바타가 모두 따른다.
+       링은 bg-layer-default, 시트 · 대화상자 · 팝오버 안(--floating)이면 bg-layer-floating 이다(다크에서 두 바탕이 다르다) */
+    .pav-stack { --pav-ring-color: var(--color-bg-layer-default); display: inline-flex; flex-shrink: 0; align-items: center; vertical-align: middle; }
+    .pav-stack--floating { --pav-ring-color: var(--color-bg-layer-floating); }
+    .pav-stack > :is(.pavatar, .pav-more) { box-shadow: 0 0 0 var(--pav-ring) var(--pav-ring-color); }
+    .pav-stack > * + * { margin-left: calc(-1 * var(--pav-overlap)); }
+    .pav-more {
+      position: relative;
+      display: inline-flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      width: var(--pav-size);
+      height: var(--pav-size);
+      border-radius: var(--radius-full);
+      background: var(--color-bg-neutral-weak);
+      color: var(--color-fg-neutral-muted);
+      font-family: var(--font-sans);
+      font-size: var(--pav-more-font);
+      line-height: 1;
+      font-weight: 700;
+      user-select: none;
+    }
+    .pav-stack--20 { --pav-size: 20px; --pav-overlap: 5px; --pav-ring: 1px; --pav-more-font: 10px; }
+    .pav-stack--24 { --pav-size: 24px; --pav-overlap: 6px; --pav-ring: 1px; --pav-more-font: 10px; }
+    .pav-stack--36 { --pav-size: 36px; --pav-overlap: 8px; --pav-ring: 2px; --pav-more-font: 13px; }
+    .pav-stack--42 { --pav-size: 42px; --pav-overlap: 10px; --pav-ring: 2px; --pav-more-font: 15px; }
+    .pav-stack--48 { --pav-size: 48px; --pav-overlap: 12px; --pav-ring: 2px; --pav-more-font: 17px; }
+    .pav-stack--56 { --pav-size: 56px; --pav-overlap: 13px; --pav-ring: 3px; --pav-more-font: 20px; }
+    .pav-stack--64 { --pav-size: 64px; --pav-overlap: 16px; --pav-ring: 3px; --pav-more-font: 23px; }
+    .pav-stack--80 { --pav-size: 80px; --pav-overlap: 20px; --pav-ring: 4px; --pav-more-font: 29px; }
+    .pav-stack--96 { --pav-size: 96px; --pav-overlap: 24px; --pav-ring: 5px; --pav-more-font: 35px; }
+    .pav-stack--108 { --pav-size: 108px; --pav-overlap: 27px; --pav-ring: 5px; --pav-more-font: 39px; }
+
+    /* Divider — divider.tsx 와 같은 짜임 · 값. 1px 선 stroke-neutral-subtle(흰 바탕 1.15 · 다크 1.30), 바깥 여백 없음. 가로(기본 — 부모 폭 · 높이 1) ·
+       세로 --vertical(폭 1 · 높이는 부모 — flex 안에서 늘어난다), 들임 --inset 은 양끝 16(폭 = 부모 − 32 — 어느 부모에서나 넘치지 않게, 세로는 위아래 16).
+       장식이 기본(aria-hidden) — 이름 있는 구획만 role=separator */
+    .pdivider { flex-shrink: 0; width: 100%; height: 1px; background: var(--color-stroke-neutral-subtle); }
+    .pdivider--inset { width: calc(100% - 2 * var(--spacing-x4)); margin-inline: var(--spacing-x4); }
+    .pdivider--vertical { align-self: stretch; width: 1px; height: auto; }
+    .pdivider--vertical.pdivider--inset { width: 1px; margin-inline: 0; margin-block: var(--spacing-x4); }
+
+    /* 갤러리 — 견본은 흰 표면(.pdsp-surface — bg-layer-default · 1px stroke-neutral-subtle · 모서리 16) 위에 둔다. 중립 weak 배지 · "+N" 의 바탕(bg-neutral-weak)이
+       페이지 바탕(bg-layer-basement)과 같은 gray-200 이라 바탕에 바로 두면 상자가 사라진다(badge.md "흰 표면 위에서").
+       라이트 · 다크 나란히 틀 .pdsp-theme 은 페이지 테마와 관계없이 그 테마로 그린다. .pdsp-phone(폰 360) · .pdsp-desk(데스크톱 웹 카드)는 화면 틀, .pdsp-bar 는 상단 바다.
+       모두 갤러리 것이고 컴포넌트의 일부가 아니다 */
+    .pdsp-surface { padding: var(--spacing-x4) var(--spacing-x5); border-radius: var(--radius-r4); background: var(--color-bg-layer-default); box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-subtle); color: var(--color-fg-neutral); font-family: var(--font-sans); }
+    .pdsp-surface--scroll { overflow-x: auto; }
+    .pdsp-surface--flush { padding: var(--spacing-x4) 0; }
+    .pdsp-pair { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr)); gap: var(--spacing-lg); }
+    .pdsp-theme { display: flex; flex-direction: column; gap: var(--spacing-x3); min-width: 0; padding: var(--spacing-x4) var(--spacing-x5) var(--spacing-x5); border-radius: var(--radius-r4); background: var(--color-bg-layer-default); box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-subtle); color: var(--color-fg-neutral); font-family: var(--font-sans); overflow-x: auto; }
+    .pdsp-theme-cap { font-size: var(--text-t2); line-height: var(--text-t2--line-height); font-weight: 700; color: var(--color-fg-neutral-subtle); }
+    .pdsp-cap { font-family: var(--font-sans); font-size: var(--text-t1); line-height: var(--text-t1--line-height); font-weight: 400; color: var(--color-fg-neutral-subtle); }
+    .pdsp-note { font-size: var(--text-t3); line-height: var(--text-t3--line-height); color: var(--color-fg-neutral-subtle); }
+    .pdsp-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-x3) var(--spacing-x4); }
+    .pdsp-row--badges { gap: var(--spacing-x3); }
+    .pdsp-gap { height: var(--spacing-x2); }
+    /* 변형 × 톤 표 — 이름 칸 + 배지 세 칸 */
+    .pdsp-matrix { display: grid; grid-template-columns: max-content repeat(3, max-content); gap: var(--spacing-x2_5) var(--spacing-x5); align-items: center; }
+    .pdsp-matrix-head { font-size: var(--text-t2); line-height: var(--text-t2--line-height); font-weight: 500; color: var(--color-fg-neutral-subtle); }
+    .pdsp-matrix-head > span { display: block; font-family: ui-monospace, monospace; font-size: 11px; font-weight: 400; color: var(--color-fg-disabled); }
+    /* 글자 크기 130% — 사용자의 글자 크기 설정을 흉내 낸다(rem 토큰을 이 틀 안에서만 키운다) */
+    .pdsp-text-scale { --text-t1: calc(0.6875rem * 1.3); --text-t1--line-height: calc(0.9375rem * 1.3); --text-t2: calc(0.75rem * 1.3); --text-t2--line-height: calc(1rem * 1.3); }
+    .pdsp-narrow { display: flex; width: 44px; }
+    .pdsp-w200 { max-width: 200px; }
+    .pdsp-w240 { display: flex; max-width: 240px; }
+    .pdsp-reading { margin-top: var(--spacing-x1_5); }
+    /* 알림 배지 견본 — 24 아이콘 칸 */
+    .pdsp-row--nb { gap: var(--spacing-x5) var(--spacing-x6); align-items: flex-start; }
+    .pdsp-nb-cell { display: inline-flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-x2); min-width: 56px; padding-top: var(--spacing-x1); }
+    .pdsp-icon24 { display: inline-flex; color: var(--color-fg-neutral); }
+    .pdsp-icon24 svg { width: 24px; height: 24px; }
+    .pdsp-row--text { gap: var(--spacing-x6) var(--spacing-x8); }
+    .pdsp-text-target { font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 500; color: var(--color-fg-neutral); }
+    .pdsp-live { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-x4); }
+    .pdsp-live--avatar { align-items: flex-start; }
+    .pdsp-live-field { display: flex; flex: 1 1 200px; flex-direction: column; gap: var(--spacing-x2); min-width: 0; }
+    .pdsp-live + .pchip-group { margin-top: var(--spacing-x4); }
+    /* 아바타 견본 */
+    .pdsp-ladder { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--spacing-x4) var(--spacing-x5); }
+    .pdsp-ladder-item, .pdsp-hue { display: inline-flex; flex-direction: column; align-items: center; gap: var(--spacing-x1_5); text-align: center; }
+    .pdsp-hues { display: grid; grid-template-columns: repeat(5, max-content); gap: var(--spacing-x3) var(--spacing-x4); }
+    .pdsp-row--avatars { gap: var(--spacing-x4) var(--spacing-x6); align-items: flex-start; }
+    .pdsp-stacks { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--spacing-x5) var(--spacing-x8); }
+    .pdsp-stack-row { display: flex; flex-direction: column; gap: var(--spacing-x2); }
+    .pdsp-row--stacks { gap: var(--spacing-x4); align-items: stretch; }
+    .pdsp-stack-on { display: inline-flex; flex-direction: column; gap: var(--spacing-x2); padding: var(--spacing-x4); border-radius: var(--radius-r3); background: var(--color-bg-layer-default); }
+    .pdsp-stack-on--floating { background: var(--color-bg-layer-floating); box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-subtle); }
+    .pdsp-stack-line { display: flex; align-items: center; gap: var(--spacing-x2); }
+    .pdsp-stack-count { font-size: var(--text-t3); line-height: var(--text-t3--line-height); color: var(--color-fg-neutral-subtle); }
+    /* 화면 틀 — 폰(360) · 데스크톱 웹 카드. 머리는 제목(+ 오른쪽) */
+    .pdsp-phone, .pdsp-desk { overflow: hidden; border: 1px solid var(--color-border-default); border-radius: var(--radius-r4); background: var(--color-bg-layer-default); color: var(--color-fg-neutral); font-family: var(--font-sans); }
+    .pdsp-phone { box-sizing: content-box; max-width: 360px; padding-bottom: var(--spacing-x2); }
+    .pdsp-desk { min-width: 520px; max-width: 720px; padding-bottom: var(--spacing-x2); }
+    .pdsp-screen-head { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-x3); padding: var(--spacing-x6) var(--spacing-global-gutter) var(--spacing-x3); }
+    .pdsp-screen-head > .ptf-screen-title { margin-bottom: 0; }
+    .pdsp-screen-head--desk { padding: var(--spacing-x6) var(--spacing-x6) var(--spacing-x3); }
+    .pdsp-pad { padding: 0 var(--spacing-global-gutter) var(--spacing-x2); }
+    .pdsp-pad-x { padding: 0 var(--spacing-global-gutter); }
+    .pdsp-desk-body { padding: var(--spacing-x4) var(--spacing-x6); }
+    /* 상단 바 — 높이 56 · 제목 · 오른쪽 아이콘 버튼(Button ghost · 아이콘만 40) */
+    .pdsp-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-x2); height: 56px; padding: 0 var(--spacing-x2) 0 var(--spacing-global-gutter); }
+    .pdsp-bar-title { font-size: var(--text-t7); line-height: var(--text-t7--line-height); font-weight: 700; color: var(--color-fg-neutral); }
+    .pdsp-bar-actions { display: flex; align-items: center; gap: var(--spacing-x1); }
+    /* 목록 줄의 제목 + 배지(사이 6) — 제목만 줄어 말줄임하고 배지는 그대로다 */
+    .pdsp-title-line { display: flex; align-items: center; gap: var(--spacing-x1_5); min-width: 0; max-width: 100%; }
+    .pdsp-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pdsp-title-line > .pbadge { flex-shrink: 0; }
+    /* 합계에 안 드는 줄(list.md) — 줄을 흐리지 않고 제목 · 금액만 fg-neutral-subtle, 환불 금액은 취소선. 배지 · 앞 타일 · 설명 줄은 보통 줄과 같다 */
+    .pdsp-excluded :is(.pdsp-title, .plst-amount) { color: var(--color-fg-neutral-subtle); }
+    .pdsp-refunded { text-decoration: line-through; }
+    .pdsp-total { display: flex; align-items: baseline; justify-content: space-between; gap: var(--spacing-x3); padding: 0 var(--spacing-global-gutter) var(--spacing-x2); }
+    .pdsp-total-label { font-size: var(--text-t4); line-height: var(--text-t4--line-height); color: var(--color-fg-neutral-subtle); }
+    .pdsp-total-value { font-size: var(--text-t7); line-height: var(--text-t7--line-height); font-weight: 700; color: var(--color-fg-neutral); font-variant-numeric: tabular-nums; }
+    /* 표 — HR 휴가 결재(데스크톱 웹). 줄 사이 선은 List 의 줄 사이 선과 같은 1px stroke-neutral-subtle */
+    .pdsp-table { width: 100%; border-collapse: collapse; font-size: var(--text-t4); line-height: var(--text-t4--line-height); }
+    .pdsp-table th { padding: var(--spacing-x2) var(--spacing-x6); text-align: left; font-weight: 500; color: var(--color-fg-neutral-subtle); }
+    .pdsp-table td { padding: var(--spacing-x2_5) var(--spacing-x6); border-top: 1px solid var(--color-stroke-neutral-subtle); color: var(--color-fg-neutral); vertical-align: middle; }
+    .pdsp-cell-person { display: flex; align-items: center; gap: var(--spacing-x3); }
+    .pdsp-cell-name { font-size: var(--text-t5); line-height: var(--text-t5--line-height); }
+    .pdsp-table td.pdsp-cell-sub { color: var(--color-fg-neutral-subtle); }
+    /* 거래 상세 — 회색 바탕 위 흰 층 사이 8(선이 아니다), 키-값 줄 · 메모 · 통계 세 칸 */
+    .pdsp-phone--basement { display: flex; flex-direction: column; gap: var(--spacing-x2); padding-bottom: 0; background: var(--color-bg-layer-basement); }
+    .pdsp-layer { padding-bottom: var(--spacing-x4); background: var(--color-bg-layer-default); }
+    .pdsp-amount-big { padding: 0 var(--spacing-global-gutter) var(--spacing-x1); font-size: var(--text-t9); line-height: var(--text-t9--line-height); font-weight: 700; font-variant-numeric: tabular-nums; }
+    .pdsp-kv-group { padding-inline: calc(var(--spacing-global-gutter) - var(--spacing-x4)); }
+    .pdsp-kv { display: flex; justify-content: space-between; gap: var(--spacing-x3); padding: var(--spacing-x3) var(--spacing-x4); font-size: var(--text-t5); line-height: var(--text-t5--line-height); }
+    .pdsp-kv > :first-child { color: var(--color-fg-neutral-subtle); }
+    .pdsp-memo { padding: var(--spacing-x4) var(--spacing-global-gutter) 0; }
+    .pdsp-memo-title { font-size: var(--text-t4); line-height: var(--text-t4--line-height); font-weight: 700; }
+    .pdsp-memo-body { margin-top: var(--spacing-x1); font-size: var(--text-t5); line-height: var(--text-t5--line-height); color: var(--color-fg-neutral-muted); }
+    .pdsp-stats { display: flex; align-items: stretch; padding-top: var(--spacing-x4); }
+    .pdsp-stat { display: flex; flex: 1; flex-direction: column; align-items: center; gap: var(--spacing-x1); padding: var(--spacing-x4) var(--spacing-x1); text-align: center; }
+    .pdsp-stat > span { font-size: var(--text-t3); line-height: var(--text-t3--line-height); color: var(--color-fg-neutral-subtle); }
+    .pdsp-stat > strong { font-size: var(--text-t4); line-height: var(--text-t4--line-height); font-weight: 700; font-variant-numeric: tabular-nums; }
+    .pdsp-divider-demo { display: flex; flex-direction: column; justify-content: center; min-height: 24px; }
+    .pdsp-divider-demo--row { flex-direction: row; justify-content: flex-start; gap: var(--spacing-x6); height: 72px; padding-inline: var(--spacing-x5); outline: 1px dashed var(--color-fg-disabled); outline-offset: -1px; margin-inline: var(--spacing-x5); }
+    .pdsp-samples--wide { grid-template-columns: minmax(0, 1fr); }
+    @media (max-width: 600px) {
+      .pdsp-hues { grid-template-columns: repeat(3, max-content); }
+      .pdsp-theme { padding: var(--spacing-x4); }
+      .pdsp-matrix { gap: var(--spacing-x2) var(--spacing-x2_5); }
+      .pdsp-matrix-head > span { display: none; }
+    }
+
+    /* 다크 — 역할 색을 배지 · 알림 · 태그 · 아바타 · 구분선 · 갤러리 틀 안에서만 다크 짝으로 바꾼다(.pchip · .plst 와 같다 — 전역 다크 블록은 옛 이름만 바꾼다).
+       라이트 틀(.pdsp-theme--light)과 그 안은 빼고, 다크 틀(.pdsp-theme--dark)은 페이지가 라이트여도 바꾼다. 끼운 .btn · .plst · .pchip · .ptf-* 는 저마다의 다크 블록이 다시 바꾼다.
+       공유 토큰(DESIGN.md)에 없는 브랜드 짝은 비어서 위 대체값(중립)으로 떨어진다 */
+    [data-theme="dark"] :is(.pbadge, .pbadge-group, .pnb, .ptag, .pavatar, .pav-stack, .pdivider, .pdsp-surface, .pdsp-theme, .pdsp-phone, .pdsp-desk, .pdsp-stack-on):not(.pdsp-theme--light, .pdsp-theme--light *),
+    .pdsp-theme--dark {
+      --color-bg-layer-default: var(--color-bg-layer-default-dark);
+      --color-bg-layer-floating: var(--color-bg-layer-floating-dark);
+      --color-bg-layer-basement: var(--color-bg-layer-basement-dark);
+      --color-bg-neutral-weak: var(--color-bg-neutral-weak-dark);
+      --color-bg-neutral-inverted: var(--color-bg-neutral-inverted-dark);
+      --color-fg-neutral: var(--color-fg-neutral-dark);
+      --color-fg-neutral-muted: var(--color-fg-neutral-muted-dark);
+      --color-fg-neutral-subtle: var(--color-fg-neutral-subtle-dark);
+      --color-fg-neutral-inverted: var(--color-fg-neutral-inverted-dark);
+      --color-fg-disabled: var(--color-fg-disabled-dark);
+      --color-stroke-neutral-weak: var(--color-stroke-neutral-weak-dark);
+      --color-stroke-neutral-subtle: var(--color-stroke-neutral-subtle-dark);
+      --color-bg-brand-weak: var(--color-bg-brand-weak-dark);
+      --color-bg-brand-solid: var(--color-bg-brand-solid-dark);
+      --color-fg-brand: var(--color-fg-brand-dark);
+      --color-fg-brand-contrast: var(--color-fg-brand-contrast-dark);
+      --color-stroke-brand-weak: var(--color-stroke-brand-weak-dark);
+      --color-bg-informative-weak: var(--color-bg-informative-weak-dark);
+      --color-bg-informative-solid: var(--color-bg-informative-solid-dark);
+      --color-fg-informative: var(--color-fg-informative-dark);
+      --color-fg-informative-contrast: var(--color-fg-informative-contrast-dark);
+      --color-stroke-informative-weak: var(--color-stroke-informative-weak-dark);
+      --color-bg-positive-weak: var(--color-bg-positive-weak-dark);
+      --color-bg-positive-solid: var(--color-bg-positive-solid-dark);
+      --color-fg-positive: var(--color-fg-positive-dark);
+      --color-fg-positive-contrast: var(--color-fg-positive-contrast-dark);
+      --color-stroke-positive-weak: var(--color-stroke-positive-weak-dark);
+      --color-bg-warning-weak: var(--color-bg-warning-weak-dark);
+      --color-bg-warning-solid: var(--color-bg-warning-solid-dark);
+      --color-fg-warning: var(--color-fg-warning-dark);
+      --color-fg-warning-contrast: var(--color-fg-warning-contrast-dark);
+      --color-stroke-warning-weak: var(--color-stroke-warning-weak-dark);
+      --color-bg-critical-weak: var(--color-bg-critical-weak-dark);
+      --color-bg-critical-solid: var(--color-bg-critical-solid-dark);
+      --color-fg-critical: var(--color-fg-critical-dark);
+      --color-fg-critical-contrast: var(--color-fg-critical-contrast-dark);
+      --color-stroke-critical-weak: var(--color-stroke-critical-weak-dark);
+      --color-chart-blue: var(--color-chart-blue-dark);
+      --color-chart-green: var(--color-chart-green-dark);
+      --color-chart-orange: var(--color-chart-orange-dark);
+      --color-chart-violet: var(--color-chart-violet-dark);
+      --color-chart-pink: var(--color-chart-pink-dark);
+      --color-chart-indigo: var(--color-chart-indigo-dark);
+      --color-chart-red: var(--color-chart-red-dark);
+      --color-chart-yellow: var(--color-chart-yellow-dark);
+      --color-chart-brown: var(--color-chart-brown-dark);
+      --color-chart-gray: var(--color-chart-gray-dark);
+    }
+
     /* todo-card */
     .todo-list { display: flex; flex-direction: column; gap: 2px; }
     .todo-row {
@@ -10626,16 +11427,7 @@ export function pageCss() {
       display: flex; gap: var(--spacing-md);
       align-items: flex-start;
     }
-    .ld-host-avatar {
-      width: 48px; height: 48px;
-      border-radius: var(--radius-full);
-      background: var(--color-primary, var(--color-text-primary));
-      color: var(--color-text-on-accent, #fff);
-      display: flex; align-items: center; justify-content: center;
-      font-size: var(--text-title-sm);
-      font-weight: 700;
-      flex-shrink: 0;
-    }
+    /* 호스트 아바타는 03o 의 Avatar(42 — 이름 + 설명 두 줄 이상의 머리 · 이니셜 + 이름 색 · 장식)다. 옛 .ld-host-avatar(48 · 브랜드 채움)는 걷었다 */
     .ld-host-name { font-weight: 600; font-size: var(--text-body-md); margin-bottom: var(--spacing-xs); }
     .ld-host-role { color: var(--color-text-secondary); font-weight: 400; }
     .ld-host-bio { color: var(--color-text-secondary); line-height: 1.6; margin-bottom: var(--spacing-xs); }
@@ -11238,9 +12030,6 @@ export function pageCss() {
     .dt-table th { text-align: left; padding: var(--spacing-sm) var(--spacing-md); color: var(--color-text-tertiary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; font-size: 11px; }
     .dt-table td { padding: var(--spacing-sm) var(--spacing-md); border-bottom: 1px solid var(--color-border-default); }
     .dt-sort { color: var(--color-primary, var(--color-text-primary)); font-weight: 700; }
-    .dt-badge { padding: 2px var(--spacing-sm); border-radius: var(--radius-full); font-size: 11px; background: var(--color-surface-input); color: var(--color-text-secondary); }
-    .dt-badge--success { background: var(--color-success); color: var(--color-text-on-accent, #fff); }
-    .dt-badge--warning { background: var(--color-warning); color: var(--color-text-on-accent, #fff); }
 
     /* Carousel */
     .car { display: flex; gap: var(--spacing-sm); align-items: center; }
@@ -11304,7 +12093,7 @@ export function pageCss() {
     .sl-row--active .sl-title { color: var(--color-primary-strong, var(--color-primary, var(--color-text-primary))); font-weight: 600; }
     .sl-title-text { overflow: hidden; text-overflow: ellipsis; }
     .sl-sub { display: block; margin-top: 2px; font-size: 11.5px; color: var(--color-text-tertiary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .sl-badge { display: inline-flex; align-items: center; padding: 1px 6px; border-radius: var(--radius-sm); font-size: 10px; font-weight: 600; letter-spacing: 0.04em; background: var(--color-surface-input); color: var(--color-text-tertiary); flex-shrink: 0; }
+    .sl-title > .pbadge { flex-shrink: 0; }
 
     /* Token catalog (기존 — 압축 유지) */
     .catalog { margin-top: var(--spacing-3xl); padding-top: var(--spacing-2xl); border-top: 1px dashed var(--color-border-default); }
@@ -11495,7 +12284,7 @@ export function pageCss() {
        data-theme="dark" 시 light 페어 토큰을 dark 페어로 alias —
        explicit color: var(--color-text-primary) 등이 자동 전환. 새 컴포넌트 추가 시
        individual override 작성 부담 감소. brand --color-primary는 mode-independent
-       (.ld-host-avatar 등 채움 사용 보존), 비채움 brand 사용은 별도 [data-theme=dark]
+       (채움 사용 보존), 비채움 brand 사용은 별도 [data-theme=dark]
        룰에서 primary-light로 override (v64 패턴). */
     [data-theme="dark"] {
       --color-bg-page: var(--color-bg-page-dark);
@@ -11624,6 +12413,7 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     ${renderFeedbackGallery(brand)}
     ${renderMenuGallery(brand)}
     ${renderDateTimeGallery(brand)}
+    ${renderDisplayGallery(brand)}
     ${renderVignettes(brand)}
     ${renderListingDetail(brand)}
     ${renderCalendar(brand)}
@@ -12940,6 +13730,63 @@ function renderHtml(brandName, css, tokens, sourceFile) {
           go(root, first[0], first[1], to);
         }
         if (button(root, to)) focusDay(root, to);
+      });
+    })();
+    // 표시 (2026-10-03) — 03o 의 직접 바꿔 보기 둘을 흉내 낸다. 알림 숫자 — [data-pnb-count] 칩을 고르면(03i 의 칩 스크립트가 고른 뒤) 이어진 버튼([data-pnb-live])의
+    // 알약 · 이름을 고친다 — 0 이면 알약을 지우고 100 이상은 "99+", 이름은 줄이지 않은 수다(notification-badge.tsx 의 formatNotificationCount 와 같은 규칙).
+    // 아바타 이름 — 칸에 쓰면 이니셜 · 이름 색을 빌드와 같은 코드(avatarLib)로 다시 정한다.
+    (function () {
+      var AV = (${avatarLib.toString()})();
+      function format(n) { return n <= 0 ? null : n >= 100 ? "99+" : String(n); }
+      function showCount(chip) {
+        var id = chip.getAttribute("data-pnb-target");
+        var n = Number(chip.getAttribute("data-pnb-count"));
+        var wrap = document.querySelector('[data-pnb-live="' + id + '"]');
+        var button = document.getElementById(id + "-button");
+        var name = document.getElementById(id + "-name");
+        if (!wrap || !button) return;
+        var text = format(n);
+        var mark = wrap.querySelector(".pnb-badge");
+        if (text === null) {
+          if (mark) mark.remove();
+        } else {
+          if (!mark) {
+            mark = document.createElement("span");
+            mark.className = "pnb-badge pnb-badge--large";
+            mark.setAttribute("aria-hidden", "true");
+            wrap.appendChild(mark);
+          }
+          mark.textContent = text;
+        }
+        var label = n > 0 ? "알림, 새 알림 " + n + "개" : "알림";
+        button.setAttribute("aria-label", label);
+        if (name) name.textContent = '버튼 이름 — "' + label + '"';
+      }
+      // 칩 스크립트가 고른 칩을 바꾼 뒤(같은 click · 화살표 keydown) 고른 칩을 읽는다
+      function picked(e) {
+        var chip = e.target && e.target.closest ? e.target.closest("[data-pnb-count]") : null;
+        var group = chip ? chip.closest("[data-pchip-live]") : null;
+        var on = group ? group.querySelector('[data-pnb-count][aria-checked="true"]') : null;
+        if (on) showCount(on);
+      }
+      document.addEventListener("click", picked);
+      document.addEventListener("keyup", picked);
+      document.querySelectorAll("[data-pav-live]").forEach(function (av) {
+        var id = av.getAttribute("data-pav-live");
+        var input = document.getElementById(id + "-input");
+        var rule = document.getElementById(id + "-rule");
+        var initial = av.querySelector(".pavatar-initial");
+        if (!input || !initial) return;
+        input.addEventListener("input", function () {
+          var n = AV.display(input.value);
+          var hue = AV.hue(n);
+          var s = AV.sum(n);
+          // 이름 색은 이니셜 칸이 칠한다(avatar.tsx 의 HUE_BG 자리)
+          AV.HUES.forEach(function (h) { initial.classList.remove("pavatar--" + h); });
+          initial.classList.add("pavatar--" + hue);
+          initial.textContent = AV.initial(n);
+          if (rule) rule.textContent = n ? "코드 포인트 합 " + s + " · % 10 = " + (s % 10) + " → " + hue + ' · 이니셜 "' + AV.initial(n) + '"' : "이름이 비면 회색 원 · 글자 없음";
+        });
       });
     })();
   </script>

@@ -1,113 +1,231 @@
 # Avatar
 
-> 사용자/팀원/엔티티의 시각 identity를 한 원형 단위로 표시. 이미지 우선, 실패 시 한글 이니셜(1글자) fallback. 리스트 행/멘션/팀 그룹/comment author 등 어디서나 사람을 식별하는 기본 단위.
+> 사람 한 명을 보이는 원 — 사진이 있으면 사진, 없으면 이름의 첫 글자(이니셜) + 이름 색. 여러 사람은 겹친 묶음(Avatar Stack — 이 문서 아래)이다. 자산 · 카드 · 주식 · 카테고리 같은 물건의 로고 · 그림 타일은 아바타가 아니다(Image Frame 차례에).
 
-Porest Avatar는 **4 sizes(sm/md/lg/xl) × 2 fills(neutral/primary)** 매트릭스로 정의됩니다. preview `.hc-avatar` SoT 정합 — 정원(`radius-full`) + `bg-primary` 채움 + `text-on-accent` 흰색 초성 + 600 weight. 한국어 이니셜 1글자(`김`/`이`/`최`)가 가독되도록 사이즈별로 폰트 토큰을 점진 확대.
+구조는 당근 [SEED Avatar](https://seed-design.io/components/avatar)(Apache-2.0)를 따른다 — 원 · 사진 · 1px 안쪽 테두리, 크기 10단계(20 ~ 108)와 자리마다 대표 크기, 묶음은 지름의 1/4 겹침 · 바탕색 링. 사진이 없을 때는 SEED 의 사람 그림이 아니라 이니셜 + 이름 색이고, 넘친 사람은 "+N" 원이다 — 맨 아래 "SEED 와 다른 점"(2026-10-03 사용자 결정). 옛 Avatar(32 · 40 · 48 · 64 · 회색 · 브랜드 채움 · 600)를 대신한다.
+
+수치 원본은 [`avatar.yaml`](avatar.yaml)(아바타)과 [`avatar-stack.yaml`](avatar-stack.yaml)(묶음)이다. 수치 표 자리(`[표: …]`)와 그림 자리(`[그림: …]`)는 사이트가 그 파일로 그린다 — GitHub 에서는 그 파일 · 그림 코드로 가는 링크로 보인다.
+
+[그림: 더치페이 참가자 · 캘린더 공유 멤버 · HR 구성원 — 라이트 · 다크](../../site/components/specs/avatar.tsx#hero)
+
+### 직접 골라 보기
+
+크기 · 사진 유무 · 이름 · 묶음 인원을 고르면 스펙대로 그린 아바타 · 묶음과 그 코드가 바뀐다. 이름을 바꾸면 이니셜과 이름 색이 규칙대로 바뀐다.
+
+[그림: 플레이그라운드](../../site/components/specs/avatar.tsx#playground)
 
 ## Anatomy
 
+[그림: 원 · 사진(또는 이니셜) · 1px 안쪽 테두리, 묶음은 바탕색 링](../../site/components/specs/avatar.tsx#anatomy)
+
+| ⓐ Container | 원 — 폭 = 높이. 사진 · 이니셜을 원으로 자른다. |
+| ⓑ Image | 사진 — 원을 채운다. |
+| ⓒ Initial | 이니셜 — 사진이 없을 때. 이름의 첫 글자 + 이름 색 바탕. |
+| ⓓ Border | 1px 안쪽 테두리 — 모든 크기. 흰 사진이 바탕에 묻히지 않게. |
+
+[표: 부위](avatar.yaml#slots)
+
+## Properties
+
+### Size
+
+크기는 SEED 의 10단계다 — 20 · 24 · 36 · 42 · 48 · 56 · 64 · 80 · 96 · 108. 자리마다 대표 크기를 쓰고, 같은 자리는 어느 화면에서나 같은 크기다. 이 밖의 크기를 만들지 않는다.
+
+[그림: 크기 10단계 — 자리마다 대표 크기](../../site/components/specs/avatar.tsx#size)
+
+[표: 크기 · 자리](avatar.yaml#size)
+
+### 사진 · 이니셜
+
+사진이 있으면 사진이다(HR 의 프로필 사진). 사진이 없거나(Desk 는 지금 사진이 없다), 불러오는 동안이거나, 불러오지 못하면 이니셜이 보인다 — 이니셜이 먼저 그려지고 사진이 오면 덮는다. 이니셜은 이름 색(차트 10색) 바탕에 `fg-neutral-inverted`(라이트 흰 · 다크 짙은 글자) · 700 이고, 글자는 지름의 40%(가장 작아도 10)다. 사람 그림(SEED Identity Placeholder) · 회색 한 색 · 브랜드 채움은 쓰지 않는다.
+
+[그림: 사진 · 이니셜 + 이름 색 — 라이트 · 다크](../../site/components/specs/avatar.tsx#initial)
+
+[표: 공통](avatar.yaml#base.enabled)
+
+#### 이니셜과 이름 색 — 웹 · 앱이 같은 규칙
+
+같은 사람은 웹 · 앱 · 어느 화면에서나 같은 글자 · 같은 색이다.
+
+- **표시 이름** — 서버가 준 이름에서 앞뒤 공백만 뺀 글. 정규화 · 바꾸기를 하지 않는다(웹 · 앱이 같은 값을 받는다).
+- **이니셜** — 표시 이름의 첫 글자 하나(사용자가 보는 글자 단위 — 웹 `Intl.Segmenter`, 앱 `characters.first`). 로마자는 대문자로. 한글 · 숫자 · 그림 글자는 그대로다. "김민수" → "김", "Kim Minsu" → "K"(지금 앱은 앞 두 글자 "Ki").
+- **이름 색** — 표시 이름의 유니코드 코드 포인트(UTF-16 단위가 아니다 — 웹 `for…of` · `codePointAt`, 앱 `runes`)를 모두 더해 10 으로 나눈 나머지로 차트 10색을 고른다. 순서는 차트 색 순서(v110) 그대로다.
+
+| 나머지 | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 색 | blue | green | orange | violet | pink | indigo | red | yellow | brown | gray |
+
+| 이름 | 코드 포인트 | 합 | % 10 | 색 · 이니셜 |
+|---|---|---|---|---|
+| 김민수 | U+AE40 44608 · U+BBFC 48124 · U+C218 49688 | 142420 | 0 | blue · "김" |
+| 이서연 | U+C774 51060 · U+C11C 49436 · U+C5F0 50672 | 151168 | 8 | brown · "이" |
+| Kim Minsu | K 75 · i 105 · m 109 · 공백 32 · M 77 · i 105 · n 110 · s 115 · u 117 | 845 | 5 | indigo · "K" |
+
+색은 뜻이 없다(장식) — 본인 · 역할 · 상태를 색으로 가르지 않는다. 이름이 비어 있으면(정상 흐름에는 없다) 회색(`chart-gray`) 원에 글자를 넣지 않는다.
+
+### Avatar Stack
+
+여러 사람은 겹쳐 묶는다 — 다음 아바타가 지름의 약 1/4(−5 ~ −27) 왼쪽으로 겹치고, 놓인 바탕색 링(1 ~ 5)으로 앞 아바타를 끊으며, 뒤에 오는 아바타가 위에 그려진다. 5명 이상이면 앞 4명 + 끝에 "+N" 원이다 — 같은 크기 · 같은 링 · 옅은 면(`bg-neutral-weak`) + `fg-neutral-muted` 700(N = 전체 − 4). 크기는 묶음이 정하고 안의 아바타가 모두 따른다. 링은 놓인 바탕과 같은 색 — 시트 · 대화상자 · 팝오버 안이면 `bg-layer-floating` 이다(다크에서 두 바탕이 다르다).
+
+[그림: 묶음 — 1/4 겹침 · 바탕색 링 · 뒤가 위 · 앞 4명 + "+2"](../../site/components/specs/avatar.tsx#stack)
+
+[표: 묶음 — 크기](avatar-stack.yaml#size)
+
+[표: 묶음 — 공통](avatar-stack.yaml#base.enabled)
+
+### State
+
+상태는 `enabled` 하나다 — 아바타 · 묶음은 누르지 않는다. 누르면 무언가 되는 자리(프로필 열기)는 아바타를 감싼 버튼 · 링크가 누름 · 포커스를 가진다.
+
+## Guidelines
+
+### 사람만 아바타 — 물건은 타일
+
+아바타는 사람(본인 · 더치페이 참가자 · 공유 멤버 · HR 구성원)에만 쓴다. 자산 · 카드 로고 · 주식 · 카테고리처럼 물건 · 분류를 보이는 것은 각진 타일이다 — 원 아바타로 그리지 않는다(Image Frame · List 붙이개 차례에).
+
+[그림: 사람은 원 아바타, 자산 · 카테고리는 각진 타일](../../site/components/specs/avatar.tsx#thing-guide)
+
+### 자리마다 대표 크기
+
+같은 자리는 같은 크기다 — 더치페이 참가자 줄이 화면마다 28 · 32 · 36 · 40 으로 갈리지 않게 위 표의 대표 크기를 쓴다. 목록 줄은 한 줄이면 36, 이름 + 설명 두 줄이면 42 다.
+
+[그림: 한 화면의 같은 자리 — 크기를 맞춘다 · 섞는다](../../site/components/specs/avatar.tsx#size-guide)
+
+### 이름 옆이면 장식, 혼자면 이름
+
+아바타 옆에는 대개 이름이 있다 — 그때 아바타는 장식이라 보조 기술에 숨긴다(이름을 한 번만 읽는다 — "김 김민수" 가 아니다). 이름 없이 아바타만 있으면(접힌 사이드바 · 묶음) 아바타가 이름을 가진다.
+
+[그림: 이름 옆 아바타는 숨김 · 혼자인 아바타는 이름](../../site/components/specs/avatar.tsx#name-guide)
+
+### 같은 사람은 같은 색, 흐리게 하지 않는다
+
+이름 색은 규칙으로만 정한다 — 화면 · 플랫폼이 따로 해시를 두지 않는다. 상태(안 낸 사람 · 나간 사람)는 아바타를 흐리게(불투명도) 하지 않고 이름 옆 글 · [Badge](badge.md) 로 알린다(v106 — 불투명도로 흐리지 않는다).
+
+[그림: 같은 이름은 웹 · 앱이 같은 색 · 상태는 배지로, 흐리지 않는다](../../site/components/specs/avatar.tsx#color-guide)
+
+### 묶음은 넷까지 + "+N"
+
+묶음에는 앞 4명까지 보이고 나머지는 "+N" 원이다. 묶음 옆에는 전체 수를 글로 둔다("6명 · 412,000원") — 그러면 묶음은 장식이다. 묶음만 있으면 묶음이 이름을 가진다("참여자 6명: 김민수, 이서연, 박지훈, 최유진 외 2명").
+
+[그림: 앞 4명 + "+2" · 옆에 "6명"](../../site/components/specs/avatar.tsx#stack-guide)
+
+## 코드
+
+레시피 `recipes/shadcn/components/ui/avatar.tsx` 를 쓴다 — `Avatar` · `AvatarStack` 과 규칙 함수 `avatarInitial(name)`(이니셜) · `avatarHue(name)`(이름 색 — `"blue"` … `"gray"`). `Avatar` 는 `name`(필수 — 이니셜 · 이름 색 · 이름) · `src`(사진, 없으면 이니셜) · `size`(`20` · `24` · `36` · `42` · `48` · `56` · `64` · `80` · `96` · `108`, 기본 `48` — 자리마다 고른다) · `decorative`(기본 `true` — 옆에 이름이 있을 때. `false` 면 이름을 읽는다)를 받는다. `AvatarStack` 은 `size`(안의 아바타가 따른다 — 기본 `24`) · `max`(기본 4) · `surface`(링 색 — `"default"` 기본 · `"floating"`) · `aria-label`(주면 묶음을 그림 하나로 읽고, 없으면 장식으로 숨긴다)을 받는다. 앱은 같은 규칙 함수를 Dart 로 두고 아래 예시 이름으로 같은 답이 나오는지 시험한다. 아래 미리보기는 스펙 값으로 그린 모습이다.
+
+### 이름 옆 — 장식
+
+[그림: 더치페이 참가자 줄 — 36 · 이니셜 + 이름 색](../../site/components/specs/avatar.tsx#ex-row)
+
+```tsx
+import { Avatar } from "@/components/ui/avatar"
+
+<span className="flex items-center gap-x3">
+  <Avatar size={36} name={p.name} src={p.photoUrl} />
+  <span>{p.name}</span>
+</span>
 ```
-┌──────────┐
-│ ⓐ root   │   사람/엔티티 1명을 표시하는 원형 컨테이너
-│  ┌────┐  │
-│  │ ⓑ  │  │   AvatarImage (이미지) — object-cover
-│  │img │  │
-│  └────┘  │
-│  ⓒ초성   │   AvatarFallback (이미지 실패 / 이미지 없음) — 1글자
-└──────────┘
+
+### 혼자 — 이름을 읽는다
+
+[그림: 접힌 사이드바의 내 아바타 · HR 프로필 사진 96](../../site/components/specs/avatar.tsx#ex-alone)
+
+```tsx
+<Avatar size={36} name={me.name} decorative={false} />
+<Avatar size={96} name={user.name} src={user.profileUrl} decorative={false} />
 ```
 
-| ⓐ root | `relative inline-flex shrink-0 overflow-hidden rounded-full` — 정원 형태. width = height. |
-| ⓑ image | `aspect-square h-full w-full object-cover` — 비율 보존하며 채움. |
-| ⓒ fallback | `flex items-center justify-center` + fill(neutral/primary 분기) + 사이즈별 font 토큰. 한글 1글자 또는 영문 2글자. |
+### 묶음 — 앞 4명 + "+N"
 
-**규칙**
+[그림: 더치페이 목록 — 24 묶음 · 옆에 "6명"](../../site/components/specs/avatar.tsx#ex-stack)
 
-- 이미지 우선 — `<AvatarImage src>` 로딩 실패 시 자동으로 fallback 노출(Radix가 처리).
-- fallback은 **1글자**(한글) 또는 **2글자**(영문) — 3글자 이상 시 글자가 작아져 가독성↓.
-- 한 화면에 같은 사람의 avatar는 동일 fill로(neutral vs primary 혼용 금지).
+```tsx
+import { Avatar, AvatarStack } from "@/components/ui/avatar"
 
-## Variants (fill)
-
-[표: 변형별 색](avatar.yaml#variant)
-
-브랜드 분기: `primary` variant에서만 HR `#357B5F` / Desk `#0147AD` 반영. `neutral`은 brand-agnostic.
-
-## Sizes
-
-`width = height` 정사각 + `radius-full` 정원. 폰트 토큰은 한국어 1글자 이니셜 가독성 기준으로 사이즈별 점진 확대.
-
-[표: 크기](avatar.yaml#size)
-
-공통 weight: `600` (font-semibold). preview `.hc-avatar`는 `700`이나 spec은 `600` 통일 — body 텍스트 `600`과 시각 위계 일관성. (preview는 다음 sync에서 정합 예정.)
-
-## States
-
-[표: 상태](avatar.yaml#matrix)
-
-avatar 자체는 인터랙티브가 아님 — 클릭 가능해야 하면 `<button>` 또는 `<a>`로 wrap.
-
-## Layout
-
-**User row** (preview `.hc` SoT — 화면샷 패턴)
-
-- `display:flex; align-items:center; gap:var(--spacing-md);` (avatar + 텍스트)
-- 우측 텍스트 column: `display:flex; flex-direction:column; gap:var(--spacing-xs);`
-  - 이름: `text-body-md` 600 + `text-primary` (또는 강조 시 `text-title-sm`)
-  - 부가정보: `text-caption` + `text-secondary`
-- 카드 형태로 감쌀 땐 `padding:var(--spacing-md); background:var(--color-bg-page); border-radius:var(--radius-md);`
-
-**Avatar group (overlap)**
-
-- `display:flex; -space-x-2` (8px 겹침) — 마지막 avatar는 `+N` fallback으로 "외 N명" 표시.
-- 각 avatar에 `ring-2 ring-surface-default`(2px 흰색/dark surface 링)로 경계 분리 — preview SoT.
-- 4–5개까지 권장. 그 이상은 `+N` 압축.
-
-**Mention chip**
-
-- inline-flex + sm avatar + 이름. 본문 흐름 안에서 `var(--color-primary)` 텍스트로.
+<span className="flex items-center gap-x2">
+  <AvatarStack size={24}>
+    {people.map((p) => <Avatar key={p.id} name={p.name} src={p.photoUrl} />)}
+  </AvatarStack>
+  <span>{people.length}명 · {formatWon(total)}</span>
+</span>
+```
 
 ## Behavior
 
 | 인터랙션 | 동작 |
 |---|---|
-| Image load | `<AvatarImage>` 로딩 성공 시 노출. 실패 시 자동으로 fallback. |
-| Image error | `onLoadingStatusChange="error"` 또는 onError 시 fallback 영구 노출. |
-| Tooltip (선택) | avatar에 hover 시 사용자명/역할 tooltip — list dense view에서 권장. |
-| Click | avatar 자체는 클릭 액션 없음. 클릭 가능해야 하면 `<button>`/`<a>`로 wrap + `aria-label`. |
+| 사진을 불러오는 동안 | 이니셜이 보이고, 사진이 오면 덮는다(스켈레톤을 따로 두지 않는다) |
+| 사진을 불러오지 못함 · 사진 없음 | 이니셜 그대로 — 깨진 그림 · 빈 원이 보이지 않는다 |
+| 이름이 바뀜 | 이니셜 · 이름 색이 규칙대로 바로 바뀐다 |
+| 묶음 인원이 바뀜 | 앞 4명 · "+N" 을 다시 센다 |
+| 누르기 | 아바타 · 묶음 자체는 누르지 않는다 — 감싼 버튼 · 링크의 동작 |
 
 ## Accessibility
 
 | 기준 | 검증 |
 |---|---|
-| **WCAG 1.1.1** Non-text Content | `<AvatarImage alt>` 필수 — 의미 있는 alt(`"@user"` 등). 장식이면 `alt=""`. fallback 초성은 시각 표현일 뿐 — 의미는 부모 텍스트로 전달. |
-| **WCAG 1.4.3** Color contrast (primary fill × text-on-accent) | HR `#357B5F` × `#FFFFFF` = 4.8:1 ✓ / Desk `#0147AD` × `#FFFFFF` = 9.5:1 ✓ |
-| **WCAG 1.4.3** Color contrast (neutral fill × text-primary) | `surface-input` × `text-primary` = 13:1+ ✓ |
-| **WCAG 1.4.11** Non-text contrast (avatar × bg-page) | `surface-input`/`primary` 모두 `bg-page` 대비 3:1+ ✓ |
-| **WCAG 2.5.5** Target Size (AAA, 44×44) | sm(32) · md(40) · lg(48) — sm/md 미달(⚠). avatar가 클릭 가능할 땐 lg(48) 이상 권장. |
-| **WCAG 2.5.8** Target Size Minimum (AA, 24×24) | 모든 사이즈 ✓ |
-| **ARIA** | static avatar는 `role="img"` + `aria-label`(이름 또는 의미). interactive wrap은 `<button>`/`<a>` semantic. |
+| **WCAG 1.4.3** Color contrast(글자 ≥ 4.5:1) | 이니셜 `fg-neutral-inverted` on 차트 10색 — 라이트 4.55(yellow) ~ 5.50, 다크 6.07 ~ 7.70 ✓(다크에서 흰 글자는 1.88 ~ 2.39 라 쓰지 않는다). "+N" `fg-neutral-muted` on `bg-neutral-weak` 6.58 · 5.93 ✓ |
+| **WCAG 1.4.11** Non-text contrast(≥ 3:1) | 1px 테두리 · 바탕색 링은 장식이다(사진 · 이니셜이 사람을 알린다). 이니셜 원은 흰 표면과 4.55 이상 |
+| **WCAG 1.1.1** Non-text Content | 이름 옆 아바타는 장식(`aria-hidden`, 사진 `alt=""`) — 이름을 한 번만 읽는다. 혼자인 아바타는 `role="img"` + 이름(`aria-label="김민수"`), 사진 실패 · 이니셜이어도 같은 이름 |
+| **WCAG 1.4.1** Use of color | 이름 색은 뜻이 없다 — 상태 · 역할은 글 · 배지로 |
+| **WCAG 2.5.8** Target Size — Minimum(AA ≥ 24×24) | 해당 없음 — 누르지 않는다. 감싼 버튼은 그 버튼의 규칙(20 · 24 아바타를 누르게 하려면 누르는 영역을 44 로) |
+| **WCAG 2.5.5** Target Size — Enhanced(AAA ≥ 44×44) | 해당 없음 — 누르지 않는다 |
+| **ARIA** | 묶음은 `aria-label` 이 있으면 `role="img"` 하나("참여자 6명: 김민수, 이서연, 박지훈, 최유진 외 2명"), 없으면 `aria-hidden`(옆 글이 수를 말한다). 안의 아바타 · "+N" 은 따로 읽지 않는다 |
 
 ## Do / Don't
 
 ### ✅ Do
 
-- 이미지가 있으면 이미지 우선 — fallback은 안전망. 의미 있는 `alt` 필수.
-- 한글 이니셜은 **성씨 1글자**(`김`) — 첫이름 글자(`지`)보다 식별성 우위.
-- avatar group은 4–5개 + `+N` — 그 이상은 시각 노이즈.
-- 사이즈는 컨테이너 위계와 일치 — list row(md) / card(md) / profile detail(xl).
+- 사진이 있으면 사진, 없으면 이니셜 + 이름 색.
+- 같은 자리는 같은 크기 — 10단계 안에서.
+- 이름 옆 아바타는 장식으로 숨긴다.
+- 묶음은 앞 4명 + "+N", 옆에 전체 수를 글로.
 
 ### ❌ Don't
 
-- fallback 글자 3개 이상 — 작아져서 못 읽음. 1–2개로 압축.
-- 같은 avatar에 neutral/primary 혼용 — 인지 부담.
-- 임의 사이즈(`h-9`/`h-11`) — 토큰 그리드(8/10/12/16) 벗어남.
-- avatar에 직접 click handler — semantic 망가짐. `<button>`/`<a>`로 wrap.
-- 사각 avatar — Porest는 항상 정원(`radius-full`). 정사각 identity가 필요하면 별도 `Logo` 컴포넌트.
+- 자산 · 카드 · 카테고리를 원 아바타로.
+- 화면 · 플랫폼마다 다른 해시 · 다른 색 순서.
+- 브랜드 채움 · 회색 한 색 이니셜, 이니셜 두 글자("Ki").
+- 아바타를 흐리게 해서 상태 알리기.
+- 다크에서 차트 색 위 흰 이니셜.
+
+## Specification
+
+`avatar.yaml` · `avatar-stack.yaml` 의 규칙을 하나도 빼지 않고 조건마다 그린다 — 웹 · 앱이 Avatar 를 만들 때 이 값을 그대로 쓴다. 조건이 없는 `Base` 가 모든 조합에 걸리고, 뒤의 규칙이 앞의 같은 값을 덮는다.
+
+[그림: Specification — avatar.yaml 의 규칙 전부](../../site/components/specs/spec-sheet.tsx#avatar)
+
+[그림: Specification — avatar-stack.yaml 의 규칙 전부](../../site/components/specs/spec-sheet.tsx#avatar-stack)
+
+## SEED 와 다른 점
+
+- **사진이 없으면 이니셜 + 이름 색** — SEED 는 사람 그림(Identity Placeholder)이고 이니셜이 없다. Desk 는 사진이 없어 사람이 모두 같은 회색 그림이 되고, 묶음에서 누가 누구인지 갈리지 않는다(사용자 결정 5C). 이름 색은 차트 10색(v110)에서 이름 해시로 하나, 글자는 `fg-neutral-inverted`.
+- **넘친 사람은 "+N" 원** — SEED 는 "앞에서부터 숨긴다" 뿐이다(사용자 결정 6B).
+- **1px 테두리는 불투명한 `stroke-neutral-subtle`** — SEED 는 투명도 있는 검정 4.7% · 흰 5%.
+- **링은 놓인 바탕색** — SEED 는 `bg.layer-default` 하나. porest 다크에서 시트(`bg-layer-floating`)는 기본 표면과 달라 그 바탕색을 쓴다.
+- **오른쪽 아래 배지(원 · 방패 · 꽃 마스크)는 두지 않는다** — porest 에 쓰는 자리가 없다.
+- **80 · 96 의 자리는 porest 화면에서** — SEED 는 설명이 없다(Desk 계정 머리 · HR 큰 프로필 사진).
+- **이름 옆 아바타는 장식, 혼자면 이름** — SEED 는 `alt` 가 선택이고 예제에 없어 이름 없는 그림으로 읽힌다.
 
 ## Migration notes
 
-- 기존 `avatar-examples.mjs`는 px 하드코드(`gap:12px`, `font-size:12px`) 사용 — `var(--spacing-md)` / `text-label-sm` 등 토큰 직접 인용으로 정정.
-- 사이즈별 폰트 매핑 hardcoded ternary(`size <= 32 ? "label-sm" : ...`)는 단순 lookup table로 동일하나, spec Sizes 표(`sm` → `text-label-sm` / `md` → `text-title-sm` / `lg` → `text-title-md` / `xl` → `text-display-sm`)와 1:1 동기.
-- "User row" 예제는 preview `.hc` SoT 톤(bg-page 카드 wrap + body-md name + caption bio)으로 재구성 — 화면샷 패턴.
-- preview-html `.hc-avatar`의 `font-weight: 700` → spec 600 정합(차기 sync 시 preview 갱신).
+### 2026-10-03 — SEED Avatar · Avatar Stack 으로
+
+사용자가 [비교 페이지](https://claude.ai/artifact/4ySVacsdnG4fgraR1HRK3G)에서 정했다 — 사진이 없으면 이니셜 + 이름 색(5C — 차트 10색 중 이름 해시로 하나, 웹 · 앱 한 해시 · 한 순서, 글자 `fg-neutral-inverted`), 크기 · 묶음은 SEED + "+N"(6B — 10단계 · 1px 안쪽 테두리 `stroke-neutral-subtle` · 겹침 지름 1/4 · 링 1 ~ 5 `bg-layer-default` · 넘치면 끝에 "+N" 원). 사람 그림 · 이니셜 한 색 · 옛 32 · 40 · 48 · 64 는 고르지 않았다. 옛 Avatar(neutral · primary 채움 · 600 · `-space-x-2` 8 겹침 · 2px 링)와 DESIGN.md 의 Avatar v58 절(24 · 32 · 40 · 56 · 사각 변형 · 최대 3 + "+N more")은 걷었다 — 옛 스펙은 `avatar.history/v-pre-seed-display.*`.
+
+| 옛 | 새 |
+|---|---|
+| sm 32 · md 40 · lg 48 · xl 64 | 자리마다 대표 크기 — 한 줄 목록 36 · 두 줄 42 · 계정 머리 80 … |
+| neutral(회색) · primary(브랜드) 채움 이니셜 | 이니셜 + 이름 색(차트 10색) |
+| 사각 아바타(HR 데이터 그리드 · 사이드바) | 원 하나 |
+| 묶음 겹침 8 · 링 2 · 4 ~ 5 + "+N" | 겹침 · 링은 크기마다, 앞 4명 + "+N" |
+
+제품은 앱 적용 단계에서 옮긴다(2026-10-03 조사).
+
+- **Desk 웹에 공용 아바타가 없다** — 사람이 네 갈래로 그려진다: 사이드바 32 브랜드 옅은 이니셜(`widgets/layout/ui/PorestSidebar.tsx:228-237` — 이름이 비면 "·"), 설정 46 · 72 브랜드 채움(`pages/settings/ui/SettingsPage.tsx:695-710 · 924-938` — 다크 채움 : 표면 1.73, 이름이 비면 "?"), 더치페이 28 ~ 40 차트 해시(`pages/dutch-pay/ui/DutchPayPage.tsx:57-77 · 631-663`), 캘린더 공유 멤버는 권한 아이콘 원(`widgets/calendar-manage/ui/CalendarShareSection.tsx:74-85 · 772-788` — 아이콘 이름 없음, 다크 2.54 · 2.57). 사람은 모두 Avatar 로, 권한은 [Badge](badge.md) 로.
+- **더치페이 다크 흰 이니셜 1.91 ~ 2.08:1** — 웹 · 앱 모두 밝은 다크 차트 색 위 흰 글자다. `fg-neutral-inverted` 로.
+- **같은 사람이 웹 · 앱에서 다른 색** — 웹은 UTF-16 글자 코드 합 % 10(파랑부터, 7 갈색 · 8 노랑), 앱은 `h·31 + c`(빨강부터 — `features/dutch_pay/presentation/dutch_pay_screen.dart:358-366`)라 무작위 이름 2,000개 중 84.5% 가 다른 색이다. 웹 주석 "앱 정합" 은 사실이 아니다. 새 규칙(코드 포인트 합 % 10 · v110 순서)으로 웹은 나머지 7 · 8 인 이름만 노랑 ↔ 갈색이 바뀌고, 앱은 대부분 바뀐다.
+- **안 낸 사람 흐림** — 더치페이 아바타를 불투명도 0.5 로 흐려 앱 라이트 1.43:1 이다. 흐리지 않고 배지 · 글로 알린다.
+- **Desk 앱 `PAvatar`** — 낭독이 "김 김"(라벨 + 글자 — `shared/widgets/p_avatar.dart:56-59`), 영문 이름은 앞 두 글자 "Ki"(`:82-87`). `PAvatarGroup` 은 쓰는 곳이 없다("+3 +3" 으로 읽힌다).
+- **HR shadcn Avatar** — 대체 글자가 크기와 관계없이 16 / 400(`shared/ui/shadcn/avatar.tsx:37-50`, 24 ~ 160), 사이드바만 모서리 8 사각(`widgets/sidebar/ui/SidebarFooter.tsx:80-83`), 근무표는 `alt` 가 없고 `baseUrl` 없이 `profile_url` 을 써 사진이 깨질 수 있다(`work-schedule/ui/ScheduleTable.tsx:258-261`), 일정 필터의 `text-xxs` 는 정의가 없다(`calendar/ui/header/event-filter.tsx:142`). 사진이 실패하면 이름 없이 "김" 만 읽힌다.
+- **물건 타일은 이번 범위 밖** — 자산 로고(웹 모서리 크기 × 0.3 · 800 · oklch 해시 ↔ 앱 모서리 12 · 700 · HSL 해시 — `entities/asset/ui/asset-logo.tsx:23-87` ↔ `asset_logo.dart`) · 주식 · 카테고리 타일은 Image Frame · List 붙이개 차례에 정한다.

@@ -1,75 +1,106 @@
-# Avatar 의 수치 원본 — 형식은 button.yaml 머리 주석, 규칙은 specs/CLAUDE.md.
+# Avatar 의 수치 원본 — 구조는 SEED Avatar(2026-10-03 사용자 결정, 표시 비교 페이지 5C · 6B · 14). 묶음은 avatar-stack.yaml.
+# 형식은 button.yaml 머리 주석, 규칙은 specs/CLAUDE.md.
 #
-# fill(variant)의 색과 크기별 초성 글자는 fallback(초성) 부위의 값이다.
-# 상태 표는 무엇이 보이느냐(이미지 · fallback)가 행이고 배경 · 글자 칸이 값이 아니라 다른 표를 가리키는
-# 말(variant 따름 · 동일)이라, 그 말을 상태 설명으로 옮겼다(input.yaml 의 filled 와 같은 방식).
-# 값이 있는 상태는 hover 커서와 focus-visible 링뿐이다.
-# defaults 를 두면 상태 표(#matrix)에 변형 · 크기 값이 모든 행의 칸으로 끼어든다 — 기본값은 축 값 설명에 적는다.
+# 사람 한 명을 보이는 원 — 사진이 있으면 사진, 없으면 이름의 첫 글자(이니셜) + 이름 색. 누르지 않는다(누르는 자리는 감싼 버튼 ·
+# 링크가 상태를 가진다). 물건(자산 · 카드 · 주식 · 카테고리)의 로고 · 그림 타일은 아바타가 아니다(Image Frame 차례).
+#
+# 이니셜 · 이름 색 — 웹 · 앱이 같은 규칙(avatar.md 의 "이니셜과 이름 색")
+#   이니셜  = 표시 이름(앞뒤 공백을 뺀)의 첫 글자 하나(grapheme) — 로마자는 대문자. "김민수" → "김", "Kim Minsu" → "K"
+#   이름 색 = 표시 이름의 유니코드 코드 포인트 합 % 10 → 차트 10색(v110 순서)
+#            blue · green · orange · violet · pink · indigo · red · yellow · brown · gray
+#            "김민수" 142420 → 0 blue · "이서연" 151168 → 8 brown · "Kim Minsu" 845 → 5 indigo
+#   글자색  = fg-neutral-inverted — 라이트 흰 · 다크 짙은 글자(차트 색 위 4.55 ~ 7.70:1, v110)
+#
+# SEED 와 다른 자리(avatar.md 의 "SEED 와 다른 점")
+#   - 사진이 없으면 이니셜 + 이름 색(사용자 결정 5C) — SEED 는 사람 그림(Identity Placeholder)이고 이니셜이 없다.
+#   - 1px 안쪽 테두리 색은 porest stroke-neutral-subtle(불투명 — SEED 는 투명도 있는 검정 4.7% · 흰 5%).
+#   - 오른쪽 아래 배지(원 · 방패 · 꽃 마스크)는 두지 않는다 — porest 에 쓰는 자리가 없다.
+#   - 80 · 96 의 자리는 porest 화면에서 정했다(SEED 설명 없음).
 
 name: Avatar
 
 slots:
-  root: 원형 컨테이너 — width = height
-  image: AvatarImage — 이미지
-  fallback: AvatarFallback — 이미지 실패 · 없음일 때의 초성(한글 1글자 · 영문 2글자)
-  focusRing: 키보드 포커스 링(avatar 를 감싼 button · link)
+  root: 원 — 폭 = 높이. 사진 또는 이니셜을 원으로 자른다
+  image: 사진 — 원을 채운다. 불러오는 동안 · 실패하면 이니셜이 보인다
+  initial: 이니셜 — 사진이 없을 때. 이름의 첫 글자 + 이름 색 바탕
+  border: 1px 안쪽 테두리 — 모든 크기, 사진 · 이니셜 위에 겹친다(흰 사진이 바탕에 묻히지 않게)
 
 variants:
-  variant:
-    neutral: (default) 동료/팀원 일반 표시 — 절제된 톤.
-    primary: 본인/강조 사용자 — preview `.hc-avatar` SoT. brand-color identity.
   size:
-    sm: dense list, comment thread.
-    md: (default) preview `.hc-avatar` SoT, user row, mention chip.
-    lg: profile header (소형), card emphasis.
-    xl: profile detail page, hero.
+    "20": 20 — 댓글 단 사람(SEED). porest 글 한 줄 안(공유한 사람 · 작성자)
+    "24": 24 — 답글(SEED). porest 줄 안 묶음(더치페이 목록의 참여자 — 지금 28) · HR 일정 필터 사용자 · 휴가 신청의 결재자
+    "36": 36 — 댓글(SEED). porest 한 줄 목록 줄(더치페이 참가자 · 캘린더 공유 멤버) · 사이드바 사용자 · HR 표의 직원(지금 28 ~ 40 · 32)
+    "42": 42 — 게시글 상세(SEED). porest 두 줄 목록 줄(이름 + 설명 — 설정의 계정 줄 · HR 구성원 목록, 지금 46)
+    "48": 48 — 작은 목록(SEED). porest 지금 쓰는 곳 없음
+    "56": 56 — 큰 목록(SEED). porest 지금 쓰는 곳 없음
+    "64": 64 — 프로필 상세 · 캐러셀(SEED). porest 지금 쓰는 곳 없음
+    "80": 80 — SEED 설명 없음. porest Desk 계정 화면 머리(웹 · 앱, 지금 72)
+    "96": 96 — SEED 설명 없음. porest HR 내 정보 · 직원 정보의 큰 사진(지금 128)
+    "108": 108 — 프로필 수정(SEED). porest HR 직원 정보 수정의 사진(지금 160)
+
+defaults:
+  size: "48"
 
 states:
-  enabled: (image loaded) — 배경은 이미지, 글자 없음
-  enabled-fallback: 배경 · 글자 variant 따름
-  image-loading: 배경 · 글자 variant 따름 — fallback 일시 노출
-  image-error: 배경 · 글자 variant 따름 — fallback 영구 노출
-  hover: interactive — 배경 · 글자 동일
-  focus-visible: interactive — 배경 · 글자 동일
+  enabled: 하나뿐 — 누르지 않는다(누르는 자리는 감싼 버튼 · 링크)
 
 rules:
-  # ── 공통(상태) ─────────────────────────────────────────
+  # ── 공통 ──────────────────────────────────────────────
   - when: {}
-    hover:
+    enabled:
       root:
-        cursor: { value: pointer, note: "`cursor-pointer` — avatar가 button/link 안에 있을 때만" }
-    focus-visible:
-      focusRing:
-        width: 2px
-        offset: 2px
-        color: { value: $color-border-focus, note: "`ring-2 ring-ring ring-offset-2` — ring = border-focus(shadcn bridge)" }
-
-  # ── fill ──────────────────────────────────────────────
-  - when: { variant: neutral }
-    enabled:
-      fallback: { background: $color-surface-input, foreground: $color-text-primary }
-
-  - when: { variant: primary }
-    enabled:
-      fallback: { background: $color-primary, foreground: $color-text-on-accent }
+        radius: $radius-full
+      image:
+        objectFit: cover
+      initial:
+        background: { value: "chart-{이름 색}", note: "이름의 코드 포인트 합 % 10 → 차트 10색(v110 순서 blue · green · orange · violet · pink · indigo · red · yellow · brown · gray) — 라이트 700 · 다크 800-dark. 색은 뜻이 없다(장식)" }
+        foreground: { value: $color-fg-neutral-inverted, note: "라이트 흰 · 다크 짙은 글자 — 차트 색 위 4.55(yellow) ~ 7.70:1(gray 다크). 다크에서 흰 글자는 1.88 ~ 2.39 라 쓰지 않는다" }
+        fontWeight: 700
+        lineHeight: { value: 1, note: "원 가운데 — 글자 크기 설정을 따르지 않는 px(원 안에서 넘치지 않게)" }
+        textTransform: { value: uppercase, note: "로마자 첫 글자만 대문자 — \"Kim Minsu\" → \"K\". 한글 · 숫자 · 그림 글자는 그대로" }
+      border:
+        borderWidth: { value: 1px, note: "모든 크기 1 — 원 안쪽(inset box-shadow), 크기가 변하지 않는다(SEED)" }
+        borderColor: { value: $color-stroke-neutral-subtle, note: "흰 사진이 흰 바탕에 묻히지 않게 — 이니셜 원 위에도 같은 선" }
 
   # ── 크기 ──────────────────────────────────────────────
-  - when: { size: sm }
+  # 이니셜 글자 = 지름의 40%(가장 작아도 10) — 비교 페이지 그림의 값
+  - when: { size: "20" }
     enabled:
-      root: { size: 32px }
-      fallback: { typography: $text-label-sm }
-
-  - when: { size: md }
+      root: { size: 20px }
+      initial: { fontSize: { value: 10px, note: "지름의 50% — 10 아래로 내리지 않는다" } }
+  - when: { size: "24" }
     enabled:
-      root: { size: 40px }
-      fallback: { typography: $text-title-sm }
-
-  - when: { size: lg }
+      root: { size: 24px }
+      initial: { fontSize: { value: 10px, note: "지름의 42% — 10 아래로 내리지 않는다" } }
+  - when: { size: "36" }
+    enabled:
+      root: { size: 36px }
+      initial: { fontSize: 14px }
+  - when: { size: "42" }
+    enabled:
+      root: { size: 42px }
+      initial: { fontSize: 17px }
+  - when: { size: "48" }
     enabled:
       root: { size: 48px }
-      fallback: { typography: $text-title-md }
-
-  - when: { size: xl }
+      initial: { fontSize: 19px }
+  - when: { size: "56" }
+    enabled:
+      root: { size: 56px }
+      initial: { fontSize: 22px }
+  - when: { size: "64" }
     enabled:
       root: { size: 64px }
-      fallback: { typography: { value: $text-display-sm, note: "Fallback font (px) 28" } }
+      initial: { fontSize: 26px }
+  - when: { size: "80" }
+    enabled:
+      root: { size: 80px }
+      initial: { fontSize: 32px }
+  - when: { size: "96" }
+    enabled:
+      root: { size: 96px }
+      initial: { fontSize: 38px }
+  - when: { size: "108" }
+    enabled:
+      root: { size: 108px }
+      initial: { fontSize: 43px }

@@ -524,6 +524,16 @@ colors:
   stroke-warning-solid-dark: "{colors.orange-800-dark}"
   stroke-informative-solid: "{colors.blue-700}"
   stroke-informative-solid-dark: "{colors.blue-800-dark}"
+  # v117 — Badge outline 의 옅은 테두리(SEED stroke.*-weak = 300). 다크는 400 — 300 은 다크 표면과 1.4:1 · 시트 위 1.2:1 로 묻히고,
+  # 800 은 글자(fg-*) · stroke-*-solid 와 같은 색이라 옅은 선이 아니다(사용자 결정 2026-10-03 표시 비교 2A — 토큰 넷을 알고 골랐다)
+  stroke-critical-weak: "{colors.red-300}"
+  stroke-critical-weak-dark: "{colors.red-400-dark}"
+  stroke-positive-weak: "{colors.green-300}"
+  stroke-positive-weak-dark: "{colors.green-400-dark}"
+  stroke-warning-weak: "{colors.orange-300}"
+  stroke-warning-weak-dark: "{colors.orange-400-dark}"
+  stroke-informative-weak: "{colors.blue-300}"
+  stroke-informative-weak-dark: "{colors.blue-400-dark}"
   # @sync:shared-end (colors-3)
   
   # (border-focus 정의 완료 — v16)
@@ -1289,6 +1299,23 @@ components:
     backgroundColor: "{colors.stroke-informative-solid}"
   role-stroke-informative-solid-dark:
     backgroundColor: "{colors.stroke-informative-solid-dark}"
+  # v117 — Badge outline 의 옅은 테두리
+  role-stroke-critical-weak-light:
+    backgroundColor: "{colors.stroke-critical-weak}"
+  role-stroke-critical-weak-dark:
+    backgroundColor: "{colors.stroke-critical-weak-dark}"
+  role-stroke-positive-weak-light:
+    backgroundColor: "{colors.stroke-positive-weak}"
+  role-stroke-positive-weak-dark:
+    backgroundColor: "{colors.stroke-positive-weak-dark}"
+  role-stroke-warning-weak-light:
+    backgroundColor: "{colors.stroke-warning-weak}"
+  role-stroke-warning-weak-dark:
+    backgroundColor: "{colors.stroke-warning-weak-dark}"
+  role-stroke-informative-weak-light:
+    backgroundColor: "{colors.stroke-informative-weak}"
+  role-stroke-informative-weak-dark:
+    backgroundColor: "{colors.stroke-informative-weak-dark}"
   
   # === v102 — 브랜드 역할 색 짝. 짝마다 대비를 lint 가 잰다(라이트 · 다크) ===
   role-brand-on-layer-light:
@@ -1919,6 +1946,7 @@ v108 로 크게 바뀐 색을 지금 제품 값(Desk 웹 `porest-tokens.css` · 
 | fg-* | 700 | 800 | 700 / 700 |
 | fg-*-contrast | 800 | 900 | 900 / 900 (v109) |
 | stroke-*-solid | 700 | 800 | 700 / 700 |
+| stroke-*-weak | 300 | 400 | 300 / 300 (v117 — Badge outline 의 옅은 테두리) |
 
 SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채움 300 / 800 · 눌림 400 / 900 — 옅은 노랑 위 검은 글자).
 
@@ -1946,6 +1974,7 @@ SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채�
 - 브랜드 글자 · 선 · 포커스 링의 다크 — SEED 700 → 900. 다크 700 은 어두운 표면 위 Desk 2.27:1 · HR 2.86:1 이다.
 - stroke-brand-solid 의 라이트 — SEED 700 → 600. 브랜드 색 그대로다.
 - stroke-brand-weak 의 다크 — SEED 300 → 800. 다크 300 은 표면과 1.3:1 안팎(Desk 1.29 · HR 1.36)이라 선이 보이지 않는다.
+- (v117) 의미 색 stroke-*-weak 의 다크 — SEED 300 → 400. 다크 300 은 표면과 1.38 ~ 1.40:1(시트 위 1.19 ~ 1.21)로 선이 묻히고, 브랜드처럼 800 으로 올리면 글자(fg-*) · stroke-*-solid 와 같은 색이 되어 옅은 선이 아니다. 400 은 1.71 ~ 1.73:1 — SEED 다크(1.77)와 같은 관계이고 라이트 300(1.51 ~ 1.53)과 무게가 맞는다.
 - stroke-focus-ring — SEED 는 파랑(blue-600)이다. porest 는 옛 border-focus 대로 브랜드 색이다.
 - (v109) 다크 약한 배경 · 눌림(의미 색 · 브랜드) — SEED 100 · 200 → 200 · 300. porest 는 다크 카드 표면(#242938, L* 16.7)이 SEED(#16171B, L* 8)보다 밝아서, 100 단계가 표면과 1.00 ~ 1.02:1 로 묻혔다. 200 · 300 이 SEED 의 표면 대비 관계(약한 배경 1.2:1 · 눌림 1.4:1)와 같다 — 지금 1.15 · 1.4:1.
 - (v109) 대비 글자의 라이트 — SEED 900 → 800. 900 은 거의 검정에 가까운 짙은 색(8:1)이었다. 800 은 약한 배경 · 눌림 위 5.0 ~ 5.7:1 이다. 규칙은 "대비 글자는 일반 글자보다 한 단계 바깥" — 라이트 700 → 800, 다크 800 → 900.
@@ -2038,6 +2067,10 @@ SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채�
 | `stroke-positive-solid` | `#167F3F` | `#25C062` | success | status-success-border |
 | `stroke-warning-solid` | `#BE490D` | `#FF8758` | warning | status-warning-border |
 | `stroke-informative-solid` | `#1D6EC9` | `#69ABFF` | info | status-info-border |
+| `stroke-critical-weak` | `#FEC4BC` | `#93231F` | — | — |
+| `stroke-positive-weak` | `#BBDAC1` | `#1A582F` | — | — |
+| `stroke-warning-weak` | `#F5C7B6` | `#833615` | — | — |
+| `stroke-informative-weak` | `#B9D4F6` | `#1C4E8A` | — | — |
 
 #### 브랜드 역할
 
@@ -2074,7 +2107,7 @@ porest 화면에 아직 쓰는 자리가 없다. 자리가 생기면 위 규칙�
 - bg.neutral-solid — 짙은 회색 채움(bg.neutral-inverted-pressed 는 v112 에 Button 의 누름으로 들였다)
 - bg.neutral-weak-alpha · bg.transparent-*(4) — 투명도 있는 배경. 필요하면 overlay 처럼 표 토큰으로 따로 둔다
 - bg.overlay · bg.overlay-muted — Elevation 의 overlay-dim 이 같은 자리다
-- stroke.neutral-muted · stroke.*-weak(4) — Desk 는 구분선을 한 값으로 쓴다(stroke.neutral-contrast 는 v113 에 Select Box 의 고른 테두리로 들였다)
+- stroke.neutral-muted — 구분선은 stroke-neutral-subtle 하나로 그린다(Divider 2026-10-03 — SEED 기본 neutral-muted 와 같은 진하기 1.15). stroke.neutral-contrast 는 v113 에 Select Box 의 고른 테두리로, stroke.*-weak(4)는 v117 에 Badge outline 의 옅은 테두리로 들였다
 - bg.magic-weak · bg.layer-fill — 당근 AI 기능 전용 · SEED 에서도 없어질 이름
 
 #### HR 웹
@@ -3540,26 +3573,18 @@ HR — meta 정보(직원명, 부서, 타임스탬프)·테이블 cell label에 
 
 #### Layout
 - 본문과 `xs` (4px) 간격
-- 메타 그룹 구분자 `·`, 그룹 간 `xs` 간격
+- 메타 줄(직원명 · 부서 · 시각)은 Tag Group(2026-10-03 SEED — DESIGN.md Caption 절 · `specs/components/tag-group.md`) — 항목 사이 " · " 글자, 공지 · 휴일 목록의 "•" 를 걷는다
 
-### Badge
+### Badge · Notification Badge · Tag Group — HR
 
-HR — 직원 상태(재직/휴직/퇴사), 결재 상태(승인/반려/대기), 평가 등급 등 status indicator로 광범위 사용. semantic 4종 + count badge.
+> 모양 · 쓰는 규칙은 DESIGN.md 의 같은 이름 절(2026-10-03 SEED)과 `specs/components/badge.md` · `notification-badge.md` · `tag-group.md`. HR 의 쓰는 자리만 적는다. 옛 HR Badge 절(18 · 22 · 28 · 알약 위주)은 걷었다.
 
-#### Variant
-공유 토큰 그대로 — `badge-success` / `badge-error` / `badge-warning` / `badge-info`. contrast 5.27~6.31:1 모두 본문 AA.
-
-#### Size
-- 데이터 그리드 inline은 `sm` (18px), 일반 status는 `md` (22px), 강조 alert badge는 `lg` (28px)
-- shape: pill(`radius-full`) 위주 — status pill 톤
-
-#### Layout
-- 직원명 옆 status: `xs` 간격
-- 그룹(예: 평가 등급 + 부서) 시 `sm` 간격
-
-#### A11y
-- 1.4.1: status를 색상만으로 표현 금지 — 텍스트/아이콘 보강 ("재직 ✓", "휴직 ⏸")
-- count badge: `aria-live="polite"` + `aria-label`
+- **결재 상태** — weak 배지 하나로, 톤은 SEED 톤 표대로: 대기 neutral · 진행 informative · 승인 positive · 반려 critical · 취소 neutral(앱 적용 때 확인). 지금은 Tailwind 날 색이라 다크 짝이 없어 다크 화면에 밝은 알약이 뜬다(입금 · 출금 · 통계 "대기" · 현재 결재자도 같다).
+- **공지 종류 · 휴일 · 가입 상태 · 근무 시간** — 관리 화면의 색 상자와 사용자 화면의 shadcn 변형 두 벌을 한 Badge 로. 흰 글자 채움(가입 상태 1.91 ~ 3.81 · 근무 시간 2.13 ~ 3.75)을 걷는다 — 시간대처럼 뜻 없는 분류는 톤이 아니라 글 · Tag Group 으로 가른다.
+- **역할 · 정책** — 코드값(`ROLE_ADMIN` · 정책 코드) 대신 이름("관리자" · 정책 이름), "3 포함된 정책" 은 "정책 3개".
+- **메타 줄** — 공지 · 휴일 목록의 "•"(3.07)를 Tag Group " · " 로, 조회수(눈 아이콘 + 숫자)는 읽을 글 "조회 12". 일정 칩의 "Day 2 of 3 •" · "9:00 AM" 은 "2/3일째" · "오전 9:00".
+- **알림 점** — HR 은 알림 기능이 아직 없다. 승인 내역 탭의 새 소식 점만 — 브랜드 글자색(`fg-brand`, 초록) 6.
+- **필터 개수** — 업무 보고의 "필터 3" 은 Chip 필터 바로 옮기며 걷는다.
 
 ### Alert text
 
@@ -3618,22 +3643,13 @@ HR 브랜드 — `border-focus` (`#357B5F`) / `border-focus-light` (`#6BAE8C`) �
 - 2.4.11 / 2.4.12 / 2.4.13 — 위 contrast 충족, sticky header 아래 자동 스크롤 권장 (`scroll-margin-top`)
 - 다크 모드는 `[data-theme="dark"]` 토글로 `--color-border-focus-light` 자동 적용
 
-### Divider
+### Divider — HR
 
-HR — list separator, section break, sidebar/main 분할에 광범위 사용 (데이터 그리드 row separator 등).
+> 모양 · 쓰는 규칙은 DESIGN.md 의 Divider 절(2026-10-03 SEED)과 `specs/components/divider.md`. HR 의 쓰는 자리만 적는다.
 
-#### Mode pair
-- `divider-light` → `border-default` (`#E5E8EF`)
-- `divider-dark` → `border-default-dark` (`#353B4D`)
-
-#### Layout
-- list item 사이 inline divider, padding 안쪽 inset (`md` 12px)
-- section break 위/아래 `lg` (16px) 간격
-- sidebar 수직 divider full height
-
-#### A11y
-- 시각 grouping 보조, semantic HTML 우선 (`<hr>` / `<section>` / `<aside>`)
-- inline divider는 `aria-hidden="true"`
+- 선은 1px `stroke-neutral-subtle` 하나 — 지금 shadcn `Separator` 10곳 · 메뉴 구분선 10곳(#eeeeee 1.16 · 다크 #353535 1.33)을 옮긴다.
+- 사이드바와 본문 사이는 세로선(끝까지), 대화상자 안 묶음 사이는 끝까지 선, 같은 묶음 안은 들인 선.
+- 데이터 표의 줄 사이 선은 Table 차례에 정한다.
 
 ### Outline (border 시각 요소)
 
@@ -3723,7 +3739,7 @@ HR — 직원 정보 form(필수/선택 옵션), 권한 토글 switch, 평가 �
 
 ### Tabs · Segmented Control
 
-공통 정의는 `DESIGN.md` 의 Tabs · Segmented Control 절, 원본은 `specs/components/tabs.md` · `segmented-control.md`(2026-10-02 SEED). 고른 표시는 중립색이라 브랜드와 관계없이 같고, 알림 점만 브랜드 색(`bg-brand-solid`)이다.
+공통 정의는 `DESIGN.md` 의 Tabs · Segmented Control 절, 원본은 `specs/components/tabs.md` · `segmented-control.md`(2026-10-02 SEED). 고른 표시는 중립색이라 브랜드와 관계없이 같고, 알림 점만 브랜드 글자색(`fg-brand` — Notification Badge small)이다.
 
 - **구역 이동** — 휴가 내역(사용 내역 · 부여 내역) · 휴가 신청(신청 내역 · 승인 내역) · 업무 코드(업무 파트 · 업무 구분) · 권한(역할 · 사용자)은 Line. 데스크톱 카드 · 페이지는 칸이 지나치게 넓어지므로 Hug 로 둔다. 탭이 하나뿐이면 탭 줄을 두지 않는다.
 - **승인할 것이 있으면** 승인 내역 탭에 알림 점 — 개수는 탭 글이 아니라 내용에 보인다.
@@ -3786,25 +3802,14 @@ semantic 토큰(success/error/warning/info)과 hue 일관성 유지 — `chart-c
 - 1.4.1 색상 단독 금지 — legend 라벨 + 패턴 (해당 시) 보강
 - screen reader: `<table>` fallback 또는 svg `role="img"` + 데이터 요약
 
-### Avatar (v58 추가)
+### Avatar — HR
 
-HR(B2B) — 직원 카드, 조직도, 결재 큐 author, 평가 reviewer 등 모든 사용자 식별. 데이터 밀도 톤이라 sm/md 사이즈 위주.
+> 모양 · 쓰는 규칙은 DESIGN.md 의 Avatar · Avatar Stack 절(2026-10-03 SEED)과 `specs/components/avatar.md`. HR 의 쓰는 자리만 적는다. 옛 HR 패턴(데이터 그리드 사각 24 · 부서별 색 · 상태 점)은 걷었다.
 
-#### HR 사용 패턴
-- **데이터 그리드 inline**: `sm` 24px 사각형 (`radius-md`) — 정보 밀도 우선.
-- **직원 list**: `md` 32px 원형 default.
-- **직원 detail panel**: `lg` 40px or `xl` 56px 원형.
-- **조직도 트리**: `sm` 24px 원형 + 이름 우측 `body-md` (15/400).
-
-#### Color
-- chart palette 10색 hash(이름) 분배 또는 부서별 매핑(예: 디자인본부 `chart-violet`, 운영본부 `chart-blue`) 컴포넌트 레벨 결정.
-- HR primary `#357B5F`(forest green)와 chart-green `#167F3F`(v110) hue 비슷 — 부서/직원 색 분배 시 `chart-green` 회피 권장.
-
-#### Status (선택, HR-specific)
-재직(`success`) / 휴직(`warning`) / 퇴직(`error`) inline indicator. avatar 우하단 8×8 dot.
-
-#### Sparse 매핑
-DESIGN.md와 동일 (`avatar` chart-blue × text-on-accent, lint contrast 활성).
+- **사진을 쓴다** — 프로필 사진(8곳). 사진이 없거나 실패하면 이니셜 + 이름 색(지금은 크기와 관계없이 회색 16 / 400 고정).
+- **크기** — 일정 필터 사용자 · 휴가 신청 결재자 24, 표의 직원 · 사이드바 36(지금 32 — 사이드바만 모서리 8 사각, 원으로), 구성원 목록 두 줄 42, 내 정보 · 직원 정보의 큰 사진 96(지금 128), 정보 수정 108(지금 160).
+- **이름** — 이름 옆이면 장식, 혼자면 이름. 근무표 아바타는 `alt` 가 없고 사진 주소를 다른 곳과 다르게 만든다 — 맞춘다.
+- **상태 · 부서** — 재직 · 휴직 · 퇴직은 아바타 점이 아니라 Badge, 부서를 아바타 색으로 가르지 않는다(이름 색은 이름 해시뿐).
 
 ### 날짜 · 시각 고르기 — HR
 

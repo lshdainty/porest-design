@@ -30,7 +30,7 @@ Porest SearchableList는 **search input × scrollable result list** 매트릭스
 | ⓐ 헤더 (옵션) | `<Label>` 좌측 + `<span>` 우측 "총 N개" caption. `flex justify-between items-center mb-2`. |
 | ⓑ search input | [Input](input.md) — `prefixIcon={<Search />}` · `clearable` · `aria-label="검색"`(2026-10-01 — 아이콘을 절대 위치로 겹쳐 그리던 것을 Input 의 앞 아이콘으로). placeholder 호출처 결정. autoFocus on open. |
 | ⓒ container | `border border-border-subtle rounded-md bg-surface-default divide-y divide-border-subtle max-h-[260] overflow-y-auto` |
-| ⓓ thumbnail | 44×28 (이미지) / 32×32 (avatar). `radius-sm` + `object-cover`. 이미지 없을 시 brand-color swatch + 첫 글자. |
+| ⓓ thumbnail | 44×28 (이미지) / 사람은 [Avatar](avatar.md) 36(한 줄) · 42(두 줄). `radius-sm` + `object-cover`. 사람 사진이 없으면 Avatar 의 이니셜 + 이름 색, 물건 이미지가 없으면 그 차례(Image Frame)에 정한다. |
 | ⓔ 텍스트 영역 | 주제목 (13 / medium / fg-primary) + 부제목 (11.5 / fg-tertiary) 2줄. `flex: 1; min-width: 0; truncate`. active 시 주제목 `fg-brand-strong + semi`. |
 | ⓕ 옵션 영역 (옵션) | 우측 badge / 상태 indicator / check 등. 호출처 결정 (단종 badge, ✓ check, 가격 등). |
 | ⓖ empty state | container 안 중앙 정렬 caption — "검색 결과가 없어요". |

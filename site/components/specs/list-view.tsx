@@ -44,6 +44,7 @@ import { ButtonView, type IconName as ButtonIcon } from './button-view';
 import { CheckboxView } from './checkbox-view';
 import { RadioView } from './radio-group-view';
 import { SwitchView } from './switch-view';
+import { AvatarView } from './display-view';
 import type { HeaderVariant, ListFace, ListIcon, ListLook, ListState, PrefixSpec, RowSpec } from './list-shared';
 
 const ICONS: Record<ListIcon, LucideIcon> = {
@@ -120,7 +121,7 @@ type RowProps = {
 };
 
 function Row({ look, row, mode, live, selected, onSelect, onArrow, tabIndex, registerRef, width, bgRadius, padX }: RowProps) {
-  const { kind, title, detail, prefix, suffix, highlighted = false, disabled = false, align = 'center' } = row;
+  const { kind, title, detail, prefix, suffix, highlighted = false, disabled = false, align = 'center', titleBadge, detailNode, suffixNode, excluded } = row;
   const clickable = kind !== 'view';
   const control = kind === 'switch' || kind === 'check' || kind === 'radio';
   const [hover, setHover] = useState(false);
@@ -151,7 +152,7 @@ function Row({ look, row, mode, live, selected, onSelect, onArrow, tabIndex, reg
   const L = look.faces[hl][pickL(mode)][st];
   const D = look.faces[hl][pickD(mode)][st];
   const f: ListFace = L;
-  const tile = prefix && 'tile' in prefix ? look.tiles[prefix.tile] : prefix && 'avatar' in prefix ? look.tiles[prefix.hue] : undefined;
+  const tile = prefix && 'tile' in prefix ? look.tiles[prefix.tile] : undefined;
   const vars = {
     '--pl-bg-l': L.bg.color,
     '--pl-bg-d': D.bg.color,
@@ -169,8 +170,8 @@ function Row({ look, row, mode, live, selected, onSelect, onArrow, tabIndex, reg
     '--pl-ring-d': look.faces[hl][pickD(mode)].focused.ring.color,
     '--pl-tile-bg-l': L.tile.bg ?? tile?.bg[pickL(mode)] ?? 'transparent',
     '--pl-tile-bg-d': D.tile.bg ?? tile?.bg[pickD(mode)] ?? 'transparent',
-    '--pl-tile-fg-l': L.tile.fg ?? (prefix && 'avatar' in prefix ? tile?.contrast[pickL(mode)] : tile?.fg[pickL(mode)]) ?? 'currentColor',
-    '--pl-tile-fg-d': D.tile.fg ?? (prefix && 'avatar' in prefix ? tile?.contrast[pickD(mode)] : tile?.fg[pickD(mode)]) ?? 'currentColor',
+    '--pl-tile-fg-l': L.tile.fg ?? tile?.fg[pickL(mode)] ?? 'currentColor',
+    '--pl-tile-fg-d': D.tile.fg ?? tile?.fg[pickD(mode)] ?? 'currentColor',
   } as CSSProperties;
 
   // 누름 — 콘텐츠 층만 2px 거리. 기준 길이 max(높이, 폭 ÷ n, 최소)
@@ -202,7 +203,8 @@ function Row({ look, row, mode, live, selected, onSelect, onArrow, tabIndex, reg
       {mark}
     </span>
   );
-  const prefixNode = control && markAt === 'prefix' ? markBox : prefix ? <Prefix spec={prefix} f={f} /> : null;
+  const prefixNode = control && markAt === 'prefix' ? markBox : prefix ? <Prefix spec={prefix} f={f} look={look} mode={mode} twoLine={!!(detail || detailNode)} /> : null;
+  // 합계에 안 드는 줄 — 제목 · 금액만 설명 글자색(fg-neutral-subtle)
   const suffixMark = control && markAt === 'suffix' ? markBox : null;
 
   const role = kind === 'switch' ? 'switch' : kind === 'check' ? 'checkbox' : kind === 'radio' ? 'radio' : kind === 'link' ? 'link' : kind === 'button' ? 'button' : undefined;
@@ -293,16 +295,27 @@ function Row({ look, row, mode, live, selected, onSelect, onArrow, tabIndex, reg
       >
         {prefixNode && <span style={{ display: 'flex', flexShrink: 0, alignItems: 'center', paddingRight: f.prefix.padRight }}>{prefixNode}</span>}
         <span style={{ display: 'flex', flex: 1, minWidth: 0, flexDirection: 'column', alignItems: 'flex-start', gap: f.body.gap, paddingRight: f.body.padRight }}>
-          <span style={{ fontSize: f.title.fontSize, lineHeight: f.title.lineHeight, fontWeight: f.title.fontWeight, color: 'var(--pl-title)', transition: `color ${f.motion.bg.duration} ${f.motion.bg.easing}` }}>{title}</span>
-          {detail && (
-            <span style={{ fontSize: f.detail.fontSize, lineHeight: f.detail.lineHeight, fontWeight: f.detail.fontWeight, color: 'var(--pl-detail)', transition: `color ${f.motion.bg.duration} ${f.motion.bg.easing}` }}>{detail}</span>
+          {titleBadge ? (
+            <span style={{ display: 'flex', alignItems: 'center', gap: look.titleGap, maxWidth: '100%', minWidth: 0 }}>
+              <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: f.title.fontSize, lineHeight: f.title.lineHeight, fontWeight: f.title.fontWeight, color: excluded ? 'var(--pl-detail)' : 'var(--pl-title)', transition: `color ${f.motion.bg.duration} ${f.motion.bg.easing}` }}>{title}</span>
+              {titleBadge}
+            </span>
+          ) : (
+            <span style={{ fontSize: f.title.fontSize, lineHeight: f.title.lineHeight, fontWeight: f.title.fontWeight, color: excluded ? 'var(--pl-detail)' : 'var(--pl-title)', transition: `color ${f.motion.bg.duration} ${f.motion.bg.easing}` }}>{title}</span>
+          )}
+          {detailNode ? (
+            <span style={{ display: 'flex', maxWidth: '100%', minWidth: 0, fontSize: f.detail.fontSize, lineHeight: f.detail.lineHeight, fontWeight: f.detail.fontWeight, color: 'var(--pl-detail)' }}>{detailNode}</span>
+          ) : (
+            detail && (
+              <span style={{ fontSize: f.detail.fontSize, lineHeight: f.detail.lineHeight, fontWeight: f.detail.fontWeight, color: 'var(--pl-detail)', transition: `color ${f.motion.bg.duration} ${f.motion.bg.easing}` }}>{detail}</span>
+            )
           )}
         </span>
-        {(suffix || suffixMark) && (
+        {(suffix || suffixMark || suffixNode) && (
           <span style={{ display: 'flex', flexShrink: 0, alignItems: 'center', gap: f.suffix.gap, fontSize: f.suffix.fontSize, lineHeight: f.suffix.lineHeight, fontWeight: f.suffix.fontWeight, color: 'var(--pl-stext)' }}>
             {suffix?.text}
             {suffix?.amount && (
-              <span style={{ fontSize: f.title.fontSize, lineHeight: f.title.lineHeight, fontWeight: 700, color: 'var(--pl-title)', fontVariantNumeric: 'tabular-nums' }}>{suffix.amount}</span>
+              <span style={{ fontSize: f.title.fontSize, lineHeight: f.title.lineHeight, fontWeight: 700, color: excluded ? 'var(--pl-detail)' : 'var(--pl-title)', fontVariantNumeric: 'tabular-nums', textDecoration: excluded === 'refunded' ? 'line-through' : 'none' }}>{suffix.amount}</span>
             )}
             {suffix?.buttons?.map((b) => (
               // 작은 버튼은 줄 위로 올라 따로 눌린다
@@ -315,6 +328,7 @@ function Row({ look, row, mode, live, selected, onSelect, onArrow, tabIndex, reg
               return <I aria-hidden size={f.suffix.iconSize} strokeWidth={2} style={{ color: 'var(--pl-sicon)', flexShrink: 0 }} />;
             })()}
             {suffix?.chevron && <ChevronRight aria-hidden size={f.suffix.iconSize} strokeWidth={2} style={{ color: 'var(--pl-sicon)', flexShrink: 0 }} />}
+            {suffixNode}
             {suffixMark}
           </span>
         )}
@@ -325,7 +339,7 @@ function Row({ look, row, mode, live, selected, onSelect, onArrow, tabIndex, reg
   );
 }
 
-function Prefix({ spec, f }: { spec: PrefixSpec; f: ListFace }) {
+function Prefix({ spec, f, look, mode, twoLine }: { spec: PrefixSpec; f: ListFace; look: ListLook; mode: ViewMode; twoLine: boolean }) {
   if ('tile' in spec) {
     const I = ICONS[spec.icon];
     return (
@@ -334,12 +348,8 @@ function Prefix({ spec, f }: { spec: PrefixSpec; f: ListFace }) {
       </span>
     );
   }
-  if ('avatar' in spec)
-    return (
-      <span aria-hidden style={{ display: 'inline-grid', placeItems: 'center', width: f.tile.size, height: f.tile.size, borderRadius: 9999, background: 'var(--pl-tile-bg)', color: 'var(--pl-tile-fg)', fontSize: f.title.fontSize, fontWeight: 700 }}>
-        {spec.avatar}
-      </span>
-    );
+  // 사람 — Avatar(이니셜 + 이름 색 · 1px 안쪽 테두리). 줄의 제목이 이름이라 아바타는 장식
+  if ('person' in spec) return <AvatarView look={look.avatar} mode={mode} size={twoLine ? look.avatarSize.two : look.avatarSize.one} name={spec.person} photo={spec.photo} />;
   const I = ICONS[spec.icon];
   return <I aria-hidden size={f.prefix.iconSize} strokeWidth={2} style={{ color: 'var(--pl-icon)' }} />;
 }

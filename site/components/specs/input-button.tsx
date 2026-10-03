@@ -7,6 +7,7 @@ import { ArrowRight } from 'lucide-react';
 import { Figure, Panel, MARK, MARK_LINE } from '../foundations/ui';
 import { buttonLook } from './button-look';
 import { InputButtonPlayground } from './input-button-playground';
+import { avatarLook } from './display-look';
 import { PEOPLE } from './input-button-data';
 import { CategoryGrid, InputButtonDemo, PeopleList, SheetOverlay, SheetPanel } from './input-button-pickers';
 import { D, DONE, DeskPopover, PickerPopover, PickerSheet, SCREEN, dk, popFooter, popoverH, sheetFooter } from './date-screens';
@@ -456,7 +457,7 @@ const SearchGuide: Fig = ({ caption }) => {
                     <div style={{ padding: `0 ${ov().sheet.body.padX}px` }}>
                       <TfInputView look={t.input} mode="light" size="large" state="focused" prefixIcon="search" value="김" clearable />
                     </div>
-                    <PeopleList look={lk} mode="light" people={people} query="김" />
+                    <PeopleList look={lk} avatar={avatarLook()} mode="light" people={people} query="김" />
                   </div>
                 </SheetPanel>
               </SheetOverlay>
@@ -492,7 +493,7 @@ const ExList: Fig = () => (
 );
 const ExSearch: Fig = () => (
   <Live>
-    <InputButtonDemo look={desk()} kit={overlayKit()} field={tf().field} input={tf().input} kind="people" label="참조자" indicator="optional" placeholder="참조자 선택" clearable initial="pore" />
+    <InputButtonDemo look={desk()} kit={overlayKit()} avatar={avatarLook()} field={tf().field} input={tf().input} kind="people" label="참조자" indicator="optional" placeholder="참조자 선택" clearable initial="pore" />
   </Live>
 );
 const ExStates: Fig = () => {
