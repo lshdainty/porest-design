@@ -15,7 +15,9 @@
  * 막대 <span data-slot="tabs-indicator">(첫 자식 — 탭이 그 위에 그려져 포커스 링이 가리지 않는다) + 탭 <button role="tab" data-slot="tabs-trigger"> >
  * 글 <span data-slot="tabs-label">(+ 알림 점 <span data-slot="tabs-notification">) + 화면 밖 "새 소식", 그리고 내용 칸 <div role="tabpanel" data-slot="tabs-content">.
  * Chip Tabs 는 목록 <div role="tablist" data-slot="chip-tabs-list"> > 탭 <button role="tab" data-slot="chip-tabs-trigger">(고른 탭에 data-selected —
- * Chip 의 고른 모습)다. 내용 칸은 모두 그려 두고(forceMount) 고르지 않은 칸은 data-state="inactive" 로 숨긴다.
+ * Chip 의 고른 모습)다. 목록의 양 끝은 늘 흐린다(Scroll Fog row 좌우 20 — 레시피의 useScrollFog 가 그릴 때 토큰 --gradient-fade-mask 에
+ * 방향을 붙여 목록의 style(mask-*) · data-fog-axis="x" 로 넣는다. 정적 HTML 은 같은 일을 빌드 때 DESIGN.md 의 토큰 값으로 해 style 에 적었다).
+ * 내용 칸은 모두 그려 두고(forceMount) 고르지 않은 칸은 data-state="inactive" 로 숨긴다.
  * Radix 가 붙이는 것 중 목록의 aria-orientation · data-orientation, 탭의 id · aria-selected · aria-controls · data-state · data-disabled · tabindex(고른 탭만 0 —
  * 레시피가 정한다), 내용 칸의 id · aria-labelledby · data-state · tabindex 를 그리고, 목록의 tabindex · style(로빙 포커스)은 그리지 않는다.
  * id 는 Radix 의 useId 자리다 — 예제마다 앞말을 달리해 한 페이지에서 겹치지 않게 한다. 내용 칸을 그리지 않은 견본(폭 · 크기 · 상태 · 변형 표)은
@@ -26,6 +28,8 @@
  * 레시피의 스크립트(화살표로 옮기며 고르기 · 막대 미끄러짐 · 고른 탭 드러내기 · 누르는 순간 --press-basis 재기 · 밀어 넘기기)는 정적 HTML 에 없다 —
  * 탭을 누르면 축소는 레시피 그대로 보이지만 고른 탭은 그대로다.
  */
+
+import { readFileSync } from "node:fs";
 
 // ── tabs.tsx 의 cva · 상수와 같은 값 ─────────────────────────────────────
 
@@ -155,6 +159,23 @@ const CHIP_COMPOUND = [
 ];
 
 const CHIP_DEFAULTS = { variant: "outlineWeak", size: "medium", layout: "withText" };
+
+// ── 끝 흐림 — scroll-fog.tsx 의 useScrollFog 와 같은 셈(row · 가로) ─────────────────
+
+// 토큰 값 — 레시피는 그릴 때 getComputedStyle 로 읽는다. 정적 HTML 은 DESIGN.md 의 v104 표에서 읽는다
+const FADE_MASK = /`gradient-fade-mask` \| `(linear-gradient\([^`]+\))`/.exec(readFileSync(new URL("../../../DESIGN.md", import.meta.url), "utf8"))[1];
+const SOLID = "linear-gradient(#000, #000)";
+const withDirection = (token, direction) => token.replace(/^linear-gradient\(/, `linear-gradient(${direction}, `);
+// 좌우 20 — 시작 쪽 흐림(투명 → 불투명) · 가운데 불투명 · 끝 쪽 흐림(불투명 → 투명). 목록의 style 에 mask-* 와 -webkit-mask-* 를 같이 넣는다
+function fogStyle(start = "20px", end = "20px") {
+  const mask = {
+    image: `${withDirection(FADE_MASK, "to right")}, ${SOLID}, ${withDirection(FADE_MASK, "to left")}`,
+    size: `${start} 100%, calc(100% - ${start} - ${end}) 100%, ${end} 100%`,
+    position: `0 0, ${start} 0, 100% 0`,
+    repeat: "no-repeat",
+  };
+  return ["image", "size", "position", "repeat"].map((p) => `mask-${p}:${mask[p]}; -webkit-mask-${p}:${mask[p]};`).join(" ");
+}
 
 // ── cva · cn 풀이 ─────────────────────────────────────────────────────────
 
@@ -331,12 +352,14 @@ function chipTabsList({ uid, variant = "solid", size = "medium", ariaLabel, item
     'aria-orientation="horizontal"',
     'data-orientation="horizontal"',
     'data-slot="chip-tabs-list"',
+    'data-scroll-fog="row"',
     `data-variant="${variant}"`,
     `data-size="${size}"`,
     'data-tabs-prevent-swipe=""',
     `class="${CHIP_TABS_LIST}"`,
     ariaLabel && `aria-label="${esc(ariaLabel)}"`,
-    `style="${SCROLL_FIX}"`,
+    'data-fog-axis="x"',
+    `style="${fogStyle()} ${SCROLL_FIX}"`,
   ]);
   const tabs = items.map((it) =>
     chipTrigger({ uid, variant, size, panels, value: it.value, label: it.label, selected: it.value === value, disabled: !!it.disabled, notification: !!it.notification }),

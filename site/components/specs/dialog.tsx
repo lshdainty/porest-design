@@ -92,14 +92,15 @@ const Hero: Fig = ({ caption }) => {
 const Playground: Fig = () => <DialogPlayground kits={{ desk: overlayKit('desk'), hr: overlayKit('hr') }} lists={{ desk: listLook('desk'), hr: listLook('hr') }} field={tf().field} input={tf().input} />;
 
 // ── Anatomy ───────────────────────────────────────────────
-// 거래 상세(조회 — 머리 닫기 · 바닥은 다른 동작이 있을 때만: 삭제 · 수정). 본문이 넘쳐 아래가 흐리고, 위로 스크롤돼 머리 아래 선이 있다
+// 거래 상세(조회 — 머리 닫기 · 바닥은 다른 동작이 있을 때만: 삭제 · 수정). 길이가 데이터에 따라 느는 본문이라 끝 흐림(scrollFog)을 걸었고,
+// 위로 스크롤돼 머리 아래 선이 있다
 const LONG: RowSpec[] = [
   ...DETAIL,
   { kind: 'view', title: '할부', suffix: { text: '일시불' } },
   { kind: 'view', title: '청구 회차', suffix: { text: '11월 14일 결제' } },
   { kind: 'view', title: '메모', suffix: { text: '회의 뒤 점심' } },
 ];
-function DetailWithActions({ mode = 'auto', scroll, marks, decor, maxHeight }: { mode?: Mode; scroll: { overflow: boolean; scrolled: boolean; offset?: number }; marks?: OvMarks; decor?: OvDecor; maxHeight?: number }) {
+function DetailWithActions({ mode = 'auto', scroll, fog = true, marks, decor, maxHeight }: { mode?: Mode; scroll: { scrolled: boolean; offset?: number }; fog?: boolean; marks?: OvMarks; decor?: OvDecor; maxHeight?: number }) {
   const s = dg().footer.button.size;
   return (
     <DialogSurface
@@ -110,6 +111,7 @@ function DetailWithActions({ mode = 'auto', scroll, marks, decor, maxHeight }: {
       bodyPad={false}
       maxHeight={maxHeight}
       scroll={scroll}
+      fog={fog}
       marks={marks}
       decor={decor}
       footer={
@@ -129,8 +131,8 @@ function DetailWithActions({ mode = 'auto', scroll, marks, decor, maxHeight }: {
 const Anatomy: Fig = ({ caption }) => {
   const d = dg();
   const c = dialogChrome();
-  // 본문 — 줄 다섯 반쯤 보이게 높이를 막는다(넘침). 위로 한 줄 반 올렸다(스크롤됨)
-  const bodyH = listRowHeight() * 4.6;
+  // 본문 — 줄 다섯 반쯤 보이게 높이를 막는다(넘침). 위로 한 줄 반 올렸다(스크롤됨) — 끝 흐림은 위 · 아래 늘 켜져 있다
+  const bodyH = listRowHeight() * 4.6 + d.scroll.fog.padTop;
   const h = c.head + bodyH + c.foot;
   return (
     <Figure caption={caption}>
@@ -140,7 +142,7 @@ const Anatomy: Fig = ({ caption }) => {
             {pinAt('ⓐ', 16, 16)}
             <DetailWithActions
               maxHeight={h}
-              scroll={{ overflow: true, scrolled: true, offset: listRowHeight() * 1.4 }}
+              scroll={{ scrolled: true, offset: listRowHeight() * 1.4 }}
               marks={{ header: line, body: line, footer: line, close: markBox }}
               decor={{ root: pinAt('ⓑ', -10, -10), header: pinAt('ⓒ', 2, d.header.padTop + 5), body: pinAt('ⓓ', 2, 13), footer: pinAt('ⓔ', 2, d.footer.padTop + 8) }}
             />
@@ -151,7 +153,7 @@ const Anatomy: Fig = ({ caption }) => {
             ['ⓐ', 'Overlay'],
             ['ⓑ', 'Container'],
             ['ⓒ', 'Header — 닫기는 조회 · 안내만'],
-            ['ⓓ', 'Body — 넘치면 이 안만 스크롤'],
+            ['ⓓ', 'Body — 넘치면 이 안만 스크롤 · 넘칠 수 있으면 끝 흐림'],
             ['ⓔ', 'Footer'],
           ]}
         />
@@ -212,35 +214,56 @@ const Size: Fig = ({ caption }) => {
   );
 };
 
-// ── 본문 스크롤 ───────────────────────────────────────────
-// 넘침(맨 위 — 아래 흐림만) · 위로 스크롤됨(아래 흐림 + 머리 아래 선). 흐림은 끝까지 스크롤해도 남아 본문 아래를 그만큼 비운다
+// ── 본문 끝 흐림 · 스크롤 ─────────────────────────────────
+const SCROLL_S = 0.56;
+// 넘칠 수 있는 본문(scrollFog) — 맨 위 · 스크롤됨 · 끝까지. 위 · 아래 흐림은 늘 그대로이고(마스크), 본문 안 여백이 그만큼이라
+// 맨 위 · 끝에서는 흐림이 빈 여백 위에 놓인다. 위로 스크롤되면 머리 아래 선이 생긴다
 const Scroll: Fig = ({ caption }) => {
   const d = dg();
   const c = dialogChrome();
-  const bodyH = listRowHeight() * 4.6;
+  const f = d.scroll.fog;
+  const rowH = listRowHeight();
+  const bodyH = rowH * 4.6 + f.padTop;
   const h = c.head + bodyH + c.foot;
-  // 흐림 자리 — 판 기준(본문의 마스크가 띠까지 흐리지 않게): 바닥 바로 위 fade 만큼
-  const fade = <Band style={{ left: 0, right: 0, bottom: c.foot, height: d.scroll.fade, background: 'transparent', boxShadow: `inset 0 0 0 1px ${MARK_LINE}` }} label={`${d.scroll.fade} 흐림`} />;
+  // 끝까지 — 위 여백 + 줄 전부 + 아래 여백 − 본문 높이
+  const end = f.padTop + LONG.length * rowH + f.padBottom - bodyH;
+  // 흐림 자리 — 판 기준(본문의 마스크가 띠까지 흐리지 않게): 본문 위 · 바닥 바로 위
+  const fogBands = (
+    <>
+      <Band style={{ left: 0, right: 0, top: c.head, height: f.top, background: 'transparent', boxShadow: `inset 0 0 0 1px ${MARK_LINE}` }} label={`위 ${f.top}`} />
+      <Band style={{ left: 0, right: 0, bottom: c.foot, height: f.bottom, background: 'transparent', boxShadow: `inset 0 0 0 1px ${MARK_LINE}` }} label={`아래 ${f.bottom}`} />
+    </>
+  );
   const lineTag = (
     <span aria-hidden className="pointer-events-none absolute right-3 rounded px-1 text-[10px] font-semibold leading-4 text-white" style={{ top: 4, background: MARK_LINE, zIndex: 5 }}>
       ↑ {d.scroll.divider.height}px 선
     </span>
   );
+  const shot = (offset: number, scrolled: boolean, body?: ReactNode) => (
+    <Scaled w={d.sizes.medium} h={h} s={SCROLL_S}>
+      <DetailWithActions maxHeight={h} scroll={{ scrolled, offset }} decor={{ root: fogBands, body }} />
+    </Scaled>
+  );
   return (
-    <Figure caption={caption}>
+    <Panel caption={caption}>
       <div className="flex flex-wrap items-start justify-center gap-6">
-        <Shot strong="넘침 — 맨 위" cap={`아래 ${d.scroll.fade} 이 흐려 더 있음을 알린다`}>
-          <Scaled w={d.sizes.medium} h={h} s={0.6}>
-            <DetailWithActions maxHeight={h} scroll={{ overflow: true, scrolled: false }} decor={{ root: fade }} />
-          </Scaled>
+        <div style={{ width: d.sizes.medium * SCROLL_S }}>
+        <Shot strong="맨 위" cap={`위 ${f.top} 흐림은 빈 여백(${f.padTop}) 위 — 아래 ${f.bottom} 이 흐려 더 있음을 알린다`}>
+          {shot(0, false)}
         </Shot>
-        <Shot strong="위로 스크롤됨" cap={`머리 아래 ${d.scroll.divider.height}px 선 — 본문과 머리를 가른다`}>
-          <Scaled w={d.sizes.medium} h={h} s={0.6}>
-            <DetailWithActions maxHeight={h} scroll={{ overflow: true, scrolled: true, offset: listRowHeight() * 1.6 }} decor={{ root: fade, body: lineTag }} />
-          </Scaled>
+        </div>
+        <div style={{ width: d.sizes.medium * SCROLL_S }}>
+        <Shot strong="위로 스크롤됨" cap={`흐림은 그대로 · 머리 아래 ${d.scroll.divider.height}px 선이 본문과 머리를 가른다`}>
+          {shot(rowH * 1.6, true, lineTag)}
         </Shot>
+        </div>
+        <div style={{ width: d.sizes.medium * SCROLL_S }}>
+        <Shot strong="끝까지" cap={`아래 ${f.bottom} 흐림은 빈 여백 위 — 마지막 줄은 흐림 밖에 다 보인다`}>
+          {shot(end, true, lineTag)}
+        </Shot>
+        </div>
       </div>
-    </Figure>
+    </Panel>
   );
 };
 

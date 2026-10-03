@@ -6,7 +6,7 @@ import { forwardRef, useEffect, useLayoutEffect, useRef, useState, type CSSPrope
 import { Hand, MousePointer2, X } from 'lucide-react';
 import type { ButtonLook } from './button-look';
 import { ButtonView } from './button-view';
-import { ocv, type AlertLayout, type AlertLook, type DialogLook, type OvClose, type OvColor, type OvHeader, type OvRing, type OvScroll, type OvText, type PopoverLook, type SheetLook, type ViewMode } from './overlay-shared';
+import { fogMaskStyle, ocv, type AlertLayout, type AlertLook, type DialogLook, type OvClose, type OvColor, type OvFog, type OvHeader, type OvRing, type OvScroll, type OvText, type PopoverLook, type SheetLook, type ViewMode } from './overlay-shared';
 
 const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
@@ -109,9 +109,22 @@ export function OvCloseButton({ look, ring, mode = 'auto', state, onClick, marks
 }
 
 // ── 머리(제목 · 설명) ─────────────────────────────────────
-function Head({ hd, title, description, t, d, mode, close, titleId, descId, marks, decor }: { hd: OvHeader; title: ReactNode; description?: ReactNode; t: OvText; d: OvText; mode: ViewMode; close: boolean; titleId?: string; descId?: string; marks?: OvMarks; decor?: ReactNode }) {
+// divider — 본문이 위로 스크롤되면 머리 아래 1px 선. 머리 아래 끝(= 본문 위 끝)에 그린다 — 본문은 끝 흐림 마스크를 받으므로 본문 안에 그리면 흐림에 지워진다
+function Head({ hd, title, description, t, d, mode, close, titleId, descId, marks, decor, divider }: { hd: OvHeader; title: ReactNode; description?: ReactNode; t: OvText; d: OvText; mode: ViewMode; close: boolean; titleId?: string; descId?: string; marks?: OvMarks; decor?: ReactNode; divider?: OvScroll['divider'] & { on: boolean } }) {
   return (
-    <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: hd.gap, flex: 'none', padding: `${hd.padTop}px ${close ? hd.padRightClose : hd.padX}px ${hd.padBottom}px ${hd.padX}px`, ...marks?.header }}>
+    <div
+      style={{
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: hd.gap,
+        flex: 'none',
+        padding: `${hd.padTop}px ${close ? hd.padRightClose : hd.padX}px ${hd.padBottom}px ${hd.padX}px`,
+        boxShadow: divider ? (divider.on ? `inset 0 -${divider.height}px 0 ${ocv(divider.color, mode)}` : 'inset 0 0 0 transparent') : undefined,
+        transition: divider ? `box-shadow ${divider.motion.duration} ${divider.motion.easing}` : undefined,
+        ...marks?.header,
+      }}
+    >
       <div id={titleId} style={{ ...typeOf(t, mode), ...marks?.title }}>
         {title}
       </div>
@@ -125,20 +138,18 @@ function Head({ hd, title, description, t, d, mode, close, titleId, descId, mark
   );
 }
 
-// 본문 스크롤의 상태 — 넘침(아래 흐림 · 그만큼 비움) · 위로 스크롤됨(머리 아래 선)
-export type ScrollState = { overflow: boolean; scrolled: boolean };
+// 본문 스크롤의 상태 — 위로 스크롤됨(머리 아래 선). 끝 흐림은 상태가 아니라 축이다(fog — 걸면 늘 켜져 있다, 2026-10-03)
+export type ScrollState = { scrolled: boolean };
 
-// 실제 본문 — 스크롤 · 크기가 바뀔 때마다 넘침 · 스크롤됨을 잰다. 넘침은 흐림 자리(아래 비움)를 빼고 잰다 — 비움이 넘침을 만들지 않게
-export function useBodyScroll(fade: number) {
+// 실제 본문 — 스크롤 · 크기가 바뀔 때마다 스크롤됨 · 넘침을 잰다. 넘침은 키보드로 스크롤하게 본문에 초점을 줄지만 정한다(흐림과는 상관없다)
+export function useBodyScroll() {
   const ref = useRef<HTMLDivElement | null>(null);
-  const [s, setS] = useState<ScrollState>({ overflow: false, scrolled: false });
+  const [s, setS] = useState({ scrolled: false, overflow: false });
   useIsoLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
     const measure = () => {
-      const pad = parseFloat(getComputedStyle(el).paddingBottom) || 0;
-      const reserved = Math.min(pad, fade);
-      const overflow = el.scrollHeight - reserved > el.clientHeight + 1;
+      const overflow = el.scrollHeight > el.clientHeight + 1;
       const scrolled = el.scrollTop > 0;
       setS((p) => (p.overflow === overflow && p.scrolled === scrolled ? p : { overflow, scrolled }));
     };
@@ -162,19 +173,22 @@ export function useBodyScroll(fade: number) {
       ro.disconnect();
       mo.disconnect();
     };
-  }, [fade]);
+  }, []);
   return { ref, state: s };
 }
 
-// 본문 — 넘치면 아래 fade 만큼 흐리고(마스크) 그만큼 비운다, 위로 스크롤되면 머리 아래 1px 선(안쪽 그림자). 머리가 없으면 선을 그리지 않는다.
-// 멈춘 그림은 state 와 offset(위로 올린 만큼)을 준다
+// 본문 — 위로 스크롤되면 머리 아래 1px 선(안쪽 그림자). 머리가 없으면 선을 그리지 않는다.
+// 끝 흐림(fog — 축 scrollFog=on)을 걸면 위 · 아래가 늘 흐리고(gradient-fade-mask 마스크) 본문 안에 그만큼 여백 · 스크롤 여유를 둔다 — 넘쳤는지 재지 않는다.
+// 멈춘 그림은 state 와 offset(위로 올린 만큼)을 준다. 여백은 낱낱 속성으로만 쓴다(줄임 속성과 섞지 않는다 — 링크로 들어올 때 지워진다)
 function Body({
   scroll,
+  fog,
   padX,
   padTop = 0,
   trail = 0,
   hasHead,
   state,
+  focusable = false,
   offset = 0,
   live,
   mode,
@@ -185,12 +199,15 @@ function Body({
   decor,
 }: {
   scroll?: OvScroll;
+  fog?: OvFog;
   padX: number;
   padTop?: number;
   // 바닥이 없을 때 본문 아래 여백(YAML body.paddingBottom — 바닥이 없을 때만)
   trail?: number;
   hasHead: boolean;
   state: ScrollState;
+  // 넘쳐서 키보드로 스크롤해야 하면 본문이 초점을 받는다
+  focusable?: boolean;
   offset?: number;
   live: boolean;
   mode: ViewMode;
@@ -200,15 +217,12 @@ function Body({
   style?: CSSProperties;
   decor?: ReactNode;
 }) {
-  const fade = scroll && state.overflow ? scroll.fade : 0;
-  const line = scroll && state.scrolled && hasHead;
-  const mask = fade ? `linear-gradient(to bottom, #000 calc(100% - ${fade}px), transparent)` : undefined;
-  const div = scroll?.divider;
   return (
     <div
       ref={bodyRef}
       data-ov-body=""
-      tabIndex={live && state.overflow ? 0 : undefined}
+      data-fog={fog ? '' : undefined}
+      tabIndex={live && focusable ? 0 : undefined}
       style={{
         position: 'relative',
         flex: '1 1 auto',
@@ -216,11 +230,13 @@ function Body({
         overflowY: live ? 'auto' : 'hidden',
         overscrollBehavior: 'contain',
         boxSizing: 'border-box',
-        padding: `${padTop}px ${padX}px ${fade || trail}px`,
-        WebkitMaskImage: mask,
-        maskImage: mask,
-        boxShadow: div ? (line ? `inset 0 ${div.height}px 0 ${ocv(div.color, mode)}` : `inset 0 0 0 transparent`) : undefined,
-        transition: div ? `box-shadow ${div.motion.duration} ${div.motion.easing}` : undefined,
+        paddingTop: fog ? Math.max(padTop, fog.padTop) : padTop,
+        paddingRight: padX,
+        paddingBottom: fog ? fog.padBottom : trail,
+        paddingLeft: padX,
+        scrollPaddingTop: fog ? fog.scrollTop : undefined,
+        scrollPaddingBottom: fog ? fog.scrollBottom : undefined,
+        ...(fog ? fogMaskStyle(fog.mask, { top: fog.top, bottom: fog.bottom }) : {}),
         outline: 'none',
         ...mark,
         ...style,
@@ -249,6 +265,10 @@ export type SheetSurfaceProps = {
   children?: ReactNode;
   // 본문 좌우 여백 — 목록은 줄이 화면 여백(24)을 가지므로 빼고 줄 폭 전체로 둔다
   bodyPad?: boolean;
+  // 본문 끝 흐림(축 scrollFog) — 넘칠 수 있는 본문(목록 · 긴 폼)에 건다. 걸면 늘 켜져 있다
+  fog?: boolean;
+  // 멈춘 그림 — 본문을 위로 올린 만큼
+  offset?: number;
   // 안전 영역(그림 속 기기의 홈 표시줄 · 실제 화면은 env(safe-area-inset-bottom)) — 바닥 아래에 더한다
   safe?: number | string;
   maxHeight?: number | string;
@@ -263,12 +283,13 @@ export type SheetSurfaceProps = {
 };
 
 export const SheetSurface = forwardRef<HTMLDivElement, SheetSurfaceProps>(function SheetSurface(
-  { look, mode = 'auto', title, description, close = true, closeState, onClose, handle = false, onHandle, footer, children, bodyPad = true, safe = 0, maxHeight, titleId, descId, marks, decor, rootProps, style, bodyRef, bodyStyle },
+  { look, mode = 'auto', title, description, close = true, closeState, onClose, handle = false, onHandle, footer, children, bodyPad = true, fog = false, offset, safe = 0, maxHeight, titleId, descId, marks, decor, rootProps, style, bodyRef, bodyStyle },
   ref,
 ) {
   const r = look.radius;
   const hd = look.handle;
   const live = !!onClose || !!rootProps;
+  const body = useBodyScroll();
   return (
     <div
       ref={ref}
@@ -309,7 +330,24 @@ export const SheetSurface = forwardRef<HTMLDivElement, SheetSurfaceProps>(functi
         ))}
       {close && <OvCloseButton look={look.close} ring={look.ring} mode={mode} state={closeState} onClick={closeState ? undefined : onClose} marks={marks} />}
       <Head hd={look.header} title={title} description={description} t={look.title} d={look.description} mode={mode} close={close} titleId={titleId} descId={descId} marks={marks} decor={decor?.header} />
-      <Body padX={bodyPad ? look.body.padX : 0} trail={footer ? 0 : look.body.padBottom} hasHead state={{ overflow: false, scrolled: false }} live={live} mode={mode} bodyRef={bodyRef} mark={marks?.body} style={bodyStyle} decor={decor?.body}>
+      <Body
+        fog={fog ? look.fog : undefined}
+        padX={bodyPad ? look.body.padX : 0}
+        trail={footer ? 0 : look.body.padBottom}
+        hasHead
+        state={{ scrolled: false }}
+        focusable={body.state.overflow}
+        offset={offset}
+        live={live}
+        mode={mode}
+        bodyRef={(el) => {
+          body.ref.current = live ? el : null;
+          bodyRef?.(el);
+        }}
+        mark={marks?.body}
+        style={bodyStyle}
+        decor={decor?.body}
+      >
         {children}
       </Body>
       {footer && (
@@ -361,8 +399,10 @@ export type DialogSurfaceProps = {
   footer?: ReactNode;
   children?: ReactNode;
   maxHeight?: number | string;
-  // 멈춘 그림의 본문 스크롤 — 넘침 · 스크롤됨과 위로 올린 만큼. 없으면 실제로 잰다
+  // 멈춘 그림의 본문 스크롤 — 스크롤됨과 위로 올린 만큼. 없으면 실제로 잰다
   scroll?: ScrollState & { offset?: number };
+  // 본문 끝 흐림(축 scrollFog) — 넘칠 수 있는 본문(목록 · 긴 폼)에 건다. 걸면 늘 켜져 있다
+  fog?: boolean;
   bodyPad?: boolean;
   // 그림 속 열린 목록 · 팝오버가 판 밖으로 나오게(실제로는 body 에 띄운다) — 판 · 본문이 자르지 않는다
   unclipped?: boolean;
@@ -375,13 +415,13 @@ export type DialogSurfaceProps = {
 };
 
 export const DialogSurface = forwardRef<HTMLDivElement, DialogSurfaceProps>(function DialogSurface(
-  { look, mode = 'auto', width, title, description, close = false, closeState, onClose, footer, children, maxHeight, scroll, bodyPad = true, unclipped = false, titleId, descId, marks, decor, rootProps, style },
+  { look, mode = 'auto', width, title, description, close = false, closeState, onClose, footer, children, maxHeight, scroll, fog = false, bodyPad = true, unclipped = false, titleId, descId, marks, decor, rootProps, style },
   ref,
 ) {
   // 판 밖으로 나오는 그림(unclipped)은 멈춘 판이다 — 본문을 재지 않고(흐림 마스크가 밖을 자른다) 자르지도 않는다
   const live = !scroll && !unclipped;
-  const body = useBodyScroll(look.scroll.fade);
-  const state = scroll ?? (unclipped ? { overflow: false, scrolled: false } : body.state);
+  const body = useBodyScroll();
+  const state = scroll ?? (unclipped ? { scrolled: false } : body.state);
   return (
     <div
       ref={ref}
@@ -404,13 +444,15 @@ export const DialogSurface = forwardRef<HTMLDivElement, DialogSurfaceProps>(func
       }}
     >
       {close && <OvCloseButton look={look.close} ring={look.ring} mode={mode} state={closeState} onClick={closeState ? undefined : onClose} marks={marks} />}
-      <Head hd={look.header} title={title} description={description} t={look.title} d={look.description} mode={mode} close={close} titleId={titleId} descId={descId} marks={marks} decor={decor?.header} />
+      <Head hd={look.header} title={title} description={description} t={look.title} d={look.description} mode={mode} close={close} titleId={titleId} descId={descId} marks={marks} decor={decor?.header} divider={{ ...look.scroll.divider, on: state.scrolled }} />
       <Body
         scroll={look.scroll}
+        fog={fog && !unclipped ? look.scroll.fog : undefined}
         padX={bodyPad ? look.body.padX : 0}
         trail={footer ? 0 : look.body.padBottom}
         hasHead
         state={state}
+        focusable={live && body.state.overflow}
         offset={scroll?.offset}
         live={live}
         mode={mode}
@@ -448,6 +490,8 @@ export type PopoverSurfaceProps = {
   children?: ReactNode;
   maxHeight?: number | string;
   scroll?: ScrollState & { offset?: number };
+  // 본문 끝 흐림(Scroll Fog overlayBody — Dialog 와 같다). 넘칠 수 있는 본문에 건다. 걸면 늘 켜져 있다
+  fog?: boolean;
   // 본문 좌우 여백 — 줄이 화면 여백을 가지는 목록(사람)은 뺀다
   bodyPad?: boolean;
   titleId?: string;
@@ -460,11 +504,11 @@ export type PopoverSurfaceProps = {
 };
 
 export const PopoverSurface = forwardRef<HTMLDivElement, PopoverSurfaceProps>(function PopoverSurface(
-  { look, mode = 'auto', width, avail, title, description, close, closeState, onClose, footer, children, maxHeight, scroll, bodyPad = true, titleId, descId, marks, decor, rootProps, style },
+  { look, mode = 'auto', width, avail, title, description, close, closeState, onClose, footer, children, maxHeight, scroll, fog = false, bodyPad = true, titleId, descId, marks, decor, rootProps, style },
   ref,
 ) {
   const live = !scroll;
-  const body = useBodyScroll(look.scroll.fade);
+  const body = useBodyScroll();
   const state = scroll ?? body.state;
   const hasHead = title !== undefined;
   const showClose = close ?? hasHead;
@@ -492,15 +536,17 @@ export const PopoverSurface = forwardRef<HTMLDivElement, PopoverSurfaceProps>(fu
       }}
     >
       {hasHead && showClose && <OvCloseButton look={look.close} ring={look.ring} mode={mode} state={closeState} onClick={closeState ? undefined : onClose} marks={marks} />}
-      {hasHead && <Head hd={look.header} title={title} description={description} t={look.title} d={look.description} mode={mode} close={showClose} titleId={titleId} descId={descId} marks={marks} decor={decor?.header} />}
+      {hasHead && <Head hd={look.header} title={title} description={description} t={look.title} d={look.description} mode={mode} close={showClose} titleId={titleId} descId={descId} marks={marks} decor={decor?.header} divider={{ ...look.scroll.divider, on: state.scrolled }} />}
       <Body
         scroll={look.scroll}
+        fog={fog ? look.scroll.fog : undefined}
         padX={bodyPad ? look.body.padX : 0}
         // 머리가 없는 고르는 패널 — 본문 위 여백(YAML body.paddingTop — 머리가 없을 때만)
         padTop={hasHead ? 0 : look.body.padTop}
         trail={footer ? 0 : look.body.padBottom}
         hasHead={hasHead}
         state={state}
+        focusable={live && body.state.overflow}
         offset={scroll?.offset}
         live={live}
         mode={mode}

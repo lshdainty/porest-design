@@ -303,7 +303,7 @@ export function FilterBarDemo({
   const frameStyle: CSSProperties = { position: 'relative', isolation: 'isolate', display: 'flex', flexDirection: 'column', height, overflow: 'hidden', borderRadius: 16, background: t(look, 'bg-layer-default', mode), padding: `16px ${look.scrollRow.padX}px 0`, fontFamily: FONT };
   return (
     <div ref={setFrame} style={frameStyle}>
-      <ChipGroupView look={look} mode={mode} layout="scroll" fog={look.tone['bg-layer-default']} ariaLabel="거래 거르기">
+      <ChipGroupView look={look} mode={mode} layout="scroll" ariaLabel="거래 거르기">
         {active > 0 && (
           <ChipView
             look={look}

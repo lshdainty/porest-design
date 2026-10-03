@@ -525,11 +525,9 @@ const SidebarMenuSkeleton = React.forwardRef<
       className={cn("rounded-xs h-8 flex gap-2 px-2 items-center", className)}
       {...props}
     >
-      {showIcon && (
-        <Skeleton className="size-4 rounded-xs" data-sidebar="menu-skeleton-icon" />
-      )}
+      {showIcon && <Skeleton className="size-4" data-sidebar="menu-skeleton-icon" />}
       <Skeleton
-        className="h-4 flex-1 max-w-[--skeleton-width]"
+        className="h-4 flex-1 max-w-(--skeleton-width)"
         data-sidebar="menu-skeleton-text"
         style={
           {

@@ -11,6 +11,8 @@ import { PeriodPickDemo, TxFormSheetDemo } from './overlay-demos';
 import {
   AlertOn,
   Band,
+  CATEGORY,
+  CategorySheet,
   DeleteAlert,
   DetailSheet,
   LedgerPhone,
@@ -28,6 +30,7 @@ import {
   overlayKit,
   pinAt,
   pinStyle,
+  tileRowHeight,
 } from './overlay-screens';
 import { DimView, GestureMark, SheetButtons, SheetSurface } from './overlay-view';
 import { F, Form, desk, tf } from './select-screens';
@@ -270,6 +273,55 @@ const Handle: Fig = ({ caption }) => {
   );
 };
 
+// ── 본문 끝 흐림 ──────────────────────────────────────────
+// 카테고리 고르기(길이가 데이터에 따라 느는 목록 — scrollFog) — 맨 위 · 끝까지 내린 모습. 위 · 아래 흐림은 늘 그대로(마스크)이고
+// 본문 안 여백이 그만큼이라 맨 위 · 끝에서는 흐림이 빈 여백 위에 놓인다. 시트는 화면 높이의 상한까지 차고 본문만 스크롤된다
+const FOG_PHONE = 640;
+const ScrollFogFigure: Fig = ({ caption }) => {
+  const s = sh();
+  const f = s.fog;
+  // kit Phone 의 화면(틀 8 안쪽) · 시트 상한 · 머리(제목 한 줄)
+  const screenH = FOG_PHONE - 16;
+  const head = s.header.padTop + px(s.title.lineHeight) + s.header.padBottom;
+  const bodyH = screenH * s.maxHeight - head - PHONE_SAFE;
+  const end = f.padTop + CATEGORY.length * tileRowHeight() + f.padBottom - bodyH;
+  const edge = { background: 'transparent', boxShadow: `inset 0 0 0 1px ${MARK_LINE}` };
+  const bands = (
+    <>
+      <Band style={{ left: 0, right: 0, top: head, height: f.top, ...edge }} label={`위 ${f.top}`} />
+      <Band style={{ left: 0, right: 0, bottom: PHONE_SAFE, height: f.bottom, ...edge }} label={`아래 ${f.bottom}`} />
+    </>
+  );
+  const phone = (offset: number) => (
+    <LedgerPhone
+      mode="auto"
+      scale={0.6}
+      h={FOG_PHONE}
+      overlay={
+        <SheetOn mode="auto">
+          <CategorySheet mode="auto" maxHeight={`${s.maxHeight * 100}%`} offset={offset} decor={{ root: bands }} />
+        </SheetOn>
+      }
+    />
+  );
+  return (
+    <Figure caption={caption}>
+      <div className="flex items-start justify-center gap-6">
+        <div className="w-[240px]">
+          <Shot strong="맨 위" cap={`위 ${f.top} 흐림은 빈 여백(${f.padTop}) 위 — 아래 ${f.bottom} 이 흐려 더 있음을 알린다`}>
+            {phone(0)}
+          </Shot>
+        </div>
+        <div className="w-[240px]">
+          <Shot strong="끝까지 내렸을 때" cap={`아래 ${f.bottom} 흐림은 빈 여백(${f.padBottom}) 위 — 마지막 줄은 흐림 밖에 다 보인다`}>
+            {phone(end)}
+          </Shot>
+        </div>
+      </div>
+    </Figure>
+  );
+};
+
 // ── 쓰임 ──────────────────────────────────────────────────
 function ConfirmSheet({ mode = 'auto' }: { mode?: Mode }) {
   return (
@@ -475,6 +527,7 @@ export const bottomSheetFigures: Record<string, Fig> = {
   anatomy: Anatomy,
   layout: Layout,
   handle: Handle,
+  scroll: ScrollFogFigure,
   'role-guide': RoleGuide,
   'height-guide': HeightGuide,
   'dismiss-guide': DismissGuide,

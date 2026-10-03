@@ -38,6 +38,9 @@ import { dividerExamples } from "../recipes/shadcn/examples/divider-examples.mjs
 import { skeletonExamples } from "../recipes/shadcn/examples/skeleton-examples.mjs";
 import { aspectRatioExamples } from "../recipes/shadcn/examples/aspect-ratio-examples.mjs";
 import { progressExamples } from "../recipes/shadcn/examples/progress-examples.mjs";
+import { progressCircleExamples } from "../recipes/shadcn/examples/progress-circle-examples.mjs";
+import { scrollFogExamples } from "../recipes/shadcn/examples/scroll-fog-examples.mjs";
+import { contentPlaceholderExamples } from "../recipes/shadcn/examples/content-placeholder-examples.mjs";
 import { scrollAreaExamples } from "../recipes/shadcn/examples/scroll-area-examples.mjs";
 import { typographyExamples } from "../recipes/shadcn/examples/typography-examples.mjs";
 import { carouselExamples } from "../recipes/shadcn/examples/carousel-examples.mjs";
@@ -81,8 +84,6 @@ import { wheelPickerExamples } from "../recipes/shadcn/examples/wheel-picker-exa
 import { tableExamples } from "../recipes/shadcn/examples/table-examples.mjs";
 import { dataTableExamples } from "../recipes/shadcn/examples/data-table-examples.mjs";
 import { chartExamples } from "../recipes/shadcn/examples/chart-examples.mjs";
-// Display extras (shadcn 외 — Porest 자체 정의)
-import { spinnerExamples } from "../recipes/shadcn/examples/spinner-examples.mjs";
 // Porest 도메인 spec (shadcn 외) — 2026-05-15 추가
 import { colorSwatchExamples } from "../recipes/shadcn/examples/color-swatch-examples.mjs";
 import { iconPickerExamples } from "../recipes/shadcn/examples/icon-picker-examples.mjs";
@@ -131,7 +132,10 @@ const SHADCN_EXAMPLES = {
   skeleton: skeletonExamples,
   "aspect-ratio": aspectRatioExamples,
   progress: progressExamples,
+  "progress-circle": progressCircleExamples,
   "scroll-area": scrollAreaExamples,
+  "scroll-fog": scrollFogExamples,
+  "content-placeholder": contentPlaceholderExamples,
   typography: typographyExamples,
   carousel: carouselExamples,
   resizable: resizableExamples,
@@ -175,8 +179,6 @@ const SHADCN_EXAMPLES = {
   table: tableExamples,
   "data-table": dataTableExamples,
   chart: chartExamples,
-  // Display extras
-  spinner: spinnerExamples,
   // Porest 도메인 spec (shadcn 카탈로그 외) — 2026-05-15
   "color-swatch": colorSwatchExamples,
   "icon-picker": iconPickerExamples,
@@ -1982,27 +1984,29 @@ const SHADCN_CATALOG = [
   { slug: "toggle-group", name: "Toggle Group", category: "Form", description: "단일 또는 복수 선택 토글 그룹." },
   { slug: "wheel-picker", name: "Wheel Picker", category: "Form", description: "순서가 있는 값을 세로로 굴려 고르는 휠 — 칼럼 · 항목 · 가운데 선택 띠 · 위아래 안개. Time Picker 의 바탕이고, 달력의 연 · 월 휠 · 달만 고르는 자리에 쓴다 (SEED Wheel Picker 구조)." },
 
-  // Display (18)
+  // Display (20)
   { slug: "aspect-ratio", name: "Aspect Ratio", category: "Display", description: "고정 비율 컨테이너 (16:9, 4:3 등)." },
   { slug: "avatar", name: "Avatar", category: "Display", description: "사람 한 명을 보이는 원 — 사진이 있으면 사진, 없으면 이니셜 + 이름 색이고, 여러 사람은 지름 1/4 을 겹친 묶음(Avatar Stack — 앞 4명 + \"+N\")이다 (SEED Avatar 구조)." },
   { slug: "badge", name: "Badge", category: "Display", description: "대상의 상태 · 분류를 한두 낱말로 보이는 누르지 않는 작은 라벨(예정 · 연체 · 승인). weak · outline · solid × 톤 6 × medium 20 · large 24 (SEED Badge 구조)." },
   { slug: "callout", name: "Callout", category: "Display", description: "화면 안, 그 기능 · 내용 가까이에 늘 보이는 안내 상자 — 팁 · 제약 · 주의와 그 자리에서 난 오류(저장 실패)를 알린다 (SEED Callout 구조)." },
   { slug: "card", name: "Card", category: "Display", description: "콘텐츠 컨테이너 (header / content / footer)." },
   { slug: "carousel", name: "Carousel", category: "Display", description: "슬라이드 갤러리 — Embla 베이스." },
+  { slug: "content-placeholder", name: "Content Placeholder", category: "Display", description: "이미지가 없거나 불러오지 못한 자리를 옅은 면과 무엇이 없는지 말하는 선 아이콘으로 채운다 — 그림은 틀 높이의 50%(16 ~ 160), 모서리는 틀이 정한다 (SEED Content Placeholder 구조)." },
   { slug: "divider", name: "Divider", category: "Display", description: "내용 사이를 나누는 1px 선 — 같은 묶음 안은 들인 선, 묶음 사이는 끝까지 선이고, 크게 다른 내용 사이는 선이 아니라 8 간격이다 (SEED Divider 구조)." },
   { slug: "list", name: "List", category: "Display", description: "설정 · 메뉴 · 선택 · 내용 줄을 세로로 잇는 목록 (SEED List 구조)." },
   { slug: "notification-badge", name: "Notification Badge", category: "Display", description: "안 읽은 알림 · 확인하지 않은 새 것이 있다는 신호 — 점(있음)과 숫자(몇 개 · 99+)를 아이콘 버튼 · 탭 글에 붙이고, 보면 사라진다 (SEED Notification Badge 구조)." },
   { slug: "page-banner", name: "Page Banner", category: "Display", description: "페이지 머리 바로 아래 화면 폭 전체로 놓여 그 페이지 전체의 상태(연결 끊김 · 만료 예정 · 새 버전)를 알리는 띠 — 한 화면에 하나 (SEED Page Banner 구조)." },
-  { slug: "progress", name: "Progress", category: "Display", description: "진행률 막대 (determinate / indeterminate)." },
-  { slug: "spinner", name: "Spinner", category: "Display", description: "원형 indeterminate 인디케이터 (shadcn 카탈로그 외, Porest 자체 정의)." },
+  { slug: "progress", name: "Progress", category: "Display", description: "\"얼마나 찼나\" 를 보이는 높이 8 미터 막대 — 예산 · 카드 한도처럼 쓸수록 차는 것과 저축 목표 · 카드 실적처럼 모을수록 차는 것, 넘친 한도만 위험 색 (SEED 에 선형 막대가 없어 porest 가 정한 부품 — 진행은 Progress Circle)." },
+  { slug: "progress-circle", name: "Progress Circle", category: "Display", description: "작업이 진행 중임을 알리는 원 — 값을 모르면 호가 늘었다 줄며 돌고 값을 알면 12시부터 채운다, 크기 24 · 40 · 버튼 안, 톤 neutral · brand · staticWhite · inherit (SEED Progress Circle 구조)." },
   { slug: "resizable", name: "Resizable", category: "Display", description: "드래그로 크기 조절 가능 패널." },
   { slug: "result-section", name: "Result Section", category: "Display", description: "화면이나 그 영역 가운데에 놓는 결과 — 비어 있음 · 불러오기 실패 · 완료 · 찾을 수 없는 페이지 · 화면 오류를 한 틀로 그린다 (SEED Result Section 구조)." },
   { slug: "scroll-area", name: "Scroll Area", category: "Display", description: "스타일된 스크롤 컨테이너." },
-  { slug: "skeleton", name: "Skeleton", category: "Display", description: "로딩 placeholder (shimmer)." },
+  { slug: "scroll-fog", name: "Scroll Fog", category: "Display", description: "스크롤되는 영역의 끝을 투명도 마스크로 늘 흐려 뒤에 더 있다는 것을 알린다 — 칩 줄 좌우 20 · 시트 · 대화상자 본문 위 20 · 아래 80 · 바닥 고정 버튼이 있는 화면 (SEED Scroll Fog 구조)." },
+  { slug: "skeleton", name: "Skeleton", category: "Display", description: "불러오는 동안 데이터 자리만 미리 그리는 회색 면과 1.5초 띠 — 모서리 넷 · 글줄 높이, 1초 뒤에 보이고 5초 · 10초에 바뀌는 시간표(LoadingRegion) (SEED Skeleton 구조)." },
   { slug: "tag-group", name: "Tag Group", category: "Display", description: "여러 메타 정보(카테고리 이름 · 자산 · 시각 · 거리 · 개수 · 금액)를 \" · \" 로 이어 한 줄로 보이는 글줄 — 읽기만 하고, 넘치면 낱말 단위로 줄을 바꾸거나 한 줄에서 말줄임한다 (SEED Tag Group 구조)." },
   { slug: "typography", name: "Typography", category: "Display", description: "텍스트 위계 (h1~h4, p, blockquote, code)." },
 
-  // Overlay (9)
+  // Overlay (10)
   { slug: "alert-dialog", name: "Alert Dialog", category: "Overlay", description: "되돌릴 수 없는 일을 하기 전에 묻거나 꼭 알아야 할 일을 알리는 화면 정중앙의 확인창 (SEED Alert Dialog 구조)." },
   { slug: "bottom-sheet", name: "Bottom Sheet", category: "Overlay", description: "1280 미만에서 폼 · 상세 · 고르기를 띄우는 화면 아래의 모달 시트 (SEED Bottom Sheet 구조)." },
   { slug: "dialog", name: "Dialog", category: "Overlay", description: "1280 이상에서 입력 폼 · 상세를 화면 정중앙에 띄우고 1280 미만에서는 Bottom Sheet 로 바뀌는 대화상자 (SEED Dialog 구조)." },

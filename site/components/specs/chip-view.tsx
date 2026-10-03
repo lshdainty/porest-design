@@ -29,6 +29,7 @@ import {
 import { ccv, faceOf, pressRatio, type ChipColor, type ChipIcon, type ChipLook, type ChipPart, type ChipSize, type ChipState, type ChipVariant, type ViewMode } from './chip-shared';
 import type { TfFieldLook } from './text-field-shared';
 import { TfFieldView } from './text-field-view';
+import { fogMaskStyle } from './overlay-shared';
 
 const ICONS: Record<ChipIcon, LucideIcon> = {
   'chevron-down': ChevronDown,
@@ -433,16 +434,15 @@ export type ChipGroupViewProps = {
   ariaLabel?: string;
   ariaLabelledby?: string;
   ariaDescribedby?: string;
-  // 가로 스크롤 — 안쪽 좌우는 늘 화면 여백. bleed 면 줄을 둘레 여백만큼 바깥으로 내 화면 끝까지(레시피의 bleed)
+  // 가로 스크롤 — 안쪽 좌우는 늘 화면 여백. bleed 면 줄을 둘레 여백만큼 바깥으로 내 화면 끝까지(레시피의 bleed).
+  // 양 끝은 늘 흐린다(Scroll Fog row — 마스크, 따로 켜지 않는다)
   bleed?: boolean;
-  // 끝 흐림 — 그 바탕색(Scroll Fog 차례에 정한다 — 그림은 간단히)
-  fog?: ChipColor;
   groupRef?: Ref<HTMLDivElement>;
   tabIndex?: number;
   style?: CSSProperties;
 };
 
-export function ChipGroupView({ look, layout = 'wrap', mode = 'auto', children, role, ariaLabel, ariaLabelledby, ariaDescribedby, bleed = true, fog, groupRef, tabIndex, style }: ChipGroupViewProps) {
+export function ChipGroupView({ look, layout = 'wrap', mode = 'auto', children, role, ariaLabel, ariaLabelledby, ariaDescribedby, bleed = true, groupRef, tabIndex, style }: ChipGroupViewProps) {
   const g = look.group;
   const r = look.scrollRow;
   // 묶음도 키보드 포커스에 링을 그린다(입력값 칩을 다 지우면 포커스가 묶음으로 온다) — 모서리 없이 묶음 둘레
@@ -470,7 +470,8 @@ export function ChipGroupView({ look, layout = 'wrap', mode = 'auto', children, 
       </div>
     );
   // 가로 스크롤 줄 — 두 겹. 바깥 묶음(이름 · 링 · bleed)은 부모의 위아래 간격을 그대로 받고, 안쪽 스크롤 칸이 위아래 padY 를 바깥 marginY 로 되돌려
-  // 줄 높이는 칩 그대로다. bleed 면 바깥을 화면 여백만큼 내 화면 끝까지 스크롤하고, 첫 칩은 안쪽 padX(화면 여백)에서 시작한다
+  // 줄 높이는 칩 그대로다. bleed 면 바깥을 화면 여백만큼 내 화면 끝까지 스크롤하고, 첫 칩은 안쪽 padX(화면 여백)에서 시작한다.
+  // 스크롤 칸의 양 끝은 늘 흐리다(Scroll Fog row — gradient-fade-mask 마스크, 스크롤 위치와 상관없이). 안쪽 여백이 흐림보다 넓어 처음 · 끝 칩은 흐리지 않는다
   return (
     <div
       ref={groupRef}
@@ -495,11 +496,11 @@ export function ChipGroupView({ look, layout = 'wrap', mode = 'auto', children, 
           marginBottom: r.marginY,
           scrollPaddingLeft: r.scrollPadding,
           scrollPaddingRight: r.scrollPadding,
+          ...fogMaskStyle(r.mask, { left: r.fog, right: r.fog }),
         }}
       >
         {children}
       </div>
-      {fog && <span aria-hidden style={{ position: 'absolute', top: 0, bottom: 0, right: 0, width: r.padX, background: `linear-gradient(to right, transparent, ${ccv(fog, mode)})`, pointerEvents: 'none' }} />}
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 import { chipVariants } from "@/components/ui/chip";
+import { useScrollFog } from "@/components/ui/scroll-fog";
 
 /*
  * Porest Tabs — 구조는 SEED Tabs(2026-10-02). 수치 원본은 specs/components/tabs.yaml(Line) · chip-tabs.yaml(Chip Tabs).
@@ -38,7 +39,9 @@ import { chipVariants } from "@/components/ui/chip";
  * Chip Tabs
  *   variant  solid(기본 — 화면 전체를 바꾸는 2차 탭, Chip Solid) · outline(일부를 바꾸는 2차 탭, Chip Outline Strong)
  *   size     medium 36(기본) · large 40
- * 목록은 바탕 · 바닥 선 없이 한 줄 가로 스크롤이다 — 좌우 화면 여백 24 · 위아래 8 · 칩 사이 8, 스크롤바는 숨긴다.
+ * 목록은 바탕 · 바닥 선 없이 한 줄 가로 스크롤이다 — 좌우 화면 여백 24 · 위아래 8 · 칩 사이 8, 스크롤바는 숨긴다. 양 끝은 늘
+ * 흐린다(Scroll Fog row — gradient-fade-mask 좌우 20, 스크롤 위치 · 넘침과 상관없이) — 여백 24 가 흐림보다 넓어 처음 · 끝 칩은 흐리지
+ * 않는다. 흐림은 마스크라 흐린 자리의 칩도 그대로 눌린다.
  * 칩은 chipVariants 를 그대로 쓴다(누름 · 호버 · 포커스 · 비활성 · 누르는 영역 44 모두 Chip 과 같다). chipVariants 는
  * data-state="checked" · data-selected 로 고름(짙은 채움)을 칠하는데 Radix 탭은 data-state="active" 를 달므로, 고른 탭에
  * data-selected 를 단다. 알림 점(fg-brand)은 글 뒤에 칩의 사이 6 을 두고 세로 가운데 — 칩 폭이 그만큼 넓어진다. 고른 칩(짙은
@@ -424,7 +427,7 @@ const ChipTabsListContext = React.createContext<{ variant: ChipTabsVariant; size
 const CHIP_VARIANT = { solid: "solid", outline: "outlineStrong" } as const;
 
 // 목록 — 바탕 · 바닥 선 없이 한 줄 가로 스크롤(스크롤바는 숨긴다). 좌우 화면 여백 24 · 위아래 8 · 칩 사이 8.
-// 고른 칩을 드러낼 때는 가장자리와 16 을 둔다(Line 과 같다)
+// 고른 칩을 드러낼 때는 가장자리와 화면 여백 24 를 둔다(scroll-padding). 양 끝 흐림(Scroll Fog row 좌우 20)은 useScrollFog 가 건다
 const chipTabsListVariants = cva(
   "relative flex w-full flex-nowrap gap-between-chips overflow-x-auto px-global-gutter py-x2 scroll-px-global-gutter font-sans [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
 );
@@ -446,12 +449,15 @@ const ChipTabsList = React.forwardRef<React.ElementRef<typeof TabsPrimitive.List
     const { value } = useTabsValue("ChipTabsList");
     useRevealSelected(own, value, true);
     useListChecks(own, "ChipTabsList", false, props["aria-label"], props["aria-labelledby"]);
+    // 양 끝은 늘 흐린다 — 따로 켜지 않는다
+    useScrollFog(own, "row");
     const ctx = React.useMemo(() => ({ variant, size }), [variant, size]);
     return (
       <ChipTabsListContext.Provider value={ctx}>
         <TabsPrimitive.List
           ref={mergeRefs(ref, own)}
           data-slot="chip-tabs-list"
+          data-scroll-fog="row"
           data-variant={variant}
           data-size={size}
           data-tabs-prevent-swipe=""

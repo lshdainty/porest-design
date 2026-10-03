@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import { axisValues, loadComponentSpec, num, resolveState, stateNames, tokenValue, type TypeValue } from '@/lib/component-spec';
 import { color, design, pressScale, proseValue, reducedMotion, type Brand } from '@/lib/design-tokens';
 import { buttonLook } from './button-look';
+import { overlayFog } from './loading-look';
 import { OV_TONES, type AlertLayout, type AlertLook, type DialogLook, type DialogSize, type OvClose, type OvColor, type OvFooter, type OvHeader, type OvMotion, type OvRing, type OvText, type OverlayLook, type PopoverLook, type SheetLook } from './overlay-shared';
 export * from './overlay-shared';
 
@@ -226,6 +227,8 @@ function sheetLook(brand: Brand, reduced: number): SheetLook {
     title: text(v, 'title', brand, w),
     description: text(v, 'description', brand, w),
     body: { padX: len(v['body.paddingX'], `${w} body.paddingX`), padBottom: len(v['body.paddingBottom'], `${w} body.paddingBottom(바닥이 없을 때)`) },
+    // 본문 끝 흐림(scrollFog=on) — Scroll Fog overlayBody 와 같은지 확인한 값
+    fog: overlayFog('bottom-sheet'),
     footer: footer(v, w),
     handle: {
       width: len(h['handle.width'], `${w} handle.width`),
@@ -249,13 +252,12 @@ function sheetLook(brand: Brand, reduced: number): SheetLook {
 
 function dialogLook(brand: Brand, sheetClose: OvClose, reduced: number): DialogLook {
   const spec = loadComponentSpec('dialog');
-  sameSet(stateNames(spec), ['enabled', 'scrolled', 'overflow', 'pressed', 'focused'], 'dialog.yaml 의 states');
+  sameSet(stateNames(spec), ['enabled', 'scrolled', 'pressed', 'focused'], 'dialog.yaml 의 states');
   sameSet(axisValues(spec, 'size'), ['medium', 'large'], 'dialog.yaml 의 size');
   const w = 'dialog';
   const v = resolveState(spec, {}, 'enabled');
   const pressed = resolveState(spec, {}, 'pressed');
   const focused = resolveState(spec, {}, 'focused');
-  const overflow = resolveState(spec, {}, 'overflow');
   const scrolled = resolveState(spec, {}, 'scrolled');
   // 닫기 버튼의 누름 전환은 YAML 에 없다 — 시트 닫기 버튼과 같은 토큰(색 전환 · 눌림 축소)으로 그린다
   const c = close('dialog', v, pressed, brand, sheetClose.motion);
@@ -268,8 +270,8 @@ function dialogLook(brand: Brand, sheetClose: OvClose, reduced: number): DialogL
   // 화면 폭 − 40 · "좌우 20 은 남긴다"
   const minus = numIn(String(unbox(v['root.maxWidth'])), /−\s*(\d+)/, 'dialog root.maxWidth');
   same(numIn(noteOf(v['root.maxWidth']), /좌우\s*(\d+)/, 'dialog root.maxWidth 비고') * 2, minus, 'dialog 좌우 남김');
-  const fade = len(overflow['fade.height'], 'dialog overflow fade.height');
-  same(len(overflow['body.paddingBottom'], 'dialog overflow body.paddingBottom'), fade, 'dialog 흐림 높이 · 본문 아래 비움');
+  // 본문 끝 흐림은 상태가 아니라 축 scrollFog 다(2026-10-03) — 걸면 늘 켜진 위 · 아래 흐림(Scroll Fog overlayBody)
+  const fog = overlayFog('dialog');
   if (Number(unbox(scrolled['divider.opacity'])) !== 1) throw new Error('dialog.yaml scrolled divider.opacity 가 1 이 아니다');
   const sizes = { medium: len(resolveState(spec, { size: 'medium' }, 'enabled')['root.width'], 'dialog medium root.width'), large: len(resolveState(spec, { size: 'large' }, 'enabled')['root.width'], 'dialog large root.width') };
   same(numIn(String(motionEntry('dialog', '열림 — 대화상자').note ?? ''), /(\d+)ms/, 'dialog 열림 비고(모션 줄이기)'), reduced, 'dialog 모션 줄이기');
@@ -288,7 +290,7 @@ function dialogLook(brand: Brand, sheetClose: OvClose, reduced: number): DialogL
     close: c,
     body: bodyOf(v, w),
     scroll: {
-      fade,
+      fog,
       divider: {
         height: len(v['divider.height'], 'dialog divider.height'),
         color: tok(v['divider.background'], brand, 'dialog divider.background'),
@@ -363,9 +365,11 @@ function popoverLook(brand: Brand, dialog: DialogLook, sheetClose: OvClose): Pop
   const focused = resolveState(spec, {}, 'focused');
   const c = close('popover', v, pressed, brand, sheetClose.motion);
   const hd = header(v, w, { slot: 'header.gap', re: /오른쪽\s*(\d+)/ });
-  // 본문 스크롤은 "Dialog 와 같다" — 비고의 48 · 1px · 선 색이 Dialog 값과 같은지
+  // 본문 스크롤은 "Dialog 와 같다" — 비고의 끝 흐림(위 20 · 아래 80) · 1px · 선 색이 Dialog 값과 같은지
   const bodyNote = noteOf(v['body.overflowY']);
-  same(numIn(bodyNote, /아래\s*(\d+)\s*흐림/, 'popover body.overflowY 비고'), dialog.scroll.fade, 'popover 흐림 — Dialog');
+  if (!bodyNote.includes('Scroll Fog overlayBody')) throw new Error('popover body.overflowY 비고가 Scroll Fog overlayBody 를 가리키지 않는다 — overlay-view 의 팝오버 본문을 고친다');
+  same(numIn(bodyNote, /위\s*(\d+)\s*·\s*아래/, 'popover body.overflowY 비고'), dialog.scroll.fog.top, 'popover 위 흐림 — Dialog');
+  same(numIn(bodyNote, /아래\s*(\d+)/, 'popover body.overflowY 비고'), dialog.scroll.fog.bottom, 'popover 아래 흐림 — Dialog');
   same(numIn(bodyNote, /(\d+)px/, 'popover body.overflowY 비고'), dialog.scroll.divider.height, 'popover 머리 아래 선 — Dialog');
   if (!bodyNote.includes(String(dialog.scroll.divider.color.name).replace(/^hr-/, ''))) throw new Error('popover body.overflowY 비고의 선 색이 Dialog 의 divider 색과 다르다');
   const offset = len(v['root.offset'], `${w} root.offset`);

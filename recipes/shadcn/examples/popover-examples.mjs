@@ -3,8 +3,8 @@
  * 각 예제 = { title, description, jsx, render() }. 첫째(안내)는 차례 · 제목 · 코드가 specs/components/popover.md 의 "코드" 절과 같고,
  * 뒤의 둘(본문 스크롤 · 머리 없는 고르는 패널)은 md 의 Properties · Guidelines 를 코드로 더 보인다.
  *
- * CONTENT · CLOSE · BODY 는 recipes/shadcn/components/ui/popover.tsx 의 상수와, HEADER · TITLE · DESCRIPTION · FOOTER 는 그 파일의 JSX 에
- * 적힌 클래스와 글자 하나까지 같아야 한다 — 두 파일을 함께 고친다. 트리거 · 바닥 버튼 BUTTON_* 는 button.tsx 의 cva 와 같다
+ * CONTENT · HEADER · CLOSE · BODY · BODY_PLAIN · BODY_FOG 는 recipes/shadcn/components/ui/popover.tsx 의 상수와, TITLE · DESCRIPTION · FOOTER 는
+ * 그 파일의 JSX 에 적힌 클래스와 글자 하나까지 같아야 한다 — 두 파일을 함께 고친다. 끝 흐림의 SOLID · fogStyle 은 scroll-fog.tsx 의 useScrollFog 와 같은 셈이다. 트리거 · 바닥 버튼 BUTTON_* 는 button.tsx 의 cva 와 같다
  * (button-examples.mjs 의 것과 같다 — 이 파일이 쓰는 변형 · 크기 · 배치와 그에 걸리는 compound 만 옮겼다). 고르는 패널을 여는 칸
  * IB_* 는 input-button.tsx 의 cva · 클래스와, 둘레 FIELD_* 는 field.tsx 의 클래스와 같다(input-button-examples.mjs 의 것과 같다).
  * 규칙은 specs/components/popover.md, 수치 원본은 specs/components/popover.yaml.
@@ -18,8 +18,9 @@
  * 자리 변수(--radix-popover-content-available-width · -height)를 그린다 — 미리보기는 틀(STAGE)의 폭 · 높이로 적었다(100cqw · 100cqh).
  * 레시피는 표면을 body 끝(portal)에 띄우고 Radix 가 감싼 div(position: fixed)로 트리거 아래 8 에 놓는다 — 미리보기는 감싼 div 를 틀 안의
  * position: absolute 로 흉내 내 트리거 아래 8 에 둔다(옆으로 넘치면 화면 안으로 미는 계산은 하지 않는다). 틀의 isolation 이 z-(--z-floating) 을 틀 안에 가둔다.
- * 본문의 넘침(data-overflow — 아래 48 흐림 + 아래 48 여백 + Tab 자리) · 위로 스크롤됨(data-scrolled — 머리 아래 선)은 레시피가 재서 단다 —
- * 미리보기는 그 순간을 멈춰 속성을 적었다. 사이트의 `.content p { margin: 12px 0; color: text-primary }` 는 층(@layer) 밖 규칙이라
+ * 넘친 본문의 Tab 자리(tabindex 0) · 위로 스크롤됨(data-scrolled — 머리의 안쪽 아래 선)은 레시피가 재서 단다 — 미리보기는 그 순간을 멈춰
+ * 속성을 적었다. 끝 흐림(scrollFog — 늘 켜진 위 20 · 아래 80)은 레시피(useScrollFog)가 그릴 때 토큰 --gradient-fade-mask 에 방향을 붙여 본문의
+ * style(mask-*) · data-fog-axis 로 넣는다 — 정적 HTML 은 같은 일을 빌드 때 DESIGN.md 의 토큰 값으로 해 style 에 적었다. 사이트의 `.content p { margin: 12px 0; color: text-primary }` 는 층(@layer) 밖 규칙이라
  * Tailwind utility 를 늘 이긴다 — <p> 에는 클래스가 정한 바깥 여백 · 글자색을 style 로 한 번 더 적는다(P_FIX — 미리보기용 덧칠).
  * 모션 클래스(animate-in · zoom-in-95 …)는 tw-animate-css 의 것이라 사이트에서는 아무 일도 하지 않는다.
  * 레시피의 스크립트(처음 초점 · Tab 으로 나가면 닫기 · 바깥 · Esc · 초점 되돌리기 · 본문 재기)는 정적 HTML 에 없다.
@@ -27,6 +28,7 @@
  * 고르는 패널의 달력은 date-picker-examples.mjs 의 그림(datePickerHtml — date-picker.tsx 의 DOM · 클래스)을 그대로 쓴다.
  */
 
+import { readFileSync } from "node:fs";
 import { datePickerHtml } from "./date-picker-examples.mjs";
 
 // ── popover.tsx 의 상수와 같은 값 ──────────────────────────────────────────
@@ -51,20 +53,26 @@ const CLOSE = [
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stroke-focus-ring",
 ].join(" ");
 
-// 본문 — Dialog 의 본문과 같다(좌우 24, 넘치면 아래 48 흐림 + 아래 48 여백, 위로 스크롤되면 머리 아래 1px 선)
+// 머리 — 위 24 · 좌우 24 · 아래 16 · 사이 6, 오른쪽 52(닫기). 본문이 위로 스크롤되면 안쪽 아래 1px stroke-neutral-subtle(150ms) —
+// 본문이 흐림 마스크를 걸어도 선이 흐려지지 않게 머리에 그린다(Dialog 와 같다)
+const HEADER = [
+  "flex shrink-0 flex-col gap-x1_5 px-x6 pb-x4 pr-x13 pt-x6",
+  "[transition:box-shadow_var(--motion-duration-color-transition)_var(--motion-ease-easing)]",
+  "[&:has(~[data-slot=popover-body][data-scrolled])]:shadow-[inset_0_-1px_0_0_var(--color-stroke-neutral-subtle)]",
+].join(" ");
+
+// 본문 — Dialog 의 본문과 같다(좌우 24, 맨 앞이면 위 24 · 맨 끝이면 아래 24)
 const BODY = [
   "min-h-0 flex-1 overflow-y-auto px-x6 first:pt-x6",
-  "[--body-pad-bottom:0px] last:[--body-pad-bottom:var(--spacing-x6)] pb-[var(--body-pad-bottom)]",
-  "[transition:box-shadow_var(--motion-duration-color-transition)_var(--motion-ease-easing)]",
-  "data-[scrolled]:not-first:shadow-[inset_0_1px_0_0_var(--color-stroke-neutral-subtle)]",
-  "data-[overflow]:pb-x12 data-[overflow]:[mask-image:linear-gradient(to_top,transparent_0,#000_var(--spacing-x12))]",
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-stroke-focus-ring",
 ].join(" ");
 
-// ── popover.tsx 의 JSX 에 적힌 클래스 ──────────────────────────────────────
+const BODY_PLAIN = "last:pb-x6";
 
-// 머리 — 위 24 · 좌우 24 · 아래 16 · 사이 6, 닫기 자리로 오른쪽 52
-const HEADER = "flex shrink-0 flex-col gap-x1_5 px-x6 pb-x4 pr-x13 pt-x6";
+// 끝 흐림(scrollFog) — 본문 안 여백 위 20(머리가 없으면 24 그대로) · 아래 80(바닥이 있어도), 스크롤 여유도 위 20 · 아래 80
+const BODY_FOG = "pt-[20px] pb-[80px] scroll-pt-[20px] scroll-pb-[80px]";
+
+// ── popover.tsx 의 JSX 에 적힌 클래스 ──────────────────────────────────────
 // 제목 t7 20 / 27 · 700 · 설명 t4 · fg-neutral-muted
 const TITLE = "m-0 text-t7 font-bold text-fg-neutral";
 const DESCRIPTION = "m-0 text-t4 font-normal text-fg-neutral-muted";
@@ -80,7 +88,8 @@ const BUTTON_BASE = [
   "active:[scale:calc(1-2/var(--press-basis))] motion-reduce:active:[scale:1]",
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stroke-focus-ring",
   "disabled:cursor-not-allowed disabled:[scale:1] disabled:bg-bg-disabled disabled:text-fg-disabled",
-  "aria-busy:cursor-progress aria-busy:text-transparent aria-busy:[&>svg]:invisible aria-busy:active:[scale:1]",
+  "aria-busy:cursor-progress aria-busy:text-transparent aria-busy:[&>svg:not([data-slot=progress-circle])]:invisible aria-busy:active:[scale:1]",
+  "[--progress-thickness:2px]",
   "[&_svg]:pointer-events-none [&_svg]:shrink-0",
 ].join(" ");
 
@@ -172,6 +181,23 @@ const P_FIX = {
   description: "margin:0; color:var(--color-fg-neutral-muted);",
   body: "margin:0; color:var(--color-fg-neutral);",
 };
+
+// ── 끝 흐림 — scroll-fog.tsx 의 useScrollFog 와 같은 셈(overlayBody · 세로) ─────────
+
+// 토큰 값 — 레시피는 그릴 때 getComputedStyle 로 읽는다. 정적 HTML 은 DESIGN.md 의 v104 표에서 읽는다
+const FADE_MASK = /`gradient-fade-mask` \| `(linear-gradient\([^`]+\))`/.exec(readFileSync(new URL("../../../DESIGN.md", import.meta.url), "utf8"))[1];
+const SOLID = "linear-gradient(#000, #000)";
+const withDirection = (token, direction) => token.replace(/^linear-gradient\(/, `linear-gradient(${direction}, `);
+// 위 20 · 아래 80 — 시작 쪽 흐림(투명 → 불투명) · 가운데 불투명 · 끝 쪽 흐림(불투명 → 투명). 상자의 style 에 mask-* 와 -webkit-mask-* 를 같이 넣는다
+function fogStyle(start = "20px", end = "80px") {
+  const mask = {
+    image: `${withDirection(FADE_MASK, "to bottom")}, ${SOLID}, ${withDirection(FADE_MASK, "to top")}`,
+    size: `100% ${start}, 100% calc(100% - ${start} - ${end}), 100% ${end}`,
+    position: `0 0, 0 ${start}, 0 100%`,
+    repeat: "no-repeat",
+  };
+  return ["image", "size", "position", "repeat"].map((p) => `mask-${p}:${mask[p]}; -webkit-mask-${p}:${mask[p]};`).join(" ");
+}
 
 // ── cva · cn 풀이 · 미리보기 조각 ──────────────────────────────────────────
 
@@ -288,7 +314,8 @@ const SCROLLED_BY = 32;
 const scrolledBy = (html) => `<div style="margin-top:-${SCROLLED_BY}px;">${html}</div>`;
 
 // <PopoverContent> + 감싼 div. uid 는 Radix · useId 의 앞말(예제마다 달리한다). title 이 없으면 ariaLabel 로 이름을 단다.
-// body = { html, overflow, scrolled, className } — 넘침 · 스크롤됨은 그 순간을 멈춰 적는다. footer 는 버튼 HTML 배열(크기 small 은 Footer 가 넣는다).
+// body = { html, scrollFog, overflow, scrolled } — scrollFog 는 끝 흐림(늘 켜짐), 넘침(Tab 자리) · 스크롤됨(머리 아래 선)은 그 순간을 멈춰 적는다.
+// footer 는 버튼 HTML 배열(크기 small 은 Footer 가 넣는다).
 // availableHeight 는 Radix 가 재는 남은 높이 — 미리보기 틀 높이에서 트리거 아래까지를 뺀 값이다
 function popoverContent({ uid, title, description, ariaLabel, align = "center", body, footer = [], availableHeight = "calc(100cqh - 2 * var(--spacing-x4))" }) {
   const titleId = `${uid}-title`;
@@ -315,17 +342,19 @@ function popoverContent({ uid, title, description, ariaLabel, align = "center", 
     : "";
   const bodyHtml = `<div ${attrs([
     'data-slot="popover-body"',
-    `class="${BODY}"`,
-    body.overflow && 'data-overflow=""',
+    body.scrollFog && 'data-scroll-fog="overlayBody"',
+    `class="${BODY} ${body.scrollFog ? BODY_FOG : BODY_PLAIN}"`,
     body.scrolled && 'data-scrolled=""',
     body.overflow && 'tabindex="0"',
+    body.scrollFog && 'data-fog-axis="y"',
+    body.scrollFog && `style="${fogStyle()}"`,
   ])}>${body.scrolled ? scrolledBy(body.html) : body.html}</div>`;
   const footerHtml = footer.length ? `<div data-slot="popover-footer" class="${FOOTER}">${footer.join("")}</div>` : "";
   return `<div data-radix-popper-content-wrapper="" style="${WRAPPER}"><div ${content}>${header}${bodyHtml}${footerHtml}</div></div>`;
 }
 
 // 안내 팝오버를 연 화면 — 칸 옆 i 버튼(트리거) 아래 8 에 표면. 휴가 화면 · 연차 줄은 미리보기 그림이다
-function infoStage({ uid, label, triggerLabel, title, description, text, height = 360, overflow = false, scrolled = false, availableHeight }) {
+function infoStage({ uid, label, triggerLabel, title, description, text, height = 360, scrollFog = false, overflow = false, scrolled = false, availableHeight }) {
   const trigger = button({
     variant: "ghost",
     size: "xsmall",
@@ -336,7 +365,7 @@ function infoStage({ uid, label, triggerLabel, title, description, text, height 
     children: ICONS.info,
   });
   const lead = `<div style="display:flex; align-items:center; gap:var(--spacing-x1); font-size:var(--text-t5); line-height:var(--text-t5--line-height); font-weight:500; color:var(--color-fg-neutral);">${esc(label)}${trigger}</div>`;
-  const body = { html: text.map((t) => `<p style="${P_FIX.body} ${BODY_TEXT}">${esc(t)}</p>`).join(`<div style="height:var(--spacing-x3);"></div>`), overflow, scrolled };
+  const body = { html: text.map((t) => `<p style="${P_FIX.body} ${BODY_TEXT}">${esc(t)}</p>`).join(`<div style="height:var(--spacing-x3);"></div>`), scrollFog, overflow, scrolled };
   return `<div style="${STAGE(height)}"><div style="${PAGE}"><div aria-hidden="true" style="${PAGE_TITLE}">휴가</div><div style="${ANCHOR}">${lead}${popoverContent({ uid, title, description, body, availableHeight })}</div>${card([
     ["연차 · 10월 12일 (월)~14일 (수)", "승인 대기"],
     ["반차(오전) · 9월 30일 (수)", "승인"],
@@ -402,12 +431,12 @@ export const popoverExamples = [
   },
 
   {
-    title: "본문이 넘칠 때 — 아래 흐림 · 머리 아래 선",
+    title: "넘칠 수 있는 본문 — 끝 흐림 · 머리 아래 선",
     description:
-      "높이는 600 과 남은 공간 중 작은 쪽까지다 — 넘치면 본문(PopoverBody)만 스크롤하고 머리는 그대로다. 넘치면 본문 아래 48 이 표면 쪽으로 흐려지고(끝까지 스크롤해도 남아 아래 48 을 비워 둔다) 키보드로도 스크롤하도록 본문에 Tab 이 선다. 위로 스크롤하면 머리 아래 1px stroke-neutral-subtle 선이 150ms 로 나타난다 — Dialog 의 본문과 같다. 위는 넘친 채 맨 위, 아래는 조금 스크롤한 순간을 멈춘 그림이다(정적 미리보기라 본문 글을 32 올려 그렸다). 긴 안내 · 단계가 있는 설명은 팝오버가 아니라 페이지 · 도움말로 옮긴다.",
+      "높이는 600 과 남은 공간 중 작은 쪽까지다 — 넘치면 본문(PopoverBody)만 스크롤하고 머리는 그대로다. 넘칠 수 있는 본문은 scrollFog 를 준다 — 위 20 · 아래 80 이 마스크로 늘 흐리고 본문 안에 그만큼 여백(위 20 · 아래 80)을 둬 끝까지 내리면 흐림이 빈 여백 위에 놓인다(Scroll Fog — 옛 \"넘칠 때만 아래 48\" 을 대신한다). 넘친 본문은 키보드로도 스크롤하도록 Tab 이 선다. 위로 스크롤하면 머리의 안쪽 아래 1px stroke-neutral-subtle 선이 150ms 로 나타난다 — Dialog 의 본문과 같다. 위는 맨 위, 아래는 조금 스크롤한 순간을 멈춘 그림이다(정적 미리보기라 본문 글을 32 올려 그렸다). 긴 안내 · 단계가 있는 설명은 팝오버가 아니라 페이지 · 도움말로 옮긴다.",
     jsx: `<PopoverContent title="연차 사용 규정" description="2026년 기준">
-  {/* 넘치면 data-overflow(아래 48 흐림), 위로 스크롤되면 data-scrolled(머리 아래 선) — 레시피가 재서 단다 */}
-  <PopoverBody>
+  {/* 넘칠 수 있는 본문 — scrollFog 는 늘 켜진 끝 흐림. 위로 스크롤되면 data-scrolled(머리 아래 선) — 레시피가 재서 단다 */}
+  <PopoverBody scrollFog>
     <p>입사 1년 미만은 한 달에 1일씩 생기고, 1년이 지나면 15일이 생겨요.</p>
     <p>쓰지 않은 연차는 다음 해 3월에 정산해요. 정산할 때 반차는 0.5일로 셈해요.</p>
     <p>공휴일 · 회사 휴무일에 겹친 날은 연차에서 빼지 않아요.</p>
@@ -424,6 +453,7 @@ export const popoverExamples = [
           description: "2026년 기준",
           text: RULES,
           height: 380,
+          scrollFog: true,
           overflow: true,
           availableHeight: "240px",
         }),
@@ -435,6 +465,7 @@ export const popoverExamples = [
           description: "2026년 기준",
           text: RULES,
           height: 380,
+          scrollFog: true,
           overflow: true,
           scrolled: true,
           availableHeight: "240px",

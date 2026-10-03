@@ -7,6 +7,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 import { useFieldGroup } from "@/components/ui/field";
+import { useScrollFog } from "@/components/ui/scroll-fog";
 
 /*
  * Porest Chip — 구조는 SEED Chip(2026-10-02). 수치 원본은 specs/components/chip.yaml.
@@ -37,8 +38,10 @@ import { useFieldGroup } from "@/components/ui/field";
  *
  * 묶음은 칩 사이 · 줄 사이 8(spacing-between-chips). scroll 은 두 겹이다 — 바깥 묶음(이름 · 포커스 · bleed) 안에 스크롤 칸
  * (chip.yaml scrollRow)을 둔다. 칸은 한 줄로 두고 안쪽 좌우 여백을 화면 여백(spacing-global-gutter)만큼 둔다 — 스크롤해도
- * 첫 칩이 여백에서 시작하고, 키보드로 옮겨도 여백 안에 멈춘다(scroll-padding). 스크롤바는 숨긴다. 부모가 이미 화면 여백을
- * 두었으면 bleed 로 줄을 화면 끝까지 낸다. 칸은 넘친 것을 자르므로 위아래 안쪽 6 · 바깥 −6 을 둔다 — 누르는 영역 44 ·
+ * 첫 칩이 여백에서 시작하고, 키보드로 옮겨도 여백 안에 멈춘다(scroll-padding). 스크롤바는 숨긴다. 칸의 양 끝은 늘 흐린다(Scroll Fog
+ * row — gradient-fade-mask 좌우 20, 스크롤 위치 · 넘침과 상관없이) — 안쪽 여백 24 가 흐림보다 넓어 처음 · 끝의 칩은 흐리지 않는다.
+ * 흐림은 마스크라 흐린 자리의 칩도 그대로 눌린다. 부모가 이미 화면 여백을 두었으면 bleed 로 줄을 화면 끝까지 낸다.
+ * 칸은 넘친 것을 자르므로 위아래 안쪽 6 · 바깥 −6 을 둔다 — 누르는 영역 44 ·
  * 포커스 링이 잘리지 않고, 줄이 세로로 스크롤되지 않고, 줄 높이는 칩 그대로다. 두 겹이라 −6 이 바깥 묶음의 margin 과
  * 상쇄돼 부모의 위아래 간격(space-y · gap)도 그대로다.
  * 비어 있는 묶음은 칩 한 줄(36) 높이를 남긴다 — 입력값을 다 지운 뒤 받는 묶음의 링(모서리 없음)이 납작한 선이 되지 않게.
@@ -287,17 +290,22 @@ const chipGroupVariants = cva("relative", {
 const SCROLL_ROW =
   "relative -my-x1_5 flex flex-nowrap gap-between-chips overflow-x-auto px-global-gutter py-x1_5 scroll-px-global-gutter [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
 
+// 스크롤 칸 — 양 끝은 늘 흐린다(Scroll Fog row — 좌우 20). 위아래 여백 6 은 흐리지 않는다(가로 마스크다)
+function ChipScrollRow({ children }: { children?: React.ReactNode }) {
+  const ref = React.useRef<HTMLDivElement>(null);
+  useScrollFog(ref, "row");
+  return (
+    <div ref={ref} data-slot="chip-scroll-row" data-scroll-fog="row" className={SCROLL_ROW}>
+      {children}
+    </div>
+  );
+}
+
 // 묶음의 키보드 링 — 모서리 없이 묶음 둘레(입력값을 다 지운 뒤 포커스를 받는다)
 const GROUP_RING = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stroke-focus-ring";
 
 const rowOf = (layout: VariantProps<typeof chipGroupVariants>["layout"], children: React.ReactNode) =>
-  layout === "scroll" ? (
-    <div data-slot="chip-scroll-row" className={SCROLL_ROW}>
-      {children}
-    </div>
-  ) : (
-    children
-  );
+  layout === "scroll" ? <ChipScrollRow>{children}</ChipScrollRow> : children;
 
 export interface ChipGroupProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof chipGroupVariants> {}
 

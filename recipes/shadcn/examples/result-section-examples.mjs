@@ -54,7 +54,8 @@ const BUTTON_BASE = [
   "active:[scale:calc(1-2/var(--press-basis))] motion-reduce:active:[scale:1]",
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stroke-focus-ring",
   "disabled:cursor-not-allowed disabled:[scale:1] disabled:bg-bg-disabled disabled:text-fg-disabled",
-  "aria-busy:cursor-progress aria-busy:text-transparent aria-busy:[&>svg]:invisible aria-busy:active:[scale:1]",
+  "aria-busy:cursor-progress aria-busy:text-transparent aria-busy:[&>svg:not([data-slot=progress-circle])]:invisible aria-busy:active:[scale:1]",
+  "[--progress-thickness:2px]",
   "[&_svg]:pointer-events-none [&_svg]:shrink-0",
 ].join(" ");
 

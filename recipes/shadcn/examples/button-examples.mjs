@@ -4,6 +4,8 @@
  *
  * BASE · VARIANT · SIZE · LAYOUT · GHOST_COLOR · FLUSH · COMPOUND · DEFAULTS 는
  * recipes/shadcn/components/ui/button.tsx 의 cva 정의와 글자 하나까지 같아야 한다 — 두 파일을 함께 고친다.
+ * 로딩 원은 Progress Circle 이다 — PC_* 는 progress-circle.tsx 의 상수(SIZE · TONE 의 inherit · ROOT · SPIN · CIRCLE · TRACK · RANGE ·
+ * RANGE_INDETERMINATE · KEYFRAMES)와 같고(progress-circle-examples.mjs 와 같은 사본), 크기 · 두께 · 색은 버튼이 정한 --progress-* 를 따른다.
  * 규칙은 specs/components/button.md, 수치 원본은 specs/components/button.yaml.
  *
  * Preview 는 정적 HTML 이다 — 페이지의 Tailwind v4 browser CDN 이 클래스를 utility 로 만든다.
@@ -22,7 +24,8 @@ const BASE = [
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stroke-focus-ring",
   "disabled:cursor-not-allowed disabled:[scale:1] disabled:bg-bg-disabled disabled:text-fg-disabled",
   // 로딩 — 라벨은 투명하게(폭 유지), 누름 축소 없음. 누르기는 onClick 에서 삼킨다
-  "aria-busy:cursor-progress aria-busy:text-transparent aria-busy:[&>svg]:invisible aria-busy:active:[scale:1]",
+  "aria-busy:cursor-progress aria-busy:text-transparent aria-busy:[&>svg:not([data-slot=progress-circle])]:invisible aria-busy:active:[scale:1]",
+  "[--progress-thickness:2px]",
   "[&_svg]:pointer-events-none [&_svg]:shrink-0",
 ].join(" ");
 
@@ -122,7 +125,8 @@ function cvaClass(props, className = "") {
   return parts.filter(Boolean).join(" ");
 }
 
-// "aria-busy:[&>svg]:invisible" → ["aria-busy", "[&>svg]", "invisible"] — 괄호 안의 ":" 는 가르지 않는다.
+// "aria-busy:[&>svg:not([data-slot=progress-circle])]:invisible" → ["aria-busy", "[&>svg:not([data-slot=progress-circle])]", "invisible"]
+// — 괄호 안의 ":" 는 가르지 않는다.
 function splitVariants(cls) {
   const segs = [];
   let depth = 0;
@@ -186,10 +190,45 @@ function forceState(classList, state) {
     .join(" ");
 }
 
-// button.tsx 의 로딩 원 — <Spinner aria-hidden className="absolute left-1/2 …" style={{ --progress-* }} />.
-// 모양 · 회전은 spinner.tsx 의 클래스, 크기 · 색은 크기 · 변형이 정한 --progress-size · --progress-track · --progress-range.
-const SPINNER =
-  '<span aria-hidden="true" class="inline-block rounded-full border-2 motion-safe:animate-[spin_var(--motion-duration-loop)_var(--motion-ease-linear)_infinite] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" style="width:var(--progress-size); height:var(--progress-size); border-width:2px; border-color:var(--progress-track); border-top-color:var(--progress-range);"></span>';
+// ── progress-circle.tsx 의 상수와 같은 값 — 버튼 안의 로딩 원(size · tone inherit) ─────────
+
+// 크기 · 두께 — 버튼이 정한 --progress-size(14 · 14 · 16 · 18) · --progress-thickness(2)
+const PC_SIZE = {
+  inherit: "[--pc-size:var(--progress-size,1em)] [--pc-thickness:var(--progress-thickness,2px)]",
+};
+// 원 · 트랙 색 — 변형이 정한 --progress-range · --progress-track
+const PC_TONE = {
+  inherit:
+    "[--pc-track:var(--progress-track,color-mix(in_srgb,currentColor_30%,transparent))] [--pc-range:var(--progress-range,currentColor)]",
+};
+const PC_ROOT = "inline-block shrink-0 overflow-visible align-middle";
+const PC_SPIN = "animate-[porest-progress-circle-rotate_1200ms_cubic-bezier(0.35,0.25,0.65,0.75)_infinite] motion-reduce:animate-none";
+const PC_CIRCLE =
+  "fill-none [cx:calc(var(--pc-size)/2)] [cy:calc(var(--pc-size)/2)] [r:calc(var(--pc-size)/2_-_var(--pc-thickness)/2)] [stroke-width:var(--pc-thickness)]";
+const PC_TRACK = `${PC_CIRCLE} [stroke:var(--pc-track)]`;
+const PC_RANGE = `${PC_CIRCLE} [stroke:var(--pc-range)] [stroke-linecap:round] [transform-box:fill-box] [transform-origin:center] [transform:rotate(-90deg)]`;
+const PC_RANGE_INDETERMINATE = [
+  "animate-[porest-progress-circle-head_1200ms_cubic-bezier(0.35,0,0.65,1)_infinite,porest-progress-circle-tail_1200ms_cubic-bezier(0.35,0,0.65,0.6)_infinite]",
+  "motion-reduce:animate-none motion-reduce:[stroke-dasharray:75_200]",
+].join(" ");
+const PC_KEYFRAMES = [
+  "@keyframes porest-progress-circle-rotate { 0% { transform: rotate(0deg) } 100% { transform: rotate(360deg) } }",
+  "@keyframes porest-progress-circle-head { 0% { stroke-dasharray: 0 200 } 75%, 100% { stroke-dasharray: 100 200 } }",
+  "@keyframes porest-progress-circle-tail { 0%, 33.33% { stroke-dashoffset: 0 } 100% { stroke-dashoffset: -100 } }",
+].join("\n");
+
+// 레시피는 키프레임을 <style href precedence>(React 19 — 문서 머리에 한 번)로 싣는다 — 정적 HTML 은 로딩 버튼이 있는 예제마다 한 번 둔다
+const PC_STYLE = `<style data-href="porest-progress-circle" data-precedence="porest">${PC_KEYFRAMES}</style>`;
+
+// button.tsx 의 로딩 원 — <ProgressCircle size="inherit" tone="inherit" aria-hidden className="absolute left-1/2 top-1/2 …" />.
+// 겹치는 클래스가 없어 cn() 은 이어 붙이기와 같다. 상자 크기는 레시피처럼 style 로 — [&_svg]:size-* 가 원을 덮지 않는다
+const PROGRESS_CIRCLE = `<svg role="progressbar" aria-label="불러오는 중" aria-hidden="true" data-slot="progress-circle" data-size="inherit" data-tone="inherit" data-mode="indeterminate" class="${[
+  PC_ROOT,
+  PC_SIZE.inherit,
+  PC_TONE.inherit,
+  PC_SPIN,
+  "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
+].join(" ")}" style="width:var(--pc-size); height:var(--pc-size);"><circle data-slot="progress-circle-track" class="${PC_TRACK}"></circle><circle data-slot="progress-circle-range" pathLength="100" class="${PC_RANGE} ${PC_RANGE_INDETERMINATE}"></circle></svg>`;
 
 // <Button> 한 개. label = aria-label(아이콘만일 때), force = 미리보기용 강제 상태("hover" · "focus-visible" · "active").
 // 로딩이면 button.tsx 처럼 자식을 감싸지 않고 그대로 둔 채 로딩 원을 덧붙이고 aria-busy 를 단다.
@@ -216,7 +255,7 @@ function btn({
   ]
     .filter(Boolean)
     .join(" ");
-  return `<button ${attrs}>${children}${loading ? SPINNER : ""}</button>`;
+  return `<button ${attrs}>${children}${loading ? PROGRESS_CIRCLE : ""}</button>`;
 }
 
 // ── 미리보기 조각 ─────────────────────────────────────────────────────────
@@ -375,7 +414,7 @@ export const buttonExamples = [
   내보내기
 </Button>`,
     render: () =>
-      surface(`<div style="display:grid; grid-template-columns:repeat(3, max-content); align-items:end; gap:var(--spacing-x4) var(--spacing-x5);">
+      surface(`${PC_STYLE}<div style="display:grid; grid-template-columns:repeat(3, max-content); align-items:end; gap:var(--spacing-x4) var(--spacing-x5);">
   ${labeled(btn({ children: "변경 내용 저장" }), "enabled")}
   ${labeled(btn({ loading: true, children: "변경 내용 저장" }), "loading")}
   ${labeled(btn({ disabled: true, children: "변경 내용 저장" }), "disabled")}
@@ -413,7 +452,7 @@ export const buttonExamples = [
           disabled: state === "disabled",
           children: "저장",
         });
-      return surface(`<div style="overflow-x:auto;">
+      return surface(`${PC_STYLE}<div style="overflow-x:auto;">
   <table style="border-collapse:collapse;">
     <thead>
       <tr><th ${th}></th>${states.map((s) => `<th scope="col" ${th}>${s}</th>`).join("")}</tr>

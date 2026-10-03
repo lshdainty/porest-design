@@ -22,7 +22,7 @@
 | ⓑ Container | 시트 — 위 두 모서리만 둥글다. 내용만큼 높고 화면 높이의 90% 를 넘지 않는다. 넓은 화면에서는 480 으로 가운데에 선다. |
 | ⓒ Header | 머리 — 제목(늘 있다) · 설명(있을 때만). |
 | ⓓ Close Button | 닫기 — 오른쪽 위 원. 조회 · 고르기 · 시트의 입력 폼에 둔다. |
-| ⓔ Body | 본문 — 넘치면 이 안에서 스크롤한다. |
+| ⓔ Body | 본문 — 넘치면 이 안에서 스크롤한다. 넘칠 수 있는 본문은 끝을 흐린다([Scroll Fog](scroll-fog.md)). |
 | ⓕ Footer | 바닥 — 버튼. 하나면 폭 전체, 둘이면 반씩. |
 | ⓖ Handle | 손잡이 — 스냅 높이를 둘 때만. |
 
@@ -37,6 +37,14 @@
 [그림: 머리 · 본문 · 바닥의 여백](../../site/components/specs/bottom-sheet.tsx#layout)
 
 [표: 공통](bottom-sheet.yaml#base.enabled)
+
+### 본문 끝 흐림
+
+목록 · 긴 폼처럼 넘칠 수 있는 본문은 [Scroll Fog](scroll-fog.md) 를 건다(`scrollFog`) — 위 20 · 아래 80 이 늘 흐리고, 본문 안에 그만큼 여백을 둬 끝까지 내리면 흐림이 빈 여백 위에 놓인다(SEED Bottom Sheet 의 권장). 넘쳤는지 재서 켜고 끄지 않는다 — 걸 본문인지는 내용의 종류로 정하고, 칸 두셋처럼 늘 들어맞는 본문에는 걸지 않는다. 1280 이상의 [Dialog](dialog.md) 에서도 같다.
+
+[그림: 넘칠 수 있는 본문 — 늘 켜진 끝 흐림(위 20 · 아래 80) · 끝까지 내린 모습](../../site/components/specs/bottom-sheet.tsx#scroll)
+
+[표: 본문 끝 흐림](bottom-sheet.yaml#scrollFog)
 
 ### 손잡이
 
@@ -196,6 +204,10 @@ import { BottomSheet, BottomSheetBody, BottomSheetContent, BottomSheetFooter } f
 - **z-index 는 specs/z-index.md 의 L2**(딤 `z-modal` 100 · 시트 `z-modal-content` 101) — 그 위에 Popover(L3) · Alert Dialog(L5)가 뜬다.
 
 ## Migration notes
+
+### 2026-10-03 — 본문 끝 흐림을 Scroll Fog 로
+
+사용자가 [비교 페이지](https://claude.ai/artifact/4ySVacsdnG4fgraR1HRK3G)에서 끝 흐림을 SEED 의 늘 켜진 마스크([Scroll Fog](scroll-fog.md))로 정했다 — 넘칠 수 있는 본문(목록 · 긴 폼)에 `scrollFog` 를 걸고, 걸면 위 20 · 아래 80 이 늘 흐리다(본문 안 여백도 그만큼). 대화상자와 같은 규칙이다 — 대화상자의 "넘칠 때만 아래 48" 을 이것으로 바꿨다.
 
 ### 2026-10-02 — SEED Bottom Sheet 로 새로 둔다(옛 Drawer 를 대신)
 

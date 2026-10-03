@@ -3,6 +3,7 @@ import * as PopoverPrimitive from "@radix-ui/react-popover";
 import { X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { useScrollFog } from "@/components/ui/scroll-fog";
 
 /*
  * Porest Popover — 구조는 SEED Popover(2026-10-02). 수치 원본은 specs/components/popover.yaml.
@@ -11,7 +12,8 @@ import { cn } from "@/lib/utils";
  *   PopoverTrigger    여는 버튼 — aria-haspopup="dialog" · aria-expanded, 열린 동안 aria-controls
  *   PopoverAnchor     트리거와 다른 요소에 붙일 때의 기준(Radix 그대로)
  *   PopoverContent    표면 — title(있으면 머리 + 오른쪽 위 닫기) · description. 머리 없는 고르는 패널은 aria-label 로 이름을 단다
- *   PopoverBody       본문 — 이 안에서만 스크롤. 넘치면 아래 48 흐림 + 아래 48 여백, 위로 스크롤되면 머리 아래 1px 선(Dialog 와 같다)
+ *   PopoverBody       본문 — 이 안에서만 스크롤, 위로 스크롤되면 머리 아래 1px 선. scrollFog 면 끝 흐림(Scroll Fog — 늘 켜진
+ *                     위 20 · 아래 80 + 본문 안 여백 위 20 · 아래 80) — 넘칠 수 있는 본문에만 준다(Dialog 와 같다)
  *   PopoverFooter     바닥 — 오른쪽 정렬, 사이 8. Button small 36 을 크기를 주지 않은 바로 아래 자식에 넣는다
  *
  * 1280 이상에서 쓴다 — 같은 내용을 1280 미만에서는 Bottom Sheet 로 띄운다(Input Button 의 useInputButtonSurface).
@@ -94,17 +96,13 @@ function focusContent(content: HTMLElement | null) {
   (first ?? content).focus({ preventScroll: true });
 }
 
-// 본문의 스크롤 상태 — dialog.tsx 의 DialogBody 와 같다(넘침은 흐림 여백 48 을 빼고 잰다, DOM 에 바로 쓴다)
+// 본문의 스크롤 상태 — dialog.tsx 의 DialogBody 와 같다(위로 스크롤됨 · 넘치면 Tab 이 선다, DOM 에 바로 쓴다)
 function useBodyScroll(ref: React.RefObject<HTMLElement | null>) {
   React.useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
     const measure = () => {
-      const style = getComputedStyle(el);
-      const pad = parseFloat(style.paddingBottom) || 0;
-      const base = parseFloat(style.getPropertyValue("--body-pad-bottom")) || 0;
-      const overflow = el.scrollHeight - pad + base > el.clientHeight + 1;
-      el.toggleAttribute("data-overflow", overflow);
+      const overflow = el.scrollHeight > el.clientHeight + 1;
       el.toggleAttribute("data-scrolled", el.scrollTop > 0);
       // 넘쳐 스크롤할 수 있으면 키보드로도 스크롤하도록 Tab 이 선다
       if (overflow) el.tabIndex = 0;
@@ -190,6 +188,14 @@ const CONTENT = [
   "origin-[var(--radix-popover-content-transform-origin)]",
   "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:duration-[var(--motion-duration-d3)] data-[state=open]:ease-[var(--motion-ease-enter)] motion-safe:data-[state=open]:zoom-in-95",
   "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:duration-[var(--motion-duration-d2)] data-[state=closed]:ease-[var(--motion-ease-exit)] motion-safe:data-[state=closed]:zoom-out-95",
+].join(" ");
+
+// 머리 — 위 24 · 좌우 24 · 아래 16 · 사이 6, 오른쪽 52(닫기). 본문이 위로 스크롤되면 안쪽 아래 1px stroke-neutral-subtle(150ms) —
+// 본문이 흐림 마스크를 걸어도 선이 흐려지지 않게 머리에 그린다(Dialog 와 같다)
+const HEADER = [
+  "flex shrink-0 flex-col gap-x1_5 px-x6 pb-x4 pr-x13 pt-x6",
+  "[transition:box-shadow_var(--motion-duration-color-transition)_var(--motion-ease-easing)]",
+  "[&:has(~[data-slot=popover-body][data-scrolled])]:shadow-[inset_0_-1px_0_0_var(--color-stroke-neutral-subtle)]",
 ].join(" ");
 
 // 닫기 — 52 투명 상자 · 아이콘 22. 아이콘이 위 27 · 오른쪽 24 에 오도록 상자를 15 당긴다. 누르면 bg-layer-floating-pressed + 2px 거리 축소(기준 52)
@@ -292,7 +298,7 @@ const PopoverContent = React.forwardRef<React.ElementRef<typeof PopoverPrimitive
           {...props}
         >
           {hasHeader && (
-            <div data-slot="popover-header" className="flex shrink-0 flex-col gap-x1_5 px-x6 pb-x4 pr-x13 pt-x6">
+            <div data-slot="popover-header" className={HEADER}>
               <h2 id={titleId} data-slot="popover-title" className="m-0 text-t7 font-bold text-fg-neutral">
                 {title}
               </h2>
@@ -316,20 +322,33 @@ const PopoverContent = React.forwardRef<React.ElementRef<typeof PopoverPrimitive
 );
 PopoverContent.displayName = "PopoverContent";
 
-// 본문 — Dialog 의 본문과 같다(좌우 24, 넘치면 아래 48 흐림 + 아래 48 여백, 위로 스크롤되면 머리 아래 1px 선)
+// 본문 — Dialog 의 본문과 같다(좌우 24, 맨 앞이면 위 24 · 맨 끝이면 아래 24)
 const BODY = [
   "min-h-0 flex-1 overflow-y-auto px-x6 first:pt-x6",
-  "[--body-pad-bottom:0px] last:[--body-pad-bottom:var(--spacing-x6)] pb-[var(--body-pad-bottom)]",
-  "[transition:box-shadow_var(--motion-duration-color-transition)_var(--motion-ease-easing)]",
-  "data-[scrolled]:not-first:shadow-[inset_0_1px_0_0_var(--color-stroke-neutral-subtle)]",
-  "data-[overflow]:pb-x12 data-[overflow]:[mask-image:linear-gradient(to_top,transparent_0,#000_var(--spacing-x12))]",
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-stroke-focus-ring",
 ].join(" ");
+const BODY_PLAIN = "last:pb-x6";
+// 끝 흐림(scrollFog) — 본문 안 여백 위 20(머리가 없으면 24 그대로) · 아래 80(바닥이 있어도), 스크롤 여유도 위 20 · 아래 80
+const BODY_FOG = "pt-[20px] pb-[80px] scroll-pt-[20px] scroll-pb-[80px]";
 
-const PopoverBody = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => {
+export interface PopoverBodyProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** 끝 흐림(Scroll Fog overlayBody — 위 20 · 아래 80, 늘 켜짐) — 넘칠 수 있는 본문에만 */
+  scrollFog?: boolean;
+}
+
+const PopoverBody = React.forwardRef<HTMLDivElement, PopoverBodyProps>(({ scrollFog = false, className, ...props }, ref) => {
   const own = React.useRef<HTMLDivElement>(null);
   useBodyScroll(own);
-  return <div ref={mergeRefs(ref, own)} data-slot="popover-body" className={cn(BODY, className)} {...props} />;
+  useScrollFog(own, scrollFog ? "overlayBody" : null);
+  return (
+    <div
+      ref={mergeRefs(ref, own)}
+      data-slot="popover-body"
+      data-scroll-fog={scrollFog ? "overlayBody" : undefined}
+      className={cn(BODY, scrollFog ? BODY_FOG : BODY_PLAIN, className)}
+      {...props}
+    />
+  );
 });
 PopoverBody.displayName = "PopoverBody";
 

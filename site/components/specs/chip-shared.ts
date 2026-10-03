@@ -58,7 +58,8 @@ export type ChipLook = {
   group: { gap: number; rowGap: number; minHeight: number; ring: { width: number; offset: number; color: ChipColor } };
   // 가로 스크롤 줄(목록 위 필터 바 · 제안 줄) — 두 겹: 바깥 묶음 · 안쪽 스크롤 칸.
   // 안쪽 좌우 padX(화면 여백) · 위아래 padY(누르는 영역 · 링이 잘리지 않게) · 바깥 marginY(줄 높이는 칩 그대로) · 스크롤 멈춤 자리 scrollPadding
-  scrollRow: { padX: number; padY: number; marginY: number; scrollPadding: number; overflowX: string };
+  // 가로 스크롤 줄 — fog 는 양 끝 흐림 깊이(Scroll Fog row — 늘 켜짐), mask 는 gradient-fade-mask
+  scrollRow: { padX: number; padY: number; marginY: number; scrollPadding: number; overflowX: string; fog: number; mask: string };
   motion: { color: ChipMotion; scale: ChipMotion };
   press: { distance: number; widthDivisor: number; minBasis: number };
   // 그림 속 화면이 쓰는 역할 색(스크롤 끝 흐림은 아직 스펙이 없다 — 토큰으로 간단히). 시트 · 팝오버는 overlay-look

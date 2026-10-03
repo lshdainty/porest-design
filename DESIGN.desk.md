@@ -2129,12 +2129,12 @@ porest 화면에 아직 쓰는 자리가 없다. 자리가 생기면 위 규칙�
 
 | 토큰 | 값 | 쓰는 곳 |
 |---|---|---|
-| `gradient-fade-mask` | `linear-gradient(#00000000 0%, #00000003 8%, #00000005 16%, #0000000d 22%, #00000014 29%, #00000021 35%, #0000002e 41%, #00000040 47%, #00000052 53%, #00000066 59%, #0000007a 65%, #00000094 71%, #000000ab 78%, #000000c7 84%, #000000e3 92%, #000000ff 100%)` | 가림 마스크 — `mask-image` 로 써서 긴 목록 · 가로 스크롤 끝을 부드럽게. 라이트 · 다크 같음 |
+| `gradient-fade-mask` | `linear-gradient(#00000000 0%, #00000003 8%, #00000005 16%, #0000000d 22%, #00000014 29%, #00000021 35%, #0000002e 41%, #00000040 47%, #00000052 53%, #00000066 59%, #0000007a 65%, #00000094 71%, #000000ab 78%, #000000c7 84%, #000000e3 92%, #000000ff 100%)` | 가림 마스크 — `mask-image` 로 써서 스크롤 영역의 끝을 부드럽게(Scroll Fog — `specs/components/scroll-fog.yaml`, 2026-10-03). 라이트 · 다크 같음 |
 | `gradient-shimmer-neutral` | `linear-gradient(90deg, #ffffff00 0%, #ffffffab 46%, #ffffffab 54%, #ffffff00 100%)` | 스켈레톤 반짝임 띠 — 라이트 |
 | `gradient-shimmer-neutral-dark` | `linear-gradient(90deg, #ffffff00 0%, #ffffff1a 46%, #ffffff1a 54%, #ffffff00 100%)` | 스켈레톤 반짝임 띠 — 다크 |
 
 - 마스크는 방향 없이 적었다(위 → 아래). 쓰는 자리에서 방향을 붙인다(`to right` 등).
-- 반짝임은 `motion-duration-loop`(1500ms) · `motion-ease-linear` 로 지나가고, 모션 줄이기 모드에서는 멈춘다.
+- 반짝임은 `motion-duration-loop`(1500ms) · `motion-ease-easing` 으로 지나가고(SEED Skeleton 의 곡선 — 2026-10-03, `specs/components/skeleton.yaml`), 모션 줄이기 모드에서는 멈춘다.
 
 ### Surface (v1 추가)
 
@@ -3034,7 +3034,7 @@ modal/sheet/drawer dim overlay (alpha 채널 prose-token).
 | `motion-duration-pressed-scale` | `150ms` | 역할 — 눌림 축소(= d3) |
 
 - 색 전환과 눌림 축소는 같은 150ms 다 — 시작과 속도가 같아야 하나의 반응으로 읽힌다.
-- 반복은 v63 의 `motion-duration-loop`(1500ms)를 그대로 쓴다(porest 역할).
+- 반복은 v63 의 `motion-duration-loop`(1500ms)를 그대로 쓴다(porest 역할) — 스켈레톤 반짝임. Progress Circle(옛 스피너)은 SEED 의 1.2초다(`specs/components/progress-circle.yaml`, 2026-10-03).
 - 옛 이름은 같은 값의 별칭이다 — `motion-duration-fast` → d3, `motion-duration-base` → d4, `motion-duration-slow` → d6. `motion-duration-slower`(500ms)는 걷는 중이다 — 큰 전환도 d6(300) 안에서 끝낸다.
 
 #### 이징
@@ -3048,7 +3048,7 @@ modal/sheet/drawer dim overlay (alpha 채널 prose-token).
 | `motion-ease-exit-expressive` | `cubic-bezier(0.35, 0, 0.95, 0.55)` | 특히 강조해야 하는 퇴장 |
 | `motion-ease-pressed-scale` | `cubic-bezier(0, 0, 0.15, 1)` | 눌림 축소 |
 
-- 반복은 v63 의 `motion-ease-linear` 를 그대로 쓴다.
+- 반복의 곡선은 컴포넌트가 정한다 — 스켈레톤 반짝임은 `motion-ease-easing`(SEED), Progress Circle 은 스펙의 숫자 곡선이다(2026-10-03). `motion-ease-linear` 는 일정한 속도가 필요한 반복에 남긴다.
 - 옛 `motion-ease-out`(0.16, 1, 0.3, 1)은 걷는 중이다 — 나타나는 모션은 `motion-ease-enter` 로 옮긴다. 앱의 `spring` 은 `motion-ease-enter-expressive`, `decel` 은 `motion-ease-enter` 로.
 
 #### 눌림 피드백
@@ -3091,7 +3091,7 @@ modal/sheet/drawer dim overlay (alpha 채널 prose-token).
 | 눌림 축소 | 세로 2px | 없음(배율 1) — 색 전환만 남는다 |
 | 색 전환 | 150ms | 그대로 |
 | 매크로 모션(200ms 초과) | 이동 · 확대 · 미끄러짐 | 150ms 서서히 나타남 · 사라짐 |
-| 반복(스켈레톤 · 펄스) | 계속 | 멈춘다 — 진행을 알려야 하는 것(스피너)은 컴포넌트 스펙이 대신할 표현을 정한다 |
+| 반복(스켈레톤 · 로딩 원 · 펄스) | 계속 | 멈춘다 — 스켈레톤은 띠 없이 면만, Progress Circle 은 돌지 않는 3/4 호(2026-10-03) |
 
 지금 이 모드를 따르는 곳은 웹 2곳 · 앱 스켈레톤 1곳이다(2026-09-29) — 앱 PR 에서 모든 모션이 따르게 한다.
 
@@ -3126,8 +3126,8 @@ skeleton shimmer · spinner · pulse 등 **반복 애니메이션** 용 토큰 2
 
 | 토큰 | 값 | 주 용도 |
 |---|---|---|
-| `motion-duration-loop` | `1500ms` | skeleton shimmer 1주기, pulse 1주기 |
-| `motion-ease-linear` | `linear` | 반복 일정 속도 |
+| `motion-duration-loop` | `1500ms` | 스켈레톤 반짝임 1주기(곡선은 `motion-ease-easing` — 2026-10-03), pulse 1주기 |
+| `motion-ease-linear` | `linear` | 일정한 속도가 필요한 반복 — 스켈레톤 · Progress Circle 은 쓰지 않는다(2026-10-03) |
 
 DESIGN.md의 Loop motion 정의와 동일 (brand-neutral). Desk `base`/`slow`/`loop` 조합이 일반적 — 메모 카드 hover(`base`) + bottom sheet(`slow`) + skeleton(`loop`).
 
@@ -3865,26 +3865,18 @@ HR과 달리 Desk는 사용자 정의 카테고리가 많으므로 **hue 의미 
 - 키보드 — 오류 글은 칸 바로 아래, 저장 버튼은 시트 아래에 붙여 키보드 위에 보이게. 금액 `numeric` · 소수 `decimal` · 이메일 `email` · 전화 `tel` 키보드.
 - 글자 수 — 카테고리 이름(12) · 메모(100)처럼 최대가 있는 칸에만.
 
-### Skeleton / Loading (v63 추가)
+### 기다림 — Desk
 
-Desk(B2C) — 메모 list·할일 카드·가계부 dashboard 로딩 상태. 모바일 우선 + 친근 톤이라 카드 단위 placeholder, 적당한 shimmer.
+> 모양 · 쓰는 규칙은 DESIGN.md 의 "기다림" 절(2026-10-03 SEED). Desk 의 쓰는 자리만 적는다.
 
-#### Desk 사용 패턴
-- **메모 list 로딩**: card 4-5개 (rect heading + text 2-line + tags placeholder). 각 카드 사이 `md` (12px) gap — 친근감 있는 spacing.
-- **할일 카드 로딩**: list-row + checkbox circle 16 + text 1-line + due-date caption. 할일은 짧으니 1줄.
-- **가계부 dashboard 로딩**: 큰 KPI 카드 (잔액) + 차트 rect + 거래 list-row 5개. dashboard top-down 순서.
-- **메모 detail 로딩**: title-md (32) rect + tags row + body-lg text 8-line + 첨부 placeholder. Markdown render 시작 전 골격.
-
-#### 모바일 친화
-- skeleton 등장: 모바일 viewport에서 첫 화면 즉시(0ms) → 깜빡임 없이 자연스러운 로딩 인상.
-- pull-to-refresh: 사용자가 이미 데이터를 본 후 새로고침 시 `surface-input` 0.4 opacity overlay + 작은 spinner (skeleton 대신).
-- bottom sheet 펼침 후 데이터 로딩 시 sheet 내부에 skeleton (sheet wrapper는 즉시 표시).
-
-#### Pulse fallback (저성능)
-shimmer gradient 비싸므로 — Android 저사양 또는 절전모드 시 자동 감지 → opacity pulse fallback. 사용자 인지 차이 미미.
-
-#### Reduced motion
-모바일 사용자 중 멀미 호소 사례 있음 — `prefers-reduced-motion: reduce` 더 적극 존중. shimmer/pulse 모두 정지, `surface-input` 단색만.
+- **첫 진입** — 대시보드 · 가계부 · 자산 · 예산 · 통계는 머리 · 탭 · 섹션 제목을 그리고 데이터 자리만 스켈레톤이다. 웹 첫 진입의 틀 없는 가운데 원과 불러오는 중인 금액 자리 "—" 를 걷는다.
+- **달 · 기간 바꾸기** — 가계부 · 통계 · 예산 · 캘린더는 고른 달 이름을 바로 보이고 숫자 · 목록 자리만 기다린다(옛 달 숫자는 지운다). 앱의 화면 통째 스켈레톤을 걷는다.
+- **당겨서 새로 고침(앱)** — 원판 없는 원 24, 새로 받기가 끝날 때까지 돈다(홈 · 통계 · 메모 · 카드 혜택이 지금 기다리지 않는다). 보던 내용은 그대로 — 카드 혜택이 목록을 비우지 않게 한다.
+- **원** — 섹션 새로 고침 · 카드 혜택 목록 끝 24, 앱 업데이트 받기는 값 있는 원 24. 할 일 체크 원 위의 같은 색 호를 걷는다.
+- **막대** — 예산 · 카드 사용은 한도, 저축 목표 · 카드 실적은 목표 — 높이 8 · 채움 `fg-brand`(넘친 한도만 `fg-critical` + "N원 초과", 달성은 글자 "달성"). 카드 실적의 웹 장미 · 호박 · 초록과 앱 브랜드 → 성공 색을 하나로 맞춘다.
+- **이미지** — 카드 그림 · 혜택 그림은 불러오는 동안 스켈레톤, 못 불러오면 대체 그림(카드 아이콘). 자산 · 카드 로고의 모노그램은 Image Frame 차례에 정한다.
+- **끝 흐림** — 필터 칩 줄 · 2차 탭 · 카테고리 고르기 · 거래 상세처럼 넘칠 수 있는 시트 본문.
+- **요청** — 앱의 riverpod 기본 재시도 10번(약 41초)을 읽기 2번 · 10초 안으로 줄인다. 웹은 요청 제한 10초를 더한다.
 
 ### Pagination / Drawer / Spinner / Stepper (v67 추가 batch)
 
@@ -3900,10 +3892,8 @@ Desk(B2C) 4 컴포넌트 사용 패턴 — DESIGN.md 공통 spec 외 brand-speci
 아래에서 올라오는 시트는 2026-10-02 Bottom Sheet 로 바뀌었다 — 위 "시트 · 대화상자 · 확인창 · 팝오버" 절. 옆 패널은 Side Panel 차례에 정한다.
 
 #### Spinner / Progress — Desk
-- **메모 저장 spinner**: button 안 sm 16 spinner + "저장 중..." 라벨.
-- **이미지 업로드 determinate progress**: 8px linear bar + percentage. 완료 시 success ✓ icon 1초 페이드.
-- **bottom sheet 데이터 로딩**: sheet 안 가운데 md 24 spinner + 라벨. sheet wrapper는 즉시 표시(skeleton 패턴과 차이).
-- pull-to-refresh: 손가락 드래그 → spinner 등장 → 놓으면 회전 → 데이터 도착 fade out.
+
+> 2026-10-03 걷었다 — 위 "기다림 — Desk" 절(Progress Circle · Progress).
 
 #### Stepper — Desk
 - **simple progress dot indicator**: onboarding 5단계 dot — 모바일 친화 minimal.

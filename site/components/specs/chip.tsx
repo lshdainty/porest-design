@@ -105,7 +105,7 @@ const Muted = ({ children, mode = 'auto' }: { children: ReactNode; mode?: Mode }
 function Bar({ mode = 'auto', s, bleed = true }: { mode?: Mode; s?: ChipSize; bleed?: boolean }) {
   const lk = cl();
   return (
-    <ChipGroupView look={lk} mode={mode} layout="scroll" bleed={bleed} fog={lk.tone['bg-layer-default']} ariaLabel="거래 거르기">
+    <ChipGroupView look={lk} mode={mode} layout="scroll" bleed={bleed} ariaLabel="거래 거르기">
       <C mode={mode} s={s} v="outlineStrong" icon="rotate-ccw" ariaLabel="필터 지우기" />
       <C mode={mode} s={s} v="solid" on l="이번 달" suf="chevron-down" />
       <C mode={mode} s={s} v="solid" on l="식비 외 2개" suf="chevron-down" />
@@ -507,7 +507,7 @@ function MemoTags({ items }: { items: [string, boolean?][] }) {
   return (
     <div className="w-[400px] max-w-full overflow-hidden" style={{ paddingLeft: lk.scrollRow.padX, paddingRight: lk.scrollRow.padX }}>
       <span className="block pb-3 text-[17px] font-bold pk-text">메모</span>
-      <ChipGroupView look={lk} layout="scroll" fog={lk.tone['bg-layer-default']} ariaLabel="태그로 거르기">
+      <ChipGroupView look={lk} layout="scroll" ariaLabel="태그로 거르기">
         {items.map(([l, on]) => (
           <C key={l} l={l} on={on} />
         ))}

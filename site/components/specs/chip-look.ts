@@ -4,6 +4,7 @@
 import { axisValues, loadComponentSpec, num, resolveState, stateNames, tokenValue, type TypeValue } from '@/lib/component-spec';
 import { color, design, pressScale, type Brand } from '@/lib/design-tokens';
 import { CHIP_SELECTED, CHIP_SIZES, CHIP_STATES, CHIP_TONES, CHIP_VARIANTS, type ChipColor, type ChipFace, type ChipLook, type ChipMotion, type ChipSize, type ChipSizeLook, type ChipType, type ChipVariant } from './chip-shared';
+import { rowFogDepth, scrollFogLook } from './loading-look';
 export * from './chip-shared';
 
 const unbox = (raw: unknown) => (raw && typeof raw === 'object' && 'value' in raw ? (raw as { value: unknown }).value : raw);
@@ -153,7 +154,11 @@ export function chipLook(brand: Brand = 'desk'): ChipLook {
     marginY: len(base['scrollRow.marginY'], 'scrollRow.marginY'),
     scrollPadding: len(base['scrollRow.scrollPadding'], 'scrollRow.scrollPadding'),
     overflowX: String(unbox(must(base['scrollRow.overflowX'], 'scrollRow.overflowX'))),
+    // 양 끝 흐림 — "좌우 20px" 이 Scroll Fog row 의 깊이와 같은지(scroll-fog.yaml), 마스크는 gradient-fade-mask
+    fog: rowFogDepth(base['scrollRow.fog'], 'chip.yaml scrollRow.fog'),
+    mask: scrollFogLook().mask,
   };
+  if (scrollRow.padX < scrollRow.fog) throw new Error(`chip.yaml 의 scrollRow.paddingX(${scrollRow.padX})가 흐림(${scrollRow.fog})보다 좁다 — 처음 · 끝 칩이 흐려진다`);
   const smallest = Math.min(...Object.values(sizes).map((v) => v.h));
   const ringOut = len(focused['focusRing.width'], 'focusRing.width') + len(focused['focusRing.offset'], 'focusRing.offset');
   if (scrollRow.padY < (touch.h - smallest) / 2 || scrollRow.padY < ringOut) throw new Error(`chip.yaml 의 scrollRow.paddingY ${scrollRow.padY} 가 누르는 영역(${(touch.h - smallest) / 2}) · 포커스 링(${ringOut})보다 작다`);

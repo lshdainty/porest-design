@@ -1949,12 +1949,12 @@ porest 화면에 아직 쓰는 자리가 없다. 자리가 생기면 위 규칙�
 
 | 토큰 | 값 | 쓰는 곳 |
 |---|---|---|
-| `gradient-fade-mask` | `linear-gradient(#00000000 0%, #00000003 8%, #00000005 16%, #0000000d 22%, #00000014 29%, #00000021 35%, #0000002e 41%, #00000040 47%, #00000052 53%, #00000066 59%, #0000007a 65%, #00000094 71%, #000000ab 78%, #000000c7 84%, #000000e3 92%, #000000ff 100%)` | 가림 마스크 — `mask-image` 로 써서 긴 목록 · 가로 스크롤 끝을 부드럽게. 라이트 · 다크 같음 |
+| `gradient-fade-mask` | `linear-gradient(#00000000 0%, #00000003 8%, #00000005 16%, #0000000d 22%, #00000014 29%, #00000021 35%, #0000002e 41%, #00000040 47%, #00000052 53%, #00000066 59%, #0000007a 65%, #00000094 71%, #000000ab 78%, #000000c7 84%, #000000e3 92%, #000000ff 100%)` | 가림 마스크 — `mask-image` 로 써서 스크롤 영역의 끝을 부드럽게(Scroll Fog — `specs/components/scroll-fog.yaml`, 2026-10-03). 라이트 · 다크 같음 |
 | `gradient-shimmer-neutral` | `linear-gradient(90deg, #ffffff00 0%, #ffffffab 46%, #ffffffab 54%, #ffffff00 100%)` | 스켈레톤 반짝임 띠 — 라이트 |
 | `gradient-shimmer-neutral-dark` | `linear-gradient(90deg, #ffffff00 0%, #ffffff1a 46%, #ffffff1a 54%, #ffffff00 100%)` | 스켈레톤 반짝임 띠 — 다크 |
 
 - 마스크는 방향 없이 적었다(위 → 아래). 쓰는 자리에서 방향을 붙인다(`to right` 등).
-- 반짝임은 `motion-duration-loop`(1500ms) · `motion-ease-linear` 로 지나가고, 모션 줄이기 모드에서는 멈춘다.
+- 반짝임은 `motion-duration-loop`(1500ms) · `motion-ease-easing` 으로 지나가고(SEED Skeleton 의 곡선 — 2026-10-03, `specs/components/skeleton.yaml`), 모션 줄이기 모드에서는 멈춘다.
 
 ### Surface (v1 추가)
 
@@ -3002,7 +3002,7 @@ modal/sheet/drawer 등 floating surface가 페이지 위에 떠 있을 때 배�
 | `motion-duration-pressed-scale` | `150ms` | 역할 — 눌림 축소(= d3) |
 
 - 색 전환과 눌림 축소는 같은 150ms 다 — 시작과 속도가 같아야 하나의 반응으로 읽힌다.
-- 반복은 v63 의 `motion-duration-loop`(1500ms)를 그대로 쓴다(porest 역할).
+- 반복은 v63 의 `motion-duration-loop`(1500ms)를 그대로 쓴다(porest 역할) — 스켈레톤 반짝임. Progress Circle(옛 스피너)은 SEED 의 1.2초다(`specs/components/progress-circle.yaml`, 2026-10-03).
 - 옛 이름은 같은 값의 별칭이다 — `motion-duration-fast` → d3, `motion-duration-base` → d4, `motion-duration-slow` → d6. `motion-duration-slower`(500ms)는 걷는 중이다 — 큰 전환도 d6(300) 안에서 끝낸다.
 
 #### 이징
@@ -3016,7 +3016,7 @@ modal/sheet/drawer 등 floating surface가 페이지 위에 떠 있을 때 배�
 | `motion-ease-exit-expressive` | `cubic-bezier(0.35, 0, 0.95, 0.55)` | 특히 강조해야 하는 퇴장 |
 | `motion-ease-pressed-scale` | `cubic-bezier(0, 0, 0.15, 1)` | 눌림 축소 |
 
-- 반복은 v63 의 `motion-ease-linear` 를 그대로 쓴다.
+- 반복의 곡선은 컴포넌트가 정한다 — 스켈레톤 반짝임은 `motion-ease-easing`(SEED), Progress Circle 은 스펙의 숫자 곡선이다(2026-10-03). `motion-ease-linear` 는 일정한 속도가 필요한 반복에 남긴다.
 - 옛 `motion-ease-out`(0.16, 1, 0.3, 1)은 걷는 중이다 — 나타나는 모션은 `motion-ease-enter` 로 옮긴다. 앱의 `spring` 은 `motion-ease-enter-expressive`, `decel` 은 `motion-ease-enter` 로.
 
 #### 눌림 피드백
@@ -3059,7 +3059,7 @@ modal/sheet/drawer 등 floating surface가 페이지 위에 떠 있을 때 배�
 | 눌림 축소 | 세로 2px | 없음(배율 1) — 색 전환만 남는다 |
 | 색 전환 | 150ms | 그대로 |
 | 매크로 모션(200ms 초과) | 이동 · 확대 · 미끄러짐 | 150ms 서서히 나타남 · 사라짐 |
-| 반복(스켈레톤 · 펄스) | 계속 | 멈춘다 — 진행을 알려야 하는 것(스피너)은 컴포넌트 스펙이 대신할 표현을 정한다 |
+| 반복(스켈레톤 · 로딩 원 · 펄스) | 계속 | 멈춘다 — 스켈레톤은 띠 없이 면만, Progress Circle 은 돌지 않는 3/4 호(2026-10-03) |
 
 지금 이 모드를 따르는 곳은 웹 2곳 · 앱 스켈레톤 1곳이다(2026-09-29) — 앱 PR 에서 모든 모션이 따르게 한다.
 
@@ -3094,8 +3094,8 @@ skeleton shimmer · spinner · pulse 등 **반복 애니메이션** 용 토큰 2
 
 | 토큰 | 값 | 주 용도 |
 |---|---|---|
-| `motion-duration-loop` | `1500ms` | skeleton shimmer 1주기, pulse 1주기 |
-| `motion-ease-linear` | `linear` | 반복 일정 속도 (`ease-out` 반복은 끝에 멈춰 어색) |
+| `motion-duration-loop` | `1500ms` | 스켈레톤 반짝임 1주기(곡선은 `motion-ease-easing` — 2026-10-03), pulse 1주기 |
+| `motion-ease-linear` | `linear` | 일정한 속도가 필요한 반복 (`ease-out` 반복은 끝에 멈춰 어색) — 스켈레톤 · Progress Circle 은 쓰지 않는다(2026-10-03) |
 
 #### 추가 이유
 1. Skeleton/Loading 시나리오에서 `1500ms × linear` 반복이 표준 (Material progress, Toss skeleton 등 실측). 단발 전환용 `motion-duration-slower` (500ms)보다 길어야 자연.
@@ -3134,9 +3134,9 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 
 | keyframe | duration | ease | 주 용도 |
 |---|---|---|---|
-| `spin` | `motion-duration-loop` (1500ms) | `linear` | spinner, refresh icon (continuous rotation) |
+| `spin` | `motion-duration-loop` (1500ms) | `linear` | 새로 고침 아이콘처럼 일정하게 도는 것 — Progress Circle 은 쓰지 않는다(1.2초 · `progress-circle.yaml`, 2026-10-03) |
 | `pulse` | `motion-duration-loop` (1500ms) | `cubic-bezier(0.4, 0, 0.6, 1)` | dot indicator, focus 강조 (in-out ease) |
-| `shimmer` | `motion-duration-loop` (1500ms) | `linear` | skeleton (linear-gradient translateX) |
+| `shimmer` | `motion-duration-loop` (1500ms) | `motion-ease-easing` | 스켈레톤 반짝임 띠(왼쪽 밖 → 오른쪽 밖) — SEED 곡선(2026-10-03) |
 | `ping` | `motion-duration-loop` (1500ms) | `cubic-bezier(0, 0, 0.2, 1)` | notification dot, attention attractor (`scale 1 → 2`, `opacity 1 → 0`) |
 
 #### CSS keyframes 정의 (export 대상)
@@ -3165,8 +3165,8 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 | Toast 등장 | `animation: slide-in-up var(--motion-duration-d6) var(--motion-ease-enter) both` |
 | Modal 등장 | `animation: scale-in var(--motion-duration-d4) var(--motion-ease-enter) both` |
 | Modal dismiss | `animation: scale-out var(--motion-duration-d3) var(--motion-ease-exit) both` |
-| Skeleton | `animation: shimmer var(--motion-duration-loop) linear infinite` |
-| Spinner | `animation: spin var(--motion-duration-loop) linear infinite` |
+| Skeleton 반짝임 | `animation: shimmer var(--motion-duration-loop) var(--motion-ease-easing) infinite` |
+| Progress Circle | 회전 · 호 · 채움 — `progress-circle.yaml` 의 motion(1.2초 숫자 곡선, 2026-10-03) |
 | Notification dot | `animation: ping var(--motion-duration-loop) cubic-bezier(0, 0, 0.2, 1) infinite` |
 | Form error | `animation: shake var(--motion-duration-d6) cubic-bezier(.36,.07,.19,.97)` |
 
@@ -3543,11 +3543,14 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 | `card` | `md` | 8px | 콘텐츠 컨테이너 — 살짝 부드럽게 |
 | `callout` | `r2_5` | 10px | 본문 안 안내 상자 — 2026-10-02 SEED Callout(`callout.yaml`) |
 | `page-banner` | — | 0 | 화면 폭 띠, 모서리 없음 — 2026-10-02 SEED Page Banner(`page-banner.yaml`) |
-| `progress` (track + indicator) | `full` | 9999px | |
-| `skeleton` | `sm` | 4px | placeholder, 컴포넌트 형상 따라감 |
+| `progress` (트랙 · 채움) | `full` | 9999px | 막대 8 — 2026-10-03(`progress.yaml`) |
+| `progress-circle` | — | — | 원(SVG) · 끝이 둥근 호 — 2026-10-03 SEED Progress Circle(`progress-circle.yaml`) |
+| `skeleton` | `r2` · `r4` · `full` · — | 8px · 16px · 9999px · 0 | 글 8(기본) · 카드 · 썸네일 16 · 아바타 full · 화면 폭 사진 0 — 2026-10-03 SEED Skeleton(`skeleton.yaml`) |
+| `content-placeholder` | — | 0 | 제 모서리 없음 — 담는 틀이 자른다. 2026-10-03 SEED Content Placeholder(`content-placeholder.yaml`) |
 | `aspect-ratio` / `carousel` slide | `md` | 8px | 이미지 컨테이너 |
 | divider(옛 `separator`) | — | — | 1px 선, 모서리 무관 — 2026-10-03 SEED Divider(`divider.yaml`) |
 | `scroll-area` / `resizable` | — | — | 부모 컨테이너에 따름 |
+| `scroll-fog` | — | — | 마스크(모양 없음) — 2026-10-03 SEED Scroll Fog(`scroll-fog.yaml`) |
 | `typography` | — | — | 텍스트, radius 무관 |
 | **Overlay** | | | |
 | `dialog` / `alert-dialog` | `r5` | 20px | 2026-10-02 SEED Dialog · Alert Dialog(`dialog.yaml` · `alert-dialog.yaml`) |
@@ -4164,8 +4167,8 @@ red → orange → yellow → green → blue → indigo → violet → pink → 
 | 표면 | 값 |
 |---|---|
 | 공통 | 표면 `bg-layer-floating`, 딤 `overlay-dim-light` · `overlay-dim-dark`(Popover 는 딤 없음), 시트 · 대화상자 · 확인창은 그림자 없음 |
-| Bottom Sheet | 최대 480 · 위 모서리 `radius-r6` · 머리 위 24 · 제목 `t8` 22 · 700 · 설명 `t5` `fg-neutral-muted` · 좌우 `spacing-global-gutter` · 닫기 28 원(`bg-neutral-weak`, 누르는 영역 44) · 손잡이는 스냅 높이를 둘 때만 · 바닥 버튼 large 48 + 안전 영역 · `motion-duration-d6` `motion-ease-enter-expressive` 로 올라오고 `d4` `exit` 로 내려간다 |
-| Dialog | medium 480 · large 800 · 최대 높이 80% · `radius-r5` · 머리 24 · 제목 `t8` · 본문만 스크롤(넘치면 아래 48 흐림, 위로 스크롤하면 머리 아래 1px `stroke-neutral-subtle`) · 바닥 버튼 small 36 오른쪽 · `d4` `enter-expressive` 로 1.3 배에서 줄며 나타남 |
+| Bottom Sheet | 최대 480 · 위 모서리 `radius-r6` · 머리 위 24 · 제목 `t8` 22 · 700 · 설명 `t5` `fg-neutral-muted` · 좌우 `spacing-global-gutter` · 닫기 28 원(`bg-neutral-weak`, 누르는 영역 44) · 손잡이는 스냅 높이를 둘 때만 · 넘칠 수 있는 본문은 Scroll Fog 위 20 · 아래 80 · 바닥 버튼 large 48 + 안전 영역 · `motion-duration-d6` `motion-ease-enter-expressive` 로 올라오고 `d4` `exit` 로 내려간다 |
+| Dialog | medium 480 · large 800 · 최대 높이 80% · `radius-r5` · 머리 24 · 제목 `t8` · 본문만 스크롤(넘칠 수 있는 본문은 Scroll Fog — 늘 켜진 위 20 · 아래 80, 위로 스크롤하면 머리 아래 1px `stroke-neutral-subtle`) · 바닥 버튼 small 36 오른쪽 · `d4` `enter-expressive` 로 1.3 배에서 줄며 나타남 |
 | Alert Dialog | 최대 272 · `radius-r5` · 안쪽 20 · 제목 `t7` 20 · 700 · 설명 `t5` `fg-neutral`(짙은 글자) · 버튼 둘 나란히(길면 세로 · 확정 위) — 1280 미만 medium 40 · 이상 small 36 |
 | Popover | 폭 320 ~ 480 · 최대 높이 600 · `radius-r5` · `shadow-s3` · 트리거와 8 · 머리 제목 `t7` + 닫기 · `d3` `enter` 로 0.95 배에서 커진다 |
 | 쌓임 | specs/z-index.md — 시트 · 대화상자 L2(`z-modal` 100 · `z-modal-content` 101) · Popover L3(`z-floating` 200) · Alert Dialog L5(`z-alert` 300 · `z-alert-content` 301) |
@@ -4515,55 +4518,51 @@ Field 는 머리(라벨 · 필수 점 또는 "선택" · 보조 액션) · 입�
 
 `{칸 이름}` 은 라벨과 같게 쓴다 — 오류만 보고도 어느 칸인지 안다.
 
-### Skeleton / Loading (v63 추가)
+### 기다림 — Skeleton · Progress Circle · Progress · Content Placeholder · Scroll Fog
 
-데이터 도착 전 시각 placeholder. **컨텐츠 형태를 미리 그려서** 사용자에게 "곧 나타날 것"을 신호 → 빈 화면 또는 spinner보다 인지 부담↓. v63 `motion-duration-loop`(1500ms) + `motion-ease-linear` 활용.
+> 2026-10-03 SEED Skeleton · Progress Circle · Pull To Refresh · Content Placeholder · Scroll Fog 와 Loading 패턴의 시간표로 새로 정했다(사용자 결정 — 비교 페이지 https://claude.ai/artifact/4ySVacsdnG4fgraR1HRK3G). 옛 Skeleton / Loading(v63) · Spinner / Progress(v67) 절을 대신한다. 수치 원본은 `specs/components/skeleton.yaml` · `progress-circle.yaml` · `pull-to-refresh.yaml` · `progress.yaml` · `content-placeholder.yaml` · `scroll-fog.yaml`, 쓰는 규칙은 같은 이름의 `.md`(당겨서 새로 고침은 `progress-circle.md`). 옛 스펙은 `skeleton.history` · `spinner.history` · `progress.history` 의 `v-pre-seed-loading.*`. 토큰은 더하지 않았다 — v104 의 `gradient-shimmer-neutral` · `gradient-fade-mask` · `motion-duration-loop` · `motion-ease-easing` 을 쓴다.
 
-#### Variant
-| Variant | 형태 | 사용 |
-|---|---|---|
-| **text** | `radius-sm` 사각형 (높이 = body-lg line-height) | 본문 텍스트 placeholder, 1-3 line group |
-| **circle** | `radius-full` | avatar, dot indicator placeholder |
-| **rect** | `radius-md` 또는 `radius-lg` | image, card, large block placeholder |
-| **list-row** | text + circle 합성 | list item (avatar + 이름 + meta) — 가장 빈도 높음 |
+#### 나누기
 
-#### Width 패턴 (text variant)
-- 첫 줄: 100% — 제목/lead
-- 중간 줄: 100% — 본문
-- 마지막 줄: 60% — 자연스러운 끝맺음 (실제 텍스트 패턴 모방)
-- group 사이: `sm` (8px) gap
+| 이런 때 | 쓰는 것 |
+|---|---|
+| 목록 · 카드 · 상세를 처음 불러옴 | Skeleton — 틀은 그리고 데이터 자리만 |
+| 섹션 새로 고침 · 목록 끝 더 불러오기 · 구조를 그릴 수 없는 화면 | Progress Circle — 요소 안 24 · 콘텐츠 가운데 40 |
+| 저장 · 제출 | Button 의 로딩(원 14 · 14 · 16 · 18) |
+| 올리기 · 받기 | 값 있는 Progress Circle 24 |
+| 앱 목록 · 대시보드를 다시 받음 | 당겨서 새로 고침 — 원판 없는 원 24 |
+| 예산 · 목표가 얼마나 찼나 | Progress — 막대(미터) |
+| 이미지가 없거나 못 불러옴 | Content Placeholder — 불러오는 동안은 Skeleton |
+| 스크롤 영역에 더 있음 | Scroll Fog |
 
-#### Color & Animation
-- **light mode**: 베이스 `surface-input` (`#F5F6FA`) + shimmer `surface-default` (`#FFFFFF`).
-- **dark mode**: 베이스 `surface-input-dark` (`#353B4D`) + shimmer `surface-default-dark` (`#242938`).
-- **shimmer**: 좌→우 그라디언트 sweep (`linear-gradient(90deg, base 0%, shimmer 50%, base 100%)`) + `background-position` 애니메이션. **1주기 `motion-duration-loop` (1500ms) × `motion-ease-linear`**.
-- **alternative**: pulse — `opacity` 0.5 ↔ 1 반복 (저성능 디바이스 fallback). 동일 duration·easing.
+#### 시간표 — 1초 · 5초 · 10초
 
-#### Size
-text variant는 `body-lg` line-height(24px) 베이스 — 글자 사이즈에 비례한 height (sm 16, md 24, lg 32). circle/rect는 컨텐츠 사이즈 따라 (avatar `md` 32×32 등). 실측 컴포넌트 사이즈와 동일하게 그려야 layout shift 0.
+모든 불러오기가 따른다 — 1초 안에 오면 아무것도 보이지 않고(틀만), 1초부터 스켈레톤 · 원, 5초에 "평소보다 오래 걸리고 있어요.", 10초에 실패(Result Section + "다시 시도"). 요청 제한은 10초이고 저절로 다시 시도하는 것(읽기만)은 그 안에서만이다. 달 · 기간을 바꾸면 머리는 바로 바뀌고 바뀔 숫자 · 목록 자리만 기다린다 — 옛 달 숫자는 지운다. 같은 내용을 다시 받으면 보던 내용을 지우지 않는다(Result Section). 원본은 `specs/components/skeleton.md` 의 "기다리는 동안" 한 곳이다.
 
-#### Layout shift (CLS)
-- skeleton의 사이즈 = 실제 컴포넌트 사이즈와 정확히 일치. 데이터 도착 시 layout 변화 없음.
-- aspect-ratio 또는 explicit width/height 지정. 가변 길이는 평균 또는 maximum 기준.
-- 페이드 전환: `motion-duration-fast` (150ms) opacity — skeleton 사라지고 실제 컨텐츠 등장.
+#### 모양
 
-#### Accessibility
-- [ ] **`aria-busy="true"`**: skeleton 영역에 부모 요소 attribute 적용 — screen reader가 "로딩 중" 상태 인지.
-- [ ] **`aria-live="polite"` + 텍스트**: 데이터 도착 시 보이지 않는 status text("불러오기 완료") 갱신 — 사용자에게 알림.
-- [ ] **2.2.2 Pause·Stop·Hide**: 데이터 도착 시 자동 정지(=숨김) — 5초 이상 지속 시 timeout/error 안내 권장.
-- [ ] **2.3.3 Reduced motion**: `prefers-reduced-motion: reduce` 시 shimmer 제거 → 단색 placeholder만 (또는 매우 느린 pulse).
-- [ ] **시각적 차별**: skeleton vs 실제 컨텐츠 시각 구분 가능해야 — 색상이 너무 진하면 데이터로 오인. `surface-input` 톤 유지.
+| | Skeleton | Progress Circle | Progress | Content Placeholder | Scroll Fog |
+|---|---|---|---|---|---|
+| 크기 | 내용의 크기 · 글은 그 글자의 줄 높이(14 → 19) | 24(두께 3) · 40(두께 5) · 버튼 안은 Button | 높이 8 | 틀을 채움 · 그림 = 틀 높이의 50%(16 ~ 160) | 기본 20 · 가로 좌우 20 · 세로 위 20 · 아래 80 |
+| 모양 | 모서리 글 8 · 카드 16 · 아바타 full · 화면 폭 사진 0 | 끝이 둥근 호 · 12시 시작 | 모서리 full | 제 모서리 없음 | 마스크 — 색이 없다 |
+| 색 | 면 `bg-neutral-weak` + 흰 띠 `gradient-shimmer-neutral`(다크 짝) | 원 `stroke-neutral-solid` · 트랙 `stroke-neutral-subtle`, 톤 brand · staticWhite · inherit | 트랙 `bg-neutral-weak` · 채움 브랜드 글자색(넘친 한도만 `fg-critical`) | 면 `bg-neutral-weak` · 그림 `stroke-neutral-weak` | `gradient-fade-mask` |
+| 움직임 | 반짝임 `motion-duration-loop` · `motion-ease-easing` | 1.2초 회전 + 호 · 채움 300ms | 채움 300ms | 없음 | 없음 — 늘 켜짐 |
+| 모션 줄이기 | 띠가 멈춘다 | 돌지 않는 3/4 호 | 바로 바뀐다 | — | — |
 
-#### Sparse component 매핑 (lint contrast)
-신규 yaml 컴포넌트 0 — skeleton은 텍스트 없는 표면 placeholder, contrast 페어 활성 대상 아님. 기존 `divider-light/dark`(border-* 시각 요소) 패턴과 동일 — sparse but lint contrast 미발동. **prose-only spec** (v60 responsive typography, v62 Form layout과 동일 톤).
+#### 쓰는 규칙
 
-#### 추가 이유
-1. v33-v62 컴포넌트 batch에 **로딩 상태 컴포넌트 부재** — Modal/Toast(완료 상태), Empty(데이터 없음 상태)는 있지만 "로딩 중" 시각 표현 미정의.
-2. HR(결재 list 로딩, 직원 검색 로딩) Desk(메모 list 로딩, 가계부 dashboard 로딩) 양쪽 빈번 사용 사례.
-3. **v63 motion 토큰 도입과 함께** — `motion-duration-loop` + `motion-ease-linear` 첫 사용 사례. 이후 spinner/pulse도 동일 토큰 재사용 가능.
+- 틀(머리 · 탭 · 제목 · 버튼 · 카드 면)은 처음부터 그린다 — 화면을 덮는 회색 막 "Loading" · 틀 없는 화면 가운데 원은 두지 않는다.
+- 스켈레톤은 흰 면(`bg-layer-default` · `bg-layer-floating`) 위에만 — 페이지 바탕(`bg-layer-basement`) 위에서는 같은 색이라 사라진다(1.00:1). 깜빡임(펄스)은 두지 않는다.
+- 스켈레톤과 원을 한 자리에 같이 쓰지 않는다.
+- 막대는 미터다 — 기다림 · 올리기에 쓰지 않는다. 높이 · 색은 하나이고 주의 구간 색 · 달성 색은 없다(달성은 글자 "달성").
+- 끝 흐림은 늘 켜 두고 흐린 쪽에 깊이만큼 여백을 둔다 — 시트 · 대화상자의 "넘칠 때만 아래 48"(2026-10-02)은 이것으로 바뀌었다.
+- 깨진 이미지 아이콘 · 빈 이미지 칸을 두지 않는다.
 
-#### HR / Desk 듀얼 브랜드
-spec brand-neutral — skeleton은 색상 자체가 neutral surface. brand 파일에서 사용 패턴 차이 prose — HR(데이터 그리드 list-row 위주, dense), Desk(card/메모 전체 placeholder, 친근 톤).
+#### 접근성
+
+- 기다리는 영역에 `aria-busy`, 화면에 상태 글 하나(`role="status"`) — "불러오는 중…" · "평소보다 오래 걸리고 있어요." 를 한 번씩 읽는다. 결과는 Result Section 이 알린다.
+- Progress Circle 은 `role="progressbar"` — 이름 "불러오는 중", 값 글 "40%"(영어 · 세 점을 쓰지 않는다). Progress 는 `role="meter"` — 이름 "식비 예산 400,000원 중 350,000원".
+- 스켈레톤 · 끝 흐림 · 대체 그림의 아이콘은 장식이다.
 
 ### Pagination (v67 추가)
 
@@ -4622,13 +4621,7 @@ spec brand-neutral. brand 파일에서 사용 패턴 차이 — HR(numbered 데�
 
 ### Spinner / Progress (v67 추가)
 
-데이터 로딩 / 처리 진행 시각화. Skeleton(v63)이 placeholder 톤이면, 본 컴포넌트는 active 진행 표현. **새 토큰 0** — `motion-duration-loop` + brand primary + spacing 합성.
-
-브랜드 spec brand-neutral. 다크 모드는 `primary` → `primary-light` cascade 자동 swap.
-
-**Detailed spec**:
-- [`specs/components/spinner.md`](specs/components/spinner.md) — 원형 indeterminate (sm 16 / md 24 / lg 32 / xl 48), border-top-color arc 270deg, motion-duration-loop linear infinite
-- [`specs/components/progress.md`](specs/components/progress.md) — 가로 바 (sm 2 / md 4 / lg 8), determinate(value 0–100) / indeterminate(sweeping gradient)
+> 2026-10-03 걷었다 — 스피너는 Progress Circle, 막대는 미터인 Progress 다(위 "기다림" 절, `specs/components/progress-circle.md` · `progress.md`). 옛 스펙은 `spinner.history` · `progress.history` 의 `v-pre-seed-loading.*`.
 
 ### Stepper (v67 추가)
 
@@ -5095,7 +5088,7 @@ Table + 정렬/필터/페이지네이션/선택. **새 토큰 0** — Table + Pa
 
 #### Empty state
 - 데이터 0건: 가운데 illustration + "표시할 데이터가 없어요" + (필터 적용 시) "필터 초기화" link
-- 로딩: Skeleton(v63) list-row variant
+- 로딩: 줄 자리만 Skeleton(실제 줄 높이 · 글줄 높이 — `specs/components/skeleton.md`), 머리(열 제목)는 그린다
 
 #### Accessibility
 - sortable: `<th aria-sort="ascending|descending|none">` + click trigger
@@ -5275,7 +5268,7 @@ spec brand-neutral. brand 파일 — HR(Data Table 결재/직원/평가 그리�
 
 #### Empty / loading
 - empty: 가운데 illustration + "데이터가 없어요" + (필터 적용 시) "필터 초기화"
-- loading: rect skeleton (v63) 또는 spinner
+- loading: 차트 자리의 Skeleton(모서리 16 — 제목 · 범례 틀은 그린다), 원을 따로 얹지 않는다
 
 #### Accessibility
 - 차트는 시각만으론 부족 → `<table>` (시각 hidden) 동반 권장 — 데이터 표 형식으로도 접근 가능
@@ -5354,13 +5347,13 @@ drag-drop area + click 업로드 button. **새 토큰 0** — surface + border +
 #### Anatomy
 - drop zone (정사각/직사각): `border-default` 2px dashed + `surface-input` 배경 + `radius-md`
 - 가운데: 아이콘 (📁 또는 ⬆) + 안내 텍스트("파일을 끌어다 놓거나 클릭하세요") + 옵션 ("최대 10MB / .jpg .png .pdf")
-- 좌측 또는 하단: 업로드된 file list — 파일명 + 사이즈 + ✕ 제거 + progress bar (업로드 중)
+- 좌측 또는 하단: 업로드된 file list — 파일명 + 사이즈 + ✕ 제거 + 값 있는 Progress Circle 24(올리는 중 — 2026-10-03)
 
 #### State
 - default: 정적 안내
 - dragover: `border-focus` 2px solid (dashed → solid 변화) + `primary` 8% tint 배경
-- drop: 등록된 file 목록에 추가, progress bar 시작
-- uploading: progress bar (linear, indeterminate 또는 determinate)
+- drop: 등록된 file 목록에 추가, 값 있는 원 시작
+- uploading: 값 있는 Progress Circle 24(진행을 모르면 값 없는 원) — 막대(Progress)는 쓰지 않는다
 - success: ✓ icon + "업로드 완료" caption (`success` 색)
 - error: ✕ icon + 에러 메시지 ("크기 초과" / "지원 안 되는 형식") (`error` 색)
 - disabled: opacity 0.5
@@ -5373,7 +5366,7 @@ drag-drop area + click 업로드 button. **새 토큰 0** — surface + border +
 #### Motion
 - dragover 강조: border 색 + bg tint `motion-duration-fast` (150ms)
 - drop animation: file item 등장 fade-in `motion-duration-base`
-- progress: determinate 채움 `motion-duration-fast`
+- progress: 원의 채움 300ms(`progress-circle.yaml`)
 
 #### Accessibility
 - `<input type="file" hidden>` + label as drop zone (native a11y)

@@ -272,7 +272,7 @@ export function WebDialog({ title, description, children, footer, mode = 'auto',
   const o = overlayLook(brand === 'hr' ? 'hr' : 'desk');
   return (
     <DimView dim={o.dialog.dim} mode={mode} place="center">
-      <DialogSurface look={o.dialog} mode={mode} title={title} description={description} close={close} footer={footer} scroll={{ overflow: false, scrolled: false }}>
+      <DialogSurface look={o.dialog} mode={mode} title={title} description={description} close={close} footer={footer} scroll={{ scrolled: false }}>
         {children}
       </DialogSurface>
     </DimView>

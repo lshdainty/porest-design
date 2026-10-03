@@ -1,159 +1,352 @@
 # Skeleton
 
-> 데이터 로딩 중 콘텐츠 자리를 보존하는 **placeholder 박스**. 텍스트/이미지/avatar 모양으로 className 조정해 곧 나타날 콘텐츠 윤곽을 미리 시각화 — CLS(Cumulative Layout Shift) 방지 + 사용자 인지 부담 감소. shadcn `Skeleton` 베이스 — 단순 div + animation.
+> 불러오는 동안 곧 나타날 내용의 자리를 미리 그리는 회색 면. 목록 · 카드 · 상세처럼 구조가 정해진 자리에 쓴다 — 화면의 틀(머리 · 탭 · 제목 · 버튼 · 카드 면)은 실제로 그리고, 서버에서 올 데이터 자리만 스켈레톤이다. 저장 · 새로 고침처럼 행동 하나를 기다리는 자리는 [Progress Circle](progress-circle.md), 이미지가 없거나 못 불러온 자리는 [Content Placeholder](content-placeholder.md) 다.
 
-Porest Skeleton은 **단일 spec × 2 animation variants(pulse / shimmer)** 매트릭스로 정의됩니다. base는 `bg-surface-input` + `rounded-sm` 박스. animation은 토큰화된 `@keyframes pulse`(opacity 깜빡임, 기본) 또는 `@keyframes shimmer`(sweep gradient, 옵션) 선택. shape는 className으로 조정 — `h-4 w-32` 텍스트 라인, `h-10 w-10 rounded-full` avatar, `h-32 w-full` 카드 이미지 등.
+구조는 당근 [SEED Skeleton](https://seed-design.io/components/skeleton)(Apache-2.0)을 따른다 — 면 하나 위로 흰 띠가 자기 폭만큼 지나가는 반짝임, 모서리 넷(0 · 8 · 16 · full), 글자 자리는 글줄 높이. 깜빡임(펄스)은 두지 않는다. 기다리는 동안의 시간표(1초 · 5초 · 10초)도 이 문서의 "기다리는 동안" 에 둔다 — SEED [Loading 패턴](https://seed-design.io/patterns/loading)의 시나리오를 규칙으로 옮겼다. 값은 porest 토큰이고, SEED 와 다른 자리는 맨 아래 "SEED 와 다른 점" 에 적었다(2026-10-03 사용자 결정). 옛 Skeleton 스펙(깜빡임 · 모서리 4 · 글줄보다 낮은 막대)을 대신한다.
+
+수치 원본은 [`skeleton.yaml`](skeleton.yaml)이다. 수치 표 자리(`[표: …]`)와 그림 자리(`[그림: …]`)는 사이트가 그 파일로 그린다 — GitHub 에서는 그 파일 · 그림 코드로 가는 링크로 보인다.
+
+[그림: 가계부 · 카드 혜택 · 거래 상세를 불러오는 동안 — 라이트 · 다크](../../site/components/specs/skeleton.tsx#hero)
+
+### 직접 골라 보기
+
+모양(글 · 카드 · 아바타 · 사진) · 글자 크기 · 모션 줄이기 · 기다린 시간을 고르면 스펙대로 그린 스켈레톤과 그 코드가 바뀐다. 기다린 시간을 옮기면 1초 · 5초 · 10초에 화면이 어떻게 바뀌는지 볼 수 있다.
+
+[그림: 플레이그라운드](../../site/components/specs/skeleton.tsx#playground)
 
 ## Anatomy
 
+[그림: 기다리는 영역 안에 면과 그 위를 지나는 반짝임 띠, 5초부터 오래 걸림 글](../../site/components/specs/skeleton.tsx#anatomy)
+
+| ⓐ Region | 기다리는 영역 — 데이터 자리 하나(쿼리 하나). 시간표 · 요청 제한 · 낭독을 맡는다. |
+| ⓑ Root | 면 — 곧 나타날 내용 하나의 자리. |
+| ⓒ Shimmer | 반짝임 띠 — 면 위를 자기 폭만큼 지나간다. |
+| ⓓ Slow Text | 오래 걸림 글 — 5초부터 한 줄. |
+
+[표: 부위](skeleton.yaml#slots)
+
+## Properties
+
+### 모서리
+
+곧 올 내용의 모양을 따른다 — 글 · 숫자 8 *(기본)*, 목록 앞 타일 12(List 타일 — 거래 · 카테고리 줄), 카드 · 썸네일 16, 아바타 · 원 아이콘 · 칩 full, 화면 끝에 붙는 사진 0.
+
+[그림: 모서리 다섯 — 글 8 · 타일 12 · 카드 16 · 아바타 full · 화면 폭 사진 0](../../site/components/specs/skeleton.tsx#radius)
+
+[표: 모서리](skeleton.yaml#radius)
+
+### 크기 — 글은 글줄 높이
+
+크기는 그 자리에 올 내용의 크기다. 글 · 숫자 자리는 그 글자의 줄 높이만큼 높다 — 14 글자(`t4`)면 19, 16 글자(`t5`)면 22. 글자보다 낮은 막대로 그리면 글이 오는 순간 줄이 밀린다. 글 줄의 폭은 실제 글 길이와 비슷하게 두고, 여러 줄이면 마지막 줄을 짧게 둔다.
+
+[그림: 글자 자리 = 글줄 높이 — 12 · 14 · 16 · 20 글자 옆에 같은 높이의 스켈레톤](../../site/components/specs/skeleton.tsx#text-height)
+
+[표: 면](skeleton.yaml#base.enabled@root)
+
+### 반짝임
+
+면 위로 흰 띠가 자기 폭만큼 왼쪽 밖에서 오른쪽 밖으로 1.5초에 지나가고, 쉬지 않고 되풀이한다. 다크에서는 띠가 훨씬 옅다(흰 10%). 깜빡임(투명도 1 ↔ 0.5)은 두지 않는다. 모션 줄이기면 띠가 멈추고 면만 남는다(v104).
+
+[그림: 반짝임 — 1.5초 · 모션 줄이기면 면만](../../site/components/specs/skeleton.tsx#shimmer)
+
+[표: 반짝임 띠](skeleton.yaml#base.enabled@shimmer)
+
+### State
+
+| 상태 | 모습 |
+|---|---|
+| `enabled` | 기다리는 중 — 띠가 지나간다 |
+| `reducedMotion` | 모션 줄이기 — 띠가 멈추고 면만 남는다 |
+
+[표: 상태](skeleton.yaml#matrix)
+
+[표: 모션](skeleton.yaml#motion)
+
+## Guidelines
+
+### 틀은 먼저, 데이터 자리만 스켈레톤
+
+머리 · 탭 · 섹션 제목 · 버튼 · 필터 · 카드 면처럼 로컬 상태와 정해진 글로 그릴 수 있는 틀은 처음부터 실제로 그린다. 스켈레톤은 서버에서 올 데이터 자리에만 둔다 — 틀까지 덮으면 바로 보일 정보를 가리고, 데이터가 오는 순간 틀이 진짜로 바뀌며 화면이 튄다.
+
+- 내용과 스켈레톤은 한 묶음이다 — 같은 부모 안에서 갈라 껍데기(카드 · 섹션 · 여백)를 함께 쓴다. 로딩 분기가 껍데기를 따로 그리면 두 벌이 되어 한쪽만 고쳐진다.
+- 껍데기는 실제로 쓰는 컴포넌트(Card · List · 섹션)를 그대로 쓴다 — 자체 상자로 흉내 내지 않는다. 컴포넌트에 값이 하나 늘면 흉내 낸 쪽만 옛 모양으로 남는다.
+- 자기 쿼리를 가진 컴포넌트는 자기 스켈레톤을 갖는다 — 부모 페이지가 다시 흉내 내지 않는다.
+- 데이터에 따라 있고 없고가 갈리는 섹션은 스켈레톤에 넣지 않는다 — 불러오는 동안은 뜰지 알 수 없다. 빼 두면 데이터가 와서 아래에 나타나는 쪽이 덜 튄다.
+- 화면 전체가 쿼리 하나를 기다려도 앱 틀(상단 바 · 탭 바 · 사이드바)은 그린다 — 틀 없이 화면 가운데 원 하나, 화면을 덮는 회색 막 "Loading" 은 두지 않는다.
+
+[그림: 틀은 실제로 · 데이터 자리만 스켈레톤 — 탭 · 제목 · 버튼까지 덮은 화면](../../site/components/specs/skeleton.tsx#frame-guide)
+
+### 흰 면 위에만
+
+스켈레톤 면(`bg-neutral-weak`)은 흰 면(카드 · 시트 · 대화상자 — `bg-layer-default` · `bg-layer-floating`) 위에서 1.08:1 로 보이고 띠가 지나가며 모양이 드러난다. 회색 페이지 바탕(`bg-layer-basement`) 위에서는 같은 색이라 사라진다(1.00:1) — 바탕 위의 자리는 카드 면을 먼저 그리고 그 안에 스켈레톤을 둔다.
+
+[그림: 흰 카드 위 · 회색 바탕 위 — 바탕 위에서는 사라진다](../../site/components/specs/skeleton.tsx#surface-guide)
+
+### 모양은 내용대로
+
+곧 올 내용의 줄 수 · 길이 · 모서리를 따른다 — 목록이면 실제 줄 높이로 몇 줄, 메모 본문이면 여러 줄에 마지막 줄을 짧게, 아바타는 원, 사진은 그 비율. 실제 줄과 높이가 1px 만 달라도 데이터가 올 때 목록 전체가 밀린다. 글자 모양까지 흉내 내지는 않는다 — 자리만 그린다.
+
+[그림: 모양 — 실제 줄과 같은 높이 · 글자보다 낮은 막대](../../site/components/specs/skeleton.tsx#shape-guide)
+
+### Progress Circle 과 한 자리에 같이 쓰지 않는다
+
+한 자리에는 하나만 — 구조가 보이는 넓은 자리(목록 · 카드 · 상세)는 스켈레톤, 행동 하나를 기다리는 작은 자리(저장 · 새로 고침 · 목록 끝 더 불러오기)는 [Progress Circle](progress-circle.md) 이다. 스켈레톤 위에 원을 얹지 않는다(SEED).
+
+[그림: 한 자리에 하나 — 스켈레톤 위에 원을 얹은 화면](../../site/components/specs/skeleton.tsx#mix-guide)
+
+## 기다리는 동안
+
+불러오는 모든 자리(첫 진입 · 화면 안 조회 · 달 · 기간 · 필터 바꾸기)는 이 시간표를 따른다 — 스켈레톤이든 [Progress Circle](progress-circle.md) 이든 같다. 결과(비어 있음 · 실패)는 [Result Section](result-section.md) 이 그린다. 수치는 `skeleton.yaml` 의 `region` 이다.
+
+### 시간표 — 1초 · 5초 · 10초
+
+| 지난 시간 | 화면 | 보조 기술 |
+|---|---|---|
+| 0 ~ 1초 | 틀만 — 데이터 자리는 비워 두고 높이는 지킨다. 1초 안에 오면 아무것도 깜빡이지 않는다 | 영역에 `aria-busy="true"` — 아직 아무것도 읽지 않는다 |
+| 1초 ~ | 스켈레톤 또는 Progress Circle | "불러오는 중…"(숨은 상태 글) |
+| 5초 ~ | 그대로 + 글 한 줄 "평소보다 오래 걸리고 있어요." | 그 글을 한 번 읽는다 |
+| 10초 | 실패 — Result Section `failure` + "다시 시도" | Result Section 이 알린다(`role="status"`) |
+| 다 옴 | 내용(투명도 150ms) · 비어 있으면 Result Section `empty` | `aria-busy` 를 풀고 상태 글을 비운다 |
+
+[그림: 시간표 — 0 ~ 1초 틀만 · 1초 스켈레톤 · 5초 안내 글 · 10초 실패 + 다시 시도](../../site/components/specs/skeleton.tsx#timeline)
+
+[표: 기다리는 영역](skeleton.yaml#base.enabled@region)
+
+### 오래 걸림 글
+
+5초가 지나도 안 오면 기다리는 자리에 글 한 줄을 더한다 — "평소보다 오래 걸리고 있어요." 스켈레톤 · 원은 그대로 둔다. 스켈레톤 영역이면 첫 스켈레톤 위에 왼쪽 맞춤으로, 가운데 원이면 원 아래에 가운데 맞춤으로 16 띄워 둔다. 영역 하나에 한 줄이고, 화면이 통째로 기다리면 콘텐츠 영역 맨 위 한 줄이다. 보조 기술에는 한 번 정중하게 읽힌다(아래 "알리기").
+
+[그림: 5초 — 스켈레톤 위 · 원 아래의 안내 글](../../site/components/specs/skeleton.tsx#slow-guide)
+
+[표: 오래 걸림 글](skeleton.yaml#base.enabled@slowText)
+
+### 요청 제한 10초 · 다시 시도는 그 안에서
+
+불러오기는 10초 안에 끝낸다 — 처음 요청부터 다시 시도까지 합쳐 10초가 지나면 끊고 실패로 그린다. 저절로 다시 시도하는 것은 그 10초 안에서만이다.
+
+- 다시 시도는 읽기(불러오기)만 2번까지, 1초 · 2초 뒤에 한다. 10초를 넘기게 되면 하지 않는다.
+- 다시 해도 같은 오류(권한 없음 · 없는 데이터 · 잘못된 요청 — 4xx)는 다시 하지 않고 바로 실패를 그린다.
+- 저장 · 삭제 같은 쓰기는 저절로 다시 보내지 않는다 — 두 번 들어간다. 쓰기의 실패는 그 자리에서 알린다(폼 맨 위 [Callout](callout.md)).
+- 올리기 · 받기처럼 진행을 아는 긴 일은 다 끝나는 시간이 아니라 진행이 10초 동안 멈추면 실패다 — 그동안은 값 있는 [Progress Circle](progress-circle.md) 로 진행을 보인다.
+- 실패 화면의 "다시 시도" 를 누르면 시간표를 처음부터 다시 센다 — 그동안 버튼에 로딩을 건다([Result Section](result-section.md)).
+
+### 무엇으로 기다리나
+
+| 이런 때 | 쓰는 것 |
+|---|---|
+| 화면 · 섹션의 첫 진입(목록 · 카드 · 상세) | 스켈레톤 — 틀은 그리고 데이터 자리만 |
+| 구조를 미리 그릴 수 없는 자리(검색 결과 · 결과 화면 전체) | Progress Circle 40 — 콘텐츠 영역 가운데, 틀은 그린다 |
+| 달 · 기간 · 필터를 바꿈(다른 내용) | 바뀔 숫자 · 목록 자리만 스켈레톤 — 아래 "다른 내용을 받을 때" |
+| 같은 내용을 다시 받음(화면으로 돌아옴 · 당겨서 새로 고침) | 보던 내용을 그대로 둔다 — 아래 "같은 내용을 다시 받을 때" |
+| 섹션 하나를 새로 고침(새로 고침 버튼) | 섹션 제목 옆 Progress Circle 24, 내용은 그대로 |
+| 목록 끝 더 불러오기 | 목록 아래 가운데 Progress Circle 24 |
+| 저장 · 제출 | 누른 버튼의 로딩([Button](button.md)) |
+| 올리기 · 받기(진행을 안다) | 값 있는 Progress Circle 24 |
+| 이미지 | 같은 모서리의 스켈레톤 — 없거나 실패하면 [Content Placeholder](content-placeholder.md) |
+
+[그림: 자리마다 — 첫 진입 스켈레톤 · 섹션 새로 고침 원 24 · 목록 끝 원 · 저장 버튼 로딩](../../site/components/specs/skeleton.tsx#which-guide)
+
+### 다른 내용을 받을 때 — 달 · 기간 · 필터
+
+달 · 기간 · 필터를 바꾸면 머리(고른 달 이름 · 기간 칩)와 고정 틀은 바로 바뀌고, 바뀔 숫자 · 목록 자리만 기다린다. 옛 달의 숫자는 그 순간 지운다 — 새 달 이름 아래 옛 숫자를 남기지 않는다(돈 숫자라 잘못 읽힌다). 지운 자리는 시간표를 따른다 — 1초까지는 비워 두고(높이는 지킨다) 그 뒤 스켈레톤이다. 이미 받아 둔 달이면 바로 보인다.
+
+[그림: 9월로 넘김 — 머리는 바로 9월, 숫자 · 목록 자리만 스켈레톤 · 9월 머리 아래 10월 숫자](../../site/components/specs/skeleton.tsx#period-guide)
+
+### 같은 내용을 다시 받을 때
+
+화면으로 돌아오거나 당겨서 새로 고칠 때는 보던 내용을 지우지 않는다 — 새 값이 오면 바뀌고, 실패하면 내용을 둔 채 [Snackbar](snackbar.md) 로 가볍게 알린다([Result Section](result-section.md) 의 결정, 2026-10-02). 스켈레톤으로 돌아가지 않는다. 당겨서 새로 고침은 [Progress Circle](progress-circle.md) 의 원이 새로 고침이 끝날 때까지 돈다.
+
+[그림: 다시 받기 — 보던 내용 그대로 · 실패는 스낵바 · 스켈레톤으로 돌아간 화면](../../site/components/specs/skeleton.tsx#refresh-guide)
+
+### 알리기 — 보조 기술
+
+- 기다리는 영역에 `aria-busy="true"` 를 단다 — 다 오거나 실패하면 푼다.
+- 상태 글은 화면에 하나다(`role="status"` · `aria-live="polite"`, 보이지 않게) — 1초에 "불러오는 중…", 5초에 "평소보다 오래 걸리고 있어요." 를 한 번씩 읽는다. 함께 기다리는 영역이 여럿이어도 한 번만 읽는다. 다 오면 비운다. 실패 · 비어 있음은 Result Section 이 알린다.
+- 상태 글은 영역보다 먼저 있어야 읽힌다 — 빈 채로 두었다가 1초에 글을 넣는다.
+- 스켈레톤 자체는 보조 기술에 숨긴다(`aria-hidden`) — 회색 면에는 읽을 것이 없다.
+- 앱(Flutter)은 같은 일을 `Semantics(liveRegion: true)` 로 한다 — 스켈레톤은 `ExcludeSemantics`.
+
+## 코드
+
+레시피 `recipes/shadcn/components/ui/skeleton.tsx` 를 쓴다. 조각은 `Skeleton`, 기다리는 영역은 `LoadingRegion`(시간표 · `aria-busy` · 오래 걸림 글 · 실패로 바꿈)이고, 앱 맨 위에 `LoadingAnnouncer` 를 한 번 둔다(화면의 상태 글 하나). 아래 미리보기는 스펙 값으로 그린 모습이다.
+
+- `Skeleton` — `radius`(`"0"` · `"8"` 기본 · `"16"` · `"full"`), `text`(`"t1"` ~ `"t14"` — 그 글자의 줄 높이를 높이로, 모서리 8), 크기 · 폭은 `className`. 늘 `aria-hidden` 이고, 글 자리(`span` · `p`) 안에도 둘 수 있게 `span`(블록)으로 그린다.
+- `LoadingRegion` — `pending`(처음 받는 중 · 내용 없음) · `failed`(내용 없이 실패) · `fallback`(스켈레톤, 또는 `"circle"` — 영역 가운데 Progress Circle 40) · `failure`(실패 때 — Result Section) · `children`(내용). 1초까지 `fallback` 을 보이지 않게 그려 높이를 지키고, 5초에 오래 걸림 글을 더하고, `pending` 동안 `aria-busy` 를 단다. 내용이 이미 있으면(같은 내용을 다시 받는 중) `pending` 이 아니다 — 내용을 그대로 둔다.
+- `LoadingAnnouncer` — 화면의 상태 글 하나. `LoadingRegion` 들이 여기에 알리고, 같은 글은 한 번만 읽는다.
+- `useWaitPhase(pending)` — `"quiet"`(0 ~ 1초) · `"waiting"`(1초 ~) · `"slow"`(5초 ~). 영역을 직접 짤 때 쓴다.
+- `LOADING_TIMING` — `{ showAfter: 1000, slowAfter: 5000, timeout: 10000, retryDelays: [1000, 2000] }`(`skeleton.yaml` 의 `region`).
+
+### 목록 — 틀은 그리고 데이터 자리만
+
+[그림: 최근 거래 카드 — 제목은 그리고 줄만 스켈레톤](../../site/components/specs/skeleton.tsx#ex-list)
+
+```tsx
+import { LoadingRegion, Skeleton } from "@/components/ui/skeleton"
+import { Card, CardHeader, CardTitle } from "@/components/ui/card"
+import { List, ListItem } from "@/components/ui/list"
+import { ResultSection } from "@/components/ui/result-section"
+
+// 줄 껍데기는 실제 List 그대로 — 글 자리는 text 로 그 글자의 줄 높이(t5 22 · t3 18)
+function TransactionRowsSkeleton({ rows }: { rows: number }) {
+  return (
+    <List>
+      {Array.from({ length: rows }, (_, i) => (
+        <ListItem
+          key={i}
+          prefix={<Skeleton radius="12" className="size-10" />}
+          title={<Skeleton text="t5" className="w-32" />}
+          detail={<Skeleton text="t3" className="w-20" />}
+          suffix={<Skeleton text="t5" className="w-16" />}
+        />
+      ))}
+    </List>
+  )
+}
+
+<Card>
+  <CardHeader><CardTitle>최근 거래</CardTitle></CardHeader>{/* 틀 — 처음부터 그린다 */}
+  <LoadingRegion
+    pending={query.isPending}
+    failed={query.isError && !query.data}
+    fallback={<TransactionRowsSkeleton rows={4} />}
+    failure={
+      <ResultSection
+        kind="failure"
+        size="medium"
+        title="거래를 불러오지 못했어요"
+        description="잠시 후 다시 시도해주세요."
+        primaryAction={{ label: "다시 시도", onClick: () => query.refetch() }}
+      />
+    }
+  >
+    <TransactionList items={query.data} />
+  </LoadingRegion>
+</Card>
 ```
-single line:
-┌────────────────────────┐
-│░░░░░░░░░░░░░░░░░░░░░░░░│  ← bg-surface-input + animate-pulse
-└────────────────────────┘
 
-avatar + text rows:
-○░░░░  ░░░░░░░░░░░░░░░░░░
-       ░░░░░░░░░░░░░
+### 모양 넷
 
-card placeholder:
-┌────────────────────────┐
-│                        │
-│       (image)          │ h-32 w-full
-│                        │
-└────────────────────────┘
-░░░░░░░░░░░░░░░         ← h-5 w-3/4 (title)
-░░░░░░░░░░░░░░░░░░░░    ← h-3 w-full
-░░░░░░░░░░░░░░░         ← h-3 w-5/6
+[그림: 글 · 카드 · 아바타 · 화면 폭 사진](../../site/components/specs/skeleton.tsx#ex-shapes)
+
+```tsx
+<Skeleton text="t4" className="w-40" />                  {/* 글 — 높이 19, 모서리 8(기본) */}
+<Skeleton radius="16" className="h-28 w-full" />          {/* 카드 · 썸네일 */}
+<Skeleton radius="full" className="size-10" />            {/* 아바타 */}
+<Skeleton radius="0" className="aspect-[4/3] w-full" />  {/* 화면 폭 사진 */}
 ```
 
-| ⓐ root | `<div>` — `animate-pulse rounded-sm bg-surface-input` + 사용처 `h-*`/`w-*`/`rounded-*` className으로 shape 결정. |
-| ⓑ pulse animation | Tailwind `animate-pulse` (= `@keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.5 } }`, 2s loop). Porest tokens.css의 `@keyframes pulse` 정의 동일 효과. |
-| ⓒ shimmer animation (옵션) | `relative overflow-hidden bg-surface-input` + 자식 `absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-primary/25 to-transparent animate-[shimmer_var(--motion-duration-loop)_linear_infinite]`. preview-html `.anim-shimmer` SoT. |
+### 다른 달 — 머리는 바로, 숫자 자리만
 
-**규칙**
+[그림: 통계의 달 넘기기](../../site/components/specs/skeleton.tsx#ex-period)
 
-- 색은 `bg-surface-input` — 본문 텍스트 영역 위에서 자연스러운 placeholder 톤. shadcn 기본 `bg-muted` 정합(Porest `surface-input`이 등가). `border-default`는 너무 강해 placeholder로 부적합.
-- shape는 className으로만 조정 — base는 박스만, 사용처가 텍스트 라인 / avatar / 이미지 영역 비율 결정.
-- 텍스트 라인 placeholder는 실제 폰트 line-height와 가깝게 — `text-body-md`(15px line-height 24) → `h-4`(16px) skeleton. 사용자가 텍스트 자리를 정확히 인지.
-- avatar는 `h-* w-* rounded-full` — [`Avatar`](avatar.md) 사이즈(sm 32 / md 40 / lg 48 / xl 64) 정합.
-- pulse vs shimmer 선택 — 단순 로딩이면 `pulse`(가벼움), 시각 강조가 필요하면 `shimmer`(더 풍부, 약간 무거움). 한 페이지 안 통일 권장(섞으면 시각 noise).
-- 다수 skeleton stack 시 동일 animation — 시각 통일.
-- `prefers-reduced-motion: reduce` 시 animation 자동 비활성 (preview-html `.anim-*::after` 패턴 동일).
+```tsx
+// 달 이름(틀)은 고른 달을 바로 보이고, 숫자는 그 달의 쿼리를 기다린다.
+// 옛 달 값을 이어서 보이지 않는다 — placeholderData 를 쓰지 않는다
+const stats = useQuery({ queryKey: ["stats", month], queryFn: () => getStats(month) })
 
-## Variants (animation)
+<MonthNav value={month} onValueChange={setMonth} />
+<LoadingRegion
+  pending={stats.isPending}
+  failed={stats.isError && !stats.data}
+  fallback={<Skeleton text="t9" className="w-36" />}
+  failure={<ResultSection kind="failure" size="medium" title="통계를 불러오지 못했어요" primaryAction={{ label: "다시 시도", onClick: () => stats.refetch() }} />}
+>
+  <Amount value={stats.data?.total} />
+</LoadingRegion>
+```
 
-| Variant | Animation | 시각 | 사용처 |
-|---|---|---|---|
-| `pulse` *(default)* | `animate-pulse` (opacity 1↔0.5) | 단순 깜빡임 | 기본 로딩 — list/card/text placeholder. 시각 가벼움. |
-| `shimmer` | sweep gradient (`@keyframes shimmer` translateX -100% → 100%) | 좌→우 빛 sweep | 강조 로딩 — hero image, key content placeholder. 시각 풍부. |
+### 앱 맨 위 · 요청 설정
 
-shimmer 구현은 합성 패턴 — base `Skeleton` + 자식 `<div>` gradient overlay. spec은 두 variant를 모두 정의하지만 tsx base는 pulse 단일, shimmer는 사용처 className 또는 추가 wrapper로 합성.
+```tsx
+import { LOADING_TIMING, LoadingAnnouncer } from "@/components/ui/skeleton"
 
-## Sizes
+// 화면의 상태 글 하나 — LoadingRegion 들이 여기에 알린다(같은 글은 한 번만 읽는다)
+<LoadingAnnouncer>
+  <App />
+</LoadingAnnouncer>
 
-Skeleton은 **size variant 없음** — 모든 크기는 사용처 className(`h-*`/`w-*`/`rounded-*`)이 결정.
-
-[표: 색 · 모양](skeleton.yaml#base)
-
-[표: 애니메이션](skeleton.yaml#motion)
-
-## States
-
-Skeleton은 **state 없음** — 정적 placeholder (단, animation은 loop 무한 반복).
-
-## Layout (한국 도메인 패턴)
-
-**HR — 결재 list placeholder**
-
-- 결재함 진입 시 — avatar(40 round) + 직원명(`h-4 w-24`) + 부서(`h-3 w-32`) + status badge(`h-6 w-16 rounded-full`) 행 3–5개 반복.
-
-**Desk — 메모 card placeholder**
-
-- 메모 보관함 진입 시 — 카드 외곽 + 제목(`h-5 w-3/4`) + 본문 2–3줄(`h-3 w-full` / `h-3 w-5/6`) + 태그 row(작은 pill 3개) + 메타(`h-3 w-32`).
-
-**Desk — 가계부 row placeholder**
-
-- 거래내역 list 로딩 — avatar(카테고리 icon 자리, 40 round) + 가맹점명(`h-4 w-40`) + 일시(`h-3 w-28`) + 금액(`h-5 w-20`, 우측 정렬).
-
-**Hero image placeholder (shimmer)**
-
-- listing detail 진입 시 큰 hero image — `h-64 w-full rounded-md` + `shimmer` variant. 시각 강조 로딩.
+// 요청은 제품 코드다(레시피 밖) — 읽기는 2번까지 1초 · 2초 뒤, 4xx 와 쓰기는 다시 보내지 않는다.
+// 한 번의 불러오기는 다시 시도까지 합쳐 LOADING_TIMING.timeout(10초) 안에 끝낸다
+new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: (count, error) => count < LOADING_TIMING.retryDelays.length && isRetryable(error),
+      retryDelay: (count) => LOADING_TIMING.retryDelays[count] ?? LOADING_TIMING.retryDelays[LOADING_TIMING.retryDelays.length - 1] ?? 0,
+    },
+    mutations: { retry: false },
+  },
+})
+```
 
 ## Behavior
 
 | 인터랙션 | 동작 |
 |---|---|
-| 모든 인터랙션 | **없음** — 정적 placeholder. focus 불가, click 무반응. |
-| Animation | 무한 loop (`animation-iteration-count: infinite`). 데이터 도착 시 부모에서 unmount. |
-| Reduced motion | `prefers-reduced-motion: reduce` 시 animation 일시 정지(또는 0.01ms으로 사실상 정지). placeholder 박스는 그대로 표시. |
+| 불러오기 시작 | 영역에 `aria-busy` — 1초까지 틀만(데이터 자리는 보이지 않게 그려 높이를 지킨다) |
+| 1초 | 스켈레톤이 보이고 띠가 지나간다 — 상태 글 "불러오는 중…" |
+| 5초 | 오래 걸림 글이 더해진다 — 한 번 읽힌다 |
+| 10초 | 실패 — Result Section `failure` + "다시 시도" 로 바뀐다(투명도 150ms) |
+| 다 옴 | 스켈레톤을 걷고 내용이 투명도로 나타난다(150ms) — 자리 크기는 그대로 |
+| 모션 줄이기 | 띠가 멈추고 면만 남는다 — 시간표 · 상태 글은 그대로 |
+| 누르기 · 키보드 | 없다 — 스켈레톤은 초점을 받지 않는다 |
 
 ## Accessibility
 
 | 기준 | 검증 |
 |---|---|
-| **WCAG 1.4.3** Color contrast (placeholder × bg-page) | `surface-input` × `bg-page` 1.2:1 — 시각 식별 약함 (의도적, placeholder는 강조 회피). 텍스트 콘텐츠 아님이라 4.5:1 미적용. |
-| **WCAG 1.4.11** Non-text contrast | placeholder는 정보 전달 요소 아님 — 대비 기준 미적용. |
-| **WCAG 2.3.3** Animation from Interactions | pulse/shimmer는 사용자 인터랙션 트리거 아님(자동 loop). 2.3.3 적용 안 됨. |
-| **WCAG 2.2.2** Pause/Stop/Hide (animation 5s+) | infinite loop이지만 시각 변화가 미세(opacity 0.5↔1, low contrast gradient) — 사용자 attention 침해 없음. 단, `prefers-reduced-motion: reduce` 존중 필수 ✓. |
-| **WCAG 1.3.1** Info and Relationships | screen reader 대응 — `aria-busy="true"` (부모 컨테이너) + `aria-live="polite"`로 로딩 상태 안내 권장. Skeleton 자체는 `aria-hidden="true"` (시각 placeholder는 SR 무관). |
-| **ARIA** | `role` 없음. 부모 컨테이너에 `aria-busy="true"` 부여 — 데이터 도착 시 `false`로 변경 + 실제 콘텐츠 mount. |
-
-## 적용 범위 — 정적 틀 vs 콘텐츠
-
-**스켈레톤은 서버 데이터가 들어갈 자리에만 씌운다. 화면의 고정 틀은 로딩 중에도 실제로 렌더한다.**
-
-탭 바, 섹션 제목, 페이지 헤더, '추가'·'관리' 같은 액션 버튼, 필터 토글은 로컬 상태·정적
-문자열로 즉시 그릴 수 있다. 이런 걸 회색 박스로 덮으면 두 가지가 나빠진다 — 곧바로 보여줄 수
-있는 정보를 굳이 가리고, 데이터가 도착하는 순간 진짜 위젯으로 바뀌면서 폭·높이가 미세하게
-달라져 화면이 튄다. 반대로 콘텐츠만 교체하면 틀은 처음부터 끝까지 같은 자리에 서 있는다.
-
-```
-┌─ 통계 ────────────────────────┐   ← 페이지 제목: 실제 렌더
-│ [카테고리][추이][비교]        │   ← 탭: 실제 렌더 (로컬 상태)
-├───────────────────────────────┤
-│ 카테고리별 지출        [7월▾] │   ← 섹션 제목·기간 버튼: 실제 렌더
-│ ░░░░░░░░░░░░░░░░░░░░░░░░░░░░  │   ← 여기서부터 skeleton (서버 데이터)
-│ ░░░░░░░░░░░░░░░░░░░░░░░░░░░░  │
-└───────────────────────────────┘
-```
-
-- **콘텐츠 컨테이너와 스켈레톤은 한 세트로 둔다** — 같은 부모 안에서 삼항으로 갈라, 껍데기
-  (카드·섹션·패딩)는 양쪽이 공유한다. 로딩 분기가 껍데기까지 따로 그리면 껍데기가 두 벌이 되고,
-  한쪽만 고쳐질 때 어긋난다.
-- **껍데기는 실렌더가 쓰는 컴포넌트를 그대로 쓴다** — `Section`/`Card` 를 자체 `<div>`·`Container`
-  로 복제하지 않는다. 복제본은 컴포넌트에 값이 하나 늘어날 때(예: 헤드 간격 prop) 로딩만 옛 값에
-  남는다.
-- **자기 쿼리를 가진 컴포넌트는 자기 스켈레톤을 갖는다** — 부모 페이지가 그 컴포넌트를 다시
-  흉내내지 않는다. 스켈레톤이 두 벌이 되면 행 수·폭이 서로 달라진다.
-- **데이터에 따라 있고 없고가 갈리는 섹션**은 스켈레톤에 넣지 않는다 — 로딩 중엔 뜰지 알 수 없어
-  넣으면 사라지고, 빼면 나타난다. 화면 맨 아래로 밀리는 쪽(빼는 쪽)이 덜 튄다.
+| **WCAG 1.4.11** Non-text contrast(≥ 3:1) | 스켈레톤은 장식(`aria-hidden`)이라 기준 밖 — 흰 면 위 1.08 · 다크 1.30(떠 있는 면 1.13), 띠가 지나가며 모양이 드러난다. 기다리는 상태는 상태 글이 알린다 |
+| **WCAG 2.2.2** Pause, Stop, Hide | 진행을 알리는 반복이라 기준의 예외지만, 10초면 실패로 바뀌어 멈추고 모션 줄이기면 처음부터 멈춘다 ✓ |
+| **WCAG 2.3.3** Animation from Interactions | 모션 줄이기면 띠를 멈춘다(v104) ✓ |
+| **WCAG 4.1.3** Status messages | 영역 `aria-busy`, 화면의 상태 글 하나(`role="status"`) — 1초 "불러오는 중…" · 5초 "평소보다 오래 걸리고 있어요." 를 한 번씩, 결과는 Result Section ✓ |
+| **WCAG 2.5.8** Target Size — Minimum(AA ≥ 24×24) | 누르는 것이 없다 — 해당 없음 |
+| **WCAG 2.5.5** Target Size — Enhanced(AAA ≥ 44×44) | 누르는 것이 없다 — 해당 없음 |
+| **ARIA** | 스켈레톤 `aria-hidden="true"`, 영역 `aria-busy="true"`(다 오면 뺀다), 상태 글 `role="status"` + `aria-live="polite"`. 영어("Loading") · 세 점("...")을 쓰지 않는다 — "불러오는 중…"(Writing v106) |
 
 ## Do / Don't
 
 ### ✅ Do
 
-- 로딩 중 콘텐츠 자리 보존 — 사용자가 곧 나타날 콘텐츠 윤곽 인지, CLS 방지.
-- shape는 실제 콘텐츠 비율과 비슷하게 — 텍스트 라인은 `h-4 w-*` (line-height 16), avatar는 [`Avatar`](avatar.md) 사이즈 정합.
-- 한 페이지 안 한 가지 animation — pulse/shimmer 섞지 않음.
-- 탭·섹션 제목·액션 버튼 같은 정적 틀은 로딩에도 실제 렌더 — skeleton 은 데이터 자리에만.
-- 부모 컨테이너에 `aria-busy="true"` + 데이터 도착 시 unmount — screen reader 친화.
-- `prefers-reduced-motion: reduce` 존중 — 토큰 시스템 keyframes는 자동 대응.
+- 틀(머리 · 탭 · 제목 · 버튼 · 카드 면)은 그리고 데이터 자리만 스켈레톤.
+- 글 자리는 그 글자의 줄 높이, 모서리는 내용대로(글 8 · 타일 12 · 카드 16 · 아바타 full · 사진 0).
+- 흰 면(카드 · 시트 · 대화상자) 위에.
+- 1초까지 기다렸다 보이고, 5초에 한 줄, 10초에 실패 + 다시 시도.
+- 달을 바꾸면 머리는 바로, 바뀔 숫자 · 목록 자리만 기다린다.
 
 ### ❌ Don't
 
-- 1초 이내 빠른 로딩 — Skeleton 노출이 더 시각 noise. 즉시 표시되는 경우엔 그냥 콘텐츠 직접 mount.
-- 정확한 색·shape를 본문과 동일하게 — placeholder는 *추정*. 너무 정확하면 사용자가 실제 콘텐츠로 오인.
-- shape 비율 무시 — 메모 본문 placeholder가 1줄(`h-3 w-1/2`)뿐이면 실제 로딩 후 4줄 본문이 등장해 사용자 인지 부담.
-- placeholder 위에 다른 콘텐츠 겹침 — z-index 위계 깨짐, 시각 혼란.
-- 로딩 완료 후에도 Skeleton 잔존 — unmount 또는 `aria-busy="false"` + 실제 콘텐츠로 교체 필수.
-- 탭·제목 같은 고정 틀까지 회색 박스로 덮기 — 바로 보여줄 수 있는 걸 가리고, 교체 순간 화면이 튄다.
-- 실렌더의 껍데기(Section·Card)를 스켈레톤에서 자체 마크업으로 복제 — 컴포넌트가 바뀌면 로딩만 옛 모양으로 남는다.
+- 깜빡임(펄스) · 브랜드 색 띠.
+- 회색 페이지 바탕 위에 바로 — 사라진다.
+- 탭 · 제목 · 버튼까지 회색으로 덮기.
+- 스켈레톤 위에 원을 얹기 · 한 자리에 둘 다.
+- 새 달 이름 아래 옛 달 숫자.
+- 불러오는 중인 금액 자리를 "—" 로 — 값이 없는 것과 같아 보인다.
+- 실패하는 조회를 스켈레톤으로 오래 붙잡기(재시도 10번에 41초).
+
+## Specification
+
+`skeleton.yaml` 의 규칙을 하나도 빼지 않고 조건마다 그린다 — 웹 · 앱이 Skeleton 을 만들 때 이 값을 그대로 쓴다. 조건이 없는 `Base` 가 모든 조합에 걸리고, 뒤의 규칙이 앞의 같은 값을 덮는다. 상태는 `enabled` 에서 바뀌는 값만 적었다.
+
+[그림: Specification — skeleton.yaml 의 규칙 전부](../../site/components/specs/spec-sheet.tsx#skeleton)
+
+## SEED 와 다른 점
+
+- **면은 porest `bg-neutral-weak`**(gray-200 #F5F6FA · 다크 #353B4D) — SEED gray-200(#f3f4f5 · #1d2025)의 역할 짝이다. 흰 면 위 1.08:1 로 SEED(1.10)와 거의 같다.
+- **흰 면 위에만 둔다** — porest gray-200 은 페이지 바탕과 같은 색이라 바탕 위에서는 사라진다(SEED 는 정하지 않았다).
+- **모션 줄이기면 띠가 멈춘다**(v104) — SEED 는 계속 돈다.
+- **보조 기술에 알린다** — 영역 `aria-busy` + 화면의 상태 글 하나. SEED 웹은 아무것도 남기지 않는다.
+- **모서리 기본값 8** — SEED 코드와 같다(rootage 는 0 을 기본이라 적었다).
+- **magic(AI) 톤은 두지 않는다** — 그 띠(gradient)도 들이지 않았다(v104).
+- **기다리는 동안의 시간표 · 요청 제한 · 다시 시도를 수치로 둔다** — SEED 는 Loading 패턴의 시나리오(5초 안내 · 10초 실패)로만 적었고 구현에는 장치가 없다.
 
 ## Migration notes
 
-- `skeleton.tsx` 색 정정 — `bg-border-default` → **`bg-surface-input`** (shadcn `bg-muted` 정합, placeholder 톤 자연). 주석에는 이미 `surface-input` 명시였으나 코드 불일치였음.
-- transition 토큰 직접 인용 추가 — Tailwind `animate-pulse`는 builtin keyframes이지만 Porest tokens.css에도 동일 `@keyframes pulse` 정의 있음. shimmer는 `animate-[shimmer_var(--motion-duration-loop)_linear_infinite]` 토큰 직접 인용.
-- preview-html `.anim-shimmer` (motion demo) — `surface-input` 베이스 + `primary 25%` mix gradient sweep. Skeleton tsx에서 shimmer variant 합성 시 동일 패턴 사용. preview-html 자체는 motion 카탈로그 용도 — Skeleton 컴포넌트는 별도 (변경 없음).
-- examples 한국 도메인 정합 — 추상 placeholder("h-4 w-32") 톤에서 **HR 결재 list / Desk 메모 card / Desk 가계부 row** 시나리오로 재작성. 타이포 토큰 직접 인용으로 위계 시각화.
-- shimmer variant 시각 명세 신규 — preview-html `.anim-shimmer` SoT 정합, React 합성 패턴(base + gradient overlay) 제공.
+### 2026-10-03 — SEED Skeleton 으로 새로 둔다
+
+사용자가 [비교 페이지](https://claude.ai/artifact/4ySVacsdnG4fgraR1HRK3G)에서 정했다 — SEED 반짝임 그대로(면 `bg-neutral-weak` · 흰 띠 · 1.5초 · 곡선 (0.35, 0, 0.35, 1) · 모서리 글 8 · 카드 16 · 원 full · 사진 0 · 글자 자리 = 글줄 높이), 시간표는 SEED Loading(1초 안 틀만 · 5초 안내 글 · 10초 실패 + 다시 시도 · 요청 제한 10초), 다른 달 · 기간은 머리를 바로 바꾸고 숫자 자리만 스켈레톤. 한 단계 진한 면(gray-300)은 고르지 않았다. 옛 Skeleton(깜빡임 기본 · `surface-input` · 모서리 4 · 글줄보다 낮은 막대 · 브랜드 25% 띠)은 걷었다 — 옛 스펙은 `skeleton.history/v-pre-seed-loading.*`.
+
+제품은 앱 적용 단계에서 옮긴다(2026-10-03 조사 — Desk 웹 · HR 은 크로미움에 띄워 쟀고, Desk 앱은 위젯 테스트로 쟀다).
+
+- **Desk 웹** — 공용 `Skeleton`(`shared/ui/skeleton.tsx:11-21`, 508개 · 41파일)은 깜빡임 2초 · #f0f2f7 · 모서리 4 로 페이지 바탕 위 1.04:1 · 카드 위 1.12:1 이고 모션 줄이기에도 계속 깜빡인다(`skeleton.tsx:17`). 반짝임(`skeleton.tsx:27-42`, 브랜드 25% 띠)은 쓰는 곳이 0. 캘린더 손 스켈레톤 31개(`widgets/calendar/ui/{agenda-view,week-and-day-view,year-view}/*-skeleton.tsx`). 가계부 줄 스켈레톤 64 ↔ 실제 65(`ExpensePage.tsx:254-286`). 불러오는 중인 금액 자리 "—" 9곳(`DashboardPage.tsx:1189 · 1288 · 1321 · 1355 · 2190`, `ExpensePage.tsx:540 · 568 · 598`, `AssetPage.tsx:1691`). 첫 진입은 앱 틀 없이 가운데 원 하나(`app/router/routes.tsx:102-111`), 지연 로딩 페이지 이동은 표시가 없다. 증권 구독 확인 중 빈 화면(`features/subscription/ui/SecuritiesGate.tsx:19-22`), 증권 스켈레톤의 `aria-busy` + 이름이 이름 금지 요소에(`TossStocksPage.tsx:409 · 425 · 767 · 771`, `daily-quote-table.tsx:117-118`). 요청 제한이 없고(`shared/api/base.ts`) 5xx · 네트워크만 1번 다시 시도(`shared/api/retry.ts:14-21`).
+- **Desk 앱** — `PSkeleton`(`shared/widgets/p_skeleton.dart:16-119`, 308개 · 38파일 · 화면 스켈레톤 46)은 깜빡임 2초 · #f0f2f7 · 모서리 4, 스켈레톤마다 컨트롤러가 따로라 엇갈려 깜빡인다(`p_skeleton.dart:53-58`). 의미 트리가 비어 있다(증권 4곳만 이름 — `stocks/toss_stocks_view.dart:2352 · 2450 · 2471 · 2774`). riverpod 기본 재시도 10번이 전역에 켜져(`app/session_scope.dart:74-80`) 0.3초 만에 실패하는 조회가 41초 동안 스켈레톤이다. `.when` 38파일(예: `expense/expense_screen.dart:271-279`)은 달을 바꾸면 화면 통째 스켈레톤으로 돌아가고, 새로 고침이 실패하면 보던 내용을 지운다. `PDayGroupSkeleton` 64 ↔ 65(`shared/widgets/p_day_group.dart:136-162`).
+- **HR 웹** — shadcn `Skeleton`(`shared/ui/shadcn/skeleton.tsx:3-11`, 398개 · 53파일)은 `bg-accent` #f8f8f8 로 흰 바탕 위 1.06:1, 모서리 6, 모션 줄이기에도 깜빡인다. 재시도 3번 약 7초 · 요청 제한 없음(`app/providers/QueryProvider.tsx:14-20`), 연도 · 필터를 바꿀 때마다 새 키로 다시 스켈레톤. 세션 확인 동안 화면을 덮는 회색 막 "Loading"(`shared/ui/loading/Loading.tsx:3-7` · `app/router/Router.tsx:78-81`). 사진 올리는 중 자리는 다크에서도 밝은 그라디언트이고 전역 `@keyframes shimmer` 를 덮어쓴다(`features/user-profile/ui/UserEditDialog.tsx:236-255`).
+- 앱 적용 때 화면마다 정할 자리 — 어느 쿼리가 화면을 통째로 기다리는지(웹 페이지 스켈레톤 · 첫 번만 3화면), 지연 로딩 페이지 이동 중 표시, 홈 히어로의 흰 정지 막대(앱 `dashboard/dashboard_screen.dart:713-726`).

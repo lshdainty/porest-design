@@ -45,7 +45,7 @@ export function SheetOverlay({ ov, mode = 'auto', children }: { ov: OverlayLook;
 // 팝오버 — 머리 없는 고르는 패널(무엇을 고르는지는 칸이 말한다), 아래에 확정 버튼(있을 때만)
 export function PopoverPanel({ ov, mode = 'auto', children, footer, width, bodyPad = true }: { ov: OverlayLook; mode?: ViewMode; children: ReactNode; footer?: ReactNode; width?: number | string; bodyPad?: boolean }) {
   return (
-    <PopoverSurface look={ov.popover} mode={mode} footer={footer} width={width} bodyPad={bodyPad} scroll={{ overflow: false, scrolled: false }}>
+    <PopoverSurface look={ov.popover} mode={mode} footer={footer} width={width} bodyPad={bodyPad} scroll={{ scrolled: false }}>
       {children}
     </PopoverSurface>
   );

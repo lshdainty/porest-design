@@ -115,6 +115,7 @@ export const PROP_LABEL = {
   brightness: '밝기',
   scale: '배율',
   translateX: '가로 이동',
+  translateY: '세로 이동',
   opacity: '불투명도',
   cursor: '커서',
   pointerEvents: '포인터 이벤트',
@@ -163,6 +164,21 @@ export const PROP_LABEL = {
   valueFormat: '값 형식',
   selectedForeground: '고른 글자색',
   numerals: '숫자 폭',
+  // 기다림 묶음(2026-10-03) — Skeleton 의 기다리는 영역 · Progress Circle 의 호 · 당겨서 새로 고침 · Scroll Fog · Content Placeholder
+  showAfter: '보이기 시작',
+  slowAfter: '오래 걸림 글',
+  timeout: '요청 제한',
+  retry: '다시 시도',
+  linecap: '끝 모양',
+  start: '시작 자리',
+  length: '호 길이',
+  threshold: '문턱',
+  multiplier: '당김 비율',
+  mode: '채움 방식',
+  mask: '마스크',
+  placement: '흐리는 쪽',
+  fog: '끝 흐림',
+  strokeWidth: '선 굵기',
 };
 export const PROP_ORDER = Object.keys(PROP_LABEL);
 

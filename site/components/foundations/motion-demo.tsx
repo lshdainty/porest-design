@@ -2,8 +2,10 @@
 // Motion 페이지의 재생 판 — 값은 서버 컴포넌트(motion.tsx)가 DESIGN.md 에서 읽어 넘긴다.
 // 누를 때만 움직인다(저절로 재생하지 않는다).
 import { useEffect, useState, type CSSProperties } from 'react';
+import { RotateCw } from 'lucide-react';
 
-export type Palette = { brand: string; weak: string; line: string; grid: string; muted: string; surface: string; skeleton: string };
+// skeleton · bone — 스켈레톤의 면 색과 글 자리 한 줄(높이 = 글줄 높이 · 모서리, skeleton.yaml)
+export type Palette = { brand: string; weak: string; line: string; grid: string; muted: string; surface: string; skeleton: string; bone?: { h: number; r: number } };
 export type EaseItem = { name: string; value: string; note: string };
 export type Kf = { name: string; duration: string; durationToken?: string; ms: number; ease: string; easeToken?: string; use: string };
 
@@ -159,7 +161,8 @@ export function KeyframePlayer({ single, loop, reduced, shimmer, palette: p }: {
         {loop.map((k) => (
           <div key={k.name} className="flex flex-col items-center gap-1.5 rounded-xl bg-white px-2 pb-3 pt-4 text-[#1A1F2E]">
             <div className="flex h-14 items-center justify-center">
-              {k.name === 'spin' && <span className="block h-7 w-7 rounded-full" style={{ border: `3px solid ${p.surface}`, borderTopColor: p.brand, animation: loopAnim(k) }} />}
+              {/* spin — 새로 고침 아이콘처럼 일정하게 도는 것(Progress Circle 은 제 스펙의 회전 · 호를 쓴다) */}
+              {k.name === 'spin' && <RotateCw aria-hidden size={26} strokeWidth={2} style={{ color: p.brand, animation: loopAnim(k) }} />}
               {k.name === 'pulse' && <span className="block h-4 w-4 rounded-full" style={{ background: p.brand, animation: loopAnim(k) }} />}
               {k.name === 'ping' && (
                 <span className="relative block h-3 w-3">
@@ -168,7 +171,7 @@ export function KeyframePlayer({ single, loop, reduced, shimmer, palette: p }: {
                 </span>
               )}
               {k.name === 'shimmer' && (
-                <span className="relative block h-3 w-20 overflow-hidden rounded" style={{ background: p.skeleton }}>
+                <span className="relative block w-20 overflow-hidden" style={{ height: p.bone?.h ?? 12, borderRadius: p.bone?.r ?? 4, background: p.skeleton }}>
                   <span className="absolute inset-0" style={{ background: shimmer, transform: 'translateX(-100%)', animation: loopAnim(k) }} />
                 </span>
               )}

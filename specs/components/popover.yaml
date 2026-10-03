@@ -69,7 +69,7 @@ rules:
         paddingX: $spacing-x6
         paddingTop: { value: $spacing-x6, note: "머리가 없을 때만 — 머리가 있으면 0" }
         paddingBottom: { value: $spacing-x6, note: "바닥이 없을 때만 — 바닥이 있으면 0" }
-        overflowY: { value: auto, note: "넘치면 아래 48 흐림 · 위로 스크롤하면 머리 아래 1px stroke-neutral-subtle — Dialog 와 같다" }
+        overflowY: { value: auto, note: "넘칠 수 있는 본문은 끝 흐림(Scroll Fog overlayBody — 늘 켜진 위 20 · 아래 80, 본문 안 여백도 그만큼 · 2026-10-03) · 위로 스크롤하면 머리 아래 1px stroke-neutral-subtle — Dialog 와 같다(dialog.yaml scrollFog)" }
       footer:
         paddingTop: $spacing-x4
         paddingX: $spacing-x6

@@ -13,7 +13,9 @@
  * <button role="checkbox" data-slot="chip">(ChipToggle — Radix Checkbox.Root), 하나 고르기 칩 <button role="radio" data-slot="chip">
  * (ChipRadio — Radix RadioGroup.Item)를 묶음 <div role="group" data-slot="chip-group">(ChipGroup) · <div role="radiogroup"
  * data-slot="chip-radio-group">(ChipRadioGroup)에 둔다. 가로 스크롤 묶음(layout="scroll")은 두 겹이다 — 바깥 묶음(이름 · 링 · bleed) 안의
- * 스크롤 칸 <div data-slot="chip-scroll-row"> 에 칩이 든다. 체크박스 · 라디오 칩의 고름은 data-state="checked" 다. 앞 · 뒤 아이콘은
+ * 스크롤 칸 <div data-slot="chip-scroll-row" data-scroll-fog="row"> 에 칩이 든다 — 칸의 양 끝은 늘 흐린다(Scroll Fog row 좌우 20). 레시피(useScrollFog)는
+ * 그릴 때 토큰 --gradient-fade-mask 에 방향을 붙여 칸의 style(mask-*) · data-fog-axis="x" 로 넣는다 — 정적 HTML 은 같은 일을 빌드 때 DESIGN.md 의
+ * 토큰 값으로 해 style 에 적었다(SOLID · fogStyle 은 scroll-fog.tsx 와 같은 셈). 체크박스 · 라디오 칩의 고름은 data-state="checked" 다. 앞 · 뒤 아이콘은
  * <span data-slot="chip-prefix-icon | chip-suffix-icon">, 입력값 칩은 알약 <span data-slot="input-chip"> > 글 <span data-slot="input-chip-label">
  * + 지우기 <button data-slot="input-chip-remove"> 다.
  * chip.tsx 는 cva 결과를 cn() 에 한 번 더 넣지만 지워지는 클래스가 없다 — 같은 속성을 다시 쓰는 클래스는 hover: · active: · disabled: ·
@@ -25,6 +27,8 @@
  * 레시피의 스크립트(Radix 의 고르기 · 화살표로 옮기기, 누르는 순간 --press-basis 재기, 지운 뒤 포커스 옮기기)는 정적 HTML 에 없다 —
  * 칩에 마우스를 올리거나 누르면 바탕 · 축소는 레시피 그대로 바뀌지만 고른 상태는 그대로이고, 지우기를 눌러도 칩이 그대로다.
  */
+
+import { readFileSync } from "node:fs";
 
 // ── chip.tsx 의 cva 와 같은 값 ───────────────────────────────────────────
 
@@ -176,6 +180,23 @@ const P_FIX = {
 // 사이트의 `* { scrollbar-width: thin }`(얇은 스크롤바)도 층 밖 규칙이라 스크롤 칸의 [scrollbar-width:none] 을 이긴다 —
 // 넘친 줄 아래에 스크롤바가 생긴다. 스크롤 칸에는 style 로 한 번 더 숨긴다(레시피에는 없는 미리보기용 덧칠)
 const SCROLL_FIX = "scrollbar-width:none;";
+
+// ── 끝 흐림 — scroll-fog.tsx 의 useScrollFog 와 같은 셈(row · 가로) ─────────────────
+
+// 토큰 값 — 레시피는 그릴 때 getComputedStyle 로 읽는다. 정적 HTML 은 DESIGN.md 의 v104 표에서 읽는다
+const FADE_MASK = /`gradient-fade-mask` \| `(linear-gradient\([^`]+\))`/.exec(readFileSync(new URL("../../../DESIGN.md", import.meta.url), "utf8"))[1];
+const SOLID = "linear-gradient(#000, #000)";
+const withDirection = (token, direction) => token.replace(/^linear-gradient\(/, `linear-gradient(${direction}, `);
+// 좌우 20 — 시작 쪽 흐림(투명 → 불투명) · 가운데 불투명 · 끝 쪽 흐림(불투명 → 투명). 칸의 style 에 mask-* 와 -webkit-mask-* 를 같이 넣는다
+function fogStyle(start = "20px", end = "20px") {
+  const mask = {
+    image: `${withDirection(FADE_MASK, "to right")}, ${SOLID}, ${withDirection(FADE_MASK, "to left")}`,
+    size: `${start} 100%, calc(100% - ${start} - ${end}) 100%, ${end} 100%`,
+    position: `0 0, ${start} 0, 100% 0`,
+    repeat: "no-repeat",
+  };
+  return ["image", "size", "position", "repeat"].map((p) => `mask-${p}:${mask[p]}; -webkit-mask-${p}:${mask[p]};`).join(" ");
+}
 
 // ── cva · cn 풀이 ─────────────────────────────────────────────────────────
 
@@ -368,9 +389,11 @@ function fieldGroup(props, f) {
   };
 }
 
-// 묶음 안 — scroll 은 스크롤 칸 한 겹을 더 둔다(레시피의 rowOf)
+// 묶음 안 — scroll 은 스크롤 칸 한 겹을 더 둔다(레시피의 rowOf · ChipScrollRow). 칸의 양 끝은 늘 흐린다(useScrollFog — row 좌우 20)
 const rowOf = (layout, chips) =>
-  layout === "scroll" ? `<div data-slot="chip-scroll-row" class="${SCROLL_ROW}" style="${SCROLL_FIX}">${chips}</div>` : chips;
+  layout === "scroll"
+    ? `<div data-slot="chip-scroll-row" data-scroll-fog="row" class="${SCROLL_ROW}" data-fog-axis="x" style="${fogStyle()} ${SCROLL_FIX}">${chips}</div>`
+    : chips;
 
 // 묶음의 이름 · 설명 속성
 const nameAttrs = (p) => [
@@ -841,7 +864,7 @@ import { Chip, ChipGroup } from "@/components/ui/chip"
   {
     title: "묶음 — 줄바꿈 · 가로 스크롤",
     description:
-      "칩 사이는 8(spacing-between-chips)이다. 폼 · 시트 안의 고르기 묶음은 줄바꿈한다(layout=\"wrap\" — 기본, 줄 사이도 8). 목록 위 필터 바 · 제안 줄은 한 줄 가로 스크롤로 둔다(layout=\"scroll\") — 두 겹이다. 바깥 묶음(이름 · 키보드 링 · bleed) 안의 스크롤 칸(data-slot=\"chip-scroll-row\")이 칩을 한 줄로 담고 안쪽 좌우 여백을 화면 여백(spacing-global-gutter)만큼 둬, 스크롤해도 첫 칩이 여백에서 시작하고 키보드로 옮겨도 여백 안에 멈춘다(scroll-padding). 부모가 이미 화면 여백을 두었으면 bleed 로 줄을 화면 끝까지 낸다. 스크롤 칸은 넘친 것을 자르므로 위아래 안쪽 6 · 바깥 −6 을 둬 누르는 영역 · 포커스 링이 잘리지 않고 줄 높이는 칩 그대로다 — −6 이 바깥 묶음의 margin 과 상쇄되는 두 겹이라 부모의 위아래 간격(space-y · gap)도 그대로다. 끝 흐림은 Scroll Fog 차례에 정한다. 미리보기의 아래 줄은 폭 360 화면을 넘어 가로로 스크롤된다.",
+      "칩 사이는 8(spacing-between-chips)이다. 폼 · 시트 안의 고르기 묶음은 줄바꿈한다(layout=\"wrap\" — 기본, 줄 사이도 8). 목록 위 필터 바 · 제안 줄은 한 줄 가로 스크롤로 둔다(layout=\"scroll\") — 두 겹이다. 바깥 묶음(이름 · 키보드 링 · bleed) 안의 스크롤 칸(data-slot=\"chip-scroll-row\")이 칩을 한 줄로 담고 안쪽 좌우 여백을 화면 여백(spacing-global-gutter)만큼 둬, 스크롤해도 첫 칩이 여백에서 시작하고 키보드로 옮겨도 여백 안에 멈춘다(scroll-padding). 부모가 이미 화면 여백을 두었으면 bleed 로 줄을 화면 끝까지 낸다. 스크롤 칸은 넘친 것을 자르므로 위아래 안쪽 6 · 바깥 −6 을 둬 누르는 영역 · 포커스 링이 잘리지 않고 줄 높이는 칩 그대로다 — −6 이 바깥 묶음의 margin 과 상쇄되는 두 겹이라 부모의 위아래 간격(space-y · gap)도 그대로다. 칸의 양 끝은 늘 흐린다(Scroll Fog row — gradient-fade-mask 좌우 20, 스크롤 위치 · 넘침과 상관없이) — 안쪽 여백 24 가 흐림보다 넓어 처음 · 끝의 칩은 흐리지 않고, 흐린 자리의 칩도 그대로 눌린다. 미리보기의 아래 줄은 폭 360 화면을 넘어 가로로 스크롤된다.",
     jsx: `// 폼 · 시트 안 — 줄바꿈(기본). 칩 사이 · 줄 사이 8
 <ChipGroup aria-label="카테고리">
   {categories.map((c) => (

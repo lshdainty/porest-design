@@ -7,6 +7,7 @@ import { buttonLook } from './button-look';
 import { listLook } from './list-look';
 import { ListView } from './list-view';
 import type { RowSpec } from './list-shared';
+import { CATEGORY } from './loading-data';
 import { overlayLook, type OverlayLook, type OvButtons, type OvKit } from './overlay-look';
 import { AlertSurface, DimView, DialogSurface, EndButtons, PopoverSurface, SheetButtons, SheetSurface, type AlertSurfaceProps, type DialogSurfaceProps, type OvMarks, type PopoverSurfaceProps, type SheetSurfaceProps } from './overlay-view';
 import { Cap, F, Form, desk, hr, tf } from './select-screens';
@@ -199,6 +200,21 @@ export const PERIOD: RowSpec[] = [
 ];
 export function PeriodList({ mode, live = false, rows = PERIOD }: { mode: Mode; live?: boolean; rows?: RowSpec[] }) {
   return <ListView look={listLook('desk')} rows={rows} mode={mode} live={live} ariaLabel="기간" />;
+}
+// 카테고리 고르기 — 줄 데이터는 loading-data(브라우저 미리보기와 같이 쓴다)
+export { CATEGORY };
+// 앞 타일이 있는 줄 높이 — 위아래 여백 + max(타일, 제목 줄 높이)
+export function tileRowHeight() {
+  const f = listLook('desk').faces.none.light.enabled;
+  return f.pad.y * 2 + Math.max(f.tile.size, px(f.title.lineHeight ?? f.title.fontSize));
+}
+// 카테고리 고르기 시트 — 위 닫기, 바닥 없음(누르면 바로 고른다), 끝 흐림
+export function CategorySheet({ mode, ...rest }: Partial<SheetBits> & { mode: Mode }) {
+  return (
+    <SheetSurface look={ov().sheet} mode={mode} title="카테고리 고르기" safe={PHONE_SAFE} bodyPad={false} fog {...rest}>
+      <ListView look={listLook('desk')} rows={CATEGORY} mode={mode} live={false} ariaLabel="카테고리" />
+    </SheetSurface>
+  );
 }
 // 거래 상세 — 키 · 값 줄
 export const DETAIL: RowSpec[] = [

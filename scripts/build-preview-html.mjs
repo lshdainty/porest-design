@@ -246,8 +246,8 @@ export function brandProfile(brandName, tokens) {
         secondary: "임시 저장",
       },
       skeleton: {
-        title: "결재 큐 로딩 중",
-        description: "list-row 5개 — avatar (32) + 신청자 + 상태 + 시간. shimmer 1500ms × linear loop.",
+        title: "결재 대기 — 불러오는 동안",
+        description: "카드 면 · 카드 제목은 그리고 줄 5개만 스켈레톤이다 — List 줄 껍데기 그대로 아바타 원 40(full) · 신청자 t5 22 · 휴가 종류 · 기간 t3 18 · 상태 t3 18. 면 bg-neutral-weak 위로 흰 띠가 1.5초(motion-ease-easing)에 지나가고, 모션 줄이기면 멈춘다.",
         layout: "list",
         items: 5,
       },
@@ -419,8 +419,8 @@ export function brandProfile(brandName, tokens) {
         secondary: "취소",
       },
       skeleton: {
-        title: "메모 list 로딩 중",
-        description: "card 4개 — heading rect + body 2-line + tags placeholder. 모바일 친화 카드 톤.",
+        title: "메모 — 불러오는 동안",
+        description: "회색 바탕 위 흰 메모 카드 넷 — 카드 면은 그리고 안쪽 글 자리만 스켈레톤이다: 제목 t5 22 · 본문 t4 19 두 줄(마지막 줄을 짧게) · 날짜 t3 18, 모서리 8. 회색 바탕 위에 바로 두면 사라진다(1.00:1). 반짝임 1.5초 · 모션 줄이기면 면만.",
         layout: "card",
         items: 4,
       },
@@ -575,8 +575,8 @@ export function brandProfile(brandName, tokens) {
       secondary: "초안 저장",
     },
     skeleton: {
-      title: "Skeleton variant 데모",
-      description: "text-line / circle / rect / list-row 4 variant. shimmer 1500ms × linear loop · prefers-reduced-motion 시 정지.",
+      title: "Skeleton — 모양 넷",
+      description: "모서리는 곧 올 내용의 모양대로 — 글 · 숫자 8(글 자리는 그 글자의 줄 높이) · 아바타 full · 카드 · 썸네일 16 · 화면 폭 사진 0. 흰 면 위에만 두고, 흰 띠가 1.5초(motion-ease-easing)에 지나간다 · 모션 줄이기면 면만(03p).",
       layout: "demo",
       items: 4,
     },
@@ -809,9 +809,11 @@ export function renderButtonGallery(brand) {
     trash: svg('<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>'),
   };
   // 라벨은 <span> 에 싼다 — 로딩이면 숨기기만 해 폭이 그대로다. 아이콘만이면 이름(aria-label)을 단다 — 네이티브 title 은 쓰지 않는다(tooltip.md)
-  const btn = ({ cls, label = "", prefix = "", suffix = "", name = "", attrs = "" }) => {
+  // 로딩이면 aria-busy 를 달고 라벨 자리 가운데에 Progress Circle(size · tone inherit · aria-hidden — 03p)을 덧붙인다(button.tsx 와 같다)
+  const btn = ({ cls, label = "", prefix = "", suffix = "", name = "", attrs = "", loading = false }) => {
     const aria = name ? ` aria-label="${escape(name)}"` : "";
-    return `<button class="btn ${cls}" type="button"${aria}${attrs}>${prefix}${label ? `<span>${escape(label)}</span>` : ""}${suffix}</button>`;
+    const busy = loading ? ' aria-busy="true"' : "";
+    return `<button class="btn ${cls}" type="button"${aria}${attrs}${busy}>${prefix}${label ? `<span>${escape(label)}</span>` : ""}${suffix}${loading ? progressCircle({ size: "inherit", tone: "inherit", hidden: true }) : ""}</button>`;
   };
   const head = (first, cols, mod = "") => `<div class="btn-row btn-row--head${mod}"><div class="btn-cell-head">${escape(first)}</div>${
     cols.map(c => `<div class="btn-cell-head">${escape(c.ko)}<span>${escape(c.en)}</span></div>`).join("")
@@ -837,7 +839,7 @@ export function renderButtonGallery(brand) {
     { en: "hovered", ko: "호버", cls: "btn-state-hover" },
     { en: "focused", ko: "포커스", cls: "btn-state-focus" },
     { en: "pressed", ko: "누름", cls: "btn-state-pressed" },
-    { en: "loading", ko: "로딩", cls: "btn-loading", attrs: ' aria-busy="true"' },
+    { en: "loading", ko: "로딩", cls: "btn-loading", loading: true },
     { en: "disabled", ko: "비활성", cls: "", attrs: " disabled" },
   ];
   const variantPanel = `
@@ -848,7 +850,7 @@ export function renderButtonGallery(brand) {
       </div>
       <div class="btn-matrix">
         ${head("변형", states)}${variants.map(v => row(v.ko, v.en,
-          states.map(s => btn({ cls: `${v.cls} ${s.cls}`.trim(), label: v.label, attrs: s.attrs || "" })),
+          states.map(s => btn({ cls: `${v.cls} ${s.cls}`.trim(), label: v.label, attrs: s.attrs || "", loading: !!s.loading })),
         )).join("")}
       </div>
     </div>`;
@@ -865,7 +867,7 @@ export function renderButtonGallery(brand) {
     { ko: "앞 아이콘 + 글자", en: "prefixIcon", make: s => btn({ cls: `btn-neutral-solid ${s.cls}`, label: "추가", prefix: ICON.plus }) },
     { ko: "글자 + 뒤 아이콘", en: "suffixIcon", make: s => btn({ cls: `btn-neutral-solid ${s.cls}`, label: "다음", suffix: ICON.chevron }) },
     { ko: "아이콘만", en: "iconOnly · 정사각", make: s => btn({ cls: `btn-neutral-solid btn-icon-only ${s.cls}`, prefix: ICON.search, name: "검색" }) },
-    { ko: "로딩", en: "loading · 폭 유지", make: s => btn({ cls: `btn-neutral-solid ${s.cls} btn-loading`, label: "저장", attrs: ' aria-busy="true"' }) },
+    { ko: "로딩", en: "loading · 폭 유지", make: s => btn({ cls: `btn-neutral-solid ${s.cls} btn-loading`, label: "저장", loading: true }) },
   ];
   const sizePanel = `
     <div class="btn-panel">
@@ -2795,8 +2797,9 @@ export function chip({ kind = "button", variant = "outlineWeak", size = "medium"
 
 // 칩 묶음(Chip Group) — 칩 사이 8(spacing-between-chips).
 //   role       radiogroup(하나 고르기) · group(여럿 고르기 · 제안 · 필터 바 · 입력값 — 기본). 이름은 labelledby(Field 라벨) 또는 label(aria-label) — 꼭 단다
-//   layout     wrap(줄바꿈 — 폼 · 시트 안, 줄 사이 8 — 기본) · scroll(한 줄 가로 스크롤 — 목록 위 필터 바 · 제안 줄)
-//   gutter     스크롤 줄을 화면 끝까지 내고 안쪽 여백을 화면 여백(24)만큼 둔다 — 좌우 24 여백이 있는 틀 안에서만
+//   layout     wrap(줄바꿈 — 폼 · 시트 안, 줄 사이 8 — 기본) · scroll(한 줄 가로 스크롤 — 목록 위 필터 바 · 제안 줄. 안쪽 좌우 여백은 화면 여백 24 이고
+//              양 끝은 늘 흐린다 — Scroll Fog row 좌우 20, 2026-10-03)
+//   gutter     bleed — 좌우 24 여백이 있는 틀 안에서 스크롤 줄을 바깥 −24 로 화면 끝까지 낸다
 //   live       페이지 끝 스크립트가 고르기 · 지우기를 흉내 낸다 · fillTarget  제안 칩이 값을 넣을 입력의 id
 export function chipGroup({ role = "group", layout = "wrap", gutter = false, label = "", labelledby = "", describedby = "", required = false, live = false, fillTarget = "", items = [] } = {}) {
   const cls = ["pchip-group", layout === "scroll" && "pchip-group--scroll scrollbar-hide", gutter && "pchip-group--gutter"].filter(Boolean).join(" ");
@@ -2962,7 +2965,7 @@ export function renderChipGallery(brand) {
   const amounts = () => quick.map(([label]) => chip({ variant: "solid", label }));
   const surfacePanel = panel(
     "표면 · 묶음",
-    "Solid 의 옅은 바탕(bg-neutral-weak)은 흰 표면(bg-layer-default) 위에서만 보인다 — 라이트의 회색 바탕(bg-layer-basement)과 같은 gray-200 이라 거기서는 칩이 사라진다. 회색 바탕 위 줄은 Outline Strong · Outline Weak 를 쓴다(다크는 두 색이 달라 보이지만 규칙은 같다). 칩 사이는 8(spacing-between-chips)이다 — 폼 · 시트 안의 고르기 묶음은 줄바꿈하고 줄 사이도 8 이다. 목록 위 필터 바 · 제안 줄은 한 줄 가로 스크롤이고(쓰임의 필터 바 · 화면의 가계부), 줄을 화면 끝까지 내고 안쪽 여백을 화면 여백(spacing-global-gutter 24)만큼 둬 스크롤해도 첫 칩이 여백에서 시작한다. 끝 흐림은 Scroll Fog 차례에 정한다.",
+    "Solid 의 옅은 바탕(bg-neutral-weak)은 흰 표면(bg-layer-default) 위에서만 보인다 — 라이트의 회색 바탕(bg-layer-basement)과 같은 gray-200 이라 거기서는 칩이 사라진다. 회색 바탕 위 줄은 Outline Strong · Outline Weak 를 쓴다(다크는 두 색이 달라 보이지만 규칙은 같다). 칩 사이는 8(spacing-between-chips)이다 — 폼 · 시트 안의 고르기 묶음은 줄바꿈하고 줄 사이도 8 이다. 목록 위 필터 바 · 제안 줄은 한 줄 가로 스크롤이고(쓰임의 필터 바 · 화면의 가계부), 줄을 화면 끝까지 내고 안쪽 여백을 화면 여백(spacing-global-gutter 24)만큼 둬 스크롤해도 첫 칩이 여백에서 시작한다. 줄의 양 끝은 늘 흐린다 — Scroll Fog row(좌우 20 마스크 · 스크롤 위치와 상관없이 켜져 있다), 안쪽 여백 24 가 흐림보다 넓어 처음 · 끝 칩은 흐리지 않는다(03p).",
     samples([
       sample("흰 표면 위 — Solid", "bg-layer-default — 옅은 회색 채움이 보인다", frame(chipGroup({ label: "빠른 금액", items: amounts() }))),
       sample("회색 바탕 위 — Solid(하지 않는다)", "bg-layer-basement — 라이트에서 bg-neutral-weak 와 같은 gray-200", frame(chipGroup({ label: "빠른 금액", items: amounts() }), " pchip-frame--basement")),
@@ -3104,7 +3107,7 @@ export function chipTab({ label = "", variant = "solid", size = "medium", select
   return `<button ${attrs}><span class="pchip-label">${escape(label)}</span>${mark}</button>`;
 }
 
-// Chip Tabs 목록 — 바탕 · 바닥 선 없이 한 줄 가로 스크롤. 칩 사이 8 · 좌우 화면 여백 24 · 위아래 8
+// Chip Tabs 목록 — 바탕 · 바닥 선 없이 한 줄 가로 스크롤. 칩 사이 8 · 좌우 화면 여백 24 · 위아래 8 · 양 끝은 늘 흐린다(Scroll Fog row 좌우 20)
 export function chipTabs({ label = "", live = false, tabs = [] } = {}) {
   return `<div ${attrsOf([
     'class="ptab-chips"',
@@ -3285,7 +3288,7 @@ export function renderTabsGallery(brand) {
   const twoTier = phone(`${head("증권")}${brokers.list}${brokers.panels}`);
   const chipPanel = panel(
     "Chip Tabs — Solid · Outline × medium · large · 두 단",
-    "1차 Line 탭 안의 2차 탭이다. 칩 하나는 03i 의 Chip 그대로다 — solid 는 Chip Solid(안 고름 bg-neutral-weak), outline 은 Chip Outline Strong(안 고름 투명 + 안쪽 1px stroke-neutral-weak)이고, 고르면 짙은 채움(bg-neutral-inverted · fg-neutral-inverted — Outline 은 테두리를 지운다)이다. 크기는 Chip medium 36(기본) · large 40, 글 14 · 500 이고 누름 · 호버 · 포커스 · 비활성도 Chip 과 같다. 목록은 바탕 · 바닥 선 없이 한 줄 가로 스크롤이고 칩 사이 8 · 좌우 화면 여백 24 · 위아래 8 이다. 화면 전체 내용을 바꾸면 Solid, 일부 내용만 바꾸면 Outline — large 는 화면 전체를 바꾸는 탭, medium 은 좁은 자리 · 스크롤 중간의 서브 내용이다. 알림 점은 칩 안이라 글 뒤 6 · 세로 가운데에 두고 칩이 그만큼 넓어진다 — 색은 fg-brand 이고, 고른 칩(짙은 채움)에는 그리지 않는다(열어 내용을 보면 사라진다). 두 단이면 1차는 Line, 2차는 Chip Tabs 다 — 화면에 필터 바(거르는 칩)가 함께 있으면 2차도 Line 으로 둔다(같은 모양이면 무엇이 탭인지 알 수 없다). 모두 누르고 ← → 로 옮겨 볼 수 있다.",
+    "1차 Line 탭 안의 2차 탭이다. 칩 하나는 03i 의 Chip 그대로다 — solid 는 Chip Solid(안 고름 bg-neutral-weak), outline 은 Chip Outline Strong(안 고름 투명 + 안쪽 1px stroke-neutral-weak)이고, 고르면 짙은 채움(bg-neutral-inverted · fg-neutral-inverted — Outline 은 테두리를 지운다)이다. 크기는 Chip medium 36(기본) · large 40, 글 14 · 500 이고 누름 · 호버 · 포커스 · 비활성도 Chip 과 같다. 목록은 바탕 · 바닥 선 없이 한 줄 가로 스크롤이고 칩 사이 8 · 좌우 화면 여백 24 · 위아래 8 이며, 양 끝은 늘 흐린다(Scroll Fog row 좌우 20 — 여백 24 가 더 넓어 처음 · 끝 칩은 흐리지 않는다). 화면 전체 내용을 바꾸면 Solid, 일부 내용만 바꾸면 Outline — large 는 화면 전체를 바꾸는 탭, medium 은 좁은 자리 · 스크롤 중간의 서브 내용이다. 알림 점은 칩 안이라 글 뒤 6 · 세로 가운데에 두고 칩이 그만큼 넓어진다 — 색은 fg-brand 이고, 고른 칩(짙은 채움)에는 그리지 않는다(열어 내용을 보면 사라진다). 두 단이면 1차는 Line, 2차는 Chip Tabs 다 — 화면에 필터 바(거르는 칩)가 함께 있으면 2차도 Line 으로 둔다(같은 모양이면 무엇이 탭인지 알 수 없다). 모두 누르고 ← → 로 옮겨 볼 수 있다.",
     samples([
       ...chipSets.map(s => sample(s.cap, s.en, phone(chipTabs({ label: s.label, live: true, tabs: s.labels.map((l, i) => chipTab({ label: l, variant: s.variant, size: s.size, selected: i === 0, dot: i === s.dot })) })))),
       sample("두 단 — 증권", "1차 Line Fill · medium(나무증권 · 토스증권) · 2차 Chip Tabs Solid(보유 · 관심 · 발견)", twoTier),
@@ -3449,7 +3452,8 @@ export function renderTabsGallery(brand) {
 // 틀이 쌓임 맥락을 가두므로(isolation) 안의 z-index 는 토큰(v116) 그대로다 — 시트 · 대화상자 L2(딤 z-modal 100 · 표면 z-modal-content 101) · 팝오버 L3(z-floating 200) · 확인창 L5(z-alert 300 · z-alert-content 301).
 // 표면은 role=group 이다 — 레시피는 role="dialog" · "alertdialog" + aria-modal 이지만, 미리보기 페이지까지 막지 않게 했다. 대신 모달 뒤 화면은 inert 로 둬
 // 레시피의 결과(뒤 화면을 보조 기술에서 숨기고 초점을 가둔다)를 흉내 낸다. 팝오버는 비모달이라 뒤 화면 안에 그대로 그린다.
-// 본문 스크롤(넘치면 아래 48 흐림 · 위로 스크롤하면 머리 아래 선)은 페이지 끝 스크립트가 레시피처럼 맡는다. 확인창 버튼의 세로 전환은 CSS 다(레시피와 같다).
+// 넘칠 수 있는 본문의 끝 흐림(scrollFog — 03p 의 Scroll Fog overlayBody, 늘 켜진 위 20 · 아래 80)은 CSS 마스크이고, 위로 스크롤하면 머리 아래 선 ·
+// 넘친 본문의 키보드 스크롤(Tab)은 페이지 끝 스크립트가 레시피처럼 맡는다. 확인창 버튼의 세로 전환은 CSS 다(레시피와 같다).
 const OVERLAY_ICON = {
   x: listSvg('<path d="M18 6 6 18"/><path d="m6 6 12 12"/>'),
   info: listSvg('<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>'),
@@ -3481,23 +3485,25 @@ const overlayNameAttrs = (titleId, descId, label = "") => attrsOf([
 //   close   위 닫기(28 원) — 조회 · 고르기 · 시트의 입력 폼 모두 둔다(기본). 닫기가 있으면 제목 오른쪽을 64 비운다
 //   handle  손잡이 — 스냅 높이(절반 · 가득)를 둘 때만. snap 은 그림이 멈춘 높이(half)
 //   footer  바닥 버튼(large 48) — 하나면 폭 전체, 둘이면 반씩(보조 왼쪽 · 주 오른쪽)
-export function bottomSheet({ id = nextOverlayId("pov-sheet"), title = "", description = "", body = "", footer = [], close = true, handle = false, snap = "", closeInteraction = "" } = {}) {
+//   scrollFog  넘칠 수 있는 본문(목록 · 긴 폼) — 위 20 · 아래 80 이 늘 흐리고 본문 안에 그만큼 여백(bottom-sheet.yaml scrollFog)
+export function bottomSheet({ id = nextOverlayId("pov-sheet"), title = "", description = "", body = "", footer = [], close = true, handle = false, snap = "", closeInteraction = "", scrollFog = false } = {}) {
   const titleId = `${id}-title`;
   const descId = description ? `${id}-desc` : "";
   const head = `<div class="pov-sheet-header${close ? " pov-sheet-header--close" : ""}"><div class="pov-sheet-title" id="${titleId}">${escape(title)}</div>${description ? `<p class="pov-sheet-desc" id="${descId}">${escape(description)}</p>` : ""}</div>`;
-  return `<div class="pov-sheet${snap ? ` pov-sheet--${snap}` : ""}" role="group" ${overlayNameAttrs(titleId, descId)}>${handle ? '<div class="pov-handle" aria-hidden="true"></div>' : ""}${head}${close ? overlayClose({ kind: "circle", interaction: closeInteraction }) : ""}<div class="pov-sheet-body">${body}</div>${footer.length ? `<div class="pov-sheet-footer">${footer.join("")}</div>` : ""}</div>`;
+  return `<div class="pov-sheet${snap ? ` pov-sheet--${snap}` : ""}" role="group" ${overlayNameAttrs(titleId, descId)}>${handle ? '<div class="pov-handle" aria-hidden="true"></div>' : ""}${head}${close ? overlayClose({ kind: "circle", interaction: closeInteraction }) : ""}<div class="pov-sheet-body${scrollFog ? ' pov-body--fog" data-pov-scroll="top' : ""}">${body}</div>${footer.length ? `<div class="pov-sheet-footer">${footer.join("")}</div>` : ""}</div>`;
 }
 
 // Dialog — 1280 이상의 폼 · 상세. 글은 여기서 escape 하고 body · footer 는 HTML 조각으로 받는다.
 //   size    medium 480(기본) · large 800
 //   close   머리 닫기(52 상자) — 조회 · 안내만. 입력 폼은 두지 않는다(바닥 취소가 닫는다). 닫기가 있으면 머리 오른쪽을 52 비운다
-//   scroll  본문 스크롤 — top(기본) · scrolled(그릴 때 위로 스크롤해 둔다). 넘침 · 스크롤 표시는 페이지 끝 스크립트가 단다
+//   scroll  본문 스크롤 — top(기본) · scrolled(그릴 때 위로 스크롤해 둔다). 머리 아래 선 · 넘친 본문의 Tab 은 페이지 끝 스크립트가 단다
+//   scrollFog  넘칠 수 있는 본문(목록 · 긴 폼) — 위 20 · 아래 80 이 늘 흐리고 본문 안에 그만큼 여백(dialog.yaml scrollFog)
 //   footer  바닥 버튼(small 36) — 오른쪽 정렬, [취소] [저장] 차례
-export function overlayDialog({ id = nextOverlayId("pov-dialog"), title = "", description = "", body = "", footer = [], size = "medium", close = false, scroll = "top", closeInteraction = "" } = {}) {
+export function overlayDialog({ id = nextOverlayId("pov-dialog"), title = "", description = "", body = "", footer = [], size = "medium", close = false, scroll = "top", closeInteraction = "", scrollFog = false } = {}) {
   const titleId = `${id}-title`;
   const descId = description ? `${id}-desc` : "";
   const head = `<div class="pov-dialog-header${close ? " pov-dialog-header--close" : ""}"><div class="pov-dialog-title" id="${titleId}">${escape(title)}</div>${description ? `<p class="pov-dialog-desc" id="${descId}">${escape(description)}</p>` : ""}</div>`;
-  return `<div class="pov-dialog${size === "large" ? " pov-dialog--large" : ""}" role="group" ${overlayNameAttrs(titleId, descId)}>${head}${close ? overlayClose({ kind: "box", interaction: closeInteraction }) : ""}<div class="pov-dialog-body" data-pov-scroll="${scroll}">${body}</div>${footer.length ? `<div class="pov-dialog-footer">${footer.join("")}</div>` : ""}</div>`;
+  return `<div class="pov-dialog${size === "large" ? " pov-dialog--large" : ""}" role="group" ${overlayNameAttrs(titleId, descId)}>${head}${close ? overlayClose({ kind: "box", interaction: closeInteraction }) : ""}<div class="pov-dialog-body${scrollFog ? " pov-body--fog" : ""}" data-pov-scroll="${scroll}">${body}</div>${footer.length ? `<div class="pov-dialog-footer">${footer.join("")}</div>` : ""}</div>`;
 }
 
 // Alert Dialog — 되돌릴 수 없는 일 앞의 확인. 글은 여기서 escape 한다. 닫기 버튼 · 입력칸이 없다.
@@ -3517,13 +3523,13 @@ export function alertDialog({ id = nextOverlayId("pov-alert"), title = "", descr
 // Popover — 트리거에 붙는 비모달 표면. 글은 여기서 escape 하고 body · footer 는 HTML 조각으로 받는다.
 //   title · description  머리 — 안내 팝오버는 제목 + 닫기(52 상자 · 머리 오른쪽 52 비움), 고르는 패널은 머리 없이 본문만(이름은 label)
 //   footer  바닥 버튼(small 36) — 고른 것을 넣을 때("완료")만, 오른쪽 정렬
-//   본문은 대화상자와 같이 넘치면 아래 48 흐림 · 위로 스크롤하면 머리 아래 선이다(페이지 끝 스크립트)
-export function overlayPopover({ id = nextOverlayId("pov-pop"), title = "", description = "", body = "", footer = [], close = true, label = "", closeInteraction = "" } = {}) {
+//   scrollFog  넘칠 수 있는 본문 — 대화상자와 같이 위 20 · 아래 80 이 늘 흐린다(머리가 없으면 위 여백은 24 그대로). 위로 스크롤하면 머리 아래 선(페이지 끝 스크립트)
+export function overlayPopover({ id = nextOverlayId("pov-pop"), title = "", description = "", body = "", footer = [], close = true, label = "", closeInteraction = "", scrollFog = false } = {}) {
   const titleId = title ? `${id}-title` : "";
   const descId = title && description ? `${id}-desc` : "";
   const withClose = !!title && close;
   const head = title ? `<div class="pov-pop-header${withClose ? " pov-pop-header--close" : ""}"><div class="pov-pop-title" id="${titleId}">${escape(title)}</div>${descId ? `<p class="pov-pop-desc" id="${descId}">${escape(description)}</p>` : ""}</div>` : "";
-  return `<div class="pov-popover" role="group" id="${id}" ${overlayNameAttrs(titleId, descId, label)}>${head}${withClose ? overlayClose({ kind: "box", interaction: closeInteraction }) : ""}<div class="pov-pop-body" data-pov-scroll="top">${body}</div>${footer.length ? `<div class="pov-pop-footer">${footer.join("")}</div>` : ""}</div>`;
+  return `<div class="pov-popover" role="group" id="${id}" ${overlayNameAttrs(titleId, descId, label)}>${head}${withClose ? overlayClose({ kind: "box", interaction: closeInteraction }) : ""}<div class="pov-pop-body${scrollFog ? " pov-body--fog" : ""}" data-pov-scroll="top">${body}</div>${footer.length ? `<div class="pov-pop-footer">${footer.join("")}</div>` : ""}</div>`;
 }
 
 // 화면 틀 — phone(폭 360 까지 · 아래 홈 표시줄 안전 영역 34) · desktop(브라우저 창). 갤러리 것이고 컴포넌트의 일부가 아니다.
@@ -3643,14 +3649,14 @@ export function renderOverlayGallery(brand) {
   });
   const sheetPanel = panel(
     "Bottom Sheet — 머리 · 바닥 · 고르기 · 손잡이",
-    "최대 480(넓은 화면에서는 가운데) · 위 두 모서리 24 이고, 높이는 내용만큼이며 화면 높이의 90% 를 넘지 않는다 — 그보다 긴 내용은 시트 안 스크롤로 버티지 않고 페이지로 옮긴다. 머리는 위 24 · 아래 16 · 좌우 화면 여백 24, 제목 22/30 · 700 · fg-neutral, 설명 16/22 · fg-neutral-muted(사이 8)이고, 닫기가 있으면 제목 오른쪽을 64 비운다. 닫기는 오른쪽 위(위 24 · 오른쪽 24)의 28 원 bg-neutral-weak · 아이콘 14 fg-neutral 이고 누르는 영역은 44 다. 본문은 좌우 24 이고 넘치면 이 안에서 스크롤한다. 바닥은 위 12 · 아래 16 에 안전 영역(홈 표시줄)을 더하고, 버튼은 Button large 48 — 하나면 폭 전체, 둘이면 반씩(사이 8 · 보조 왼쪽 · 주 오른쪽)이다. 조회 · 고르기 시트도 위 닫기이고, 바닥 버튼은 고른 것을 넣을 때(\"적용\" · \"완료\")만 둔다. 조회 · 고르기 시트는 바깥 누르기 · 끌어내리기로 닫힌다 — 놓을 때 빠르게(0.4px/ms 넘게) 끌었거나 높이의 25% 이상 내려왔으면 닫고, 열린 뒤 0.5초 · 본문을 스크롤하는 중에는 끌리지 않는다. 손잡이(36 × 4 · stroke-neutral-weak · 위 6 · 누르는 영역 44 · 보조 기술에 숨김)는 절반 · 가득 같은 스냅 높이를 둘 때만 단다 — 누르면 다음 높이로 가고, 가장 낮은 높이에서 누르면 닫힌다. 300ms(d6) enter-expressive 로 올라오고 200ms(d4) exit 로 내려간다. 딤 L2 100 · 시트 101.",
+    "최대 480(넓은 화면에서는 가운데) · 위 두 모서리 24 이고, 높이는 내용만큼이며 화면 높이의 90% 를 넘지 않는다 — 그보다 긴 내용은 시트 안 스크롤로 버티지 않고 페이지로 옮긴다. 머리는 위 24 · 아래 16 · 좌우 화면 여백 24, 제목 22/30 · 700 · fg-neutral, 설명 16/22 · fg-neutral-muted(사이 8)이고, 닫기가 있으면 제목 오른쪽을 64 비운다. 닫기는 오른쪽 위(위 24 · 오른쪽 24)의 28 원 bg-neutral-weak · 아이콘 14 fg-neutral 이고 누르는 영역은 44 다. 본문은 좌우 24 이고 넘치면 이 안에서 스크롤한다 — 목록 · 긴 폼처럼 넘칠 수 있는 본문은 끝을 늘 흐린다(scrollFog — 위 20 · 아래 80 + 본문 안 여백, 03p 의 Scroll Fog). 바닥은 위 12 · 아래 16 에 안전 영역(홈 표시줄)을 더하고, 버튼은 Button large 48 — 하나면 폭 전체, 둘이면 반씩(사이 8 · 보조 왼쪽 · 주 오른쪽)이다. 조회 · 고르기 시트도 위 닫기이고, 바닥 버튼은 고른 것을 넣을 때(\"적용\" · \"완료\")만 둔다. 조회 · 고르기 시트는 바깥 누르기 · 끌어내리기로 닫힌다 — 놓을 때 빠르게(0.4px/ms 넘게) 끌었거나 높이의 25% 이상 내려왔으면 닫고, 열린 뒤 0.5초 · 본문을 스크롤하는 중에는 끌리지 않는다. 손잡이(36 × 4 · stroke-neutral-weak · 위 6 · 누르는 영역 44 · 보조 기술에 숨김)는 절반 · 가득 같은 스냅 높이를 둘 때만 단다 — 누르면 다음 높이로 가고, 가장 낮은 높이에서 누르면 닫힌다. 300ms(d6) enter-expressive 로 올라오고 200ms(d4) exit 로 내려간다. 딤 L2 100 · 시트 101.",
     samples([
       sample("고르기 — 설명 · 초기화 · 적용 반씩", "BottomSheet — List 라디오 · 바닥 버튼 둘(large 48)", pickSheet),
       sample("손잡이 — 스냅 높이를 둘 때만", "snapPoints — 시트는 화면의 90% 높이 · 절반 높이에 멈췄다 · 바닥 버튼 없음", snapSheet),
     ]),
   );
 
-  // 3. Dialog — 조회(머리 닫기) · 본문이 넘칠 때(아래 48 흐림) · 위로 스크롤했을 때(머리 아래 선). 둘째 · 셋째는 실제로 스크롤된다
+  // 3. Dialog — 조회(머리 닫기) · 넘칠 수 있는 본문(끝 흐림 — scrollFog 위 20 · 아래 80) · 위로 스크롤했을 때(머리 아래 선). 셋 다 실제로 스크롤된다
   const leaveFields = [
     { label: "휴가 종류", required: true, control: { kind: "select", size: "medium", value: "연차" } },
     { label: "기간", required: true, control: { kind: "inputButton", size: "medium", value: "10월 12일~10월 14일", suffixIcon: "calendarDays" } },
@@ -3663,7 +3669,7 @@ export function renderOverlayGallery(brand) {
     device: "desktop",
     height: 520,
     page: overlayPage({ desktop: true }),
-    layers: [overlayScrim(), overlayLayer("dialog", overlayDialog({ title: "거래 상세", close: true, body: overlayValueList(detail) }))],
+    layers: [overlayScrim(), overlayLayer("dialog", overlayDialog({ title: "거래 상세", close: true, body: overlayValueList(detail), scrollFog: true }))],
   });
   const leaveDialog = (scroll) => overlayFrame({
     device: "desktop",
@@ -3675,14 +3681,15 @@ export function renderOverlayGallery(brand) {
       body: leaveForm(),
       footer: [overlayButton("취소", { variant: "neutral-weak" }), overlayButton("신청")],
       scroll,
+      scrollFog: true,
     }))],
   });
   const dialogPanel = panel(
     "Dialog — 조회 · 본문 스크롤",
-    "medium 480(기본) · large 800 이고, 좌우 20 은 남기며 높이는 화면의 80% 까지다 · 모서리 20. 머리는 위 24 · 좌우 24 · 아래 16, 제목 22/30 · 700 · 설명 16/22 · fg-neutral-muted(사이 6). 바닥은 위 16 · 좌우 24 · 아래 24 에 버튼을 오른쪽으로 모은다(사이 8). 조회 · 안내는 머리 오른쪽에 닫기를 둔다 — 투명 52 상자 · 아이콘 22 fg-neutral-subtle(아이콘이 위 28 · 오른쪽 24 — 제목 첫 줄 가운데와 맞는다)이고, 닫기가 있으면 머리 오른쪽을 52 비운다. 조회의 바닥 버튼은 수정 · 삭제 같은 다른 동작이 있을 때만이고, 조회 · 안내는 바깥 누르기 · Esc 로도 닫힌다. 본문만 스크롤한다 — 머리 · 바닥은 늘 보인다. 본문이 넘치면 아래 48 이 표면 쪽으로 흐려지고(끝까지 스크롤해도 남아 본문 아래 48 을 비워 둔다), 위로 스크롤하면 머리 아래 1px stroke-neutral-subtle 선이 150ms 로 나타난다 — 아래 두 대화상자는 실제로 스크롤된다. 200ms(d4) enter-expressive 로 1.3 배에서 줄며 나타나고 100ms(d2)로 사라진다. 딤 L2 100 · 대화상자 101 — 그 안에서 연 팝오버(L3) · 확인창(L5)이 위에 뜬다.",
+    "medium 480(기본) · large 800 이고, 좌우 20 은 남기며 높이는 화면의 80% 까지다 · 모서리 20. 머리는 위 24 · 좌우 24 · 아래 16, 제목 22/30 · 700 · 설명 16/22 · fg-neutral-muted(사이 6). 바닥은 위 16 · 좌우 24 · 아래 24 에 버튼을 오른쪽으로 모은다(사이 8). 조회 · 안내는 머리 오른쪽에 닫기를 둔다 — 투명 52 상자 · 아이콘 22 fg-neutral-subtle(아이콘이 위 28 · 오른쪽 24 — 제목 첫 줄 가운데와 맞는다)이고, 닫기가 있으면 머리 오른쪽을 52 비운다. 조회의 바닥 버튼은 수정 · 삭제 같은 다른 동작이 있을 때만이고, 조회 · 안내는 바깥 누르기 · Esc 로도 닫힌다. 본문만 스크롤한다 — 머리 · 바닥은 늘 보인다. 목록 · 긴 폼처럼 넘칠 수 있는 본문은 끝을 늘 흐린다(scrollFog — 03p 의 Scroll Fog overlayBody) — 위 20 · 아래 80 을 마스크로 흐리고 본문 안에 그만큼 여백(20 · 80)을 둬 끝까지 내리면 흐림이 빈 여백 위에 놓인다. 넘쳤는지 재서 켜고 끄지 않는다 — 칸 두셋처럼 늘 들어맞는 본문에는 걸지 않는다. 위로 스크롤하면 머리 아래 1px stroke-neutral-subtle 선이 150ms 로 나타난다 — 세 대화상자는 실제로 스크롤된다. 200ms(d4) enter-expressive 로 1.3 배에서 줄며 나타나고 100ms(d2)로 사라진다. 딤 L2 100 · 대화상자 101 — 그 안에서 연 팝오버(L3) · 확인창(L5)이 위에 뜬다.",
     samples([
-      sample("조회 — 머리 닫기 · 바닥 버튼 없음", "Dialog — 닫기 52 상자 · 바깥 누르기로도 닫힌다", viewDialog),
-      sample("본문이 넘칠 때 — 아래 48 흐림", "DialogBody overflow — 끝까지 스크롤해도 48 을 비워 둔다", leaveDialog("top")),
+      sample("조회 — 머리 닫기 · 바닥 버튼 없음", "Dialog — 닫기 52 상자 · 바깥 누르기로도 닫힌다 · 데이터에 따라 느는 본문이라 scrollFog", viewDialog),
+      sample("넘칠 수 있는 본문 — 끝 흐림 위 20 · 아래 80", "DialogBody scrollFog — 늘 켜짐 · 본문 안 여백 20 · 80", leaveDialog("top")),
       sample("위로 스크롤했을 때 — 머리 아래 선", "DialogBody scrolled — 1px stroke-neutral-subtle · 150ms", leaveDialog("scrolled")),
     ], DESKTOP),
   );
@@ -3751,7 +3758,7 @@ export function renderOverlayGallery(brand) {
       </div>`,
   );
 
-  const lede = "SEED Bottom Sheet · Dialog · Responsive Dialog · Alert Dialog · Popover 구조 — 표면을 일로 나눈다. 폼 · 상세는 한 부품이 폭으로 표면을 바꾼다 — 1280 미만은 아래에서 올라오는 시트(최대 480 · 위 모서리 24), 이상은 가운데 대화상자(medium 480 · large 800 · 모서리 20 · 높이는 화면의 80% 까지). 되돌릴 수 없는 확인은 폰 · 데스크톱 모두 가운데 확인창(최대 272), 트리거에 붙는 짧은 안내 · 고르는 패널은 1280 이상에서 팝오버(320 ~ 480 · 그림자 s3)다. 시트 · 대화상자 · 확인창은 그림자 없이 딤(0.50 · 다크 0.65) 위의 떠 있는 표면(bg-layer-floating)이고, 팝오버만 딤 없이 그림자로 뜬다. 입력 폼은 바깥 누르기 · 끌어내리기로 닫히지 않고, 닫기 버튼과 바닥 취소는 하나만 둔다. 쌓임은 specs/z-index.md — 시트 · 대화상자 L2(z-modal 100 · z-modal-content 101) · 팝오버 L3(z-floating 200) · 확인창 L5(z-alert 300 · z-alert-content 301). 그림은 열린 순간을 멈춘 것이고, 폰 · 데스크톱 화면 틀은 갤러리 것이다. 옛 Modal · 아래 Drawer · 옛 Alert Dialog · 옛 Popover(테두리 · shadow-md) 모양은 걷었다."
+  const lede = "SEED Bottom Sheet · Dialog · Responsive Dialog · Alert Dialog · Popover 구조 — 표면을 일로 나눈다. 폼 · 상세는 한 부품이 폭으로 표면을 바꾼다 — 1280 미만은 아래에서 올라오는 시트(최대 480 · 위 모서리 24), 이상은 가운데 대화상자(medium 480 · large 800 · 모서리 20 · 높이는 화면의 80% 까지). 되돌릴 수 없는 확인은 폰 · 데스크톱 모두 가운데 확인창(최대 272), 트리거에 붙는 짧은 안내 · 고르는 패널은 1280 이상에서 팝오버(320 ~ 480 · 그림자 s3)다. 시트 · 대화상자 · 확인창은 그림자 없이 딤(0.50 · 다크 0.65) 위의 떠 있는 표면(bg-layer-floating)이고, 팝오버만 딤 없이 그림자로 뜬다. 넘칠 수 있는 본문의 끝 흐림은 03p 의 Scroll Fog(늘 켜진 위 20 · 아래 80)다. 입력 폼은 바깥 누르기 · 끌어내리기로 닫히지 않고, 닫기 버튼과 바닥 취소는 하나만 둔다. 쌓임은 specs/z-index.md — 시트 · 대화상자 L2(z-modal 100 · z-modal-content 101) · 팝오버 L3(z-floating 200) · 확인창 L5(z-alert 300 · z-alert-content 301). 그림은 열린 순간을 멈춘 것이고, 폰 · 데스크톱 화면 틀은 갤러리 것이다. 옛 Modal · 아래 Drawer · 옛 Alert Dialog · 옛 Popover(테두리 · shadow-md) 모양과 \"본문이 넘칠 때만 아래 48 흐림\"(2026-10-02)은 걷었다."
     + (brand.key === "shared" ? " 공유 토큰에는 브랜드 역할 색이 없어 포커스 링이 여기서는 중립(fg-neutral)으로 보인다 — HR · Desk 미리보기에서 브랜드 색이다." : "");
 
   return `
@@ -5091,6 +5098,7 @@ export function renderDateTimeGallery(brand) {
   </section>`;
 }
 
+
 // 표시 — Badge · Notification Badge · Tag Group · Avatar · Avatar Stack · Divider. spec: specs/components/badge.md · notification-badge.md · tag-group.md ·
 // avatar.md · divider.md · 수치 badge.yaml · notification-badge.yaml · tag-group.yaml · avatar.yaml · avatar-stack.yaml · divider.yaml. 구조는 SEED(2026-10-03).
 // 모두 누르지 않는다 — 상태가 enabled 하나다(누르는 자리는 감싼 버튼 · 줄이 가진다).
@@ -5525,6 +5533,461 @@ export function renderDisplayGallery(brand) {
   </section>`;
 }
 
+// 기다림 — spec: specs/components/skeleton.md · progress-circle.md · progress.md · scroll-fog.md · content-placeholder.md ·
+// 수치 skeleton.yaml · progress-circle.yaml · pull-to-refresh.yaml · progress.yaml · scroll-fog.yaml · content-placeholder.yaml. 구조는 SEED Skeleton ·
+// Progress Circle · Pull To Refresh · Scroll Fog · Content Placeholder 와 Loading 패턴(2026-10-03). Progress(막대)는 porest 만의 미터다.
+// 스켈레톤 .psk(면 + ::after 반짝임 띠) · 기다리는 영역 .pld-region(data-phase — quiet 0 ~ 1초 · waiting 1초 ~ · slow 5초 ~ · failed 10초) > 오래 걸림 글 .pld-slow ·
+// 화면의 상태 글 .pld-status(role=status, 보이지 않게) · 원 .ppc(svg role=progressbar > 트랙 .ppc-track · 호 .ppc-range) ·
+// 당겨서 새로 고침 .pptr(지시자 칸 .pptr-indicator · 내용 .pptr-content) · 막대 .pmeter(이름 줄 .pmeter-head · 트랙 .pmeter-track(role=meter) > 채움 .pmeter-fill ·
+// 금액 줄 .pmeter-amount) · 끝 흐림 .pfog(--box · --overlay-body · --page — 마스크, 가로 줄은 칩 줄 · Chip Tabs 가 맡는다) · 대체 그림 .pcph(> 그림 .pcph-glyph).
+// 시간표 · 당기기 · 값 바꾸기는 페이지 끝 스크립트가 흉내 낸다 — 멈춘 그림의 0 · 1 · 5 · 10초는 그 순간을 고정한 것이다.
+const PLD_ICON = {
+  search: TEXT_FIELD_ICON.search,
+  chevronLeft: PICK_ICON.chevronLeft,
+  chevronRight: PICK_ICON.chevronRight,
+  fileText: listSvg('<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>'),
+};
+// 대체 그림의 그림 — lucide 선 아이콘(24 격자 · 선 1.5 — 그림이 커지면 같은 비율로 굵어진다, content-placeholder.yaml)
+const PLD_GLYPH = {
+  image: '<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>',
+  creditCard: '<rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>',
+  receipt: '<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/>',
+  fileText: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+};
+const pldLen = (v) => (typeof v === "number" ? `${v}px` : v);
+
+// 스켈레톤 한 조각 — skeleton.tsx 의 Skeleton. 늘 aria-hidden 이고, 글 자리(span · p) 안에도 둘 수 있게 span(블록)이다.
+//   radius  "0"(화면 폭 사진) · "8"(글 · 숫자 — 기본) · "12"(목록 앞 타일) · "16"(카드 · 썸네일) · "full"(아바타 · 원 아이콘 · 칩)
+//   text    "t1" ~ "t14" — 높이가 그 글자의 줄 높이(14 글자 t4 → 19). 모서리는 8
+//   w · h   폭 · 높이(px 수 또는 CSS 길이) — 곧 올 내용의 크기
+//   still   모션 줄이기의 모습 — 띠를 멈추고 면만 남긴다(갤러리에서 그 모습을 보일 때만)
+export function skeleton({ radius = "8", text = "", w = "", h = "", still = false, cls = "" } = {}) {
+  const style = [w !== "" && `width: ${pldLen(w)};`, text ? `height: var(--text-${text}--line-height);` : h !== "" && `height: ${pldLen(h)};`].filter(Boolean).join(" ");
+  const c = ["psk", radius !== "8" && `psk--r${radius}`, still && "psk--still", cls].filter(Boolean).join(" ");
+  return `<span class="${c}" aria-hidden="true"${style ? ` style="${style}"` : ""}></span>`;
+}
+
+// Progress Circle — progress-circle.tsx 의 ProgressCircle(svg). 트랙 · 호의 자리는 CSS 가 지름 · 두께(--ppc-size · --ppc-thickness)로 정한다.
+//   size     "24"(두께 3) · "40"(두께 5 — 기본) · "inherit"(놓인 부품의 --progress-size · --progress-thickness — Button 14 · 14 · 16 · 18 · 두께 2)
+//   tone     neutral(기본) · brand · staticWhite · inherit(놓인 부품의 --progress-track · --progress-range — 없으면 글자색과 그 30%)
+//   value    없으면(null) 값 없는 원 — 호가 늘었다 줄며 돈다. 있으면 12시부터 (값 − min) ÷ (max − min) 만큼 채운다(0 이면 호를 지운다)
+//   label    이름(기본 "불러오는 중") · valueText 값 글(기본 반올림한 "40%") · hidden 장식(버튼 안 — 버튼이 aria-busy 로 알린다)
+//   still    모션 줄이기의 모습 — 값 없는 원은 돌지 않는 3/4 호(갤러리에서 그 모습을 보일 때만)
+export function progressCircle({ size = "40", tone = "neutral", value = null, min = 0, max = 100, label = "불러오는 중", valueText = "", hidden = false, still = false, attrs = "" } = {}) {
+  const determinate = typeof value === "number";
+  const percent = determinate ? Math.min(100, Math.max(0, ((value - min) / (max - min)) * 100)) : 0;
+  const toneCls = tone === "staticWhite" ? "static-white" : tone;
+  const cls = ["ppc", `ppc--s${size}`, `ppc--${toneCls}`, still && "ppc--still"].filter(Boolean).join(" ");
+  const a11y = hidden
+    ? 'aria-hidden="true" focusable="false"'
+    : attrsOf([
+        'role="progressbar"',
+        `aria-label="${escape(label)}"`,
+        determinate && `aria-valuemin="${min}"`,
+        determinate && `aria-valuemax="${max}"`,
+        determinate && `aria-valuenow="${value}"`,
+        determinate && `aria-valuetext="${escape(valueText || `${Math.round(percent)}%`)}"`,
+      ]);
+  return `<svg ${attrsOf([
+    `class="${cls}"`,
+    `data-state="${determinate ? "determinate" : "indeterminate"}"`,
+    determinate && percent === 0 && 'data-empty=""',
+    determinate && `style="--ppc-p: ${+percent.toFixed(2)};"`,
+    a11y,
+    attrs,
+  ])}><circle class="ppc-track"/><circle class="ppc-range"/></svg>`;
+}
+
+// 막대(Progress) — progress.tsx 의 Progress — 이름 줄 · 막대 · 금액 줄 한 묶음. 미터라 막대가 role=meter 이고 이름은 "{이름} {목표} 중 {현재}",
+// 값 글은 오른쪽 글과 같은 말이다. 보이는 이름 · 오른쪽 글 · 금액 줄은 보조 기술에 숨긴다(같은 말을 두 번 읽지 않게).
+//   meaning  limit(한도 — 쓸수록 찬다, 넘으면 끝까지 위험 색 + "N원 초과" — 기본) · goal(목표 — 모을수록 찬다, 닿으면 글 "달성"만)
+//   format   값 → 글(기본 "350,000원") · live  페이지 끝 스크립트가 값을 바꿔 볼 수 있게 한다(data-pmeter-*)
+const pldWon = (n) => `${Math.round(n).toLocaleString("ko-KR")}원`;
+export function pmeterState({ value, max, meaning = "limit", format = pldWon }) {
+  const over = meaning === "limit" && value > max;
+  const reached = meaning === "goal" && value >= max;
+  const status = over ? `${format(value - max)} 초과` : reached ? "달성" : `${Math.round((value / max) * 100)}%`;
+  return { over, reached, status, width: Math.max(0, Math.min(value / max, 1)) * 100 };
+}
+export function progressMeter({ label, value, max, meaning = "limit", format = pldWon, live = "" } = {}) {
+  const s = pmeterState({ value, max, meaning, format });
+  const state = s.over ? "over" : s.reached ? "reached" : "enabled";
+  return `<div ${attrsOf([
+    `class="pmeter"`,
+    `data-meaning="${meaning}"`,
+    `data-state="${state}"`,
+    live && `data-pmeter-live="${escape(live)}" data-label="${escape(label)}" data-value="${value}" data-max="${max}"`,
+  ])}><div class="pmeter-head" aria-hidden="true"><span class="pmeter-label">${escape(label)}</span><span class="pmeter-status">${escape(s.status)}</span></div><div ${attrsOf([
+    'class="pmeter-track"',
+    'role="meter"',
+    `aria-label="${escape(`${label} ${format(max)} 중 ${format(value)}`)}"`,
+    'aria-valuemin="0"',
+    `aria-valuemax="${max}"`,
+    `aria-valuenow="${Math.min(value, max)}"`,
+    `aria-valuetext="${escape(s.status)}"`,
+  ])}><div class="pmeter-fill"${value > 0 ? "" : ' data-empty=""'} style="width: ${+s.width.toFixed(2)}%;"></div></div><div class="pmeter-amount" aria-hidden="true">${escape(`${format(value)} / ${format(max)}`)}</div></div>`;
+}
+
+// 대체 그림(Content Placeholder) — content-placeholder.tsx. 담는 틀을 채우고 그림은 틀 높이의 50%(16 ~ 160, 틀 폭이 좁으면 폭)다. 모서리는 틀이 자른다.
+//   glyph  image(기본) · creditCard · receipt · fileText — 무엇이 없는지 말하는 그림
+//   label  대체 글 — 주면 role=img + 이름, 안 주면 보조 기술에 숨긴다(장식 이미지였던 자리)
+export function contentPlaceholder({ glyph = "image", label = "" } = {}) {
+  const svg = `<svg class="pcph-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PLD_GLYPH[glyph]}</svg>`;
+  return `<span class="pcph"${label ? ` role="img" aria-label="${escape(label)}"` : ' aria-hidden="true"'}>${svg}</span>`;
+}
+
+// 스켈레톤 줄 — List 줄 껍데기 그대로(skeleton.md 코드의 TransactionRowsSkeleton): 앞 원 40 · 제목 t5(22) · 설명 t3(18) · 뒤 금액 t5.
+// still 은 모션 줄이기의 모습. 폭은 실제 글 길이와 비슷하게 줄마다 조금씩 다르다
+const pldSkeletonRows = (rows, { still = false } = {}) => listOf(Array.from({ length: rows }, (_, i) => {
+  const [tw, dw, aw] = [[128, 80, 64], [112, 96, 56], [136, 72, 72], [120, 88, 96]][i % 4];
+  return `<li class="plst-row"><div class="plst-content"><span class="plst-prefix">${skeleton({ radius: "12", w: 40, h: 40, still })}</span><span class="plst-body"><span class="plst-title">${skeleton({ text: "t5", w: tw, still })}</span><span class="plst-detail">${skeleton({ text: "t3", w: dw, still })}</span></span><span class="plst-suffix">${skeleton({ text: "t5", w: aw, still })}</span></div></li>`;
+}), ' aria-hidden="true"');
+
+// 기다리는 영역 — skeleton.tsx 의 LoadingRegion 이 그리는 모습. phase 는 그 순간이다:
+//   quiet(0 ~ 1초 — 대신 그림을 보이지 않게 그려 높이를 지킨다) · waiting(1초 ~) · slow(5초 ~ — 오래 걸림 글) · failed(10초 — failure) · done(내용)
+//   fallback  스켈레톤 조각(HTML) 또는 "circle"(영역 가운데 원 40) · failure · content  실패 · 내용 HTML · outline  0 ~ 1초 자리를 점선으로(갤러리 표시)
+const PLD_SLOW = "평소보다 오래 걸리고 있어요.";
+function pldRegion({ phase = "waiting", fallback = "", failure = "", content = "", outline = false, attrs = "" } = {}) {
+  const circle = fallback === "circle";
+  const busy = phase !== "failed" && phase !== "done";
+  const slow = phase === "slow" ? `<p class="pld-slow">${PLD_SLOW}</p>` : "";
+  let inner;
+  if (phase === "failed") inner = failure;
+  else if (phase === "done") inner = content;
+  else if (circle) inner = `<div class="pld-center">${progressCircle({ size: "40" })}${slow}</div>`;
+  else inner = `${slow}<div class="pld-fallback">${fallback}</div>`;
+  return `<div ${attrsOf([
+    `class="pld-region${circle ? " pld-region--circle" : ""}${outline ? " pld-region--outline" : ""}"`,
+    `data-phase="${phase}"`,
+    busy && 'aria-busy="true"',
+    attrs,
+  ])}>${inner}</div>`;
+}
+
+// 끝 흐림의 마스크 단계 — gradient-fade-mask 토큰(방향 없이 위 → 아래, DESIGN.md v104)에서 단계만 떼어 :root 의 --pfog-stops 로 둔다.
+// 쓰는 자리(.pfog · 칩 줄 · 시트 · 대화상자 본문)가 방향을 붙인다. 토큰이 없으면 아무것도 두지 않는다 — 마스크가 풀려 흐림만 없어진다
+export function fadeMaskStopsCss(tokenCss) {
+  const m = /--gradient-fade-mask:\s*linear-gradient\((.*)\);/.exec(tokenCss);
+  return m ? `\n    :root { --pfog-stops: ${m[1]}; }\n` : "";
+}
+
+// 기다림 갤러리 — 스켈레톤(틀 · 데이터 자리) · 모서리와 글줄 높이 · 기다리는 동안(0 · 1 · 5 · 10초) · 원(크기 × 톤 · 값) · 원의 자리 · 당겨서 새로 고침 ·
+// 막대 · 끝 흐림 · 대체 그림 아홉 판을 흰 표면(.vignette-card) 위에 그린다. 견본 틀(.ptf-samples · .ptf-cap) · 상태 표(.cb-matrix)는 Text Field 갤러리 것,
+// 화면 틀(overlayFrame) · 시트 · 대화상자는 03k 것, 목록 줄은 03e 것, 칩은 03i 것, 결과는 03l 것이다. 글은 Desk(가계부 · 통계 · 검색 · 예산 · 카드)와
+// HR(근무 시간)에서 빌렸다 — skeleton.md · progress-circle.md · progress.md · scroll-fog.md · content-placeholder.md 코드 예와 같은 글이다.
+// 멈춘 그림은 그 순간을 고정한 것이고, "직접" 이 붙은 견본은 실제로 시간이 흐르고 · 당기고 · 값을 바꿔 볼 수 있다(페이지 끝 스크립트).
+export function renderLoadingGallery(brand) {
+  const panel = (title, sub, body) => `
+    <div class="vignette-card cb-panel">
+      <div class="vignette-head">
+        <div class="vignette-title">${escape(title)}</div>
+        <div class="vignette-sub">${escape(sub)}</div>
+      </div>${body}
+    </div>`;
+  const samples = (items, cls = "ptf-samples") => `
+      <div class="${cls}">${items.join("")}
+      </div>`;
+  const sample = (cap, en, body) => `
+        <div class="ptf-sample">
+          <div class="ptf-cap">${escape(cap)}<span>${escape(en)}</span></div>
+          ${body}
+        </div>`;
+  const DESKTOP = "ptf-samples pov-samples--desktop";
+  const phone = (height, page, layers = []) => overlayFrame({ device: "phone", height, page, layers });
+  const desktop = (height, page, layers = []) => overlayFrame({ device: "desktop", height, page, layers });
+  const title = (t) => `<div class="pov-page-title">${escape(t)}</div>`;
+  const ledgerRows = (rows = OVERLAY_LEDGER) => listOf(rows.map(overlayRow));
+  const failCard = (what = "거래") => resultSection({ kind: "failure", size: "medium", title: `${what}를 불러오지 못했어요`, description: "잠시 후 다시 시도해주세요.", primary: "다시 시도" });
+  const controls = (buttons) => `<div class="pld-controls">${buttons.map(([label, attrs]) => `<button class="btn btn-neutral-weak btn-size-small" type="button" ${attrs}><span>${escape(label)}</span></button>`).join("")}</div>`;
+  const status = '<p class="pld-status" role="status" aria-live="polite" data-pld-status=""></p>';
+
+  // 1. 스켈레톤 — 틀(제목 · 목록 제목 · 카드 면)은 그리고 데이터 자리만. 반짝임은 같은 화면에서 한 박자로 지난다
+  const sum = (amount) => `<div class="pld-sum"><span class="pld-sum-label">10월 지출</span>${amount}</div>`;
+  const listPhone = phone(480, `${title("가계부")}${sum(skeleton({ text: "t9", w: 144 }))}${listHeader({ text: "최근 거래" })}${pldRegion({ fallback: pldSkeletonRows(4) })}`);
+  const donePhone = phone(480, `${title("가계부")}${sum('<span class="pld-sum-amount">656,500원</span>')}${listHeader({ text: "최근 거래" })}${pldRegion({ phase: "done", content: ledgerRows() })}`);
+  const listDesktop = desktop(420, `${title("가계부")}<div class="pov-page-card">${listHeader({ text: "최근 거래", variant: "boldSolid" })}${pldRegion({ fallback: pldSkeletonRows(4) })}</div>`);
+  const stillPhone = phone(480, `${title("가계부")}${sum(skeleton({ text: "t9", w: 144, still: true }))}${listHeader({ text: "최근 거래" })}${pldRegion({ fallback: pldSkeletonRows(4, { still: true }) })}`);
+  const listPanel = panel(
+    "Skeleton — 틀은 그리고 데이터 자리만 · 반짝임 1.5초",
+    "화면의 틀(제목 · 목록 제목 · 카드 면)은 처음부터 실제로 그리고, 서버에서 올 데이터 자리만 스켈레톤이다. 줄 껍데기는 실제 List 줄 그대로 — 앞 원 40(full) · 제목 자리 t5 줄 높이 22 · 설명 자리 t3 18 · 금액 자리 t5 22 라 줄 높이가 내용과 같은 66 이다(데이터가 와도 목록이 밀리지 않는다). 면은 bg-neutral-weak(흰 면 위 1.08 · 다크 1.30:1)이고, 흰 띠(gradient-shimmer-neutral · 다크는 흰 10% 짝)가 면 위를 자기 폭만큼 왼쪽 밖에서 오른쪽 밖으로 1.5초(motion-duration-loop) · motion-ease-easing 으로 쉬지 않고 지난다 — 같은 화면의 스켈레톤은 한 박자로 지난다. 깜빡임(펄스)은 없다. 모션 줄이기면 띠가 멈추고 면만 남는다(v104). 스켈레톤 · 목록은 보조 기술에 숨기고, 영역에 aria-busy 를 단다.",
+    `${samples([
+      sample("폰 — 첫 진입", "LoadingRegion fallback=<TransactionRowsSkeleton rows={4} /> — 제목 · \"최근 거래\" 는 그린다", listPhone),
+      sample("다 옴 — 같은 자리 · 같은 높이", "content — 줄 66 · 금액 t9 32 그대로(투명도 150ms 로 바뀐다)", donePhone),
+      sample("모션 줄이기 — 띠가 멈춘다", "prefers-reduced-motion: reduce — 면만 남는다(v104)", stillPhone),
+    ])}${samples([
+      sample("데스크톱 웹 — 카드 안", "Card > CardHeader(틀) + LoadingRegion — 회색 바탕 위 흰 카드에만 둔다", listDesktop),
+    ], `${DESKTOP} pov-samples--next`)}`,
+  );
+
+  // 2. 모서리 넷 · 글은 글줄 높이 · 흰 면 위에만
+  const shape = (cap, en, html, cls = "") => `<div class="pld-shape${cls}"><div class="pld-shape-art">${html}</div><div class="ptf-cap">${escape(cap)}<span>${escape(en)}</span></div></div>`;
+  const shapes = `<div class="pld-shapes">${[
+    shape("글 · 숫자 — 8", "radius=\"8\"(기본) · text=\"t4\" → 19", skeleton({ text: "t4", w: 160 })),
+    shape("목록 앞 타일 — 12", "radius=\"12\" — List 타일 40", skeleton({ radius: "12", w: 40, h: 40 })),
+    shape("카드 · 썸네일 — 16", "radius=\"16\"", skeleton({ radius: "16", w: "100%", h: 112 })),
+    shape("아바타 · 원 아이콘 · 칩 — full", "radius=\"full\"", skeleton({ radius: "full", w: 40, h: 40 })),
+    shape("화면 폭 사진 — 0", "radius=\"0\" · 비율 4:3 — 화면 끝에 붙는다", skeleton({ radius: "0", w: "100%", cls: "pld-photo" }), " pld-shape--bleed"),
+  ].join("")}</div>`;
+  const heights = [["t2", "12", "16"], ["t3", "13", "18"], ["t4", "14", "19"], ["t5", "16", "22"], ["t7", "20", "27"]];
+  const textHeights = `<div class="pld-texth">${heights.map(([t, size, lh]) => `<div class="pld-texth-row"><span class="pld-texth-text" style="font-size: var(--text-${t}); line-height: var(--text-${t}--line-height);">${size} 글자</span>${skeleton({ text: t, w: 96 })}<span class="pld-texth-cap">${t} ${size} → ${lh}</span></div>`).join("")}</div>`;
+  const surface = (cls, label) => `<div class="pld-surface ${cls}">${pldSkeletonRows(2)}<div class="pld-surface-cap">${escape(label)}</div></div>`;
+  const shapePanel = panel(
+    "Skeleton — 모서리 넷 · 글은 글줄 높이 · 흰 면 위에만",
+    "모서리는 곧 올 내용의 모양을 따른다 — 글 · 숫자 8(기본 · radius-r2), 목록 앞 타일 12(r3), 카드 · 썸네일 16(r4), 아바타 · 원 아이콘 · 칩 full, 화면 끝에 붙는 사진 0. 크기는 그 자리에 올 내용의 크기이고, 글 · 숫자 자리는 그 글자의 줄 높이만큼 높다 — 12 글자(t2) 16 · 13(t3) 18 · 14(t4) 19 · 16(t5) 22 · 20(t7) 27. 글자보다 낮은 막대로 그리면 글이 오는 순간 줄이 밀린다(아래 견본은 글과 스켈레톤이 같은 높이다). 스켈레톤 면은 흰 면(카드 · 시트 · 대화상자 — bg-layer-default · bg-layer-floating) 위에서 1.08:1 로 보이고 띠가 지나가며 모양이 드러난다 — 회색 페이지 바탕(bg-layer-basement)은 같은 gray-200 이라 1.00:1 로 사라진다. 바탕 위의 자리는 카드 면을 먼저 그리고 그 안에 둔다.",
+    `${samples([
+      sample("모서리 — 내용의 모양대로", "Skeleton radius — \"0\" · \"8\" · \"12\" · \"16\" · \"full\"", shapes),
+    ], "ptf-samples pld-samples--wide")}${samples([
+      sample("글 자리 = 그 글자의 줄 높이", "text=\"t2\" ~ \"t7\" — 왼쪽 글과 같은 높이", textHeights),
+      sample("흰 면 위 — 보인다", "bg-layer-default 위 1.08:1 · 다크 1.30:1", surface("pld-surface--white", "흰 카드 · 시트 위")),
+      sample("회색 바탕 위 — 사라진다", "bg-layer-basement 위 1.00:1 — 이렇게 두지 않는다", surface("pld-surface--basement", "회색 페이지 바탕 위")),
+    ], "ptf-samples pov-samples--next")}`,
+  );
+
+  // 3. 기다리는 동안 — 0 ~ 1초 틀만 · 1초 스켈레톤 · 5초 오래 걸림 글 · 10초 실패. 아래 셋은 실제로 시간이 흐른다
+  const tl = (phase, outline = false) => phone(400, `${title("가계부")}${listHeader({ text: "최근 거래" })}${pldRegion({ phase, outline, fallback: pldSkeletonRows(4), failure: failCard() })}`);
+  const live = (kind, height, page, buttons) => `<div class="pld-live" data-pld-live="${kind}">${phone(height, page)}${controls(buttons)}<p class="pld-clock" data-pld-clock="" aria-hidden="true">버튼을 누르면 시간이 흐른다</p></div>`;
+  const tpl = (name, html) => `<template data-pld-tpl="${name}">${html}</template>`;
+  const liveList = live("list", 440, `${title("가계부")}${listHeader({ text: "최근 거래" })}<div data-pld-host="">${pldRegion({ phase: "done", content: ledgerRows() })}</div>${tpl("fallback", pldSkeletonRows(4))}${tpl("failure", failCard())}${tpl("content", ledgerRows())}`, [
+    ["10초까지 — 오지 않음", 'data-pld-run="never"'],
+    ["3초에 옴", 'data-pld-run="3000"'],
+    ["0.6초에 옴", 'data-pld-run="600"'],
+  ]);
+  const SEARCH = [
+    { color: "orange", icon: "utensils", title: "스타벅스 강남점", detail: "식비 · 10월 1일 (목)", amount: "6,500원" },
+    { color: "orange", icon: "utensils", title: "스타벅스 역삼점", detail: "식비 · 9월 28일 (월)", amount: "5,900원" },
+    { color: "orange", icon: "utensils", title: "스타벅스 선릉점", detail: "식비 · 9월 21일 (월)", amount: "11,200원" },
+  ];
+  const searchBox = `<div class="pld-search">${PLD_ICON.search}<span>스타벅스</span></div>`;
+  const liveCircle = live("circle", 440, `${title("검색")}${searchBox}<div class="pld-area" data-pld-host="">${pldRegion({ phase: "done", content: ledgerRows(SEARCH) })}</div>${tpl("failure", failCard("검색 결과"))}${tpl("content", ledgerRows(SEARCH))}`, [
+    ["10초까지 — 오지 않음", 'data-pld-run="never"'],
+    ["3초에 옴", 'data-pld-run="3000"'],
+  ]);
+  // 다른 달 — 머리(달 이름)는 바로 바뀌고 숫자 · 목록 자리만 기다린다. 받아 둔 달은 바로 보인다
+  const STATS = {
+    "2026-10": { total: "656,500원", rows: ["432,000원", "128,500원", "96,000원"] },
+    "2026-09": { total: "712,300원", rows: ["458,000원", "141,300원", "113,000원"] },
+    "2026-08": { total: "598,400원", rows: ["401,200원", "119,700원", "77,500원"] },
+  };
+  const statRows = (amounts) => listOf(["식비", "교통", "쇼핑"].map((name, i) => listRow({ prefix: listTile(["orange", "blue", "violet"][i], ["utensils", "bus", "bag"][i]), title: name, suffix: amounts ? `<span class="plst-amount">${escape(amounts[i])}</span>` : skeleton({ text: "t5", w: 72 }) })));
+  const monthNav = `<div class="pld-month"><button class="btn btn-ghost btn-icon-only btn-size-medium" type="button" aria-label="이전 달" data-pld-month="-1">${PLD_ICON.chevronLeft}</button><span class="pld-month-name" data-pld-month-name="">2026년 10월</span><button class="btn btn-ghost btn-icon-only btn-size-medium" type="button" aria-label="다음 달" data-pld-month="1" disabled>${PLD_ICON.chevronRight}</button></div>`;
+  const statTotal = (amount) => `<div class="pld-stat-total"><span class="pld-sum-label">지출</span>${amount}</div>`;
+  const statContent = (key) => `${statTotal(`<span class="pld-sum-amount">${STATS[key].total}</span>`)}${statRows(STATS[key].rows)}`;
+  const periodLive = `<div class="pld-live" data-pld-live="period">${phone(440, `${title("통계")}${monthNav}<div class="pld-stat" data-pld-host="">${pldRegion({ phase: "done", content: statContent("2026-10") })}</div>${tpl("fallback", `${statTotal(skeleton({ text: "t9", w: 144 }))}${statRows(null)}`)}${Object.keys(STATS).map((key) => tpl(`content-${key}`, statContent(key))).join("")}`)}<p class="pld-clock" data-pld-clock="" aria-hidden="true">‹ 로 지난달로 넘겨 보면 머리는 바로 바뀐다</p></div>`;
+  const timelinePanel = panel(
+    "기다리는 동안 — 0 ~ 1초 틀만 · 1초 스켈레톤 · 5초 한 줄 · 10초 실패",
+    "모든 불러오기는 한 시간표를 따른다(skeleton.yaml region). 0 ~ 1초는 틀만 — 데이터 자리는 보이지 않게 그려 높이를 지키고(첫 그림의 점선 자리), 1초 안에 오면 아무것도 깜빡이지 않는다. 영역에는 처음부터 aria-busy 를 단다. 1초부터 스켈레톤(또는 콘텐츠 영역 가운데 원 40)이 보이고 화면의 상태 글 하나가 \"불러오는 중…\" 을 읽는다. 5초가 지나도 안 오면 \"평소보다 오래 걸리고 있어요.\"(t4 · fg-neutral-muted) 한 줄을 더한다 — 스켈레톤이면 첫 스켈레톤 위 16 · 왼쪽 맞춤, 가운데 원이면 원 아래 16 · 가운데 맞춤이고 한 번 정중하게 읽힌다. 10초면 요청을 끊고 Result Section failure(\"다시 시도\")로 바꾼다 — 저절로 다시 시도하는 것(읽기만 · 1초 · 2초 뒤 · 2번)은 그 10초 안에서만이다. 다 오면 스켈레톤을 걷고 내용이 투명도(150ms)로 나타나며 aria-busy 를 푼다. 달 · 기간을 바꾸면 머리(달 이름)는 바로 바뀌고 바뀔 숫자 · 목록 자리만 같은 시간표로 기다린다 — 옛 달 숫자는 그 순간 지우고, 이미 받아 둔 달은 바로 보인다. 아래 셋은 실제로 시간이 흐른다(지난 시간 · 지금 단계는 견본 아래 글).",
+    `${samples([
+      sample("0 ~ 1초 — 틀만", "aria-busy=\"true\" · 데이터 자리는 보이지 않게 그려 높이를 지킨다(점선)", tl("quiet", true)),
+      sample("1초 — 스켈레톤", "상태 글 \"불러오는 중…\"", tl("waiting")),
+      sample("5초 — 오래 걸림 글", "첫 스켈레톤 위 16 · t4 · fg-neutral-muted — 한 번 읽는다", tl("slow")),
+      sample("10초 — 실패 + 다시 시도", "Result Section failure · medium — 요청 제한 10초", tl("failed")),
+    ], "ptf-samples pld-samples--four")}${samples([
+      sample("직접 — 스켈레톤 영역", "LoadingRegion fallback={스켈레톤} — 0.6초 · 3초 · 10초까지", liveList),
+      sample("직접 — 가운데 원 40", "fallback=\"circle\" — 구조를 그릴 수 없는 자리(검색 결과)", liveCircle),
+      sample("직접 — 다른 달로 넘기기", "머리는 바로 · 숫자 자리만 기다린다 — 받아 둔 달은 바로", periodLive),
+    ], "ptf-samples pov-samples--next")}`,
+  );
+
+  // 4. Progress Circle — 크기 × 톤 · 값 있는 원 · 모션 줄이기 · 버튼 안
+  const swatch = (html, kind = "white") => `<span class="pld-swatch pld-swatch--${kind}">${html}</span>`;
+  const toneRows = [
+    { ko: "neutral — 기본", en: "원 stroke-neutral-solid · 트랙 stroke-neutral-subtle", tone: "neutral", bg: "white" },
+    { ko: "brand", en: "앱 첫 화면 — 원 stroke-brand-solid · 트랙 bg-brand-weak-pressed", tone: "brand", bg: "white" },
+    { ko: "staticWhite", en: "사진 위 딤 — 흰 원 · 흰 30% 트랙", tone: "staticWhite", bg: "dim" },
+    { ko: "inherit", en: "글자색 · 그 30% — 놓인 부품이 정한다", tone: "inherit", bg: "white" },
+  ];
+  const toneCols = [
+    { ko: "24", en: "두께 3 · 값 없음", size: "24" },
+    { ko: "40", en: "두께 5 · 값 없음", size: "40" },
+    { ko: "24 · 값 40%", en: "값 있는 원", size: "24", value: 40 },
+    { ko: "40 · 값 40%", en: "값 있는 원", size: "40", value: 40 },
+  ];
+  const toneMatrix = `
+      <div class="cb-matrix pld-matrix" style="--cb-cols: ${toneCols.length};">
+        <div class="cb-matrix-row cb-matrix-row--head"><div class="cb-matrix-head">톤</div>${
+          toneCols.map(c => `<div class="cb-matrix-head">${escape(c.ko)}<span>${escape(c.en)}</span></div>`).join("")
+        }</div>${toneRows.map(r => `
+        <div class="cb-matrix-row"><div class="cb-matrix-label">${escape(r.ko)}<span>${escape(r.en)}</span></div>${
+          toneCols.map(c => `<div class="cb-matrix-cell">${swatch(progressCircle({ size: c.size, tone: r.tone, value: c.value ?? null }), r.bg)}</div>`).join("")
+        }</div>`).join("")}
+      </div>`;
+  const values = `<div class="pld-row">${[
+    [0, "0 — 호 없음"], [40, "40%"], [100, "100 — 꽉 참"],
+  ].map(([v, cap]) => `<div class="pld-row-item">${swatch(progressCircle({ size: "40", value: v }))}<span class="pld-row-cap">${escape(cap)}</span></div>`).join("")}<div class="pld-row-item">${swatch(progressCircle({ size: "40", value: 3, min: 0, max: 5, label: "사진 5장 중 3장 올리는 중", valueText: "60%" }))}<span class="pld-row-cap">5 중 3 → 60%</span></div></div>`;
+  const fillLive = `<div class="pld-live" data-pld-live="fill"><div class="pld-row"><div class="pld-row-item">${swatch(progressCircle({ size: "40", value: 20, label: "영수증 사진 올리는 중", attrs: "data-pld-fill" }))}<span class="pld-row-cap" data-pld-fill-cap="">20%</span></div></div>${controls([["값 올리기", 'data-pld-fill-step=""']])}</div>`;
+  const still = `<div class="pld-row">${[
+    ["24 · neutral", progressCircle({ size: "24", still: true })],
+    ["40 · neutral", progressCircle({ size: "40", still: true })],
+    ["40 · brand", progressCircle({ size: "40", tone: "brand", still: true })],
+  ].map(([cap, html]) => `<div class="pld-row-item">${swatch(html)}<span class="pld-row-cap">${escape(cap)}</span></div>`).join("")}</div>`;
+  const inButton = `<div class="pld-row">${[["xsmall", "14"], ["small", "14"], ["medium", "16"], ["large", "18"]].map(([size, px]) => `<div class="pld-row-item"><button class="btn btn-neutral-solid btn-size-${size} btn-loading" type="button" aria-busy="true"><span>저장</span>${progressCircle({ size: "inherit", tone: "inherit", hidden: true })}</button><span class="pld-row-cap">${size} · ${px}</span></div>`).join("")}</div>`;
+  const circlePanel = panel(
+    "Progress Circle — 크기 24 · 40 × 톤 · 값 있는 원 · 모션 줄이기",
+    "트랙(원 전체)과 호 둘이다. 크기는 둘 — 24(두께 3 · 요소 안)와 40(두께 5 · 콘텐츠 영역 가운데). 호는 12시에서 시작하고 끝이 둥글다. 값을 모르면 호가 늘었다 줄며 돈다 — 원은 1.2초에 한 바퀴(cubic-bezier(0.35, 0.25, 0.65, 0.75)), 머리는 1.2초의 0 ~ 75% 동안 원둘레만큼 늘고 꼬리는 33.33 ~ 100% 에 따라와 줄인다. 값을 알면 12시부터 (값 − min) ÷ (max − min) 만큼 채우고(0 이면 호를 지운다), 값이 바뀌면 300ms(d6 · enter)로 따라 찬다 — 처음 그릴 때는 움직이지 않는다. 톤 넷 — neutral(원 stroke-neutral-solid 흰 면 위 4.18 · 다크 4.13:1, 트랙 stroke-neutral-subtle), brand(stroke-brand-solid — 다크는 밝은 짝 · 트랙 bg-brand-weak-pressed), staticWhite(사진 위 딤 — 흰 원 · 흰 30% 트랙), inherit(놓인 부품의 --progress-* · 없으면 글자색과 그 30%). 모션 줄이기면 돌지 않는다 — 값 없는 원은 12시부터 3/4 호로 멈추고, 채움은 바로 바뀐다. 버튼 안의 원(14 · 14 · 16 · 18, 두께 2)은 Button 이 정한다(size · tone inherit). 이름은 \"불러오는 중\"(role=progressbar), 값 있는 원은 값 글 \"40%\" 다.",
+    `${toneMatrix}${samples([
+      sample("값 있는 원 — 12시부터 · min · max 를 지킨다", "value · min · max — aria-valuetext \"60%\"", values),
+      sample("직접 — 값이 바뀌면 300ms 로 따라 찬다", "누를 때마다 20% 씩 · 100 다음은 0", fillLive),
+      sample("모션 줄이기 — 돌지 않는 3/4 호", "prefers-reduced-motion: reduce", still),
+      sample("버튼 안 — Button 이 크기 · 색을 넘긴다", "size=\"inherit\" tone=\"inherit\" aria-hidden — 버튼이 aria-busy", inButton),
+    ], "ptf-samples pov-samples--next")}`,
+  );
+
+  // 5. 원의 자리 — 섹션 제목 옆 24 · 목록 끝 24 · 콘텐츠 가운데 40 · 올리기(값 있는 원)
+  const refreshHead = `<div class="plst-header plst-header--bold-solid"><span class="pld-title-row">최근 거래${progressCircle({ size: "24", label: "최근 거래 새로 고치는 중" })}</span></div>`;
+  const placePhone = phone(460, `${title("가계부")}${refreshHead}${ledgerRows(OVERLAY_LEDGER.slice(0, 3))}<div class="pld-more">${progressCircle({ size: "24", label: "거래 더 불러오는 중" })}</div>`);
+  const centerDesktop = desktop(420, `${title("검색")}<div class="pov-page-card pld-page-card">${searchBox}${pldRegion({ fallback: "circle" })}</div>`);
+  const photo = `<div class="pld-upload"><div class="pld-photo-thumb"><div class="pld-photo-dim">${progressCircle({ size: "24", tone: "staticWhite", value: 62, label: "영수증 사진 올리는 중" })}</div></div><div class="pld-file">${PLD_ICON.fileText}<span class="pld-file-name">10월 카드 명세서.pdf</span>${progressCircle({ size: "24", value: 35, label: "10월 카드 명세서.pdf 올리는 중" })}</div></div>`;
+  const placePanel = panel(
+    "Progress Circle — 자리가 범위를 말한다 · 올리기",
+    "원이 놓인 자리가 무엇을 기다리는지 말한다. 섹션 하나를 새로 고칠 때는 섹션 제목 오른쪽 8 에 24 — 보던 내용은 그대로 둔다. 목록 끝을 더 불러올 때는 목록 아래 가운데 24. 구조를 미리 그릴 수 없는 자리(검색 결과 · 결과 화면 전체)는 콘텐츠 영역 가운데 40 — 틀(머리 · 검색칸 · 카드 면)은 그린다. 화면을 덮는 회색 막 위 \"Loading\" · 앱 틀 없이 화면 가운데 원 하나는 두지 않는다. 진행을 아는 올리기 · 받기는 값 있는 원 24 — 사진이면 사진 위 딤(overlay-dim-light · 다크 overlay-dim-dark) 가운데 staticWhite, 파일이면 이름 옆 neutral 이다. 막대(Progress)는 진행에 쓰지 않는다. 원의 이름은 기다리는 일이다(\"최근 거래 새로 고치는 중\" · \"영수증 사진 올리는 중\").",
+    `${samples([
+      sample("폰 — 섹션 새로 고침 24 · 목록 끝 24", "CardHeader 옆 · 목록 아래 가운데 — 보던 내용은 그대로", placePhone),
+      sample("올리기 · 받기 — 값 있는 원 24", "사진 위 딤 staticWhite · 파일 이름 옆 neutral", photo),
+    ])}${samples([
+      sample("데스크톱 웹 — 콘텐츠 영역 가운데 40", "LoadingRegion fallback=\"circle\" — 틀은 그린다", centerDesktop),
+    ], `${DESKTOP} pov-samples--next`)}`,
+  );
+
+  // 6. 당겨서 새로 고침 — 쉼 · 당기는 중 · 문턱을 넘음 · 새로 고치는 중(멈춘 그림)과 직접 당겨 보기
+  // 내용 — 가계부 줄(제목 · 금액만 — 좁은 네 칸에서도 한 줄)
+  const ptrRows = listOf([...OVERLAY_LEDGER, ...OVERLAY_LEDGER.slice(0, 3)].map((r) => listRow({ prefix: listTile(r.color, r.icon), title: r.title, suffix: `<span class="plst-amount">${escape(r.amount)}</span>` })));
+  const ptr = ({ state = "idle", pull = 0, live = false }) => {
+    const ratio = Math.min(pull / 88, 1);
+    const circle = state === "refreshing"
+      ? progressCircle({ size: "24", label: "새로 고치는 중" })
+      : progressCircle({ size: "24", value: Math.round(ratio * 100), hidden: true });
+    return `<div ${attrsOf([
+      'class="pptr"',
+      `data-state="${state}"`,
+      live && 'data-pptr-live=""',
+      `style="--pptr-pull: ${pull}px; --pptr-ratio: ${+ratio.toFixed(3)};"`,
+    ])}><div class="pptr-indicator"${state === "refreshing" ? "" : ' aria-hidden="true"'}>${circle}</div><div class="pptr-content">${ptrRows}</div></div>`;
+  };
+  const ptrPhone = (args) => phone(420, `${title("가계부")}${ptr(args)}`);
+  const ptrLive = `<div class="pld-live" data-pld-live="ptr">${ptrPhone({ live: true })}<p class="pld-clock" data-pld-clock="" aria-hidden="true">목록을 아래로 끌어 보세요 — 손가락 117(당긴 거리 88)을 넘기고 놓으면 새로 고친다</p></div>`;
+  const ptrPanel = panel(
+    "당겨서 새로 고침 — 당긴 만큼 채움 · 문턱 88 · 놓으면 돎 · 끝날 때까지 88",
+    "앱 화면(탭)의 목록 · 대시보드를 맨 위에서 아래로 당기면 같은 내용을 다시 받는다. 지시자는 원판 없는 원 24(neutral)이고, 머리 바로 아래 높이 88 칸(원 + 위아래 32) 가운데에 내용과 겹친다 — 쉴 때는 칸 높이만큼 위(−88)로 숨고 보조 기술에도 숨는다. 당기는 동안 내용은 당긴 거리(손가락 이동 × 0.75)만큼 내려오고, 지시자 칸은 min(당긴 거리 − 88, 0) 로 따라 내려와 문턱에서 제자리에 서며, 원은 당긴 비율만큼 채워지고 짙어진다(투명도 당긴 거리 ÷ 88). 문턱은 당긴 거리 88(손가락 약 117)이고 넘기면 원이 꽉 찬다. 문턱을 넘겨 놓으면 원이 돌고(\"새로 고치는 중\") 내용이 88 로 300ms(d6 · enter)에 돌아가 새로 고침이 끝날 때까지(성공 · 실패 모두) 머문 뒤 300ms 에 제자리로 간다. 문턱 전에 놓으면 새로 고치지 않고 제자리로. 보던 내용은 그대로 두고, 실패하면 스낵바로 알린다. 웹에는 두지 않는다. 모션 줄이기면 미끄러지지 않고 바로 간다.",
+    `${samples([
+      sample("쉼", "idle — 칸 −88 · 투명도 0 · 보조 기술에 숨김", ptrPhone({ state: "idle" })),
+      sample("당기는 중 — 당긴 거리 44", "pulling — 원 50% · 투명도 0.5 · 칸 −44", ptrPhone({ state: "pulling", pull: 44 })),
+      sample("문턱을 넘음 — 당긴 거리 110", "ready — 원 꽉 참 · 칸 제자리 · 내용은 손가락을 따라온다", ptrPhone({ state: "ready", pull: 110 })),
+      sample("새로 고치는 중", "refreshing — 원이 돈다 · 내용 88 에 머문다", ptrPhone({ state: "refreshing", pull: 88 })),
+    ], "ptf-samples pld-samples--four")}${samples([
+      sample("직접 — 끌어서 당기기", "마우스 · 손가락으로 끌기 — 놓으면 1.6초 새로 고친 뒤 제자리", ptrLive),
+    ], "ptf-samples pov-samples--next")}`,
+  );
+
+  // 7. Progress(막대) — 한도 · 목표 · 넘침 · 달성
+  const meters = (items) => `<div class="pld-meters">${items.map((m) => progressMeter(m)).join("")}</div>`;
+  const meterPhone = phone(440, `${title("10월 예산 · 목표")}${meters([
+    { label: "식비 예산", value: 350000, max: 400000 },
+    { label: "교통 예산", value: 120000, max: 100000 },
+    { meaning: "goal", label: "여행 자금", value: 1200000, max: 2000000 },
+    { meaning: "goal", label: "현대카드 M 전월 실적", value: 390000, max: 300000 },
+  ])}`);
+  const hours = (h) => `${h}시간`;
+  const meterDesktop = desktop(300, `${title("이번 달")}<div class="pov-page-card pld-page-card">${meters([
+    { label: "식비 예산", value: 350000, max: 400000 },
+    { meaning: "goal", label: "오늘 근무", value: 6, max: 8, format: hours },
+  ])}</div>`);
+  const meterLive = `<div class="pld-live" data-pld-live="meter"><div class="pld-surface pld-surface--white pld-meters">${progressMeter({ label: "식비 예산", value: 350000, max: 400000, live: "limit" })}${progressMeter({ meaning: "goal", label: "여행 자금", value: 1800000, max: 2000000, live: "goal" })}</div>${controls([["− 50,000원", 'data-pmeter-step="-50000"'], ["+ 50,000원", 'data-pmeter-step="50000"']])}</div>`;
+  const meterPanel = panel(
+    "Progress — 한도 · 목표 · 넘침 · 달성",
+    "\"얼마나 찼나\" 를 보이는 미터다 — 예산 · 카드 한도(limit — 쓸수록 찬다), 저축 목표 · 카드 실적(goal — 모을수록 찬다). 이름 줄(이름 14 · 500 fg-neutral · 오른쪽 글 13 fg-neutral-subtle 숫자 폭을 같게) · 막대 · 금액 줄(\"현재 / 목표\" 12 fg-neutral-subtle)이 한 묶음이고 사이는 6 이다. 막대는 높이 하나 8 · 모서리 full, 트랙 bg-neutral-weak, 채움은 브랜드 글자색 fg-brand(다크는 밝은 짝 — 채움 색 bg-brand-solid 는 다크 트랙에 묻힌다)이고 값이 0 보다 크면 적어도 8 이다. 한도를 넘으면 채움을 끝까지 칠하고 fg-critical 로 바꾸며 오른쪽 글이 \"20,000원 초과\"(fg-critical · 700)다. 목표에 닿으면 끝까지 · 색은 그대로 · 오른쪽 글 \"달성\"(fg-neutral · 700)만 — 주의 구간 색 · 달성 색은 없다. 값이 바뀌면 채움이 300ms(d6 · enter)로 따라 차고(처음 그릴 때는 움직이지 않는다), 모션 줄이기면 바로 바뀐다. 보조 기술에는 미터로 읽힌다 — role=meter · 이름 \"식비 예산 400,000원 중 350,000원\" · 값 글은 오른쪽 글과 같은 말(\"88%\" · \"20,000원 초과\" · \"달성\")이고 보이는 글은 숨긴다. 막대는 불러오기 · 올리기 진행에 쓰지 않는다 — 그건 원이다.",
+    `${samples([
+      sample("폰 — 보통 · 넘침 · 목표 · 달성", "limit 88% · limit 초과 · goal 60% · goal 달성(130%)", meterPhone),
+      sample("직접 — 값을 바꾸면 300ms 로 따라 찬다", "식비 예산 400,000원 · 여행 자금 2,000,000원 — 한도를 넘겨 보기", meterLive),
+    ])}${samples([
+      sample("데스크톱 웹 — 카드 안 · 돈이 아닌 값", "formatValue={(h) => `${h}시간`} — \"6시간 / 8시간\"", meterDesktop),
+    ], `${DESKTOP} pov-samples--next`)}`,
+  );
+
+  // 8. Scroll Fog — 칩 줄 · 시트 · 대화상자 본문 · 바닥 버튼 화면 · 상자, 늘 켜짐 · 깊이만큼 여백
+  const CHIPS = ["전체", "식비", "교통", "쇼핑", "카페", "구독", "의료", "여행"];
+  const chipRow = (label) => chipGroup({ role: "radiogroup", layout: "scroll", gutter: true, label, items: chipRadios(CHIPS, "전체", { variant: "outlineStrong" }) });
+  const rowFrame = (cls, label, scroll = "") => `<div class="pld-fog-row ${cls}"${scroll ? ` data-pfog-scroll="${scroll}"` : ""}>${chipRow(label)}</div>`;
+  const CATS = ["식비", "교통", "쇼핑", "카페", "구독", "의료", "여행", "주거", "통신", "교육"];
+  const sheet = (scroll) => `<div${scroll ? ` data-pfog-scroll="${scroll}"` : ""}>${phone(560, overlayPage(), [overlayScrim(), overlayLayer("sheet", bottomSheet({ title: "카테고리 고르기", body: overlayRadioList("카테고리", CATS, "식비"), footer: [overlayButton("완료", { size: "large" })], scrollFog: true }))])}</div>`;
+  const longDetail = [["금액", "8,000원"], ["카테고리", "식비"], ["결제 수단", "현대카드 M"], ["날짜", "10월 1일 (목)"], ["시간", "오후 12:30"], ["가맹점", "김밥천국 강남점"], ["할부", "일시불"], ["메모", "친구와 점심"], ["태그", "회사 근처"], ["더치페이", "2명 · 4,000원씩"]];
+  const fogDialog = desktop(520, overlayPage({ desktop: true }), [overlayScrim(), overlayLayer("dialog", overlayDialog({ title: "거래 상세", close: true, body: overlayValueList(longDetail), scrollFog: true }))]);
+  const IMPORTED = ["김밥천국", "버스", "다이소", "스타벅스", "GS25", "교보문고", "올리브영", "택시", "넷플릭스", "쿠팡"].map((t, i) => ({ title: t, detail: `10월 ${i + 1}일 · 현대카드 M`, value: "가져옴" }));
+  const fogPage = phone(560, `${title("가져오기 결과")}<div class="pld-page-fog"><div class="pfog pfog--page" tabindex="0" role="region" aria-label="가져온 거래">${listOf(IMPORTED.map((r) => listRow({ title: r.title, detail: r.detail, suffix: escape(r.value) })))}</div><div class="pld-page-cta">${overlayButton("가계부에 넣기", { size: "large" })}</div></div>`);
+  const TERMS = "제1조(목적) 이 약관은 Porest Desk 가 제공하는 가계부 · 메모 · 할 일 서비스의 이용 조건과 절차를 정한다. 제2조(계정) 이용자는 하나의 계정만 만들 수 있고, 계정 정보는 본인만 쓴다. 제3조(데이터) 이용자가 넣은 거래 · 메모는 이용자의 것이며, 서비스는 보관과 백업에만 쓴다. 제4조(해지) 이용자는 언제든 설정에서 이용을 해지할 수 있고, 해지하면 아이디와 이메일은 다시 쓸 수 없다. 제5조(변경) 약관이 바뀌면 시행 7일 전에 앱 안에서 알린다.";
+  const box = (scroll) => `<div class="pld-box"${scroll ? ` data-pfog-scroll="${scroll}"` : ""}><div class="pfog pfog--box" tabindex="0" role="region" aria-label="이용 약관"><p class="pld-terms">${escape(TERMS)}</p></div></div>`;
+  const fogPanel = panel(
+    "Scroll Fog — 칩 줄 · 시트 · 대화상자 본문 · 바닥 버튼 화면 · 상자, 늘 켜짐 · 깊이만큼 여백",
+    "스크롤 상자에 거는 마스크(gradient-fade-mask 16단계 — 색을 덮지 않아 흰 면 · 회색 바탕 · 다크 어디서나 같다)다. 스크롤 위치 · 넘침을 재지 않고 늘 켜 두고, 흐린 쪽에 깊이 이상의 여백을 둬 처음 · 끝에서는 흐림이 빈 여백 위에 놓인다(마지막 줄 · 칩이 흐림 아래 남지 않는다). 자리마다 방향 · 깊이를 정해 둔다 — 칩 필터 바 · 제안 줄 · Chip Tabs(row)는 좌우 20 · 여백은 화면 여백 24(처음 · 끝 칩은 흐리지 않는다), 시트 · 대화상자 · 팝오버의 넘칠 수 있는 본문(overlayBody — scrollFog)은 위 20 · 아래 80 + 본문 안 여백 20 · 80, 바닥 고정 버튼이 있는 화면 전체 스크롤(page)은 위 20 · 아래 80 이고 바닥 버튼 위에서 끝난다, 카드 안 높이를 정한 스크롤(box)은 넘치는 방향 양 끝 20. 키보드로 옮긴 요소가 흐림 아래 멈추지 않게 스크롤 여유(scroll-padding)를 같은 만큼 둔다. 흐린 자리의 칩 · 줄도 그대로 눌린다. 시트 · 대화상자의 옛 \"본문이 넘칠 때만 아래 48 흐림\"(2026-10-02)은 이 규칙으로 바뀌었다. 모든 상자는 실제로 스크롤된다 — 처음 · 가운데 · 끝 어디서나 흐림은 그대로다.",
+    `${samples([
+      sample("칩 줄 — 흰 면 · 처음", "ChipGroup layout=\"scroll\" — 늘 좌우 20 · 안쪽 여백 24", rowFrame("pld-fog-row--white", "카테고리")),
+      sample("칩 줄 — 흰 면 · 끝까지 민 뒤", "끝 칩은 여백 24 안 — 흐림은 빈 여백 위", rowFrame("pld-fog-row--white", "카테고리 — 끝", "end")),
+      sample("칩 줄 — 회색 바탕 위", "마스크라 바탕색이 바뀌어도 그대로다", rowFrame("pld-fog-row--basement", "카테고리 — 회색 바탕", "middle")),
+    ])}${samples([
+      sample("시트 본문 — 처음", "BottomSheetBody scrollFog — 위 20 · 아래 80 · 여백 20 · 80", sheet("")),
+      sample("시트 본문 — 끝까지 내린 뒤", "아래 80 은 빈 여백 위 — 마지막 줄은 흐림 밖", sheet("end")),
+      sample("바닥 버튼 화면 — page", "ScrollFog use=\"page\" — 바닥 버튼 위에서 끝난다", fogPage),
+    ], "ptf-samples pov-samples--next")}${samples([
+      sample("대화상자 본문 — 거래 상세", "ResponsiveDialogBody scrollFog className=\"px-0\" — 1280 이상", fogDialog),
+    ], `${DESKTOP} pov-samples--next`)}${samples([
+      sample("상자 — 처음", "ScrollFog use=\"box\"(기본) · max-h 240 — 위아래 20", box("")),
+      sample("상자 — 가운데", "흐림은 스크롤 위치와 상관없다", box("middle")),
+      sample("상자 — 끝", "끝에서도 그대로 — 여백 20 위", box("end")),
+    ], "ptf-samples pov-samples--next")}`,
+  );
+
+  // 9. Content Placeholder — 크기(그림 = 틀 높이의 50% · 16 ~ 160) · 그림 · 불러오는 동안은 스켈레톤
+  const frame = (w, h, radius, html, cls = "") => `<div class="pld-cph${cls}" style="width: ${pldLen(w)}; height: ${pldLen(h)}; border-radius: ${radius};">${html}</div>`;
+  const cphSizes = `<div class="pld-cph-sizes">${[
+    ["40 썸네일 → 20", frame(40, 40, "var(--radius-r2)", contentPlaceholder({ glyph: "receipt" }))],
+    ["120 카드 → 60", frame(120, 120, "var(--radius-r4)", contentPlaceholder())],
+    ["좁고 긴 40 × 120 → 40(폭)", frame(40, 120, "var(--radius-r2)", contentPlaceholder())],
+  ].map(([cap, html]) => `<div class="pld-cph-item">${html}<span class="pld-row-cap">${escape(cap)}</span></div>`).join("")}</div>`;
+  const cphWide = `<div class="pld-cph-item">${frame("100%", "auto", "0", contentPlaceholder(), " pld-cph--photo")}<span class="pld-row-cap">화면 폭 4:3(360 × 270) → 135</span></div>`;
+  const cphBig = `<div class="pld-cph-item">${frame("100%", 360, "var(--radius-r4)", contentPlaceholder({ label: "가게 사진" }))}<span class="pld-row-cap">높이 360 → 160(최대)</span></div>`;
+  const glyphs = `<div class="pld-cph-sizes">${[["image", "사진 — 기본"], ["creditCard", "카드 그림"], ["receipt", "영수증 사진"], ["fileText", "문서"]].map(([g, cap]) => `<div class="pld-cph-item">${frame(72, 72, "var(--radius-r3)", contentPlaceholder({ glyph: g }))}<span class="pld-row-cap">${escape(cap)}</span></div>`).join("")}</div>`;
+  const card = (html) => `<div class="pld-cph pld-cph--card">${html}</div>`;
+  const cphStates = `<div class="pld-cph-sizes">${[
+    ["불러오는 중 — 같은 모서리의 스켈레톤", card(skeleton({ w: "100%", h: "100%" }))],
+    ["불러오지 못함 — 대체 그림", card(contentPlaceholder({ glyph: "creditCard", label: "현대카드 M 카드 그림" }))],
+    ["불러옴", card('<span class="pld-card-art" role="img" aria-label="현대카드 M 카드 그림"><span>Hyundai M</span></span>')],
+  ].map(([cap, html]) => `<div class="pld-cph-item">${html}<span class="pld-row-cap">${escape(cap)}</span></div>`).join("")}</div>`;
+  const cphPanel = panel(
+    "Content Placeholder — 틀을 채운 면 · 그림은 틀 높이의 50%(16 ~ 160)",
+    "이미지가 없거나 불러오지 못했을 때 그 자리를 채우는 대체 그림이다 — 면 bg-neutral-weak(스켈레톤 면과 같은 색)이 담는 틀을 채우고, 가운데에 무엇이 없는지 말하는 lucide 선 아이콘(stroke-neutral-weak · 24 격자 선 1.5 — 그림이 커지면 같은 비율로 굵어진다)을 둔다. 그림은 틀 높이의 50% 정사각이고 16 보다 작아지지 않고 160 보다 커지지 않으며, 틀 폭이 그보다 좁으면 폭에 맞춘다(40 썸네일 20 · 화면 폭 4:3 사진 135 · 그보다 크면 160). 제 모서리 · 테두리 · 그림자가 없다 — 담는 틀이 자른다. 면 위 그림은 1.14 · 다크 1.20:1 로 옅은 장식이고, 무엇이 없는지는 대체 글이 말한다 — 대체 글이 있던 이미지면 그 글을 자리 이름(role=img)으로 남기고, 장식이었으면 자리도 숨긴다. 불러오는 동안은 이 그림이 아니라 같은 모서리 · 같은 크기의 스켈레톤이다. 깨진 이미지 아이콘 · 빈 칸 · 외부 기본 그림을 보이지 않는다.",
+    `${samples([
+      sample("크기 — 틀 높이의 50%", "ContentPlaceholder — 40 → 20 · 120 → 60 · 좁으면 폭", cphSizes),
+      sample("크기 — 화면 폭 사진", "aspect-[4/3] · 모서리 0", cphWide),
+      sample("크기 — 160 에서 멈춘다", "label=\"가게 사진\" → role=\"img\"", cphBig),
+    ])}${samples([
+      sample("그림 — 무엇이 없는지", "icon={<ImageIcon />}(기본) · <CreditCard /> · <Receipt /> · <FileText />", glyphs),
+    ], "ptf-samples pov-samples--next")}${samples([
+      sample("카드 그림 — 불러오는 중 · 못 함 · 옴", "aspect-[1.586] w-28 rounded-r2 — 같은 틀 · 같은 모서리", cphStates),
+    ], `${DESKTOP} pov-samples--next`)}`,
+  );
+
+  const lede = "SEED Skeleton · Progress Circle · Pull To Refresh · Scroll Fog · Content Placeholder 와 Loading 패턴의 시간표 — 기다리는 동안의 모습이다. 화면의 틀은 처음부터 그리고, 구조가 보이는 데이터 자리는 스켈레톤(면 bg-neutral-weak + 흰 띠 1.5초 · 모서리 글 8 · 카드 16 · 원 full · 사진 0 · 글 자리 = 글줄 높이 · 흰 면 위에만), 행동 하나를 기다리는 작은 자리는 Progress Circle(24 · 40 · 두께 3 · 5, 호가 늘었다 줄며 1.2초, 값을 알면 12시부터 채움)이다. 모든 불러오기는 1초 안에는 아무것도 보이지 않고 · 1초부터 스켈레톤 · 원 · 5초 \"평소보다 오래 걸리고 있어요.\" · 10초 실패(다시 시도)다. 앱의 당겨서 새로 고침은 원판 없는 원 24(문턱 88 · 끝날 때까지 88). 막대(Progress)는 기다림이 아니라 \"얼마나 찼나\" 의 미터(높이 8 · fg-brand · 넘친 한도만 fg-critical + \"N원 초과\" · 달성은 글자만)다. 스크롤 영역의 끝은 늘 켜진 마스크(Scroll Fog — 가로 좌우 20 · 시트 · 대화상자 본문 위 20 · 아래 80)로 흐리고, 이미지가 없거나 못 불러오면 Content Placeholder 다. 모션 줄이기면 띠 · 회전 · 채움 전환이 멈춘다. 옛 Skeleton(깜빡임 · 모서리 4) · Spinner(16 · 24 · 32 · 48 · 브랜드 4분의 1 호) · Progress(2 · 4 · 8 · 흐르는 막대) · 시트 · 대화상자의 \"넘칠 때만 아래 48 흐림\" 은 걷었다."
+    + (brand.key === "shared" ? " 공유 토큰에는 브랜드 역할 색이 없어 brand 톤 · 막대 채움이 여기서는 중립으로 보인다 — HR · Desk 미리보기에서 브랜드 색이다." : "");
+
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">03p — 기다림: Skeleton · Progress Circle · Progress · Scroll Fog · Content Placeholder</div>
+      <h2 class="section-title">기다림 — 스켈레톤 · 원 · 1 · 5 · 10초 · 막대 · 끝 흐림 · 대체 그림</h2>
+      <p class="section-lede">${escape(lede)}</p>
+    </header>
+    ${status}
+    ${listPanel}
+    ${shapePanel}
+    ${timelinePanel}
+    ${circlePanel}
+    ${placePanel}
+    ${ptrPanel}
+    ${meterPanel}
+    ${fogPanel}
+    ${cphPanel}
+  </section>`;
+}
+
 export function renderVignettes(brand) {
   // 배지 — 옛 .badge(알약 · 대문자)는 걷고 03o 의 Badge 로 그린다. HR 결재 상태는 대기 neutral · 진행 informative · 승인 positive · 반려 critical(badge.md Migration notes).
   // 탭 — 옛 underline · pills 그림(브랜드 색 밑줄 · 채움)은 걷었다(tabs.md 2026-10-02). 다른 구역으로 옮기는 자리(HR 직원 상세 · 공유 문서)는 Line 탭,
@@ -5885,77 +6348,37 @@ export function renderSnackbars(brand) {
   </section>`;
 }
 
+// 13 — 브랜드 화면의 스켈레톤(skeleton.md · 수치 skeleton.yaml) — 모양 · 움직임은 03p 의 Skeleton(.psk) 그대로다. 틀(카드 면 · 카드 제목)은 그리고 데이터 자리만
+// 스켈레톤이며, 회색 바탕(.psk-screen) 위 흰 카드(.psk-card) 안에만 둔다. HR 은 결재 대기 카드의 줄(List 줄 껍데기 — 아바타 원 40 · 신청자 t5 · 휴가 · 기간 t3 ·
+// 상태 t3), Desk 는 메모 카드 넷(제목 t5 · 본문 t4 두 줄 — 마지막 줄 짧게 · 날짜 t3), 공유는 모양 넷이다. 영역에 aria-busy, 스켈레톤은 보조 기술에 숨긴다
 export function renderSkeleton(brand) {
   const sk = brand.skeleton;
   if (!sk) return "";
 
-  let body = "";
+  let body;
   if (sk.layout === "list") {
-    const rows = Array.from({ length: sk.items || 5 }, () => `
-      <div class="sk-row">
-        <div class="sk sk-circle" style="width:32px;height:32px;"></div>
-        <div class="sk-row-content">
-          <div class="sk sk-text" style="width:40%;"></div>
-          <div class="sk sk-text sk-text-sm" style="width:65%;"></div>
-        </div>
-        <div class="sk sk-rect" style="width:60px;height:20px;border-radius:9999px;"></div>
-      </div>`).join("");
-    body = `<div class="sk-stack">${rows}</div>`;
+    const rows = Array.from({ length: sk.items || 5 }, (_, i) => `<li class="plst-row"><div class="plst-content"><span class="plst-prefix">${skeleton({ radius: "full", w: 40, h: 40 })}</span><span class="plst-body"><span class="plst-title">${skeleton({ text: "t5", w: [64, 56, 72, 60, 68][i % 5] })}</span><span class="plst-detail">${skeleton({ text: "t3", w: [168, 144, 184, 152, 160][i % 5] })}</span></span><span class="plst-suffix">${skeleton({ text: "t3", w: 56 })}</span></div></li>`);
+    body = `<div class="psk-card">${listHeader({ text: "결재 대기", variant: "boldSolid" })}<div class="pld-region" data-phase="waiting" aria-busy="true">${listOf(rows, ' aria-hidden="true"')}</div></div>`;
   } else if (sk.layout === "card") {
-    const cards = Array.from({ length: sk.items || 4 }, () => `
-      <div class="sk-card">
-        <div class="sk sk-text" style="width:80%;height:24px;"></div>
-        <div class="sk sk-text" style="width:100%;"></div>
-        <div class="sk sk-text" style="width:60%;"></div>
-        <div class="sk-tags-row">
-          <div class="sk sk-rect" style="width:50px;height:18px;border-radius:9999px;"></div>
-          <div class="sk sk-rect" style="width:70px;height:18px;border-radius:9999px;"></div>
-        </div>
-      </div>`).join("");
-    body = `<div class="sk-grid">${cards}</div>`;
+    const card = (i) => `<div class="psk-card psk-memo" aria-hidden="true">${skeleton({ text: "t5", w: ["72%", "56%", "64%", "80%"][i % 4] })}<div class="psk-memo-lines">${skeleton({ text: "t4", w: "100%" })}${skeleton({ text: "t4", w: ["64%", "72%", "60%", "68%"][i % 4] })}</div>${skeleton({ text: "t3", w: 88 })}</div>`;
+    body = `<div class="pld-region psk-memo-grid" data-phase="waiting" aria-busy="true">${Array.from({ length: sk.items || 4 }, (_, i) => card(i)).join("")}</div>`;
   } else {
-    // demo: 4 variants
-    body = `
-      <div class="sk-demo">
-        <div class="sk-demo-cell">
-          <div class="sk-demo-label">text · 3 lines</div>
-          <div class="sk sk-text" style="width:100%;"></div>
-          <div class="sk sk-text" style="width:100%;"></div>
-          <div class="sk sk-text" style="width:60%;"></div>
-        </div>
-        <div class="sk-demo-cell">
-          <div class="sk-demo-label">circle · avatar</div>
-          <div style="display:flex;gap:var(--spacing-md);align-items:center;">
-            <div class="sk sk-circle" style="width:24px;height:24px;"></div>
-            <div class="sk sk-circle" style="width:32px;height:32px;"></div>
-            <div class="sk sk-circle" style="width:48px;height:48px;"></div>
-          </div>
-        </div>
-        <div class="sk-demo-cell">
-          <div class="sk-demo-label">rect · card</div>
-          <div class="sk sk-rect" style="width:100%;height:80px;"></div>
-        </div>
-        <div class="sk-demo-cell">
-          <div class="sk-demo-label">list-row</div>
-          <div class="sk-row">
-            <div class="sk sk-circle" style="width:32px;height:32px;"></div>
-            <div class="sk-row-content">
-              <div class="sk sk-text" style="width:50%;"></div>
-              <div class="sk sk-text sk-text-sm" style="width:75%;"></div>
-            </div>
-          </div>
-        </div>
-      </div>`;
+    body = `<div class="psk-card psk-shapes" aria-hidden="true">${[
+      ["글 · 숫자 — 8 · 줄 높이(t4 19)", `<div class="psk-memo-lines">${skeleton({ text: "t4", w: "100%" })}${skeleton({ text: "t4", w: "60%" })}</div>`],
+      ["아바타 · 원 아이콘 — full", skeleton({ radius: "full", w: 40, h: 40 })],
+      ["카드 · 썸네일 — 16", skeleton({ radius: "16", w: "100%", h: 80 })],
+      ["화면 폭 사진 — 0", skeleton({ radius: "0", w: "100%", cls: "pld-photo" })],
+    ].map(([cap, html]) => `<div class="psk-shape"><div class="psk-shape-cap">${escape(cap)}</div>${html}</div>`).join("")}</div>`;
   }
 
   return `
   <section class="section">
     <header class="section-head">
-      <div class="section-eyebrow">13 — Skeleton / Loading</div>
+      <div class="section-eyebrow">13 — Skeleton</div>
       <h2 class="section-title">${escape(sk.title)}</h2>
       <p class="section-lede">${escape(sk.description)}</p>
     </header>
-    <div class="sk-card-wrap" aria-busy="true" aria-label="콘텐츠 로딩 중">
+    <div class="psk-screen">
       ${body}
     </div>
   </section>`;
@@ -6079,42 +6502,31 @@ export function renderBatchV67(brand) {
         </div>
        </div>`;
 
-  // Spinner / Progress
-  const spinner = `
-    <div class="sp-block">
-      <div class="sp-row">
-        <div class="sp-cell">
-          <div class="sp-label">Circular · md 24</div>
-          <div class="sp-spinner" role="status" aria-label="로딩 중"></div>
+  // Progress Circle · Progress — 옛 Spinner(16 · 24 · 32 · 브랜드 4분의 1 호 · 라벨 앞 원) · 진행 막대(4 · 흐르는 막대)는 걷었다(2026-10-03 — 03p).
+  // 섹션 새로 고침은 제목 옆 원 24, 화면 가운데는 원 40, 올리기는 값 있는 원 24, 막대는 "얼마나 찼나" 의 미터다(진행에는 쓰지 않는다)
+  const upload = isHr ? { name: "Q1 평가표.pdf", value: 62 } : isDesk ? { name: "영수증 사진.jpg", value: 62 } : { name: "sample.pdf", value: 62 };
+  const meter = isHr
+    ? progressMeter({ label: "연차 사용", value: 11, max: 15, format: (d) => `${d}일` })
+    : progressMeter({ label: isDesk ? "식비 예산" : "예산", value: 350000, max: 400000 });
+  const waiting = `
+    <div class="pld-batch">
+      <div class="pld-batch-row">
+        <div class="pld-batch-cell">
+          <div class="pld-batch-label">섹션 새로 고침 — 제목 옆 24</div>
+          <span class="pld-title-row pld-batch-title">${isHr ? "결재 대기" : isDesk ? "최근 거래" : "목록"}${progressCircle({ size: "24", label: `${isHr ? "결재 대기" : isDesk ? "최근 거래" : "목록"} 새로 고치는 중` })}</span>
         </div>
-        <div class="sp-cell">
-          <div class="sp-label">Circular · lg 32</div>
-          <div class="sp-spinner sp-spinner--lg" role="status" aria-label="로딩 중"></div>
+        <div class="pld-batch-cell">
+          <div class="pld-batch-label">콘텐츠 가운데 — 40</div>
+          ${progressCircle({ size: "40" })}
         </div>
-        <div class="sp-cell">
-          <div class="sp-label">Inline + 라벨</div>
-          <div class="sp-inline">
-            <div class="sp-spinner sp-spinner--sm" role="status" aria-label="처리 중"></div>
-            <span>${isHr ? "결재 처리 중..." : isDesk ? "메모 저장 중..." : "처리 중..."}</span>
-          </div>
-        </div>
-      </div>
-      <div class="sp-row">
-        <div class="sp-cell sp-cell--full">
-          <div class="sp-label">Determinate progress · 62%</div>
-          <div class="sp-progress" role="progressbar" aria-valuenow="62" aria-valuemin="0" aria-valuemax="100" aria-label="${isHr ? "일괄 승인" : isDesk ? "이미지 업로드" : "진행"}">
-            <div class="sp-progress-fill" style="width: 62%;"></div>
-          </div>
-          <div class="sp-progress-meta"><span>${isHr ? "47 / 76 결재" : isDesk ? "1.2MB / 1.9MB" : "62 / 100"}</span><span>62%</span></div>
+        <div class="pld-batch-cell">
+          <div class="pld-batch-label">올리기 — 값 있는 원 24</div>
+          <span class="pld-file">${PLD_ICON.fileText}<span class="pld-file-name">${escape(upload.name)}</span>${progressCircle({ size: "24", value: upload.value, label: `${upload.name} 올리는 중` })}</span>
         </div>
       </div>
-      <div class="sp-row">
-        <div class="sp-cell sp-cell--full">
-          <div class="sp-label">Indeterminate progress (sweeping)</div>
-          <div class="sp-progress sp-progress--indeterminate" role="progressbar" aria-label="동기화 중">
-            <div class="sp-progress-sweep"></div>
-          </div>
-        </div>
+      <div class="pld-batch-cell pld-batch-cell--full">
+        <div class="pld-batch-label">막대 — 얼마나 찼나(미터 · 높이 8)</div>
+        ${meter}
       </div>
     </div>`;
 
@@ -6150,7 +6562,7 @@ export function renderBatchV67(brand) {
   <section class="section">
     <header class="section-head">
       <div class="section-eyebrow">14 — Components batch (v67)</div>
-      <h2 class="section-title">Pagination · ${isDesk ? "Bottom Sheet" : "Drawer"} · Spinner · Stepper</h2>
+      <h2 class="section-title">Pagination · ${isDesk ? "Bottom Sheet" : "Drawer"} · Progress Circle · Stepper</h2>
       <p class="section-lede">시스템 빈틈 4 컴포넌트 — 모두 prose-only spec, 새 토큰 0 (기존 합성).</p>
     </header>
     <div class="batch-grid">
@@ -6163,8 +6575,8 @@ export function renderBatchV67(brand) {
         ${drawer}
       </div>
       <div class="batch-card">
-        <div class="batch-card-head">Spinner / Progress</div>
-        ${spinner}
+        <div class="batch-card-head">Progress Circle · Progress — 모양은 03p</div>
+        ${waiting}
       </div>
       <div class="batch-card batch-card--full">
         <div class="batch-card-head">Stepper</div>
@@ -6536,8 +6948,8 @@ export function renderBatchV73V78(brand) {
         <div class="fu-list">
           <div class="fu-item">
             <span class="fu-file-icon">📄</span>
-            <div class="fu-meta"><span class="fu-name">${escape(isHr ? "Q1-evaluation.pdf" : isDesk ? "receipt-2026.jpg" : "sample.pdf")}</span>
-            <div class="fu-progress"><div class="fu-progress-bar" style="width: 67%"></div></div></div>
+            <div class="fu-meta"><span class="fu-name">${escape(isHr ? "Q1-evaluation.pdf" : isDesk ? "receipt-2026.jpg" : "sample.pdf")}</span></div>
+            ${progressCircle({ size: "24", value: 67, label: `${isHr ? "Q1-evaluation.pdf" : isDesk ? "receipt-2026.jpg" : "sample.pdf"} 올리는 중` })}
             <button class="fu-remove" aria-label="제거" type="button">×</button>
           </div>
         </div>
@@ -6959,6 +7371,7 @@ export function pageCss() {
       /* 크기 기본 = medium(cva defaultVariants). 누름 배율 = (기준 − 2) ÷ 기준 — 정적 미리보기라 기준은 높이 */
       --press-basis: 40;
       --progress-size: 16px;
+      --progress-thickness: 2px;
       --btn-icon-size: 16px;
       position: relative;
       display: inline-flex;
@@ -7150,7 +7563,8 @@ export function pageCss() {
     /* 포커스 — 키보드 포커스에만 링 2px · 띄움 2px(v106) */
     .btn:focus-visible,
     .btn.btn-state-focus { outline: 2px solid var(--btn-focus-ring); outline-offset: 2px; }
-    /* 로딩 — 누름 색 위 로딩 원. 라벨은 숨기기만 해 폭이 그대로다. 누르기를 막는다(aria-busy) */
+    /* 로딩 — 누름 색 위 로딩 원(Progress Circle · size · tone inherit — 크기 --progress-size · 두께 --progress-thickness 2 · 색 --progress-track · --progress-range,
+       모양 · 움직임은 03p 의 기다림 블록 .ppc). 라벨은 숨기기만 해 폭이 그대로다. 누르기를 막는다(aria-busy) */
     .btn.btn-loading,
     .btn[aria-busy="true"] {
       background: var(--btn-bg-loading);
@@ -7158,23 +7572,8 @@ export function pageCss() {
       cursor: progress;
       pointer-events: none;
     }
-    .btn.btn-loading > *,
-    .btn[aria-busy="true"] > * { visibility: hidden; }
-    .btn.btn-loading::after,
-    .btn[aria-busy="true"]::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      margin: auto;
-      box-sizing: border-box;
-      width: var(--progress-size);
-      height: var(--progress-size);
-      border: 2px solid var(--progress-track);
-      border-top-color: var(--progress-range);
-      border-radius: var(--radius-full);
-      animation: btn-progress-spin var(--motion-duration-loop) var(--motion-ease-linear) infinite;
-    }
-    @keyframes btn-progress-spin { to { transform: rotate(360deg); } }
+    .btn.btn-loading > :not(.ppc),
+    .btn[aria-busy="true"] > :not(.ppc) { visibility: hidden; }
     /* 비활성 — 전용 색(v106). 불투명도로 흐리게 하지 않고, 호버 · 누름에 반응하지 않는다 */
     .btn:disabled {
       background: var(--btn-bg-disabled);
@@ -7183,12 +7582,10 @@ export function pageCss() {
       /* 누르는 영역은 그대로 둔다 — 포인터 이벤트를 끄면 커서가 보이지 않는다. 누름 축소만 뺀다(호버 · 누름 색은 위 규칙을 이 규칙이 덮는다) */
       scale: 1;
     }
-    /* 모션 줄이기 — 축소하지 않는다(누름은 색으로만). 로딩 원도 멈춘다(Spinner 와 같다) */
+    /* 모션 줄이기 — 축소하지 않는다(누름은 색으로만). 로딩 원은 Progress Circle 의 모션 줄이기(돌지 않는 3/4 호)를 따른다 */
     @media (prefers-reduced-motion: reduce) {
       .btn:active,
       .btn.btn-state-pressed { scale: 1; }
-      .btn.btn-loading::after,
-      .btn[aria-busy="true"]::after { animation: none; }
     }
 
     /* Color identity */
@@ -9167,10 +9564,10 @@ export function pageCss() {
     .pchip-remove:focus-visible { outline: none; }
     .pchip-remove:disabled { cursor: not-allowed; }
     /* 묶음 — 칩 사이 8(spacing-between-chips). 기본은 줄바꿈(폼 · 시트 안 — 줄 사이도 8), --scroll 은 한 줄 가로 스크롤(목록 위 필터 바 · 제안 줄).
-       스크롤 줄은 넘친 것을 자르므로 사방 6 을 더 열고 그만큼 바깥으로 당긴다 — 누르는 영역(가장 작은 small 32 의 44 — (44 − 32) ÷ 2, 아이콘만 있는 칩은 가로도)과
-       포커스 링(2 + 2)이 잘리지 않고 칩 자리는 그대로다(위아래 6 은 사이트 그림과 같은 값 — chip.yaml 에는 없다).
-       --gutter 는 줄을 화면 끝까지 내고 안쪽 여백을 화면 여백(spacing-global-gutter 24)만큼 둔다 — 좌우 24 인 틀 안에서 쓰고, 스크롤해도 · 키보드로 옮겨도 첫 칩이 여백에서 시작한다.
-       끝 흐림은 Scroll Fog 차례에 정한다. 입력값 칩을 다 지우면 포커스가 묶음으로 오므로 묶음도 키보드 링을 그린다 */
+       스크롤 줄(chip.yaml scrollRow)은 안쪽 좌우 여백이 화면 여백(spacing-global-gutter 24)이라 스크롤해도 · 키보드로 옮겨도 첫 칩이 여백에서 시작하고,
+       넘친 것을 자르므로 위아래 6 을 더 열고 그만큼 바깥으로 당긴다 — 누르는 영역(small 32 의 44)과 포커스 링(2 + 2)이 잘리지 않고 줄 높이는 칩 그대로다.
+       양 끝은 늘 흐린다 — Scroll Fog row(좌우 20 마스크, 기다림 블록) · 안쪽 여백 24 가 흐림보다 넓어 처음 · 끝 칩은 흐리지 않는다(2026-10-03).
+       --gutter 는 bleed 다 — 좌우 24 인 틀 안에서 줄을 바깥 −24 로 화면 끝까지 낸다. 입력값 칩을 다 지우면 포커스가 묶음으로 오므로 묶음도 키보드 링을 그린다 */
     .pchip-group {
       --pchip-focus-ring: var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral)));
       display: flex;
@@ -9183,8 +9580,8 @@ export function pageCss() {
       border: 0;
     }
     .pchip-group:focus-visible { outline: 2px solid var(--pchip-focus-ring); outline-offset: 2px; }
-    .pchip-group--scroll { flex-wrap: nowrap; overflow-x: auto; padding: var(--spacing-x1_5); margin: calc(-1 * var(--spacing-x1_5)); }
-    .pchip-group--gutter { padding-inline: var(--spacing-global-gutter); margin-inline: calc(-1 * var(--spacing-global-gutter)); scroll-padding-inline: var(--spacing-global-gutter); }
+    .pchip-group--scroll { flex-wrap: nowrap; overflow-x: auto; padding: var(--spacing-x1_5) var(--spacing-global-gutter); margin-block: calc(-1 * var(--spacing-x1_5)); scroll-padding-inline: var(--spacing-global-gutter); }
+    .pchip-group--gutter { margin-inline: calc(-1 * var(--spacing-global-gutter)); }
 
     /* 다크 — 역할 색을 칩 · 갤러리 틀 안에서만 다크 짝으로 바꾼다(.btn · .psb-group · .pib 와 같다 — 전역 다크 블록은 옛 이름만 바꾼다).
        공유 토큰(DESIGN.md)에 없는 브랜드 짝(포커스 링)은 비어서 위 대체값(중립)으로 떨어진다 */
@@ -9337,7 +9734,7 @@ export function pageCss() {
     /* Chip Tabs — 목록 .ptab-chips(role=tablist) > 03i 의 칩 .pchip(role=tab). 칩 하나는 Chip 그대로(solid = Solid · outline = Outline Strong, medium 36 · large 40)이고
        고름은 aria-selected 와 함께 data-selected 로 칩의 고른 모습(짙은 채움)을 칠한다. 목록은 바탕 · 바닥 선 없이 한 줄 가로 스크롤 —
        칩 사이 8(between-chips) · 좌우 화면 여백 24 · 위아래 8(칩의 누르는 영역 44 · 바깥 포커스 링이 잘리지 않는다), 고른 칩이 화면 밖이면 화면 여백 24 를 두고 스크롤한다(Chip 의 가로 스크롤 줄과 같다).
-       알림 점은 칩 안이라 글 뒤 6(칩의 사이) · 세로 가운데이고 칩이 그만큼 넓어진다. 고른 칩(짙은 채움)에는 그리지 않는다 */
+       양 끝은 늘 흐린다 — Scroll Fog row(좌우 20 마스크, 기다림 블록 · 2026-10-03). 알림 점은 칩 안이라 글 뒤 6(칩의 사이) · 세로 가운데이고 칩이 그만큼 넓어진다. 고른 칩(짙은 채움)에는 그리지 않는다 */
     .ptab-chips {
       --ptab-dot: var(--color-fg-brand, var(--color-primary, var(--color-fg-neutral)));
       position: relative;
@@ -9515,7 +9912,8 @@ export function pageCss() {
        팝오버 .pov-popover. 모두 떠 있는 표면 bg-layer-floating 이고, 시트 · 대화상자 · 확인창은 그림자 없이 딤(overlay-dim 0.50 · 다크 0.65) 위에, 팝오버는 딤 없이 shadow-s3 로 뜬다.
        머리 .pov-*-header(제목 · 설명) · 본문 .pov-*-body · 바닥 .pov-*-footer 로 짠다. 닫기 .pov-close 는 시트 28 원(--circle) · 대화상자 · 팝오버 투명 52 상자(--box)이고,
        누르면 바탕이 칠해지고 2px 거리로 준다(배율 = (기준 − 2) ÷ 기준, 기준 28 · 52 — 모션 줄이기면 줄지 않는다). 포커스는 키보드에만 바깥 링 2px · 띄움 2px stroke-focus-ring 이다.
-       대화상자 · 팝오버 본문은 넘치면 [data-overflow](아래 48 흐림 + 본문 아래 48 비움), 위로 스크롤되면 [data-scrolled](머리 아래 1px 선)다 — 페이지 끝 스크립트가 단다.
+       넘칠 수 있는 본문(.pov-body--fog — scrollFog)은 끝을 늘 흐린다(Scroll Fog overlayBody — 위 20 · 아래 80 마스크 + 본문 안 여백 20 · 80, 마스크는 기다림 블록).
+       대화상자 · 팝오버 본문이 위로 스크롤되면 [data-scrolled] 로 머리 아래 1px 선을 머리 쪽에 그린다(본문의 흐림이 선을 지우지 않게) — 페이지 끝 스크립트가 단다.
        확인창 바닥은 글 폭이 배치를 정한다 — 한쪽 글이 반 폭을 넘으면 세로(확정이 위), 버튼 하나면 폭 전체(alert-dialog.tsx 와 같은 flex-wrap-reverse).
        화면 틀 .pov-frame(폰 · 데스크톱 웹) · 뒤 화면 .pov-page · 표면 자리 .pov-layer 는 갤러리 것이다 — 틀의 .pov-viewport 가 쌓임 맥락을 가둬 z-index 는 토큰(v116)을
        그대로 쓴다(시트 · 대화상자 L2 딤 --z-modal · 표면 --z-modal-content, 팝오버 L3 --z-floating, 확인창 L5 딤 --z-alert · 표면 --z-alert-content). 폰 틀의 --pov-safe-bottom 은 레시피의 env(safe-area-inset-bottom) 자리다.
@@ -9602,29 +10000,23 @@ export function pageCss() {
     .pov-dialog--large { width: 800px; }
     /* 머리 — 위 24 · 좌우 24 · 아래 16, 제목 ↔ 설명 6. 닫기가 있으면 오른쪽 52(24 + 아이콘 22 + 6). 팝오버도 같다 */
     .pov-dialog-header,
-    .pov-pop-header { display: flex; flex-shrink: 0; flex-direction: column; gap: var(--spacing-x1_5); padding: var(--spacing-x6) var(--spacing-x6) var(--spacing-x4); }
+    .pov-pop-header { display: flex; flex-shrink: 0; flex-direction: column; gap: var(--spacing-x1_5); padding: var(--spacing-x6) var(--spacing-x6) var(--spacing-x4); transition: box-shadow var(--motion-duration-color-transition) var(--motion-ease-easing); }
     .pov-dialog-header--close,
     .pov-pop-header--close { padding-right: calc(var(--spacing-x6) + 22px + var(--spacing-x1_5)); }
     .pov-dialog-title { font-size: var(--text-t8); line-height: var(--text-t8--line-height); font-weight: 700; color: var(--color-fg-neutral); }
     .pov-dialog-desc { margin: 0; font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 400; color: var(--color-fg-neutral-muted); }
     /* 본문 — 좌우 24, 넘치면 이 안에서만 스크롤(머리 · 바닥은 그대로). 바닥이 없으면 아래 24 를 본문이 가진다 */
     .pov-dialog-body,
-    .pov-pop-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 0 var(--spacing-x6); transition: box-shadow var(--motion-duration-color-transition) var(--motion-ease-easing); }
+    .pov-pop-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 0 var(--spacing-x6); }
     .pov-dialog-body:last-child,
     .pov-pop-body:last-child { padding-bottom: var(--spacing-x6); }
     /* 머리 없는 팝오버(고르는 패널) — 위 24 를 본문이 가진다 */
     .pov-pop-body:first-child { padding-top: var(--spacing-x6); }
-    /* 위로 스크롤됨 — 머리 아래 1px stroke-neutral-subtle(안쪽 그림자). 본문이 첫 자식이면(머리가 없으면) 그리지 않는다 */
-    :is(.pov-dialog-body, .pov-pop-body)[data-scrolled]:not(:first-child) { box-shadow: inset 0 1px 0 0 var(--color-stroke-neutral-subtle); }
-    /* 넘침 — 아래 48 을 표면 쪽으로 흐린다(마스크). 끝까지 스크롤해도 남으므로 본문 아래 48 을 비워 둔다 */
-    :is(.pov-dialog-body, .pov-pop-body)[data-overflow] {
-      padding-bottom: 48px;
-      -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 48px), transparent);
-      mask-image: linear-gradient(to bottom, #000 calc(100% - 48px), transparent);
-    }
+    /* 위로 스크롤됨 — 머리 아래 1px stroke-neutral-subtle(머리의 아래 안쪽 그림자 — 본문의 위 흐림 마스크 밖이다). 머리가 없으면 그리지 않는다 */
+    :is(.pov-dialog-header, .pov-pop-header):has(~ :is(.pov-dialog-body, .pov-pop-body)[data-scrolled]) { box-shadow: inset 0 -1px 0 0 var(--color-stroke-neutral-subtle); }
     /* 넘쳐 스크롤할 수 있는 본문은 키보드로도 스크롤하도록 Tab 이 선다(스크립트가 tabindex 를 단다) — 키보드 포커스에 안쪽 링 2px */
-    :is(.pov-dialog-body, .pov-pop-body):focus { outline: none; }
-    :is(.pov-dialog-body, .pov-pop-body):focus-visible { outline: 2px solid var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral))); outline-offset: -2px; }
+    :is(.pov-dialog-body, .pov-pop-body, .pov-sheet-body):focus { outline: none; }
+    :is(.pov-dialog-body, .pov-pop-body, .pov-sheet-body):focus-visible { outline: 2px solid var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral))); outline-offset: -2px; }
     /* 바닥 — 위 16 · 좌우 24 · 아래 24 · 사이 8, 오른쪽 정렬. 버튼 small 36 */
     .pov-dialog-footer,
     .pov-pop-footer { display: flex; flex-shrink: 0; justify-content: flex-end; gap: var(--spacing-x2); padding: var(--spacing-x4) var(--spacing-x6) var(--spacing-x6); }
@@ -10904,6 +11296,7 @@ export function pageCss() {
       --color-stroke-focus-ring: var(--color-stroke-focus-ring-dark);
     }
 
+
     /* === 표시 — Badge · Notification Badge · Tag Group · Avatar · Avatar Stack · Divider ===
        specs/components/badge.md · notification-badge.md · tag-group.md · avatar.md · divider.md(수치 원본은 같은 이름의 .yaml · avatar-stack.yaml). 구조는 SEED(2026-10-03).
        모두 누르지 않는다 — 상태가 enabled 하나라 호버 · 누름 · 포커스 규칙이 없다(누르는 자리는 감싼 버튼 · 줄이 가진다).
@@ -11289,6 +11682,315 @@ export function pageCss() {
       --color-chart-gray: var(--color-chart-gray-dark);
     }
 
+    /* === 기다림 — Skeleton · Progress Circle · Pull To Refresh · Progress · Scroll Fog · Content Placeholder ===
+       specs/components/skeleton.md · progress-circle.md · progress.md · scroll-fog.md · content-placeholder.md(수치는 같은 이름의 .yaml · pull-to-refresh.yaml).
+       구조는 SEED(2026-10-03) — Progress(막대)는 porest 만의 미터다. 토큰은 역할 색과 v104 의 gradient-shimmer-neutral(-dark) · gradient-fade-mask ·
+       motion-duration-loop · motion-ease-easing 이고, 반짝임 · 회전 · 나타남은 토큰의 shimmer · spin · fade-in 키프레임이다.
+       끝 흐림의 마스크는 gradient-fade-mask 의 16단계에 방향을 붙여 깐다 — 그 단계(--pfog-stops)는 페이지가 토큰 값에서 읽어 :root 에 둔다
+       (DESIGN.md "마스크는 방향 없이 적었다 — 쓰는 자리에서 방향을 붙인다"). 모션 줄이기면 띠 · 회전 · 채움 · 당기기 전환이 멈춘다.
+       .psk--still · .ppc--still 은 갤러리에서 모션 줄이기의 모습을 고정해 보여 주는 클래스다. 다크 짝은 이 블록 끝의 [data-theme="dark"] 에서 바꾼다. */
+
+    /* Skeleton — 면 bg-neutral-weak · 모서리 8(기본). 흰 띠(::after — 면과 같은 크기)가 자기 폭만큼 왼쪽 밖 → 오른쪽 밖으로 1.5초 · easing, 쉬는 틈 없이 지난다.
+       같은 화면의 스켈레톤은 한 박자다 — 페이지 끝 스크립트가 띠를 문서 시계에 맞춘다(늦게 붙은 것도). 글 자리는 높이가 그 글자의 줄 높이(인라인 style) */
+    .psk {
+      --psk-band: var(--gradient-shimmer-neutral);
+      position: relative;
+      display: block;
+      flex-shrink: 0;
+      max-width: 100%;
+      overflow: hidden;
+      border-radius: var(--radius-r2);
+      background: var(--color-bg-neutral-weak);
+    }
+    .psk::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--psk-band);
+      transform: translateX(-100%);
+      animation: shimmer var(--motion-duration-loop) var(--motion-ease-easing) infinite;
+    }
+    .psk--r0 { border-radius: 0; }
+    .psk--r12 { border-radius: var(--radius-r3); }
+    .psk--r16 { border-radius: var(--radius-r4); }
+    .psk--rfull { border-radius: var(--radius-full); }
+    .psk--still::after { animation: none; opacity: 0; }
+
+    /* 기다리는 영역 — 0 ~ 1초(quiet)는 대신 그림을 보이지 않게 그려 높이를 지킨다. 오래 걸림 글은 t4 · 400 · fg-neutral-muted 한 줄 —
+       스켈레톤 영역은 첫 스켈레톤 위 16(왼쪽 맞춤 — 줄의 여백 24 에 맞춘다), 가운데 원은 원 아래 16(가운데 맞춤). 내용 · 결과로 바뀌면 투명도 150ms */
+    .pld-region[data-phase="quiet"] :is(.pld-fallback, .pld-center) { visibility: hidden; }
+    .pld-region[data-enter] { animation: fade-in var(--motion-duration-d3) var(--motion-ease-enter) both; }
+    .pld-region--outline { outline: 1px dashed var(--color-fg-neutral-subtle); outline-offset: -1px; }
+    .pld-region--circle { display: grid; place-items: center; min-height: 240px; padding: var(--spacing-x6) var(--spacing-global-gutter); }
+    .pld-center { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-x4); }
+    .pld-slow {
+      margin: 0;
+      padding: 0 var(--spacing-global-gutter) var(--spacing-x4);
+      font-family: var(--font-sans);
+      font-size: var(--text-t4);
+      line-height: var(--text-t4--line-height);
+      font-weight: 400;
+      color: var(--color-fg-neutral-muted);
+      word-break: keep-all;
+      overflow-wrap: break-word;
+    }
+    .pld-center > .pld-slow { padding: 0; text-align: center; }
+    /* 화면의 상태 글 하나 — role=status · polite, 보이지 않게(skeleton.tsx 의 LoadingAnnouncer) */
+    .pld-status { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+    /* Progress Circle — svg 하나(트랙 · 호). 지름 · 두께는 크기가 정하고(24 · 3 / 40 · 5 / inherit — 놓인 부품의 --progress-size · --progress-thickness),
+       선 가운데 반지름 = (지름 − 두께) ÷ 2, 원둘레 = 2π × 반지름. 호는 12시(−90°)에서 시계 방향 · 끝이 둥글다 */
+    .ppc {
+      --ppc-size: 40px;
+      --ppc-thickness: 5px;
+      --ppc-r: calc((var(--ppc-size) - var(--ppc-thickness)) / 2);
+      --ppc-c: calc(2 * 3.14159 * var(--ppc-r));
+      display: block;
+      flex-shrink: 0;
+      width: var(--ppc-size);
+      height: var(--ppc-size);
+      overflow: visible;
+    }
+    .ppc--s24 { --ppc-size: 24px; --ppc-thickness: 3px; }
+    .ppc--sinherit { --ppc-size: var(--progress-size, 1em); --ppc-thickness: var(--progress-thickness, 2px); }
+    .ppc circle { cx: calc(var(--ppc-size) / 2); cy: calc(var(--ppc-size) / 2); r: var(--ppc-r); fill: none; stroke-width: var(--ppc-thickness); }
+    .ppc-track { stroke: var(--ppc-track); }
+    .ppc-range { stroke: var(--ppc-range); stroke-linecap: round; transform: rotate(-90deg); transform-origin: center; }
+    /* 톤 — neutral(원 stroke-neutral-solid · 트랙 stroke-neutral-subtle) · brand(stroke-brand-solid · bg-brand-weak-pressed — 공유 토큰에는 없어 중립으로) ·
+       staticWhite(흰 원 · 흰 30% 트랙) · inherit(놓인 부품이 정한다 — 없으면 글자색과 그 30%) */
+    .ppc--neutral { --ppc-track: var(--color-stroke-neutral-subtle); --ppc-range: var(--color-stroke-neutral-solid); }
+    .ppc--brand { --ppc-track: var(--color-bg-brand-weak-pressed, var(--color-stroke-neutral-subtle)); --ppc-range: var(--color-stroke-brand-solid, var(--color-stroke-neutral-solid)); }
+    .ppc--static-white { --ppc-track: color-mix(in srgb, var(--color-static-white) 30%, transparent); --ppc-range: var(--color-static-white); }
+    .ppc--inherit { --ppc-track: var(--progress-track, color-mix(in srgb, currentColor 30%, transparent)); --ppc-range: var(--progress-range, currentColor); }
+    /* 값 있는 원 — 12시부터 값만큼(--ppc-p · 0 ~ 100). 값이 바뀌면 300ms(d6 · enter)로 따라 찬다 — 처음 그릴 때는 움직이지 않는다. 0 이면 호를 지운다 */
+    .ppc[data-state="determinate"] .ppc-range {
+      stroke-dasharray: var(--ppc-c);
+      stroke-dashoffset: calc(var(--ppc-c) * (100 - var(--ppc-p, 0)) / 100);
+      transition: stroke-dashoffset var(--motion-duration-d6) var(--motion-ease-enter), opacity var(--motion-duration-d6) var(--motion-ease-enter);
+    }
+    .ppc[data-empty] .ppc-range { opacity: 0; }
+    /* 값 없는 원 — 원이 1.2초에 한 바퀴(0.35, 0.25, 0.65, 0.75), 호 머리가 0 ~ 75% 에 원둘레만큼 늘고(0.35, 0, 0.65, 1) 꼬리가 33.33 ~ 100% 에 따라와 줄인다(0.35, 0, 0.65, 0.6) */
+    .ppc[data-state="indeterminate"] { animation: ppc-rotate 1200ms cubic-bezier(0.35, 0.25, 0.65, 0.75) infinite; }
+    .ppc[data-state="indeterminate"] .ppc-range { animation: ppc-head 1200ms cubic-bezier(0.35, 0, 0.65, 1) infinite, ppc-tail 1200ms cubic-bezier(0.35, 0, 0.65, 0.6) infinite; }
+    /* 회전 · 머리 · 꼬리는 원만의 키프레임이다 — 토큰 spin 은 일정한 속도로 도는 아이콘의 것이라 쓰지 않는다(DESIGN.md Animation library) */
+    @keyframes ppc-rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes ppc-head {
+      0% { stroke-dasharray: 0 1000px; }
+      75%, 100% { stroke-dasharray: var(--ppc-c) 1000px; }
+    }
+    @keyframes ppc-tail {
+      0%, 33.33% { stroke-dashoffset: 0; }
+      100% { stroke-dashoffset: calc(var(--ppc-c) * -1); }
+    }
+    /* 모션 줄이기 — 돌지 않는다. 값 없는 원은 12시부터 시계 방향 3/4 호로 멈추고, 채움은 바로 바뀐다(v104) */
+    .ppc--still[data-state="indeterminate"] { animation: none; }
+    .ppc--still[data-state="indeterminate"] .ppc-range { animation: none; stroke-dasharray: calc(var(--ppc-c) * 0.75) 1000px; }
+    /* 버튼 안 — 라벨 자리 가운데에 얹는다(Button 이 크기 · 색을 --progress-* 로 넘긴다). 라벨은 숨기기만 해 폭이 그대로다 */
+    .btn > .ppc { position: absolute; inset: 0; width: var(--ppc-size); height: var(--ppc-size); margin: auto; }
+
+    /* 당겨서 새로 고침 — 지시자 칸 88(원 24 + 위아래 32)이 영역 맨 위에 내용과 겹친다. --pptr-pull 은 당긴 거리(손가락 이동 × 0.75), --pptr-ratio 는 ÷ 88(최대 1).
+       칸은 min(당긴 거리 − 88, 0) 로 따라 내려와 문턱에서 제자리에 서고 투명도는 ratio, 내용은 당긴 거리만큼(새로 고치는 동안 88). 놓은 뒤 움직임은 300ms(d6 · enter) */
+    .pov-page:has(> .pptr),
+    .pov-page:has(> .pld-page-fog) { display: flex; flex-direction: column; }
+    .pptr { --pptr-pull: 0px; --pptr-ratio: 0; position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; touch-action: pan-x; user-select: none; }
+    .pptr-indicator {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      height: 88px;
+      pointer-events: none;
+      transform: translateY(min(calc(var(--pptr-pull) - 88px), 0px));
+      opacity: var(--pptr-ratio);
+    }
+    .pptr-content { transform: translateY(var(--pptr-pull)); }
+    /* 당기는 동안 원은 손가락을 바로 따라 찬다 — 값 있는 원의 300ms 전환을 쓰지 않는다 */
+    .pptr-indicator .ppc .ppc-range { transition: none; }
+    .pptr[data-settling] :is(.pptr-indicator, .pptr-content) { transition: transform var(--motion-duration-d6) var(--motion-ease-enter), opacity var(--motion-duration-d6) var(--motion-ease-enter); }
+    .pptr[data-pptr-live] { cursor: grab; }
+    .pptr[data-pptr-live][data-dragging] { cursor: grabbing; }
+
+    /* Progress(막대) — 이름 줄(이름 t4 · 500 · 오른쪽 글 t3 · 숫자 폭을 같게) · 막대(높이 8 · 모서리 full · 트랙 bg-neutral-weak) · 금액 줄(t2 · fg-neutral-subtle), 사이 6.
+       채움은 브랜드 글자색 fg-brand(다크는 밝은 짝 — 공유 토큰에는 없어 중립으로) · 값이 0 보다 크면 적어도 8 · 값이 바뀌면 300ms(d6 · enter).
+       넘친 한도(over)는 끝까지 fg-critical + 오른쪽 글 fg-critical · 700, 닿은 목표(reached)는 오른쪽 글 "달성" fg-neutral · 700 — 색은 그대로 */
+    .pmeter { display: flex; flex-direction: column; gap: var(--spacing-x1_5); min-width: 0; font-family: var(--font-sans); }
+    .pmeter-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--spacing-x2); }
+    .pmeter-label { min-width: 0; font-size: var(--text-t4); line-height: var(--text-t4--line-height); font-weight: 500; color: var(--color-fg-neutral); word-break: keep-all; overflow-wrap: break-word; }
+    .pmeter-status { flex-shrink: 0; font-size: var(--text-t3); line-height: var(--text-t3--line-height); font-weight: 400; color: var(--color-fg-neutral-subtle); font-variant-numeric: tabular-nums; }
+    .pmeter-track { overflow: hidden; height: 8px; border-radius: var(--radius-full); background: var(--color-bg-neutral-weak); }
+    .pmeter-fill {
+      --pmeter-fill: var(--color-fg-brand, var(--color-fg-neutral));
+      height: 100%;
+      min-width: 8px;
+      max-width: 100%;
+      border-radius: var(--radius-full);
+      background: var(--pmeter-fill);
+      transition: width var(--motion-duration-d6) var(--motion-ease-enter);
+    }
+    .pmeter-fill[data-empty] { min-width: 0; }
+    .pmeter-amount { font-size: var(--text-t2); line-height: var(--text-t2--line-height); color: var(--color-fg-neutral-subtle); font-variant-numeric: tabular-nums; }
+    .pmeter[data-state="over"] .pmeter-fill { --pmeter-fill: var(--color-fg-critical); }
+    .pmeter[data-state="over"] .pmeter-status { color: var(--color-fg-critical); font-weight: 700; }
+    .pmeter[data-state="reached"] .pmeter-status { color: var(--color-fg-neutral); font-weight: 700; }
+
+    /* Scroll Fog — 스크롤 상자에 거는 마스크(색을 덮지 않는다). 처음 · 끝 쪽에 gradient-fade-mask 단계(--pfog-stops)를 방향을 붙여 깔고 가운데는 꽉 찬 층으로 잇는다.
+       --pfog-start · --pfog-end 는 그 축의 처음 · 끝 깊이 — 세로(box · overlayBody · page · 시트 · 대화상자 · 팝오버 본문)는 위 · 아래, 가로(칩 줄 · Chip Tabs)는 왼쪽 · 오른쪽.
+       스크롤 위치 · 넘침과 상관없이 늘 켜져 있고 누르기를 막지 않는다. 흐린 쪽에는 깊이 이상의 여백과 같은 만큼의 스크롤 여유를 둔다 */
+    :is(.pfog--box, .pfog--overlay-body, .pfog--page, .pov-body--fog) {
+      --pfog-start: 20px;
+      --pfog-end: 20px;
+      -webkit-mask-image: linear-gradient(to bottom, var(--pfog-stops)), linear-gradient(#000, #000), linear-gradient(to top, var(--pfog-stops));
+      mask-image: linear-gradient(to bottom, var(--pfog-stops)), linear-gradient(#000, #000), linear-gradient(to top, var(--pfog-stops));
+      -webkit-mask-size: 100% var(--pfog-start), 100% calc(100% - var(--pfog-start) - var(--pfog-end)), 100% var(--pfog-end);
+      mask-size: 100% var(--pfog-start), 100% calc(100% - var(--pfog-start) - var(--pfog-end)), 100% var(--pfog-end);
+      -webkit-mask-position: 0 0, 0 var(--pfog-start), 0 100%;
+      mask-position: 0 0, 0 var(--pfog-start), 0 100%;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+    }
+    :is(.pchip-group--scroll, .ptab-chips) {
+      --pfog-start: 20px;
+      --pfog-end: 20px;
+      -webkit-mask-image: linear-gradient(to right, var(--pfog-stops)), linear-gradient(#000, #000), linear-gradient(to left, var(--pfog-stops));
+      mask-image: linear-gradient(to right, var(--pfog-stops)), linear-gradient(#000, #000), linear-gradient(to left, var(--pfog-stops));
+      -webkit-mask-size: var(--pfog-start) 100%, calc(100% - var(--pfog-start) - var(--pfog-end)) 100%, var(--pfog-end) 100%;
+      mask-size: var(--pfog-start) 100%, calc(100% - var(--pfog-start) - var(--pfog-end)) 100%, var(--pfog-end) 100%;
+      -webkit-mask-position: 0 0, var(--pfog-start) 0, 100% 0;
+      mask-position: 0 0, var(--pfog-start) 0, 100% 0;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+    }
+    /* box — 카드 · 상자 안의 높이를 정한 스크롤, 넘치는 방향 양 끝 20 · 여백 20. overlayBody · page — 위 20 · 아래 80 · 여백 20 · 80(page 는 바닥 버튼 위에서 끝난다) */
+    .pfog--box { overflow-y: auto; padding-block: 20px; scroll-padding-block: 20px; }
+    .pfog--overlay-body,
+    .pfog--page { --pfog-end: 80px; overflow-y: auto; padding-top: 20px; padding-bottom: 80px; scroll-padding: 20px 0 80px; }
+    /* 시트 · 대화상자 · 팝오버의 넘칠 수 있는 본문(scrollFog) — overlayBody 와 같다. 머리 아래 16 은 그대로 두고 본문 안에 20 을 더하고, 바닥이 있어도 아래 80.
+       머리가 없는 팝오버 본문은 위 24 그대로(흐림 깊이 이상) */
+    :is(.pov-sheet-body, .pov-dialog-body, .pov-pop-body).pov-body--fog { --pfog-end: 80px; padding-top: 20px; padding-bottom: 80px; scroll-padding: 20px 0 80px; }
+    .pov-pop-body.pov-body--fog:first-child { padding-top: var(--spacing-x6); }
+
+    /* Content Placeholder — 담는 틀을 채운 면 bg-neutral-weak + 가운데 그림(stroke-neutral-weak · 선 1.5). 그림은 틀 높이의 50% 정사각,
+       16 ~ 160 으로 자르고 틀 폭이 좁으면 폭에 맞춘다(컨테이너 단위). 제 모서리 · 테두리 · 그림자가 없다 — 틀이 자른다 */
+    .pcph { display: grid; place-items: center; width: 100%; height: 100%; overflow: hidden; background: var(--color-bg-neutral-weak); container-type: size; }
+    .pcph-glyph { display: block; width: min(clamp(16px, 50cqh, 160px), 100cqw); height: auto; aspect-ratio: 1; color: var(--color-stroke-neutral-weak); }
+
+    /* 모션 줄이기 — 띠를 멈추고 지우고(면만), 원은 돌지 않는 3/4 호 · 채움은 바로, 막대 채움은 바로, 당기기 뒤 움직임도 바로(v104) */
+    @media (prefers-reduced-motion: reduce) {
+      .psk::after { animation: none; opacity: 0; }
+      .ppc[data-state="indeterminate"] { animation: none; }
+      .ppc[data-state="indeterminate"] .ppc-range { animation: none; stroke-dasharray: calc(var(--ppc-c) * 0.75) 1000px; }
+      .ppc[data-state="determinate"] .ppc-range,
+      .pmeter-fill,
+      .pptr[data-settling] :is(.pptr-indicator, .pptr-content) { transition: none; }
+    }
+
+    /* 갤러리 — 화면 틀 안의 머리 · 요약 · 견본 칸 · 직접 해 보는 단추 · 지난 시간 글. 모두 갤러리 것이고 컴포넌트의 일부가 아니다 */
+    .pld-sum { display: flex; flex-direction: column; gap: var(--spacing-x1); padding: 0 var(--spacing-global-gutter) var(--spacing-x4); font-family: var(--font-sans); }
+    .pld-sum-label { font-size: var(--text-t4); line-height: var(--text-t4--line-height); color: var(--color-fg-neutral-subtle); }
+    .pld-sum-amount { font-size: var(--text-t9); line-height: var(--text-t9--line-height); font-weight: 700; color: var(--color-fg-neutral); font-variant-numeric: tabular-nums; }
+    .pld-page-card { padding: var(--spacing-x6); }
+    .pld-samples--wide { grid-template-columns: minmax(0, 1fr); }
+    .pld-samples--four { grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); }
+    .pld-shapes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); gap: var(--spacing-x6) var(--spacing-x4); }
+    .pld-shape { display: flex; flex-direction: column; gap: var(--spacing-x2); min-width: 0; }
+    .pld-shape-art { display: flex; align-items: center; justify-content: center; min-height: 150px; padding: var(--spacing-x4); border-radius: var(--radius-r3); background: var(--color-bg-layer-default); box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-subtle); }
+    .pld-shape--bleed .pld-shape-art { align-items: flex-start; padding: 0; border-radius: 0; overflow: hidden; }
+    .pld-shape .ptf-cap { margin: 0; }
+    .psk.pld-photo { width: 100%; aspect-ratio: 4 / 3; }
+    .pld-texth { display: flex; flex-direction: column; gap: var(--spacing-x3); padding: var(--spacing-x4); border-radius: var(--radius-r3); background: var(--color-bg-layer-default); box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-subtle); font-family: var(--font-sans); }
+    .pld-texth-row { display: grid; grid-template-columns: minmax(0, 1fr) 96px minmax(0, 1fr); gap: var(--spacing-x3); align-items: start; }
+    .pld-texth-text { justify-self: start; color: var(--color-fg-neutral); outline: 1px dashed var(--color-fg-neutral-subtle); outline-offset: 0; white-space: nowrap; }
+    .pld-texth-cap { font-family: ui-monospace, monospace; font-size: 11px; line-height: 16px; color: var(--color-text-tertiary); }
+    .pld-surface { display: flex; flex-direction: column; padding: var(--spacing-x2) 0; border-radius: var(--radius-r4); background: var(--color-bg-layer-default); box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-subtle); font-family: var(--font-sans); }
+    .pld-surface--basement { background: var(--color-bg-layer-basement); box-shadow: none; }
+    .pld-surface-cap { padding: var(--spacing-x2) var(--spacing-global-gutter) 0; font-size: var(--text-t3); line-height: var(--text-t3--line-height); color: var(--color-fg-neutral-subtle); }
+    .pld-live { display: flex; flex-direction: column; gap: var(--spacing-x3); min-width: 0; }
+    .pld-controls { display: flex; flex-wrap: wrap; gap: var(--spacing-x2); }
+    .pld-clock { margin: 0; font-size: var(--text-caption); line-height: 1.4; color: var(--color-text-tertiary); font-variant-numeric: tabular-nums; }
+    .pld-search { display: flex; align-items: center; gap: var(--spacing-x2); height: 40px; margin: 0 var(--spacing-global-gutter) var(--spacing-x2); padding: 0 var(--spacing-x3_5); border-radius: var(--radius-r2); box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-weak); font-family: var(--font-sans); font-size: var(--text-t4); color: var(--color-fg-neutral); }
+    .pld-search > svg { width: 16px; height: 16px; color: var(--color-fg-neutral-subtle); }
+    .pld-page-card .pld-search { margin: 0 0 var(--spacing-x2); }
+    .pld-area { min-height: 260px; }
+    .pld-area > .pld-region--circle { min-height: 260px; }
+    .pld-month { display: flex; align-items: center; gap: var(--spacing-x1); padding: 0 var(--spacing-x4) var(--spacing-x2); font-family: var(--font-sans); }
+    .pld-month-name { font-size: var(--text-t6); line-height: var(--text-t6--line-height); font-weight: 700; color: var(--color-fg-neutral); font-variant-numeric: tabular-nums; }
+    .pld-stat-total { display: flex; flex-direction: column; gap: var(--spacing-x1); padding: var(--spacing-x2) var(--spacing-global-gutter) var(--spacing-x2); font-family: var(--font-sans); }
+    .pld-matrix .cb-matrix-row { grid-template-columns: 168px repeat(var(--cb-cols), minmax(96px, 1fr)); }
+    .pld-swatch { position: relative; display: inline-grid; place-items: center; width: 72px; height: 72px; overflow: hidden; border-radius: var(--radius-r3); background: var(--color-bg-layer-default); box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-subtle); color: var(--color-fg-neutral); }
+    .pld-swatch--dim { background: linear-gradient(var(--overlay-dim-light), var(--overlay-dim-light)), linear-gradient(135deg, var(--color-chart-orange), var(--color-chart-violet)); box-shadow: none; }
+    .pld-row { display: flex; flex-wrap: wrap; gap: var(--spacing-x4) var(--spacing-x3); align-items: flex-start; }
+    .pld-row-item { display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-x2); min-width: 0; }
+    .pld-row-cap { max-width: 100%; font-size: var(--text-caption); line-height: 1.4; color: var(--color-text-tertiary); font-variant-numeric: tabular-nums; }
+    .pld-title-row { display: inline-flex; align-items: center; gap: var(--spacing-x2); }
+    .pld-more { display: flex; justify-content: center; padding: var(--spacing-x4) 0; }
+    .pld-upload { display: flex; flex-direction: column; gap: var(--spacing-x4); padding: var(--spacing-x4); border-radius: var(--radius-r4); background: var(--color-bg-layer-default); box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-subtle); font-family: var(--font-sans); }
+    .pld-photo-thumb { width: 80px; height: 80px; overflow: hidden; border-radius: var(--radius-r2); background: linear-gradient(135deg, var(--color-chart-orange), var(--color-chart-violet)); }
+    .pld-photo-dim { display: grid; place-items: center; width: 100%; height: 100%; background: var(--overlay-dim-light); }
+    .pld-file { display: flex; align-items: center; gap: var(--spacing-x3); min-width: 0; color: var(--color-fg-neutral); }
+    .pld-file > svg:first-child { width: 22px; height: 22px; flex-shrink: 0; color: var(--color-fg-neutral-subtle); }
+    .pld-file-name { flex: 1; min-width: 0; font-size: var(--text-t5); line-height: var(--text-t5--line-height); overflow-wrap: anywhere; }
+    .pld-meters { display: flex; flex-direction: column; gap: var(--spacing-x6); padding: var(--spacing-x2) var(--spacing-global-gutter) var(--spacing-x4); }
+    .pld-surface.pld-meters { padding: var(--spacing-x4) var(--spacing-global-gutter); }
+    .pld-page-card .pld-meters { padding: 0; }
+    .pld-fog-row { padding: var(--spacing-x4) var(--spacing-global-gutter); border-radius: var(--radius-r4); background: var(--color-bg-layer-default); box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-subtle); overflow: hidden; max-width: 360px; }
+    .pld-fog-row--basement { background: var(--color-bg-layer-basement); box-shadow: none; }
+    .pld-page-fog { display: flex; flex: 1 1 auto; flex-direction: column; min-height: 0; }
+    .pld-page-fog > .pfog--page { flex: 1 1 auto; min-height: 0; }
+    .pld-page-cta { display: flex; flex-shrink: 0; padding: var(--spacing-x3) var(--spacing-global-gutter) calc(var(--spacing-x4) + var(--pov-safe-bottom)); }
+    .pld-page-cta > .btn { flex: 1 1 0; }
+    .pfog--page:focus-visible,
+    .pfog--box:focus-visible { outline: 2px solid var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral))); outline-offset: -2px; }
+    .pld-box { overflow: hidden; border-radius: var(--radius-r4); background: var(--color-bg-layer-default); box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-subtle); }
+    .pld-box > .pfog--box { max-height: 240px; padding-inline: var(--spacing-x5); }
+    .pld-terms { margin: 0; font-family: var(--font-sans); font-size: var(--text-t4); line-height: 1.7; color: var(--color-fg-neutral-muted); word-break: keep-all; overflow-wrap: break-word; }
+    .pld-cph-sizes { display: flex; flex-wrap: wrap; gap: var(--spacing-x4); align-items: flex-end; }
+    .pld-cph-sizes .pld-row-cap { max-width: 168px; }
+    .pld-cph-item { display: flex; flex-direction: column; gap: var(--spacing-x2); min-width: 0; max-width: 100%; }
+    .pld-cph { overflow: hidden; max-width: 100%; }
+    .pld-cph--photo { width: 100%; max-width: 360px; aspect-ratio: 4 / 3; }
+    .pld-cph--card { width: 112px; aspect-ratio: 1.586; border-radius: var(--radius-r2); }
+    .pld-card-art { display: flex; align-items: flex-end; width: 100%; height: 100%; padding: var(--spacing-x2); background: linear-gradient(135deg, var(--color-gray-1000), var(--color-gray-800)); font-family: var(--font-sans); font-size: 11px; font-weight: 700; color: var(--color-static-white); }
+    @media (max-width: 900px) {
+      .pld-matrix .cb-matrix-row { grid-template-columns: 120px repeat(var(--cb-cols), minmax(80px, 1fr)); }
+    }
+    /* 폰 폭 — 톤 표의 줄 이름을 한 줄 전체로 올리고 네 칸을 그 아래에 나란히 둔다(판이 가로로 밀리지 않게). 모서리 견본은 한 줄에 하나 */
+    @media (max-width: 600px) {
+      .pld-matrix .cb-matrix-row { grid-template-columns: repeat(var(--cb-cols), minmax(0, 1fr)); }
+      .pld-matrix .cb-matrix-row > :first-child { grid-column: 1 / -1; }
+      .pld-swatch { width: 100%; max-width: 72px; }
+      .pld-shapes { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    /* 다크 — 역할 색을 기다림 부품 · 견본 칸 안에서만 다크 짝으로 바꾼다(.pdp · .pov-frame 과 같다 — 전역 다크 블록은 옛 이름만 바꾼다).
+       반짝임 띠는 흰 10% 짝, 딤은 0.65. 공유 토큰(DESIGN.md)에 없는 브랜드 짝은 비어서 위 대체값(중립)으로 떨어진다 */
+    [data-theme="dark"] :is(.psk, .ppc, .pmeter, .pcph, .pld-region, .pld-sum, .pld-shapes, .pld-texth, .pld-surface, .pld-swatch, .pld-search, .pld-month, .pld-stat, .pld-upload, .pld-fog-row, .pld-box, .pld-cph) {
+      --color-bg-layer-default: var(--color-bg-layer-default-dark);
+      --color-bg-layer-basement: var(--color-bg-layer-basement-dark);
+      --color-bg-neutral-weak: var(--color-bg-neutral-weak-dark);
+      --color-bg-brand-weak-pressed: var(--color-bg-brand-weak-pressed-dark);
+      --color-fg-neutral: var(--color-fg-neutral-dark);
+      --color-fg-neutral-muted: var(--color-fg-neutral-muted-dark);
+      --color-fg-neutral-subtle: var(--color-fg-neutral-subtle-dark);
+      --color-fg-brand: var(--color-fg-brand-dark);
+      --color-fg-critical: var(--color-fg-critical-dark);
+      --color-stroke-neutral-subtle: var(--color-stroke-neutral-subtle-dark);
+      --color-stroke-neutral-weak: var(--color-stroke-neutral-weak-dark);
+      --color-stroke-neutral-solid: var(--color-stroke-neutral-solid-dark);
+      --color-stroke-brand-solid: var(--color-stroke-brand-solid-dark);
+      --color-stroke-focus-ring: var(--color-stroke-focus-ring-dark);
+      --color-chart-orange: var(--color-chart-orange-dark);
+      --color-chart-violet: var(--color-chart-violet-dark);
+    }
+    [data-theme="dark"] .psk { --psk-band: var(--gradient-shimmer-neutral-dark); }
+    [data-theme="dark"] .pld-swatch--dim { background: linear-gradient(var(--overlay-dim-dark), var(--overlay-dim-dark)), linear-gradient(135deg, var(--color-chart-orange), var(--color-chart-violet)); }
+    [data-theme="dark"] .pld-photo-dim { background: var(--overlay-dim-dark); }
+
     /* todo-card */
     .todo-list { display: flex; flex-direction: column; gap: 2px; }
     .todo-row {
@@ -11572,81 +12274,22 @@ export function pageCss() {
        옛 그림자 카드(.form-card) · 2열 그리드 · 라벨 14 · 빨간 별표 · 회색 채운 칸(.form-input · .form-textarea · .form-select) · 도움말 12 · 경계선 버튼 줄은 걷었다.
        고르는 칸은 위 Select · Input Button 블록의 .psel-trigger · .pib 다(select.md · input-button.md). */
 
-    /* === Skeleton / Loading === */
-    .sk-card-wrap {
-      background: var(--color-surface-default);
-      border-radius: var(--radius-lg);
-      padding: var(--spacing-lg);
-      box-shadow: var(--shadow-sm);
-    }
-    @keyframes sk-shimmer {
-      0% { background-position: -200% 0; }
-      100% { background-position: 200% 0; }
-    }
-    .sk {
-      background-color: var(--color-surface-input);
-      background-image: linear-gradient(
-        90deg,
-        var(--color-surface-input) 0%,
-        var(--color-surface-default) 50%,
-        var(--color-surface-input) 100%
-      );
-      background-size: 200% 100%;
-      background-repeat: no-repeat;
-      background-position: 0 0;
-      animation: sk-shimmer var(--motion-duration-loop, 1500ms) var(--motion-ease-linear, linear) infinite;
-    }
-    .sk-text { height: 14px; border-radius: var(--radius-sm); margin: var(--spacing-xs) 0; }
-    .sk-text-sm { height: 12px; }
-    .sk-circle { border-radius: var(--radius-full); flex-shrink: 0; }
-    .sk-rect { border-radius: var(--radius-md); }
-    .sk-stack { display: flex; flex-direction: column; gap: var(--spacing-xs); }
-    .sk-row {
-      display: flex; align-items: center; gap: var(--spacing-md);
-      padding: var(--spacing-sm) var(--spacing-xs);
-      border-bottom: 1px solid var(--color-border-default);
-    }
-    .sk-row:last-child { border-bottom: none; }
-    .sk-row-content { flex: 1; }
-    .sk-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: var(--spacing-md);
-    }
-    .sk-card {
-      background: var(--color-surface-input);
-      border-radius: var(--radius-md);
-      padding: var(--spacing-md);
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-xs);
-    }
-    .sk-card .sk { background-color: var(--color-surface-default); background-image: linear-gradient(90deg, var(--color-surface-default) 0%, var(--color-surface-input) 50%, var(--color-surface-default) 100%); }
-    .sk-tags-row { display: flex; gap: var(--spacing-xs); margin-top: var(--spacing-xs); }
-    .sk-demo {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--spacing-lg);
-    }
-    .sk-demo-cell {
-      background: var(--color-surface-input);
-      border-radius: var(--radius-md);
-      padding: var(--spacing-md);
-    }
-    .sk-demo-cell .sk { background-color: var(--color-surface-default); background-image: linear-gradient(90deg, var(--color-surface-default) 0%, var(--color-surface-input) 50%, var(--color-surface-default) 100%); }
-    .sk-demo-label {
-      font-size: var(--text-caption);
-      color: var(--color-text-tertiary);
-      font-family: ui-monospace, monospace;
-      margin-bottom: var(--spacing-sm);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .sk { animation: none; background-image: none; }
+    /* === 13 — Skeleton(브랜드 화면) — 03p 의 Skeleton(.psk)을 브랜드 화면에 둔다. 회색 바탕(.psk-screen) 위 흰 카드(.psk-card) 안에만 둔다(skeleton.md "흰 면 위에만").
+       옛 Skeleton / Loading(.sk-* — surface-input 면 · 선형 반짝임 · 모서리 4 · 글자보다 낮은 막대)은 걷었다 === */
+    .psk-screen { padding: var(--spacing-x6); border-radius: var(--radius-r4); background: var(--color-bg-layer-basement); }
+    .psk-card { padding: var(--spacing-x2) 0; border-radius: var(--radius-r4); background: var(--color-bg-layer-default); }
+    .psk-memo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: var(--spacing-x4); }
+    .psk-memo { display: flex; flex-direction: column; gap: var(--spacing-x2); padding: var(--spacing-x4) var(--spacing-x5); }
+    .psk-memo-lines { display: flex; flex-direction: column; gap: var(--spacing-x2); }
+    .psk-shapes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); gap: var(--spacing-x6); padding: var(--spacing-x6); }
+    .psk-shape { display: flex; flex-direction: column; gap: var(--spacing-x2); min-width: 0; }
+    .psk-shape-cap { font-size: var(--text-caption); line-height: 1.4; color: var(--color-text-tertiary); }
+    [data-theme="dark"] :is(.psk-screen, .psk-card) {
+      --color-bg-layer-default: var(--color-bg-layer-default-dark);
+      --color-bg-layer-basement: var(--color-bg-layer-basement-dark);
     }
 
-    /* === v67 batch (Pagination / Drawer / Spinner / Stepper) === */
+    /* === v67 batch (Pagination / Drawer / Progress Circle / Stepper) === */
     .batch-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -11734,60 +12377,14 @@ export function pageCss() {
     .drw-actions { display: flex; gap: var(--spacing-sm); padding-top: var(--spacing-sm); border-top: 1px solid var(--color-border-default); }
     .drw-actions .btn { flex: 1; }
 
-    /* Spinner / Progress */
-    .sp-block { display: flex; flex-direction: column; gap: var(--spacing-md); }
-    .sp-row { display: flex; gap: var(--spacing-lg); flex-wrap: wrap; }
-    .sp-cell {
-      display: flex; flex-direction: column; gap: var(--spacing-sm);
-      min-width: 80px;
-    }
-    .sp-cell--full { flex: 1; min-width: 100%; }
-    .sp-label { font-size: var(--text-caption); color: var(--color-text-tertiary); font-family: ui-monospace, monospace; }
-    @keyframes sp-spin {
-      to { transform: rotate(360deg); }
-    }
-    .sp-spinner {
-      width: 24px; height: 24px;
-      border: 2px solid var(--color-border-default);
-      border-top-color: var(--color-primary, var(--color-text-primary));
-      border-radius: var(--radius-full);
-      animation: sp-spin var(--motion-duration-loop, 1500ms) var(--motion-ease-linear, linear) infinite;
-    }
-    .sp-spinner--sm { width: 16px; height: 16px; border-width: 2px; }
-    .sp-spinner--lg { width: 32px; height: 32px; border-width: 3px; }
-    .sp-inline { display: flex; gap: var(--spacing-sm); align-items: center; font-size: var(--text-body-md); color: var(--color-text-secondary); }
-    .sp-progress {
-      width: 100%;
-      height: 4px;
-      background: var(--color-surface-input);
-      border-radius: var(--radius-full);
-      overflow: hidden;
-      position: relative;
-    }
-    .sp-progress-fill {
-      height: 100%;
-      background: var(--color-primary, var(--color-text-primary));
-      transition: width var(--motion-duration-base, 200ms) var(--motion-ease-out, ease-out);
-    }
-    @keyframes sp-sweep {
-      0% { left: -30%; }
-      100% { left: 100%; }
-    }
-    .sp-progress--indeterminate { background: var(--color-surface-input); }
-    .sp-progress-sweep {
-      position: absolute;
-      top: 0; left: -30%;
-      width: 30%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, var(--color-primary, var(--color-text-primary)), transparent);
-      animation: sp-sweep var(--motion-duration-loop, 1500ms) var(--motion-ease-linear, linear) infinite;
-    }
-    .sp-progress-meta {
-      display: flex; justify-content: space-between;
-      font-size: var(--text-caption);
-      color: var(--color-text-tertiary);
-      margin-top: var(--spacing-xs);
-    }
+    /* Progress Circle · Progress — 모양은 03p 의 기다림 블록(.ppc · .pmeter)이다. 옛 Spinner / Progress(.sp-* — 브랜드 4분의 1 호 · 4px 막대 · 흐르는 막대)는 걷었다 */
+    .pld-batch { display: flex; flex-direction: column; gap: var(--spacing-md); }
+    .pld-batch-row { display: flex; flex-wrap: wrap; gap: var(--spacing-lg); align-items: flex-start; }
+    .pld-batch-cell { display: flex; flex-direction: column; gap: var(--spacing-sm); min-width: 0; }
+    .pld-batch-cell--full { width: 100%; }
+    .pld-batch-label { font-size: var(--text-caption); color: var(--color-text-tertiary); font-family: ui-monospace, monospace; }
+    .pld-batch-title { font-family: var(--font-sans); font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 700; color: var(--color-fg-neutral); }
+    [data-theme="dark"] :is(.pld-batch-title, .pld-file) { --color-fg-neutral: var(--color-fg-neutral-dark); --color-fg-neutral-subtle: var(--color-fg-neutral-subtle-dark); }
 
     /* Stepper */
     .stp-block { display: flex; flex-direction: column; gap: var(--spacing-md); }
@@ -11896,8 +12493,7 @@ export function pageCss() {
     .fu-file-icon { font-size: 18px; }
     .fu-meta { flex: 1; display: flex; flex-direction: column; gap: 4px; }
     .fu-name { font-size: var(--text-caption); color: var(--color-text-primary); }
-    .fu-progress { height: 4px; background: var(--color-surface-default); border-radius: 2px; overflow: hidden; }
-    .fu-progress-bar { height: 100%; background: var(--color-primary); }
+    /* 올리는 중 — 값 있는 Progress Circle 24(이름 옆 neutral — progress-circle.md "올리기 · 받기"). 옛 4px 브랜드 막대(.fu-progress)는 걷었다 */
     .fu-remove { width: 24px; height: 24px; border: 0; background: transparent; cursor: pointer; color: var(--color-text-tertiary); border-radius: var(--radius-sm); }
 
     /* Treeview */
@@ -11919,8 +12515,11 @@ export function pageCss() {
     .anim-shake { animation: shake var(--motion-duration-slow) cubic-bezier(.36,.07,.19,.97); background: var(--color-error); }
     .anim-spin { animation: spin var(--motion-duration-loop) linear infinite; background: var(--color-info); }
     .anim-pulse { animation: pulse var(--motion-duration-loop) cubic-bezier(0.4, 0, 0.6, 1) infinite; background: var(--color-success); }
-    .anim-shimmer { position: relative; overflow: hidden; background: var(--color-surface-input); }
-    .anim-shimmer::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--color-primary) 25%, transparent) 50%, transparent 100%); animation: shimmer var(--motion-duration-loop) linear infinite; }
+    /* shimmer — Skeleton 의 반짝임(skeleton.yaml): 면 bg-neutral-weak · 흰 띠 gradient-shimmer-neutral(다크 짝) · 1.5초 motion-ease-easing(2026-10-03) */
+    .anim-shimmer { position: relative; overflow: hidden; background: var(--color-bg-neutral-weak); }
+    .anim-shimmer::after { content: ""; position: absolute; inset: 0; background: var(--gradient-shimmer-neutral); animation: shimmer var(--motion-duration-loop) var(--motion-ease-easing) infinite; }
+    [data-theme="dark"] .anim-shimmer { background: var(--color-bg-neutral-weak-dark); }
+    [data-theme="dark"] .anim-shimmer::after { background: var(--gradient-shimmer-neutral-dark); }
     .anim-actions { display: flex; justify-content: flex-end; margin-top: var(--spacing-sm); }
     @media (prefers-reduced-motion: reduce) {
       .anim-fade-in, .anim-slide-in-up, .anim-scale-in, .anim-bounce-in, .anim-shake, .anim-spin, .anim-pulse, .anim-shimmer::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
@@ -12148,7 +12747,6 @@ export function pageCss() {
     [data-theme="dark"] .amenity-grid,
     [data-theme="dark"] .ld-highlights,
     [data-theme="dark"] .ld-host,
-    [data-theme="dark"] .sk-card-wrap,
     [data-theme="dark"] .batch-card,
     [data-theme="dark"] .drw-side,
     [data-theme="dark"] .sc-card,
@@ -12204,21 +12802,12 @@ export function pageCss() {
     [data-theme="dark"] .stp-connector { background: var(--color-border-default-dark); }
     [data-theme="dark"] .pg-btn:hover,
     [data-theme="dark"] .pg-arrow:hover { background: var(--color-surface-input-dark); }
-    [data-theme="dark"] .sp-spinner { border-color: var(--color-border-default-dark); border-top-color: var(--color-primary-light, var(--color-text-primary-dark)); }
-    [data-theme="dark"] .sp-progress-fill { background: var(--color-primary-light, var(--color-text-primary-dark)); }
-    [data-theme="dark"] .sp-progress-sweep { background: linear-gradient(90deg, transparent, var(--color-primary-light, var(--color-text-primary-dark)), transparent); }
     [data-theme="dark"] .stp-item--current .stp-circle {
       background: var(--color-primary-light, var(--color-primary, var(--color-text-primary-dark)));
       color: var(--color-bg-page-dark, #0b0d12);
       box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary-light, var(--color-primary, var(--color-text-primary-dark))) 25%, transparent);
     }
     [data-theme="dark"] .ld-highlight-icon { background: var(--color-surface-input-dark); }
-    [data-theme="dark"] .sk { background-color: var(--color-surface-input-dark); background-image: linear-gradient(90deg, var(--color-surface-input-dark) 0%, var(--color-surface-default-dark) 50%, var(--color-surface-input-dark) 100%); }
-    [data-theme="dark"] .sk-card,
-    [data-theme="dark"] .sk-demo-cell { background: var(--color-surface-input-dark); }
-    [data-theme="dark"] .sk-card .sk,
-    [data-theme="dark"] .sk-demo-cell .sk { background-color: var(--color-surface-default-dark); background-image: linear-gradient(90deg, var(--color-surface-default-dark) 0%, var(--color-surface-input-dark) 50%, var(--color-surface-default-dark) 100%); }
-    [data-theme="dark"] .sk-row { border-color: var(--color-border-default-dark); }
     [data-theme="dark"] .ld-rail-row,
     [data-theme="dark"] .cal-legend { border-color: var(--color-border-default-dark); }
     [data-theme="dark"] .hero-fact,
@@ -12355,7 +12944,6 @@ export function pageCss() {
         grid-template-rows: 1fr 1fr 1fr;
       }
       .ld-gallery-cell--hero { grid-row: 1 / 2; grid-column: 1 / -1; }
-      .sk-demo { grid-template-columns: 1fr; }
       .batch-grid { grid-template-columns: 1fr; }
       .drw-side { width: 100%; }
       .sc-grid { grid-template-columns: 1fr; }
@@ -12386,7 +12974,7 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     })();
   </script>
   <style>${css}</style>
-  <style>${pageCss()}</style>
+  <style>${pageCss()}${fadeMaskStopsCss(css)}</style>
 </head>
 <body>
   <button class="theme-toggle" type="button" aria-label="테마 전환" onclick="(function(){var c=document.documentElement.getAttribute('data-theme');var n=c==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);try{localStorage.setItem('porest-theme',n)}catch(e){}})()">
@@ -12414,6 +13002,7 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     ${renderMenuGallery(brand)}
     ${renderDateTimeGallery(brand)}
     ${renderDisplayGallery(brand)}
+    ${renderLoadingGallery(brand)}
     ${renderVignettes(brand)}
     ${renderListingDetail(brand)}
     ${renderCalendar(brand)}
@@ -12870,20 +13459,16 @@ function renderHtml(brandName, css, tokens, sourceFile) {
         pick(nextItem);
       });
     })();
-    // Overlays (2026-10-02) — dialog.tsx · popover.tsx 의 본문(DialogBody · PopoverBody)이 하는 일을 흉내 낸다(페이지의 모든 [data-pov-scroll]).
-    // 넘치면 data-overflow(아래 48 흐림 + 본문 아래 48 비움) · 키보드로도 스크롤하도록 tabindex 0, 위로 스크롤되면 data-scrolled(머리 아래 1px 선).
-    // 넘침은 비움(48)을 뺀 내용으로 잰다. data-pov-scroll="scrolled" 본문은 그릴 때 조금 스크롤해 둔다(그 순간을 멈춘 그림 — 직접 스크롤해도 같다).
-    // 폭이 바뀌면 다시 잰다 — 크기 감시 안에서는 다음 그림 틀(requestAnimationFrame)에 고쳐 감시가 되돌아 울리지 않게 한다.
+    // Overlays (2026-10-02 · 끝 흐림 2026-10-03) — dialog.tsx · popover.tsx · bottom-sheet.tsx 의 본문(DialogBody · PopoverBody · BottomSheetBody)이 하는 일을
+    // 흉내 낸다(페이지의 모든 [data-pov-scroll]). 넘치면 키보드로도 스크롤하도록 tabindex 0, 위로 스크롤되면 data-scrolled(머리 아래 1px 선).
+    // 끝 흐림(scrollFog)은 넘침을 재지 않는 CSS 마스크라 여기서 다루지 않는다(늘 켜짐 — Scroll Fog). data-pov-scroll="scrolled" 본문은 그릴 때 조금 스크롤해 둔다
+    // (그 순간을 멈춘 그림 — 직접 스크롤해도 같다). 폭이 바뀌면 다시 잰다 — 크기 감시 안에서는 다음 그림 틀(requestAnimationFrame)에 고쳐 감시가 되돌아 울리지 않게 한다.
     (function () {
       var bodies = Array.prototype.slice.call(document.querySelectorAll("[data-pov-scroll]"));
       function scrolled(body) { body.toggleAttribute("data-scrolled", body.scrollTop > 0); }
       function fit(body) {
-        var top = body.scrollTop;
-        body.removeAttribute("data-overflow");
         var over = body.scrollHeight > body.clientHeight + 1;
-        body.toggleAttribute("data-overflow", over);
         if (over) body.setAttribute("tabindex", "0"); else body.removeAttribute("tabindex");
-        body.scrollTop = top;
         scrolled(body);
       }
       bodies.forEach(function (body) {
@@ -13036,7 +13621,9 @@ function renderHtml(brandName, css, tokens, sourceFile) {
         }
         var retry = closest(e, "[data-presult-retry]");
         if (!retry || retry.hasAttribute("aria-busy")) return;
+        // 버튼의 로딩 — aria-busy + 라벨 자리 가운데 Progress Circle(size · tone inherit · aria-hidden — button.tsx 와 같다)
         retry.setAttribute("aria-busy", "true");
+        retry.insertAdjacentHTML("beforeend", ${JSON.stringify(progressCircle({ size: "inherit", tone: "inherit", hidden: true }))});
         var host = retry.closest("[data-presult-host]");
         setTimeout(function () {
           var tpl = host.querySelector("template");
@@ -13788,6 +14375,319 @@ function renderHtml(brandName, css, tokens, sourceFile) {
           if (rule) rule.textContent = n ? "코드 포인트 합 " + s + " · % 10 = " + (s % 10) + " → " + hue + ' · 이니셜 "' + AV.initial(n) + '"' : "이름이 비면 회색 원 · 글자 없음";
         });
       });
+    })();
+    // 기다림 (2026-10-03) — skeleton.tsx 의 LoadingRegion · LoadingAnnouncer · progress-circle.tsx · progress.tsx 가 하는 일 가운데 그림에 필요한 것과
+    // 앱의 당겨서 새로 고침을 흉내 낸다(03p 의 "직접" 견본 · 끝 흐림 상자의 [data-pfog-scroll] · 페이지의 모든 반짝임).
+    // 반짝임은 화면에 한 박자다 — 그릴 때와 새로 붙일 때 반짝임 애니메이션의 시작을 문서 시계 0 에 맞춘다(늦게 붙은 스켈레톤도 같은 박자).
+    // 시간표 — 누르면 영역을 비우고(aria-busy) 0 ~ 1초는 대신 그림을 보이지 않게 그려 높이를 지키고, 1초에 스켈레톤 · 원 + 상태 글 "불러오는 중…",
+    // 5초에 오래 걸림 글 + 같은 글을 상태 글로, 10초에 Result Section failure 로 바꾼다(그 결과는 Result Section 이 알린다). 정한 시간에 오면 내용을
+    // 투명도로 보이고 상태 글을 비운다. 상태 글은 섹션에 하나(data-pld-status)이고 같은 글은 이어서 두 번 넣지 않는다.
+    // 실패의 "다시 시도" 는 버튼에 로딩(원)을 걸고 1.5초 뒤 내용을 보인다. 다른 달 — 머리(달 이름)는 바로 바꾸고 숫자 · 목록 자리만 같은 시간표로
+    // 기다린다(옛 달 숫자는 그 순간 지운다). 받아 둔 달은 바로 보인다. 값 있는 원 · 막대는 버튼으로 값을 바꾸면 300ms 로 따라 찬다(CSS 전환).
+    // 당겨서 새로 고침 — 끌기를 아래로 시작하면 당긴 거리 = 이동 × 0.75(위로 되돌리면 0 에 머문다), 88 을 넘겨 놓으면 원이 돌고 내용은 88 에 머물다
+    // 1.6초 뒤 제자리로(300ms) 간다. 문턱 전에 놓으면 그대로 제자리. 새로 고치는 동안에는 끌기를 받지 않는다. 모션 줄이기면 바로 간다(CSS).
+    // [data-pfog-scroll] 안의 끝 흐림 상자는 그릴 때 가운데 · 끝으로 스크롤해 둔다 — 흐림이 스크롤 위치와 상관없음을 보인다.
+    (function () {
+      var PPC_BUTTON = ${JSON.stringify(progressCircle({ size: "inherit", tone: "inherit", hidden: true }))};
+      var CIRCLE = ${JSON.stringify(progressCircle({ size: "40" }))};
+      var SLOW = ${JSON.stringify(PLD_SLOW)};
+      var WAITING = "불러오는 중…";
+      var statusEl = document.querySelector("[data-pld-status]");
+      var said = "";
+      function say(text) {
+        if (!statusEl || text === said) return;
+        said = text;
+        statusEl.textContent = text;
+      }
+      // 반짝임 — 문서 시계 0 에 맞춘다. 띠는 ::after 라 아래쪽 애니메이션까지 모두 본다
+      function sync(root) {
+        if (!root || !root.getAnimations) return;
+        root.getAnimations({ subtree: true }).forEach(function (a) {
+          if (a.animationName === "shimmer" && a.startTime !== 0) a.startTime = 0;
+        });
+      }
+      sync(document.documentElement);
+      window.addEventListener("load", function () { sync(document.documentElement); });
+
+      // ── 기다리는 영역 ──
+      function tpl(live, name) {
+        var t = live.querySelector('template[data-pld-tpl="' + name + '"]');
+        return t ? t.innerHTML : "";
+      }
+      var runs = new WeakMap();
+      function stop(live) {
+        var st = runs.get(live);
+        if (!st) return;
+        st.timers.forEach(clearTimeout);
+        if (st.tick) clearInterval(st.tick);
+        runs.delete(live);
+      }
+      function region(live) { return live.querySelector("[data-pld-host] > .pld-region"); }
+      function enter(el) {
+        el.removeAttribute("data-enter");
+        void el.offsetWidth;
+        el.setAttribute("data-enter", "");
+      }
+      function paint(live, phase, content) {
+        var kind = live.getAttribute("data-pld-live");
+        var r = region(live);
+        r.className = "pld-region" + (kind === "circle" ? " pld-region--circle" : "");
+        r.setAttribute("data-phase", phase);
+        if (phase === "failed" || phase === "done") r.removeAttribute("aria-busy"); else r.setAttribute("aria-busy", "true");
+        if (phase === "failed") { r.innerHTML = tpl(live, "failure"); enter(r); return; }
+        if (phase === "done") { r.innerHTML = content || tpl(live, "content"); enter(r); return; }
+        r.removeAttribute("data-enter");
+        if (phase === "quiet") {
+          r.innerHTML = kind === "circle" ? '<div class="pld-center">' + CIRCLE + "</div>" : '<div class="pld-fallback">' + tpl(live, "fallback") + "</div>";
+          sync(r);
+          return;
+        }
+        if (phase === "slow") {
+          var slow = '<p class="pld-slow">' + SLOW + "</p>";
+          var center = r.querySelector(".pld-center");
+          if (center) center.insertAdjacentHTML("beforeend", slow); else r.insertAdjacentHTML("afterbegin", slow);
+        }
+      }
+      var PHASE = { quiet: "틀만 — 데이터 자리는 비워 두고 높이는 지킨다", waiting: '스켈레톤 · 원 — 상태 글 "불러오는 중…"', slow: "+ 오래 걸림 글(한 번 읽는다)", failed: "실패 — 요청 제한 10초", done: "다 옴 — 내용을 투명도로" };
+      function clock(live) {
+        var st = runs.get(live);
+        var el = live.querySelector("[data-pld-clock]");
+        if (!st || !el) return;
+        var s = Math.min((performance.now() - st.t0) / 1000, 10);
+        el.textContent = "지난 시간 " + s.toFixed(1) + "초 · " + PHASE[st.phase];
+      }
+      function setPhase(live, phase, content) {
+        var st = runs.get(live);
+        if (!st) return;
+        st.phase = phase;
+        paint(live, phase, content);
+        if (phase === "waiting") say(WAITING);
+        else if (phase === "slow") say(SLOW);
+        else say("");
+        clock(live);
+        if (phase === "failed" || phase === "done") {
+          st.timers.forEach(clearTimeout);
+          if (st.tick) clearInterval(st.tick);
+          st.tick = 0;
+        }
+      }
+      function run(live, arrive, content) {
+        stop(live);
+        var st = { t0: performance.now(), phase: "quiet", timers: [], tick: 0 };
+        runs.set(live, st);
+        paint(live, "quiet");
+        say("");
+        st.timers.push(setTimeout(function () { setPhase(live, "waiting"); }, 1000));
+        st.timers.push(setTimeout(function () { setPhase(live, "slow"); }, 5000));
+        st.timers.push(setTimeout(function () { setPhase(live, "failed"); }, 10000));
+        if (arrive) st.timers.push(setTimeout(function () { setPhase(live, "done", content); }, arrive));
+        st.tick = setInterval(function () { clock(live); }, 100);
+        clock(live);
+      }
+      document.addEventListener("click", function (e) {
+        var t = e.target && e.target.closest ? e.target : null;
+        if (!t) return;
+        var btn = t.closest("[data-pld-run]");
+        if (btn) {
+          var v = btn.getAttribute("data-pld-run");
+          run(btn.closest("[data-pld-live]"), v === "never" ? 0 : Number(v));
+          return;
+        }
+        // 실패의 다시 시도 — 버튼에 로딩을 걸고(누르기는 막힌다) 1.5초 뒤 내용
+        var retry = t.closest("[data-pld-live] .presult .btn");
+        if (retry && !retry.hasAttribute("aria-busy")) {
+          var live = retry.closest("[data-pld-live]");
+          retry.setAttribute("aria-busy", "true");
+          retry.insertAdjacentHTML("beforeend", PPC_BUTTON);
+          var st = { t0: performance.now(), phase: "failed", timers: [], tick: 0 };
+          runs.set(live, st);
+          var el = live.querySelector("[data-pld-clock]");
+          if (el) el.textContent = "다시 시도 — 버튼에 로딩을 걸고 시간표를 처음부터 다시 센다";
+          st.timers.push(setTimeout(function () { setPhase(live, "done"); }, 1500));
+        }
+      });
+
+      // ── 다른 달 — 머리는 바로, 숫자 자리만 기다린다 ──
+      document.querySelectorAll('[data-pld-live="period"]').forEach(function (live) {
+        var months = ["2026-08", "2026-09", "2026-10"];
+        var at = 2;
+        var cached = { "2026-10": true };
+        var name = live.querySelector("[data-pld-month-name]");
+        var prev = live.querySelector('[data-pld-month="-1"]');
+        var next = live.querySelector('[data-pld-month="1"]');
+        function show(i) {
+          at = i;
+          var key = months[i];
+          var parts = key.split("-");
+          name.textContent = parts[0] + "년 " + Number(parts[1]) + "월";
+          prev.disabled = i === 0;
+          next.disabled = i === months.length - 1;
+          var content = tpl(live, "content-" + key);
+          if (cached[key]) {
+            stop(live);
+            runs.set(live, { t0: performance.now(), phase: "done", timers: [], tick: 0 });
+            setPhase(live, "done", content);
+            var el = live.querySelector("[data-pld-clock]");
+            if (el) el.textContent = Number(parts[1]) + "월은 받아 두었다 — 바로 보인다";
+            return;
+          }
+          run(live, 1800, content);
+          runs.get(live).timers.push(setTimeout(function () { cached[key] = true; }, 1800));
+        }
+        live.addEventListener("click", function (e) {
+          var b = e.target.closest("[data-pld-month]");
+          if (!b || b.disabled) return;
+          var i = at + Number(b.getAttribute("data-pld-month"));
+          if (i >= 0 && i < months.length) show(i);
+        });
+      });
+
+      // ── 값 있는 원 — 누를 때마다 20% 씩(100 다음은 0) ──
+      function setCircle(svg, percent, text) {
+        svg.style.setProperty("--ppc-p", String(percent));
+        svg.toggleAttribute("data-empty", percent === 0);
+        if (svg.hasAttribute("aria-valuenow")) {
+          svg.setAttribute("aria-valuenow", String(percent));
+          svg.setAttribute("aria-valuetext", text || Math.round(percent) + "%");
+        }
+      }
+      document.addEventListener("click", function (e) {
+        var b = e.target.closest ? e.target.closest("[data-pld-fill-step]") : null;
+        if (!b) return;
+        var live = b.closest("[data-pld-live]");
+        var svg = live.querySelector("[data-pld-fill]");
+        var v = Number(svg.getAttribute("aria-valuenow")) + 20;
+        if (v > 100) v = 0;
+        setCircle(svg, v);
+        var cap = live.querySelector("[data-pld-fill-cap]");
+        if (cap) cap.textContent = v + "%";
+      });
+
+      // ── 막대 — 값을 바꾸면 채움이 따라 찬다. 한도를 넘으면 끝까지 위험 색 + "N원 초과", 목표에 닿으면 "달성" ──
+      function won(n) { return Math.round(n).toLocaleString("ko-KR") + "원"; }
+      function setMeter(m, value) {
+        var max = Number(m.getAttribute("data-max"));
+        var meaning = m.getAttribute("data-meaning");
+        var label = m.getAttribute("data-label");
+        var over = meaning === "limit" && value > max;
+        var reached = meaning === "goal" && value >= max;
+        var status = over ? won(value - max) + " 초과" : reached ? "달성" : Math.round((value / max) * 100) + "%";
+        m.setAttribute("data-value", String(value));
+        m.setAttribute("data-state", over ? "over" : reached ? "reached" : "enabled");
+        m.querySelector(".pmeter-status").textContent = status;
+        m.querySelector(".pmeter-amount").textContent = won(value) + " / " + won(max);
+        var fill = m.querySelector(".pmeter-fill");
+        fill.style.width = (Math.max(0, Math.min(value / max, 1)) * 100) + "%";
+        fill.toggleAttribute("data-empty", value <= 0);
+        var track = m.querySelector(".pmeter-track");
+        track.setAttribute("aria-label", label + " " + won(max) + " 중 " + won(value));
+        track.setAttribute("aria-valuenow", String(Math.min(value, max)));
+        track.setAttribute("aria-valuetext", status);
+      }
+      document.addEventListener("click", function (e) {
+        var b = e.target.closest ? e.target.closest("[data-pmeter-step]") : null;
+        if (!b) return;
+        var step = Number(b.getAttribute("data-pmeter-step"));
+        b.closest("[data-pld-live]").querySelectorAll("[data-pmeter-live]").forEach(function (m) {
+          setMeter(m, Math.max(0, Number(m.getAttribute("data-value")) + step));
+        });
+      });
+
+      // ── 당겨서 새로 고침 ──
+      document.querySelectorAll("[data-pptr-live]").forEach(function (root) {
+        var live = root.closest("[data-pld-live]");
+        var note = live && live.querySelector("[data-pld-clock]");
+        var indicator = root.querySelector(".pptr-indicator");
+        var state = "idle";
+        var pull = 0;
+        var startY = null;
+        var downY = 0;
+        var id = null;
+        function circle(mode) {
+          indicator.innerHTML = mode === "spin" ? ${JSON.stringify(progressCircle({ size: "24", label: "새로 고치는 중" }))} : ${JSON.stringify(progressCircle({ size: "24", value: 0, hidden: true }))};
+          if (mode === "spin") indicator.removeAttribute("aria-hidden"); else indicator.setAttribute("aria-hidden", "true");
+        }
+        function apply(p) {
+          pull = p;
+          var ratio = Math.min(p / 88, 1);
+          root.style.setProperty("--pptr-pull", p + "px");
+          root.style.setProperty("--pptr-ratio", String(ratio));
+          var svg = indicator.querySelector(".ppc");
+          if (svg && svg.getAttribute("data-state") === "determinate") {
+            svg.style.setProperty("--ppc-p", String(Math.round(ratio * 100)));
+            svg.toggleAttribute("data-empty", ratio === 0);
+          }
+        }
+        function settle(p, then) {
+          root.setAttribute("data-settling", "");
+          apply(p);
+          setTimeout(function () { root.removeAttribute("data-settling"); if (then) then(); }, 320);
+        }
+        function tell(text) { if (note) note.textContent = text; }
+        root.addEventListener("pointerdown", function (e) {
+          if (state === "refreshing" || e.button !== 0) return;
+          id = e.pointerId;
+          downY = e.clientY;
+          startY = null;
+          root.setPointerCapture(id);
+        });
+        root.addEventListener("pointermove", function (e) {
+          if (e.pointerId !== id || state === "refreshing") return;
+          if (startY === null) {
+            if (e.clientY <= downY) return;
+            startY = e.clientY;
+            root.setAttribute("data-dragging", "");
+          }
+          var p = Math.max(0, (e.clientY - startY) * 0.75);
+          state = p > 88 ? "ready" : "pulling";
+          root.setAttribute("data-state", state);
+          apply(p);
+          tell("당긴 거리 " + Math.round(p) + " · " + (state === "ready" ? "문턱을 넘었다 — 놓으면 새로 고친다" : "문턱 88 까지 " + Math.max(0, Math.round(88 - p))));
+        });
+        function release(e) {
+          if (e.pointerId !== id) return;
+          id = null;
+          root.removeAttribute("data-dragging");
+          if (startY === null || state === "refreshing") return;
+          startY = null;
+          if (state === "ready") {
+            state = "refreshing";
+            root.setAttribute("data-state", state);
+            circle("spin");
+            tell("새로 고치는 중 — 끝날 때까지 88 에 머문다");
+            settle(88);
+            setTimeout(function () {
+              settle(0, function () {
+                state = "idle";
+                root.setAttribute("data-state", state);
+                circle("fill");
+                apply(0);
+                tell("새로 고쳤다 — 보던 내용은 그대로 두고 새 값으로 바꾼다");
+              });
+            }, 1600);
+          } else {
+            state = "idle";
+            root.setAttribute("data-state", state);
+            settle(0);
+            tell("문턱 전에 놓았다 — 새로 고치지 않는다");
+          }
+        }
+        root.addEventListener("pointerup", release);
+        root.addEventListener("pointercancel", release);
+      });
+
+      // ── 끝 흐림 — 처음 · 가운데 · 끝 ──
+      function place() {
+        document.querySelectorAll("[data-pfog-scroll]").forEach(function (wrap) {
+          var f = wrap.getAttribute("data-pfog-scroll") === "end" ? 1 : 0.5;
+          wrap.querySelectorAll(".pfog--box, .pov-body--fog, .pchip-group--scroll").forEach(function (box) {
+            box.scrollLeft = Math.round((box.scrollWidth - box.clientWidth) * f);
+            box.scrollTop = Math.round((box.scrollHeight - box.clientHeight) * f);
+          });
+        });
+      }
+      place();
+      window.addEventListener("load", place);
     })();
   </script>
 </body>

@@ -1,5 +1,6 @@
 // Motion 페이지 — 지속 시간 · 이징 · 키프레임은 DESIGN.md 의 motion 표 · CSS 블록에서만 온다
 import { color, ms, pressScale, proseTokenSet, proseValue, reducedMotion, sectionCode, sectionTable, specSize } from '@/lib/design-tokens';
+import { loadingKit } from '../specs/loading-look';
 import { Figure, Panel } from './ui';
 import { EasingPlayer, KeyframePlayer, type Kf, type Palette } from './motion-demo';
 
@@ -14,7 +15,9 @@ export function palette(): Palette {
     grid: color('stroke-neutral-weak'),
     muted: color('stroke-neutral-solid'),
     surface: color('bg-neutral-weak'),
-    skeleton: color('bg-neutral-weak-pressed'),
+    // 스켈레톤 면 — skeleton.yaml 의 root.background(bg-neutral-weak) · 글 한 줄(t4 줄 높이 · 모서리 8)
+    skeleton: loadingKit().skeleton.bg.light,
+    bone: { h: loadingKit().skeleton.text.t4.lineHeight, r: loadingKit().skeleton.radius['8'] },
   };
 }
 

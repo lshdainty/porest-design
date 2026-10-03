@@ -2,6 +2,7 @@
 // `--p-<토큰>`(Desk 값) · `--p-hr-<토큰>`(HR 에서 값이 다른 브랜드 토큰만). `.dark`(fumadocs 의 다크)면 `-dark` 짝으로 바뀐다.
 // 그림은 색을 hex 대신 이 변수로 쓴다(kit 의 rc — 모드를 정하지 않으면 변수).
 import { design, proseValue } from '@/lib/design-tokens';
+import { loadingCss } from './loading-look';
 
 function build() {
   const desk = design('desk').front.colors;
@@ -23,10 +24,14 @@ function build() {
     light.push(`--p-shadow-s${n}:${proseValue(`shadow-s${n}`)}`);
     dark.push(`--p-shadow-s${n}:${proseValue(`shadow-s${n}-dark`)}`);
   }
+  // 스켈레톤 반짝임 띠(v104) — 라이트 · 다크 짝
+  light.push(`--p-gradient-shimmer-neutral:${proseValue('gradient-shimmer-neutral')}`);
+  dark.push(`--p-gradient-shimmer-neutral:${proseValue('gradient-shimmer-neutral-dark')}`);
   // 그림 속 기기 틀 · 브라우저 창 — 토큰이 아니라 그림 장식
   light.push('--p-frame:#1A1F2E', '--p-chrome:#E4E6EB', '--p-chrome-url:#F5F6FA');
   dark.push('--p-frame:#3A3F4C', '--p-chrome:#2B303D', '--p-chrome-url:#1E222C');
-  return `:root{${light.join(';')}}.dark{${dark.join(';')}}`;
+  // 기다림 묶음의 움직임(Progress Circle · Skeleton — 버튼의 로딩 원도 이것) — 시간 · 곡선은 YAML 에서(loading-look)
+  return `:root{${light.join(';')}}.dark{${dark.join(';')}}${loadingCss()}`;
 }
 
 let css: string | undefined;
