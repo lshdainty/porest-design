@@ -5,6 +5,7 @@ import { alertDialogFigures } from './alert-dialog';
 import { bottomSheetFigures } from './bottom-sheet';
 import { buttonFigures } from './button';
 import { buttonGuideFigures } from './button-guides';
+import { calloutFigures } from './callout';
 import { checkboxFigures } from './checkbox';
 import { chipFigures } from './chip';
 import { dialogFigures } from './dialog';
@@ -13,10 +14,13 @@ import { inputFigures } from './input';
 import { inputButtonFigures } from './input-button';
 import { listFigures } from './list';
 import { popoverFigures } from './popover';
+import { pageBannerFigures } from './page-banner';
 import { radioGroupFigures } from './radio-group';
+import { resultSectionFigures } from './result-section';
 import { selectFigures } from './select';
 import { selectBoxFigures } from './select-box';
 import { segmentedControlFigures } from './segmented-control';
+import { snackbarFigures } from './snackbar';
 import { switchFigures } from './switch';
 import { tabsFigures } from './tabs';
 import { textareaFigures } from './textarea';
@@ -26,6 +30,7 @@ const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactN
   'alert-dialog': alertDialogFigures,
   'bottom-sheet': bottomSheetFigures,
   button: { ...buttonFigures, ...buttonGuideFigures },
+  callout: calloutFigures,
   checkbox: checkboxFigures,
   chip: chipFigures,
   dialog: dialogFigures,
@@ -34,10 +39,13 @@ const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactN
   'input-button': inputButtonFigures,
   list: listFigures,
   popover: popoverFigures,
+  'page-banner': pageBannerFigures,
   'radio-group': radioGroupFigures,
+  'result-section': resultSectionFigures,
   select: selectFigures,
   'select-box': selectBoxFigures,
   'segmented-control': segmentedControlFigures,
+  snackbar: snackbarFigures,
   switch: switchFigures,
   tabs: tabsFigures,
   textarea: textareaFigures,

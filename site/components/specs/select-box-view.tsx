@@ -38,6 +38,7 @@ import {
 } from 'lucide-react';
 import { CheckboxView } from './checkbox-view';
 import { RadioView } from './radio-group-view';
+import { SnackbarRegion, useSnackbarHost } from './feedback-view';
 import { sbGroupVars, type BoxSpec, type SbFooter, type SbIcon, type SbLayout, type SbLook, type SbState } from './select-box-shared';
 
 const ICONS: Record<SbIcon, LucideIcon> = {
@@ -388,16 +389,11 @@ export type SelectBoxGroupViewProps = {
 export function SelectBoxGroupView({ look, kind, control = 'mark', boxes, columns = 1, layout, mode = 'auto', live = true, value: initial, max, ariaLabel, ariaLabelledby, width = '100%', ragged, partialTarget, zone, style }: SelectBoxGroupViewProps) {
   const [value, setValue] = useState(initial);
   const [checks, setChecks] = useState<Record<string, boolean>>(() => Object.fromEntries(boxes.map((b) => [b.value, !!b.checked])));
-  const [notice, setNotice] = useState(false);
+  // 최대 개수 안내 — Snackbar(snackbar.yaml) 그대로: 4초, 머무는 동안 멈춤, 한 번에 하나
+  const snack = useSnackbarHost(look.snackbar);
   const refs = useRef<(HTMLDivElement | null)[]>([]);
   const lay: SbLayout = layout ?? (columns > 1 ? 'vertical' : 'horizontal');
   const w = typeof width === 'number' ? width : 360;
-
-  useEffect(() => {
-    if (!notice) return;
-    const t = setTimeout(() => setNotice(false), 2400);
-    return () => clearTimeout(t);
-  }, [notice]);
 
   const move = (from: number, dir: 1 | -1) => {
     for (let k = 1; k <= boxes.length; k++) {
@@ -414,7 +410,7 @@ export function SelectBoxGroupView({ look, kind, control = 'mark', boxes, column
     setChecks((c) => {
       const next = !c[b.value];
       if (next && max !== undefined && Object.values(c).filter(Boolean).length >= max) {
-        setNotice(true);
+        snack.show({ message: `${max}개까지 고를 수 있어요.` });
         return c;
       }
       return { ...c, [b.value]: next };
@@ -463,16 +459,6 @@ export function SelectBoxGroupView({ look, kind, control = 'mark', boxes, column
       zone={zone}
     />
   ));
-  const toast = max !== undefined && (
-    <span
-      role="status"
-      className="psb pointer-events-none absolute bottom-0 left-1/2 rounded-full px-4 py-2 text-[13px] font-medium"
-      data-mode={mode}
-      style={{ ...vars, transform: `translate(-50%, ${notice ? '-8px' : '8px'})`, opacity: notice ? 1 : 0, transition: 'opacity 200ms, transform 200ms', background: 'var(--psb-nt-bg)', color: 'var(--psb-nt-fg)', whiteSpace: 'nowrap' }}
-    >
-      {notice ? `${max}개까지 고를 수 있어요` : ''}
-    </span>
-  );
   const group =
     kind === 'radio' ? (
       <div role="radiogroup" aria-label={ariaLabel} aria-labelledby={ariaLabelledby} className="psb" data-mode={mode} style={grid}>
@@ -484,10 +470,12 @@ export function SelectBoxGroupView({ look, kind, control = 'mark', boxes, column
       </fieldset>
     );
   if (max === undefined) return group;
+  // 띠 자리 — 묶음 아래(띠 높이 + 자리 위아래 여백). 띠는 그 아래 가운데에 뜬다
+  const sb = look.snackbar;
   return (
-    <div className="relative" style={{ width, paddingBottom: 56 }}>
+    <div className="relative" style={{ width, paddingBottom: sb.root.minHeight + sb.region.padBottom * 2 }}>
       {group}
-      {toast}
+      <SnackbarRegion host={snack} look={sb} mode={mode} />
     </div>
   );
 }

@@ -94,7 +94,7 @@ export function roleColors(brand: Brand = 'shared') {
 }
 // v110 — 색을 고르지 않은 항목이 받는 차트 색 순서(제품 순서)
 export const CHART_ORDER = ['blue', 'green', 'orange', 'violet', 'pink', 'indigo', 'red', 'yellow', 'brown', 'gray'];
-export const BRAND_ROLES = ['fg-brand', 'fg-brand-contrast', 'bg-brand-solid', 'bg-brand-solid-pressed', 'bg-brand-weak', 'bg-brand-weak-pressed', 'stroke-focus-ring', 'stroke-brand-solid', 'stroke-brand-weak'];
+export const BRAND_ROLES = ['fg-brand', 'fg-brand-contrast', 'fg-brand-inverted', 'bg-brand-solid', 'bg-brand-solid-pressed', 'bg-brand-weak', 'bg-brand-weak-pressed', 'stroke-focus-ring', 'stroke-brand-solid', 'stroke-brand-weak'];
 
 // 역할이 가리키는 팔레트 단계("gray-200") — 옛 이름이면 역할을 거쳐 끝까지
 export function colorStep(name: string, brand: Brand = 'desk') {

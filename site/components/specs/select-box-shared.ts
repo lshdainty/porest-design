@@ -1,6 +1,7 @@
 // Select Box 의 모양 — 서버(select-box-look) · 브라우저(select-box-view · 플레이그라운드)가 함께 쓰는 상수 · 타입.
 // 파일 읽기(서버 전용)를 들이지 않는다.
 import type { CheckLook } from './checkbox-shared';
+import type { SnackbarLook } from './feedback-shared';
 import type { RadioLook } from './radio-group-shared';
 
 type Mode = 'light' | 'dark';
@@ -58,8 +59,8 @@ export type SbLook = {
   // 펼침 안의 입력칸 — input.yaml 에서(펼침의 내용은 쓰는 쪽이 정한다 — 예시로만)
   input: { height: number; padX: number; radius: number; fontSize: string; lineHeight?: string | number; bg: Record<Mode, string>; fg: Record<Mode, string>; border: Record<Mode, string>; focus: Record<Mode, string> };
   surface: Record<'default' | 'basement' | 'floating', Record<Mode, string>>;
-  // 최대 개수에 닿았을 때 띄우는 안내(스낵바 모양 — 그림에서만)
-  notice: { bg: Record<Mode, string>; fg: Record<Mode, string> };
+  // 최대 개수에 닿았을 때 띄우는 안내 — Snackbar(snackbar.yaml) 그대로
+  snackbar: SnackbarLook;
 };
 
 // 그림의 아이콘 — 이름으로 넘긴다(서버 그림 → 브라우저 그림)
@@ -116,12 +117,11 @@ export type BoxSpec = {
   layout?: SbLayout;
 };
 
-// 묶음에 싣는 색 — 펼침의 입력칸 · 최대 개수 안내(상자 밖에서 펼침 내용만 그릴 때도 쓴다)
+// 묶음에 싣는 색 — 펼침의 입력칸(상자 밖에서 펼침 내용만 그릴 때도 쓴다)
 export function sbGroupVars(look: SbLook, mode: 'light' | 'dark' | 'auto' = 'auto') {
   const pickL = mode === 'dark' ? 'dark' : 'light';
   const pickD = mode === 'light' ? 'light' : 'dark';
   const i = look.input;
-  const n = look.notice;
   const u = look.faces.unselected;
   return {
     '--psb-title-l': u[pickL].enabled.label.color,
@@ -136,9 +136,5 @@ export function sbGroupVars(look: SbLook, mode: 'light' | 'dark' | 'auto' = 'aut
     '--psb-in-bd-d': i.border[pickD],
     '--psb-in-focus-l': i.focus[pickL],
     '--psb-in-focus-d': i.focus[pickD],
-    '--psb-nt-bg-l': n.bg[pickL],
-    '--psb-nt-bg-d': n.bg[pickD],
-    '--psb-nt-fg-l': n.fg[pickL],
-    '--psb-nt-fg-d': n.fg[pickD],
   } as Record<string, string>;
 }

@@ -271,6 +271,8 @@ Card grid — 3열 그리드, hover 시 `shadow-md` lift. Desk 카드 list 톤.
 
 ## Banner
 
+> 2026-10-02 — 본문 자리에서 알리는 상자는 `specs/components/callout.md`(SEED Callout), 화면 위 띠는 `page-banner.md`(SEED Page Banner)가 원본이다. Alert 는 Callout 으로 바꿨다. 아래 마크업은 옛 모양이다.
+
 ```html
 <div role="status" class="flex items-start gap-3 p-4 bg-info/10 border-l-4 border-info rounded-r-md">
   <svg aria-hidden="true" class="w-5 h-5 text-info flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
@@ -305,6 +307,8 @@ Error — critical 알림, 즉시 발화 (`role="alert"`).
 ---
 
 ## Toast / Sonner
+
+> 2026-10-02 — 잠깐 뜨는 알림은 `specs/components/snackbar.md`(SEED Snackbar)가 원본이다 — 아래 가운데에 한 번에 하나, z-index 는 `specs/z-index.md` 의 L6(400). Sonner 는 걷었다. 아래 마크업은 옛 모양이다.
 
 ```html
 <div role="status" aria-live="polite" class="max-w-sm bg-surface-default border border-default rounded-md shadow-lg p-4 flex items-start gap-3">
@@ -792,6 +796,8 @@ Hover Card — non-interactive preview. delay 700ms hover, link/avatar에 mentio
 ---
 
 ## Empty state
+
+> 2026-10-02 — 빈 화면 · 실패 · 완료는 `specs/components/result-section.md`(SEED Result Section)가 원본이다. 아래 마크업은 옛 모양이다.
 
 ```html
 <div class="flex flex-col items-center gap-4 py-16">

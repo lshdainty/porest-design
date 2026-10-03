@@ -1,0 +1,159 @@
+# Callout 의 수치 원본 — 구조는 SEED Callout(2026-10-02 사용자 결정, 비교 페이지 1 · 2 · 6).
+# 형식은 button.yaml 머리 주석, 규칙은 specs/CLAUDE.md.
+#
+# 화면 안, 그 기능 · 내용 가까이에 늘 보이는 안내 상자 — 팁 · 제약 · 주의 · 저장 실패 같은 그 자리의 오류.
+# 페이지 전체의 상태는 Page Banner(page-banner.yaml), 잠깐 알릴 결과는 Snackbar(snackbar.yaml)다.
+#
+# SEED 와 다른 자리(callout.md 의 "SEED 와 다른 점")
+#   - 톤은 다섯 — magic(AI)은 porest 에 AI 기능이 없어 두지 않는다.
+#   - 아이콘은 lucide 선 아이콘(v106 — SEED 는 채운 아이콘을 권한다).
+#   - 나중에 나타나는 경고 · 위험(저장 실패)은 role="alert"(SEED 는 역할이 없다).
+#   - 버튼에 type="button"(SEED 링크 · 닫기에는 없어 폼 안에서 제출된다).
+
+name: Callout
+
+slots:
+  root: 상자 — 콘텐츠 폭 전체
+  icon: 앞 아이콘 — 톤 색
+  content: 제목 · 본문 · 링크 — 한 문단으로 흐른다
+  title: 제목 — 성격을 나타내는 짧은 말(안내 · 주의 · 새 기능)
+  description: 본문 — 제목을 되풀이하지 않는다
+  link: 링크 — 보조 내용으로 갈 때만(밑줄)
+  suffixIcon: 뒤 화살표 — 상자 전체를 누르는 Actionable 에만
+  closeButton: 닫기 — Dismissible 에만. 이름 "닫기"
+  focusRing: 키보드 포커스 링(웹)
+
+variants:
+  tone:
+    neutral: 일반 안내
+    informative: 이해를 돕는 정보 · 가이드 · 팁
+    positive: 성공 · 혜택 같은 좋은 소식
+    warning: 주의가 필요한 상태 · 미리 알릴 문제
+    critical: 오류 · 바로 조치해야 할 일
+  interaction:
+    display: 보이기만 — 링크를 둘 수 있다
+    actionable: 상자 전체가 버튼 — 뒤 화살표, 링크는 두지 않는다
+    dismissible: 닫기 버튼 — 한 번 보면 되는 안내에만(경고 · 오류는 닫지 못한다)
+
+defaults:
+  tone: neutral
+  interaction: display
+
+states:
+  enabled: 기본
+  hovered: 웹 — Actionable 은 누름 바탕(축소 없음), 닫기 버튼은 누름 바탕
+  pressed: Actionable 은 누름 바탕 + 상자 전체 2px 거리 축소, 닫기 버튼은 축소
+  focused: 웹 — 키보드 포커스에만 링
+
+rules:
+  # ── 공통 ──────────────────────────────────────────────
+  - when: {}
+    enabled:
+      root:
+        width: 100%
+        minHeight: 50px
+        padding: $spacing-x3_5
+        gap: { value: $spacing-x3, note: "아이콘 ↔ 글 ↔ 뒤 화살표 · 닫기" }
+        radius: $radius-r2_5
+        alignItems: { value: center, note: "여러 줄이면 아이콘 · 화살표 · 닫기가 상자 가운데" }
+      icon:
+        size: { value: 16px, note: "lucide 선 아이콘 — 톤마다 기본: neutral · informative info, positive circle-check, warning triangle-alert, critical circle-alert(바꾸거나 뺄 수 있다)" }
+      title:
+        typography: { value: $text-t4, note: "본문과 한 문단 — 사이는 띄어쓰기 두 칸" }
+        fontWeight: 700
+      description:
+        typography: { value: $text-t4, note: "단어 단위 줄바꿈(v114)" }
+        fontWeight: 400
+      link:
+        typography: $text-t4
+        fontWeight: 400
+        textDecoration: { value: underline, note: "밑줄과 2 띄움 — 본문과 사이 띄어쓰기 두 칸" }
+      suffixIcon:
+        size: { value: 16px, note: "chevron-right" }
+      closeButton:
+        size: { value: 40px, note: "투명 상자 — 바깥 여백 −12 로 줄 높이를 늘리지 않는다. 아이콘은 오른쪽 끝에서 14" }
+        iconSize: 16px
+        radius: $radius-r2
+        touchTarget: 40 × 40
+    focused:
+      focusRing:
+        width: 2px
+        offset: { value: 2px, note: "Actionable 은 상자 둘레, 링크 · 닫기는 그 둘레(모서리 4 · 8)" }
+        color: $color-stroke-focus-ring
+
+  # ── 톤 ────────────────────────────────────────────────
+  - when: { tone: neutral }
+    enabled:
+      root: { background: $color-bg-neutral-weak, foreground: $color-fg-neutral }
+  - when: { tone: informative }
+    enabled:
+      root: { background: $color-bg-informative-weak, foreground: { value: $color-fg-informative-contrast, note: "글 · 아이콘 · 링크 · 화살표 · 닫기가 모두 이 색" } }
+  - when: { tone: positive }
+    enabled:
+      root: { background: $color-bg-positive-weak, foreground: $color-fg-positive-contrast }
+  - when: { tone: warning }
+    enabled:
+      root: { background: $color-bg-warning-weak, foreground: $color-fg-warning-contrast }
+  - when: { tone: critical }
+    enabled:
+      root: { background: $color-bg-critical-weak, foreground: $color-fg-critical-contrast }
+
+  # ── 상자 전체를 누르는 Actionable ──────────────────────
+  - when: { interaction: actionable }
+    pressed:
+      root:
+        scale: { value: 2px 거리 축소, note: "상자 전체(SEED scaleScope: self) — 모션 줄이기면 하지 않는다" }
+        scaleDuration: $motion-duration-pressed-scale
+        scaleEasing: $motion-ease-pressed-scale
+  - when: { tone: neutral, interaction: actionable }
+    hovered: { root: { background: $color-bg-neutral-weak-pressed } }
+    pressed: { root: { background: $color-bg-neutral-weak-pressed } }
+  - when: { tone: informative, interaction: actionable }
+    hovered: { root: { background: $color-bg-informative-weak-pressed } }
+    pressed: { root: { background: $color-bg-informative-weak-pressed } }
+  - when: { tone: positive, interaction: actionable }
+    hovered: { root: { background: $color-bg-positive-weak-pressed } }
+    pressed: { root: { background: $color-bg-positive-weak-pressed } }
+  - when: { tone: warning, interaction: actionable }
+    hovered: { root: { background: $color-bg-warning-weak-pressed } }
+    pressed: { root: { background: $color-bg-warning-weak-pressed } }
+  - when: { tone: critical, interaction: actionable }
+    hovered: { root: { background: $color-bg-critical-weak-pressed } }
+    pressed: { root: { background: $color-bg-critical-weak-pressed } }
+
+  # ── 닫기 버튼 ──────────────────────────────────────────
+  - when: { interaction: dismissible }
+    pressed:
+      closeButton:
+        scale: { value: 2px 거리 축소, note: "기준 40 — 모션 줄이기면 하지 않는다" }
+        scaleDuration: $motion-duration-pressed-scale
+        scaleEasing: $motion-ease-pressed-scale
+  - when: { tone: neutral, interaction: dismissible }
+    hovered: { closeButton: { background: { value: $color-bg-neutral-weak-pressed, note: "톤의 누름 바탕 — SEED 투명 누름 색의 불투명 짝" } } }
+    pressed: { closeButton: { background: $color-bg-neutral-weak-pressed } }
+  - when: { tone: informative, interaction: dismissible }
+    hovered: { closeButton: { background: $color-bg-informative-weak-pressed } }
+    pressed: { closeButton: { background: $color-bg-informative-weak-pressed } }
+  - when: { tone: positive, interaction: dismissible }
+    hovered: { closeButton: { background: $color-bg-positive-weak-pressed } }
+    pressed: { closeButton: { background: $color-bg-positive-weak-pressed } }
+  - when: { tone: warning, interaction: dismissible }
+    hovered: { closeButton: { background: $color-bg-warning-weak-pressed } }
+    pressed: { closeButton: { background: $color-bg-warning-weak-pressed } }
+  - when: { tone: critical, interaction: dismissible }
+    hovered: { closeButton: { background: $color-bg-critical-weak-pressed } }
+    pressed: { closeButton: { background: $color-bg-critical-weak-pressed } }
+
+motion:
+  "누름":
+    duration: $motion-duration-pressed-scale
+    easing: $motion-ease-pressed-scale
+    properties: [scale]
+  "바탕":
+    duration: $motion-duration-color-transition
+    easing: $motion-ease-easing
+    properties: [background-color]
+  "닫힘":
+    duration: 0ms
+    properties: [바로 사라짐]
+    note: "닫으면 바로 걷는다(SEED) — 초점은 다음 요소로"

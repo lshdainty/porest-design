@@ -477,7 +477,7 @@ const MaxGuide: Fig = ({ caption }) => (
         <PhoneWidth>
           <Label id="sb-max-ok">홈에 둘 요약</Label>
           <span className="-mt-1 mb-3 block text-[13px]" style={{ color: rc('fg-neutral-muted') }}>
-            2개까지 고를 수 있어요
+            2개까지 고를 수 있어요.
           </span>
           <G kind="check" control="none" columns={2} boxes={SUMMARY.map((b, i) => ({ ...b, checked: i < 2 }))} max={2} ariaLabelledby="sb-max-ok" />
         </PhoneWidth>

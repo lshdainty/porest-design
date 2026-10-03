@@ -52,6 +52,7 @@ const NOISE = new Set([
   "button-primary", "button-outline-on-dark",
   "focus-ring-on-light", "focus-ring-on-dark",
   "stroke-focus-ring", // v106 State 절 — 포커스 링 색은 브랜드 역할(v102)
+  "fg-brand-inverted", // v115 알림 메시지 절 — 스낵바 액션 색은 브랜드 역할(반전 짝)
   "border-vs-surface", // 비교 표현 ("border vs surface")
   // historical reference (v14~v15 fork 시도, v15에서 unified 회귀 기록 표)
   "bg-page-hr", "bg-page-desk", "page-text-hr-light", "page-text-desk-light",

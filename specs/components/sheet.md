@@ -35,7 +35,7 @@ right side example:
 **규칙**
 
 - 슬라이드 방향의 **반대편 모서리에만 1px border** — right sheet은 `border-l border-border-default`, bottom sheet은 `border-t border-border-default`. 본문과 자연 경계.
-- shadow는 **inline style**(`boxShadow: var(--shadow-xl)`) — Tailwind utility(`shadow-lg`) 대신 [`Dialog`](dialog.md)/[`Bottom Sheet`](bottom-sheet.md)/[`Popover`](popover.md)/[`Card`](card.md)/[`Sonner`](sonner.md)와 동일한 다크 모드 fix 패턴.
+- shadow는 **inline style**(`boxShadow: var(--shadow-xl)`) — Tailwind utility(`shadow-lg`) 대신 [`Card`](card.md)와 동일한 다크 모드 fix 패턴. 2026-10-02 SEED 차례에 [`Dialog`](dialog.md) · [`Bottom Sheet`](bottom-sheet.md) · [`Snackbar`](snackbar.md) 는 그림자를 걷었고(딤 · 면 색으로 뜬다) [`Popover`](popover.md) 는 `shadow-s3` 다 — Sheet 는 그 차례에 다시 정한다.
 - side variant 폭은 `w-3/4` + `sm:max-w-sm` (≤384px) — 모바일에선 75%, 데스크탑에선 384px 고정. 데이터·필터 패널엔 충분.
 - top/bottom sheet은 `inset-x-0` + 높이 자동(콘텐츠) — 모바일 친화 액션 시트 톤.
 - close button(X)은 항상 우상단 — 사용자가 즉시 인식. focus-visible ring 필수.

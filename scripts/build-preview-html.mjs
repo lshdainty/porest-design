@@ -217,17 +217,19 @@ export function brandProfile(brandName, tokens) {
           { label: "Pretendard 패키지", note: "한국어 우선 폰트" },
         ],
       },
+      // 빈 결재함 — Result Section 비어 있음(result-section.md 글 — 제목은 마침표 없이, 설명은 무엇을 하면 되는지, 버튼은 동작 이름). 아이콘은 비어 있는 것(받은 결재)을 말한다
       emptyState: {
-        title: "결재 대기 0건",
-        description: "현재 처리할 결재가 없어요. 새 결재를 시작하거나 잠시 휴식 시간을 가져보세요.",
+        icon: "inbox",
+        title: "처리할 결재가 없어요",
+        description: "새 결재가 오면 여기에 모여요.",
         primary: "새 결재 시작",
-        secondary: "이력 보기",
+        secondary: "지난 결재 보기",
       },
-      toasts: [
-        { kind: "success", title: "결재 승인 완료", body: "김지원의 휴가 신청이 승인되었습니다." },
-        { kind: "error", title: "신청 실패", body: "잔여 연차가 부족합니다 (현재 0.5일)." },
-        { kind: "warning", title: "기한 임박", body: "이번 분기 평가 작성이 D-3 남았어요." },
-        { kind: "info", title: "신규 공고", body: "디자인 시스템 디자이너 공고가 등록됐어요." },
+      snackbars: [
+        { message: "휴가 신청을 결재 라인에 보냈어요." },
+        { tone: "positive", message: "김지원의 휴가 신청을 승인했어요." },
+        { tone: "critical", message: "결재 의견을 보내지 못했어요. 다시 눌러 주세요." },
+        { message: "휴가 신청을 취소했어요.", action: "되돌리기" },
       ],
       // 폼 칸 — renderForm 이 Field 로 그린다. pair 는 다음 칸과 나란히(짧은 두 칸), max 는 글자 수 최대.
       // 고르는 칸은 select(짧은 선택지 5개 이상 — 칸 아래 목록) · inputButton(달력 · 격자를 여는 칸 — 기간 · 날짜 · 카테고리)이다(select.md "고르는 컴포넌트 고르기")
@@ -388,16 +390,17 @@ export function brandProfile(brandName, tokens) {
         ],
       },
       emptyState: {
-        title: "오늘 할일 0개",
-        description: "할일을 추가해 하루를 시작해보세요. 가벼운 메모나 빠른 한 줄도 좋아요.",
-        primary: "할일 추가",
-        secondary: "어제 보기",
+        icon: "listChecks",
+        title: "오늘 할 일이 없어요",
+        description: "할 일을 추가하면 여기에 모여요.",
+        primary: "할 일 추가",
+        secondary: "어제 할 일 보기",
       },
-      toasts: [
-        { kind: "success", title: "메모 저장 완료", body: "Porest 브랜드 톤 메모가 저장되었습니다." },
-        { kind: "error", title: "동기화 실패", body: "인터넷 연결을 확인하고 다시 시도해주세요." },
-        { kind: "warning", title: "예산 80% 도달", body: "이번 달 가계부 예산이 80%에 도달했어요." },
-        { kind: "info", title: "백업 완료", body: "어제 자정 자동 백업이 완료됐어요 (412 항목)." },
+      snackbars: [
+        { message: "메모를 저장했어요." },
+        { tone: "positive", message: "거래 1,204건을 가져왔어요." },
+        { tone: "critical", message: "관심 종목에 넣지 못했어요. 다시 눌러 주세요." },
+        { message: "메모를 보관함으로 옮겼어요.", action: "되돌리기" },
       ],
       form: {
         title: "거래 추가",
@@ -547,16 +550,17 @@ export function brandProfile(brandName, tokens) {
       ],
     },
     emptyState: {
-      title: "Empty state demo",
-      description: "이 영역은 빈 상태 시각화 demo입니다. 실제 사용 시나리오는 brand 파일 (HR / Desk) 참조.",
-      primary: "더 알아보기",
-      secondary: "닫기",
+      icon: "inbox",
+      title: "제안한 토큰이 없어요",
+      description: "새 토큰을 제안하면 여기에 모여요.",
+      primary: "토큰 제안",
+      secondary: "",
     },
-    toasts: [
-      { kind: "success", title: "Build 완료", body: `exports/tokens.css 생성 (${tokens.colors.length} colors, ${tokens.text.length} typography).` },
-      { kind: "error", title: "Sync drift 감지", body: "DESIGN.hr.md와 DESIGN.md 사이 동기화 실패." },
-      { kind: "warning", title: "missingPrimary 1건", body: "DESIGN.md baseline은 의도적으로 primary 미정의." },
-      { kind: "info", title: "Tailwind v4 export", body: "@theme CSS 빌드 정상 — 모든 namespace 통과." },
+    snackbars: [
+      { message: "토큰 제안을 저장했어요." },
+      { tone: "positive", message: `tokens.css 를 만들었어요. 색 ${tokens.colors.length}개가 들어 있어요.` },
+      { tone: "critical", message: "동기화하지 못했어요. 다시 실행해 주세요." },
+      { message: "토큰 제안을 지웠어요.", action: "되돌리기" },
     ],
     form: {
       title: "Token submission form",
@@ -3776,6 +3780,388 @@ export function renderOverlayGallery(brand) {
   </section>`;
 }
 
+// 알림 메시지 — spec: specs/components/snackbar.md · callout.md · page-banner.md · result-section.md · 수치 snackbar.yaml · callout.yaml · page-banner.yaml ·
+// result-section.yaml. 구조는 SEED Snackbar · Callout · Page Banner · Result Section(2026-10-02). 옛 Sonner · Alert · Banner · 빈 화면 카드를 대신한다.
+// 스낵바 — 띠 .psnack(role=status · aria-atomic · Tab 이 선다) > 앞 아이콘 .psnack-icon(성공 · 실패에만) · 글과 액션 .psnack-content > 글 .psnack-message ·
+//   액션 .psnack-action, 끝에 보조 기술용 닫기 .psnack-close(보이지 않고 키보드 초점이 오면 띠 오른쪽 끝에 보인다). 자리 .psnack-region 은 화면 아래 가운데다.
+// 콜아웃 — 상자 .pcallout(보이기 · 닫기는 div, 전체 누르기는 button) > 앞 아이콘 · 한 문단 .pcallout-content(제목 · 본문 · 링크 — 사이 띄어쓰기 두 칸) · 뒤 화살표 · 닫기.
+// 페이지 배너 — 띠 .pbanner(화면 폭 · 옅음 weak · 짙음 solid) > 안 .pbanner-inner(전체 누르기면 이것만 준다) > 앞 아이콘 · 글과 버튼 .pbanner-content · 뒤 화살표 · 닫기.
+// 결과 — .presult(large · medium) > 아이콘 40 · 제목(제목 태그) · 설명 · 버튼 둘(Button neutralWeak medium 40 · ghost small 36 — 03 의 .btn 그대로).
+// 아이콘은 lucide 선 아이콘이다(v106 — 채운 원은 쓰지 않는다). 누름 · 호버 · 포커스는 그 순간을 멈춘 클래스(--pressed · --hover · --focus)로 그렸다.
+// data-psnack-show 버튼(띄우기) · data-pfb-live 안의 닫기 · data-presult-retry(다시 시도)는 페이지 끝 스크립트가 흉내 낸다.
+let pfbSeq = 0;
+const nextPfbId = (prefix = "pfb") => `${prefix}-${(pfbSeq += 1)}`;
+const FB_ICON = {
+  circleCheck: TEXT_FIELD_ICON.circleCheck,
+  circleAlert: TEXT_FIELD_ICON.circleAlert,
+  info: listSvg('<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>'),
+  triangleAlert: listSvg('<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>'),
+  x: CHIP_ICON.x,
+  chevronRight: PICK_ICON.chevronRight,
+  receiptText: listSvg('<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M14 8H8"/><path d="M16 12H8"/><path d="M13 16H8"/>'),
+  searchX: listSvg('<path d="m13.5 8.5-5 5"/><path d="m8.5 8.5 5 5"/><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>'),
+  inbox: listSvg('<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>'),
+  listChecks: listSvg('<path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/>'),
+  house: PICK_ICON.house,
+  wallet: LIST_ICON.wallet,
+  chartPie: listSvg('<path d="M21 12c.552 0 1.005-.449.95-.998a10 10 0 0 0-8.953-8.951c-.55-.055-.998.398-.998.95v8a1 1 0 0 0 1 1z"/><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/>'),
+};
+// 톤마다 앞 아이콘(Callout · Page Banner) — neutral · informative 는 info, positive 는 체크, warning 은 세모 느낌표, critical 은 원 느낌표
+const FB_TONE_ICON = { neutral: "info", informative: "info", positive: "circleCheck", warning: "triangleAlert", critical: "circleAlert" };
+const FB_TONES = ["neutral", "informative", "positive", "warning", "critical"];
+
+// 스낵바 띠 하나 — 글(message · action)은 여기서 escape 한다.
+//   tone    neutral(기본 — 아이콘 없음) · positive(체크) · critical(느낌표). 아이콘 · 액션은 반전 짝 색(fg-*-inverted, v115)
+//   action  액션 글 — 하나, 동작 이름(되돌리기 · 잔액 고치기). 있으면 6초, 없으면 4초다(띄우는 스크립트가 센다)
+//   state   pressed(액션 누름) · focus(띠) · focusAction(액션) · focusClose(닫기가 보인다) — 그 순간을 멈춘 띠(갤러리 전용)
+export function snackbar({ tone = "neutral", message = "", action = "", state = "" } = {}) {
+  const icon = tone === "positive" ? FB_ICON.circleCheck : tone === "critical" ? FB_ICON.circleAlert : "";
+  const cls = ["psnack", `psnack--${tone}`, state === "focus" && "psnack--focus"].filter(Boolean).join(" ");
+  const actionCls = ["psnack-action", state === "pressed" && "psnack-action--pressed", state === "focusAction" && "psnack-action--focus"].filter(Boolean).join(" ");
+  const closeCls = ["psnack-close", state === "focusClose" && "psnack-close--focus"].filter(Boolean).join(" ");
+  return `<div class="${cls}" role="status" aria-atomic="true" tabindex="0">${icon ? `<span class="psnack-icon" aria-hidden="true">${icon}</span>` : ""}<div class="psnack-content"><p class="psnack-message">${escape(message)}</p>${
+    action ? `<button type="button" class="${actionCls}">${escape(action)}</button>` : ""
+  }</div><button type="button" class="${closeCls}" aria-label="닫기">${FB_ICON.x}</button></div>`;
+}
+
+// 콜아웃 하나 — 글(title · description · link)은 여기서 escape 한다. 제목 · 본문 · 링크는 한 문단이고 사이는 띄어쓰기 두 칸이다(.pcallout-content 가 그대로 둔다)
+//   tone         neutral(기본) · informative · positive · warning · critical — 바탕 bg-*-weak, 글 · 아이콘 · 링크 · 화살표 · 닫기는 모두 fg-*-contrast
+//   interaction  display(보이기 — 링크를 둘 수 있다) · actionable(상자 전체가 버튼 — 뒤 화살표, 링크는 두지 않는다) · dismissible(닫기 — 한 번 보면 되는 안내만)
+//   role         alert — 나중에 나타나는 경고 · 위험(저장 실패)
+//   state        hover · pressed · focus(상자) · linkFocus · closeHover · closePressed · closeFocus — 그 순간을 멈춘 콜아웃(갤러리 전용)
+//   live         닫기를 눌러 볼 수 있다 — 바로 사라지고 초점은 다음 요소로 간다(페이지 끝 스크립트)
+export function callout({ tone = "neutral", interaction = "display", title = "", description = "", link = "", role = "", state = "", live = false } = {}) {
+  const actionable = interaction === "actionable";
+  const cls = ["pcallout", `pcallout--${tone}`, actionable && "pcallout--actionable", ["hover", "pressed", "focus"].includes(state) && `pcallout--${state}`].filter(Boolean).join(" ");
+  const text = [
+    title && `<span class="pcallout-title">${escape(title)}</span>`,
+    description && `<span class="pcallout-desc">${escape(description)}</span>`,
+    !actionable && link && `<a class="pcallout-link${state === "linkFocus" ? " pcallout-link--focus" : ""}" href="#" data-pfb-link="">${escape(link)}</a>`,
+  ].filter(Boolean).join('<span class="pcallout-space">  </span>');
+  const icon = `<span class="pcallout-icon" aria-hidden="true">${FB_ICON[FB_TONE_ICON[tone]]}</span>`;
+  if (actionable) return `<button type="button" class="${cls}">${icon}<span class="pcallout-content">${text}</span><span class="pcallout-suffix" aria-hidden="true">${FB_ICON.chevronRight}</span></button>`;
+  const closeState = { closeHover: " pcallout-close--hover", closePressed: " pcallout-close--pressed", closeFocus: " pcallout-close--focus" }[state] || "";
+  const close = interaction === "dismissible" ? `<button type="button" class="pcallout-close${closeState}" aria-label="닫기">${FB_ICON.x}</button>` : "";
+  return `<div ${attrsOf([`class="${cls}"`, role && `role="${role}"`, live && 'data-pfb-live=""'])}>${icon}<p class="pcallout-content">${text}</p>${close}</div>`;
+}
+
+// 페이지 배너 하나 — 글(title · description · button)은 여기서 escape 한다. 제목과 본문은 한 문단(사이 띄어쓰기 두 칸)이고, 버튼은 한 줄에 안 들어가면 다음 줄 본문 시작선으로 간다
+//   tone         neutral(기본) · informative · positive · warning · critical
+//   variant      weak(옅은 바탕 — 기본, Callout 과 같은 짝) · solid(짙은 바탕 + 흰 글 — 무거운 상태에만)
+//   interaction  display(보이기 — 버튼 하나를 둘 수 있다) · actionable(띠 전체가 버튼 — 뒤 화살표) · dismissible(닫기)
+//   state        hover · pressed · focus(띠) · buttonPressed · buttonFocus · closePressed · closeFocus — 그 순간을 멈춘 띠(갤러리 전용)
+//   live         닫기를 눌러 볼 수 있다(페이지 끝 스크립트)
+export function pageBanner({ tone = "neutral", variant = "weak", interaction = "display", title = "", description = "", button = "", role = "", state = "", live = false } = {}) {
+  const actionable = interaction === "actionable";
+  const cls = ["pbanner", `pbanner--${variant}`, `pbanner--${tone}`, actionable && "pbanner--actionable", ["hover", "pressed", "focus"].includes(state) && `pbanner--${state}`].filter(Boolean).join(" ");
+  const text = [title && `<span class="pbanner-title">${escape(title)}</span>`, description && `<span class="pbanner-desc">${escape(description)}</span>`].filter(Boolean).join('<span class="pbanner-space">  </span>');
+  const icon = `<span class="pbanner-icon" aria-hidden="true">${FB_ICON[FB_TONE_ICON[tone]]}</span>`;
+  if (actionable) {
+    return `<button type="button" class="${cls}"><span class="pbanner-inner">${icon}<span class="pbanner-content"><span class="pbanner-text">${text}</span></span><span class="pbanner-suffix" aria-hidden="true">${FB_ICON.chevronRight}</span></span></button>`;
+  }
+  const buttonState = { buttonPressed: " pbanner-button--pressed", buttonFocus: " pbanner-button--focus" }[state] || "";
+  const btn = button ? `<button type="button" class="pbanner-button${buttonState}">${escape(button)}</button>` : "";
+  const closeState = { closePressed: " pbanner-close--pressed", closeFocus: " pbanner-close--focus" }[state] || "";
+  const close = interaction === "dismissible" ? `<button type="button" class="pbanner-close${closeState}" aria-label="닫기">${FB_ICON.x}</button>` : "";
+  return `<div ${attrsOf([`class="${cls}"`, role && `role="${role}"`, live && 'data-pfb-live=""'])}><div class="pbanner-inner">${icon}<div class="pbanner-content"><p class="pbanner-text">${text}</p>${btn}</div>${close}</div></div>`;
+}
+
+// 결과 하나 — 글은 여기서 escape 한다. 결과로 바뀌면 보조 기술에 알린다(role=status), 제목은 제목 태그다(갤러리는 절 제목 아래라 h3).
+//   kind      empty(비어 있음 — 회색 아이콘, 무엇이 비었는지 말하는 아이콘을 준다) · failure(실패 — 위험 색 느낌표) · done(완료 — 성공 색 체크)
+//   size      large(화면 전체 — 기본) · medium(카드 · 섹션 · 시트 안)
+//   icon      FB_ICON 이름 — 실패 · 완료는 주지 않으면 느낌표 · 체크
+//   primary · secondary  첫 버튼(Button neutralWeak medium 40) · 둘째 버튼(Button ghost small 36 — 위아래로 블리드)
+//   retry     첫 버튼이 다시 시도다 — 누르면 로딩을 걸고 곁의 <template> 내용으로 바꾼다(페이지 끝 스크립트)
+export function resultSection({ kind = "empty", size = "large", icon = "", title = "", description = "", primary = "", secondary = "", level = 3, retry = false } = {}) {
+  const asset = FB_ICON[icon || (kind === "failure" ? "circleAlert" : kind === "done" ? "circleCheck" : "inbox")];
+  const first = primary ? `<button class="btn btn-neutral-weak" type="button"${retry ? ' data-presult-retry=""' : ""}><span>${escape(primary)}</span></button>` : "";
+  const second = secondary ? `<button class="btn btn-ghost btn-size-small presult-secondary" type="button"><span>${escape(secondary)}</span></button>` : "";
+  const actions = first || second ? `<div class="presult-actions">${first}${second}</div>` : "";
+  return `<div class="presult presult--${size} presult--${kind}" role="status"><span class="presult-asset" aria-hidden="true">${asset}</span><h${level} class="presult-title">${escape(title)}</h${level}>${
+    description ? `<p class="presult-desc">${escape(description)}</p>` : ""
+  }${actions}</div>`;
+}
+
+// 알림 메시지 갤러리 — Snackbar(톤 · 액션 · 상태 · 자리 · 직접 띄우기) · Callout(톤 × 상호작용 · 상태 · 폼 맨 위 오류) · Page Banner(옅음 · 짙음 × 톤 · 자리 · 상호작용) ·
+// Result Section(크기 × 결과 · 404) 여덟 판을 흰 표면(.vignette-card) 위에 그린다. 견본 틀(.ptf-samples · .ptf-cap)과 상태 표(.cb-matrix)는 Text Field 갤러리 것이다.
+// 글은 스펙 md 의 코드 예와 비교 페이지(2026-10-02)의 Desk 화면에서 빌렸다 — 해요체 · 문장이면 마침표(스낵바도), 버튼은 동작 이름(Writing v106).
+export function renderFeedbackGallery(brand) {
+  const panel = (title, sub, body) => `
+    <div class="vignette-card cb-panel">
+      <div class="vignette-head">
+        <div class="vignette-title">${escape(title)}</div>
+        <div class="vignette-sub">${escape(sub)}</div>
+      </div>${body}
+    </div>`;
+  const samples = (items, cls = "ptf-samples") => `
+      <div class="${cls}">${items.join("")}
+      </div>`;
+  const sample = (cap, en, body, cls = "") => `
+        <div class="ptf-sample${cls}">
+          <div class="ptf-cap">${escape(cap)}<span>${escape(en)}</span></div>
+          ${body}
+        </div>`;
+  // 상태 표 — 줄(머리 글 · 영문) × 칸. 칸마다 상자 · 띠를 실제 폭으로 그린다. 칸이 좁아지면 판(.cb-panel)이 가로로 밀린다
+  const matrix = (cls, first, cols, rows, cell) => `
+      <div class="cb-matrix ${cls}" style="--cb-cols: ${cols.length};">
+        <div class="cb-matrix-row cb-matrix-row--head"><div class="cb-matrix-head">${escape(first)}</div>${
+          cols.map(c => `<div class="cb-matrix-head">${escape(c.ko)}<span>${escape(c.en)}</span></div>`).join("")
+        }</div>${rows.map(r => `
+        <div class="cb-matrix-row"><div class="cb-matrix-label">${escape(r.ko)}<span>${escape(r.en)}</span></div>${
+          cols.map(c => `<div class="cb-matrix-cell pfb-cell">${cell(r, c)}</div>`).join("")
+        }</div>`).join("")}
+      </div>`;
+  const na = (text) => `<span class="psel-na">${escape(text)}</span>`;
+  // 틀 — 띠 견본 칸(폰 폭 · 자리 여백 8) · 폰 화면 · 데스크톱 웹 화면 · 머리와 그 아래 배너만 그린 화면 윗부분. 모두 갤러리 것이다
+  const strip = (html) => `<div class="pfb-strip">${html}</div>`;
+  const head = (title, cls = "pfb-phone-head") => `<div class="${cls}"><div class="ptf-screen-title">${escape(title)}</div></div>`;
+  const tabbar = `<div class="pfb-tabbar" aria-hidden="true">${[["house", "홈"], ["receiptText", "가계부"], ["wallet", "자산"], ["chartPie", "통계"]].map(([icon, label], i) =>
+    `<span class="pfb-tab${i === 1 ? " pfb-tab--on" : ""}">${FB_ICON[icon]}<span>${label}</span></span>`).join("")}</div>`;
+  const tile = (color, icon) => `<span class="plst-tile plst-tile--${color}">${LIST_ICON[icon]}</span>`;
+  const won = (v) => `<span class="plst-amount">${escape(v)}</span>`;
+  const ledgerRows = () => listOf([
+    listRow({ prefix: tile("orange", "utensils"), title: "김밥천국", detail: "식비 · 현대카드 M", suffix: won("8,000원") }),
+    listRow({ prefix: tile("blue", "bus"), title: "버스", detail: "교통 · 현대카드 M", suffix: won("1,500원") }),
+    listRow({ prefix: tile("violet", "bag"), title: "다이소", detail: "쇼핑 · 현대카드 M", suffix: won("12,300원") }),
+    listRow({ prefix: tile("orange", "utensils"), title: "스타벅스", detail: "식비 · 국민 주계좌", suffix: won("6,800원") }),
+  ], ' aria-label="10월 거래"');
+
+  // 1. Snackbar — 톤 · 액션 · 상태. 띠는 폰 폭(360)에서 자리 여백 8 을 뺀 폭이다(344)
+  const snackPanel = panel(
+    "Snackbar — 톤 · 액션 · 상태",
+    "짙은 띠 하나다 — bg-neutral-inverted(다크는 밝은 띠) · 최소 44 · 여백 10 + 글 좌우 6(글은 띠 가장자리에서 16) · 모서리 8 · 그림자 없음, 폭은 자리에서 좌우 8 을 뺀 만큼이고 최대 464 다. 글은 14 / 19 · 400 · fg-neutral-inverted 이고 줄을 바꾸되 자르지 않는다 — 두 줄 안에서 끝나게 쓴다. neutral(기본)은 아이콘이 없고, 성공을 눈에 띄게 알릴 때만 positive(circle-check), 다시 하면 되는 가벼운 실패에 critical(circle-alert)이다 — 아이콘은 상자 24 안에 오른쪽 2(그림 22)를 두어 글이 띠 가장자리에서 40 에 서고, 색만 바뀐다. 액션은 하나 · 동작 이름 · 14 · 700 이고 짙은 띠 위에서 보이게 반전 짝 색(fg-brand-inverted)이다 — 누르는 영역은 글 + 좌우 8 × 44, 누르면 글만 2px 거리로 준다. 포커스는 키보드에만 링 2px · 띠 글자색(fg-neutral-inverted)이고 늘 띠 위에 그린다 — 액션은 바깥 2 띄우고, 띠 · 닫기는 띄움 −4(가장자리에서 2 안쪽)다. 바깥에 그리면 페이지 위라 보이지 않는다. Tab 은 띠 → 액션 → 보조 기술용 닫기 차례로 선다. 닫기는 평소에 보이지 않다가 키보드 초점이 오면 띠 오른쪽 끝에 X 16(44 상자)으로 보인다. 누름 · 포커스는 그 순간을 멈춰 그렸다 — 띠 · 액션은 실제로 Tab 으로 옮겨 볼 수 있다.",
+    samples([
+      sample("neutral — 아이콘 없음", "tone=\"neutral\"(기본) — 결과 · 안내", strip(snackbar({ message: "거래를 저장했어요." }))),
+      sample("positive — 체크", "아이콘 24 · fg-positive-inverted — 성공을 눈에 띄게 알릴 때만", strip(snackbar({ tone: "positive", message: "관심 종목에 넣었어요." }))),
+      sample("critical — 느낌표", "아이콘 24 · fg-critical-inverted — 다시 하면 되는 가벼운 실패", strip(snackbar({ tone: "critical", message: "관심 종목에 넣지 못했어요. 다시 눌러 주세요." }))),
+      sample("액션 — 되돌리기", "action — 14 · 700 · fg-brand-inverted · 누르는 영역 44", strip(snackbar({ message: "거래를 삭제했어요.", action: "되돌리기" }))),
+      sample("긴 글 — 줄을 바꾸고 자르지 않는다", "단어 단위 줄바꿈(v114) · 글과 액션은 양 끝 · 사이 10", strip(snackbar({ tone: "positive", message: "미리 낸 돈 중 32,000원이 계좌로 돌아왔어요.", action: "잔액 고치기" }))),
+      sample("누름 — 액션 글만 2px 거리 축소", "pressed — 기준 max(높이, 폭 ÷ 4, 24) · 150ms", strip(snackbar({ message: "거래를 삭제했어요.", action: "되돌리기", state: "pressed" }))),
+      sample("포커스 — 띠", "focused — 링 2px · 띄움 −4 · fg-neutral-inverted", strip(snackbar({ message: "거래를 삭제했어요.", action: "되돌리기", state: "focus" }))),
+      sample("포커스 — 액션", "Tab — 띠 다음은 액션 · 바깥 2", strip(snackbar({ message: "거래를 삭제했어요.", action: "되돌리기", state: "focusAction" }))),
+      sample("보조 기술용 닫기 — 키보드 초점이 오면 보인다", "이름 \"닫기\" · 44 상자 · X 16 · 띠 오른쪽 끝 · 링 띄움 −4", strip(snackbar({ message: "거래를 삭제했어요.", action: "되돌리기", state: "focusClose" }))),
+    ]),
+  );
+
+  // 2. Snackbar — 자리. 폰은 탭 바(56 — 갤러리 틀) 위 8, 데스크톱은 아래 가운데 8 · 최대 464
+  const placementPanel = panel(
+    "Snackbar — 자리: 폰은 탭 바 위 8 · 데스크톱은 아래 가운데 최대 464",
+    "어느 폭이든 화면 아래 가운데다 — 자리는 좌우 · 아래 8 을 두고(안전 영역이 있으면 그만큼 더), 탭 바 · 플로팅 버튼 · 바닥 버튼이 있으면 그 위 8 에 선다(SnackbarAvoidOverlap). 띠는 자리 폭을 채우다 464 에서 멈추고 넓은 화면에서는 가운데에 선다. 시트 · 대화상자가 열려 있어도 그 위에 그린다(z L6 400) — 다만 시트 안에서 한 일의 결과는 그 안 Callout 으로 알리고 스낵바는 시트가 닫힌 뒤에 띄운다. 한 번에 하나만 보이고 쌓지 않는다.",
+    samples([
+      sample("폰 — 탭 바 위 8", "SnackbarAvoidOverlap 이 탭 바를 피한다 — 띠 344(360 − 좌우 8)", `<div class="pfb-phone pfb-phone--screen pfb-phone--tabbar">${head("가계부")}<div class="pfb-phone-body">${ledgerRows()}</div><div class="psnack-region" role="region" aria-label="알림 — 그림">${snackbar({ message: "거래를 삭제했어요.", action: "되돌리기" })}</div>${tabbar}</div>`),
+      sample("데스크톱 웹 — 아래 가운데 · 최대 464", "넓으면 464 에서 멈추고 가운데에 선다", `<div class="pfb-desk pfb-desk--tall">${head("가계부", "pfb-desk-head")}<div class="pfb-desk-body">${ledgerRows()}</div><div class="psnack-region" role="region" aria-label="알림 — 그림">${snackbar({ message: "거래를 삭제했어요.", action: "되돌리기" })}</div></div>`),
+    ], "ptf-samples ptf-samples--forms"),
+  );
+
+  // 3. Snackbar — 직접 띄워 보기. 버튼이 폰의 자리에 띠를 띄운다(페이지 끝 스크립트). 자리는 실제 aria-live 다 — 띄운 글을 보조 기술이 읽는다
+  const regionId = nextPfbId("psnack-region");
+  const shows = [
+    { label: "결과 — 4초", message: "거래를 저장했어요." },
+    { label: "되돌리기 — 6초", message: "거래를 삭제했어요.", action: "되돌리기" },
+    { label: "가벼운 실패 — 4초", tone: "critical", message: "관심 종목에 넣지 못했어요. 다시 눌러 주세요." },
+    { label: "잔액 고치기 — 6초", tone: "positive", message: "미리 낸 돈 중 32,000원이 계좌로 돌아왔어요.", action: "잔액 고치기" },
+  ];
+  const showButtons = shows.map(s => `<button class="btn btn-neutral-weak btn-size-small" type="button" data-psnack-show="" data-psnack-target="${regionId}" data-psnack-message="${escape(s.message)}"${
+    s.tone ? ` data-psnack-tone="${s.tone}"` : ""}${s.action ? ` data-psnack-action="${escape(s.action)}"` : ""}><span>${escape(s.label)}</span></button>`).join("");
+  const livePanel = panel(
+    "Snackbar — 직접 띄워 보기: 4초 · 액션 6초 · 머무는 동안 멈춤 · 한 번에 하나",
+    "버튼을 누르면 폰 아래(탭 바 위 8)에 띠가 150ms 로 가운데에서 커지며 나타난다(scale 0.8 → 1 · 투명도, ease-enter — 모션 줄이기면 투명도만). 액션이 없으면 4초, 있으면 6초 뒤 100ms 로 사라진다. 마우스를 올리거나 · 손가락으로 누르고 있거나 · 키보드 초점이 띠 안에 있으면 멈추고, 모두 떠나면 처음부터 다시 센다. 다른 버튼을 누르면 지금 띠를 바로 걷고(100ms) 새 띠를 띄운다 — 쌓지 않는다. 액션을 누르면 닫히고, Esc · 띠 누르기로는 닫히지 않는다. 초점은 옮기지 않는다 — 자리(aria-live=\"polite\")가 글을 읽힌다. 남은 시간은 옆 글이 보인다.",
+    `
+      <div class="pfb-live">
+        <div class="pfb-phone pfb-phone--screen pfb-phone--tabbar">${head("가계부")}<div class="pfb-phone-body">${ledgerRows()}</div><div class="psnack-region" id="${regionId}" role="region" aria-label="알림" aria-live="polite"></div>${tabbar}</div>
+        <div class="pfb-live-controls">
+          <div class="pfb-live-buttons">${showButtons}</div>
+          <p class="pfb-live-status" aria-hidden="true" data-psnack-status="${regionId}">버튼을 누르면 폰 아래에 띠가 뜬다.</p>
+        </div>
+      </div>`,
+  );
+
+  // 4. Callout — 톤 다섯 × 상호작용 셋. 닫기는 한 번 보면 되는 안내에만 — 경고 · 오류에는 두지 않는다
+  const calloutText = {
+    neutral: {
+      display: { title: "안내", description: "지난달 거래는 이번 달 예산에 들지 않아요.", link: "자세히" },
+      actionable: { description: "토스증권을 연결하면 보유 주식이 자산에 더해져요." },
+      dismissible: { title: "새 기능", description: "자산마다 금액을 가릴 수 있어요." },
+    },
+    informative: {
+      display: { title: "안내", description: "가져온 데이터는 기존 거래에 더해지고 덮어쓰지 않아요.", link: "자세히" },
+      actionable: { description: "반복 거래로 매달 나가는 돈을 자동으로 기록해 보세요." },
+      dismissible: { title: "새 기능", description: "반복 거래를 자동으로 기록할 수 있어요." },
+    },
+    positive: {
+      display: { title: "혜택", description: "이번 달 카드 실적을 채웠어요.", link: "자세히" },
+      actionable: { description: "이번 달 예산을 지켰어요. 지난달과 견줘 보세요." },
+      dismissible: { title: "완료", description: "1,204건을 가계부에 넣었어요." },
+    },
+    warning: {
+      display: { title: "주의", description: "분할 금액의 합이 거래 금액보다 3,000원 적어요.", link: "자세히" },
+      actionable: { description: "카드 결제일이 내일이에요. 결제할 금액을 확인해 보세요." },
+    },
+    critical: {
+      display: { description: "저장하지 못했어요. 입력한 내용은 그대로 있어요. 잠시 뒤 다시 저장해 주세요." },
+      actionable: { description: "결제 수단이 지워진 거래가 3건 있어요. 눌러서 고쳐 주세요." },
+    },
+  };
+  const calloutCols = [
+    { ko: "보이기", en: "display — 링크를 둘 수 있다", interaction: "display" },
+    { ko: "전체 누르기", en: "actionable — button · 뒤 chevron-right", interaction: "actionable" },
+    { ko: "닫기", en: "dismissible — 닫기 40 · 한 번 보면 되는 안내만", interaction: "dismissible" },
+  ];
+  const calloutRows = FB_TONES.map(tone => ({ ko: tone, en: tone === "neutral" ? "bg-neutral-weak · fg-neutral — 기본" : `bg-${tone}-weak · fg-${tone}-contrast`, tone }));
+  const calloutPanel = panel(
+    "Callout — 톤 다섯 × 보이기 · 전체 누르기 · 닫기",
+    "그 기능 · 내용 바로 위에 늘 보이는 안내 상자다 — 콘텐츠 폭 · 최소 50 · 안쪽 14 · 모서리 10 · 사이 12, 바탕은 옅은 톤(bg-*-weak)이고 글 · 아이콘 · 링크 · 화살표 · 닫기는 모두 같은 fg-*-contrast 색이다. 제목(700) · 본문(400) · 링크(밑줄 · 띄움 2)는 14 / 19 로 한 문단에 흐르고 사이는 띄어쓰기 두 칸이다. 아이콘 16(neutral · informative 는 info, positive 는 circle-check, warning 은 triangle-alert, critical 은 circle-alert) · 뒤 화살표 16 · 닫기 40(바깥 여백 −12 — 줄 높이를 늘리지 않고 아이콘은 오른쪽 끝에서 14)이고, 여러 줄이면 상자 가운데에 선다. 전체 누르기는 상자 전체가 버튼이라 링크를 두지 않는다. 닫기는 새 기능처럼 한 번 보면 되는 안내에만 두고 닫은 것을 기억한다 — 경고 · 오류는 닫지 못한다(문제가 남아 있는 동안 보여야 한다). 닫기 칸은 직접 눌러 닫아 볼 수 있다.",
+    matrix("pcallout-matrix", "톤", calloutCols, calloutRows, (r, c) => {
+      const t = calloutText[r.tone][c.interaction];
+      if (!t) return na("두지 않는다 — 경고 · 오류는 닫지 못한다");
+      return callout({ tone: r.tone, interaction: c.interaction, ...t, live: c.interaction === "dismissible" });
+    }),
+  );
+
+  // 5. Callout — 상태(informative 로 그렸다) · 저장 실패는 폼 맨 위. 시트 안의 결과 · 오류는 그 안 Callout 이다
+  const calloutStateCols = [
+    { ko: "기본", en: "enabled" },
+    { ko: "호버", en: "hovered — 웹 · 누름 바탕 · 축소 없음", state: "hover" },
+    { ko: "누름", en: "pressed — 누름 바탕 + 2px 축소", state: "pressed" },
+    { ko: "포커스", en: "focused — 키보드만 · 링 2px · 띄움 2px", state: "focus" },
+  ];
+  const calloutStateRows = [
+    { ko: "전체 누르기", en: "상자 — bg-informative-weak-pressed · 상자 전체 축소", args: { interaction: "actionable", description: "반복 거래로 매달 나가는 돈을 자동으로 기록해 보세요." }, map: { hover: "hover", pressed: "pressed", focus: "focus" } },
+    { ko: "닫기", en: "닫기 40 — 누름 바탕 · 닫기만 축소 · 모서리 8", args: { interaction: "dismissible", title: "새 기능", description: "반복 거래를 자동으로 기록할 수 있어요." }, map: { hover: "closeHover", pressed: "closePressed", focus: "closeFocus" } },
+    { ko: "링크", en: "링크 — 키보드 링 모서리 4", args: { interaction: "display", title: "안내", description: "가져온 데이터는 기존 거래에 더해져요.", link: "자세히" }, map: { focus: "linkFocus" } },
+  ];
+  const calloutStatePanelBody = matrix("pcallout-matrix pcallout-matrix--states", "부위", calloutStateCols, calloutStateRows, (r, c) => {
+    if (c.state && !r.map[c.state]) return na("없다 — 링크는 글자만");
+    return callout({ tone: "informative", ...r.args, state: c.state ? r.map[c.state] : "" });
+  });
+  const saveError = "저장하지 못했어요. 입력한 내용은 그대로 있어요. 잠시 뒤 다시 저장해 주세요.";
+  const sheetMock = `<div class="pib-mock pib-mock--phone pfb-sheet-mock">
+          <div class="pib-mock-screen"><div class="ptf-screen-title">가계부</div></div>
+          <div class="pib-dim" aria-hidden="true"></div>
+          <div class="pib-sheet" role="group" aria-label="거래 추가">
+            <div class="pib-sheet-title">거래 추가</div>
+            <div class="ptf-form pfb-sheet-form">${callout({ tone: "critical", role: "alert", description: saveError })}${
+              textField({ label: "금액", control: { kind: "input", size: "large", value: "28,500", suffix: "원", inputmode: "numeric", format: "amount" } })}${
+              textField({ label: "카테고리", control: { kind: "inputButton", size: "large", value: "식비 · 카페", prefixIcon: "coffee", suffixIcon: "chevronDown" } })}</div>
+            <button class="btn btn-neutral-solid btn-size-large pib-done" type="button"><span>저장</span></button>
+          </div>
+        </div>`;
+  const deskForm = `<div class="ptf-screen ptf-screen--desktop">
+            <div class="ptf-screen-title">휴가 신청</div>
+            <div class="ptf-form">${callout({ tone: "critical", role: "alert", description: "신청하지 못했어요. 입력한 내용은 그대로 있어요. 잠시 뒤 다시 신청해 주세요." })}${
+              textField({ label: "휴가 정책", control: { kind: "select", size: "medium", value: "연차" } })}${
+              textField({ label: "기간", control: { kind: "inputButton", size: "medium", value: "10월 12일 (월)~10월 14일 (수)", suffixIcon: "calendarDays" } })}</div>
+            <div class="ptf-screen-actions ptf-screen-actions--end"><button class="btn btn-neutral-weak" type="button"><span>취소</span></button><button class="btn btn-neutral-solid" type="button"><span>신청</span></button></div>
+          </div>`;
+  const calloutStatePanel = panel(
+    "Callout — 상태 · 저장 실패는 폼 맨 위",
+    "전체 누르기는 마우스를 올리면(웹) 톤의 누름 바탕(bg-*-weak-pressed)이고, 누르면 그 바탕에 상자 전체가 2px 거리로 준다(기준 max(높이, 폭 ÷ 4, 24) · 150ms — 모션 줄이기면 줄지 않는다). 닫기는 투명 상자라 올리거나 누르면 같은 누름 바탕이 깔리고, 누르면 닫기만 준다(기준 40). 포커스는 키보드로 왔을 때만 링 2px · 띄움 2px stroke-focus-ring 이다 — 상자 · 링크(모서리 4) · 닫기(모서리 8) 둘레. 바탕은 150ms(color-transition)로 바뀐다. 저장 · 제출이 실패하면 폼은 연 채로 폼 맨 위에 critical Callout 을 둔다 — 무엇이 안 됐는지와 할 수 있는 일까지 쓰고, 나중에 나타나는 경고 · 위험이라 role=\"alert\" 로 보조 기술에 알린다. 시트 안에서 한 일의 결과 · 오류도 그 안 Callout 이다(스낵바는 시트가 닫힌 뒤).",
+    `${calloutStatePanelBody}${samples([
+      sample("폰 — 거래 추가 시트 맨 위", "Callout tone=\"critical\" role=\"alert\" — 시트는 연 채로", sheetMock),
+      sample("데스크톱 웹 — 휴가 신청 폼 맨 위", "폼 맨 위 · 칸 오류는 칸 아래(Field)", deskForm),
+    ], "ptf-samples ptf-samples--forms pfb-gap")}`,
+  );
+
+  // 6. Page Banner — 옅음 · 짙음 × 톤 다섯. 칸마다 머리 바로 아래 띠 하나(화면 윗부분만 그렸다 — 폰 폭)
+  const bannerText = {
+    neutral: { title: "지난 기록", description: "2025년 가계부를 보고 있어요.", button: "올해로 가기" },
+    informative: { title: "새 버전", description: "새 버전이 나왔어요. 새로 고치면 바로 쓸 수 있어요.", button: "새로 고침" },
+    positive: { title: "연결됨", description: "토스증권을 연결했어요. 보유 주식이 자산에 더해져요.", button: "자산 보기" },
+    warning: { title: "곧 만료", description: "Pro 이용이 10월 31일에 끝나요.", button: "구독 보기" },
+    critical: { title: "연결 끊김", description: "토스증권 키가 만료돼 시세를 받지 못해요.", button: "다시 연결" },
+  };
+  const bannerHead = { neutral: "가계부", informative: "홈", positive: "증권", warning: "설정", critical: "증권" };
+  const screenTop = (title, banner) => `<div class="pfb-top">${head(title, "pfb-top-head")}${banner}<div class="pfb-top-body" aria-hidden="true"><span></span><span></span></div></div>`;
+  const variantCols = [
+    { ko: "옅음", en: "variant=\"weak\"(기본) — bg-*-weak + fg-*-contrast", variant: "weak" },
+    { ko: "짙음", en: "variant=\"solid\" — bg-*-solid + 흰 글 · 무거운 상태에만", variant: "solid" },
+  ];
+  const bannerRows = FB_TONES.map(tone => ({ ko: tone, en: tone === "neutral" ? "weak bg-neutral-weak · solid bg-neutral-inverted" : `weak bg-${tone}-weak · solid bg-${tone}-solid`, tone }));
+  const bannerTonePanel = panel(
+    "Page Banner — 옅음 · 짙음 × 톤 다섯",
+    "페이지 머리 바로 아래(위에 사진이 있으면 그 아래)에 화면 폭 전체로 놓는 띠다 — 한 화면에 하나, 그 페이지 전체의 상태만 알린다. 모서리 0 · 최소 40 · 위아래 10 · 좌우 화면 여백 24(띠 안 글이 페이지 글과 같은 선에서 시작한다) · 아이콘 16(첫 줄 가운데 — 위 2) · 아이콘과 글 사이 8. 제목은 14 / 19 · 700, 본문은 14 / 19 · 500 이고 한 문단(사이 띄어쓰기 두 칸)이다. 버튼은 하나 · 글 버튼 · 13 / 18 · 700 이고 누르는 높이는 40(글 + 사방 11, 바깥 여백 −11 로 띠 높이를 늘리지 않는다)이다. 옅은 바탕(weak · 기본)은 Callout 과 같은 짝(bg-*-weak + fg-*-contrast)이고, 짙은 바탕(solid)은 bg-*-solid + 흰 글(static-white — neutral 은 bg-neutral-inverted + fg-neutral-inverted)이다 — 연결 끊김 · 거절 · 편집 불가처럼 그 페이지를 제대로 쓸 수 없는 상태에만 쓴다. 칸마다 폰 화면 윗부분을 그렸다 — 폭이 좁아 버튼이 다음 줄 본문 시작선으로 내려간 칸이 있다.",
+    matrix("pbanner-matrix", "톤", variantCols, bannerRows, (r, c) => screenTop(bannerHead[r.tone], pageBanner({ tone: r.tone, variant: c.variant, ...bannerText[r.tone] }))),
+  );
+
+  // 7. Page Banner — 자리 · 버튼 줄바꿈 · 상호작용 · 상태
+  const lost = { tone: "critical", ...bannerText.critical };
+  const phoneBanner = `<div class="pfb-phone">${head("증권")}${pageBanner(lost)}<div class="pfb-phone-body">${listOf([
+    listRow({ title: "삼성전자", detail: "12주 · 평균 71,200원", suffix: won("마지막 값 75,400원") }),
+    listRow({ title: "카카오", detail: "5주 · 평균 48,900원", suffix: won("마지막 값 47,100원") }),
+  ], ' aria-label="보유 종목"')}</div></div>`;
+  const deskBanner = `<div class="pfb-desk">${head("증권", "pfb-desk-head")}${pageBanner(lost)}<div class="pfb-desk-body">${listOf([
+    listRow({ title: "삼성전자", detail: "12주 · 평균 71,200원", suffix: won("마지막 값 75,400원") }),
+    listRow({ title: "카카오", detail: "5주 · 평균 48,900원", suffix: won("마지막 값 47,100원") }),
+  ], ' aria-label="보유 종목"')}</div></div>`;
+  const bannerStateCols = [
+    { ko: "기본", en: "enabled" },
+    { ko: "호버", en: "hovered — 웹 · 누름 바탕", state: "hover" },
+    { ko: "누름", en: "pressed — 안의 내용 · 버튼 · 닫기만 2px 축소", state: "pressed" },
+    { ko: "포커스", en: "focused — 키보드만 · 안쪽 링 2px", state: "focus" },
+  ];
+  const bannerStateRows = [
+    { ko: "전체 누르기", en: "띠 — 누름 바탕 · 바탕은 그대로 두고 안의 내용만 축소", args: { tone: "informative", interaction: "actionable", title: "공지", description: "새 공지 2개가 있어요." }, map: { hover: "hover", pressed: "pressed", focus: "focus" } },
+    { ko: "버튼", en: "글 버튼 — 바탕 없음 · 버튼만 축소(기준 40)", args: { tone: "warning", title: "곧 만료", description: "Pro 이용이 10월 31일에 끝나요.", button: "구독 보기" }, map: { pressed: "buttonPressed", focus: "buttonFocus" } },
+    { ko: "닫기", en: "닫기 40 — 바탕 없음 · 닫기만 축소", args: { tone: "informative", interaction: "dismissible", title: "새 기능", description: "반복 거래를 자동으로 기록할 수 있어요." }, map: { pressed: "closePressed", focus: "closeFocus" } },
+    // 짙은 바탕 — 링은 띠 글자색(neutral 은 fg-neutral-inverted, 나머지는 흰 글)
+    { ko: "짙은 · 전체 누르기", en: "solid neutral — bg-neutral-inverted-pressed · 링 fg-neutral-inverted", args: { tone: "neutral", variant: "solid", interaction: "actionable", title: "공지", description: "새 공지 2개가 있어요." }, map: { hover: "hover", pressed: "pressed", focus: "focus" } },
+    { ko: "짙은 · 버튼", en: "solid critical — 링 static-white", args: { tone: "critical", variant: "solid", title: "연결 끊김", description: "토스증권 키가 만료돼 시세를 받지 못해요.", button: "다시 연결" }, map: { pressed: "buttonPressed", focus: "buttonFocus" } },
+    { ko: "짙은 · 닫기", en: "solid informative — 링 static-white", args: { tone: "informative", variant: "solid", interaction: "dismissible", title: "새 버전", description: "새로 고치면 바로 쓸 수 있어요." }, map: { pressed: "closePressed", focus: "closeFocus" } },
+  ];
+  const bannerStates = matrix("pbanner-matrix pbanner-matrix--states", "부위", bannerStateCols, bannerStateRows, (r, c) => {
+    if (c.state && !r.map[c.state]) return na("없다 — 바탕이 바뀌지 않는다");
+    return `<div class="pfb-band">${pageBanner({ ...r.args, state: c.state ? r.map[c.state] : "" })}</div>`;
+  });
+  const bannerPlacePanel = panel(
+    "Page Banner — 자리 · 버튼 줄바꿈 · 상호작용 · 상태",
+    "글과 버튼은 한 줄에 양 끝이다 — 같은 띠가 폰에서는 한 줄에 안 들어가 버튼이 다음 줄 본문 시작선으로 내려가고(사이 6), 넓은 데스크톱에서는 띠 오른쪽 끝(좌우 화면 여백 24 안)에 선다. 페이지 머리 바로 아래 하나만 두고, 그 기능 가까이의 안내는 Callout 이다. 연결이 끊겨도 지난 값은 지우지 않는다. 상호작용은 셋이다 — display(버튼 하나를 둘 수 있다) · actionable(띠 전체가 버튼 — 뒤 chevron-right 16 · 글과 8) · dismissible(닫기 40 · 바깥 여백 −12 — 아이콘은 오른쪽 끝에서 24 · 글과 8, 한 번 보면 되는 안내에만 · 닫은 것을 기억한다). 전체 누르기는 마우스를 올리면(웹) 누름 바탕이고, 누르면 그 바탕은 그대로 두고 안의 내용만 2px 거리로 준다. 버튼 · 닫기는 바탕 없이 저마다 준다. 포커스는 키보드에만 안쪽 링 2px(띄움 −2)이다 — 화면 끝까지 차는 띠라 바깥 링이 잘린다. 링은 띠 위에 그려지므로 옅은 바탕은 stroke-focus-ring, 짙은 바탕은 띠 글자색(흰 글 · neutral 은 fg-neutral-inverted)이다 — 브랜드 링은 짙은 바탕 위 1.0 ~ 3.2:1 이라 보이지 않는다. 버튼 · 닫기도 같다. 화살표 · 닫기는 띠 가운데, 아이콘은 첫 줄에 붙는다. 닫기는 직접 눌러 볼 수 있다.",
+    `${samples([
+      sample("폰 — 머리 바로 아래 · 버튼이 다음 줄로", "critical · weak · display — 지난 값은 그대로", phoneBanner),
+      sample("데스크톱 웹 — 글과 버튼이 한 줄에 양 끝", "같은 띠 · 좌우 화면 여백 24", deskBanner),
+    ], "ptf-samples ptf-samples--forms")}${samples([
+      sample("닫기 — 한 번 보면 되는 안내", "interaction=\"dismissible\" — 닫으면 다시 띄우지 않는다", `<div class="pfb-band">${pageBanner({ tone: "informative", interaction: "dismissible", title: "새 기능", description: "반복 거래를 자동으로 기록할 수 있어요.", live: true })}</div>`),
+      sample("전체 누르기 — 띠가 버튼", "interaction=\"actionable\" — 뒤 chevron-right · 버튼은 두지 않는다", `<div class="pfb-band">${pageBanner({ tone: "neutral", interaction: "actionable", title: "공지", description: "새 공지 2개가 있어요." })}</div>`),
+      sample("짙은 바탕 · 버튼 — 무거운 상태", "variant=\"solid\" — 흰 글 · 버튼도 흰 글", `<div class="pfb-band">${pageBanner({ tone: "warning", variant: "solid", title: "곧 만료", description: "Pro 이용이 10월 31일에 끝나요.", button: "구독 보기" })}</div>`),
+    ], "ptf-samples pfb-gap")}${bannerStates}`,
+  );
+
+  // 8. Result Section — large · medium × 비어 있음 · 실패 · 완료 · 404. 실패 카드의 다시 시도는 눌러 볼 수 있다(로딩 → 내용)
+  const retryHost = `<div class="pfb-card" data-presult-host="">${resultSection({ kind: "failure", size: "medium", title: "거래를 불러오지 못했어요", description: "잠시 뒤 다시 시도해 주세요.", primary: "다시 시도", retry: true })}<template>${listOf([
+    listRow({ prefix: tile("orange", "utensils"), title: "김밥천국", detail: "식비 · 10월 1일", suffix: won("8,000원") }),
+    listRow({ prefix: tile("blue", "bus"), title: "버스", detail: "교통 · 10월 1일", suffix: won("1,500원") }),
+  ], ' aria-label="이번 달 거래"')}</template></div>`;
+  const resultPanel = panel(
+    "Result Section — large · medium × 비어 있음 · 실패 · 완료 · 404",
+    "놓인 자리의 가로 · 세로 가운데에 선다 — 좌우 48 · 위아래 16, 아이콘 40(lucide 선 아이콘 · 굵기 1.5)과 제목 사이 16. large(화면 전체)는 제목 22 / 30 · 설명 16 / 22(사이 12) · 버튼 위 28, medium(카드 · 섹션 · 시트 안)은 제목 16 / 22 · 설명 14 / 19(사이 8) · 버튼 위 24 다. 제목은 700 · fg-neutral(큰 글씨라 마침표 없이), 설명은 fg-neutral-muted · 최대 두 줄이다. 아이콘 색은 결과가 정한다 — 비어 있음은 그 내용을 말하는 아이콘을 fg-neutral-subtle, 실패는 circle-alert 를 fg-critical, 완료는 circle-check 를 fg-positive 로. 버튼은 위아래로 최대 둘(사이 20) — 첫 버튼은 해결 · 다음 동작(Button neutralWeak medium 40), 둘째는 보조(Button ghost small 36 — 위아래로 8 블리드해 글 자리만 차지하므로 보이는 상자 사이는 12)다. 불러오기에 실패하면 \"내역이 없어요\" 가 아니라 실패를 보이고 \"다시 시도\" 를 둔다 — 카드의 다시 시도를 누르면 버튼에 로딩을 걸고 내용으로 바뀐다. 없는 주소는 몰래 돌리지 않고 \"페이지를 찾을 수 없어요\" + \"홈으로\" 를 보인다. 결과로 바뀌면 role=\"status\" 로 보조 기술에 알린다.",
+    samples([
+      sample("비어 있음 · large — 폰", "kind=\"empty\" · icon={<ReceiptText />} · 거래 추가", `<div class="pfb-phone pfb-phone--screen pfb-phone--tabbar">${head("가계부")}<div class="pfb-phone-body pfb-phone-body--center">${resultSection({ kind: "empty", icon: "receiptText", title: "이번 달 거래가 없어요", description: "거래를 기록하면 여기에 모여요.", primary: "거래 추가" })}</div>${tabbar}</div>`),
+      sample("실패 · medium — 카드 안 · 다시 시도", "kind=\"failure\" size=\"medium\" — 눌러 보면 로딩 → 내용", `<div class="pfb-phone pfb-phone--basement">${head("홈")}<div class="pfb-phone-body"><div class="pfb-card-title">이번 달 거래</div>${retryHost}</div></div>`),
+      sample("완료 · large — 가져오기", "kind=\"done\" — 가계부로 가기 · 다른 파일 가져오기", `<div class="pfb-phone pfb-phone--screen">${head("가져오기")}<div class="pfb-phone-body pfb-phone-body--center">${resultSection({ kind: "done", title: "1,204건을 가져왔어요", description: "건너뛴 줄 3 · 실패 0", primary: "가계부로 가기", secondary: "다른 파일 가져오기" })}</div></div>`),
+      sample("찾을 수 없는 페이지 · large — 데스크톱 웹", "kind=\"empty\" · icon={<SearchX />} · 홈으로", `<div class="pfb-desk pfb-desk--tall"><div class="pfb-desk-body pfb-phone-body--center">${resultSection({ kind: "empty", icon: "searchX", title: "페이지를 찾을 수 없어요", primary: "홈으로" })}</div></div>`, " pfb-wide"),
+    ], "ptf-samples pfb-results"),
+  );
+
+  const lede = "SEED Snackbar · Callout · Page Banner · Result Section 구조 — 알림을 일로 나눈다. 방금 한 일의 결과 · 뒤에서 끝난 일 · 다시 하면 되는 가벼운 실패는 화면 아래 가운데의 짙은 띠(Snackbar — 한 번에 하나, 4초 · 액션이 있으면 6초, 머무는 동안 멈춘다), 그 기능 · 내용 가까이의 안내와 그 자리의 오류(저장 실패)는 옅은 톤 상자(Callout), 페이지 전체의 상태는 머리 바로 아래 화면 폭 띠(Page Banner — 한 화면 하나), 비어 있음 · 불러오기 실패 · 완료 · 찾을 수 없는 페이지는 놓인 자리 가운데의 결과(Result Section)다. 입력값 오류는 칸 아래(Field), 되돌릴 수 없는 결정은 Alert Dialog 다. 오류는 자리에서 알린다 — 전역 오류 토스트를 두지 않고 서버가 보낸 글 · 영어 · 코드를 보이지 않는다. 톤은 neutral · informative · positive · warning · critical 다섯이고 옅은 바탕은 bg-*-weak + fg-*-contrast, 짙은 바탕은 bg-*-solid + 흰 글이다. 스낵바의 아이콘 · 액션은 반전 짝 색(fg-*-inverted, v115)이다. 아이콘은 lucide 선 아이콘이다. 옛 Sonner(흰 카드 · 그림자 · 3장 쌓기) · Alert(왼쪽 4px 막대) · Banner · 빈 화면 카드는 없다."
+    + (brand.key === "shared" ? " 공유 토큰에는 브랜드 역할 색이 없어 스낵바 액션(fg-brand-inverted) · 포커스 링이 여기서는 중립으로 보인다 — HR · Desk 미리보기에서 브랜드 색이다." : "");
+
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">03l — 알림 메시지</div>
+      <h2 class="section-title">Snackbar · Callout · Page&nbsp;Banner · Result&nbsp;Section — 일로 나눈 알림&nbsp;넷</h2>
+      <p class="section-lede">${escape(lede)}</p>
+    </header>
+    ${snackPanel}
+    ${placementPanel}
+    ${livePanel}
+    ${calloutPanel}
+    ${calloutStatePanel}
+    ${bannerTonePanel}
+    ${bannerPlacePanel}
+    ${resultPanel}
+  </section>`;
+}
+
 export function renderVignettes(brand) {
   // 탭 — 옛 underline · pills 그림(브랜드 색 밑줄 · 채움)은 걷었다(tabs.md 2026-10-02). 다른 구역으로 옮기는 자리(HR 직원 상세 · 공유 문서)는 Line 탭,
   // 같은 메모를 거르는 자리(Desk 의 전체 · 즐겨찾기 · 오늘 · 보관함)는 Segmented Control 이다 — 모양 · 동작은 03j 의 도우미 그대로다
@@ -4099,61 +4485,37 @@ function renderAmenities(brand) {
   </section>`;
 }
 
+// 빈 화면 — Result Section 의 비어 있음(large)이다(result-section.md). 옛 빈 화면 카드(그림자 카드 · 96 동그라미 그림 · 채운 버튼 + 테두리 버튼)는 걷었다.
+// 글은 brand.emptyState — 제목은 마침표 없이 상태 한 줄, 설명은 무엇을 하면 되는지, 버튼은 동작 이름이다. 모양 · 쓰임은 03l
 export function renderEmptyState(brand) {
   const e = brand.emptyState;
   if (!e) return "";
   return `
   <section class="section">
     <header class="section-head">
-      <div class="section-eyebrow">09 — Empty state</div>
-      <h2 class="section-title">${escape(e.title)}</h2>
-      <p class="section-lede">빈 상태 시각화 — 의미 + 다음 행동 가이드. surface-default 카드 + circular illustration + primary/outline CTA.</p>
+      <div class="section-eyebrow">09 — Empty state · Result Section</div>
+      <h2 class="section-title">빈 화면 — 비어 있음도 결과 하나로</h2>
+      <p class="section-lede">Result Section 의 비어 있음(large) — 아이콘 40 은 비어 있는 것을 말하고(fg-neutral-subtle), 제목 22 / 30 · 설명 16 / 22 · 첫 버튼(neutralWeak 40)과 보조 글 버튼(ghost 36)이다. 불러오기에 실패했을 때는 이 모습이 아니라 실패(다시 시도)를 보인다. 모양 · 쓰임은 03l — 알림 메시지.</p>
     </header>
-    <div class="empty-card">
-      <div class="empty-illustration" aria-hidden="true"></div>
-      <div class="empty-title">${escape(e.title)}</div>
-      <div class="empty-description">${escape(e.description)}</div>
-      <div class="empty-actions">
-        <button class="btn btn-primary">${escape(e.primary)}</button>
-        <button class="btn btn-outline">${escape(e.secondary)}</button>
-      </div>
-    </div>
+    <div class="pfb-stage">${resultSection({ kind: "empty", icon: e.icon, title: e.title, description: e.description, primary: e.primary, secondary: e.secondary })}</div>
   </section>`;
 }
 
 // 옛 "10 — Modal"(브랜드마다 확인 + 키 · 값 칸 · 모서리 12 · shadow-xl)은 걷었다 — 시트 · 대화상자 · 확인창은 03k 다(dialog.md · alert-dialog.md, 2026-10-02)
 
-export function renderToasts(brand) {
-  const ts = brand.toasts || [];
-  if (!ts.length) return "";
-  // sonner.md SoT — 20px stroke svg, kind별 stroke 색상. fill 채움 금지.
-  const iconSvg = (k) => {
-    const stroke = `var(--color-${k === "error" ? "error" : k === "warning" ? "warning" : k === "info" ? "info" : "success"})`;
-    const path = k === "success"
-      ? '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>'
-      : k === "error"
-        ? '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>'
-        : k === "warning"
-          ? '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>'
-          : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>';
-    return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${path}</svg>`;
-  };
-  const items = ts.map(t => `
-    <div class="toast toast-${t.kind}">
-      ${iconSvg(t.kind)}
-      <div class="toast-content">
-        <div class="toast-title">${escape(t.title)}</div>
-        <div class="toast-body">${escape(t.body)}</div>
-      </div>
-    </div>`).join("");
+// 스낵바 — 방금 한 일의 결과 · 뒤에서 끝난 일 · 다시 하면 되는 가벼운 실패만 알린다(snackbar.md). 옛 토스트(흰 카드 · 그림자 · 아이콘 넷 · 제목 + 본문 · 쌓기)는 걷었다 —
+// 기한 임박 · 예산 도달 같은 주의는 그 자리의 Callout · Page Banner 다. 띠는 한 번에 하나라 견본마다 따로 그린다. 모양 · 자리 · 시간은 03l
+export function renderSnackbars(brand) {
+  const items = brand.snackbars || [];
+  if (!items.length) return "";
   return `
   <section class="section">
     <header class="section-head">
-      <div class="section-eyebrow">11 — Toast</div>
-      <h2 class="section-title">시스템 알림 — 4 semantic</h2>
-      <p class="section-lede">자동 dismiss 톤. v51-v53 semantic vivid 색상 (success emerald / error vivid red / warning orange / info sky blue).</p>
+      <div class="section-eyebrow">11 — Snackbar</div>
+      <h2 class="section-title">방금 한 일의 결과 — 한 번에 하나</h2>
+      <p class="section-lede">짙은 띠(bg-neutral-inverted) · 아래 가운데 · 4초(액션이 있으면 6초) — 결과 · 뒤에서 끝난 일 · 가벼운 실패만 알리고, 기한 · 한도 같은 주의는 그 자리의 Callout · 페이지의 Page Banner 로 옮겼다. 띠는 쌓지 않는다 — 견본마다 따로 그렸다. 모양 · 자리 · 시간은 03l — 알림 메시지.</p>
     </header>
-    <div class="toast-stack">${items}</div>
+    <div class="pfb-strips">${items.map(item => `<div class="pfb-strip">${snackbar(item)}</div>`).join("")}</div>
   </section>`;
 }
 
@@ -4712,31 +5074,21 @@ export function renderShadcnData(brand) {
 }
 
 export function renderShadcnExtras(brand) {
-  // v72 Extras 5
+  // v72 Extras 5 — 옛 Sonner 칸은 Snackbar 로 바꿨다(2026-10-02). 띠는 brand.snackbars 의 액션 띠다
+  const undo = (brand.snackbars || []).find(item => item.action) || { message: "거래를 삭제했어요.", action: "되돌리기" };
   return `
   <section class="section">
     <header class="section-head">
       <div class="section-eyebrow">19 — Extras (v72)</div>
-      <h2 class="section-title">Sonner · Aspect Ratio · Chart · Date Range · Time Picker</h2>
-      <p class="section-lede">5 추가 컴포넌트 — toast stack, 비율 wrapper, 차트, 기간/시각 선택.</p>
+      <h2 class="section-title">Snackbar · Aspect Ratio · Chart · Date Range · Time Picker</h2>
+      <p class="section-lede">5 추가 컴포넌트 — 스낵바, 비율 wrapper, 차트, 기간/시각 선택.</p>
     </header>
     <div class="sc-grid">
+      <!-- Snackbar — 옛 Sonner(흰 카드 · 그림자 · 아이콘 넷 · 3장 쌓기)를 03l 의 짙은 띠 하나로 -->
       <div class="sc-card">
-        <div class="sc-head">Sonner — toast stack</div>
-        <div class="son">
-          <div class="son-toast son-toast--success">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            <span>${brand.key === "hr" ? "결재 승인 완료" : brand.key === "desk" ? "메모 저장 완료" : "Build 통과"}</span>
-          </div>
-          <div class="son-toast son-toast--info">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-info)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-            <span>${brand.key === "hr" ? "신규 평가 등록" : brand.key === "desk" ? "동기화 완료" : "Token 갱신"}</span>
-          </div>
-          <div class="son-toast son-toast--warning">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-warning)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            <span>${brand.key === "hr" ? "기한 임박 D-3" : brand.key === "desk" ? "예산 80% 도달" : "warning 1건"}</span>
-          </div>
-        </div>
+        <div class="sc-head">Snackbar — 한 번에 하나</div>
+        <div class="pfb-strip">${snackbar(undo)}</div>
+        <div class="sc-note">짙은 띠(bg-neutral-inverted) · 아래 가운데 · 4초(액션이 있으면 6초) · 액션은 fg-brand-inverted — 모양 · 자리 · 시간은 03l — 알림 메시지. 옛 Sonner(흰 카드 · 그림자 · 3장 쌓기)는 걷었다.</div>
       </div>
       <div class="sc-card">
         <div class="sc-head">Aspect Ratio (16:9)</div>
@@ -4783,11 +5135,13 @@ export function renderShadcnExtras(brand) {
 export function renderBatchV73V78(brand) {
   // v73(Banner/Tag/Popover/File Upload/Treeview) + v74(Animation) + v75(Form validation) + v76(RTL)
   // 옛 v73 Tag / Chip(브랜드 10% 바탕 · 칩 안의 입력칸 · "제거" ×)은 걷고 03i 의 입력값 칩(chip.md — Outline Weak 고른 모습 + "{글} 지우기")으로 옮겼다(2026-10-02)
+  // 옛 v73 Banner 셋(왼쪽 4px 막대 · 8% 바탕 · 동그라미 글자 아이콘)은 걷고 03l 의 Page Banner 하나로 옮겼다(page-banner.md 2026-10-02 — 한 화면에 하나).
+  // 점검 안내는 한 번 보면 되는 안내라 닫을 수 있다(눌러 보면 바로 걷힌다 — 페이지 끝 스크립트)
   const isHr = brand.key === "hr";
   const isDesk = brand.key === "desk";
-  const bannerWarn = isHr ? "2026-06-01부터 개인정보 처리방침이 변경됩니다."
-                          : isDesk ? "2026-05-15 23:00 ~ 24:00 동기화 일시 중단됩니다."
-                                   : "약관 변경 예정 — sticky banner.";
+  const notice = isHr ? { head: "홈", title: "변경 예정", description: "6월 1일부터 개인정보 처리방침이 바뀌어요.", button: "내용 보기" }
+                      : isDesk ? { head: "홈", title: "점검 예정", description: "5월 15일 밤 11시부터 1시간 동안 동기화를 멈춰요.", interaction: "dismissible", live: true }
+                               : { head: "홈", title: "변경 예정", description: "6월 1일부터 이용약관이 바뀌어요.", button: "내용 보기" };
   const people = chipPeople(brand);
   // 안내 팝오버 — 칸 옆 i 버튼(Button ghost · xsmall · 아이콘만)이 연다. 글은 해요체 짧은 문장(popover.md 글)
   const popoverInfo = isHr
@@ -4802,24 +5156,16 @@ export function renderBatchV73V78(brand) {
   <section class="section">
     <header class="section-head">
       <div class="section-eyebrow">20 — Extras-2 (v73) · Animation (v74) · Field 검증(옛 v75) · RTL (v76)</div>
-      <h2 class="section-title">Banner · Chip 입력값 · Popover · File Upload · Treeview · Animation · Field 검증 · RTL</h2>
+      <h2 class="section-title">Page Banner · Chip 입력값 · Popover · File Upload · Treeview · Animation · Field 검증 · RTL</h2>
       <p class="section-lede">v73-v76 시각 데모 — shadcn 누락 5종 + 14 keyframe 라이브 + Field 검증 모습 5(옛 v75 form state 를 Field 로) + dir 토글.</p>
     </header>
 
-    <!-- v73 Banner — 4 variant -->
-    <div class="banner banner--info" role="status">
-      <span class="banner-icon">i</span>
-      <div class="banner-body"><strong>시스템 점검 안내</strong><span>${escape(bannerWarn)}</span></div>
-      <button class="banner-close" aria-label="배너 닫기" type="button">×</button>
+    <!-- Page Banner — 옛 v73 Banner 셋을 03l 의 Page Banner 하나로(머리 바로 아래 · 한 화면 하나) -->
+    <div class="pfb-top pfb-top--wide">
+      <div class="pfb-top-head"><div class="ptf-screen-title">${escape(notice.head)}</div></div>
+      ${pageBanner({ tone: "informative", ...notice })}
     </div>
-    <div class="banner banner--warning" role="alert">
-      <span class="banner-icon">!</span>
-      <div class="banner-body"><strong>약관 변경 예정</strong><span>4월 30일까지 미동의 시 일부 기능이 제한될 수 있습니다.</span></div>
-    </div>
-    <div class="banner banner--error" role="alert">
-      <span class="banner-icon">⚠</span>
-      <div class="banner-body"><strong>결제 실패</strong><span>등록된 카드가 만료되었습니다. 카드 정보를 갱신해주세요.</span></div>
-    </div>
+    <p class="sc-note pfb-note">페이지 머리 바로 아래 · 화면 폭 띠 하나 — 옅은 바탕 bg-informative-weak + fg-informative-contrast · 좌우 24 · 최소 40. 모양 · 쓰임은 03l — 알림 메시지. 옛 Banner(왼쪽 4px 막대 · 8% 바탕 · 세 장)는 걷었다.</p>
 
     <div class="sc-grid">
       <!-- Chip 입력값 — 옛 Tag / Chip 을 03i 의 입력값 칩으로. 지우면 포커스가 다음 칩의 지우기로 간다(페이지 끝 스크립트) -->
@@ -8114,6 +8460,514 @@ export function pageCss() {
     }
     [data-theme="dark"] .pov-scrim { background: var(--overlay-dim-dark); }
 
+    /* === 알림 메시지 — Snackbar · Callout · Page Banner · Result Section ===
+       specs/components/snackbar.md · callout.md · page-banner.md · result-section.md(수치 원본은 같은 이름의 .yaml). 구조는 SEED(2026-10-02).
+       색은 역할 색만 쓴다 — 옅은 바탕은 bg-*-weak + fg-*-contrast, 짙은 바탕은 bg-*-solid + 흰 글(static-white), 스낵바는 반전 짝(fg-*-inverted, v115).
+       누름 = 2px 거리 축소 — 배율 = (기준 − 2) ÷ 기준, 기준 = max(높이, 폭 ÷ 4, 24) 를 페이지 끝 스크립트가 누르는 순간 재서 --press-basis 로 넘긴다(재기 전에는 높이).
+       모션 줄이기면 축소하지 않는다. 포커스는 키보드에만 링 2px 이다. --hover · --pressed · --focus 는 갤러리에서 그 순간을 고정해 보여 주는 클래스다.
+       다크 짝은 이 블록 끝의 [data-theme="dark"] 에서 바꾼다. */
+
+    /* Snackbar — 자리 .psnack-region 은 화면 아래 가운데(좌우 · 아래 8, 탭 바 · 바닥 버튼이 있으면 그 위 8 · z L6 400). 띠 .psnack 은 짙은 바탕 ·
+       최소 44 · 여백 10 · 모서리 8 · 그림자 없음 · 자리 폭을 채우다 최대 464. 아이콘 24(오른쪽 2) → 글과 액션(좌우 6 · 사이 10 · 양 끝) → 보조 기술용 닫기 */
+    .psnack-region {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 400;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 var(--spacing-x2) var(--spacing-x2);
+      pointer-events: none;
+    }
+    .psnack-region > * { pointer-events: auto; }
+    .psnack {
+      /* 액션 글자색 — 공유 토큰(DESIGN.md)에는 브랜드 반전 짝이 없어 띠 글자색(중립)으로 떨어진다 */
+      --psnack-action: var(--color-fg-brand-inverted, var(--color-fg-neutral-inverted));
+      position: relative;
+      display: flex;
+      align-items: center;
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 464px;
+      min-height: 44px;
+      margin: 0;
+      padding: var(--spacing-x2_5);
+      border-radius: var(--radius-r2);
+      background: var(--color-bg-neutral-inverted);
+      box-shadow: none;
+      color: var(--color-fg-neutral-inverted);
+      font-family: var(--font-sans);
+      font-size: var(--text-t4);
+      line-height: var(--text-t4--line-height);
+      text-align: left;
+    }
+    /* 아이콘 — 상자 24 안에 오른쪽 2(SEED 와 같은 border-box — 그림은 22). 글은 띠 가장자리에서 16, 아이콘이 있으면 40 */
+    .psnack-icon { display: flex; flex-shrink: 0; box-sizing: border-box; width: 24px; height: 24px; padding-right: var(--spacing-x0_5); }
+    .psnack-icon > svg { width: 100%; height: 100%; }
+    .psnack--positive .psnack-icon { color: var(--color-fg-positive-inverted); }
+    .psnack--critical .psnack-icon { color: var(--color-fg-critical-inverted); }
+    .psnack-content {
+      display: flex;
+      flex: 1 1 auto;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--spacing-x2_5);
+      min-width: 0;
+      padding: 0 var(--spacing-x1_5);
+    }
+    .psnack-message { min-width: 0; margin: 0; font-weight: 400; color: var(--color-fg-neutral-inverted); }
+    /* 액션 — 글 버튼. 누르는 영역은 글 + 좌우 8 × 44(::before — 띠 높이 안에서 위아래로 넓힌다), 누르면 글만 2px 거리로 준다 */
+    .psnack-action {
+      --press-basis: 24;
+      position: relative;
+      flex-shrink: 0;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: var(--radius-r1);
+      background: transparent;
+      color: var(--psnack-action);
+      font: inherit;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    .psnack-action::before { content: ""; position: absolute; top: 50%; right: calc(-1 * var(--spacing-x2)); left: calc(-1 * var(--spacing-x2)); height: 44px; translate: 0 -50%; }
+    .psnack-action:active,
+    .psnack-action.psnack-action--pressed { scale: calc(1 - 2 / var(--press-basis)); }
+    /* 보조 기술용 닫기 — 보이지 않고(보조 기술은 읽는다), 키보드 초점이 오면 띠 오른쪽 끝에 44 상자 · X 16 으로 보인다. 위아래 · 오른쪽은 띠 여백(10)만큼 바깥으로 당겨 띠 높이를 그대로 둔다 */
+    .psnack-close {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      border: 0;
+      background: transparent;
+      color: var(--color-fg-neutral-inverted);
+      white-space: nowrap;
+      clip-path: inset(50%);
+      cursor: pointer;
+    }
+    .psnack-close:focus-visible,
+    .psnack-close.psnack-close--focus {
+      position: relative;
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      margin: calc(-1 * var(--spacing-x2_5)) calc(-1 * var(--spacing-x2_5)) calc(-1 * var(--spacing-x2_5)) 0;
+      overflow: visible;
+      border-radius: var(--radius-r2);
+      clip-path: none;
+    }
+    .psnack-close > svg { width: 16px; height: 16px; }
+    /* 포커스 — 키보드에만 링 2px · 띠 글자색(브랜드 링은 짙은 띠 위에서 3:1 에 못 미친다). 링이 늘 띠 위에 그려지게 액션은 바깥 2 띄우고,
+       띠 · 닫기는 띄움 −4(가장자리에서 2 안쪽)다 — 바깥에 그리면 페이지 위라 라이트는 흰 페이지 위 흰 링, 다크는 짙은 페이지 위 짙은 링이 된다
+       (snackbar.tsx 와 같다 — snackbar.yaml 의 focusRing.offset 2px 는 띠 · 닫기에서 이 레시피와 다르다) */
+    .psnack-action:focus-visible,
+    .psnack-action.psnack-action--focus { outline: 2px solid var(--color-fg-neutral-inverted); outline-offset: 2px; }
+    .psnack:focus-visible,
+    .psnack.psnack--focus,
+    .psnack-close:focus-visible,
+    .psnack-close.psnack-close--focus { outline: 2px solid var(--color-fg-neutral-inverted); outline-offset: -4px; }
+    /* 나타남 150ms(ease-enter) · 사라짐 100ms(ease-exit) — 가운데를 기준점으로 0.8 ↔ 1 · 투명도. 모션 줄이기면 투명도만 */
+    @keyframes psnack-enter { from { opacity: 0; scale: 0.8; } to { opacity: 1; scale: 1; } }
+    @keyframes psnack-exit { from { opacity: 1; scale: 1; } to { opacity: 0; scale: 0.8; } }
+    @keyframes psnack-fade-in { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes psnack-fade-out { from { opacity: 1; } to { opacity: 0; } }
+    .psnack.psnack--enter { animation: psnack-enter var(--motion-duration-d3) var(--motion-ease-enter) both; }
+    .psnack.psnack--exit { animation: psnack-exit var(--motion-duration-d2) var(--motion-ease-exit) both; pointer-events: none; }
+
+    /* Callout — 상자 .pcallout · 콘텐츠 폭 · 최소 50 · 안쪽 14 · 모서리 10 · 사이 12. 톤은 색을 --pcallout-* 변수에 담기만 하고 상태가 그 변수를 칠한다.
+       제목(700) · 본문(400) · 링크(밑줄)는 한 문단 14 / 19 이고 사이는 띄어쓰기 두 칸이다 — 진짜 글자(.pcallout-space · pre-wrap)라 복사해도 이어 붙지 않고 그 뒤에서 줄을 바꿀 수 있다 */
+    .pcallout {
+      --pcallout-bg: var(--color-bg-neutral-weak);
+      --pcallout-bg-pressed: var(--color-bg-neutral-weak-pressed);
+      --pcallout-fg: var(--color-fg-neutral);
+      /* 포커스 링 — 공유 토큰(DESIGN.md)에는 브랜드 역할 색이 없어 중립으로 떨어진다(.pchip · .ptab-list 와 같은 대체 사슬) */
+      --pcallout-focus-ring: var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral)));
+      --press-basis: 50;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-x3);
+      box-sizing: border-box;
+      width: 100%;
+      min-height: 50px;
+      margin: 0;
+      padding: var(--spacing-x3_5);
+      border: 0;
+      border-radius: var(--radius-r2_5);
+      background: var(--pcallout-bg);
+      color: var(--pcallout-fg);
+      font-family: var(--font-sans);
+      font-size: var(--text-t4);
+      line-height: var(--text-t4--line-height);
+      font-weight: 400;
+      text-align: left;
+      transition:
+        background-color var(--motion-duration-color-transition) var(--motion-ease-easing),
+        scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    .pcallout--informative { --pcallout-bg: var(--color-bg-informative-weak); --pcallout-bg-pressed: var(--color-bg-informative-weak-pressed); --pcallout-fg: var(--color-fg-informative-contrast); }
+    .pcallout--positive { --pcallout-bg: var(--color-bg-positive-weak); --pcallout-bg-pressed: var(--color-bg-positive-weak-pressed); --pcallout-fg: var(--color-fg-positive-contrast); }
+    .pcallout--warning { --pcallout-bg: var(--color-bg-warning-weak); --pcallout-bg-pressed: var(--color-bg-warning-weak-pressed); --pcallout-fg: var(--color-fg-warning-contrast); }
+    .pcallout--critical { --pcallout-bg: var(--color-bg-critical-weak); --pcallout-bg-pressed: var(--color-bg-critical-weak-pressed); --pcallout-fg: var(--color-fg-critical-contrast); }
+    .pcallout-icon, .pcallout-suffix { display: flex; flex-shrink: 0; }
+    .pcallout-icon > svg, .pcallout-suffix > svg { width: 16px; height: 16px; }
+    .pcallout-content { display: block; flex: 1 1 auto; min-width: 0; margin: 0; }
+    .pcallout-space, .pbanner-space { white-space: pre-wrap; }
+    .pcallout-title { font-weight: 700; }
+    .pcallout-link { display: inline-block; border-radius: var(--radius-r1); color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+    /* 전체 누르기 — 상자가 버튼이다. 호버(웹) = 누름 바탕, 누름 = 누름 바탕 + 상자 전체 2px 거리 축소 */
+    .pcallout--actionable { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    @media (hover: hover) {
+      .pcallout--actionable:hover { background: var(--pcallout-bg-pressed); }
+    }
+    .pcallout--actionable.pcallout--hover { background: var(--pcallout-bg-pressed); }
+    .pcallout--actionable:active,
+    .pcallout--actionable.pcallout--pressed { background: var(--pcallout-bg-pressed); scale: calc(1 - 2 / var(--press-basis)); }
+    /* 닫기 — 40 투명 상자 · 모서리 8, 바깥 여백 −12 로 줄 높이를 늘리지 않는다(아이콘은 오른쪽 끝에서 14). 호버 · 누름 = 톤의 누름 바탕, 누르면 닫기만 준다(기준 40) */
+    .pcallout-close {
+      --press-basis: 40;
+      position: relative;
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      margin: calc(-1 * var(--spacing-x3));
+      padding: 0;
+      border: 0;
+      border-radius: var(--radius-r2);
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition:
+        background-color var(--motion-duration-color-transition) var(--motion-ease-easing),
+        scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    .pcallout-close > svg { width: 16px; height: 16px; }
+    @media (hover: hover) {
+      .pcallout-close:hover { background: var(--pcallout-bg-pressed); }
+    }
+    .pcallout-close.pcallout-close--hover { background: var(--pcallout-bg-pressed); }
+    .pcallout-close:active,
+    .pcallout-close.pcallout-close--pressed { background: var(--pcallout-bg-pressed); scale: calc(1 - 2 / var(--press-basis)); }
+    .pcallout--actionable:focus-visible,
+    .pcallout--actionable.pcallout--focus,
+    .pcallout-link:focus-visible,
+    .pcallout-link.pcallout-link--focus,
+    .pcallout-close:focus-visible,
+    .pcallout-close.pcallout-close--focus { outline: 2px solid var(--pcallout-focus-ring); outline-offset: 2px; }
+
+    /* Page Banner — 띠 .pbanner · 화면 폭 · 모서리 0 · 최소 40 · 위아래 10 · 좌우 화면 여백 24. 안 .pbanner-inner(아이콘 ↔ 글 8 · 아이콘은 첫 줄에 붙고 화살표 · 닫기는 가운데).
+       글과 버튼 .pbanner-content 는 한 줄에 양 끝이고, 안 들어가면 버튼이 다음 줄 본문 시작선으로 간다(사이 6). 옅은 바탕(weak)은 Callout 과 같은 짝, 짙은 바탕(solid)은 흰 글 */
+    .pbanner {
+      --pbanner-bg: var(--color-bg-neutral-weak);
+      --pbanner-bg-pressed: var(--color-bg-neutral-weak-pressed);
+      --pbanner-fg: var(--color-fg-neutral);
+      --pbanner-focus-ring: var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral)));
+      --press-basis: 40;
+      position: relative;
+      display: block;
+      box-sizing: border-box;
+      width: 100%;
+      min-height: 40px;
+      margin: 0;
+      padding: var(--spacing-x2_5) var(--spacing-global-gutter);
+      border: 0;
+      border-radius: 0;
+      background: var(--pbanner-bg);
+      color: var(--pbanner-fg);
+      font-family: var(--font-sans);
+      font-size: var(--text-t4);
+      line-height: var(--text-t4--line-height);
+      text-align: left;
+      transition: background-color var(--motion-duration-color-transition) var(--motion-ease-easing);
+    }
+    .pbanner--weak.pbanner--informative { --pbanner-bg: var(--color-bg-informative-weak); --pbanner-bg-pressed: var(--color-bg-informative-weak-pressed); --pbanner-fg: var(--color-fg-informative-contrast); }
+    .pbanner--weak.pbanner--positive { --pbanner-bg: var(--color-bg-positive-weak); --pbanner-bg-pressed: var(--color-bg-positive-weak-pressed); --pbanner-fg: var(--color-fg-positive-contrast); }
+    .pbanner--weak.pbanner--warning { --pbanner-bg: var(--color-bg-warning-weak); --pbanner-bg-pressed: var(--color-bg-warning-weak-pressed); --pbanner-fg: var(--color-fg-warning-contrast); }
+    .pbanner--weak.pbanner--critical { --pbanner-bg: var(--color-bg-critical-weak); --pbanner-bg-pressed: var(--color-bg-critical-weak-pressed); --pbanner-fg: var(--color-fg-critical-contrast); }
+    /* 짙은 바탕의 포커스 링은 띠 글자색(currentColor — 흰 글 · neutral 은 fg-neutral-inverted) — 브랜드 링은 짙은 바탕 위 1.0 ~ 3.2:1 이라 보이지 않는다 */
+    .pbanner--solid { --pbanner-focus-ring: currentColor; }
+    .pbanner--solid.pbanner--neutral { --pbanner-bg: var(--color-bg-neutral-inverted); --pbanner-bg-pressed: var(--color-bg-neutral-inverted-pressed); --pbanner-fg: var(--color-fg-neutral-inverted); }
+    .pbanner--solid.pbanner--informative { --pbanner-bg: var(--color-bg-informative-solid); --pbanner-bg-pressed: var(--color-bg-informative-solid-pressed); --pbanner-fg: var(--color-static-white); }
+    .pbanner--solid.pbanner--positive { --pbanner-bg: var(--color-bg-positive-solid); --pbanner-bg-pressed: var(--color-bg-positive-solid-pressed); --pbanner-fg: var(--color-static-white); }
+    .pbanner--solid.pbanner--warning { --pbanner-bg: var(--color-bg-warning-solid); --pbanner-bg-pressed: var(--color-bg-warning-solid-pressed); --pbanner-fg: var(--color-static-white); }
+    .pbanner--solid.pbanner--critical { --pbanner-bg: var(--color-bg-critical-solid); --pbanner-bg-pressed: var(--color-bg-critical-solid-pressed); --pbanner-fg: var(--color-static-white); }
+    .pbanner-inner {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--spacing-x2);
+      width: 100%;
+      transition: scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    .pbanner-icon { display: flex; flex-shrink: 0; margin-top: var(--spacing-x0_5); }
+    .pbanner-icon > svg, .pbanner-suffix > svg { width: 16px; height: 16px; }
+    .pbanner-content { display: flex; flex: 1 1 auto; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-x1_5); min-width: 0; }
+    .pbanner-text { display: block; min-width: 0; margin: 0; }
+    .pbanner-title { font-weight: 700; }
+    .pbanner-desc { font-weight: 500; }
+    .pbanner-suffix { display: flex; flex-shrink: 0; align-self: center; }
+    /* 버튼 — 글 버튼 하나 · 13 / 18 · 700. 누르는 높이 40 = 글 + 사방 11, 바깥 여백 −11 로 띠 높이를 늘리지 않는다. 누르면 버튼만 준다(바탕 없음) */
+    .pbanner-button {
+      --press-basis: 40;
+      position: relative;
+      flex-shrink: 0;
+      margin: -11px;
+      padding: 11px;
+      border: 0;
+      border-radius: var(--radius-r1);
+      background: transparent;
+      color: inherit;
+      font-family: inherit;
+      font-size: var(--text-t3);
+      line-height: var(--text-t3--line-height);
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    /* 닫기 — 40 투명 상자 · 모서리 8, 바깥 여백 −12(아이콘은 오른쪽 끝에서 24 · 글과 8). 누르면 닫기만 준다(바탕 없음) */
+    .pbanner-close {
+      --press-basis: 40;
+      position: relative;
+      display: flex;
+      flex-shrink: 0;
+      align-self: center;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      margin: calc(-1 * var(--spacing-x3));
+      padding: 0;
+      border: 0;
+      border-radius: var(--radius-r2);
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    .pbanner-close > svg { width: 16px; height: 16px; }
+    .pbanner-button:active,
+    .pbanner-button.pbanner-button--pressed,
+    .pbanner-close:active,
+    .pbanner-close.pbanner-close--pressed { scale: calc(1 - 2 / var(--press-basis)); }
+    /* 전체 누르기 — 띠가 버튼이다. 호버(웹) = 누름 바탕, 누름 = 누름 바탕 + 안의 내용만 2px 거리 축소(바탕은 그대로 — 기준은 띠) */
+    .pbanner--actionable { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    @media (hover: hover) {
+      .pbanner--actionable:hover { background: var(--pbanner-bg-pressed); }
+    }
+    .pbanner--actionable.pbanner--hover { background: var(--pbanner-bg-pressed); }
+    .pbanner--actionable:active,
+    .pbanner--actionable.pbanner--pressed { background: var(--pbanner-bg-pressed); }
+    .pbanner--actionable:active > .pbanner-inner,
+    .pbanner--actionable.pbanner--pressed > .pbanner-inner { scale: calc(1 - 2 / var(--press-basis)); }
+    /* 포커스 — 키보드에만 안쪽 링 2px(띄움 −2) — 화면 끝까지 차는 띠라 바깥 링이 잘린다. 버튼 · 닫기도 같다.
+       링은 띠 위에 그려지므로 옅은 바탕은 stroke-focus-ring, 짙은 바탕은 띠 글자색이다(page-banner.tsx 의 RING · outline-current) */
+    .pbanner--actionable:focus-visible,
+    .pbanner--actionable.pbanner--focus,
+    .pbanner-button:focus-visible,
+    .pbanner-button.pbanner-button--focus,
+    .pbanner-close:focus-visible,
+    .pbanner-close.pbanner-close--focus { outline: 2px solid var(--pbanner-focus-ring); outline-offset: -2px; }
+
+    /* Result Section — .presult 는 놓인 자리의 가로 · 세로 가운데에 선다(남는 높이를 채운다) · 좌우 48 · 위아래 16. 아이콘 40(선 1.5) · 아래 16.
+       large 는 제목 t8 22 / 30 · 설명 t5 16 / 22(위 12) · 버튼 위 28, medium 은 제목 t5 16 / 22 · 설명 t4 14 / 19(위 8) · 버튼 위 24.
+       버튼은 위아래로 사이 20 — 첫 버튼 Button neutralWeak medium 40, 둘째 Button ghost small 36(위아래로 8 블리드해 글 자리만 차지 — 보이는 상자 사이는 12, SEED 와 같다) */
+    .presult {
+      display: flex;
+      flex: 1 1 auto;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      padding: var(--spacing-x4) var(--spacing-x12);
+      font-family: var(--font-sans);
+      text-align: center;
+    }
+    .presult-asset { display: flex; margin-bottom: var(--spacing-x4); color: var(--color-fg-neutral-subtle); }
+    .presult-asset > svg { width: 40px; height: 40px; stroke-width: 1.5; }
+    .presult--failure .presult-asset { color: var(--color-fg-critical); }
+    .presult--done .presult-asset { color: var(--color-fg-positive); }
+    .presult-title { margin: 0; color: var(--color-fg-neutral); font-size: var(--text-t8); line-height: var(--text-t8--line-height); font-weight: 700; }
+    .presult-desc { margin: var(--spacing-x3) 0 0; color: var(--color-fg-neutral-muted); font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 400; }
+    .presult-actions { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-x5); margin-top: var(--spacing-x7); }
+    .presult--medium .presult-title { font-size: var(--text-t5); line-height: var(--text-t5--line-height); }
+    .presult--medium .presult-desc { margin-top: var(--spacing-x2); font-size: var(--text-t4); line-height: var(--text-t4--line-height); }
+    .presult--medium .presult-actions { margin-top: var(--spacing-x6); }
+    .presult-secondary { margin-block: calc(-1 * var(--spacing-x2)); }
+
+    /* 모션 줄이기 — 축소하지 않고, 띠는 투명도로만 나타나고 사라진다 */
+    @media (prefers-reduced-motion: reduce) {
+      .psnack-action:active,
+      .psnack-action.psnack-action--pressed,
+      .pcallout--actionable:active,
+      .pcallout--actionable.pcallout--pressed,
+      .pcallout-close:active,
+      .pcallout-close.pcallout-close--pressed,
+      .pbanner-button:active,
+      .pbanner-button.pbanner-button--pressed,
+      .pbanner-close:active,
+      .pbanner-close.pbanner-close--pressed,
+      .pbanner--actionable:active > .pbanner-inner,
+      .pbanner--actionable.pbanner--pressed > .pbanner-inner { scale: 1; }
+      .psnack.psnack--enter { animation-name: psnack-fade-in; }
+      .psnack.psnack--exit { animation-name: psnack-fade-out; }
+    }
+
+    /* 다크 — 역할 색을 알림 메시지 · 갤러리 틀 안에서만 다크 짝으로 바꾼다(.pchip · .ptab-list 와 같다 — 전역 다크 블록은 옛 이름만 바꾼다).
+       끼운 .btn · .plst · .ptf-* 는 저마다의 다크 블록이 바꾼다. 공유 토큰(DESIGN.md)에 없는 브랜드 짝(fg-brand-inverted · 포커스 링)은 비어서 위 대체값(중립)으로 떨어진다 */
+    [data-theme="dark"] :is(.psnack, .psnack-region, .pcallout, .pbanner, .presult, .pfb-strip, .pfb-phone, .pfb-desk, .pfb-top, .pfb-stage, .pfb-band) {
+      --color-bg-neutral-inverted: var(--color-bg-neutral-inverted-dark);
+      --color-bg-neutral-inverted-pressed: var(--color-bg-neutral-inverted-pressed-dark);
+      --color-fg-neutral-inverted: var(--color-fg-neutral-inverted-dark);
+      --color-fg-positive-inverted: var(--color-fg-positive-inverted-dark);
+      --color-fg-critical-inverted: var(--color-fg-critical-inverted-dark);
+      --color-fg-brand-inverted: var(--color-fg-brand-inverted-dark);
+      --color-stroke-focus-ring: var(--color-stroke-focus-ring-dark);
+      --color-bg-neutral-weak: var(--color-bg-neutral-weak-dark);
+      --color-bg-neutral-weak-pressed: var(--color-bg-neutral-weak-pressed-dark);
+      --color-bg-informative-weak: var(--color-bg-informative-weak-dark);
+      --color-bg-informative-weak-pressed: var(--color-bg-informative-weak-pressed-dark);
+      --color-bg-positive-weak: var(--color-bg-positive-weak-dark);
+      --color-bg-positive-weak-pressed: var(--color-bg-positive-weak-pressed-dark);
+      --color-bg-warning-weak: var(--color-bg-warning-weak-dark);
+      --color-bg-warning-weak-pressed: var(--color-bg-warning-weak-pressed-dark);
+      --color-bg-critical-weak: var(--color-bg-critical-weak-dark);
+      --color-bg-critical-weak-pressed: var(--color-bg-critical-weak-pressed-dark);
+      --color-bg-informative-solid: var(--color-bg-informative-solid-dark);
+      --color-bg-informative-solid-pressed: var(--color-bg-informative-solid-pressed-dark);
+      --color-bg-positive-solid: var(--color-bg-positive-solid-dark);
+      --color-bg-positive-solid-pressed: var(--color-bg-positive-solid-pressed-dark);
+      --color-bg-warning-solid: var(--color-bg-warning-solid-dark);
+      --color-bg-warning-solid-pressed: var(--color-bg-warning-solid-pressed-dark);
+      --color-bg-critical-solid: var(--color-bg-critical-solid-dark);
+      --color-bg-critical-solid-pressed: var(--color-bg-critical-solid-pressed-dark);
+      --color-fg-informative-contrast: var(--color-fg-informative-contrast-dark);
+      --color-fg-positive-contrast: var(--color-fg-positive-contrast-dark);
+      --color-fg-warning-contrast: var(--color-fg-warning-contrast-dark);
+      --color-fg-critical-contrast: var(--color-fg-critical-contrast-dark);
+      --color-fg-neutral: var(--color-fg-neutral-dark);
+      --color-fg-neutral-muted: var(--color-fg-neutral-muted-dark);
+      --color-fg-neutral-subtle: var(--color-fg-neutral-subtle-dark);
+      --color-fg-critical: var(--color-fg-critical-dark);
+      --color-fg-positive: var(--color-fg-positive-dark);
+      --color-bg-layer-default: var(--color-bg-layer-default-dark);
+      --color-bg-layer-default-pressed: var(--color-bg-layer-default-pressed-dark);
+      --color-bg-layer-basement: var(--color-bg-layer-basement-dark);
+      --color-stroke-neutral-subtle: var(--color-stroke-neutral-subtle-dark);
+    }
+
+    /* 알림 메시지 갤러리 — 띠 · 상자 · 결과는 흰 표면(.vignette-card) 위에 둔다(옅은 회색 톤 bg-neutral-weak 가 페이지 바탕 bg-layer-basement 와 같은 gray-200 이다).
+       견본 틀(.ptf-samples · .ptf-cap)과 상태 표(.cb-matrix)는 Text Field 갤러리 것이다. .pfb-strip 은 폰 폭(안쪽 360)에 자리 여백 8 을 둔 띠 견본 칸,
+       .pfb-phone 은 폰 화면(안쪽 360 — 머리 · 목록 · 탭 바 56), .pfb-desk 는 데스크톱 웹 화면, .pfb-top 은 머리와 그 바로 아래 페이지 배너만 그린 화면 윗부분,
+       .pfb-band 는 띠 하나를 떼어 놓은 칸, .pfb-stage 는 결과 하나를 가운데에 둔 흰 판이다. 모두 갤러리 것이고 알림 메시지의 일부가 아니다 */
+    .pfb-strip {
+      position: relative;
+      box-sizing: content-box;
+      max-width: 344px;
+      padding: var(--spacing-x4) var(--spacing-x2);
+      border: 1px solid var(--color-border-default);
+      border-radius: var(--radius-r4);
+      background: var(--color-bg-layer-default);
+    }
+    .pfb-strips { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 362px), 1fr)); gap: var(--spacing-lg); }
+    .pfb-phone,
+    .pfb-desk {
+      position: relative;
+      isolation: isolate;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid var(--color-border-default);
+      border-radius: var(--radius-r4);
+      background: var(--color-bg-layer-default);
+      font-family: var(--font-sans);
+    }
+    .pfb-phone { box-sizing: content-box; max-width: 360px; }
+    .pfb-phone--screen { height: 560px; }
+    .pfb-phone--tabbar > .psnack-region { bottom: 56px; }
+    .pfb-phone--basement { background: var(--color-bg-layer-basement); }
+    .pfb-desk { box-sizing: border-box; width: 100%; max-width: 760px; }
+    .pfb-desk--tall { height: 360px; }
+    .pfb-phone-head { padding: var(--spacing-x6) var(--spacing-global-gutter) var(--spacing-x4); }
+    .pfb-desk-head { padding: var(--spacing-x8) var(--spacing-global-gutter) var(--spacing-x4); }
+    .pfb-phone-head > .ptf-screen-title,
+    .pfb-desk-head > .ptf-screen-title,
+    .pfb-top-head > .ptf-screen-title { margin-bottom: 0; }
+    .pfb-phone-body,
+    .pfb-desk-body { flex: 1 1 auto; min-height: 0; overflow: hidden; }
+    .pfb-phone-body--center { display: flex; flex-direction: column; }
+    .pfb-tabbar {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      flex-shrink: 0;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      height: 56px;
+      background: var(--color-bg-layer-default);
+      box-shadow: inset 0 1px 0 var(--color-stroke-neutral-subtle);
+    }
+    .pfb-tab { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--spacing-x0_5); color: var(--color-fg-neutral-subtle); font-size: var(--text-t1); line-height: var(--text-t1--line-height); font-weight: 500; }
+    .pfb-tab > svg { width: 22px; height: 22px; }
+    .pfb-tab--on { color: var(--color-fg-neutral); }
+    .pfb-card-title { padding: 0 var(--spacing-global-gutter) var(--spacing-x2); color: var(--color-fg-neutral); font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 700; }
+    .pfb-card { display: flex; flex-direction: column; min-height: 200px; margin: 0 var(--spacing-x4) var(--spacing-x6); overflow: hidden; border-radius: var(--radius-r4); background: var(--color-bg-layer-default); }
+    .pfb-card:focus { outline: none; }
+    .pfb-top {
+      box-sizing: content-box;
+      max-width: 360px;
+      overflow: hidden;
+      border: 1px solid var(--color-border-default);
+      border-radius: var(--radius-r4);
+      background: var(--color-bg-layer-default);
+      font-family: var(--font-sans);
+    }
+    .pfb-top--wide { max-width: none; margin-bottom: var(--spacing-sm); }
+    .pfb-top-head { padding: var(--spacing-x4) var(--spacing-global-gutter) var(--spacing-x3); }
+    .pfb-top-body { display: flex; flex-direction: column; gap: var(--spacing-x2); padding: var(--spacing-x4) var(--spacing-global-gutter); }
+    .pfb-top-body > span { display: block; height: 10px; border-radius: var(--radius-full); background: var(--color-bg-layer-basement); }
+    .pfb-top-body > span:last-child { width: 60%; }
+    .pfb-band { overflow: hidden; border: 1px solid var(--color-border-default); }
+    .pfb-stage { display: flex; flex-direction: column; min-height: 360px; border-radius: var(--radius-lg); background: var(--color-bg-layer-default); box-shadow: var(--shadow-sm); }
+    .pfb-note { margin: 0 0 var(--spacing-lg); }
+    .pfb-gap { margin-top: var(--spacing-xl); }
+    .pfb-cell { display: block; min-width: 0; }
+    .pfb-results > .pfb-wide { grid-column: 1 / -1; }
+    .pcallout-matrix .cb-matrix-row { grid-template-columns: 168px repeat(var(--cb-cols), minmax(240px, 1fr)); align-items: start; }
+    .pbanner-matrix .cb-matrix-row { grid-template-columns: 168px repeat(var(--cb-cols), minmax(240px, 1fr)); align-items: start; }
+    .pcallout-matrix--states .cb-matrix-row,
+    .pbanner-matrix--states .cb-matrix-row { grid-template-columns: 168px repeat(var(--cb-cols), minmax(220px, 1fr)); }
+    .pbanner-matrix--states { margin-top: var(--spacing-xl); }
+    @media (max-width: 900px) {
+      .pcallout-matrix .cb-matrix-row,
+      .pbanner-matrix .cb-matrix-row { grid-template-columns: 120px repeat(var(--cb-cols), minmax(240px, 1fr)); }
+      .pcallout-matrix--states .cb-matrix-row,
+      .pbanner-matrix--states .cb-matrix-row { grid-template-columns: 120px repeat(var(--cb-cols), minmax(220px, 1fr)); }
+    }
+    /* 직접 띄워 보기 — 왼쪽 폰, 오른쪽 버튼 · 남은 시간(좁으면 위아래) */
+    .pfb-live { display: grid; grid-template-columns: minmax(0, 362px) minmax(0, 1fr); gap: var(--spacing-xl); align-items: start; }
+    .pfb-live-buttons { display: flex; flex-wrap: wrap; gap: var(--spacing-x2); }
+    .pfb-live-status { min-height: 1.4em; margin: var(--spacing-md) 0 0; font-size: var(--text-caption); line-height: 1.4; color: var(--color-text-tertiary); font-variant-numeric: tabular-nums; }
+    @media (max-width: 900px) {
+      .pfb-live { grid-template-columns: minmax(0, 1fr); }
+    }
+
     /* todo-card */
     .todo-list { display: flex; flex-direction: column; gap: 2px; }
     .todo-row {
@@ -8396,48 +9250,11 @@ export function pageCss() {
     .amenity-label { font-weight: 600; font-size: var(--text-body-md); }
     .amenity-note { font-size: var(--text-caption); color: var(--color-text-tertiary); margin-top: 2px; }
 
-    /* === Empty state === */
-    .empty-card {
-      background: var(--color-surface-default);
-      border-radius: var(--radius-lg);
-      padding: var(--spacing-3xl);
-      box-shadow: var(--shadow-sm);
-      display: flex; flex-direction: column; align-items: center; text-align: center;
-      gap: var(--spacing-md);
-    }
-    .empty-illustration {
-      width: 96px; height: 96px;
-      border-radius: var(--radius-full);
-      background: linear-gradient(135deg, color-mix(in srgb, var(--color-primary, var(--color-text-tertiary)) 15%, transparent), var(--color-surface-input));
-    }
-    .empty-title { font-size: var(--text-title-md); font-weight: var(--text-heading-md--font-weight); line-height: var(--text-heading-md--line-height); }
-    .empty-description { color: var(--color-text-secondary); max-width: 40ch; line-height: 1.6; }
-    .empty-actions { display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-sm); flex-wrap: wrap; justify-content: center; }
+    /* 옛 빈 화면 카드(.empty-card · .empty-illustration · .empty-title · .empty-description · .empty-actions)는 걷었다 — 빈 화면은 알림 메시지 블록(Tabs 블록 뒤)의 Result Section(.presult)이다(result-section.md, 2026-10-02) */
 
     /* 옛 Modal(.modal-* — 모서리 12 · shadow-xl · 머리 18 22)은 걷었다. 시트 · 대화상자 · 확인창은 Overlays 블록의 .pov-* 다(03k) */
 
-    /* === Toast === sonner.md SoT — surface-raised + 테두리 없음 + radius-md + shadow-md + 20px stroke svg(kind별 색).
-       flex-wrap + content 한 줄 전체 — 버튼이 있으면 글 아래 줄로 간다(2026-09-22). */
-    .toast-stack { display: flex; flex-direction: column; gap: var(--spacing-md); }
-    .toast {
-      display: flex; flex-wrap: wrap; align-items: flex-start; align-content: center; gap: var(--spacing-md);
-      background: var(--bg-surface-raised);
-      border-radius: var(--radius-md);
-      padding: var(--spacing-md) var(--spacing-lg);
-      box-shadow: var(--shadow-md);
-      min-height: 52px; box-sizing: border-box;
-      max-width: 360px;
-    }
-    .toast > svg { flex-shrink: 0; margin-top: 2px; }
-    .toast-content { display: flex; flex-direction: column; gap: var(--spacing-xs); min-width: 0; flex: 1 1 calc(100% - 20px - var(--spacing-md)); }
-    .toast-title { font-weight: 600; font-size: var(--text-title-sm); line-height: var(--text-title-sm--line-height); color: var(--color-text-primary); }
-    .toast-body {
-      color: var(--color-text-secondary);
-      font-size: var(--text-body-sm);
-      line-height: var(--text-body-sm--line-height);
-    }
-    /* 닫기(×)는 정적 HTML 로 두지 않는다 — sonner 자체 dismiss UI 에 위임(sonner.md 규칙).
-       flex-wrap 에서 × 가 content 옆 자리를 못 얻어 다음 줄로 떨어지기도 한다. */
+    /* 옛 토스트(.toast-stack · .toast · .toast-content · .toast-title · .toast-body — 흰 카드 · 그림자 · 아이콘 넷)는 걷었다 — 스낵바는 알림 메시지 블록(Tabs 블록 뒤)의 .psnack 이다(snackbar.md, 2026-10-02) */
 
     /* === Form layout === 폼은 Field 로 짠다 — 위 Text Field 블록의 .ptf-field · .ptf-form · .ptf-screen(field.md "Form 의 구성").
        옛 그림자 카드(.form-card) · 2열 그리드 · 라벨 14 · 빨간 별표 · 회색 채운 칸(.form-input · .form-textarea · .form-select) · 도움말 12 · 경계선 버튼 줄은 걷었다.
@@ -8752,22 +9569,7 @@ export function pageCss() {
     .swipe-row { position: relative; display: flex; align-items: center; gap: var(--spacing-md); padding: var(--spacing-md); background: var(--color-surface-default); transition: transform var(--motion-duration-fast) var(--motion-ease-out); }
     @media (prefers-reduced-motion: reduce) { .swipe-row { transition: none; } }
     
-    /* Banner */
-    /* Banner — alert.md SoT 정합 (brand vignette는 banner-icon 필드 사용,
-       site Alert은 stroke svg 사용). 시각 spec(border-l 4px + 8% bg + gap-md)은 동기. */
-    .banner { display: flex; align-items: flex-start; gap: var(--spacing-md); padding: var(--spacing-md); margin-block: var(--spacing-sm); border-inline-start-width: 4px; border-inline-start-style: solid; border-radius: var(--radius-sm); }
-    .banner--info { background: color-mix(in srgb, var(--color-info) 8%, var(--color-surface-default)); border-inline-start-color: var(--color-info); }
-    .banner--warning { background: color-mix(in srgb, var(--color-warning) 8%, var(--color-surface-default)); border-inline-start-color: var(--color-warning); }
-    .banner--error { background: color-mix(in srgb, var(--color-error) 8%, var(--color-surface-default)); border-inline-start-color: var(--color-error); }
-    .banner--success { background: color-mix(in srgb, var(--color-success) 8%, var(--color-surface-default)); border-inline-start-color: var(--color-success); }
-    .banner-icon { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 700; font-size: 13px; color: var(--color-text-on-accent); }
-    .banner--info .banner-icon { background: var(--color-info); }
-    .banner--success .banner-icon { background: var(--color-success); }
-    .banner--warning .banner-icon { background: var(--color-warning); }
-    .banner--error .banner-icon { background: var(--color-error); }
-    .banner-body { flex: 1; display: flex; flex-direction: column; gap: var(--spacing-xs); font-size: var(--text-body-sm); line-height: 1.5; color: var(--color-text-secondary); }
-    .banner-body strong { font-size: var(--text-body-md); font-weight: 600; color: var(--color-text-primary); }
-    .banner-close { width: 28px; height: 28px; border: 0; background: transparent; cursor: pointer; border-radius: var(--radius-sm); color: var(--color-text-tertiary); }
+    /* 옛 Banner(.banner · .banner-icon · .banner-body · .banner-close — 왼쪽 4px 막대 · 8% 바탕)는 걷었다 — 페이지 배너는 알림 메시지 블록의 .pbanner, 화면 안 안내는 .pcallout 이다(page-banner.md · callout.md, 2026-10-02) */
 
     /* 옛 Tag / Chip(.chip · .chip-x · .chip--input — 브랜드 10% 바탕 · 칩 안의 입력칸)은 걷었다. 칩은 위 Chip 블록의 .pchip 이다(chip.md, 2026-10-02) */
 
@@ -8950,11 +9752,7 @@ export function pageCss() {
     .sa { max-height: 100px; overflow-y: auto; padding: var(--spacing-sm); background: var(--color-bg-page); border-radius: var(--radius-md); }
     .sa-content { font-size: var(--text-caption); color: var(--color-text-secondary); line-height: 1.6; }
 
-    /* Sonner toast stack */
-    .son { display: flex; flex-direction: column; gap: var(--spacing-sm); }
-    /* sonner.md SoT — 20px stroke svg(kind별 색) + shadow-lg + border 1px */
-    .son-toast { display: flex; gap: var(--spacing-md); align-items: flex-start; min-height: 52px; box-sizing: border-box; padding: var(--spacing-md) var(--spacing-lg); background: var(--bg-surface-raised); border-radius: var(--radius-md); box-shadow: var(--shadow-md); font-size: var(--text-body-sm); line-height: var(--text-body-sm--line-height); color: var(--color-text-primary); }
-    .son-toast > svg { flex-shrink: 0; margin-top: 2px; }
+    /* 옛 Sonner 쌓기(.son · .son-toast)는 걷었다 — 19 의 Snackbar 칸은 알림 메시지 블록의 .psnack 이다(2026-10-02) */
 
     /* Aspect Ratio */
     .ar { background: var(--color-surface-input); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--color-text-tertiary); font-family: ui-monospace, monospace; font-size: var(--text-caption); }
@@ -9009,7 +9807,6 @@ export function pageCss() {
     .sl-title-text { overflow: hidden; text-overflow: ellipsis; }
     .sl-sub { display: block; margin-top: 2px; font-size: 11.5px; color: var(--color-text-tertiary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .sl-badge { display: inline-flex; align-items: center; padding: 1px 6px; border-radius: var(--radius-sm); font-size: 10px; font-weight: 600; letter-spacing: 0.04em; background: var(--color-surface-input); color: var(--color-text-tertiary); flex-shrink: 0; }
-    .sl-empty { padding: 24px 0; text-align: center; font-size: 12px; color: var(--color-text-tertiary); }
 
     /* Token catalog (기존 — 압축 유지) */
     .catalog { margin-top: var(--spacing-3xl); padding-top: var(--spacing-2xl); border-top: 1px dashed var(--color-border-default); }
@@ -9062,8 +9859,6 @@ export function pageCss() {
     [data-theme="dark"] .review-summary,
     [data-theme="dark"] .review-item,
     [data-theme="dark"] .amenity-grid,
-    [data-theme="dark"] .empty-card,
-    [data-theme="dark"] .toast,
     [data-theme="dark"] .ld-highlights,
     [data-theme="dark"] .ld-host,
     [data-theme="dark"] .sk-card-wrap,
@@ -9072,7 +9867,6 @@ export function pageCss() {
     [data-theme="dark"] .sc-card,
     [data-theme="dark"] .ctx,
     [data-theme="dark"] .car-arrow,
-    [data-theme="dark"] .son-toast,
     [data-theme="dark"] .sl,
     [data-theme="dark"] .ipk-trigger,
     [data-theme="dark"] .swatch { background: var(--color-surface-default-dark); }
@@ -9103,7 +9897,6 @@ export function pageCss() {
     [data-theme="dark"] .ctx,
     [data-theme="dark"] .col-trigger,
     [data-theme="dark"] .car-arrow,
-    [data-theme="dark"] .son-toast,
     [data-theme="dark"] .tg,
     [data-theme="dark"] .tgg,
     [data-theme="dark"] .tgg-item + .tgg-item,
@@ -9207,9 +10000,6 @@ export function pageCss() {
     [data-theme="dark"] .review-avg { color: var(--color-primary-light, var(--color-text-primary-dark)); }
     [data-theme="dark"] .review-rating { color: var(--color-primary-light, var(--color-text-primary-dark)); }
     [data-theme="dark"] .amenity-dot { background: var(--color-primary-light, var(--color-text-primary-dark)); }
-    [data-theme="dark"] .empty-illustration {
-      background: linear-gradient(135deg, color-mix(in srgb, var(--color-primary-light, var(--color-text-tertiary-dark)) 25%, transparent), var(--color-surface-input-dark));
-    }
 
     /* === Dark mode token aliases ===
        data-theme="dark" 시 light 페어 토큰을 dark 페어로 alias —
@@ -9341,13 +10131,14 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     ${renderChipGallery(brand)}
     ${renderTabsGallery(brand)}
     ${renderOverlayGallery(brand)}
+    ${renderFeedbackGallery(brand)}
     ${renderVignettes(brand)}
     ${renderListingDetail(brand)}
     ${renderCalendar(brand)}
     ${renderReviews(brand)}
     ${renderAmenities(brand)}
     ${renderEmptyState(brand)}
-    ${renderToasts(brand)}
+    ${renderSnackbars(brand)}
     ${renderForm(brand)}
     ${renderSkeleton(brand)}
     ${renderBatchV67(brand)}
@@ -9390,13 +10181,6 @@ function renderHtml(brandName, css, tokens, sourceFile) {
         demo.setAttribute("dir", next);
         var label = document.getElementById("rtl-dir-label");
         if (label) label.textContent = next;
-      });
-    });
-    // Banner dismiss (v73)
-    document.querySelectorAll(".banner-close").forEach(function(btn) {
-      btn.addEventListener("click", function() {
-        var b = btn.closest(".banner");
-        if (b) b.style.display = "none";
       });
     });
     // Text Field (2026-10-01) — field.tsx · input.tsx · textarea.tsx 가 하는 일을 흉내 낸다(페이지의 모든 .ptf-field · .ptf-input · .ptf-textarea).
@@ -9839,6 +10623,146 @@ function renderHtml(brandName, css, tokens, sourceFile) {
         });
         bodies.forEach(function (el) { ro.observe(el, { box: "border-box" }); });
       }
+    })();
+    // 알림 메시지 (2026-10-02) — snackbar.tsx · callout.tsx · page-banner.tsx · result-section.tsx 가 하는 일 가운데 그림에 필요한 것을 흉내 낸다(03l · 09 · 11 · 19 · 20).
+    // 누름 배율의 기준 = max(높이, 폭 ÷ 4, 24) — 액션 · 콜아웃 · 배너 · 버튼 · 닫기는 누르는 순간(포인터 · 키) 재서 --press-basis 로 넘긴다. 그 순간을 멈춘 누름은 그릴 때 잰다.
+    // 스낵바 — [data-psnack-show] 버튼이 이어진 자리(data-psnack-target)에 띠를 띄운다. 한 번에 하나 — 띠가 있으면 100ms 로 걷고 새 띠를 150ms 로 띄운다.
+    // 액션이 없으면 4초, 있으면 6초 뒤 걷는다. 마우스를 올리거나 · 누르고 있거나 · 키보드 초점이 띠 안에 있으면 멈추고, 모두 떠나면 처음부터 다시 센다.
+    // 액션 · 닫기를 누르면 걷는다 — Esc · 띠 누르기로는 닫히지 않는다. 걷는 동안은 aria-hidden 이고, 초점은 옮기지 않는다. 남은 시간은 곁의 글(data-psnack-status)이 보인다.
+    // data-pfb-live 콜아웃 · 배너의 닫기는 바로 걷고 초점을 다음 요소로 옮긴다. 결과의 다시 시도(data-presult-retry)는 버튼에 로딩을 걸고 1.2초 뒤 곁의 <template> 내용으로 바꾼다.
+    // 미리보기 링크(data-pfb-link)는 옮기지 않는다.
+    (function () {
+      var ICON = { positive: ${JSON.stringify(FB_ICON.circleCheck)}, critical: ${JSON.stringify(FB_ICON.circleAlert)} };
+      var X = ${JSON.stringify(FB_ICON.x)};
+      var PRESS = ".psnack-action, .pcallout--actionable, .pcallout-close, .pbanner--actionable, .pbanner-button, .pbanner-close";
+      var FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+      function measure(el) { el.style.setProperty("--press-basis", String(Math.max(el.offsetHeight, el.offsetWidth / 4, 24))); }
+      function closest(e, selector) { return e.target && e.target.closest ? e.target.closest(selector) : null; }
+      document.addEventListener("pointerdown", function (e) { var el = closest(e, PRESS); if (el) measure(el); }, true);
+      document.addEventListener("keydown", function (e) { var el = closest(e, PRESS); if (el) measure(el); }, true);
+      var frozen = document.querySelectorAll(".psnack-action--pressed, .pcallout--pressed, .pcallout-close--pressed, .pbanner--pressed, .pbanner-button--pressed, .pbanner-close--pressed");
+      frozen.forEach(measure);
+      window.addEventListener("load", function () { frozen.forEach(measure); });
+
+      // 스낵바 — 자리마다 띠 하나(region._cur), 걷는 동안 들어온 다음 띠(region._next)는 걷은 뒤 띄운다
+      function status(region, text) {
+        var out = document.querySelector('[data-psnack-status="' + region.id + '"]');
+        if (out) out.textContent = text;
+      }
+      function build(o) {
+        var el = document.createElement("div");
+        el.className = "psnack psnack--" + o.tone;
+        el.setAttribute("role", "status");
+        el.setAttribute("aria-atomic", "true");
+        el.tabIndex = 0;
+        el.innerHTML = (ICON[o.tone] ? '<span class="psnack-icon" aria-hidden="true">' + ICON[o.tone] + "</span>" : "")
+          + '<div class="psnack-content"><p class="psnack-message"></p>' + (o.action ? '<button type="button" class="psnack-action"></button>' : "") + "</div>"
+          + '<button type="button" class="psnack-close" aria-label="닫기">' + X + "</button>";
+        el.querySelector(".psnack-message").textContent = o.message;
+        if (o.action) el.querySelector(".psnack-action").textContent = o.action;
+        return el;
+      }
+      function tick(region, el) {
+        clearInterval(region._tick);
+        var draw = function () {
+          if (region._cur !== el || el._leaving) return;
+          var total = el._total / 1000;
+          status(region, el._paused ? "멈춤 — 떠나면 처음부터 " + total + "초" : total + "초 띠 — 남은 시간 " + Math.max(0, (el._end - Date.now()) / 1000).toFixed(1) + "초");
+        };
+        draw();
+        region._tick = setInterval(draw, 100);
+      }
+      function run(region, el) {
+        clearTimeout(el._timer);
+        el._end = Date.now() + el._total;
+        el._timer = setTimeout(function () { leave(region, el); }, el._total);
+      }
+      function hold(region, el, why, on) {
+        if (el._leaving) return;
+        el._holds[why] = on;
+        var held = el._holds.hover || el._holds.press || el._holds.focus;
+        if (held && !el._paused) { el._paused = true; clearTimeout(el._timer); }
+        else if (!held && el._paused) { el._paused = false; run(region, el); }
+      }
+      function enter(region) {
+        var o = region._next;
+        region._next = null;
+        var el = build(o);
+        el._total = o.action ? 6000 : 4000;
+        el._holds = {};
+        el._release = function () { if (el._holds.press) hold(region, el, "press", false); };
+        region._cur = el;
+        region.appendChild(el);
+        el.classList.add("psnack--enter");
+        el.addEventListener("pointerenter", function (e) { if (e.pointerType === "mouse") hold(region, el, "hover", true); });
+        el.addEventListener("pointerleave", function (e) { if (e.pointerType === "mouse") hold(region, el, "hover", false); });
+        el.addEventListener("pointerdown", function () { hold(region, el, "press", true); });
+        document.addEventListener("pointerup", el._release);
+        document.addEventListener("pointercancel", el._release);
+        el.addEventListener("focusin", function (e) { if (e.target.matches(":focus-visible")) hold(region, el, "focus", true); });
+        el.addEventListener("focusout", function (e) { if (!el.contains(e.relatedTarget)) hold(region, el, "focus", false); });
+        el.addEventListener("click", function (e) { if (closest(e, ".psnack-action, .psnack-close")) leave(region, el); });
+        run(region, el);
+        tick(region, el);
+      }
+      function leave(region, el) {
+        if (el._leaving) return;
+        el._leaving = true;
+        clearTimeout(el._timer);
+        clearInterval(region._tick);
+        document.removeEventListener("pointerup", el._release);
+        document.removeEventListener("pointercancel", el._release);
+        el.setAttribute("aria-hidden", "true");
+        el.classList.remove("psnack--enter");
+        el.classList.add("psnack--exit");
+        if (!region._next) status(region, "걷었다 — 버튼을 누르면 다시 뜬다.");
+        setTimeout(function () {
+          el.remove();
+          if (region._cur === el) region._cur = null;
+          if (region._next) enter(region);
+        }, 100);
+      }
+      document.addEventListener("click", function (e) {
+        var btn = closest(e, "[data-psnack-show]");
+        if (!btn) return;
+        var region = document.getElementById(btn.getAttribute("data-psnack-target"));
+        if (!region) return;
+        region._next = { tone: btn.getAttribute("data-psnack-tone") || "neutral", message: btn.getAttribute("data-psnack-message"), action: btn.getAttribute("data-psnack-action") || "" };
+        if (region._cur) leave(region, region._cur);
+        else enter(region);
+      });
+
+      // 콜아웃 · 배너 닫기 — 초점은 상자 다음의 초점 받을 요소로(body 로 떨어지지 않게)
+      function nextFocusable(box) {
+        var all = document.querySelectorAll(FOCUSABLE);
+        for (var i = 0; i < all.length; i++) {
+          var el = all[i];
+          if (box.contains(el) || el.offsetParent === null) continue;
+          if (box.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING) return el;
+        }
+        return null;
+      }
+      document.addEventListener("click", function (e) {
+        if (closest(e, "[data-pfb-link]")) { e.preventDefault(); return; }
+        var close = closest(e, "[data-pfb-live] .pcallout-close, [data-pfb-live] .pbanner-close");
+        if (close) {
+          var box = close.closest("[data-pfb-live]");
+          var next = nextFocusable(box);
+          box.remove();
+          if (next) next.focus();
+          return;
+        }
+        var retry = closest(e, "[data-presult-retry]");
+        if (!retry || retry.hasAttribute("aria-busy")) return;
+        retry.setAttribute("aria-busy", "true");
+        var host = retry.closest("[data-presult-host]");
+        setTimeout(function () {
+          var tpl = host.querySelector("template");
+          host.tabIndex = -1;
+          host.innerHTML = tpl ? tpl.innerHTML : "";
+          host.focus({ preventScroll: true });
+        }, 1200);
+      });
     })();
   </script>
 </body>

@@ -388,11 +388,6 @@ colors:
   fg-warning-contrast-dark: "{colors.orange-900-dark}"
   fg-informative-contrast: "{colors.blue-800}"
   fg-informative-contrast-dark: "{colors.blue-900-dark}"
-  # v115 — 반전 표면(bg-neutral-inverted — 스낵바) 위의 상태 아이콘. 라이트는 그 역할의 다크 값, 다크는 라이트 값(사용자 결정 2026-10-02)
-  fg-positive-inverted: "{colors.green-800-dark}"
-  fg-positive-inverted-dark: "{colors.green-700}"
-  fg-critical-inverted: "{colors.red-800-dark}"
-  fg-critical-inverted-dark: "{colors.red-700}"
   # 배경 (bg)
   bg-layer-basement: "{colors.gray-200}"
   bg-layer-basement-dark: "{colors.gray-00-dark}"
@@ -1041,18 +1036,6 @@ components:
   role-inverted-pressed-dark:
     backgroundColor: "{colors.bg-neutral-inverted-pressed-dark}"
     textColor: "{colors.fg-neutral-inverted-dark}"
-  role-positive-on-inverted-light:
-    backgroundColor: "{colors.bg-neutral-inverted}"
-    textColor: "{colors.fg-positive-inverted}"
-  role-positive-on-inverted-dark:
-    backgroundColor: "{colors.bg-neutral-inverted-dark}"
-    textColor: "{colors.fg-positive-inverted-dark}"
-  role-critical-on-inverted-light:
-    backgroundColor: "{colors.bg-neutral-inverted}"
-    textColor: "{colors.fg-critical-inverted}"
-  role-critical-on-inverted-dark:
-    backgroundColor: "{colors.bg-neutral-inverted-dark}"
-    textColor: "{colors.fg-critical-inverted-dark}"
   role-critical-on-layer-light:
     backgroundColor: "{colors.bg-layer-default}"
     textColor: "{colors.fg-critical}"
@@ -1747,8 +1730,6 @@ v108 로 크게 바뀐 색을 지금 제품 값(Desk 웹 `porest-tokens.css` · 
 | `fg-placeholder` | gray-700 | gray-700 | gray-600 / gray-600 |
 | `fg-disabled` | gray-500 | gray-600 | gray-500 / gray-500 (v109) |
 | `fg-neutral-inverted` | gray-00 | gray-100 | — |
-| `fg-positive-inverted` | green-800(다크 팔레트) | green-700 | — (v115, SEED 에 없음 — 스낵바 아이콘) |
-| `fg-critical-inverted` | red-800(다크 팔레트) | red-700 | — (v115, SEED 에 없음 — 스낵바 아이콘) |
 | `stroke-neutral-subtle` | gray-300 | gray-300 | 투명도 있는 검정 · 흰색 |
 | `stroke-neutral-weak` | gray-400 | gray-400 | — |
 | `stroke-neutral-solid` | gray-600 | gray-600 | gray-800 / gray-800 (v109) |
@@ -1776,7 +1757,6 @@ SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채�
 | bg-brand-weak-pressed | 200 / 300 | 200 / 300 | 200 / 200 |
 | fg-brand | 600 / 900 | 600 / 900 | 600 / 700 |
 | fg-brand-contrast | 700 / 900 | 700 / 900 | 700 / 700 |
-| fg-brand-inverted | 900(다크 팔레트) / 600 | 900(다크 팔레트) / 600 | — (v115) |
 | stroke-brand-solid | 600 / 900 | 600 / 900 | 700 / 700 |
 | stroke-brand-weak | 300 / 800 | 400 / 800 | 300 / 300 |
 | stroke-focus-ring | 600 / 900 | 600 / 900 | blue-600 / blue-600 |
@@ -1839,8 +1819,6 @@ SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채�
 | `fg-positive-contrast` | `#026E33` | `#AED6B6` | — | — |
 | `fg-warning-contrast` | `#A53E0A` | `#F9BFA9` | — | — |
 | `fg-informative-contrast` | `#0F5FB3` | `#ACCEFB` | — | — |
-| `fg-positive-inverted` | `#25C062` | `#167F3F` | — | — |
-| `fg-critical-inverted` | `#FF8477` | `#D72323` | — | — |
 
 #### 배경 (bg)
 
@@ -3501,8 +3479,6 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 | `badge` | `full` | 9999px | pill |
 | `avatar` | `full` | 9999px | 원형 |
 | `card` | `md` | 8px | 콘텐츠 컨테이너 — 살짝 부드럽게 |
-| `callout` | `r2_5` | 10px | 본문 안 안내 상자 — 2026-10-02 SEED Callout(`callout.yaml`) |
-| `page-banner` | — | 0 | 화면 폭 띠, 모서리 없음 — 2026-10-02 SEED Page Banner(`page-banner.yaml`) |
 | `progress` (track + indicator) | `full` | 9999px | |
 | `skeleton` | `sm` | 4px | placeholder, 컴포넌트 형상 따라감 |
 | `aspect-ratio` / `carousel` slide | `md` | 8px | 이미지 컨테이너 |
@@ -3515,7 +3491,8 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 | `sheet` | `sm` | 4px | 사이드 패널 |
 | `popover` / `hover-card` | `sm` | 4px | floating |
 | `tooltip` | `xs` | 2px | 작은 floating |
-| `snackbar` | `r2` | 8px | 2026-10-02 SEED Snackbar(`snackbar.yaml`) |
+| `sonner` toast | `sm` | 4px | |
+| `alert` | `sm` | 4px | |
 | **Navigation** | | | |
 | `tabs` trigger | `sm` | 4px | pills variant도 동일 |
 | `dropdown-menu` / `context-menu` / `menubar` content | `sm` | 4px | |
@@ -4114,85 +4091,69 @@ red → orange → yellow → green → blue → indigo → violet → pink → 
 }
 ```
 
-### 시트 · 대화상자 · 확인창 · 팝오버
+### Modal (Dialog / AlertDialog)
 
-수치 · 규칙의 원본은 `specs/components/bottom-sheet.md` · `dialog.md` · `alert-dialog.md` · `popover.md` 와 각 `.yaml` 이다 — 2026-10-02 SEED Bottom Sheet · Dialog · Responsive Dialog · Alert Dialog · Popover 구조로 새로 정했다(옛 Modal · Drawer · Alert Dialog · Popover 절을 대신한다). 이 절은 토큰과 닿는 자리만 모은다.
+> 상세 spec(Anatomy / Sizes / States / Motion / Accessibility / Do-Don't)은 [`specs/components/dialog.md`](specs/components/dialog.md) (일반 modal) · [`specs/components/alert-dialog.md`](specs/components/alert-dialog.md) (비가역 결정 확정)가 단일 SoT. 코드(`recipes/shadcn/components/ui/dialog.tsx`, `alert-dialog.tsx`) · 예제 · preview-html `.modal-*` 4 source 동기.
 
-#### 나누기
+**시각 토큰 요약** — preview-html `.modal-*` 톤 정합:
+- container: `surface-default` + `radius-lg` (12px) + `shadow-xl` + padding `spacing-2xl` (32px)
+- title: `display-sm` (24/700) · description: `body-md` + `text-secondary`
+- overlay: `overlay-dim-light` rgba(0,0,0,0.50) (다크는 `-dark` 자동 alias)
+- size: `sm` 384 / `md` 480 (default) / `lg` 640
+- motion: overlay fade-in `motion-duration-base` + container scale 0.96→1 + fade-in `motion-duration-slow`
 
-| 일 | 1280 미만 | 1280 이상 |
+**Dialog vs AlertDialog 의미 분기**:
+- **Dialog**: form / 정보 표시 / 콘텐츠 편집. overlay click + Escape + 우상단 X로 close 가능.
+- **AlertDialog**: 비가역 위험 액션 확정(삭제/회수/결제). overlay click 무시 + close button 없음 + default focus = Cancel.
+
+### Toast
+
+일시적 알림 — 사용자 액션 결과(저장 완료, 삭제됨 등) 또는 시스템 이벤트(네트워크 오류 등)를 modal 없이 화면 모서리에 잠깐 표시. 자동으로 닫힘.
+
+#### Structure (기존 토큰 조합 — 신규 토큰 불필요)
+- 표면: `surface-default` + `shadow-md` + `radius-md` (기본 카드 구조)
+- semantic accent: 좌측 4px stroke 또는 icon으로 `success`/`error`/`warning`/`info` 표현
+- 텍스트: `body-md` (15/400) + (선택) `body-lg` 제목
+- close button: optional, 우측 상단 small icon button
+
+#### Variant (semantic 4)
+| Variant | 좌측 stroke / icon 색 | 사용 |
 |---|---|---|
-| 입력 폼 · 상세(지금 화면을 떠나지 않고) | Bottom Sheet | Dialog — 한 부품(Responsive Dialog)이 폭으로 바꾼다 |
-| 날짜 · 시각 · 아이콘 격자 · 긴 목록 고르기 | Bottom Sheet(Input Button) | Popover |
-| 되돌릴 수 없는 확인 · 꼭 알릴 일 | Alert Dialog | Alert Dialog |
-| 줄의 동작 목록 | Menu Sheet(그 차례에) | Menu(그 차례에) |
-| 화면 높이 90% 를 넘는 내용 | 페이지 | 페이지 |
+| success | `success` (`#167F3F`) — `✓` | 저장 완료, 추가됨 |
+| error | `error` (`#D72323`) — `!` | 작업 실패, 네트워크 오류 |
+| warning | `warning` (`#BE490D`) — `⚠` | 임박 만료, 데이터 손실 가능 |
+| info | `info` (`#1D6EC9`) — `ℹ` | 일반 정보, 동기화 진행 |
 
-#### 모양
+`badge`/`alert-text` 토큰을 직접 매핑하지 않고, surface + 기존 semantic 색상 조합 — Toast는 컴포넌트 단위로 별도 sparse 매핑 없이 prose 가이드만.
 
-| 표면 | 값 |
+#### Position
+| Position | 사용 |
 |---|---|
-| 공통 | 표면 `bg-layer-floating`, 딤 `overlay-dim-light` · `overlay-dim-dark`(Popover 는 딤 없음), 시트 · 대화상자 · 확인창은 그림자 없음 |
-| Bottom Sheet | 최대 480 · 위 모서리 `radius-r6` · 머리 위 24 · 제목 `t8` 22 · 700 · 설명 `t5` `fg-neutral-muted` · 좌우 `spacing-global-gutter` · 닫기 28 원(`bg-neutral-weak`, 누르는 영역 44) · 손잡이는 스냅 높이를 둘 때만 · 바닥 버튼 large 48 + 안전 영역 · `motion-duration-d6` `motion-ease-enter-expressive` 로 올라오고 `d4` `exit` 로 내려간다 |
-| Dialog | medium 480 · large 800 · 최대 높이 80% · `radius-r5` · 머리 24 · 제목 `t8` · 본문만 스크롤(넘치면 아래 48 흐림, 위로 스크롤하면 머리 아래 1px `stroke-neutral-subtle`) · 바닥 버튼 small 36 오른쪽 · `d4` `enter-expressive` 로 1.3 배에서 줄며 나타남 |
-| Alert Dialog | 최대 272 · `radius-r5` · 안쪽 20 · 제목 `t7` 20 · 700 · 설명 `t5` `fg-neutral`(짙은 글자) · 버튼 둘 나란히(길면 세로 · 확정 위) — 1280 미만 medium 40 · 이상 small 36 |
-| Popover | 폭 320 ~ 480 · 최대 높이 600 · `radius-r5` · `shadow-s3` · 트리거와 8 · 머리 제목 `t7` + 닫기 · `d3` `enter` 로 0.95 배에서 커진다 |
-| 쌓임 | specs/z-index.md — 시트 · 대화상자 L2(100 · 101) · Popover L3(200) · Alert Dialog L5(300 · 301) |
+| **top-right** (desktop default) | 일반 알림 — 우측 상단 (화면 모서리 24px 여백) |
+| **top-center** (mobile default) | 모바일 — 상단 중앙, status bar 아래 |
+| **bottom-center** (긴급) | 다른 UI 차단 (확인 필요) — 자주 사용 X |
 
-#### 쓰는 규칙
+#### Layout
+- container size: max-width 360px (desktop) / viewport 폭 - `xl` (모바일)
+- padding: `md` (12px) 또는 `lg` (16px)
+- icon + text 간격: `sm` (8px)
+- 여러 toast 중첩 시: stack 위→아래, 토스트 간 `xs` (4px) 간격
+- z-index: modal보다 낮음 (modal 위에 표시되지 않음)
 
-- 입력 폼은 바깥 누르기 · 끌어내리기로 닫지 않는다 — 닫기 버튼 · 취소 · `Esc` · 뒤로 가기로 닫고, 바뀐 값이 있으면 "작성한 내용이 사라져요" 를 묻는다(Field).
-- 닫기 버튼과 바닥 취소를 함께 두지 않는다 — 대화상자의 입력 폼은 바닥 [취소] [저장], 시트의 입력 폼은 위 닫기 + 바닥 [저장], 조회 · 안내 · 고르기는 위 닫기.
-- 확인창은 닫기 버튼이 없고 바깥 누르기를 무시한다. `Esc` 는 취소. 확인창 안에 입력칸을 두지 않는다.
-- 버튼 글은 동작 이름("삭제" · "저장" · "그룹 삭제") — "확인" 으로 뭉뚱그리지 않는다.
+#### Motion
+- 등장: slide-in (top-right은 우측에서, top-center은 위에서) + fade (`motion-duration-base` 200ms × `motion-ease-out`)
+- 자동 닫힘 timer: success/info 4초, warning 6초, error 8초 (긴 텍스트는 +2초)
+- 사라짐: slide-out + fade (`motion-duration-fast` 150ms)
+- hover 시 timer pause, leave 시 resume
+- `prefers-reduced-motion: reduce` 시 즉시 표시 + cross-fade only
 
-#### Accessibility 체크리스트
-- [ ] 모달(시트 · 대화상자 · 확인창) — `role="dialog"` · 확인창 `role="alertdialog"`, `aria-modal="true"`, 제목 `aria-labelledby` · 설명 `aria-describedby`, 열면 표면으로 초점 · 닫으면 연 자리로, 열린 동안 초점을 가두고 뒤 화면을 숨기고 스크롤을 잠근다
-- [ ] Popover — `role="dialog"`(aria-modal 없음), 초점은 안으로 · 가두지 않음 · Tab 으로 나가면 닫힘, 트리거 `aria-haspopup="dialog"` · `aria-expanded`
-- [ ] 닫기 버튼 이름 "닫기", 시트 닫기 누르는 영역 44
-- [ ] 대화상자 높이 80% 상한 — 머리 · 바닥이 화면 밖으로 나가지 않는다
-
-### 알림 메시지 — Snackbar · Callout · Page Banner · Result Section
-
-> 2026-10-02 SEED Snackbar · Callout · Page Banner · Result Section 구조로 다시 정했다(사용자 결정 — 비교 페이지 https://claude.ai/artifact/8t85WkZ3HLhMu8KibW3Vk1). 수치 원본은 `specs/components/snackbar.yaml` · `callout.yaml` · `page-banner.yaml` · `result-section.yaml`, 쓰는 규칙은 각 스펙 md 다. 옛 Toast 절(흰 카드 · 위 오른쪽 · 3장 쌓기 · 오류 8초)과 Sonner(v72) · Banner(v73) 절은 걷었다. 반전 짝 역할 셋(v115 — `fg-brand-inverted` · `fg-positive-inverted` · `fg-critical-inverted`)을 이 묶음에서 들였다.
-
-#### 나누기
-
-| 이런 일 | 쓰는 것 |
-|---|---|
-| 방금 한 일의 결과 · 뒤에서 끝난 일 · 다시 하면 되는 가벼운 실패 | Snackbar(토스트) |
-| 입력값이 틀림 | Field 의 오류 문구(칸 아래) |
-| 그 기능 · 내용 가까이의 팁 · 주의, 그 자리의 오류(저장 실패) | Callout |
-| 페이지 전체의 상태(연결 끊김 · 만료 예정 · 새 버전) | Page Banner — 페이지 맨 위, 한 화면 하나 |
-| 비어 있음 · 불러오기 실패 · 완료 · 404 · 화면 오류 | Result Section |
-| 되돌릴 수 없는 결정 | Alert Dialog |
-
-오류는 자리에서 알린다 — 모든 실패를 한곳에서 토스트로 띄우지 않는다(서버가 보낸 글 · 영어 · 코드를 그대로 보이지 않는다). 시트 · 대화상자 안의 결과 · 오류는 그 안 Callout, 토스트는 시트가 닫힌 뒤.
-
-#### 모양
-
-| | Snackbar | Callout | Page Banner | Result Section |
-|---|---|---|---|---|
-| 자리 | 화면 아래 가운데 · 탭 바 · 플로팅 버튼 위 8 · 최대 464 | 본문 안 · 콘텐츠 폭 | 페이지 맨 위 · 화면 폭 | 놓인 자리 가운데 |
-| 면 | `bg-neutral-inverted`(다크는 밝은 띠) · 모서리 8 · 그림자 없음 | `bg-*-weak` · 모서리 10 | `bg-*-weak` · `bg-*-solid` · 모서리 0 | 없음 |
-| 크기 · 여백 | 최소 44 · 10 + 6(글은 16) | 최소 50 · 14 | 최소 40 · 10 / 24 | 좌우 48 · 위아래 16 |
-| 글 | 14 / 19 | 14 / 19 · 제목 700 · 한 문단 | 14 / 19 · 제목 700 · 본문 500 | 제목 22 / 30 · 16 / 22 · 설명 muted |
-| 아이콘 | 24 — 성공 · 실패만(`fg-*-inverted`) | 16 · 톤 색 | 16 · 톤 색 | 40 |
-| 버튼 | 액션 하나 · `fg-brand-inverted` 14 · 700 | 링크 · 전체 누르기 · 닫기 | 글 버튼 하나 13 · 700 · 닫기 | neutralWeak 40 + 글 버튼 |
-| 시간 · 쌓임 | 4초 · 액션 6초 · 머무는 동안 멈춤 · 한 번에 하나 · z L6(400) | 늘 보임 | 늘 보임 · 한 화면 하나 | 늘 보임 |
-
-톤은 다섯(neutral · informative · positive · warning · critical) — 옅은 바탕은 `bg-*-weak` + `fg-*-contrast`, 짙은 바탕은 `bg-*-solid` + 흰 글(`static-white`). 아이콘은 lucide 선 아이콘(v106).
-
-#### 쓰는 규칙
-
-- **글** — 해요체 문장에 마침표(스낵바도 — Writing v106). 무엇이 됐는지 먼저("거래를 저장했어요."), 오류는 할 수 있는 일까지. "실패" 로 끝나는 말 · 서버가 보낸 글 · 영어 · 코드를 쓰지 않는다. 액션은 동작 이름("되돌리기").
-- **닫기** — Callout · Page Banner 는 한 번 보면 되는 안내에만 닫기를 두고, 닫은 것을 기억한다. 경고 · 오류는 닫지 못한다.
-- **실패는 비어 있음과 다르게** — 불러오기 실패를 "내역이 없어요" 로 보이지 않는다. Result Section 의 실패 + "다시 시도".
-
-#### 접근성
-
-- Snackbar: 자리 `aria-live="polite"` · 띠 `role="status"` + `aria-atomic`, 초점을 옮기지 않는다. 보조 기술용 닫기는 키보드 초점이 오면 보인다.
-- 나중에 나타나는 경고 · 위험(Callout · Page Banner)은 `role="alert"`. Result Section 은 결과로 바뀌면 `role="status"`, 제목은 제목 태그.
+#### Accessibility
+- [ ] **role="status"** (success/info, polite) 또는 **role="alert"** (error, assertive)
+- [ ] **aria-live**: status는 `aria-live="polite"`, alert는 `aria-live="assertive"`
+- [ ] **시간 제한 1.4.13**: timer로 사라지므로 사용자가 충분히 읽을 시간 확보 — error는 dismissible(close button) 권장, 또는 hover/focus pause
+- [ ] **2.2.1 Timing Adjustable**: 자동 닫힘 시간을 사용자가 끄거나 연장 가능하도록 옵션 제공 (시스템 설정 또는 prefers-reduced-motion 기반 +50% 시간)
+- [ ] **focus 가져오지 않기**: toast 등장이 사용자의 focus를 빼앗으면 안 됨 — `tabindex="-1"` (focus 안 받음, screen reader는 aria-live로 읽음)
+- [ ] **dismissible toast**: close button `aria-label="알림 닫기"` 필수
 
 ### Tooltip
 
@@ -4721,11 +4682,52 @@ spec brand-neutral — skeleton은 색상 자체가 neutral surface. brand 파�
 #### HR / Desk 듀얼 브랜드
 spec brand-neutral. brand 파일에서 사용 패턴 차이 — HR(numbered 데이터 그리드 위주), Desk(load-more 모바일 우선).
 
-### Sheet — 옆 패널 (v67 추가)
+### Drawer / Sheet (v67 추가)
 
-> 아래에서 올라오는 Drawer 는 2026-10-02 Bottom Sheet 로 바뀌었다(위 "시트 · 대화상자 · 확인창 · 팝오버" 절, `specs/components/bottom-sheet.md`). 이 절의 옆 패널(Sheet — 오른쪽 · 왼쪽)은 Side Panel 차례에 다시 정한다.
+페이지 위로 슬라이드 인/아웃하는 panel. **새 토큰 추가 0** — `z-drawer` (v65) + `motion-duration-slow` + `overlay-dim` + 기존 surface/radius 합성.
 
-페이지 옆에서 들어오는 패널. 너비 `min(80vw, 480px)`, 바깥쪽 모서리만 `radius-2xl`, 여백 `xl` 24 · 머리 · 바닥 `lg` 16, `surface-default` · `shadow-xl`, `overlay-dim`. 열린 동안 초점을 가두고 닫히면 트리거로 돌려준다(`role="dialog"` + `aria-modal="true"`).
+#### Variant
+| Variant | 방향 | 사용 |
+|---|---|---|
+| **side** (right) | 우→좌 슬라이드 인 | 데스크탑 detail panel (HR 직원 detail, 권한 설정) |
+| **side** (left) | 좌→우 슬라이드 인 | navigation drawer (Desk hamburger menu) |
+| **bottom** | 하→상 슬라이드 인 | mobile 액션 (Desk 거래 입력, 메모 attachments) |
+| **top** | 상→하 슬라이드 인 (드물게) | 알림 센터 (notification feed) |
+
+#### Layout
+- 너비/높이: side는 `min(80vw, 480px)`, bottom은 `max-height: 75vh`
+- radius: side는 좌/우 외곽만 `radius-2xl` (20px), bottom은 상단만 `radius-2xl`
+- padding: `xl` (24px) 4면, header/footer는 `lg` (16px)
+- background: `surface-default`, shadow: `shadow-xl`
+- 함께: overlay-dim (`overlay-dim-light` 또는 prose-token 동일 alpha)
+
+#### Anatomy
+- header: 제목(`title-sm`) + 닫기 버튼(`✕` 24×24 button, `text-tertiary`)
+- body-lg: scroll 가능 (overflow-y: auto), main content
+- footer (선택): primary action button + secondary
+- bottom drawer는 상단에 swipe handle (8×40 `surface-input` rounded bar) 표시 — gesture hint
+
+#### Motion
+- 등장: slide + overlay fade (`motion-duration-slow` 300ms × `motion-ease-out`)
+- 사라짐: 역순 (`motion-duration-base` 200ms — 닫기는 빠르게)
+- bottom drawer swipe-down: 사용자 finger 따라 transform translate, threshold 30% 또는 velocity 기준 닫기
+- `prefers-reduced-motion: reduce`: fade-only (slide 비활성)
+
+#### Z-index
+- `z-drawer` (1200) — modal(1300)보다 아래, sticky(1100)보다 위
+- modal이 drawer 위에서 등장 가능 (modal에 confirm)
+
+#### Accessibility
+- [ ] **focus trap**: drawer 열린 동안 tab focus가 drawer 내부에 갇힘 (escape 또는 close 버튼으로 해제)
+- [ ] **return focus**: drawer 닫힐 때 trigger 요소로 focus 복귀
+- [ ] `role="dialog"` + `aria-modal="true"` (focus trap 명시)
+- [ ] `aria-labelledby="drawer-title-id"` — 제목과 연결
+- [ ] **Esc**: drawer 닫기 (단, 본문 텍스트 입력 중에는 입력 우선)
+- [ ] **overlay click**: 외부 클릭으로 닫기 (단, 폼 입력 중이면 confirmation prompt)
+- [ ] **scroll lock**: drawer 열린 동안 body-lg scroll 차단 (`overflow: hidden`)
+
+#### HR / Desk 듀얼 브랜드
+spec brand-neutral. brand 파일 — HR(side drawer 데스크탑 detail), Desk(bottom sheet 모바일).
 
 ### Spinner / Progress (v67 추가)
 
@@ -5212,7 +5214,38 @@ right-click(데스크탑) / long-press(모바일) 메뉴. **새 토큰 0** — D
 
 ### Alert Dialog (v70 추가)
 
-> 2026-10-02 SEED Alert Dialog 로 다시 정했다 — 위 "시트 · 대화상자 · 확인창 · 팝오버" 절과 `specs/components/alert-dialog.md` 를 따른다.
+destructive confirmation modal — Modal(v43)의 강조 변형. 데이터 삭제, 영구 액션 등. **새 토큰 0**.
+
+#### Differences vs Modal
+- **Modal**: 일반 confirmation (저장, 신청 등) — primary action 강조
+- **Alert Dialog**: destructive (삭제, 취소 등) — primary `error` 색 + 추가 경고 톤
+
+#### Anatomy
+- overlay: `overlay-dim-light` (Modal과 동일)
+- card: `surface-default` + `radius-lg` + `shadow-xl` (Modal과 동일 또는 약간 작음)
+- icon (옵션): destructive 의미 강조 — `error` 또는 `warning` 24-32px
+- title: `title-sm`, 강한 wording ("정말 삭제하시겠어요?")
+- description: `body-lg`, 결과 명시 ("이 메모는 영구 삭제됩니다", "취소할 수 없어요")
+- actions: primary `btn-primary` `error` 색 배경 + `text-on-accent` ("삭제") + secondary outline ("취소")
+- 액션 순서: 모바일은 destructive를 먼저(상단/좌측), 데스크탑은 우측 (플랫폼 관행)
+
+#### State
+- 강조: title + icon이 시각 무게중심
+- focus initial: secondary("취소") — destructive 자동 진행 회피
+
+#### Motion
+- Modal과 동일 (`motion-duration-base` 200ms × `motion-ease-out`)
+- destructive emphasis: 등장 시 작은 scale bounce(1.0 → 1.02 → 1.0) 옵션 — `prefers-reduced-motion` 시 비활성
+
+#### Accessibility
+- `role="alertdialog"` (단순 dialog 대신 — alert 의미 강조) + `aria-modal="true"`
+- `aria-labelledby="title-id"` + `aria-describedby="desc-id"`
+- focus trap (Modal 동일)
+- **Esc**: 취소(secondary)와 동일 동작 — destructive 자동 진행 안 함
+- 키보드: Tab으로 actions 이동, focus는 secondary부터 시작
+
+#### HR / Desk 듀얼 브랜드 (v70 5종 공통)
+spec brand-neutral. brand 파일 — HR(Accordion 결재 detail 그룹 / Hover Card 직원 mini profile / Alert Dialog 결재 반려 confirm / Context Menu 데이터 그리드 row), Desk(Accordion FAQ 설정 / Collapsible 메모 attachments / Hover Card 태그 정의 / Alert Dialog 메모 영구 삭제).
 
 ### Table (v71 추가)
 
@@ -5386,7 +5419,46 @@ spec brand-neutral. brand 파일 — HR(Data Table 결재/직원/평가 그리�
 
 ### Sonner (v72 추가, Toast 강화)
 
-> 2026-10-02 걷었다 — Snackbar 로 바꿨다("알림 메시지 — Snackbar · Callout · Page Banner · Result Section" 절). 옛 스펙은 `specs/components/sonner.history/v-pre-seed-feedback.*`.
+multi-toast stack management — v46 Toast의 상위 패턴. 동시 다수 toast 등장·정렬·자동 제거. **새 토큰 0**.
+
+#### Differences vs Toast
+- **Toast (v46)**: 단일 toast 컴포넌트 spec — 하나 등장
+- **Sonner**: 여러 toast 동시 관리 — stack, dismiss order, auto-collapse
+
+#### Position
+| Position | 사용 |
+|---|---|
+| **bottom-right** (default) | 데스크탑 — 우하단 stack |
+| **top-right** | 알림 빈도 높을 때 (HR 결재 알림) |
+| **bottom-center** | 모바일 friendly — safe-area-inset-bottom 고려 |
+| **top-center** | 강조 (성공/실패 동시 강조) |
+
+#### Stack
+- 최대 표시: 3개 (그 이상은 collapsed +N more)
+- 새 toast 등장: 가장 위/아래에 추가, 다른 toast는 밀림 (slide animation)
+- 자동 dismiss: 5초 (success/info), 7초 (warning), 10초 (error — 사용자 인지 시간 ↑)
+- hover stack: 사용자 hover 시 모든 toast 정지 + expand (timer pause)
+
+#### Anatomy (per toast)
+- v46 Toast 구조 그대로 — kind icon + title + body-lg + close
+- + ✕ close 우측 상단 (각 toast 개별 dismiss)
+- + 액션 버튼 옵션 ("실행 취소" — 5초 안에 클릭하면 작업 revert)
+
+#### Motion
+- 등장: slide-in from edge + fade `motion-duration-base` (200ms)
+- 사라짐: slide-out + fade `motion-duration-fast` (150ms)
+- stack reorder: smooth transition `motion-duration-base`
+- collapsed +N: `caption` "더 보기 (N)" + 클릭 시 expand
+
+#### Accessibility
+- 컨테이너: `role="region" aria-label="알림"`
+- 각 toast: `role="alert"` (성공/실패 강조) 또는 `role="status"` (info)
+- live region: `aria-live="polite"` (info), `aria-live="assertive"` (error)
+- 키보드: Tab으로 toast 진입, Esc 또는 close button으로 dismiss
+- 스크린리더: 새 toast 등장 시 자동 발화
+
+#### Z-index
+`z-toast` (v65, 1400) — 모든 layer 위.
 
 ### Aspect Ratio (v72 추가)
 
@@ -5531,7 +5603,48 @@ spec brand-neutral. brand 파일 — HR(Sonner top-right 결재 알림 stack / C
 
 ### Banner (v73 추가)
 
-> 2026-10-02 걷었다 — 화면 안 안내는 Callout, 페이지 맨 위 띠는 Page Banner 다("알림 메시지 — Snackbar · Callout · Page Banner · Result Section" 절).
+페이지 상단 또는 영역 상단에 표시하는 알림. Toast(임시)와 다름 — Banner는 영구적 또는 사용자가 명시적 dismiss 전까지 유지. **새 토큰 0**.
+
+#### Variant
+| Variant | 시맨틱 | 사용 |
+|---|---|---|
+| **info** | `info` 색 stripe | 시스템 점검 안내, 새 기능 소개 |
+| **success** | `success` 색 stripe | 마이그레이션 완료, 캠페인 성공 |
+| **warning** | `warning` 색 stripe | 약관 변경 예정, 곧 만료 (구독, 휴가) |
+| **error** | `error` 색 stripe | 시스템 장애, 결제 실패 |
+
+#### Anatomy
+- 가로 stripe — 페이지 너비 100%
+- 좌측: kind icon (16-20px circle, semantic 색)
+- 가운데: title(`body-lg`) + description(`body-lg`/`caption`) + (옵션) link "자세히"
+- 우측: action button (옵션) + ✕ dismiss button
+- background: `surface-input` 또는 semantic 8-12% tint
+
+#### Position
+- **page-top**: 모든 페이지 상단 sticky (시스템 알림)
+- **section-top**: 카드/section 상단 (해당 영역 한정 안내)
+- **inline**: 콘텐츠 흐름 안 (form 위 안내 등)
+
+#### State
+- default: 정보 표시
+- dismissible: ✕ 클릭 또는 사용자 dismiss → 5초 fade-out
+- persistent: dismiss 불가 (시스템 점검 등 강제 안내)
+
+#### Motion
+- 등장: slide-down (10px) + fade `motion-duration-base` (200ms) `motion-ease-out`
+- 사라짐: 역순 (`motion-duration-fast`)
+- `prefers-reduced-motion`: instant
+
+#### Accessibility
+- `role="alert"` (severe error/warning) 또는 `role="status"` (info/success)
+- `aria-live="polite"` (info/success), `aria-live="assertive"` (error)
+- dismiss button: `aria-label="알림 닫기"`
+- localStorage로 dismiss 기억 (재방문 시 같은 banner 재등장 회피)
+
+#### Differences vs Toast
+- **Toast**: 임시 (5-10초 자동 dismiss), event-driven
+- **Banner**: 영구 또는 명시적 dismiss, 시스템/페이지 레벨 안내
+- **Alert Dialog**: blocking modal, 사용자 응답 필수
 
 ### Chip
 
@@ -5576,7 +5689,42 @@ spec brand-neutral. brand 파일 — HR(Sonner top-right 결재 알림 stack / C
 
 ### Popover (v73 추가)
 
-> 2026-10-02 SEED Popover 로 다시 정했다 — 위 "시트 · 대화상자 · 확인창 · 팝오버" 절과 `specs/components/popover.md` 를 따른다.
+trigger 클릭 시 등장하는 작은 카드 — Tooltip(v44)보다 풍부, Dropdown(v45)보다 자유 콘텐츠. **새 토큰 0** — Tooltip + Card 합성, Dropdown spec과 분리.
+
+#### Differences
+- **Tooltip (v44)**: hover 즉시 등장, 1줄 hint, decoration
+- **Popover**: 클릭 trigger, interactive 콘텐츠 (form/list/액션 가능)
+- **Dropdown (v45)**: 정형 menu/select pattern (items list)
+- **Hover Card (v70)**: hover 등장, 정보 preview (read-only)
+
+#### Anatomy
+- trigger: button 또는 link
+- panel: `surface-default` + `radius-md` + `shadow-md` + 1px `border-default`
+- arrow (옵션): trigger 방향 가리키는 8px triangle
+- 콘텐츠: 자유 — form / list / 메타정보 / 작은 액션
+
+#### Layout
+- panel max-width: 320-400px
+- panel offset from trigger: `xs` (4px)
+- 자동 flip: viewport 초과 시 위/아래/좌/우 자동 reposition
+- close on outside click + Esc
+
+#### Motion
+- 등장: scale(0.96→1) + fade-in `motion-duration-fast` (150ms) `motion-ease-out`
+- 사라짐: 역순
+
+#### State
+- closed (default): trigger 단독
+- open: panel 표시 + trigger `border-focus` outline (현재 활성 표시)
+
+#### Accessibility
+- trigger: `aria-expanded="true|false"` + `aria-haspopup="dialog"` (interactive content)
+- panel: `role="dialog"` + `aria-label="..."` (interactive면) 또는 단순 popover (`aria-labelledby="trigger-id"`)
+- focus 관리:
+  - 등장 시: panel 안 첫 focusable 요소로 focus 이동
+  - 닫힐 때: trigger로 return focus
+  - focus trap 옵션 (form 같은 interactive content)
+- 키보드: Esc 닫기, 외부 클릭 닫기, Tab으로 panel 안 이동
 
 ### File Upload (v73 추가)
 

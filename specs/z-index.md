@@ -14,7 +14,7 @@ Porest 는 Bootstrap 식 **명시적 z-index 계층 분기** 정책을 채택. s
 | **L3 — modal-aware floating** | `z-[200]` | `popover` / `select` / `dropdown-menu` / `color-picker` (popover 패턴) | page 와 modal 안 어디서든 사용. modal(L2) 위에 떠야 하므로 200. page 에서도 동일 값 — sticky/FAB(L1=50) 위 자연스러움 |
 | **L4 — modal-aware tooltip** | `z-[210]` | `tooltip` | popover 위에 살짝 떠야 함 (hover 잠깐 뜨고 사라지는 참고 정보) |
 | **L5 — alert-dialog** | `z-[300]` overlay · `z-[301]` content | `alert-dialog` | 비가역 결정 강제. dialog(L2) 위로 명시 — dialog 안에서 삭제 확인 같은 alert 띄우는 케이스 보존 |
-| **L6 — toast** | sonner 라이브러리 기본 (보통 99999+) | `sonner` | 모든 modal 위 사용자 알림. 라이브러리가 자체 처리 |
+| **L6 — snackbar** | `z-[400]` | `snackbar` | 모든 시트 · 대화상자 · 확인창 위의 잠깐 알림(2026-10-02 — 옛 sonner 라이브러리 기본 99999+ 를 명시 값으로) |
 | **L9 — dev** | `z-[9999]` | `env-watermark` | dev only 시각 표시 (production 비활성) |
 
 ## 의도된 stacking 시나리오
@@ -26,7 +26,7 @@ Porest 는 Bootstrap 식 **명시적 z-index 계층 분기** 정책을 채택. s
 | dialog 안 select / popover 열림 | floating(L3=200) 가 dialog content(L2=101) 위 ✓ |
 | dialog 안 tooltip hover | tooltip(L4=210) 가 popover(L3=200) 위 ✓ |
 | dialog 안 alert-dialog 열림 (삭제 확인 등) | alert(L5=300) 가 dialog(L2=101) 위 ✓ |
-| 모든 layer 위 toast | sonner(L6) 가 alert 위 ✓ |
+| 모든 layer 위 snackbar | snackbar(L6=400) 가 alert(L5=301) 위 ✓ |
 | dev watermark | L9 가 모든 것 위 (배경처럼 보임은 opacity 처리) |
 
 ## L3 의 "modal-aware" 의미

@@ -394,6 +394,9 @@ colors:
   fg-brand-dark: "{colors.brand-900-dark}"
   fg-brand-contrast: "{colors.brand-700}"
   fg-brand-contrast-dark: "{colors.brand-900-dark}"
+  # v115 — 반전 표면(bg-neutral-inverted — 스낵바 액션) 위의 브랜드 글자. 라이트는 fg-brand 의 다크 값, 다크는 라이트 값
+  fg-brand-inverted: "{colors.brand-900-dark}"
+  fg-brand-inverted-dark: "{colors.brand-600}"
   # 배경 (bg)
   bg-brand-solid: "{colors.brand-600}"
   bg-brand-solid-dark: "{colors.brand-700-dark}"
@@ -444,6 +447,11 @@ colors:
   fg-warning-contrast-dark: "{colors.orange-900-dark}"
   fg-informative-contrast: "{colors.blue-800}"
   fg-informative-contrast-dark: "{colors.blue-900-dark}"
+  # v115 — 반전 표면(bg-neutral-inverted — 스낵바) 위의 상태 아이콘. 라이트는 그 역할의 다크 값, 다크는 라이트 값(사용자 결정 2026-10-02)
+  fg-positive-inverted: "{colors.green-800-dark}"
+  fg-positive-inverted-dark: "{colors.green-700}"
+  fg-critical-inverted: "{colors.red-800-dark}"
+  fg-critical-inverted-dark: "{colors.red-700}"
   # 배경 (bg)
   bg-layer-basement: "{colors.gray-200}"
   bg-layer-basement-dark: "{colors.gray-00-dark}"
@@ -1103,6 +1111,24 @@ components:
   role-inverted-pressed-dark:
     backgroundColor: "{colors.bg-neutral-inverted-pressed-dark}"
     textColor: "{colors.fg-neutral-inverted-dark}"
+  role-positive-on-inverted-light:
+    backgroundColor: "{colors.bg-neutral-inverted}"
+    textColor: "{colors.fg-positive-inverted}"
+  role-positive-on-inverted-dark:
+    backgroundColor: "{colors.bg-neutral-inverted-dark}"
+    textColor: "{colors.fg-positive-inverted-dark}"
+  role-critical-on-inverted-light:
+    backgroundColor: "{colors.bg-neutral-inverted}"
+    textColor: "{colors.fg-critical-inverted}"
+  role-critical-on-inverted-dark:
+    backgroundColor: "{colors.bg-neutral-inverted-dark}"
+    textColor: "{colors.fg-critical-inverted-dark}"
+  role-brand-on-inverted-light:
+    backgroundColor: "{colors.bg-neutral-inverted}"
+    textColor: "{colors.fg-brand-inverted}"
+  role-brand-on-inverted-dark:
+    backgroundColor: "{colors.bg-neutral-inverted-dark}"
+    textColor: "{colors.fg-brand-inverted-dark}"
   role-critical-on-layer-light:
     backgroundColor: "{colors.bg-layer-default}"
     textColor: "{colors.fg-critical}"
@@ -1875,6 +1901,8 @@ v108 로 크게 바뀐 색을 지금 제품 값(Desk 웹 `porest-tokens.css` · 
 | `fg-placeholder` | gray-700 | gray-700 | gray-600 / gray-600 |
 | `fg-disabled` | gray-500 | gray-600 | gray-500 / gray-500 (v109) |
 | `fg-neutral-inverted` | gray-00 | gray-100 | — |
+| `fg-positive-inverted` | green-800(다크 팔레트) | green-700 | — (v115, SEED 에 없음 — 스낵바 아이콘) |
+| `fg-critical-inverted` | red-800(다크 팔레트) | red-700 | — (v115, SEED 에 없음 — 스낵바 아이콘) |
 | `stroke-neutral-subtle` | gray-300 | gray-300 | 투명도 있는 검정 · 흰색 |
 | `stroke-neutral-weak` | gray-400 | gray-400 | — |
 | `stroke-neutral-solid` | gray-600 | gray-600 | gray-800 / gray-800 (v109) |
@@ -1902,6 +1930,7 @@ SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채�
 | bg-brand-weak-pressed | 200 / 300 | 200 / 300 | 200 / 200 |
 | fg-brand | 600 / 900 | 600 / 900 | 600 / 700 |
 | fg-brand-contrast | 700 / 900 | 700 / 900 | 700 / 700 |
+| fg-brand-inverted | 900(다크 팔레트) / 600 | 900(다크 팔레트) / 600 | — (v115) |
 | stroke-brand-solid | 600 / 900 | 600 / 900 | 700 / 700 |
 | stroke-brand-weak | 300 / 800 | 400 / 800 | 300 / 300 |
 | stroke-focus-ring | 600 / 900 | 600 / 900 | blue-600 / blue-600 |
@@ -1964,6 +1993,8 @@ SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채�
 | `fg-positive-contrast` | `#026E33` | `#AED6B6` | — | — |
 | `fg-warning-contrast` | `#A53E0A` | `#F9BFA9` | — | — |
 | `fg-informative-contrast` | `#0F5FB3` | `#ACCEFB` | — | — |
+| `fg-positive-inverted` | `#25C062` | `#167F3F` | — | — |
+| `fg-critical-inverted` | `#FF8477` | `#D72323` | — | — |
 
 #### 배경 (bg)
 
@@ -2016,6 +2047,7 @@ SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채�
 |---|---|---|---|---|
 | `fg-brand` | `#357B5F` | `#72B898` | primary · primary-light | fg-brand · fg-link |
 | `fg-brand-contrast` | `#256D52` | `#72B898` | — | fg-brand-strong |
+| `fg-brand-inverted` | `#72B898` | `#357B5F` | — | — |
 | `bg-brand-solid` | `#357B5F` | `#357B5F` | primary | bg-brand |
 | `bg-brand-solid-pressed` | `#256D52` | `#256D51` | — | bg-brand-press · bg-brand-hover |
 | `bg-brand-weak` | `#EDF5F0` | `#25372E` | — | bg-brand-subtle |
@@ -3740,32 +3772,14 @@ HR — icon-only action button(승인/반려/편집/삭제 icon) 의미 설명, 
 - icon-only button: tooltip + `aria-label` 동시 (screen reader 보강)
 - 데이터 그리드 truncated cell: hover 시 tooltip + 키보드 focus도 동등
 
-### Toast
+### 알림 메시지 — Snackbar · Callout · Page Banner · Result Section
 
-HR — 결재 처리 완료, 직원 정보 저장, 시스템 알림 등 짧은 작업 결과 표시.
+> 모양 · 쓰는 규칙은 DESIGN.md 의 같은 이름 절(2026-10-02 SEED). HR 의 쓰는 자리만 적는다.
 
-#### Structure (신규 토큰 없음)
-- 표면: `surface-default` + `shadow-md` + `radius-md`
-- semantic 4종 좌측 4px stroke + icon (`success`/`error`/`warning`/`info`)
-- text: `body-md` (15/400) + (선택) `body-lg` 제목
-
-#### Position
-- desktop default: top-right (24px 여백)
-- 모바일 앱(승인 등): top-center
-
-#### Layout
-- max-width 360px, padding `md` (12px), icon+text 간격 `sm` (8px)
-- 중첩 시 stack 위→아래, `xs` 간격
-
-#### Motion
-- 등장: slide-in + fade (`motion-duration-base`)
-- 자동 닫힘: success/info 4s, warning 6s, error 8s, hover pause
-- 사라짐: slide-out + fade (`motion-duration-fast`)
-
-#### A11y
-- error는 `role="alert"` + `aria-live="assertive"`, 그 외 `role="status"` + polite
-- 자동 닫힘 시간 prefers-reduced-motion +50% 또는 시스템 설정으로 조정 가능
-- focus 빼앗지 않음, dismissible `aria-label="알림 닫기"`
+- **오류** — 전역 오류 토스트(GET 까지 · 재시도마다)를 걷는다. 목록 · 상세를 불러오지 못하면 그 자리 Result Section(실패 + 다시 시도), 저장 실패는 대화상자 맨 위 Callout `critical`, 칸 오류는 칸 아래.
+- **토스트** — 결재 승인 · 반려 · 저장처럼 방금 한 일의 결과만, 아래 가운데. 테마는 앱 테마를 따른다.
+- **안내** — 휴가 신청의 자동 승인 · 결재자 안내는 Callout(번역 키가 아닌 글로), 공지는 Page Banner 를 검토한다(지금은 로그인마다 대화상자 — 앱 적용 때 정한다).
+- **빈 화면** — shadcn Empty 를 Result Section 으로, 404 는 한국어 Result Section.
 
 ### 시트 · 대화상자 · 확인창 · 팝오버
 
@@ -4019,10 +4033,8 @@ HR(B2B) 5 data display 컴포넌트 — 데이터 그리드 핵심 application �
 HR(B2B) 5 추가 컴포넌트.
 
 #### Sonner — HR
-- **top-right position** 데스크탑 default — 결재 알림 빈도 높음, 시야 상단 명확.
-- 결재 승인/반려 결과 stack — 일괄 처리 시 동시 5+ toast 가능.
-- "실행 취소" action: 잘못 승인한 결재 5초 안에 revert 가능.
-- 5초(success) / 10초(error) auto-dismiss — error는 사용자 인지 시간 ↑.
+
+> 2026-10-02 걷었다 — Snackbar("알림 메시지 — Snackbar · Callout · Page Banner · Result Section" 절).
 
 #### Aspect Ratio — HR
 - **16:9** 직원 프로필 cover image
@@ -4054,11 +4066,8 @@ HR(B2B) 5 추가 컴포넌트.
 HR(B2B) 5 추가 shadcn 누락 컴포넌트.
 
 #### Banner — HR
-- **약관 변경 예정** warning variant — "2026-06-01부터 개인정보 처리방침이 변경됩니다" stripe 영구 노출.
-- **시스템 점검 공지** info variant — 결재 시스템 새벽 점검 사전 안내, dismiss 가능.
-- 페이지 최상단 (header 아래) 고정 위치 — 스크롤 시 따라가지 않음.
-- error variant — 결재 시스템 일시 장애, 휴가 신청 불가 등 critical 알림.
-- 본인이 직접 dismiss 전엔 유지 — 새로고침 후에도 표시 (localStorage `dismissed-banner-{id}`).
+
+> 2026-10-02 걷었다 — 화면 안 안내는 Callout, 페이지 맨 위 띠는 Page Banner("알림 메시지 — Snackbar · Callout · Page Banner · Result Section" 절).
 
 #### Chip — HR
 공통 정의는 `DESIGN.md` 의 Chip 절, 원본은 `specs/components/chip.md`(2026-10-02 SEED Chip). 고른 칩은 중립색이라 브랜드와 관계없이 같다.

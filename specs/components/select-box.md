@@ -134,7 +134,7 @@ Select Box 는 고르는 도구이고 그 자체로 무언가를 실행하지 �
 
 컨트롤이 없는 상자로 여럿을 고르게 하면 몇 개까지 고를 수 있는지 미리 적는다. 다 고른 뒤 또 고르면 고르지 않고 토스트 같은 안내로 알린다(SEED).
 
-[그림: 최대 개수 안내 — "2개까지 고를 수 있어요"](../../site/components/specs/select-box.tsx#max-guide)
+[그림: 최대 개수 안내 — "2개까지 고를 수 있어요."](../../site/components/specs/select-box.tsx#max-guide)
 
 ### 다른 컴포넌트와 나누기
 
