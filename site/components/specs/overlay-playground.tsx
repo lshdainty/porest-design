@@ -125,13 +125,14 @@ const DETAIL: RowSpec[] = [
 // 스냅 높이 — 절반 · 가득(화면 높이에 대해, 가득은 시트 상한)
 const snapsOf = (kit: OvKit) => [0.5, kit.ov.sheet.maxHeight];
 
-function sheetCode(use: SheetUse, o: { desc: boolean; foot: 'none' | 'one' | 'two'; handle: boolean }) {
+function sheetCode(use: SheetUse, o: { desc: boolean; foot: 'none' | 'one' | 'two'; handle: boolean; fog: boolean }) {
   const root = ['open={open}', 'onOpenChange={setOpen}', ...attr(use === 'form', 'form'), ...attr(use === 'form', 'dirty={isDirty}'), ...attr(o.handle, 'snapPoints={[0.5, 0.9]}')];
   const title = use === 'form' ? '거래 추가' : use === 'pick' ? '기간' : '거래 상세';
   const desc = use === 'form' ? '금액만 넣어도 저장할 수 있어요.' : use === 'pick' ? '고른 기간의 거래만 보여요.' : '10월 1일 (목) 오후 12:30';
   const body = use === 'form' ? '      <Field label="금액">…</Field>' : use === 'pick' ? `      <ListRadioGroup value={draft} onValueChange={${o.foot === 'none' ? 'pick' : 'setDraft'}}>…</ListRadioGroup>` : '      <List>…</List>';
   // 본문에 List 를 바로 두면 줄이 제 좌우 여백(24)을 가진다 — 본문 좌우 여백을 뺀다
-  const bodyAttr = use === 'form' ? '' : ' className="px-0"';
+  // 넘칠 수 있는 본문(목록 · 긴 폼)은 scrollFog — 위 20 · 아래 80 이 늘 흐리다(Scroll Fog)
+  const bodyAttr = `${o.fog ? ' scrollFog' : ''}${use === 'form' ? '' : ' className="px-0"'}`;
   const foot =
     use === 'form'
       ? '      <Button size="large" type="submit">저장</Button>'
@@ -149,6 +150,7 @@ export function BottomSheetPlayground({ kits, lists, field, input }: { kits: Rec
   const [desc, setDesc] = useState<'no' | 'yes'>('yes');
   const [foot, setFoot] = useState<'none' | 'one' | 'two'>('two');
   const [handle, setHandle] = useState<'no' | 'yes'>('no');
+  const [fog, setFog] = useState<'off' | 'on'>('off');
   const [mode, setMode] = useState<ViewMode>('auto');
   const [brand, setBrand] = useState<Brand>('desk');
   const [open, setOpen] = useState(false);
@@ -164,7 +166,7 @@ export function BottomSheetPlayground({ kits, lists, field, input }: { kits: Rec
   const form = use === 'form';
   const withHandle = !form && handle === 'yes';
   const snaps = snapsOf(kit);
-  const code = useMemo(() => sheetCode(use, { desc: desc === 'yes', foot, handle: withHandle }), [use, desc, foot, withHandle]);
+  const code = useMemo(() => sheetCode(use, { desc: desc === 'yes', foot, handle: withHandle, fog: fog === 'on' }), [use, desc, foot, withHandle, fog]);
   const close = () => {
     setOpen(false);
     setAmount('');
@@ -237,6 +239,7 @@ export function BottomSheetPlayground({ kits, lists, field, input }: { kits: Rec
                   handle={withHandle}
                   onHandle={() => (snap + 1 < snaps.length ? setSnap(snap + 1) : setOpen(false))}
                   bodyPad={form}
+                  fog={fog === 'on'}
                   footer={footer}
                 >
                   {body}
@@ -267,6 +270,7 @@ export function BottomSheetPlayground({ kits, lists, field, input }: { kits: Rec
           ) : (
             <Seg label="손잡이 snapPoints(절반 · 가득)" value={handle} options={[['no', '없음(기본)'], ['yes', '있음']] as const} onChange={setHandle} />
           )}
+          <Seg label="끝 흐림 scrollFog" value={fog} options={[['off', '끔(기본) — 늘 들어맞는 본문'], ['on', '켬 — 넘칠 수 있는 본문']] as const} onChange={setFog} />
           <div className="flex flex-wrap gap-5">
             <Seg label="모드" value={mode} options={MODES} onChange={setMode} />
             <Seg label="브랜드" value={brand} options={BRANDS} onChange={setBrand} />
@@ -294,12 +298,12 @@ const LONG_DETAIL: RowSpec[] = [
 ];
 const FORM_FIELDS = ['사유', '연락처', '인수인계 담당자', '맡긴 일', '돌아오는 날', '메모'];
 
-function dialogCode(use: DialogUse, o: { size: 'medium' | 'large'; desc: boolean; long: boolean }) {
+function dialogCode(use: DialogUse, o: { size: 'medium' | 'large'; desc: boolean; long: boolean; fog: boolean }) {
   const form = use === 'form';
   const ui = ['ResponsiveDialog', 'ResponsiveDialogBody', ...(form ? ['ResponsiveDialogCancel'] : []), 'ResponsiveDialogContent', ...(form ? ['ResponsiveDialogFooter'] : [])];
   const content = [`title="${form ? '휴가 신청' : '거래 상세'}"`, ...attr(o.desc, `description="${form ? '승인되면 알려드려요.' : '10월 1일 (목) 오후 12:30'}"`), ...attr(o.size === 'large', 'size="large"')];
   const body = form ? (o.long ? FORM_FIELDS : FORM_FIELDS.slice(0, 2)).map((f) => `      <Field label="${f}">…</Field>`).join('\n') : '      <List>…</List>';
-  return `${form ? 'import { Button } from "@/components/ui/button"\n' : ''}import { ${ui.join(', ')} } from "@/components/ui/dialog"\n\n${form ? '{/* form — 바깥 누르기 · 끌어내리기로 닫지 않는다. dirty — 닫기 전에 "작성한 내용이 사라져요" 를 묻는다 */}\n' : '{/* 조회 — 머리 닫기 버튼(시트에서는 오른쪽 위 원), 바깥 누르기로도 닫힌다 */}\n'}<ResponsiveDialog open={open} onOpenChange={setOpen}${form ? ' form dirty={isDirty}' : ''}>\n  <ResponsiveDialogContent ${content.join(' ')}>\n    <ResponsiveDialogBody${form ? '' : ' className="px-0"'}>\n${body}\n    </ResponsiveDialogBody>${form ? '\n    <ResponsiveDialogFooter>\n      {/* 1280 이상에서만 그린다 — 시트에서는 위 닫기 버튼이 맡는다 */}\n      <ResponsiveDialogCancel>취소</ResponsiveDialogCancel>\n      <Button onClick={submit}>신청</Button>\n    </ResponsiveDialogFooter>' : ''}\n  </ResponsiveDialogContent>\n</ResponsiveDialog>`;
+  return `${form ? 'import { Button } from "@/components/ui/button"\n' : ''}import { ${ui.join(', ')} } from "@/components/ui/dialog"\n\n${form ? '{/* form — 바깥 누르기 · 끌어내리기로 닫지 않는다. dirty — 닫기 전에 "작성한 내용이 사라져요" 를 묻는다 */}\n' : '{/* 조회 — 머리 닫기 버튼(시트에서는 오른쪽 위 원), 바깥 누르기로도 닫힌다 */}\n'}<ResponsiveDialog open={open} onOpenChange={setOpen}${form ? ' form dirty={isDirty}' : ''}>\n  <ResponsiveDialogContent ${content.join(' ')}>\n    <ResponsiveDialogBody${o.fog ? ' scrollFog' : ''}${form ? '' : ' className="px-0"'}>\n${body}\n    </ResponsiveDialogBody>${form ? '\n    <ResponsiveDialogFooter>\n      {/* 1280 이상에서만 그린다 — 시트에서는 위 닫기 버튼이 맡는다 */}\n      <ResponsiveDialogCancel>취소</ResponsiveDialogCancel>\n      <Button onClick={submit}>신청</Button>\n    </ResponsiveDialogFooter>' : ''}\n  </ResponsiveDialogContent>\n</ResponsiveDialog>`;
 }
 
 export function DialogPlayground({ kits, lists, field, input }: { kits: Record<Brand, OvKit>; lists: Record<Brand, ListLook>; field: TfFieldLook; input: TfInputLook }) {
@@ -307,6 +311,7 @@ export function DialogPlayground({ kits, lists, field, input }: { kits: Record<B
   const [use, setUse] = useState<DialogUse>('form');
   const [desc, setDesc] = useState<'no' | 'yes'>('yes');
   const [len, setLen] = useState<'short' | 'long'>('short');
+  const [fog, setFog] = useState<'off' | 'on'>('off');
   const [width, setWidth] = useState<'wide' | 'narrow'>('wide');
   const [mode, setMode] = useState<ViewMode>('auto');
   const [brand, setBrand] = useState<Brand>('hr');
@@ -320,7 +325,7 @@ export function DialogPlayground({ kits, lists, field, input }: { kits: Record<B
   const form = use === 'form';
   const wide = width === 'wide';
   const long = len === 'long';
-  const code = useMemo(() => dialogCode(use, { size, desc: desc === 'yes', long }), [use, size, desc, long]);
+  const code = useMemo(() => dialogCode(use, { size, desc: desc === 'yes', long, fog: fog === 'on' }), [use, size, desc, long, fog]);
   const dirty = Object.values(values).some((v) => v);
   const close = () => {
     setOpen(false);
@@ -370,6 +375,7 @@ export function DialogPlayground({ kits, lists, field, input }: { kits: Record<B
                     close={!form}
                     onClose={() => request('close')}
                     bodyPad={form}
+                    fog={fog === 'on'}
                     footer={
                       form && (
                         <EndButtons
@@ -399,6 +405,7 @@ export function DialogPlayground({ kits, lists, field, input }: { kits: Record<B
                     {...head}
                     onClose={() => request('close')}
                     bodyPad={form}
+                    fog={fog === 'on'}
                     footer={form && <SheetButtons mode={mode} items={[{ label: '신청', look: brand === 'hr' ? kit.sheet.brand : kit.sheet.solid, onClick: close }]} />}
                   >
                     {body}
@@ -415,6 +422,7 @@ export function DialogPlayground({ kits, lists, field, input }: { kits: Record<B
           <Seg label="쓰임" value={use} options={[['form', '입력 폼'], ['view', '조회']] as const} onChange={(v) => (setUse(v), setOpen(false))} />
           <Seg label="설명 description" value={desc} options={[['no', '없음'], ['yes', '있음']] as const} onChange={setDesc} />
           <Seg label="본문 길이" value={len} options={[['short', '짧게'], ['long', '길게(넘쳐 스크롤)']] as const} onChange={setLen} />
+          <Seg label="끝 흐림 scrollFog" value={fog} options={[['off', '끔(기본) — 늘 들어맞는 본문'], ['on', '켬 — 넘칠 수 있는 본문']] as const} onChange={setFog} />
           <Seg label={`창 폭 — ${kit.ov.breakpoint} 에서 바뀐다`} value={width} options={[['wide', `${kit.ov.breakpoint} 이상 — 대화상자`], ['narrow', `${kit.ov.breakpoint} 미만 — 시트`]] as const} onChange={(v) => setWidth(v)} />
           <div className="flex flex-wrap gap-5">
             <Seg label="모드" value={mode} options={MODES} onChange={setMode} />
@@ -531,17 +539,18 @@ const RULE_LONG = [
   '연차를 미리 당겨 쓸 수는 없어요. 남은 연차보다 많이 신청하면 신청 단계에서 막혀요.',
 ];
 type Place = 'top' | 'bottom' | 'edge';
-function popoverCode(o: { head: boolean; foot: boolean; long: boolean }) {
+function popoverCode(o: { head: boolean; foot: boolean; long: boolean; fog: boolean }) {
   const ui = ['Popover', 'PopoverBody', 'PopoverContent', ...(o.foot ? ['PopoverFooter'] : []), 'PopoverTrigger'];
   const content = o.head ? 'title="연차 사용 규정"' : 'aria-label="날짜 선택"';
   const body = o.head ? (o.long ? '…(긴 안내 — 넘치면 본문만 스크롤)' : RULE) : '<DatePicker selection="single" value={draft} onValueChange={setDraft} />';
-  return `import { Info } from "lucide-react"\nimport { Button } from "@/components/ui/button"\nimport { ${ui.join(', ')} } from "@/components/ui/popover"\n\n<Popover>\n  <PopoverTrigger asChild>\n    ${o.head ? '<Button variant="ghost" size="xsmall" layout="iconOnly" aria-label="연차 사용 규정"><Info /></Button>' : '<InputButton value={…} suffixIcon={<CalendarDays />} />'}\n  </PopoverTrigger>\n  <PopoverContent ${content}>\n    <PopoverBody>${body}</PopoverBody>${o.foot ? '\n    <PopoverFooter>\n      <Button size="small" onClick={done}>완료</Button>\n    </PopoverFooter>' : ''}\n  </PopoverContent>\n</Popover>`;
+  return `import { Info } from "lucide-react"\nimport { Button } from "@/components/ui/button"\nimport { ${ui.join(', ')} } from "@/components/ui/popover"\n\n<Popover>\n  <PopoverTrigger asChild>\n    ${o.head ? '<Button variant="ghost" size="xsmall" layout="iconOnly" aria-label="연차 사용 규정"><Info /></Button>' : '<InputButton value={…} suffixIcon={<CalendarDays />} />'}\n  </PopoverTrigger>\n  <PopoverContent ${content}>\n    <PopoverBody${o.fog ? ' scrollFog' : ''}>${body}</PopoverBody>${o.foot ? '\n    <PopoverFooter>\n      <Button size="small" onClick={done}>완료</Button>\n    </PopoverFooter>' : ''}\n  </PopoverContent>\n</Popover>`;
 }
 
 export function PopoverPlayground({ kits, sels, field, dates }: { kits: Record<Brand, OvKit>; sels: Record<Brand, SelectLook>; field: TfFieldLook; dates: Record<Brand, DateKit> }) {
   const [head, setHead] = useState<'yes' | 'no'>('yes');
   const [foot, setFoot] = useState<'no' | 'yes'>('no');
   const [len, setLen] = useState<'short' | 'long'>('short');
+  const [fog, setFog] = useState<'off' | 'on'>('off');
   const [place, setPlace] = useState<Place>('top');
   const [mode, setMode] = useState<ViewMode>('auto');
   const [brand, setBrand] = useState<Brand>('hr');
@@ -557,7 +566,9 @@ export function PopoverPlayground({ kits, sels, field, dates }: { kits: Record<B
   const withHead = head === 'yes';
   // 달력 패널은 늘 바닥 "완료" — 날짜를 누르는 순간 넣고 닫지 않는다
   const withFoot = !withHead || foot === 'yes';
-  const code = useMemo(() => popoverCode({ head: withHead, foot: withFoot, long: len === 'long' }), [withHead, withFoot, len]);
+  // 끝 흐림 — 안내(머리가 있는 팝오버)의 넘칠 수 있는 본문에. 달력 패널은 늘 들어맞는다
+  const withFog = withHead && fog === 'on';
+  const code = useMemo(() => popoverCode({ head: withHead, foot: withFoot, long: len === 'long', fog: withFog }), [withHead, withFoot, len, withFog]);
   const text: CSSProperties = { margin: 0, fontFamily: p.description.fontFamily, fontSize: p.description.fontSize, lineHeight: p.description.lineHeight, color: ocv(p.description.color, mode) };
   const body = withHead ? (
     len === 'long' ? (
@@ -618,6 +629,7 @@ export function PopoverPlayground({ kits, sels, field, dates }: { kits: Record<B
                 mode={mode}
                 title={withHead ? '연차 사용 규정' : undefined}
                 titleId={`${id}t`}
+                fog={withFog}
                 onClose={() => (setOpen(false), btn.current?.focus())}
                 footer={
                   withFoot ? (
@@ -656,7 +668,10 @@ export function PopoverPlayground({ kits, sels, field, dates }: { kits: Record<B
             </div>
           )}
           {withHead ? (
-            <Seg label="본문 길이" value={len} options={[['short', '짧게'], ['long', '길게(넘쳐 스크롤)']] as const} onChange={setLen} />
+            <>
+              <Seg label="본문 길이" value={len} options={[['short', '짧게'], ['long', '길게(넘쳐 스크롤)']] as const} onChange={setLen} />
+              <Seg label="끝 흐림 scrollFog" value={fog} options={[['off', '끔(기본) — 늘 들어맞는 본문'], ['on', '켬 — 넘칠 수 있는 본문']] as const} onChange={setFog} />
+            </>
           ) : (
             <div className="flex flex-col gap-1.5 text-[12px] text-fd-muted-foreground">
               <span className="font-medium">본문 길이</span>

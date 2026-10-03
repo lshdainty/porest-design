@@ -22,14 +22,15 @@ porest 는 두 가지만 둔다 — **가림 마스크**와 **반짝임**. 투�
 
 - 색이 아니라 **마스크**로 쓴다(`mask-image`). 배경색을 덧칠하지 않으므로 어떤 배경 위에서도, 라이트 · 다크 모두 같은 값으로 쓴다.
 - 토큰은 방향 없이(위 → 아래) 적혀 있다. 쓰는 자리에서 방향을 붙인다 — 오른쪽 끝을 흐리면 `to left`, 아래 끝을 흐리면 `to top`.
+- 흐리는 깊이와 그만큼의 여백은 쓰는 자리가 정한다 — [Scroll Fog](/docs/components/scroll-fog).
 
 ## 반짝임
 
 <ShimmerFigure />
 
-스켈레톤 위를 반짝임 띠가 되풀이해 지나가며 불러오는 중임을 알린다.
+스켈레톤 위를 반짝임 띠가 되풀이해 지나가며 불러오는 중임을 알린다 — [Skeleton](/docs/components/skeleton).
 
-- 반복 시간은 `motion-duration-loop`, 곡선은 `motion-ease-linear` 다 — [Motion › 반복](/docs/foundations/motion#반복).
+- 반복 시간은 `motion-duration-loop`, 곡선은 `motion-ease-easing` 이다 — 쉬는 틈 없이 되풀이한다([Motion › 반복](/docs/foundations/motion#반복)).
 - 다크는 띠를 훨씬 옅게 쓴다(`gradient-shimmer-neutral-dark`).
 - 모션 줄이기 모드에서는 멈춘다 — [Motion › 모션 줄이기](/docs/foundations/motion#모션-줄이기).
 

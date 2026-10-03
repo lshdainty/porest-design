@@ -38,6 +38,8 @@ import {
   User,
   Utensils,
   Wallet,
+  Stethoscope,
+  Plane,
   type LucideIcon,
 } from 'lucide-react';
 import { ButtonView, type IconName as ButtonIcon } from './button-view';
@@ -52,6 +54,8 @@ const ICONS: Record<ListIcon, LucideIcon> = {
   globe: Globe,
   user: User,
   wallet: Wallet,
+  stethoscope: Stethoscope,
+  plane: Plane,
   lock: Lock,
   moon: Moon,
   coffee: Coffee,

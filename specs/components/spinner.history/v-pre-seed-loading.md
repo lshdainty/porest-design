@@ -23,7 +23,7 @@ Spinner는 **variant 없음** — 단일 시각, size만 분기.
 
 ## Sizes
 
-[표: 크기](spinner.yaml#size)
+[표: 크기](v-pre-seed-loading.yaml#size)
 
 Tailwind utility 매핑 (spinner.tsx cva):
 - `sm`: `size-4 border-2`
@@ -33,13 +33,13 @@ Tailwind utility 매핑 (spinner.tsx cva):
 
 ## Color
 
-[표: 색](spinner.yaml#base)
+[표: 색](v-pre-seed-loading.yaml#base)
 
 다크 모드에서 `primary-light`로 자동 swap돼 어두운 표면 위에서 시인성 확보 (button focus ring과 동일 패턴).
 
 ## Animation
 
-[표: 회전](spinner.yaml#motion)
+[표: 회전](v-pre-seed-loading.yaml#motion)
 
 CSS 키:
 

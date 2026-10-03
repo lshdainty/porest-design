@@ -21,7 +21,7 @@
 12. [Accordion / Collapsible](#accordion--collapsible)
 13. [Tooltip / Popover / Hover Card](#tooltip--popover--hover-card)
 14. [Dropdown / Context Menu](#dropdown--context-menu)
-15. [Skeleton / Spinner / Progress](#skeleton--spinner--progress)
+15. [Skeleton / Progress Circle / Progress](#skeleton--progress-circle--progress)
 16. [Pagination / Stepper](#pagination--stepper)
 17. [Avatar](#avatar)
 18. [Breadcrumb / Sidebar](#breadcrumb--sidebar)
@@ -556,35 +556,44 @@ Hover Card — non-interactive preview. delay 700ms hover, link/avatar에 mentio
 
 ---
 
-## Skeleton / Spinner / Progress
+## Skeleton / Progress Circle / Progress
+
+> 2026-10-03 SEED Skeleton · Progress Circle 로 다시 정했다 — 원본은 `specs/components/skeleton.md`(기다리는 동안의 시간표 1 · 5 · 10초) · `progress-circle.md` · `progress.md`, 레시피 `skeleton.tsx` · `progress-circle.tsx` · `progress.tsx`. 아래는 모양만 옮긴 HTML 이다.
 
 ```html
-<!-- Skeleton row -->
-<div class="space-y-3" aria-busy="true" aria-label="로딩 중">
-  <div class="flex items-center gap-3">
-    <div class="w-10 h-10 rounded-full bg-surface-input animate-pulse"></div>
-    <div class="flex-1 space-y-2">
-      <div class="h-4 w-1/3 bg-surface-input rounded animate-pulse"></div>
-      <div class="h-3 w-1/2 bg-surface-input rounded animate-pulse"></div>
+<!-- Skeleton — 고정 틀(제목)은 그리고 데이터 자리만. 면 bg-neutral-weak + 반짝임 띠 1.5초(motion-ease-easing),
+     글자 자리는 그 글의 줄 높이, 흰 면 위에만. 영역에 aria-busy, 화면의 상태 글 하나가 "불러오는 중…" 을 읽는다 -->
+<section aria-busy="true" aria-labelledby="recent-title" class="space-y-x3">
+  <h2 id="recent-title" class="text-t5 font-bold">최근 거래</h2>
+  <div class="flex items-center gap-x3">
+    <span class="skeleton block size-10 rounded-full"></span>
+    <div class="flex-1 space-y-x0_5">
+      <span class="skeleton block h-[22px] w-1/3 rounded-r2"></span>  <!-- 제목 16 / 22 -->
+      <span class="skeleton block h-[18px] w-1/2 rounded-r2"></span>  <!-- 설명 13 / 18 -->
     </div>
   </div>
-</div>
+</section>
+<p role="status" class="sr-only">불러오는 중…</p>  <!-- 화면에 하나(LoadingAnnouncer) -->
 
-<!-- Spinner -->
-<div role="status" aria-label="저장 중" class="inline-flex items-center gap-2">
-  <span class="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin"></span>
-  <span class="text-caption text-secondary">저장 중...</span>
-</div>
+<!-- Progress Circle — 값 없는 원 24(두께 3) · 40(두께 5). 원 stroke-neutral-solid · 트랙 stroke-neutral-subtle.
+     버튼의 저장 중은 Button loading 이다(원을 버튼 옆에 따로 두지 않는다) -->
+<svg role="progressbar" aria-label="불러오는 중" width="24" height="24" viewBox="0 0 24 24" class="progress-circle">
+  <circle cx="12" cy="12" r="10.5" fill="none" stroke="var(--color-stroke-neutral-subtle)" stroke-width="3" />
+  <circle cx="12" cy="12" r="10.5" fill="none" stroke="var(--color-stroke-neutral-solid)" stroke-width="3" stroke-linecap="round" pathLength="100" />
+</svg>
 
-<!-- Progress bar (determinate) -->
-<div class="space-y-1">
-  <div class="flex justify-between text-caption">
-    <span>업로드 중</span>
-    <span>67%</span>
-  </div>
-  <div role="progressbar" aria-valuenow="67" aria-valuemin="0" aria-valuemax="100" class="h-2 bg-surface-input rounded-full overflow-hidden">
-    <div class="h-full bg-primary transition-[width] duration-300" style="width: 67%"></div>
-  </div>
+<!-- 올리기 진행 — 값 있는 원 24(12시에서 시계 방향). 막대 Progress 는 "얼마나 찼나" 미터라 진행에 쓰지 않는다 -->
+<svg role="progressbar" aria-label="영수증.jpg 올리는 중" aria-valuenow="67" aria-valuemin="0" aria-valuemax="100" aria-valuetext="67%"
+     width="24" height="24" viewBox="0 0 24 24" style="transform: rotate(-90deg)">
+  <circle cx="12" cy="12" r="10.5" fill="none" stroke="var(--color-stroke-neutral-subtle)" stroke-width="3" />
+  <circle cx="12" cy="12" r="10.5" fill="none" stroke="var(--color-stroke-neutral-solid)" stroke-width="3" stroke-linecap="round" pathLength="100" stroke-dasharray="67 100" />
+</svg>
+
+<!-- Progress — 미터(예산 · 목표). 높이 8 · 트랙 bg-neutral-weak · 채움 fg-brand, 넘치면 끝까지 fg-critical + "N원 초과", 달성은 글만 -->
+<div role="meter" aria-label="식비 예산 400,000원 중 350,000원" aria-valuenow="350000" aria-valuemin="0" aria-valuemax="400000" aria-valuetext="88%" class="space-y-x1_5">
+  <div class="flex justify-between text-t4" aria-hidden="true"><span>식비 예산</span><span class="text-fg-neutral-subtle">88%</span></div>
+  <div class="h-2 rounded-full bg-bg-neutral-weak overflow-hidden"><div class="h-full rounded-full bg-fg-brand" style="width: 87.5%"></div></div>
+  <div class="text-t2 text-fg-neutral-subtle tabular-nums" aria-hidden="true">350,000원 / 400,000원</div>
 </div>
 ```
 
@@ -837,11 +846,8 @@ Hover Card — non-interactive preview. delay 700ms hover, link/avatar에 mentio
 /* Toast */
 .toast { animation: slide-in-up var(--motion-duration-slow) var(--motion-ease-out) both; }
 
-/* Skeleton */
-.skeleton { animation: shimmer var(--motion-duration-loop) linear infinite; }
-
-/* Spinner */
-.spinner { animation: spin var(--motion-duration-loop) linear infinite; }
+/* Skeleton — 반짝임 띠(gradient-shimmer-neutral)가 1.5초에 지나간다. Progress Circle 의 회전 · 머리 · 꼬리는 레시피가 따로 싣는다(토큰 spin 은 새로 고침 아이콘용) */
+.skeleton { animation: shimmer var(--motion-duration-loop) var(--motion-ease-easing) infinite; }
 
 /* Notification dot */
 .dot::after { animation: ping var(--motion-duration-loop) cubic-bezier(0, 0, 0.2, 1) infinite; }

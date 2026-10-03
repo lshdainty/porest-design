@@ -54,7 +54,7 @@ export function PhoneSheet({ mode, brand = 'desk', app, form, h = 720, scale = 1
 // 팝오버(멈춘 그림) — 머리 없는 고르는 패널, 바닥 버튼. width 를 주면 그 폭(두 달 744 — Popover 최대 480 의 예외)
 export function PickerPopover({ mode, brand = 'desk', footer, width, marks, decor, children, style }: { mode: Mode; brand?: Brand; footer?: ReactNode; width?: number; marks?: OvMarks; decor?: OvDecor; children: ReactNode; style?: CSSProperties }) {
   return (
-    <PopoverSurface look={ov(brand).popover} mode={mode} footer={footer} width={width} scroll={{ overflow: false, scrolled: false }} style={width ? { maxWidth: width, ...style } : style} marks={marks} decor={decor}>
+    <PopoverSurface look={ov(brand).popover} mode={mode} footer={footer} width={width} scroll={{ scrolled: false }} style={width ? { maxWidth: width, ...style } : style} marks={marks} decor={decor}>
       {children}
     </PopoverSurface>
   );

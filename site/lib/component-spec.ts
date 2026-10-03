@@ -91,7 +91,7 @@ export function tokenValue(raw: unknown, mode: Mode = 'light', brand: Brand = 'd
   if (!v.startsWith('$')) return v;
   const color = colorOf(v, mode, brand);
   if (color) return color;
-  const [, group, key] = /^\$(spacing|radius|text|font|motion)-(.+)$/.exec(v) ?? [];
+  const [, group, key] = /^\$(spacing|radius|text|font|motion|gradient)-(.+)$/.exec(v) ?? [];
   const front = design().front;
   if (group === 'spacing' && front.spacing[key]) return front.spacing[key];
   if (group === 'radius') return key === 'full' ? '9999px' : front.rounded[key];
@@ -101,6 +101,8 @@ export function tokenValue(raw: unknown, mode: Mode = 'light', brand: Brand = 'd
   }
   if (group === 'font' && key === 'sans') return front.typography.t4?.fontFamily ?? 'Pretendard, sans-serif';
   if (group === 'motion') return proseValue(`motion-${key}`);
+  // 그라디언트(v104) — 표 토큰. 다크 짝은 YAML 의 dark 로 따로 적는다(gradient-shimmer-neutral-dark)
+  if (group === 'gradient') return proseValue(`gradient-${key}`);
   throw new Error(`풀 수 없는 토큰 ${v}`);
 }
 

@@ -58,6 +58,9 @@ export type ChipTabsLook = {
   gap: number;
   overflowX: 'auto';
   scrollPadding: number;
+  // 양 끝 흐림 — Scroll Fog row 의 깊이(늘 켜짐) · gradient-fade-mask
+  fog: number;
+  mask: string;
   shrink: number;
   variants: Record<ChipTabsVariant, ChipVariant>;
   sizes: Record<ChipTabsSize, ChipSize>;

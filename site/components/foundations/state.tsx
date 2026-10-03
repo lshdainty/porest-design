@@ -1,10 +1,11 @@
 // State 페이지 — 상태마다의 색은 DESIGN*.md 의 역할 색, 크기는 컴포넌트 YAML, 축소는 "눌림 피드백" 표에서 온다
 import type { CSSProperties, ReactNode } from 'react';
-import { LoaderCircle } from 'lucide-react';
 import { color, pressScale, specSize, type Brand } from '@/lib/design-tokens';
 import { Figure, Verdict } from './ui';
 import { textFieldLook } from '../specs/text-field-look';
 import { TfFieldView, TfInputView } from '../specs/text-field-view';
+import { buttonLook } from '../specs/button-look';
+import { PcArc } from '../specs/pc-arc';
 
 type Mode = 'light' | 'dark';
 const rc = (name: string, mode: Mode = 'light', brand: Brand = 'desk') => (name === 'static-white' ? color(name, brand) : color(mode === 'dark' ? `${name}-dark` : name, brand));
@@ -56,6 +57,12 @@ export function InteractionStatesFigure() {
   );
 }
 
+// 채운 브랜드 버튼(medium)의 로딩 원 — button.yaml progressCircle
+const loadingCircle = () => {
+  const p = buttonLook({ variant: 'brandSolid', size: 'medium' }).faces.light.loading.progress;
+  return { size: p.size, thickness: p.thickness, track: p.track, range: p.range };
+};
+
 export function OptionStatesFigure() {
   const white = rc('static-white');
   return (
@@ -72,7 +79,8 @@ export function OptionStatesFigure() {
         </Cell>
         <Cell label="loading" sub="누름 색 + 진행 표시, 누름 없음">
           <Button bg={rc('bg-brand-solid-pressed')} fg={white}>
-            <LoaderCircle size={20} strokeWidth={2.5} aria-hidden />
+            {/* 로딩 원 — Button 이 넘기는 크기 · 두께 · 색(button.yaml progressCircle), 움직임은 Progress Circle */}
+            <PcArc {...loadingCircle()} />
           </Button>
         </Cell>
       </div>

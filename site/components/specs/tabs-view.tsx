@@ -9,6 +9,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from 'react';
 import { ChipView, useReducedMotion } from './chip-view';
 import { faceOf, nextEnabled, pressRatio, tcv, type ChipTabsLook, type ChipTabsSize, type ChipTabsVariant, type TabItem, type TabsLayout, type TabsLook, type TabsSize, type TabsState, type ViewMode } from './tabs-shared';
+import { fogMaskStyle } from './overlay-shared';
 
 const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 const FONT = "'Pretendard Variable', Pretendard, sans-serif";
@@ -539,6 +540,8 @@ export function ChipTabsView({ look, mode = 'auto', variant = look.defaults.vari
         scrollPaddingLeft: look.scrollPadding,
         scrollPaddingRight: look.scrollPadding,
         scrollbarWidth: 'none',
+        // 양 끝은 늘 흐리다(Scroll Fog row — 마스크). 목록 좌우 여백이 흐림보다 넓어 처음 · 끝 칩은 흐리지 않는다
+        ...fogMaskStyle(look.mask, { left: look.fog, right: look.fog }),
         ...zone,
         ...style,
       }}

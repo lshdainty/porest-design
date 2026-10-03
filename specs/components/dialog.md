@@ -16,12 +16,12 @@
 
 ## Anatomy
 
-[그림: 대화상자는 딤 · 대화상자 · 머리 · 본문 · 바닥으로, 본문이 넘치면 아래가 흐려지고 스크롤하면 머리 아래 선이 생긴다](../../site/components/specs/dialog.tsx#anatomy)
+[그림: 대화상자는 딤 · 대화상자 · 머리 · 본문 · 바닥으로, 넘칠 수 있는 본문은 끝이 늘 흐리고 스크롤하면 머리 아래 선이 생긴다](../../site/components/specs/dialog.tsx#anatomy)
 
 | ⓐ Overlay | 딤 — 대화상자 뒤 화면 전체. 조회 대화상자는 누르면 닫힌다(입력 폼은 무시). |
 | ⓑ Container | 대화상자 — 화면 정중앙, medium 480 · large 800, 높이는 화면의 80% 까지. |
 | ⓒ Header | 머리 — 제목 · 설명. 조회 · 안내 대화상자만 오른쪽에 닫기 버튼. |
-| ⓓ Body | 본문 — 넘치면 이 안에서만 스크롤한다(머리 · 바닥은 그대로). |
+| ⓓ Body | 본문 — 넘치면 이 안에서만 스크롤한다(머리 · 바닥은 그대로). 넘칠 수 있는 본문은 끝을 흐린다([Scroll Fog](scroll-fog.md)). |
 | ⓔ Footer | 바닥 — 버튼, 오른쪽 정렬. |
 
 [표: 부위](dialog.yaml#slots)
@@ -38,11 +38,17 @@
 
 ### 머리 · 본문 · 바닥
 
-머리는 위 24 · 좌우 24 · 아래 16, 제목 22 / 30 · 700 · 설명 16 / 22 · 사이 6. 본문은 좌우 24. 바닥은 위 16 · 좌우 24 · 아래 24 에 버튼을 오른쪽으로 모은다 — Button small 36, [취소] [저장] 순서. 본문이 넘치면 아래 48 이 흐려지고(끝까지 스크롤해도 그만큼 비워 둔다), 위로 스크롤하면 머리 아래 1px 선이 생긴다.
-
-[그림: 본문 스크롤 — 아래 흐림 · 머리 아래 선](../../site/components/specs/dialog.tsx#scroll)
+머리는 위 24 · 좌우 24 · 아래 16, 제목 22 / 30 · 700 · 설명 16 / 22 · 사이 6. 본문은 좌우 24. 바닥은 위 16 · 좌우 24 · 아래 24 에 버튼을 오른쪽으로 모은다 — Button small 36, [취소] [저장] 순서. 위로 스크롤하면 머리 아래 1px 선이 생긴다.
 
 [표: 공통](dialog.yaml#base.enabled)
+
+### 본문 끝 흐림
+
+목록 · 긴 폼처럼 넘칠 수 있는 본문은 [Scroll Fog](scroll-fog.md) 를 건다(`scrollFog`) — 위 20 · 아래 80 이 늘 흐리고, 본문 안에 그만큼 여백을 둬 끝까지 내리면 흐림이 빈 여백 위에 놓인다. 넘쳤는지 재서 켜고 끄지 않는다 — 걸 본문인지는 내용의 종류로 정하고, 칸 두셋처럼 늘 들어맞는 본문에는 걸지 않는다. 1280 미만의 시트에서도 같다([Bottom Sheet](bottom-sheet.md)).
+
+[그림: 본문 스크롤 — 늘 켜진 끝 흐림(위 20 · 아래 80) · 머리 아래 선](../../site/components/specs/dialog.tsx#scroll)
+
+[표: 본문 끝 흐림](dialog.yaml#scrollFog)
 
 ### State
 
@@ -50,7 +56,6 @@
 |---|---|
 | `enabled` | 열림 — 딤 위 대화상자 |
 | `scrolled` | 본문이 위로 스크롤됨 — 머리 아래 1px `stroke-neutral-subtle` |
-| `overflow` | 본문이 넘침 — 아래 48 흐림 |
 | `pressed` | 닫기 버튼 — `bg-layer-floating-pressed` + 2px 거리 축소 |
 | `focused` | 키보드 포커스에만 링 2px · 띄움 2px |
 
@@ -96,7 +101,7 @@
 
 ## 코드
 
-레시피 `recipes/shadcn/components/ui/dialog.tsx` 를 쓴다(Radix Dialog 위). 폼 · 상세는 `ResponsiveDialog` — 1280 에서 Dialog 와 Bottom Sheet 를 바꾸고, `form` 이면 닫는 자리도 표면에 맞춰 바꾼다(대화상자는 바닥 취소, 시트는 위 닫기). `form` 이 아니면(조회 · 안내) 두 표면 모두 위 닫기 버튼이다. 본문에 [List](list.md) 를 바로 두면 줄이 제 좌우 여백(24)을 가지므로 본문 좌우 여백을 뺀다(`className="px-0"`). 아래 미리보기는 스펙 값으로 그린 모습이다.
+레시피 `recipes/shadcn/components/ui/dialog.tsx` 를 쓴다(Radix Dialog 위). 폼 · 상세는 `ResponsiveDialog` — 1280 에서 Dialog 와 Bottom Sheet 를 바꾸고, `form` 이면 닫는 자리도 표면에 맞춰 바꾼다(대화상자는 바닥 취소, 시트는 위 닫기). `form` 이 아니면(조회 · 안내) 두 표면 모두 위 닫기 버튼이다. 본문에 [List](list.md) 를 바로 두면 줄이 제 좌우 여백(24)을 가지므로 본문 좌우 여백을 뺀다(`className="px-0"`). 넘칠 수 있는 본문은 `scrollFog` 를 준다(위 20 · 아래 80 끝 흐림 — [Scroll Fog](scroll-fog.md)). 아래 미리보기는 스펙 값으로 그린 모습이다.
 
 ### 입력 폼
 
@@ -127,10 +132,10 @@ import { ResponsiveDialog, ResponsiveDialogBody, ResponsiveDialogCancel, Respons
 [그림: 거래 상세](../../site/components/specs/dialog.tsx#ex-view)
 
 ```tsx
-{/* 조회 — 머리 닫기 버튼(시트에서는 오른쪽 위 원), 바깥 누르기로도 닫힌다 */}
+{/* 조회 — 머리 닫기 버튼(시트에서는 오른쪽 위 원), 바깥 누르기로도 닫힌다. 길이가 데이터에 따라 느는 본문이라 scrollFog */}
 <ResponsiveDialog open={open} onOpenChange={setOpen}>
   <ResponsiveDialogContent title="거래 상세">
-    <ResponsiveDialogBody className="px-0">
+    <ResponsiveDialogBody scrollFog className="px-0">
       <List>…</List>
     </ResponsiveDialogBody>
   </ResponsiveDialogContent>
@@ -144,7 +149,7 @@ import { ResponsiveDialog, ResponsiveDialogBody, ResponsiveDialogCancel, Respons
 | 열기 | 200ms 로 크게 나타나며 줄어든다(1.3 → 1). 처음 초점은 대화상자에 간다. |
 | 바닥 취소 · 닫기 버튼 · `Esc` | 닫는다. 입력 폼에 바뀐 값이 있으면 먼저 묻는다. 뒤로 가기로 닫는 것은 1280 미만(시트)뿐이다 — 데스크톱 브라우저의 뒤로 가기는 페이지를 떠난다. |
 | 바깥(딤) 누르기 | 조회 · 안내는 닫는다. **입력 폼은 무시한다.** |
-| 본문 스크롤 | 본문만 스크롤 — 위로 스크롤되면 머리 아래 선, 넘치면 아래 흐림. |
+| 본문 스크롤 | 본문만 스크롤 — 위로 스크롤되면 머리 아래 선. 끝 흐림(`scrollFog`)은 걸었으면 늘 그대로다. |
 | 닫힌 뒤 | 100ms 로 사라지고, 초점은 연 자리(트리거)로 돌아간다. |
 | 열린 동안 | 뒤 화면을 보조 기술에서 숨기고 스크롤을 잠근다. 초점은 대화상자 안을 돈다. |
 | 창 폭이 1280 을 넘나듦 | 열린 채 표면이 바뀐다(대화상자 ↔ 시트). 값은 폼(부모)이 들고 있어 그대로다 — 입력칸의 값을 대화상자 · 시트 안에만 두지 않는다. |
@@ -190,9 +195,14 @@ import { ResponsiveDialog, ResponsiveDialogBody, ResponsiveDialogCancel, Respons
 - **딤은 porest 0.50 · 다크 0.65**(v102) — SEED 0.455.
 - **입력 폼은 바깥을 눌러도 닫히지 않고, 머리 닫기 버튼을 두지 않는다** — SEED 도 같은 쪽을 권한다(snippet 의 바깥 닫기 기본값 · "입력 폼에서는 헤더 X 지양"). porest 는 규칙으로 못박았다.
 - **반투명 색을 불투명 짝으로**(v102) — 머리 아래 선 `stroke-neutral-subtle`, 닫기 버튼 누름 `bg-layer-floating-pressed`.
+- **본문 끝 흐림은 Scroll Fog**(2026-10-03) — 넘칠 수 있는 본문에 늘 켜진 위 20 · 아래 80. SEED Dialog 는 본문이 넘칠 때만 아래 48 을 흐린다.
 - **z-index 는 specs/z-index.md 의 L2**(딤 `z-modal` 100 · 대화상자 `z-modal-content` 101) — 그 안에서 연 Popover(L3) · Alert Dialog(L5)가 위에 뜬다(SEED 는 모두 2 + layerIndex).
 
 ## Migration notes
+
+### 2026-10-03 — 본문 끝 흐림을 Scroll Fog 로
+
+사용자가 [비교 페이지](https://claude.ai/artifact/4ySVacsdnG4fgraR1HRK3G)에서 끝 흐림을 SEED 의 늘 켜진 마스크([Scroll Fog](scroll-fog.md))로 정해, 2026-10-02 의 "본문이 넘칠 때만 아래 48 흐림" 을 바꿨다 — 넘칠 수 있는 본문(목록 · 긴 폼)에 `scrollFog` 를 걸고, 걸면 위 20 · 아래 80 이 늘 흐리다(본문 안 여백도 그만큼). 넘친 쪽만 흐리는 안은 고르지 않았다. 상태 `overflow` 와 부위 `fade` 를 걷고 축 `scrollFog` · 부위 `fog` 를 두었다.
 
 ### 2026-10-02 — SEED Dialog 로 다시 정한다
 

@@ -13,6 +13,7 @@ import {
   BottomSheetTrigger,
 } from "@/components/ui/bottom-sheet";
 import { useInputButtonSurface } from "@/components/ui/input-button";
+import { useScrollFog } from "@/components/ui/scroll-fog";
 
 /*
  * Porest Dialog — 구조는 SEED Dialog · Responsive Dialog(2026-10-02). 수치 원본은 specs/components/dialog.yaml.
@@ -21,7 +22,8 @@ import { useInputButtonSurface } from "@/components/ui/input-button";
  *   DialogTrigger           여는 버튼 — 닫으면 초점이 여기로 돌아온다
  *   DialogContent           대화상자 — title · description(있을 때만) · size medium 480(기본) | large 800.
  *                           조회 · 안내(form 이 아니면)는 머리 오른쪽에 닫기 버튼, 입력 폼은 두지 않는다(바닥 [취소])
- *   DialogBody              본문 — 이 안에서만 스크롤. 넘치면 아래 48 흐림 + 아래 48 여백, 위로 스크롤되면 머리 아래 1px 선
+ *   DialogBody              본문 — 이 안에서만 스크롤, 위로 스크롤되면 머리 아래 1px 선. scrollFog 면 끝 흐림(Scroll Fog —
+ *                           늘 켜진 위 20 · 아래 80 + 본문 안 여백 위 20 · 아래 80) — 넘칠 수 있는 본문(목록 · 긴 폼)에만 준다
  *   DialogFooter            바닥 — 오른쪽 정렬, 사이 8. Button small 36 을 크기를 주지 않은 바로 아래 자식에 넣는다
  *   DialogCancel            바닥 [취소] — neutralWeak. 닫기를 청한다(바뀐 값이 있으면 먼저 묻는다)
  *
@@ -48,6 +50,10 @@ import { useInputButtonSurface } from "@/components/ui/input-button";
  * 닫기 버튼은 52 투명 상자 · 아이콘 22 fg-neutral-subtle — 아이콘이 위 28 · 오른쪽 24. 누르면 bg-layer-floating-pressed + 2px 거리
  * 축소(기준 52), 호버는 누름 색. 이름 "닫기". 본문은 좌우 24 — 맨 끝(바닥이 없을 때)이면 아래 24, 맨 앞(머리가 없을 때)이면 위 24.
  * 바닥은 위 16 · 좌우 24 · 아래 24. 넘쳐 스크롤할 수 있는 본문은 키보드로도 스크롤하도록 Tab 이 선다(안쪽 링).
+ * 끝 흐림(scrollFog, dialog.yaml · scroll-fog.yaml overlayBody) — 걸 본문인지는 내용의 종류로 정한다(칸 두셋처럼 늘 들어맞는 본문에는
+ * 걸지 않는다). 걸면 넘쳤는지 · 스크롤 위치와 상관없이 늘 켜져 있고, 본문 안 여백이 위 20(머리가 없으면 24 그대로) · 아래 80
+ * (바닥이 있어도)이 돼 끝까지 내리면 흐림이 빈 여백 위에 놓인다. 스크롤 여유도 위 20 · 아래 80. 머리 아래 선은 머리의 안쪽 아래
+ * 1px 로 그린다 — 본문은 흐림 마스크가 걸려 그 안에 그린 선은 흐려진다.
  * 쌓임: 딤 z-modal 100 · 대화상자 z-modal-content 101(specs/z-index.md L2) — 그 안에서 연 Popover(L3) · Alert Dialog(L5)가 위에 뜬다.
  * 모션: 200ms enter-expressive 로 1.3 배에서 줄며 나타나고 100ms exit 로 줄지 않고 사라진다(딤 100ms). 모션 줄이기면 150ms 서서히.
  */
@@ -97,19 +103,15 @@ function focusOpener(trigger: HTMLElement | null, opener: Element | null) {
   target?.focus({ preventScroll: true });
 }
 
-// 본문의 스크롤 상태 — 넘침(data-overflow)과 위로 스크롤됨(data-scrolled). 넘침은 흐림 여백(48)을 빼고 잰다 — 여백 때문에
-// 넘친 채로 남지 않게(넘치지 않을 때의 아래 여백은 --body-pad-bottom). 본문 · 그 아래 자식의 크기가 바뀌면 다시 잰다.
+// 본문의 스크롤 상태 — 위로 스크롤됨(data-scrolled, 머리 아래 선)과 넘침(Tab 이 서는지). 본문 · 그 아래 자식의 크기가 바뀌면
+// 다시 잰다. 끝 흐림은 재지 않는다 — scrollFog 면 늘 켜져 있다.
 // 다시 그리지 않고 DOM 에 바로 쓴다 — 열린 직후(Radix 가 처음 초점을 정하기 전)에 이미 넘친 본문이 Tab 순서에 있게
 function useBodyScroll(ref: React.RefObject<HTMLElement | null>) {
   React.useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
     const measure = () => {
-      const style = getComputedStyle(el);
-      const pad = parseFloat(style.paddingBottom) || 0;
-      const base = parseFloat(style.getPropertyValue("--body-pad-bottom")) || 0;
-      const overflow = el.scrollHeight - pad + base > el.clientHeight + 1;
-      el.toggleAttribute("data-overflow", overflow);
+      const overflow = el.scrollHeight > el.clientHeight + 1;
       el.toggleAttribute("data-scrolled", el.scrollTop > 0);
       // 넘쳐 스크롤할 수 있으면 키보드로도 스크롤하도록 Tab 이 선다
       if (overflow) el.tabIndex = 0;
@@ -213,6 +215,14 @@ const CONTENT = [
 
 const SIZE = { medium: "w-[480px]", large: "w-[800px]" } as const;
 
+// 머리 — 위 24 · 좌우 24 · 아래 16 · 사이 6. 본문이 위로 스크롤되면 안쪽 아래 1px stroke-neutral-subtle(150ms) — 본문이 흐림 마스크를
+// 걸어도 선이 흐려지지 않게 머리에 그린다
+const HEADER = [
+  "flex shrink-0 flex-col gap-x1_5 px-x6 pb-x4 pt-x6",
+  "[transition:box-shadow_var(--motion-duration-color-transition)_var(--motion-ease-easing)]",
+  "[&:has(~[data-slot=dialog-body][data-scrolled])]:shadow-[inset_0_-1px_0_0_var(--color-stroke-neutral-subtle)]",
+].join(" ");
+
 // 닫기 — 52 투명 상자 · 아이콘 22 fg-neutral-subtle. 아이콘이 위 28 · 오른쪽 24 에 오도록 상자를 (52 − 22) ÷ 2 = 15 만큼 당긴다.
 // 누르면 bg-layer-floating-pressed + 2px 거리 축소(기준 52 → 0.962)
 const CLOSE = [
@@ -294,10 +304,7 @@ const DialogContent = React.forwardRef<React.ElementRef<typeof DialogPrimitive.C
           {...props}
         >
           {hasHeader && (
-            <div
-              data-slot="dialog-header"
-              className={cn("flex shrink-0 flex-col gap-x1_5 px-x6 pb-x4 pt-x6", showClose && "pr-x13")}
-            >
+            <div data-slot="dialog-header" className={cn(HEADER, showClose && "pr-x13")}>
               <DialogPrimitive.Title data-slot="dialog-title" className="m-0 text-t8 font-bold text-fg-neutral">
                 {title}
               </DialogPrimitive.Title>
@@ -323,21 +330,33 @@ const DialogContent = React.forwardRef<React.ElementRef<typeof DialogPrimitive.C
 );
 DialogContent.displayName = "DialogContent";
 
-// 본문 — 좌우 24, 이 안에서만 스크롤. 넘치면 아래 48 을 흐리고(마스크) 아래 48 을 비워 둔다. 위로 스크롤되면 머리 아래
-// 1px stroke-neutral-subtle(안쪽 그림자, 150ms) — 맨 앞 자식(머리가 없으면)이면 그리지 않는다
+// 본문 — 좌우 24, 이 안에서만 스크롤. 맨 앞 자식(머리가 없으면)이면 위 24, 맨 끝 자식(바닥이 없으면)이면 아래 24
 const BODY = [
   "min-h-0 flex-1 overflow-y-auto px-x6 first:pt-x6",
-  "[--body-pad-bottom:0px] last:[--body-pad-bottom:var(--spacing-x6)] pb-[var(--body-pad-bottom)]",
-  "[transition:box-shadow_var(--motion-duration-color-transition)_var(--motion-ease-easing)]",
-  "data-[scrolled]:not-first:shadow-[inset_0_1px_0_0_var(--color-stroke-neutral-subtle)]",
-  "data-[overflow]:pb-x12 data-[overflow]:[mask-image:linear-gradient(to_top,transparent_0,#000_var(--spacing-x12))]",
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-stroke-focus-ring",
 ].join(" ");
+const BODY_PLAIN = "last:pb-x6";
+// 끝 흐림(scrollFog) — 본문 안 여백 위 20(머리가 없으면 24 그대로) · 아래 80(바닥이 있어도), 스크롤 여유도 위 20 · 아래 80
+const BODY_FOG = "pt-[20px] pb-[80px] scroll-pt-[20px] scroll-pb-[80px]";
 
-const DialogBody = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => {
+export interface DialogBodyProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** 끝 흐림(Scroll Fog overlayBody — 위 20 · 아래 80, 늘 켜짐) — 넘칠 수 있는 본문(목록 · 긴 폼)에만 */
+  scrollFog?: boolean;
+}
+
+const DialogBody = React.forwardRef<HTMLDivElement, DialogBodyProps>(({ scrollFog = false, className, ...props }, ref) => {
   const own = React.useRef<HTMLDivElement>(null);
   useBodyScroll(own);
-  return <div ref={mergeRefs(ref, own)} data-slot="dialog-body" className={cn(BODY, className)} {...props} />;
+  useScrollFog(own, scrollFog ? "overlayBody" : null);
+  return (
+    <div
+      ref={mergeRefs(ref, own)}
+      data-slot="dialog-body"
+      data-scroll-fog={scrollFog ? "overlayBody" : undefined}
+      className={cn(BODY, scrollFog ? BODY_FOG : BODY_PLAIN, className)}
+      {...props}
+    />
+  );
 });
 DialogBody.displayName = "DialogBody";
 
@@ -417,7 +436,8 @@ const ResponsiveDialogContent = React.forwardRef<HTMLDivElement, ResponsiveDialo
 });
 ResponsiveDialogContent.displayName = "ResponsiveDialogContent";
 
-const ResponsiveDialogBody = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>((props, ref) => {
+// 본문 — scrollFog 는 두 표면 모두 같다(위 20 · 아래 80)
+const ResponsiveDialogBody = React.forwardRef<HTMLDivElement, DialogBodyProps>((props, ref) => {
   const { wide } = useResponsive("ResponsiveDialogBody");
   return wide ? <DialogBody ref={ref} {...props} /> : <BottomSheetBody ref={ref} {...props} />;
 });

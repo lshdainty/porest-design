@@ -2120,12 +2120,12 @@ HR 웹은 아직 porest 색에 이어지지 않았다 — shadcn 기본 테마 �
 
 | 토큰 | 값 | 쓰는 곳 |
 |---|---|---|
-| `gradient-fade-mask` | `linear-gradient(#00000000 0%, #00000003 8%, #00000005 16%, #0000000d 22%, #00000014 29%, #00000021 35%, #0000002e 41%, #00000040 47%, #00000052 53%, #00000066 59%, #0000007a 65%, #00000094 71%, #000000ab 78%, #000000c7 84%, #000000e3 92%, #000000ff 100%)` | 가림 마스크 — `mask-image` 로 써서 긴 목록 · 가로 스크롤 끝을 부드럽게. 라이트 · 다크 같음 |
+| `gradient-fade-mask` | `linear-gradient(#00000000 0%, #00000003 8%, #00000005 16%, #0000000d 22%, #00000014 29%, #00000021 35%, #0000002e 41%, #00000040 47%, #00000052 53%, #00000066 59%, #0000007a 65%, #00000094 71%, #000000ab 78%, #000000c7 84%, #000000e3 92%, #000000ff 100%)` | 가림 마스크 — `mask-image` 로 써서 스크롤 영역의 끝을 부드럽게(Scroll Fog — `specs/components/scroll-fog.yaml`, 2026-10-03). 라이트 · 다크 같음 |
 | `gradient-shimmer-neutral` | `linear-gradient(90deg, #ffffff00 0%, #ffffffab 46%, #ffffffab 54%, #ffffff00 100%)` | 스켈레톤 반짝임 띠 — 라이트 |
 | `gradient-shimmer-neutral-dark` | `linear-gradient(90deg, #ffffff00 0%, #ffffff1a 46%, #ffffff1a 54%, #ffffff00 100%)` | 스켈레톤 반짝임 띠 — 다크 |
 
 - 마스크는 방향 없이 적었다(위 → 아래). 쓰는 자리에서 방향을 붙인다(`to right` 등).
-- 반짝임은 `motion-duration-loop`(1500ms) · `motion-ease-linear` 로 지나가고, 모션 줄이기 모드에서는 멈춘다.
+- 반짝임은 `motion-duration-loop`(1500ms) · `motion-ease-easing` 으로 지나가고(SEED Skeleton 의 곡선 — 2026-10-03, `specs/components/skeleton.yaml`), 모션 줄이기 모드에서는 멈춘다.
 
 ### Surface (v1 추가)
 
@@ -3016,7 +3016,7 @@ modal/sheet/drawer dim overlay (alpha 채널 prose-token).
 | `motion-duration-pressed-scale` | `150ms` | 역할 — 눌림 축소(= d3) |
 
 - 색 전환과 눌림 축소는 같은 150ms 다 — 시작과 속도가 같아야 하나의 반응으로 읽힌다.
-- 반복은 v63 의 `motion-duration-loop`(1500ms)를 그대로 쓴다(porest 역할).
+- 반복은 v63 의 `motion-duration-loop`(1500ms)를 그대로 쓴다(porest 역할) — 스켈레톤 반짝임. Progress Circle(옛 스피너)은 SEED 의 1.2초다(`specs/components/progress-circle.yaml`, 2026-10-03).
 - 옛 이름은 같은 값의 별칭이다 — `motion-duration-fast` → d3, `motion-duration-base` → d4, `motion-duration-slow` → d6. `motion-duration-slower`(500ms)는 걷는 중이다 — 큰 전환도 d6(300) 안에서 끝낸다.
 
 #### 이징
@@ -3030,7 +3030,7 @@ modal/sheet/drawer dim overlay (alpha 채널 prose-token).
 | `motion-ease-exit-expressive` | `cubic-bezier(0.35, 0, 0.95, 0.55)` | 특히 강조해야 하는 퇴장 |
 | `motion-ease-pressed-scale` | `cubic-bezier(0, 0, 0.15, 1)` | 눌림 축소 |
 
-- 반복은 v63 의 `motion-ease-linear` 를 그대로 쓴다.
+- 반복의 곡선은 컴포넌트가 정한다 — 스켈레톤 반짝임은 `motion-ease-easing`(SEED), Progress Circle 은 스펙의 숫자 곡선이다(2026-10-03). `motion-ease-linear` 는 일정한 속도가 필요한 반복에 남긴다.
 - 옛 `motion-ease-out`(0.16, 1, 0.3, 1)은 걷는 중이다 — 나타나는 모션은 `motion-ease-enter` 로 옮긴다. 앱의 `spring` 은 `motion-ease-enter-expressive`, `decel` 은 `motion-ease-enter` 로.
 
 #### 눌림 피드백
@@ -3073,7 +3073,7 @@ modal/sheet/drawer dim overlay (alpha 채널 prose-token).
 | 눌림 축소 | 세로 2px | 없음(배율 1) — 색 전환만 남는다 |
 | 색 전환 | 150ms | 그대로 |
 | 매크로 모션(200ms 초과) | 이동 · 확대 · 미끄러짐 | 150ms 서서히 나타남 · 사라짐 |
-| 반복(스켈레톤 · 펄스) | 계속 | 멈춘다 — 진행을 알려야 하는 것(스피너)은 컴포넌트 스펙이 대신할 표현을 정한다 |
+| 반복(스켈레톤 · 로딩 원 · 펄스) | 계속 | 멈춘다 — 스켈레톤은 띠 없이 면만, Progress Circle 은 돌지 않는 3/4 호(2026-10-03) |
 
 지금 이 모드를 따르는 곳은 웹 2곳 · 앱 스켈레톤 1곳이다(2026-09-29) — 앱 PR 에서 모든 모션이 따르게 한다.
 
@@ -3108,8 +3108,8 @@ skeleton shimmer · spinner · pulse 등 **반복 애니메이션** 용 토큰 2
 
 | 토큰 | 값 | 주 용도 |
 |---|---|---|
-| `motion-duration-loop` | `1500ms` | skeleton shimmer 1주기, pulse 1주기 |
-| `motion-ease-linear` | `linear` | 반복 일정 속도 |
+| `motion-duration-loop` | `1500ms` | 스켈레톤 반짝임 1주기(곡선은 `motion-ease-easing` — 2026-10-03), pulse 1주기 |
+| `motion-ease-linear` | `linear` | 일정한 속도가 필요한 반복 — 스켈레톤 · Progress Circle 은 쓰지 않는다(2026-10-03) |
 
 DESIGN.md의 Loop motion 정의와 동일 (brand-neutral). HR `fast`/`base`/`loop` 조합이 일반적 — 결재 큐 row hover(`fast`) + dropdown(`base`) + skeleton(`loop`).
 
@@ -3834,23 +3834,18 @@ semantic 토큰(success/error/warning/info)과 hue 일관성 유지 — `chart-c
 - 문구는 Writing(v106) — HR 도 해요체다("사번을 입력해주세요." · "이미 등록된 사번이에요.").
 - 결재 의견 · 권한 설정 같은 시트 · 대화상자도 값이 바뀐 채 닫으려 하면 "작성한 내용이 사라져요" 를 묻는다.
 
-### Skeleton / Loading (v63 추가)
+### 기다림 — HR
 
-HR(B2B) — 데이터 그리드·결재 큐·직원 list 로딩 상태. 데이터 밀도 우선이라 list-row variant 위주, dense layout 유지.
+> 모양 · 쓰는 규칙은 DESIGN.md 의 "기다림" 절(2026-10-03 SEED). HR 의 쓰는 자리만 적는다.
 
-#### HR 사용 패턴
-- **결재 큐 로딩**: list-row 5-7개 (avatar 32 + 이름 lg + 상태 badge 위치 + 시간 caption). 실제 row와 정확히 동일 height(60px).
-- **직원 검색 결과**: list-row 10개 (그리드 형태) — sm avatar 24 + 이름 + 부서 + 직급. shimmer는 한 그룹씩 동시 (페이지 단위).
-- **결재 detail 로딩**: rect (heading 30px) + text 4-line + rect (button area 40px). detail panel 전체 placeholder.
-- **dashboard 위젯 로딩**: rect (각 위젯) — KPI 카드 4개, 표 1개. 위젯 단위로 loading (전체 페이지 spinner 비권장).
-
-#### 정보 밀도
-- list-row 사이 gap: `xs` (4px) — 일반 list보다 dense.
-- shimmer 1주기는 `motion-duration-loop` (1500ms) 표준 — 너무 빠르면 산만, 너무 느리면 응답 없음 인상.
-- 5초 이상 로딩 시 위젯 우상단에 `text-tertiary` "오래 걸리는군요... 새로고침" link 표시.
-
-#### Reduced motion
-사용자 시스템 설정 존중 — `prefers-reduced-motion: reduce` 시 shimmer 정지, `surface-input` 단색 + 작은 spinner 1개로 fallback.
+- **첫 진입** — 대시보드 위젯 · 결재함 · 휴가 내역은 위젯 머리 · 표 머리를 그리고 데이터 줄만 스켈레톤이다. 흰 카드 위에 둔다(지금 #f8f8f8 이 흰 바탕 위 1.06:1 로 거의 안 보인다).
+- **세션 확인 · 인증 콜백** — 화면을 덮는 회색 막 "Loading" 을 걷고 앱 틀 + 콘텐츠 가운데 원 40 으로 바꾼다.
+- **원** — 저장 · 승인은 Button 로딩, 영역 기다림은 원 24 · 40 — 이름 "불러오는 중"(지금 영어 "Loading").
+- **연도 · 필터 바꾸기** — 머리는 바로 바뀌고 표 · 숫자 자리만 기다린다.
+- **막대** — 승인률 · 오늘 근무 시간은 높이 8 · 채움 `fg-brand` 미터로, 이름과 값이 읽히게 한다(지금 래퍼가 값을 넘기지 않아 '값 모름'으로 읽힌다).
+- **이미지** — 규정 그림은 불러오는 동안 스켈레톤, 못 불러오면 대체 그림. 프로필 사진의 외부 기본 그림을 걷는다.
+- **끝 흐림** — 필터 칩 줄 · 결재 이력 · 권한 목록처럼 넘칠 수 있는 대화상자 본문.
+- **요청** — 재시도 3번(약 7초)을 읽기 2번 · 10초 안으로, 요청 제한 10초를 더한다.
 
 ### Pagination / Drawer / Spinner / Stepper (v67 추가 batch)
 
@@ -3865,9 +3860,8 @@ HR(B2B) 4 컴포넌트 사용 패턴 — DESIGN.md 공통 spec 외 brand-specifi
 아래에서 올라오는 시트는 2026-10-02 Bottom Sheet 로 바뀌었다 — 위 "시트 · 대화상자 · 확인창 · 팝오버" 절. 옆 패널은 Side Panel 차례에 정한다.
 
 #### Spinner / Progress — HR
-- **결재 처리 중 inline spinner**: 승인 클릭 시 button 안 sm 16 spinner + "처리 중..." 라벨 (text-on-accent 위 white spinner).
-- **데이터 동기 progress**: dashboard 상단 indeterminate progress bar (linear, 4px, primary). 동기 완료 시 success 색 1초 → fade out.
-- **bulk operation determinate progress**: 100건 일괄 승인 등 — percentage 표시 ("47 / 100").
+
+> 2026-10-03 걷었다 — 위 "기다림 — HR" 절(Progress Circle · Progress).
 
 #### Stepper — HR
 - **결재 단계 horizontal**: 신청 → 1차 결재 → 2차 결재 → 완료. sequential, 이전 단계 비완료 시 진입 차단.

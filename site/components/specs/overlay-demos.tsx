@@ -389,8 +389,9 @@ export function TxFormSheetDemo({ kit, date, sel, field, input, mode = 'auto', c
 }
 
 // ── Responsive Dialog — 1280 이상 대화상자 · 미만 시트, 머리 · 본문 · 바닥은 같다 ─────────
-// form 이면 대화상자는 바닥 취소(머리 닫기 없음) · 시트는 위 닫기(바닥 취소 없음). 조회는 둘 다 위 닫기
-function ResponsiveLayer({
+// form 이면 대화상자는 바닥 취소(머리 닫기 없음) · 시트는 위 닫기(바닥 취소 없음). 조회는 둘 다 위 닫기.
+// fog 는 본문 끝 흐림(scrollFog) — 넘칠 수 있는 본문에 걸고, 걸면 두 표면 모두 늘 켜진 위 · 아래 흐림이다
+export function ResponsiveLayer({
   kit,
   mode,
   open,
@@ -400,6 +401,7 @@ function ResponsiveLayer({
   description,
   children,
   bodyPad = true,
+  fog = false,
   submit,
   trigger,
 }: {
@@ -412,6 +414,7 @@ function ResponsiveLayer({
   description?: string;
   children: ReactNode;
   bodyPad?: boolean;
+  fog?: boolean;
   // 입력 폼의 주 버튼(신청 · 저장)
   submit?: { label: string; onClick: () => void; brand?: boolean };
   trigger: () => HTMLElement | null;
@@ -436,6 +439,7 @@ function ResponsiveLayer({
             close={!form}
             onClose={() => onRequestClose('close')}
             bodyPad={bodyPad}
+            fog={fog}
             footer={
               submit && (
                 <EndButtons
@@ -468,6 +472,7 @@ function ResponsiveLayer({
           {...head}
           onClose={() => onRequestClose('close')}
           bodyPad={bodyPad}
+          fog={fog}
           safe={SAFE}
           footer={submit && <SheetButtons mode={mode} items={[{ label: submit.label, look: submit.brand ? kit.sheet.brand : kit.sheet.solid, onClick: submit.onClick }]} />}
         >
@@ -579,7 +584,8 @@ export function DetailDialogDemo({ kit, list, rows, mode = 'auto' }: { kit: OvKi
         </li>
         <TxRow kit={kit} mode={mode} tx={TXS[1]} />
       </ul>
-      <ResponsiveLayer kit={kit} mode={mode} open={open} form={false} onRequestClose={() => setOpen(false)} title="거래 상세" bodyPad={false} trigger={() => trigger.current}>
+      {/* 길이가 데이터에 따라 느는 본문 — scrollFog(위 · 아래 끝 흐림, 늘 켜짐) */}
+      <ResponsiveLayer kit={kit} mode={mode} open={open} form={false} onRequestClose={() => setOpen(false)} title="거래 상세" bodyPad={false} fog trigger={() => trigger.current}>
         <ListView look={list} rows={rows} mode={mode} live={false} />
       </ResponsiveLayer>
     </DemoFrame>

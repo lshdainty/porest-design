@@ -7,7 +7,8 @@
  * GRID · WEEK · WEEKDAY_ROW · WEEKDAY · CELL · BAND · BAND_SIDE · DAY · DAY_PRESS · DAY_PRESS_ON_WEAK · DAY_STATE · DAY_TODAY_WEIGHT · DAY_STRIKE · OUTSIDE · LIVE ·
  * DATE_PICKER_TWO_MONTHS_POPOVER 는 recipes/shadcn/components/ui/date-picker.tsx 의 상수와, TITLE_TEXT · MONTH_COLUMN · HIDDEN_WEEKDAYS 는 그 파일의
  * JSX 에 적힌 클래스와 글자 하나까지 같아야 한다 — 두 파일을 함께 고친다(연 · 월 휠 WHEEL · WHEEL_YEAR · WHEEL_MONTH 는 이 파일의 그림이 휠을 열지 않아 옮기지 않았다).
- * 둘레의 부품은 그 레시피의 값을 옮겨 썼다 — BUTTON_* 는 button.tsx(button-examples.mjs), CHIP_* · GROUP_* · SCROLL_ROW 는 chip.tsx(chip-examples.mjs),
+ * 둘레의 부품은 그 레시피의 값을 옮겨 썼다 — BUTTON_* 는 button.tsx(button-examples.mjs), CHIP_* · GROUP_* · SCROLL_ROW 는 chip.tsx(chip-examples.mjs — 스크롤
+ * 칸의 양 끝 흐림 fogStyle 은 scroll-fog.tsx 의 useScrollFog 와 같은 셈),
  * SHEET_* 는 bottom-sheet.tsx(bottom-sheet-examples.mjs), POP_* 는 popover.tsx(popover-examples.mjs), IB_* 는 input-button.tsx · FIELD_* 는 field.tsx
  * (input-button-examples.mjs)의 것과 같다 — 이 파일이 쓰는 변형 · 크기와 그에 걸리는 compound 만 옮겼다.
  * 규칙은 specs/components/date-picker.md, 수치 원본은 specs/components/date-picker.yaml.
@@ -29,6 +30,8 @@
  * 칠해지지만 고른 날은 그대로다. 아이콘은 lucide-react 와 같은 모양의 inline SVG 다(lucide 의 class · xmlns 는 그리지 않는다 — 레시피가 className 을 준
  * 제목 셰브론만 class 를 단다).
  */
+
+import { readFileSync } from "node:fs";
 
 // ── date-picker.tsx 의 상수와 같은 값 ──────────────────────────────────────
 
@@ -152,7 +155,8 @@ const BUTTON_BASE = [
   "active:[scale:calc(1-2/var(--press-basis))] motion-reduce:active:[scale:1]",
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stroke-focus-ring",
   "disabled:cursor-not-allowed disabled:[scale:1] disabled:bg-bg-disabled disabled:text-fg-disabled",
-  "aria-busy:cursor-progress aria-busy:text-transparent aria-busy:[&>svg]:invisible aria-busy:active:[scale:1]",
+  "aria-busy:cursor-progress aria-busy:text-transparent aria-busy:[&>svg:not([data-slot=progress-circle])]:invisible aria-busy:active:[scale:1]",
+  "[--progress-thickness:2px]",
   "[&_svg]:pointer-events-none [&_svg]:shrink-0",
 ].join(" ");
 
@@ -282,7 +286,9 @@ const SHEET_CLOSE = [
 const SHEET_HEADER = "flex shrink-0 flex-col gap-x2 px-global-gutter pb-x4 pt-x6";
 const SHEET_TITLE = "m-0 text-t8 font-bold text-fg-neutral";
 const SHEET_TITLE_WITH_CLOSE = "pr-x10";
-const SHEET_BODY = "min-h-0 flex-1 overflow-y-auto px-global-gutter last:pb-x4";
+const SHEET_BODY = "min-h-0 flex-1 overflow-y-auto px-global-gutter";
+// 끝 흐림이 없는 본문(scrollFog 아님) — 끝이면 아래 16
+const SHEET_BODY_PLAIN = "last:pb-x4";
 const SHEET_FOOTER = "flex shrink-0 gap-x2 px-global-gutter pb-x4 pt-x3 [&>*]:min-w-0 [&>*]:flex-1";
 
 // ── popover.tsx 의 상수 · JSX 에 적힌 클래스 — 1280 이상 팝오버 ───────────────
@@ -299,15 +305,13 @@ const POP_CONTENT = [
   "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:duration-[var(--motion-duration-d2)] data-[state=closed]:ease-[var(--motion-ease-exit)] motion-safe:data-[state=closed]:zoom-out-95",
 ].join(" ");
 
-// 본문 — Dialog 의 본문과 같다(좌우 24, 넘치면 아래 48 흐림 + 아래 48 여백, 위로 스크롤되면 머리 아래 1px 선)
+// 본문 — Dialog 의 본문과 같다(좌우 24 · 머리가 없으면 위 24 · 끝이면 아래 24). 끝 흐림(scrollFog — BODY_FOG)은 이 파일의 패널이
+// 쓰지 않아 BODY_PLAIN 만 옮겼다. 위로 스크롤되면 머리 아래 1px 선은 머리(HEADER)가 긋는다 — 이 패널에는 머리가 없다
 const POP_BODY = [
   "min-h-0 flex-1 overflow-y-auto px-x6 first:pt-x6",
-  "[--body-pad-bottom:0px] last:[--body-pad-bottom:var(--spacing-x6)] pb-[var(--body-pad-bottom)]",
-  "[transition:box-shadow_var(--motion-duration-color-transition)_var(--motion-ease-easing)]",
-  "data-[scrolled]:not-first:shadow-[inset_0_1px_0_0_var(--color-stroke-neutral-subtle)]",
-  "data-[overflow]:pb-x12 data-[overflow]:[mask-image:linear-gradient(to_top,transparent_0,#000_var(--spacing-x12))]",
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-stroke-focus-ring",
 ].join(" ");
+const POP_BODY_PLAIN = "last:pb-x6";
 
 // 바닥 — 위 16 · 좌우 24 · 아래 24, 오른쪽 정렬, 사이 8. 버튼은 small 36
 const POP_FOOTER = "flex shrink-0 items-center justify-end gap-x2 px-x6 pb-x6 pt-x4";
@@ -590,7 +594,9 @@ function datePicker({ uid, selection = "single", visibleRange = "month", value, 
     .join("");
   const presetRow = presets.length
     ? `<div role="radiogroup" data-slot="date-picker-presets" class="${cn(chipGroupVariants({ layout, bleed: layout === "scroll" }), PRESETS)}" aria-label="빠른 기간">${
-        layout === "scroll" ? `<div data-slot="chip-scroll-row" class="${SCROLL_ROW}" style="${SCROLL_FIX}">${chips}</div>` : chips
+        layout === "scroll"
+          ? `<div data-slot="chip-scroll-row" data-scroll-fog="row" class="${SCROLL_ROW}" data-fog-axis="x" style="${fogStyle()} ${SCROLL_FIX}">${chips}</div>`
+          : chips
       }</div>`
     : "";
 
@@ -628,6 +634,21 @@ const button = ({ variant = "neutralSolid", size, label, disabled = false }) =>
 // 사이트의 `* { scrollbar-width: thin }` 은 층 밖 규칙이라 스크롤 칸의 [scrollbar-width:none] 을 이긴다 — 스크롤 칸에 style 로 한 번 더 숨긴다(미리보기용 덧칠)
 const SCROLL_FIX = "scrollbar-width:none;";
 
+// 빠른 기간 줄의 끝 흐림 — chip.tsx 의 ChipScrollRow 가 거는 useScrollFog(scroll-fog.tsx · row 좌우 20)와 같은 셈. 레시피는 그릴 때
+// 토큰 --gradient-fade-mask 를 읽어 방향을 붙인다 — 정적 HTML 은 빌드 때 DESIGN.md 의 토큰 값으로 style 에 적는다(chip-examples.mjs 와 같다)
+const FADE_MASK = /`gradient-fade-mask` \| `(linear-gradient\([^`]+\))`/.exec(readFileSync(new URL("../../../DESIGN.md", import.meta.url), "utf8"))[1];
+const SOLID = "linear-gradient(#000, #000)";
+const withDirection = (token, direction) => token.replace(/^linear-gradient\(/, `linear-gradient(${direction}, `);
+function fogStyle(start = "20px", end = "20px") {
+  const mask = {
+    image: `${withDirection(FADE_MASK, "to right")}, ${SOLID}, ${withDirection(FADE_MASK, "to left")}`,
+    size: `${start} 100%, calc(100% - ${start} - ${end}) 100%, ${end} 100%`,
+    position: `0 0, ${start} 0, 100% 0`,
+    repeat: "no-repeat",
+  };
+  return ["image", "size", "position", "repeat"].map((p) => `mask-${p}:${mask[p]}; -webkit-mask-${p}:${mask[p]};`).join(" ");
+}
+
 // 미리보기 틀 — 레시피의 딤 · 시트 · 팝오버는 화면(fixed)에 뜬다. transform 이 fixed 의 기준을 틀로 바꾸고 isolation 이 z-index 를 틀 안에 가둔다.
 // phone 은 휴대폰(360 — 시트는 1280 미만), desktop 은 데스크톱 화면(팝오버는 1280 이상)이다. minWidth 는 두 달 팝오버(744)를 다 보이는 폭
 const STAGE = ({ height, phone = false, minWidth = 0 }) =>
@@ -663,7 +684,7 @@ function bottomSheet({ uid, title, body, footer, height, full = false, pageHtml 
   const header = `<div data-slot="bottom-sheet-header" class="${SHEET_HEADER}"><h2 id="${titleId}" data-slot="bottom-sheet-title" class="${SHEET_TITLE} ${SHEET_TITLE_WITH_CLOSE}">${esc(title)}</h2></div>`;
   const close = `<button type="button" aria-label="닫기" data-slot="bottom-sheet-close" class="${SHEET_CLOSE}">${svg(PATHS.x)}</button>`;
   const overlay = `<div data-vaul-overlay="" data-vaul-snap-points="false" data-state="open" data-slot="bottom-sheet-overlay" class="${SHEET_OVERLAY}"></div>`;
-  return `<div style="${STAGE({ height, phone: true })}">${pageHtml}${overlay}<div ${content}>${header}${close}<div data-slot="bottom-sheet-body" class="${SHEET_BODY}">${body}</div><div data-slot="bottom-sheet-footer" class="${SHEET_FOOTER}">${footer.join("")}</div></div></div>`;
+  return `<div style="${STAGE({ height, phone: true })}">${pageHtml}${overlay}<div ${content}>${header}${close}<div data-slot="bottom-sheet-body" class="${SHEET_BODY} ${SHEET_BODY_PLAIN}">${body}</div><div data-slot="bottom-sheet-footer" class="${SHEET_FOOTER}">${footer.join("")}</div></div></div>`;
 }
 
 // <Field label> + <InputButton size="medium" suffixIcon={<CalendarDays />}> — 팝오버를 연 칸. PopoverTrigger asChild 가 버튼에 Radix 의 속성과
@@ -702,7 +723,7 @@ function popoverStage({ uid, title, label, value, body, footer, height, classNam
     // Radix 가 재는 가용 폭 · 높이 — 미리보기는 넉넉히 적었다
     'style="--radix-popover-content-available-width:1000px; --radix-popover-content-available-height:800px;"',
   ]);
-  const popover = `<div data-radix-popper-content-wrapper="" style="position:absolute; left:0; top:calc(100% + var(--spacing-x2)); min-width:max-content; z-index:var(--z-floating);"><div ${content}><div data-slot="popover-body" class="${POP_BODY}">${body}</div><div data-slot="popover-footer" class="${POP_FOOTER}">${footer.join("")}</div></div></div>`;
+  const popover = `<div data-radix-popper-content-wrapper="" style="position:absolute; left:0; top:calc(100% + var(--spacing-x2)); min-width:max-content; z-index:var(--z-floating);"><div ${content}><div data-slot="popover-body" class="${POP_BODY} ${POP_BODY_PLAIN}">${body}</div><div data-slot="popover-footer" class="${POP_FOOTER}">${footer.join("")}</div></div></div>`;
   const field = pickField({ uid: `${uid}-field`, label: title.field, value, contentId: uid });
   const stage = `<div style="${STAGE({ height, minWidth })}"><div style="padding:var(--spacing-x6) var(--spacing-x8);"><div aria-hidden="true" style="${PAGE_TITLE} margin-bottom:var(--spacing-x4);">${esc(title.page)}</div><div style="padding:var(--spacing-x4) var(--spacing-x6) var(--spacing-x6); border-radius:var(--radius-r4); background:var(--color-bg-layer-default);"><div style="position:relative; display:flex; flex-direction:column; align-items:flex-start; max-width:400px;">${field}${popover}</div></div></div></div>`;
   return minWidth ? `<div style="overflow-x:auto; ${SCROLL_FIX}">${stage}</div>` : stage;

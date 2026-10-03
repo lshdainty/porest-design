@@ -31,6 +31,7 @@ import {
   X,
 } from 'lucide-react';
 import type { ButtonLook, ButtonState } from './button-look';
+import { PcArc } from './pc-arc';
 
 const ICONS = {
   plus: Plus,
@@ -248,23 +249,10 @@ export function ButtonView({ look, mode = 'auto', state = 'live', label, prefix,
       )}
       {suffix && !iconOnly && <Icon name={suffix} size={f.icon} color={inner} />}
       {loading && (
-        <span
-          aria-hidden
-          className="porest-spin"
-          style={{
-            position: 'absolute',
-            left: '50%',
-            top: '50%',
-            width: f.progress.size,
-            height: f.progress.size,
-            marginLeft: -f.progress.size / 2,
-            marginTop: -f.progress.size / 2,
-            boxSizing: 'border-box',
-            borderRadius: '50%',
-            border: `${f.progress.thickness}px solid var(--pb-track)`,
-            borderTopColor: 'var(--pb-range)',
-          }}
-        />
+        // 로딩 원 — Progress Circle(값 없는 원 · inherit): 크기 · 두께 · 색은 button.yaml 의 progressCircle, 움직임은 progress-circle.yaml
+        <span aria-hidden style={{ position: 'absolute', left: '50%', top: '50%', width: f.progress.size, height: f.progress.size, marginLeft: -f.progress.size / 2, marginTop: -f.progress.size / 2 }}>
+          <PcArc size={f.progress.size} thickness={f.progress.thickness} track="var(--pb-track)" range="var(--pb-range)" />
+        </span>
       )}
     </button>
   );

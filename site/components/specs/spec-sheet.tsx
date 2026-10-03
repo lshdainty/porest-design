@@ -66,6 +66,23 @@ function ScalarValue({ raw, omitWeight = false }: { raw: unknown; omitWeight?: b
   const v = String(raw).trim();
   const color = /^\$color-([a-z0-9-]+)(?:\s*\/\s*(\d+)%)?$/.exec(v);
   if (color) return <ColorValue name={color[1]} alpha={color[2] ? Number(color[2]) : undefined} />;
+  // 그라디언트(v104 표 토큰) — 이름 · 미리보기 · 값. 마스크는 방향을 붙여(→), 반짝임 띠는 스켈레톤 면 위에 그린다
+  const gr = /^\$gradient-([a-z0-9-]+)$/.exec(v);
+  if (gr) {
+    const value = proseValue(`gradient-${gr[1]}`);
+    const dark = gr[1].endsWith('-dark');
+    const face = design('desk').front.colors[dark ? 'bg-neutral-weak-dark' : 'bg-neutral-weak'];
+    const preview = gr[1].startsWith('fade-mask') ? value.replace(/^linear-gradient\(/, 'linear-gradient(to right, ') : `${value}, ${face}`;
+    return (
+      <span className="flex flex-col gap-1">
+        <code className="text-[12.5px] text-fd-foreground">{v.slice(1)}</code>
+        <span className="flex items-start gap-2">
+          <span aria-hidden className="mt-0.5 inline-block h-3.5 w-14 shrink-0 rounded-[4px] border border-black/10 dark:border-white/20" style={{ background: preview }} />
+          <span className="break-all font-mono text-[11px] leading-4 text-fd-muted-foreground">{value}</span>
+        </span>
+      </span>
+    );
+  }
   const m = /^\$(spacing|radius|text|font|motion|shadow)-(.+)$/.exec(v);
   if (m) {
     const front = design().front;

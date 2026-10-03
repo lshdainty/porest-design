@@ -3,7 +3,7 @@ import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
-import { Spinner } from "@/components/ui/spinner";
+import { ProgressCircle } from "@/components/ui/progress-circle";
 
 /*
  * Porest Button — 구조는 SEED Action Button(2026-09-30). 수치 원본은 specs/components/button.yaml.
@@ -27,6 +27,8 @@ import { Spinner } from "@/components/ui/spinner";
  *   disabled 는 전용 색(bg-disabled · fg-disabled) — 흐리게 하지 않는다.
  *   loading 은 누름 색 위 로딩 원 + 누르기 막기 + aria-busy. 라벨은 글자 · 아이콘 색만 투명하게 해 폭을 그대로 둔다 —
  *   자식을 따로 감싸지 않으므로 부르는 쪽의 [&>span] · [&>svg] 규칙이 그대로 먹는다. asChild 와 함께 쓰지 않는다.
+ *   로딩 원은 Progress Circle(progress-circle.tsx) — size · tone inherit 로 이 버튼이 정한 --progress-size(14 · 14 · 16 · 18) ·
+ *   --progress-thickness(2) · --progress-track · --progress-range 를 따른다. 장식이다(aria-hidden) — 버튼의 aria-busy 가 알린다.
  *
  * 누르는 영역은 보이는 크기와 따로 44×44 까지 넓힌다(::before).
  */
@@ -40,8 +42,10 @@ const buttonVariants = cva(
     "active:[scale:calc(1-2/var(--press-basis))] motion-reduce:active:[scale:1]",
     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stroke-focus-ring",
     "disabled:cursor-not-allowed disabled:[scale:1] disabled:bg-bg-disabled disabled:text-fg-disabled",
-    // 로딩 — 라벨은 투명하게(폭 유지), 누름 축소 없음. 누르기는 onClick 에서 삼킨다
-    "aria-busy:cursor-progress aria-busy:text-transparent aria-busy:[&>svg]:invisible aria-busy:active:[scale:1]",
+    // 로딩 — 라벨은 투명하게(폭 유지), 누름 축소 없음. 누르기는 onClick 에서 삼킨다. 로딩 원(Progress Circle)도 svg 지만 숨기지 않는다
+    "aria-busy:cursor-progress aria-busy:text-transparent aria-busy:[&>svg:not([data-slot=progress-circle])]:invisible aria-busy:active:[scale:1]",
+    // 로딩 원의 두께 — 크기와 상관없이 2(button.yaml progressCircle). 크기는 size 마다 --progress-size
+    "[--progress-thickness:2px]",
     "[&_svg]:pointer-events-none [&_svg]:shrink-0",
   ].join(" "),
   {
@@ -171,16 +175,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       >
         {children}
         {loading && (
-          <Spinner
+          <ProgressCircle
+            size="inherit"
+            tone="inherit"
             aria-hidden
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-            style={{
-              width: "var(--progress-size)",
-              height: "var(--progress-size)",
-              borderWidth: 2,
-              borderColor: "var(--progress-track)",
-              borderTopColor: "var(--progress-range)",
-            }}
           />
         )}
       </button>

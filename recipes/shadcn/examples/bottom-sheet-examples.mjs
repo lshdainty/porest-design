@@ -1,11 +1,13 @@
 /*
  * shadcn Bottom Sheet 예제 — docs site components/bottom-sheet.html 에서 Preview + Code 토글로 보인다.
  * 각 예제 = { title, description, jsx, render() }. 앞의 둘(고르기 — 기간 · 입력 폼)은 차례 · 제목 · 코드가 specs/components/bottom-sheet.md 의
- * "코드" 절과 같고(목록을 담은 본문에 className="px-0" 만 더했다 — 줄이 제 좌우 24 를 가진다), 뒤의 둘(손잡이 · 닫기 버튼)은 md 의
- * Properties 를 코드로 더 보인다.
+ * "코드" 절과 같고(목록을 담은 본문에 className="px-0" 만 더했다 — 줄이 제 좌우 24 를 가진다), 뒤의 셋(본문 끝 흐림 · 손잡이 · 닫기 버튼)은
+ * md 의 Properties 를 코드로 더 보인다.
  *
- * OVERLAY · CONTENT · CLOSE · HANDLE 은 recipes/shadcn/components/ui/bottom-sheet.tsx 의 상수와, HEADER · TITLE · TITLE_WITH_CLOSE ·
- * DESCRIPTION · SNAP_HEIGHT · BODY · FOOTER 는 그 파일의 JSX 에 적힌 클래스와 글자 하나까지 같아야 한다 — 두 파일을 함께 고친다.
+ * OVERLAY · CONTENT · CLOSE · HANDLE · BODY · BODY_PLAIN · BODY_FOG 는 recipes/shadcn/components/ui/bottom-sheet.tsx 의 상수와, HEADER · TITLE ·
+ * TITLE_WITH_CLOSE · DESCRIPTION · SNAP_HEIGHT · FOOTER 는 그 파일의 JSX 에 적힌 클래스와 글자 하나까지 같아야 한다 — 두 파일을 함께 고친다.
+ * 끝 흐림의 SOLID · fogStyle 은 scroll-fog.tsx 의 useScrollFog 와 같은 셈이다 — 레시피는 그릴 때 토큰 --gradient-fade-mask 에 방향을 붙여 본문의
+ * style(mask-*) · data-fog-axis 로 넣고, 정적 HTML 은 같은 일을 빌드 때 DESIGN.md 의 토큰 값으로 해 style 에 적었다.
  * 둘레의 부품은 그 레시피의 값을 옮겨 썼다 — BUTTON_* 는 button.tsx(button-examples.mjs), LIST_* · RADIOMARK_* · DOT_* 는 list.tsx ·
  * radio-group.tsx(list-examples.mjs), INPUT_* 는 input.tsx(input-examples.mjs), IB_* 는 input-button.tsx(input-button-examples.mjs),
  * FIELD_* 는 field.tsx 의 것과 같다 — 이 파일이 쓰는 변형 · 크기와 그에 걸리는 compound 만 옮겼다.
@@ -26,6 +28,8 @@
  * 열린 순간을 멈춘 그림이다. 레시피의 스크립트(끌기 · 바깥 누르기 · Esc · 뒤로 가기 · 바뀐 값 묻기 · 초점)는 정적 HTML 에 없다.
  * 아이콘은 lucide-react 와 같은 모양의 inline SVG 다(lucide 의 class · xmlns 는 그리지 않는다).
  */
+
+import { readFileSync } from "node:fs";
 
 // ── bottom-sheet.tsx 의 상수와 같은 값 ─────────────────────────────────────
 
@@ -80,8 +84,11 @@ const TITLE_WITH_CLOSE = "pr-x10";
 const DESCRIPTION = "m-0 text-t5 font-normal text-fg-neutral-muted";
 // 스냅 높이를 두면 시트를 화면의 90% 높이로 둔다 — cn(CONTENT, SNAP_HEIGHT)
 const SNAP_HEIGHT = "h-[90dvh]";
-// 본문 — 좌우 24, 넘치면 이 안에서 스크롤. 바닥이 없어 맨 끝이면 아래 16. 레시피는 cn(BODY, className)
-const BODY = "min-h-0 flex-1 overflow-y-auto px-global-gutter last:pb-x4";
+// 본문 — 좌우 24, 넘치면 이 안에서 스크롤. 바닥이 없어 맨 끝이면 아래 16(BODY_PLAIN). 레시피는 cn(BODY, scrollFog ? BODY_FOG : BODY_PLAIN, className)
+const BODY = "min-h-0 flex-1 overflow-y-auto px-global-gutter";
+const BODY_PLAIN = "last:pb-x4";
+// 끝 흐림(scrollFog) — 본문 안 여백 위 20 · 아래 80(바닥이 있어도), 스크롤 여유도 위 20 · 아래 80
+const BODY_FOG = "pt-[20px] pb-[80px] scroll-pt-[20px] scroll-pb-[80px]";
 // 바닥 — 위 12 · 아래 16(그 아래 안전 영역은 시트가 둔다), 버튼 하나면 폭 전체 · 둘이면 반씩(사이 8)
 const FOOTER = "flex shrink-0 gap-x2 px-global-gutter pb-x4 pt-x3 [&>*]:min-w-0 [&>*]:flex-1";
 
@@ -94,7 +101,8 @@ const BUTTON_BASE = [
   "active:[scale:calc(1-2/var(--press-basis))] motion-reduce:active:[scale:1]",
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stroke-focus-ring",
   "disabled:cursor-not-allowed disabled:[scale:1] disabled:bg-bg-disabled disabled:text-fg-disabled",
-  "aria-busy:cursor-progress aria-busy:text-transparent aria-busy:[&>svg]:invisible aria-busy:active:[scale:1]",
+  "aria-busy:cursor-progress aria-busy:text-transparent aria-busy:[&>svg:not([data-slot=progress-circle])]:invisible aria-busy:active:[scale:1]",
+  "[--progress-thickness:2px]",
   "[&_svg]:pointer-events-none [&_svg]:shrink-0",
 ].join(" ");
 
@@ -395,6 +403,23 @@ function forceState(classList, state) {
 
 const forced = (classList, state) => merge(`${classList} ${forceState(classList, state)}`);
 
+// ── 끝 흐림 — scroll-fog.tsx 의 useScrollFog 와 같은 셈(overlayBody · 세로) ─────────
+
+// 토큰 값 — 레시피는 그릴 때 getComputedStyle 로 읽는다. 정적 HTML 은 DESIGN.md 의 v104 표에서 읽는다
+const FADE_MASK = /`gradient-fade-mask` \| `(linear-gradient\([^`]+\))`/.exec(readFileSync(new URL("../../../DESIGN.md", import.meta.url), "utf8"))[1];
+const SOLID = "linear-gradient(#000, #000)";
+const withDirection = (token, direction) => token.replace(/^linear-gradient\(/, `linear-gradient(${direction}, `);
+// 위 20 · 아래 80 — 시작 쪽 흐림(투명 → 불투명) · 가운데 불투명 · 끝 쪽 흐림(불투명 → 투명). 상자의 style 에 mask-* 와 -webkit-mask-* 를 같이 넣는다
+function fogStyle(start = "20px", end = "80px") {
+  const mask = {
+    image: `${withDirection(FADE_MASK, "to bottom")}, ${SOLID}, ${withDirection(FADE_MASK, "to top")}`,
+    size: `100% ${start}, 100% calc(100% - ${start} - ${end}), 100% ${end}`,
+    position: `0 0, 0 ${start}, 0 100%`,
+    repeat: "no-repeat",
+  };
+  return ["image", "size", "position", "repeat"].map((p) => `mask-${p}:${mask[p]}; -webkit-mask-${p}:${mask[p]};`).join(" ");
+}
+
 // ── 미리보기 조각 ─────────────────────────────────────────────────────────
 
 const attrs = (list) => list.filter(Boolean).join(" ");
@@ -441,7 +466,8 @@ function closeButton(force) {
 }
 
 // <BottomSheet open> + <BottomSheetContent>. uid 는 Radix 가 만드는 id 의 앞말(예제마다 달리한다).
-// body = { html, className } · footer = 버튼 HTML 배열 · snap = 스냅 높이(0 ~ 1 — 손잡이를 달고 시트를 90% 높이로 둔 뒤 그 높이까지 내린다)
+// body = { html, className, scrollFog } · footer = 버튼 HTML 배열 · snap = 스냅 높이(0 ~ 1 — 손잡이를 달고 시트를 90% 높이로 둔 뒤 그 높이까지 내린다).
+// scrollFog 는 끝 흐림(늘 켜짐 — 위 20 · 아래 80), 넘친 본문의 Tab 자리(tabindex 0)는 레시피가 재서 단다 — 그 순간을 멈춰 적는다(overflow)
 function bottomSheet({ uid, title, description, body, footer = [], snap, form = false, close = true, height = 600 }) {
   const titleId = `${uid}-title`;
   const descriptionId = `${uid}-description`;
@@ -468,7 +494,15 @@ function bottomSheet({ uid, title, description, body, footer = [], snap, form = 
   const header = `<div data-slot="bottom-sheet-header" class="${HEADER}"><h2 id="${titleId}" data-slot="bottom-sheet-title" class="${close ? `${TITLE} ${TITLE_WITH_CLOSE}` : TITLE}">${esc(title)}</h2>${
     description != null ? `<p id="${descriptionId}" data-slot="bottom-sheet-description" class="${DESCRIPTION}" style="${P_FIX.description}">${esc(description)}</p>` : ""
   }</div>`;
-  const bodyHtml = `<div data-slot="bottom-sheet-body" class="${body.className ? merge(`${BODY} ${body.className}`) : BODY}">${body.html}</div>`;
+  const bodyClass = merge([BODY, body.scrollFog ? BODY_FOG : BODY_PLAIN, body.className].filter(Boolean).join(" "));
+  const bodyHtml = `<div ${attrs([
+    'data-slot="bottom-sheet-body"',
+    body.scrollFog && 'data-scroll-fog="overlayBody"',
+    `class="${bodyClass}"`,
+    body.overflow && 'tabindex="0"',
+    body.scrollFog && 'data-fog-axis="y"',
+    body.scrollFog && `style="${fogStyle()}"`,
+  ])}>${body.html}</div>`;
   const footerHtml = footer.length ? `<div data-slot="bottom-sheet-footer" class="${FOOTER}">${footer.join("")}</div>` : "";
   const overlay = `<div data-vaul-overlay="" data-vaul-snap-points="${snaps}" data-state="open" data-slot="bottom-sheet-overlay" class="${OVERLAY}"></div>`;
   return `<div style="${STAGE(height)}">${page()}${overlay}<div ${content}>${handle}${header}${close ? closeButton() : ""}${bodyHtml}${footerHtml}</div></div>`;
@@ -595,6 +629,36 @@ export const bottomSheetExamples = [
           )}</div>`,
         },
         footer: [button({ variant: "neutralSolid", label: "저장", type: "submit" })],
+      }),
+  },
+
+  {
+    title: "넘칠 수 있는 본문 — 끝 흐림",
+    description:
+      "목록 · 긴 폼처럼 넘칠 수 있는 본문은 scrollFog 를 준다(Scroll Fog overlayBody) — 위 20 · 아래 80 이 마스크(gradient-fade-mask)로 늘 흐리고, 본문 안에 그만큼 여백(위 20 — 머리 아래 16 은 그대로 · 아래 80 — 바닥이 있어도)과 스크롤 여유를 둬 끝까지 내리면 흐림이 빈 여백 위에 놓인다(SEED Bottom Sheet 의 권장). 넘쳤는지 재서 켜고 끄지 않는다 — 걸 본문인지는 내용의 종류로 정하고, 칸 두셋처럼 늘 들어맞는 본문에는 걸지 않는다. 1280 이상의 Dialog 와 같다. 미리보기 본문은 실제로 스크롤된다.",
+    jsx: `<BottomSheet open={open} onOpenChange={setOpen}>
+  <BottomSheetContent title="카테고리 고르기">
+    {/* 길이가 데이터에 따라 늘어나는 목록 — 위 20 · 아래 80 흐림과 같은 여백 */}
+    <BottomSheetBody scrollFog className="px-0">
+      <ListRadioGroup value={category} onValueChange={setCategory} aria-label="카테고리">…</ListRadioGroup>
+    </BottomSheetBody>
+    <BottomSheetFooter>
+      <Button size="large" onClick={apply}>완료</Button>
+    </BottomSheetFooter>
+  </BottomSheetContent>
+</BottomSheet>`,
+    render: () =>
+      bottomSheet({
+        uid: "bottom-sheet-ex-fog",
+        title: "카테고리 고르기",
+        height: 560,
+        body: {
+          className: "px-0",
+          scrollFog: true,
+          overflow: true,
+          html: radioList({ uid: "bottom-sheet-ex-fog-list", label: "카테고리", options: ["식비", "교통", "쇼핑", "카페", "구독", "의료", "여행", "주거", "통신", "교육"], value: "식비" }),
+        },
+        footer: [button({ variant: "neutralSolid", label: "완료" })],
       }),
   },
 

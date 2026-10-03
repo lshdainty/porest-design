@@ -63,7 +63,7 @@
 
 ### Chip Tabs
 
-1차 Line 탭 안의 2차 탭이다. 칩 하나는 [Chip](chip.md) 그대로 — `solid` 는 Chip Solid, `outline` 은 Chip Outline Strong, 크기는 Chip medium 36 *(기본)* · large 40 이다. 고르면 짙은 채움(`bg-neutral-inverted` · `fg-neutral-inverted`)이고, 누름 · 호버 · 포커스 · 비활성도 Chip 과 같다. 목록은 바탕 · 바닥 선 없이 한 줄 가로 스크롤이고, 칩 사이 8 · 좌우 화면 여백 24(Chip 의 가로 스크롤 줄과 같다) · 위아래 8 이다.
+1차 Line 탭 안의 2차 탭이다. 칩 하나는 [Chip](chip.md) 그대로 — `solid` 는 Chip Solid, `outline` 은 Chip Outline Strong, 크기는 Chip medium 36 *(기본)* · large 40 이다. 고르면 짙은 채움(`bg-neutral-inverted` · `fg-neutral-inverted`)이고, 누름 · 호버 · 포커스 · 비활성도 Chip 과 같다. 목록은 바탕 · 바닥 선 없이 한 줄 가로 스크롤이고, 칩 사이 8 · 좌우 화면 여백 24(Chip 의 가로 스크롤 줄과 같다) · 위아래 8 이다. 목록의 양 끝은 [Scroll Fog](scroll-fog.md) 로 늘 흐린다(좌우 20 — 여백 24 가 더 넓어 처음 · 끝 칩은 흐리지 않는다).
 
 - 화면 전체 내용을 바꾸면 **Solid**, 일부 내용만 바꾸면 **Outline**(SEED).
 - **large** 는 화면 전체를 바꾸는 탭, **medium** 은 좁은 자리 · 스크롤 중간의 서브 내용(SEED).

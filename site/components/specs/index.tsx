@@ -9,6 +9,7 @@ import { buttonFigures } from './button';
 import { buttonGuideFigures } from './button-guides';
 import { calloutFigures } from './callout';
 import { checkboxFigures } from './checkbox';
+import { contentPlaceholderFigures } from './content-placeholder';
 import { datePickerFigures } from './date-picker';
 import { chipFigures } from './chip';
 import { dialogFigures } from './dialog';
@@ -22,11 +23,15 @@ import { menuFigures } from './menu';
 import { menuSheetFigures } from './menu-sheet';
 import { notificationBadgeFigures } from './notification-badge';
 import { popoverFigures } from './popover';
+import { progressFigures } from './progress';
+import { progressCircleFigures } from './progress-circle';
 import { pageBannerFigures } from './page-banner';
 import { radioGroupFigures } from './radio-group';
 import { resultSectionFigures } from './result-section';
 import { selectFigures } from './select';
 import { selectBoxFigures } from './select-box';
+import { scrollFogFigures } from './scroll-fog';
+import { skeletonFigures } from './skeleton';
 import { segmentedControlFigures } from './segmented-control';
 import { snackbarFigures } from './snackbar';
 import { switchFigures } from './switch';
@@ -46,6 +51,7 @@ const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactN
   button: { ...buttonFigures, ...buttonGuideFigures },
   callout: calloutFigures,
   checkbox: checkboxFigures,
+  'content-placeholder': contentPlaceholderFigures,
   'date-picker': datePickerFigures,
   chip: chipFigures,
   dialog: dialogFigures,
@@ -59,11 +65,15 @@ const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactN
   'menu-sheet': menuSheetFigures,
   'notification-badge': notificationBadgeFigures,
   popover: popoverFigures,
+  progress: progressFigures,
+  'progress-circle': progressCircleFigures,
   'page-banner': pageBannerFigures,
   'radio-group': radioGroupFigures,
   'result-section': resultSectionFigures,
   select: selectFigures,
   'select-box': selectBoxFigures,
+  'scroll-fog': scrollFogFigures,
+  skeleton: skeletonFigures,
   'segmented-control': segmentedControlFigures,
   snackbar: snackbarFigures,
   switch: switchFigures,

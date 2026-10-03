@@ -94,6 +94,8 @@ export const LIST_ICONS = [
   'info',
   'check',
   'external',
+  'stethoscope',
+  'plane',
 ] as const;
 export type ListIcon = (typeof LIST_ICONS)[number];
 

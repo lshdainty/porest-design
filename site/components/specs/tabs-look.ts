@@ -5,6 +5,7 @@
 import { axisValues, loadComponentSpec, num, resolveState, stateNames, tokenValue, type TypeValue } from '@/lib/component-spec';
 import { color, design, pressScale, type Brand } from '@/lib/design-tokens';
 import { CHIP_SIZES, CHIP_VARIANTS, chipLook, type ChipSize, type ChipVariant } from './chip-look';
+import { rowFogDepth, scrollFogLook } from './loading-look';
 import {
   CHIP_TABS_SIZES,
   CHIP_TABS_VARIANTS,
@@ -225,6 +226,8 @@ export function chipTabsLook(brand: Brand = 'desk'): ChipTabsLook {
     gap: len(base['list.gap'], 'list.gap', F),
     overflowX: 'auto',
     scrollPadding: len(base['list.scrollPadding'], 'list.scrollPadding', F),
+    fog: rowFogDepth(base['list.fog'], `${F} list.fog`),
+    mask: scrollFogLook().mask,
     shrink: Number(unbox(must(base['trigger.shrink'], 'trigger.shrink', F))),
     variants,
     sizes,
@@ -236,6 +239,7 @@ export function chipTabsLook(brand: Brand = 'desk'): ChipTabsLook {
     },
     chip,
   };
+  if (look.padX < look.fog) throw new Error(`${F} list.paddingX(${look.padX})가 흐림(${look.fog})보다 좁다 — 처음 · 끝 칩이 흐려진다`);
   // 칩은 줄지 않는다 — 그림의 칩(ChipView)은 flex: none 이다
   if (look.shrink !== 0) throw new Error(`${F} trigger.shrink(${look.shrink})가 0 이 아니다 — 칩 그림(flex: none)을 고친다`);
   // 칩 줄 위아래 — 칩의 누르는 영역 · 바깥 포커스 링이 잘리지 않아야 한다(스크롤 칸은 넘친 것을 자른다)

@@ -1,12 +1,12 @@
 /*
  * shadcn Dialog 예제 — docs site components/dialog.html 에서 Preview + Code 토글로 보인다.
- * 각 예제 = { title, description, jsx, render() }. 앞의 둘(입력 폼 · 조회)은 차례 · 제목 · 코드가 specs/components/dialog.md 의 "코드" 절과 같고
- * (입력 폼의 import 는 한 줄로 정리했고, 목록을 담은 본문에 className="px-0" 을 더했다), 뒤의 셋(크기 · 본문 스크롤 · 닫기 버튼)은
- * md 의 Properties 를 코드로 더 보인다. 폼 · 상세는 ResponsiveDialog 로 짠다 — 미리보기는 1280 이상의 모습(Dialog)이고, 1280 미만의
+ * 각 예제 = { title, description, jsx, render() }. 앞의 둘(입력 폼 · 조회)은 차례 · 제목 · 코드가 specs/components/dialog.md 의 "코드" 절과 같고,
+ * 뒤의 셋(크기 · 본문 스크롤과 끝 흐림 · 닫기 버튼)은 md 의 Properties 를 코드로 더 보인다. 폼 · 상세는 ResponsiveDialog 로 짠다 — 미리보기는 1280 이상의 모습(Dialog)이고, 1280 미만의
  * 모습은 bottom-sheet 페이지의 시트다.
  *
- * OVERLAY · CONTENT · SIZE · CLOSE · BODY 는 recipes/shadcn/components/ui/dialog.tsx 의 상수와, HEADER · HEADER_WITH_CLOSE · TITLE ·
- * DESCRIPTION · FOOTER 는 그 파일의 JSX 에 적힌 클래스와 글자 하나까지 같아야 한다 — 두 파일을 함께 고친다.
+ * OVERLAY · CONTENT · SIZE · HEADER · CLOSE · BODY · BODY_PLAIN · BODY_FOG 는 recipes/shadcn/components/ui/dialog.tsx 의 상수와, HEADER_WITH_CLOSE ·
+ * TITLE · DESCRIPTION · FOOTER 는 그 파일의 JSX 에 적힌 클래스와 글자 하나까지 같아야 한다 — 두 파일을 함께 고친다. 끝 흐림의 SOLID · fogMask 는
+ * scroll-fog.tsx(scroll-fog-examples.mjs)의 것과 같은 셈이다.
  * 둘레의 부품은 그 레시피의 값을 옮겨 썼다 — BUTTON_* 는 button.tsx(button-examples.mjs), SELECT_* 는 select.tsx(select-examples.mjs),
  * IB_* 는 input-button.tsx(input-button-examples.mjs), INPUT_* 는 input.tsx(input-examples.mjs), LIST_* 는 list.tsx(list-examples.mjs),
  * FIELD_* 는 field.tsx 의 것과 같다 — 이 파일이 쓰는 변형 · 크기와 그에 걸리는 compound 만 옮겼다.
@@ -17,8 +17,10 @@
  * 머리 <div data-slot="dialog-header">(제목 <h2> · 설명 <p> · 조회 · 안내면 닫기 <button data-slot="dialog-close">) · 본문
  * <div data-slot="dialog-body"> · 바닥 <div data-slot="dialog-footer">(입력 폼이면 [취소] <button data-slot="dialog-cancel"> [저장]).
  * Radix 가 실행 중에 붙이는 것 중 열림(data-state="open") · 이름 잇기(id · aria-labelledby · aria-describedby) · tabindex="-1" 을 그리고,
- * 딤 · 대화상자의 style(pointer-events)과 뒤 화면의 aria-hidden 은 그리지 않는다. 본문의 넘침(data-overflow — 아래 48 흐림 + 아래 48 여백 +
- * Tab 자리) · 위로 스크롤됨(data-scrolled — 머리 아래 선)은 레시피가 재서 단다 — 미리보기는 그 순간을 멈춰 속성을 적었다.
+ * 딤 · 대화상자의 style(pointer-events)과 뒤 화면의 aria-hidden 은 그리지 않는다. 넘친 본문의 Tab 자리(tabindex 0) · 위로 스크롤됨
+ * (data-scrolled — 머리의 안쪽 아래 선)은 레시피가 재서 단다 — 미리보기는 그 순간을 멈춰 속성을 적었다. 끝 흐림(scrollFog — 늘 켜진 위 20 ·
+ * 아래 80)은 레시피(useScrollFog)가 그릴 때 토큰 --gradient-fade-mask 에 방향을 붙여 본문의 style(mask-*) · data-fog-axis 로 넣는다 —
+ * 정적 HTML 은 같은 일을 빌드 때 DESIGN.md 의 토큰 값으로 해 style 에 적었다.
  * 대화상자는 화면(fixed)에 뜬다 — 미리보기 틀(STAGE)에 transform 을 줘 fixed 의 기준을 틀로 바꾸고, isolation 으로 z-index(딤 100 ·
  * 대화상자 101)를 틀 안에 가둔다(사이트 머리 막대 위로 올라오지 않게). 높이 상한 max-h-[80dvh] 는 창 높이를 따르므로 미리보기는 틀 높이의
  * 80% 를 style 로 한 번 더 적는다(DIALOG_FIT — 미리보기용 덧칠). 틀 안의 뒤 화면(가계부 줄)은 미리보기 그림이다.
@@ -27,6 +29,8 @@
  * 사이트에서는 아무 일도 하지 않는다. 레시피의 스크립트(처음 초점 · 바깥 누르기 · Esc · 바뀐 값 묻기 · 초점 되돌리기 · 본문 재기)는
  * 정적 HTML 에 없다. 아이콘은 lucide-react 와 같은 모양의 inline SVG 다(lucide 의 class · xmlns 는 그리지 않는다).
  */
+
+import { readFileSync } from "node:fs";
 
 // ── dialog.tsx 의 상수와 같은 값 ───────────────────────────────────────────
 
@@ -60,20 +64,28 @@ const CLOSE = [
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stroke-focus-ring",
 ].join(" ");
 
-// 본문 — 좌우 24, 이 안에서만 스크롤. 넘치면 아래 48 을 흐리고(마스크) 아래 48 을 비워 둔다. 위로 스크롤되면 머리 아래 1px 선
+// 머리 — 위 24 · 좌우 24 · 아래 16 · 사이 6. 본문이 위로 스크롤되면 안쪽 아래 1px stroke-neutral-subtle(150ms) — 본문이 흐림 마스크를
+// 걸어도 선이 흐려지지 않게 머리에 그린다
+const HEADER = [
+  "flex shrink-0 flex-col gap-x1_5 px-x6 pb-x4 pt-x6",
+  "[transition:box-shadow_var(--motion-duration-color-transition)_var(--motion-ease-easing)]",
+  "[&:has(~[data-slot=dialog-body][data-scrolled])]:shadow-[inset_0_-1px_0_0_var(--color-stroke-neutral-subtle)]",
+].join(" ");
+
+// 본문 — 좌우 24, 이 안에서만 스크롤. 맨 앞 자식(머리가 없으면)이면 위 24, 맨 끝 자식(바닥이 없으면)이면 아래 24
 const BODY = [
   "min-h-0 flex-1 overflow-y-auto px-x6 first:pt-x6",
-  "[--body-pad-bottom:0px] last:[--body-pad-bottom:var(--spacing-x6)] pb-[var(--body-pad-bottom)]",
-  "[transition:box-shadow_var(--motion-duration-color-transition)_var(--motion-ease-easing)]",
-  "data-[scrolled]:not-first:shadow-[inset_0_1px_0_0_var(--color-stroke-neutral-subtle)]",
-  "data-[overflow]:pb-x12 data-[overflow]:[mask-image:linear-gradient(to_top,transparent_0,#000_var(--spacing-x12))]",
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-stroke-focus-ring",
 ].join(" ");
 
+const BODY_PLAIN = "last:pb-x6";
+
+// 끝 흐림(scrollFog) — 본문 안 여백 위 20(머리가 없으면 24 그대로) · 아래 80(바닥이 있어도), 스크롤 여유도 위 20 · 아래 80
+const BODY_FOG = "pt-[20px] pb-[80px] scroll-pt-[20px] scroll-pb-[80px]";
+
 // ── dialog.tsx 의 JSX 에 적힌 클래스 ───────────────────────────────────────
 
-// 머리 — 위 24 · 좌우 24 · 아래 16 · 사이 6. 닫기 버튼이 있으면 cn(HEADER, HEADER_WITH_CLOSE)(오른쪽 52 = 24 + 아이콘 22 + 6)
-const HEADER = "flex shrink-0 flex-col gap-x1_5 px-x6 pb-x4 pt-x6";
+// 닫기 버튼이 있으면 cn(HEADER, HEADER_WITH_CLOSE)(오른쪽 52 = 24 + 아이콘 22 + 6)
 const HEADER_WITH_CLOSE = "pr-x13";
 // 제목 t8 22 / 30 · 700 · 설명 t5 · fg-neutral-muted
 const TITLE = "m-0 text-t8 font-bold text-fg-neutral";
@@ -90,7 +102,8 @@ const BUTTON_BASE = [
   "active:[scale:calc(1-2/var(--press-basis))] motion-reduce:active:[scale:1]",
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stroke-focus-ring",
   "disabled:cursor-not-allowed disabled:[scale:1] disabled:bg-bg-disabled disabled:text-fg-disabled",
-  "aria-busy:cursor-progress aria-busy:text-transparent aria-busy:[&>svg]:invisible aria-busy:active:[scale:1]",
+  "aria-busy:cursor-progress aria-busy:text-transparent aria-busy:[&>svg:not([data-slot=progress-circle])]:invisible aria-busy:active:[scale:1]",
+  "[--progress-thickness:2px]",
   "[&_svg]:pointer-events-none [&_svg]:shrink-0",
 ].join(" ");
 
@@ -356,6 +369,23 @@ function forceState(classList, state) {
 
 const forced = (classList, state) => merge(`${classList} ${forceState(classList, state)}`);
 
+// ── 끝 흐림 — scroll-fog.tsx 의 useScrollFog 와 같은 셈(overlayBody · 세로) ─────────
+
+// 토큰 값 — 레시피는 그릴 때 getComputedStyle 로 읽는다. 정적 HTML 은 DESIGN.md 의 v104 표에서 읽는다
+const FADE_MASK = /`gradient-fade-mask` \| `(linear-gradient\([^`]+\))`/.exec(readFileSync(new URL("../../../DESIGN.md", import.meta.url), "utf8"))[1];
+const SOLID = "linear-gradient(#000, #000)";
+const withDirection = (token, direction) => token.replace(/^linear-gradient\(/, `linear-gradient(${direction}, `);
+// 위 20 · 아래 80 — 시작 쪽 흐림(투명 → 불투명) · 가운데 불투명 · 끝 쪽 흐림(불투명 → 투명). 상자의 style 에 mask-* 와 -webkit-mask-* 를 같이 넣는다
+function fogStyle(start = "20px", end = "80px") {
+  const mask = {
+    image: `${withDirection(FADE_MASK, "to bottom")}, ${SOLID}, ${withDirection(FADE_MASK, "to top")}`,
+    size: `100% ${start}, 100% calc(100% - ${start} - ${end}), 100% ${end}`,
+    position: `0 0, 0 ${start}, 0 100%`,
+    repeat: "no-repeat",
+  };
+  return ["image", "size", "position", "repeat"].map((p) => `mask-${p}:${mask[p]}; -webkit-mask-${p}:${mask[p]};`).join(" ");
+}
+
 // ── 미리보기 조각 ─────────────────────────────────────────────────────────
 
 const attrs = (list) => list.filter(Boolean).join(" ");
@@ -405,7 +435,8 @@ const SCROLLED_BY = 40;
 const scrolledBy = (html) => `<div style="margin-top:-${SCROLLED_BY}px;">${html}</div>`;
 
 // <Dialog open> + <DialogContent>. uid 는 Radix 가 만드는 id 의 앞말(예제마다 달리한다).
-// form 이면 머리 닫기 버튼이 없다(바닥 [취소]). body = { html, className, overflow, scrolled } — 넘침 · 스크롤됨은 그 순간을 멈춰 적는다
+// form 이면 머리 닫기 버튼이 없다(바닥 [취소]). body = { html, className, scrollFog, overflow, scrolled } — scrollFog 는 끝 흐림(늘 켜짐),
+// 넘침(Tab 자리) · 스크롤됨(머리 아래 선)은 그 순간을 멈춰 적는다
 function dialog({ uid, title, description, size = "medium", form = false, body, footer = [], height = 520 }) {
   const titleId = `${uid}-title`;
   const descriptionId = `${uid}-description`;
@@ -427,12 +458,15 @@ function dialog({ uid, title, description, size = "medium", form = false, body, 
   const header = `<div data-slot="dialog-header" class="${showClose ? `${HEADER} ${HEADER_WITH_CLOSE}` : HEADER}"><h2 id="${titleId}" data-slot="dialog-title" class="${TITLE}">${esc(title)}</h2>${
     description != null ? `<p id="${descriptionId}" data-slot="dialog-description" class="${DESCRIPTION}" style="${P_FIX.description}">${esc(description)}</p>` : ""
   }${showClose ? closeButton() : ""}</div>`;
+  const bodyClass = merge([BODY, body.scrollFog ? BODY_FOG : BODY_PLAIN, body.className].filter(Boolean).join(" "));
   const bodyHtml = `<div ${attrs([
     'data-slot="dialog-body"',
-    `class="${body.className ? merge(`${BODY} ${body.className}`) : BODY}"`,
-    body.overflow && 'data-overflow=""',
+    body.scrollFog && 'data-scroll-fog="overlayBody"',
+    `class="${bodyClass}"`,
     body.scrolled && 'data-scrolled=""',
     body.overflow && 'tabindex="0"',
+    body.scrollFog && 'data-fog-axis="y"',
+    body.scrollFog && `style="${fogStyle()}"`,
   ])}>${body.scrolled ? scrolledBy(body.html) : body.html}</div>`;
   const footerHtml = footer.length ? `<div data-slot="dialog-footer" class="${FOOTER}">${footer.join("")}</div>` : "";
   return `<div style="${STAGE(height)}">${page()}<div data-state="open" data-slot="dialog-overlay" class="${OVERLAY}"></div><div ${content}>${header}${bodyHtml}${footerHtml}</div></div>`;
@@ -500,6 +534,8 @@ const DETAIL = [
   ["날짜", "10월 1일 (목)"],
   ["메모", "친구와 점심"],
 ];
+// 데이터에 따라 느는 상세 — 본문이 넘쳐 끝 흐림이 보인다
+const DETAIL_LONG = [...DETAIL, ["가맹점", "김밥천국 강남점"], ["할부", "일시불"], ["더치페이", "2명 · 4,000원씩"]];
 
 // 휴가 신청 폼 — Field 사이 24(field.yaml form). more 면 칸 넷(본문이 넘친다)
 const leaveForm = (uid, more = false) =>
@@ -556,11 +592,11 @@ import { ResponsiveDialog, ResponsiveDialogBody, ResponsiveDialogCancel, Respons
   {
     title: "조회",
     description:
-      "조회 · 안내(form 이 아니면)는 머리 오른쪽에 닫기 버튼을 둔다 — 투명 52 상자 · 아이콘 22 fg-neutral-subtle 이고 아이콘이 위 28 · 오른쪽 24(제목 첫 줄 가운데)에 선다. 닫기 버튼이 있으면 머리 오른쪽을 52 비운다. 바깥(딤) 누르기 · Esc 로도 닫힌다. 바닥은 수정 · 삭제 같은 다른 동작이 있을 때만 둔다 — 바닥이 없으면 본문이 아래 24 를 가진다. 목록은 줄이 제 좌우 24 를 가지므로 본문 여백을 0 으로 둔다(className=\"px-0\"). 1280 미만에서는 같은 내용이 시트로 뜨고 닫기는 오른쪽 위 원이 된다.",
-    jsx: `{/* 조회 — 머리 닫기 버튼(시트에서는 오른쪽 위 원), 바깥 누르기로도 닫힌다 */}
+      "조회 · 안내(form 이 아니면)는 머리 오른쪽에 닫기 버튼을 둔다 — 투명 52 상자 · 아이콘 22 fg-neutral-subtle 이고 아이콘이 위 28 · 오른쪽 24(제목 첫 줄 가운데)에 선다. 닫기 버튼이 있으면 머리 오른쪽을 52 비운다. 바깥(딤) 누르기 · Esc 로도 닫힌다. 바닥은 수정 · 삭제 같은 다른 동작이 있을 때만 둔다 — 바닥이 없으면 본문이 아래 24 를 가진다. 목록은 줄이 제 좌우 24 를 가지므로 본문 여백을 0 으로 둔다(className=\"px-0\"). 거래 상세처럼 길이가 데이터에 따라 느는 본문은 scrollFog 로 끝을 늘 흐린다(위 20 · 아래 80 + 본문 안 여백 — Scroll Fog). 1280 미만에서는 같은 내용이 시트로 뜨고 닫기는 오른쪽 위 원이 된다.",
+    jsx: `{/* 조회 — 머리 닫기 버튼(시트에서는 오른쪽 위 원), 바깥 누르기로도 닫힌다. 길이가 데이터에 따라 느는 본문이라 scrollFog */}
 <ResponsiveDialog open={open} onOpenChange={setOpen}>
   <ResponsiveDialogContent title="거래 상세">
-    <ResponsiveDialogBody className="px-0">
+    <ResponsiveDialogBody scrollFog className="px-0">
       <List>…</List>
     </ResponsiveDialogBody>
   </ResponsiveDialogContent>
@@ -569,7 +605,7 @@ import { ResponsiveDialog, ResponsiveDialogBody, ResponsiveDialogCancel, Respons
       dialog({
         uid: "dialog-ex-view",
         title: "거래 상세",
-        body: { className: "px-0", html: valueList(DETAIL) },
+        body: { className: "px-0", scrollFog: true, overflow: true, html: valueList(DETAIL_LONG) },
       }),
   },
 
@@ -578,7 +614,7 @@ import { ResponsiveDialog, ResponsiveDialogBody, ResponsiveDialogCancel, Respons
     description:
       "size 로 폭을 고른다 — medium 480(기본)은 일반 입력 폼 · 상세, large 800 은 복잡한 설정 · 많은 조회다. 높이는 내용만큼이고 화면 높이의 80% 를 넘지 않는다. 화면이 좁으면 좌우 20 을 남기고 줄어든다 — 미리보기 칸이 800 보다 좁아 아래 large 는 칸 폭 − 40 으로 줄었다. 1280 미만의 시트는 크기와 관계없이 최대 480 이다.",
     jsx: `<ResponsiveDialogContent size="large" title="거래 상세">
-  <ResponsiveDialogBody className="px-0">
+  <ResponsiveDialogBody scrollFog className="px-0">
     <List>…</List>
   </ResponsiveDialogBody>
 </ResponsiveDialogContent>`,
@@ -587,17 +623,17 @@ import { ResponsiveDialog, ResponsiveDialogBody, ResponsiveDialogCancel, Respons
         uid: "dialog-ex-large",
         title: "거래 상세",
         size: "large",
-        body: { className: "px-0", html: valueList(DETAIL) },
+        body: { className: "px-0", scrollFog: true, overflow: true, html: valueList(DETAIL_LONG) },
       }),
   },
 
   {
-    title: "본문 스크롤 — 아래 흐림 · 머리 아래 선",
+    title: "본문 스크롤 — 끝 흐림 · 머리 아래 선",
     description:
-      "넘치는 만큼 본문(DialogBody)만 스크롤하고 머리 · 바닥은 늘 보인다. 본문이 넘치면 data-overflow 가 붙어 아래 48 을 표면 쪽으로 흐리고(마스크) 본문 아래 48 을 비워 둔다 — 끝까지 스크롤해도 흐림이 남기 때문이다. 넘친 본문은 키보드로도 스크롤하도록 Tab 이 선다(안쪽 링). 위로 스크롤되면 data-scrolled 가 붙어 머리 아래 1px stroke-neutral-subtle(안쪽 그림자)이 150ms 로 나타난다 — 본문이 맨 앞 자식(머리가 없을 때)이면 그리지 않는다. 위는 넘친 채 맨 위, 아래는 조금 스크롤한 순간을 멈춘 그림이다(정적 미리보기라 본문 글을 40 올려 그렸다).",
+      "넘치는 만큼 본문(DialogBody)만 스크롤하고 머리 · 바닥은 늘 보인다. 넘칠 수 있는 본문(목록 · 긴 폼)은 scrollFog 를 준다 — 위 20 · 아래 80 을 마스크(gradient-fade-mask)로 늘 흐리고, 본문 안에 그만큼 여백(위 20 — 머리 아래 16 은 그대로 · 아래 80 — 바닥이 있어도)과 스크롤 여유를 둬 끝까지 내리면 흐림이 빈 여백 위에 놓인다. 넘쳤는지 재서 켜고 끄지 않는다(옛 \"넘칠 때만 아래 48\" 을 대신한다). 넘친 본문은 키보드로도 스크롤하도록 Tab 이 선다(안쪽 링). 위로 스크롤되면 data-scrolled 가 붙어 머리의 안쪽 아래 1px stroke-neutral-subtle 이 150ms 로 나타난다 — 본문의 흐림에 지워지지 않게 머리에 그리고, 머리가 없으면 그리지 않는다. 위는 맨 위, 아래는 조금 스크롤한 순간을 멈춘 그림이다(정적 미리보기라 본문 글을 40 올려 그렸다).",
     jsx: `<ResponsiveDialogContent title="휴가 신청" description="승인되면 알려드려요.">
-  {/* 넘치면 data-overflow(아래 48 흐림 + Tab 자리), 위로 스크롤되면 data-scrolled(머리 아래 선) — 레시피가 재서 단다 */}
-  <ResponsiveDialogBody>
+  {/* 넘칠 수 있는 긴 폼 — scrollFog 는 늘 켜진 끝 흐림. 위로 스크롤되면 data-scrolled(머리 아래 선) — 레시피가 재서 단다 */}
+  <ResponsiveDialogBody scrollFog>
     <Field label="휴가 종류">…</Field>
     <Field label="기간">…</Field>
     <Field label="비상 연락처">…</Field>
@@ -610,8 +646,8 @@ import { ResponsiveDialog, ResponsiveDialogBody, ResponsiveDialogCancel, Respons
 </ResponsiveDialogContent>`,
     render: () =>
       [
-        ["dialog-ex-overflow", "넘침 — data-overflow", false],
-        ["dialog-ex-scrolled", "위로 스크롤됨 — data-scrolled", true],
+        ["dialog-ex-overflow", "끝 흐림 — scrollFog(위 20 · 아래 80)", false],
+        ["dialog-ex-scrolled", "위로 스크롤됨 — data-scrolled(머리 아래 선)", true],
       ]
         .map(
           ([uid, caption, scrolled]) =>
@@ -621,7 +657,7 @@ import { ResponsiveDialog, ResponsiveDialogBody, ResponsiveDialogCancel, Respons
               description: "승인되면 알려드려요.",
               form: true,
               height: 440,
-              body: { html: leaveForm(uid, true), overflow: true, scrolled },
+              body: { html: leaveForm(uid, true), scrollFog: true, overflow: true, scrolled },
               footer: [button({ variant: "neutralWeak", label: "취소", slot: "dialog-cancel" }), button({ variant: "neutralSolid", label: "신청" })],
             })}</div>`,
         )

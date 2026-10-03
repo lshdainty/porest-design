@@ -82,7 +82,8 @@ const BUTTON_BASE = [
   "active:[scale:calc(1-2/var(--press-basis))] motion-reduce:active:[scale:1]",
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stroke-focus-ring",
   "disabled:cursor-not-allowed disabled:[scale:1] disabled:bg-bg-disabled disabled:text-fg-disabled",
-  "aria-busy:cursor-progress aria-busy:text-transparent aria-busy:[&>svg]:invisible aria-busy:active:[scale:1]",
+  "aria-busy:cursor-progress aria-busy:text-transparent aria-busy:[&>svg:not([data-slot=progress-circle])]:invisible aria-busy:active:[scale:1]",
+  "[--progress-thickness:2px]",
   "[&_svg]:pointer-events-none [&_svg]:shrink-0",
 ].join(" ");
 
@@ -151,7 +152,9 @@ const SHEET_CLOSE = [
 const SHEET_HEADER = "flex shrink-0 flex-col gap-x2 px-global-gutter pb-x4 pt-x6";
 const SHEET_TITLE = "m-0 text-t8 font-bold text-fg-neutral";
 const SHEET_TITLE_WITH_CLOSE = "pr-x10";
-const SHEET_BODY = "min-h-0 flex-1 overflow-y-auto px-global-gutter last:pb-x4";
+const SHEET_BODY = "min-h-0 flex-1 overflow-y-auto px-global-gutter";
+// 끝 흐림이 없는 본문(scrollFog 아님) — 끝이면 아래 16
+const SHEET_BODY_PLAIN = "last:pb-x4";
 const SHEET_FOOTER = "flex shrink-0 gap-x2 px-global-gutter pb-x4 pt-x3 [&>*]:min-w-0 [&>*]:flex-1";
 
 // ── popover.tsx 의 상수 · JSX 에 적힌 클래스 — 1280 이상 팝오버 ───────────────
@@ -168,15 +171,13 @@ const POP_CONTENT = [
   "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:duration-[var(--motion-duration-d2)] data-[state=closed]:ease-[var(--motion-ease-exit)] motion-safe:data-[state=closed]:zoom-out-95",
 ].join(" ");
 
-// 본문 — Dialog 의 본문과 같다(좌우 24, 넘치면 아래 48 흐림 + 아래 48 여백, 위로 스크롤되면 머리 아래 1px 선)
+// 본문 — Dialog 의 본문과 같다(좌우 24 · 머리가 없으면 위 24 · 끝이면 아래 24). 끝 흐림(scrollFog — BODY_FOG)은 이 파일의 패널이
+// 쓰지 않아 BODY_PLAIN 만 옮겼다. 위로 스크롤되면 머리 아래 1px 선은 머리(HEADER)가 긋는다 — 이 패널에는 머리가 없다
 const POP_BODY = [
   "min-h-0 flex-1 overflow-y-auto px-x6 first:pt-x6",
-  "[--body-pad-bottom:0px] last:[--body-pad-bottom:var(--spacing-x6)] pb-[var(--body-pad-bottom)]",
-  "[transition:box-shadow_var(--motion-duration-color-transition)_var(--motion-ease-easing)]",
-  "data-[scrolled]:not-first:shadow-[inset_0_1px_0_0_var(--color-stroke-neutral-subtle)]",
-  "data-[overflow]:pb-x12 data-[overflow]:[mask-image:linear-gradient(to_top,transparent_0,#000_var(--spacing-x12))]",
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-stroke-focus-ring",
 ].join(" ");
+const POP_BODY_PLAIN = "last:pb-x6";
 
 // 바닥 — 위 16 · 좌우 24 · 아래 24, 오른쪽 정렬, 사이 8. 버튼은 small 36
 const POP_FOOTER = "flex shrink-0 items-center justify-end gap-x2 px-x6 pb-x6 pt-x4";
@@ -397,7 +398,7 @@ function bottomSheet({ uid, title, body, footer, height, pageHtml }) {
   const header = `<div data-slot="bottom-sheet-header" class="${SHEET_HEADER}"><h2 id="${titleId}" data-slot="bottom-sheet-title" class="${SHEET_TITLE} ${SHEET_TITLE_WITH_CLOSE}">${esc(title)}</h2></div>`;
   const close = `<button type="button" aria-label="닫기" data-slot="bottom-sheet-close" class="${SHEET_CLOSE}">${ICONS.x}</button>`;
   const overlay = `<div data-vaul-overlay="" data-vaul-snap-points="false" data-state="open" data-slot="bottom-sheet-overlay" class="${SHEET_OVERLAY}"></div>`;
-  return `<div style="${STAGE({ height, phone: true })}">${pageHtml}${overlay}<div ${content}>${header}${close}<div data-slot="bottom-sheet-body" class="${SHEET_BODY}">${body}</div><div data-slot="bottom-sheet-footer" class="${SHEET_FOOTER}">${footer.join("")}</div></div></div>`;
+  return `<div style="${STAGE({ height, phone: true })}">${pageHtml}${overlay}<div ${content}>${header}${close}<div data-slot="bottom-sheet-body" class="${SHEET_BODY} ${SHEET_BODY_PLAIN}">${body}</div><div data-slot="bottom-sheet-footer" class="${SHEET_FOOTER}">${footer.join("")}</div></div></div>`;
 }
 
 // <InputButton> 상자 — 상자(div) > 배경 층 버튼 + 콘텐츠 층(값 · 뒤 아이콘). trigger 는 버튼에 얹을 속성(이름 · 여는 자리), valueId 는 값 자리의 id
@@ -437,7 +438,7 @@ function popoverStage({ uid, title, label, value, icon, body, footer, height }) 
     // Radix 가 재는 가용 폭 · 높이 — 미리보기는 넉넉히 적었다
     'style="--radix-popover-content-available-width:560px; --radix-popover-content-available-height:600px;"',
   ]);
-  const popover = `<div data-radix-popper-content-wrapper="" style="position:absolute; left:0; top:calc(100% + var(--spacing-x2)); min-width:max-content; z-index:var(--z-floating);"><div ${content}><div data-slot="popover-body" class="${POP_BODY}">${body}</div><div data-slot="popover-footer" class="${POP_FOOTER}">${footer.join("")}</div></div></div>`;
+  const popover = `<div data-radix-popper-content-wrapper="" style="position:absolute; left:0; top:calc(100% + var(--spacing-x2)); min-width:max-content; z-index:var(--z-floating);"><div ${content}><div data-slot="popover-body" class="${POP_BODY} ${POP_BODY_PLAIN}">${body}</div><div data-slot="popover-footer" class="${POP_FOOTER}">${footer.join("")}</div></div></div>`;
   const field = pickField({ uid: `${uid}-field`, label: title.field, value, icon, contentId: uid });
   return `<div style="${STAGE({ height })}"><div style="padding:var(--spacing-x6) var(--spacing-x8);"><div aria-hidden="true" style="${PAGE_TITLE} margin-bottom:var(--spacing-x4);">${esc(title.page)}</div><div style="padding:var(--spacing-x4) var(--spacing-x6) var(--spacing-x6); border-radius:var(--radius-r4); background:var(--color-bg-layer-default);"><div style="position:relative; display:flex; flex-direction:column; align-items:flex-start; max-width:400px;">${field}${popover}</div></div></div></div>`;
 }

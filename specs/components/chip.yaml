@@ -82,7 +82,8 @@ rules:
         paddingX: { value: $spacing-global-gutter, note: "줄을 화면 끝까지 내고 안쪽 여백을 화면 여백만큼 — 스크롤해도 첫 칩이 여백에서 시작한다. 이미 화면 여백 안에 있으면 바깥 −24 로 화면 끝까지 낸다(bleed)" }
         paddingY: { value: $spacing-x1_5, note: "스크롤 칸은 넘친 것을 자르므로 — 누르는 영역 44 · 포커스 링이 잘리지 않게" }
         marginY: { value: −6px, note: "안쪽 위아래 6 을 바깥에서 되돌려 줄 높이는 칩 그대로다. 줄을 두 겹(바깥 묶음 · 안쪽 스크롤 칸)으로 둬 부모의 위아래 간격(space-y · gap)이 지워지지 않게 한다" }
-        overflowX: { value: auto, note: "스크롤바는 숨긴다. 끝 흐림은 Scroll Fog 차례에" }
+        overflowX: { value: auto, note: "스크롤바는 숨긴다" }
+        fog: { value: 좌우 20px, note: "Scroll Fog row(scroll-fog.yaml) — gradient-fade-mask 마스크, 늘 켜짐. 안쪽 여백 24 가 흐림보다 넓어 처음 · 끝의 칩은 흐리지 않는다(2026-10-03)" }
         scrollPadding: { value: $spacing-global-gutter, note: "키보드로 칩을 옮겨도 화면 여백 안에 멈춘다" }
     pressed:
       root:

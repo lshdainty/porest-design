@@ -55,9 +55,10 @@ Aspect Ratio는 **state 없음** — 정적 layout primitive.
 
 - `<AspectRatio ratio={16/9}><img className="object-cover" /></AspectRatio>` — 동영상, hero banner, listing thumbnail.
 
-**Placeholder (이미지 로딩 전)**
+**불러오는 동안 · 없을 때** (2026-10-03)
 
-- 로딩 전 `bg-surface-input` + 중앙 "image"/icon — 사용자가 박스 크기 즉시 인식, CLS(Cumulative Layout Shift) 방지.
+- 상자는 비율로 크기를 먼저 잡는다 — CLS(Cumulative Layout Shift) 방지.
+- 불러오는 동안은 같은 모서리의 [Skeleton](skeleton.md), 이미지가 없거나 불러오지 못하면 [Content Placeholder](content-placeholder.md)(옅은 면 + 그림)다 — 불러오는 중과 없음을 같은 그림으로 두지 않는다.
 
 **Card thumbnail**
 
@@ -88,7 +89,7 @@ Aspect Ratio는 **state 없음** — 정적 layout primitive.
 ### ✅ Do
 
 - 동영상/이미지/iframe wrapper — 콘텐츠 로딩 전후 박스 크기 보장.
-- placeholder 톤(`bg-surface-input`) — 로딩 전 사용자 인지.
+- 불러오는 동안은 Skeleton, 없거나 실패하면 Content Placeholder — 빈 상자 · 깨진 이미지를 두지 않는다.
 - Card thumbnail 최상단에 16:9 — listing 패턴 표준.
 - 1:1 + `rounded-full` — circular avatar 비율 보장.
 - 비율은 콘텐츠 의미에 맞게 — 동영상 16:9, 프로필 1:1, 모바일 portrait 3:4.

@@ -46,7 +46,7 @@ enter · exit 가운데 특히 강조할 움직임에 쓴다.
 <SourceTable heading="이징" minWidth={720} />
 
 - `motion-ease-pressed-scale` 은 눌림 축소에만 쓴다 — [Feedback › Scale](/docs/foundations/feedback/scale).
-- 반복은 `motion-ease-linear` 를 쓴다.
+- 반복의 곡선은 컴포넌트가 정한다 — 스켈레톤 반짝임은 `motion-ease-easing`, Progress Circle 은 그 스펙의 곡선이다. `motion-ease-linear` 는 일정한 속도가 필요한 반복에 남긴다.
 - 옛 `motion-ease-out` 은 걷는 중이다. 나타나는 모션은 `motion-ease-enter`, 사라지는 모션은 `motion-ease-exit` 로 옮긴다.
 
 ## 지속 시간
@@ -62,7 +62,7 @@ enter · exit 가운데 특히 강조할 움직임에 쓴다.
 
 ## 반복
 
-스켈레톤 · 스피너 · 펄스처럼 되풀이하는 움직임이다. 끝에서 멈칫하지 않게 일정한 속도가 기본이다.
+스켈레톤 반짝임 · 펄스처럼 되풀이하는 움직임이다. 쉬는 틈 없이 되풀이하고, 곡선은 컴포넌트가 정한다 — 스켈레톤 반짝임은 `motion-ease-easing`, Progress Circle 은 [그 스펙](/docs/components/progress-circle)의 시간 · 곡선을 쓴다. 모션 줄이기 모드에서는 멈춘다.
 
 <SourceTable heading="Loop motion" />
 

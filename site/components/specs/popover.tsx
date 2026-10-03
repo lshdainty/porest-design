@@ -91,7 +91,7 @@ function RuleWindow({ mode, w = 540, s = 1, marks, decor, short = false }: { mod
           <Summary mode={mode} top={TRIG_TOP + TRIG_H + 16} />
         </Page>
         <div className="absolute" style={{ left: p.edge, top }}>
-          <RulePopover mode={mode} marks={marks} decor={decor} avail={w - p.edge * 2} scroll={{ overflow: false, scrolled: false }}>
+          <RulePopover mode={mode} marks={marks} decor={decor} avail={w - p.edge * 2} scroll={{ scrolled: false }}>
             <RuleBody mode={mode} short={short} />
           </RulePopover>
         </div>
@@ -133,7 +133,7 @@ function DateWindow({ mode, w = 448, s = 1, marks, decor }: { mode: Mode; w?: nu
 function DatePanel({ mode, marks, decor }: { mode: Mode; marks?: OvMarks; decor?: OvDecor }) {
   const p = pv();
   return (
-    <PopoverSurface look={p} mode={mode} scroll={{ overflow: false, scrolled: false }} marks={marks} decor={decor} footer={<EndButtons mode={mode} items={[{ label: '완료', look: btn('neutralSolid', p.footer.button.size, 'hr') }]} />}>
+    <PopoverSurface look={p} mode={mode} scroll={{ scrolled: false }} marks={marks} decor={decor} footer={<EndButtons mode={mode} items={[{ label: '완료', look: btn('neutralSolid', p.footer.button.size, 'hr') }]} />}>
       <DatePickerView kit={dateKit('hr')} mode={mode} value={{ y: 2026, m: 10, d: 12 }} />
     </PopoverSurface>
   );
@@ -209,7 +209,7 @@ function PlaceWindow({ kind }: { kind: 'below' | 'above' | 'edge' }) {
         <RuleTrigger mode="auto" style={{ left: trig.x, top: trig.y }} />
       </Page>
       <div className="absolute" style={{ left, top }}>
-        <PopoverSurface look={p} title="연차 사용 규정" width={popW} scroll={{ overflow: false, scrolled: false }} decor={{ root: kind === 'above' ? <Band style={{ left: 24, bottom: -p.offset, width: 48, height: p.offset }} label={String(p.offset)} /> : kind === 'edge' ? <Band style={{ right: -p.edge, top: 0, bottom: 0, width: p.edge }} label={String(p.edge)} /> : <Band style={{ left: 24, top: -p.offset, width: 48, height: p.offset }} label={String(p.offset)} /> }}>
+        <PopoverSurface look={p} title="연차 사용 규정" width={popW} scroll={{ scrolled: false }} decor={{ root: kind === 'above' ? <Band style={{ left: 24, bottom: -p.offset, width: 48, height: p.offset }} label={String(p.offset)} /> : kind === 'edge' ? <Band style={{ right: -p.edge, top: 0, bottom: 0, width: p.edge }} label={String(p.edge)} /> : <Band style={{ left: 24, top: -p.offset, width: 48, height: p.offset }} label={String(p.offset)} /> }}>
           <RuleBody mode="auto" short />
         </PopoverSurface>
       </div>
@@ -256,7 +256,7 @@ function FormPopoverWindow() {
         </span>
       </Page>
       <div className="absolute" style={{ left: 32, top }}>
-        <PopoverSurface look={p} title="휴가 신청" scroll={{ overflow: false, scrolled: false }} width={360} footer={<EndButtons items={[{ label: '신청', look: btn('brandSolid', p.footer.button.size, 'hr') }]} />}>
+        <PopoverSurface look={p} title="휴가 신청" scroll={{ scrolled: false }} width={360} footer={<EndButtons items={[{ label: '신청', look: btn('brandSolid', p.footer.button.size, 'hr') }]} />}>
           <Form>
             <F label="사유">
               <TfInputView look={t.input} size="medium" state="enabled" value="가족 행사" />
@@ -308,7 +308,7 @@ function FocusWindow({ step }: { step: 'open' | 'back' | 'tab' }) {
         </Page>
         {step === 'open' && (
           <div className="absolute" style={{ left: p.edge, top }}>
-            <RulePopover mode="auto" avail={w - p.edge * 2} scroll={{ overflow: false, scrolled: false }} marks={{ root: { outline: `${p.ring.width}px solid ${rc('stroke-focus-ring', 'auto', 'hr')}`, outlineOffset: p.ring.offset } }}>
+            <RulePopover mode="auto" avail={w - p.edge * 2} scroll={{ scrolled: false }} marks={{ root: { outline: `${p.ring.width}px solid ${rc('stroke-focus-ring', 'auto', 'hr')}`, outlineOffset: p.ring.offset } }}>
               <RuleBody mode="auto" short />
             </RulePopover>
           </div>

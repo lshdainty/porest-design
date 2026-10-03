@@ -6,6 +6,8 @@
  *   list: border + radius-md + bg-surface + divide-y + max-h 260 + overflow-y-auto
  *   row: thumbnail (44×28 카드) + 주제목+부제목 + 우측 옵션
  *   active row: bg-brand-subtle + 주제목 color/weight 강조
+ *   loading: 줄 틀은 그대로, 데이터 자리만 Skeleton — SK_* 는 skeleton.tsx 의 상수(ROOT · RADIUS · TEXT_HEIGHT · SHIMMER)와 글자 하나까지 같다
+ *            (skeleton-examples.mjs 와 같은 사본). 레시피의 Skeleton 은 <span data-slot="skeleton" aria-hidden> > 띠 <span data-slot="skeleton-shimmer">
  */
 
 const HEADER =
@@ -39,6 +41,24 @@ const SUB = "block truncate mt-0.5 text-[11.5px] text-text-tertiary";
 
 const BADGE_DISCONTINUED =
   "inline-flex items-center px-1.5 py-px rounded text-[10px] font-semibold flex-shrink-0";
+
+// ── skeleton.tsx 의 상수와 같은 값 — 불러오는 동안의 줄 ─────────────────────
+
+const SK_RADIUS = { "8": "rounded-r2" };
+const SK_TEXT_HEIGHT = { t2: "h-(--text-t2--line-height)", t3: "h-(--text-t3--line-height)" };
+const SK_ROOT = "relative block overflow-hidden bg-bg-neutral-weak";
+const SK_SHIMMER = [
+  "pointer-events-none absolute inset-0 [transform:translateX(-100%)]",
+  "bg-[image:var(--gradient-shimmer-neutral)] dark:bg-[image:var(--gradient-shimmer-neutral-dark)]",
+  "animate-[shimmer_var(--motion-duration-loop)_var(--motion-ease-easing)_infinite]",
+  "motion-reduce:animate-none motion-reduce:opacity-0",
+].join(" ");
+
+// <Skeleton radius text className /> — 겹치는 클래스가 없어 cn() 은 이어 붙이기와 같다
+const skeleton = ({ radius = "8", text, className = "" } = {}) =>
+  `<span data-slot="skeleton" data-radius="${radius}"${text ? ` data-text="${text}"` : ""} class="${[SK_ROOT, SK_RADIUS[radius], text && SK_TEXT_HEIGHT[text], className]
+    .filter(Boolean)
+    .join(" ")}" aria-hidden="true"><span data-slot="skeleton-shimmer" class="${SK_SHIMMER}"></span></span>`;
 
 const SEARCH_SVG =
   '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
@@ -125,14 +145,30 @@ export const searchableListExamples = [
 
   {
     title: "Loading state (skeleton)",
-    description: "비동기 결과 로딩 중 — thumbnail + 2줄 텍스트 동일 폭 skeleton row N개.",
-    jsx: `<SearchableList isLoading loadingSkeleton={<SkeletonRows />} />`,
+    description:
+      "비동기 결과 로딩 중 — 줄 틀(사진 · 두 줄)은 그대로 두고 데이터 자리만 Skeleton 으로 채운다. 회색 면(bg-neutral-weak) 위로 1.5초 띠가 지나고, 글 자리의 높이는 그 글자의 줄 높이다(skeleton.md). 1초 뒤에 보이고 5 · 10초에 바뀌는 시간표는 LoadingRegion 이 맡는다.",
+    jsx: `import { Skeleton } from "@/components/ui/skeleton"
+
+// 줄 틀은 그대로, 데이터 자리만 — 사진 44 × 28 · 카드 이름(t3) · 발급사(t2)
+function SkeletonRows() {
+  return Array.from({ length: 3 }, (_, i) => (
+    <div key={i} className="flex w-full items-center gap-3 px-3 py-2.5">
+      <Skeleton className="h-7 w-11 shrink-0" />
+      <span className="min-w-0 flex-1">
+        <Skeleton text="t3" className="w-2/3" />
+        <Skeleton text="t2" className="mt-0.5 w-1/2" />
+      </span>
+    </div>
+  ))
+}
+
+<SearchableList isLoading loadingSkeleton={<SkeletonRows />} />`,
     render: () => {
-      const skeletonRow = `<div class="${ROW_BASE}">
-  <span style="display:inline-block; width:44px; height:28px; background:var(--color-surface-input); border-radius: var(--radius-sm); flex-shrink:0;"></span>
-  <span class="flex-1 min-w-0">
-    <span style="display:block; height:14px; width:67%; background:var(--color-surface-input); border-radius: var(--radius-sm); margin-bottom: 6px;"></span>
-    <span style="display:block; height:12px; width:50%; background:var(--color-surface-input); border-radius: var(--radius-sm);"></span>
+      const skeletonRow = `<div class="flex w-full items-center gap-3 px-3 py-2.5">
+  ${skeleton({ className: "h-7 w-11 shrink-0" })}
+  <span class="min-w-0 flex-1">
+    ${skeleton({ text: "t3", className: "w-2/3" })}
+    ${skeleton({ text: "t2", className: "mt-0.5 w-1/2" })}
   </span>
 </div>`;
       return `<div style="max-width: 420px;">

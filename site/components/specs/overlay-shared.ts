@@ -1,5 +1,6 @@
 // 시트 · 대화상자 · 확인창 · 팝오버의 모양 — 서버(overlay-look) · 브라우저(overlay-view · 데모 · 플레이그라운드)가 함께 쓰는 상수 · 타입.
 // 파일 읽기(서버 전용)를 들이지 않는다.
+import type { CSSProperties } from 'react';
 import type { ButtonLook } from './button-look';
 
 export type ViewMode = 'light' | 'dark' | 'auto';
@@ -37,8 +38,32 @@ export type OvClose = {
 
 export type OvHeader = { padTop: number; padBottom: number; padX: number; padRightClose: number; gap: number };
 export type OvFooter = { padTop: number; padX: number; padBottom: number; gap: number; justify: string; button: { size: string; height: number } };
-// 본문 스크롤 — 넘치면 아래 흐림(본문 아래를 그만큼 비운다), 위로 스크롤되면 머리 아래 선
-export type OvScroll = { fade: number; divider: { height: number; color: OvColor; motion: OvMotion } };
+// 본문 끝 흐림(축 scrollFog=on) — Scroll Fog overlayBody. 넘칠 수 있는 본문에만 걸고, 걸면 늘 켜져 있다.
+// top · bottom 은 흐림 깊이, padTop · padBottom 은 본문 안 여백(흐림 깊이 이상), scrollTop · scrollBottom 은 스크롤 여유, mask 는 gradient-fade-mask(방향 없음)
+export type OvFog = { top: number; bottom: number; padTop: number; padBottom: number; scrollTop: number; scrollBottom: number; mask: string };
+// 본문 스크롤 — 위로 스크롤되면 머리 아래 선. 끝 흐림은 상태가 아니라 축이다(fog)
+export type OvScroll = { fog: OvFog; divider: { height: number; color: OvColor; motion: OvMotion } };
+
+// 흐림 마스크 — gradient-fade-mask(위 → 아래, 알파 0 → 1)의 단계를 깊이(px)에 맞게 줄여 한쪽에 하나씩 겹친다(mask-composite: intersect).
+// 깊이가 0 인 쪽은 흐리지 않는다. 같은 값을 Scroll Fog · 시트 · 대화상자 · 칩 줄이 함께 쓴다
+export type FogSides = { top?: number; bottom?: number; left?: number; right?: number };
+const SIDE_DIR: Record<keyof FogSides, string> = { top: 'to bottom', bottom: 'to top', left: 'to right', right: 'to left' };
+export function fogLayer(mask: string, side: keyof FogSides, depth: number) {
+  const stops = /^linear-gradient\((.*)\)$/.exec(mask.trim())?.[1];
+  if (!stops) throw new Error(`gradient-fade-mask(${mask})가 linear-gradient(…) 가 아니다`);
+  const scaled = stops.split(/,\s*(?![^(]*\))/).map((s) => {
+    const m = /^(\S+)\s+([\d.]+)%$/.exec(s.trim());
+    if (!m) throw new Error(`gradient-fade-mask 의 단계(${s})를 읽지 못했다`);
+    return `${m[1]} ${Math.round(((Number(m[2]) / 100) * depth) * 100) / 100}px`;
+  });
+  return `linear-gradient(${SIDE_DIR[side]}, ${scaled.join(', ')})`;
+}
+export function fogMaskStyle(mask: string, sides: FogSides): CSSProperties {
+  const layers = (Object.keys(SIDE_DIR) as (keyof FogSides)[]).filter((k) => (sides[k] ?? 0) > 0).map((k) => fogLayer(mask, k, sides[k]!));
+  if (!layers.length) return {};
+  const image = layers.join(', ');
+  return { WebkitMaskImage: image, maskImage: image, WebkitMaskComposite: layers.length > 1 ? 'source-in' : 'source-over', maskComposite: layers.length > 1 ? 'intersect' : 'add' } as CSSProperties;
+}
 
 export type SheetLook = {
   dim: OvColor;
@@ -54,6 +79,8 @@ export type SheetLook = {
   description: OvText;
   // 본문 — 좌우 · 바닥이 없을 때 아래(그 아래 안전 영역)
   body: { padX: number; padBottom: number };
+  // 본문 끝 흐림(축 scrollFog=on) — 걸면 늘 켜져 있다
+  fog: OvFog;
   footer: OvFooter;
   handle: { width: number; height: number; radius: number; color: OvColor; top: number; target: number };
   ring: OvRing;

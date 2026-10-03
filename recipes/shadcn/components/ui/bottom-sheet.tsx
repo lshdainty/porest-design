@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useBackClose, useLeaveConfirm } from "@/components/ui/alert-dialog";
 import { useInputButtonSurface } from "@/components/ui/input-button";
+import { useScrollFog } from "@/components/ui/scroll-fog";
 
 /*
  * Porest Bottom Sheet — 구조는 SEED Bottom Sheet(2026-10-02). 수치 원본은 specs/components/bottom-sheet.yaml. vaul 위에 짰다.
@@ -12,7 +13,8 @@ import { useInputButtonSurface } from "@/components/ui/input-button";
  *   BottomSheet          화면 아래에서 올라오는 모달 — open · defaultOpen · onOpenChange · form · dirty · snapPoints
  *   BottomSheetTrigger   여는 버튼 — 닫으면 초점이 여기로 돌아온다
  *   BottomSheetContent   시트 — title(늘) · description(덧붙일 말이 있을 때만). 오른쪽 위 닫기 버튼(showCloseButton, 기본 켬)
- *   BottomSheetBody      본문 — 좌우 화면 여백 24, 넘치면 이 안에서 스크롤
+ *   BottomSheetBody      본문 — 좌우 화면 여백 24, 넘치면 이 안에서 스크롤. scrollFog 면 끝 흐림(Scroll Fog — 늘 켜진
+ *                        위 20 · 아래 80 + 본문 안 여백 위 20 · 아래 80) — 넘칠 수 있는 본문(목록 · 긴 폼)에만 준다
  *   BottomSheetFooter    바닥 — 버튼 하나면 폭 전체, 둘이면 반씩(사이 8). Button large 48 을 크기를 주지 않은 바로 아래 자식에 넣는다
  *   BottomSheetSurface   바탕 — 딤 · 시트 · 손잡이와 닫는 길(Esc · 바깥 · 끌기 · 초점)만. 머리가 다른 시트(Menu Sheet)가 이 위에 짠다.
  *                        BottomSheetContent 도 이것 위에 머리 · 닫기 버튼을 얹은 것이다. handle="always" 면 스냅 높이가 없어도 손잡이를 단다
@@ -34,6 +36,9 @@ import { useInputButtonSurface } from "@/components/ui/input-button";
  * 머리 위 24 · 아래 16 · 사이 8, 제목 t8 22 / 30 · 700 · 설명 t5 fg-neutral-muted. 닫기 버튼이 있으면 제목 오른쪽 64(24 + 원 28 + 12).
  * 닫기 버튼은 28 원(bg-neutral-weak · 아이콘 14 fg-neutral) · 누르는 영역 44, 위 24 · 오른쪽 24. 누르면 bg-neutral-weak-pressed +
  * 2px 거리 축소(기준 28), 호버는 누름 색. 이름 "닫기". 본문이 맨 끝(바닥이 없을 때)이면 아래 16 을 둔다.
+ * 끝 흐림(scrollFog, bottom-sheet.yaml · scroll-fog.yaml overlayBody) — 걸 본문인지는 내용의 종류로 정한다(칸 두셋처럼 늘 들어맞는
+ * 본문에는 걸지 않는다). 걸면 늘 켜져 있고 본문 안 여백이 위 20(머리 아래 16 은 그대로) · 아래 80(바닥이 있어도 — 바닥이 없으면 그
+ * 아래 안전 영역)이 돼 끝까지 내리면 흐림이 빈 여백 위에 놓인다. 스크롤 여유도 위 20 · 아래 80. 1280 이상의 Dialog 와 같다.
  * 쌓임: 딤 z-modal 100 · 시트 z-modal-content 101(specs/z-index.md L2) — 그 위에 Popover(L3) · Alert Dialog(L5).
  * 모션: 300ms enter-expressive 로 올라오고(딤 300ms enter) 200ms exit 로 내려간다(딤 200ms exit). 모션 줄이기면 150ms 서서히 나타남 ·
  * 사라짐. vaul 이 넣는 0.5s 는 덮는다 — vaul 의 CSS 는 나중에 들어오고 끌다 놓을 때는 인라인으로 넣으므로 !important 로 이긴다.
@@ -395,14 +400,29 @@ const BottomSheetContent = React.forwardRef<React.ElementRef<typeof DrawerPrimit
 BottomSheetContent.displayName = "BottomSheetContent";
 
 // 본문 — 좌우 화면 여백 24, 넘치면 이 안에서 스크롤. 바닥이 없어 맨 끝이면 아래 16(바닥의 아래 여백)
-const BottomSheetBody = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    data-slot="bottom-sheet-body"
-    className={cn("min-h-0 flex-1 overflow-y-auto px-global-gutter last:pb-x4", className)}
-    {...props}
-  />
-));
+const BODY = "min-h-0 flex-1 overflow-y-auto px-global-gutter";
+const BODY_PLAIN = "last:pb-x4";
+// 끝 흐림(scrollFog) — 본문 안 여백 위 20 · 아래 80(바닥이 있어도), 스크롤 여유도 위 20 · 아래 80
+const BODY_FOG = "pt-[20px] pb-[80px] scroll-pt-[20px] scroll-pb-[80px]";
+
+export interface BottomSheetBodyProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** 끝 흐림(Scroll Fog overlayBody — 위 20 · 아래 80, 늘 켜짐) — 넘칠 수 있는 본문(목록 · 긴 폼)에만 */
+  scrollFog?: boolean;
+}
+
+const BottomSheetBody = React.forwardRef<HTMLDivElement, BottomSheetBodyProps>(({ scrollFog = false, className, ...props }, ref) => {
+  const own = React.useRef<HTMLDivElement>(null);
+  useScrollFog(own, scrollFog ? "overlayBody" : null);
+  return (
+    <div
+      ref={mergeRefs(ref, own)}
+      data-slot="bottom-sheet-body"
+      data-scroll-fog={scrollFog ? "overlayBody" : undefined}
+      className={cn(BODY, scrollFog ? BODY_FOG : BODY_PLAIN, className)}
+      {...props}
+    />
+  );
+});
 BottomSheetBody.displayName = "BottomSheetBody";
 
 // 바닥 — 위 12 · 아래 16(그 아래 안전 영역은 시트가 둔다), 버튼 하나면 폭 전체 · 둘이면 반씩(사이 8). Button large 48

@@ -5,7 +5,8 @@
 # 이상에서 이 Dialog 로 같은 머리 · 본문 · 바닥을 띄운다. 되돌릴 수 없는 확인은 Alert Dialog(alert-dialog.yaml)다.
 # 닫는 길(입력 폼은 바깥 누르기로 닫지 않는다 · 닫기 버튼과 취소는 하나만)은 dialog.md 의 Behavior 에 있다.
 #
-# 상태 scrolled · overflow 는 본문 스크롤의 상태다 — 넘치면 아래 흐림, 위로 스크롤되면 머리 아래 선.
+# 상태 scrolled 는 본문 스크롤의 상태다 — 위로 스크롤되면 머리 아래 선. 끝 흐림은 상태가 아니라 축 scrollFog 다 — 넘칠 수 있는
+# 본문(목록 · 긴 폼)에 걸고, 걸면 넘쳤는지와 상관없이 늘 켜져 있다(Scroll Fog — scroll-fog.yaml 의 overlayBody, 2026-10-03).
 #
 # SEED 와 다른 자리(dialog.md 의 "SEED 와 다른 점")
 #   - 바뀌는 폭: SEED md(768) → porest 1280(Input Button 과 같은 경계 — 사용자 결정 2026-10-02).
@@ -13,6 +14,7 @@
 #   - 딤: SEED bg.overlay 0.455 → porest overlay-dim 0.50 · 다크 0.65(v102).
 #   - 반투명 색을 불투명 짝으로(v102): 머리 아래 선 stroke-neutral-subtle, 닫기 버튼 누름 bg-layer-floating-pressed.
 #   - z-index: specs/z-index.md 의 L2(딤 z-modal 100 · 대화상자 z-modal-content 101).
+#   - 본문 끝 흐림: SEED Dialog 의 넘칠 때만 아래 48 → porest Scroll Fog(늘 켜진 위 20 · 아래 80, 넘칠 수 있는 본문에만 — 2026-10-03).
 
 name: Dialog
 
@@ -25,7 +27,7 @@ slots:
   description: 설명 — 덧붙일 말이 있을 때만
   divider: 머리 아래 선 — 본문이 위로 스크롤됐을 때만
   body: 본문 — 넘치면 이 안에서만 스크롤(머리 · 바닥은 고정)
-  fade: 아래 흐림 — 본문이 넘칠 때만
+  fog: 끝 흐림 — Scroll Fog(scroll-fog.yaml 의 overlayBody). 넘칠 수 있는 본문에만 걸고, 걸면 늘 켜져 있다
   footer: 바닥 — 버튼, 오른쪽 정렬
   focusRing: 키보드 포커스 링(웹)
 
@@ -33,14 +35,17 @@ variants:
   size:
     medium: 480 — 기본. 일반 입력 폼 · 상세
     large: 800 — 복잡한 설정 · 많은 조회
+  scrollFog:
+    "off": 기본 — 늘 들어맞는 본문(칸 두셋 · 짧은 안내)
+    "on": 넘칠 수 있는 본문(목록 · 긴 폼 · 데이터에 따라 길어지는 내용) — 위 20 · 아래 80 이 늘 흐리다
 
 defaults:
   size: medium
+  scrollFog: "off"
 
 states:
   enabled: 열림
   scrolled: 본문이 위로 스크롤됨 — 머리 아래 선
-  overflow: 본문이 넘침 — 아래 흐림
   pressed: 닫기 버튼 누름
   focused: 웹 — 키보드 포커스에만 링
 
@@ -101,12 +106,6 @@ rules:
     scrolled:
       divider:
         opacity: { value: 1, note: "본문을 위로 스크롤하면 나타난다" }
-    overflow:
-      fade:
-        height: 48px
-        background: { value: "본문 아래 48 을 bg-layer-floating 쪽으로 흐린다(마스크)", note: "넘칠 때만 — 끝까지 스크롤해도 남으므로 본문 아래 48 을 비워 둔다" }
-      body:
-        paddingBottom: 48px
     pressed:
       closeButton:
         background: { value: $color-bg-layer-floating-pressed, note: "SEED bg.transparent-pressed 의 떠 있는 표면 짝(v102)" }
@@ -125,6 +124,17 @@ rules:
     enabled:
       root:
         width: 800px
+
+  # ── 본문 끝 흐림(Scroll Fog) ──────────────────────────
+  - when: { scrollFog: "on" }
+    enabled:
+      fog:
+        mask: { value: $gradient-fade-mask, note: "Scroll Fog overlayBody(scroll-fog.yaml) — 늘 켜져 있다. 넘쳤는지 재서 켜고 끄지 않는다" }
+        size: { value: 위 20px · 아래 80px, note: "본문 상자의 위 · 아래 끝" }
+      body:
+        paddingTop: { value: 20px, note: "머리가 있으면 20(머리 아래 16 은 그대로 두고 본문 안에 더한다), 머리가 없으면 24 그대로 — 흐림 깊이 이상" }
+        paddingBottom: { value: 80px, note: "바닥이 있어도 — 끝까지 내려도 마지막 줄이 흐림 아래 남지 않는다" }
+        scrollPadding: { value: 위 20px · 아래 80px, note: "키보드로 옮긴 칸이 흐림 아래 멈추지 않게" }
 
 motion:
   "열림 — 대화상자":
