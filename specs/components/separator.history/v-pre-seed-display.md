@@ -38,7 +38,7 @@ Separator는 **variant 없음** — 단일 시각 톤. orientation prop으로만
 
 Separator는 **size variant 없음** — 항상 `1px`. 두께 분기 필요 시 사용처 className로 override(권장 안 함).
 
-[표: 굵기 · 색 · 길이](separator.yaml#base)
+[표: 굵기 · 색 · 길이](v-pre-seed-display.yaml#base)
 
 ## States
 

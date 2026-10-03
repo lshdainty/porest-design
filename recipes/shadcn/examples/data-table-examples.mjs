@@ -12,13 +12,33 @@ const INPUT =
 const BTN_OUTLINE =
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-sm font-medium transition-colors border border-border-default bg-surface-default text-text-primary hover:bg-surface-input h-9 px-3 text-label-md";
 
-const BADGE_BASE = "display:inline-flex; align-items:center; padding:2px 8px; border-radius:9999px; font-size:var(--text-label-sm); font-weight:500;";
-
-const STATUS = {
-  paid: `${BADGE_BASE} background:color-mix(in srgb, var(--color-success) 15%, transparent); color:var(--color-success);`,
-  pending: `${BADGE_BASE} background:color-mix(in srgb, var(--color-warning) 15%, transparent); color:var(--color-warning);`,
-  failed: `${BADGE_BASE} background:color-mix(in srgb, var(--color-error) 15%, transparent); color:var(--color-error);`,
+// ── badge.tsx 의 cva 와 같은 값(이 파일이 쓰는 weak · medium 과 그 톤만 — badge-examples.mjs 의 것과 같다) ──
+// 표의 상태는 Badge weak — 한 목록은 한 변형, 뜻은 톤으로(결제완료 positive · 대기중 neutral · 실패 critical). 옛 알약 · 15% 섞은 의미 색은 걷었다(badge.md)
+const BADGE_BASE = "inline-flex min-w-0 cursor-default items-center gap-x0_5 overflow-hidden whitespace-nowrap font-sans";
+const BADGE_VARIANTS = {
+  variant: { weak: "font-medium" },
+  tone: { neutral: "", positive: "", critical: "" },
+  size: { medium: "min-h-x5 rounded-r1 px-x1_5 py-x0_5 text-t1" },
 };
+const BADGE_COMPOUND = [
+  { variant: "weak", tone: "neutral", className: "bg-bg-neutral-weak text-fg-neutral-muted" },
+  { variant: "weak", tone: "positive", className: "bg-bg-positive-weak text-fg-positive-contrast" },
+  { variant: "weak", tone: "critical", className: "bg-bg-critical-weak text-fg-critical-contrast" },
+];
+const BADGE_LABEL = "min-w-0 truncate";
+// <Badge> — base → 축 → 맞는 compound(cva 와 같은 차례)
+const badge = (text, { variant = "weak", tone = "neutral", size = "medium" } = {}) => {
+  const cls = [
+    BADGE_BASE,
+    BADGE_VARIANTS.variant[variant],
+    BADGE_VARIANTS.tone[tone],
+    BADGE_VARIANTS.size[size],
+    ...BADGE_COMPOUND.filter((c) => c.variant === variant && c.tone === tone).map((c) => c.className),
+  ].filter(Boolean).join(" ");
+  return `<span data-slot="badge" class="${cls}"><span data-slot="badge-label" class="${BADGE_LABEL}">${text}</span></span>`;
+};
+const STATUS_TONE = { 결제완료: "positive", 대기중: "neutral", 실패: "critical" };
+const status = (text) => badge(text, { tone: STATUS_TONE[text] });
 
 const TABLE = "width:100%; border-collapse:collapse; font-size:var(--text-title-sm); color:var(--color-text-primary);";
 const HEAD_ROW = "border-bottom:1px solid var(--color-border-default);";
@@ -41,7 +61,7 @@ const COLUMNS_ICON =
 export const dataTableExamples = [
   {
     title: "Default",
-    description: "TanStack Table + shadcn Table — filter / sort / column toggle / pagination 통합.",
+    description: "TanStack Table + shadcn Table — filter / sort / column toggle / pagination 통합. 상태 칸은 Badge weak(20 · 모서리 4 · 11/15 · 500)다 — 반복되는 줄은 weak 로 맞추고 뜻은 톤으로 가른다(결제완료 positive · 대기중 neutral · 실패 critical).",
     jsx: `// 의존성: @tanstack/react-table
 const data: Payment[] = [
   { id: "p1", email: "kim@example.com", status: "결제완료", amount: 250000 },
@@ -49,9 +69,12 @@ const data: Payment[] = [
   ...
 ]
 
+// 상태의 뜻 — 톤(badge.md)
+const STATUS_TONE = { 결제완료: "positive", 대기중: "neutral", 실패: "critical" } as const
+
 const columns: ColumnDef<Payment>[] = [
   { accessorKey: "email", header: "이메일" },
-  { accessorKey: "status", header: "상태", cell: ({ row }) => <Badge>{row.getValue("status")}</Badge> },
+  { accessorKey: "status", header: "상태", cell: ({ row }) => <Badge tone={STATUS_TONE[row.original.status]}>{row.getValue("status")}</Badge> },
   { accessorKey: "amount", header: () => <div className="text-right">금액</div>, ... },
 ]
 
@@ -96,10 +119,10 @@ return (
       <th style="${HEAD} text-align:right;">금액</th>
     </tr></thead>
     <tbody>
-      <tr style="${ROW}"><td style="${CELL}">kim@example.com</td><td style="${CELL}"><span style="${STATUS.paid}">결제완료</span></td><td style="${CELL} text-align:right;">₩250,000</td></tr>
-      <tr style="${ROW}"><td style="${CELL}">lee@example.com</td><td style="${CELL}"><span style="${STATUS.pending}">대기중</span></td><td style="${CELL} text-align:right;">₩150,000</td></tr>
-      <tr style="${ROW}"><td style="${CELL}">park@example.com</td><td style="${CELL}"><span style="${STATUS.failed}">실패</span></td><td style="${CELL} text-align:right;">₩350,000</td></tr>
-      <tr style="${ROW}"><td style="${CELL}">choi@example.com</td><td style="${CELL}"><span style="${STATUS.paid}">결제완료</span></td><td style="${CELL} text-align:right;">₩87,500</td></tr>
+      <tr style="${ROW}"><td style="${CELL}">kim@example.com</td><td style="${CELL}">${status("결제완료")}</td><td style="${CELL} text-align:right;">₩250,000</td></tr>
+      <tr style="${ROW}"><td style="${CELL}">lee@example.com</td><td style="${CELL}">${status("대기중")}</td><td style="${CELL} text-align:right;">₩150,000</td></tr>
+      <tr style="${ROW}"><td style="${CELL}">park@example.com</td><td style="${CELL}">${status("실패")}</td><td style="${CELL} text-align:right;">₩350,000</td></tr>
+      <tr style="${ROW}"><td style="${CELL}">choi@example.com</td><td style="${CELL}">${status("결제완료")}</td><td style="${CELL} text-align:right;">₩87,500</td></tr>
     </tbody>
   </table>
   <div style="${FOOTER_BAR}">

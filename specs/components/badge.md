@@ -1,130 +1,264 @@
 # Badge
 
-> 상태·카테고리·메타 라벨을 한 글자~짧은 단어로 압축 표시하는 마이크로 컴포넌트. pill shape(`radius-full`) + `text-badge`(11/600/1.2) baseline. 단독 또는 list row / card header / button 내부 등 다양한 표면에 합성. shadcn `Badge` 베이스.
+> 대상의 상태 · 분류를 한두 낱말로 보이는 작은 라벨("예정" · "연체" · "승인"). 누르지 않는다 — 고르고 거르는 것은 [Chip](chip.md), 실행은 [Button](button.md), 시간 · 개수 · 길이 같은 메타 정보는 [Tag Group](tag-group.md), 안 읽은 알림은 [Notification Badge](notification-badge.md) 다.
 
-Porest Badge는 **3 styles(solid / soft / outline) × neutral·semantic 색상** 매트릭스로 정의됩니다. site SoT(solid: default/secondary/destructive/outline) + preview SoT(soft semantic: success/info/warning/error)를 통합 — 같은 spec 안에 두 시각 톤을 공존시켜 사용처가 강조 강도(solid > soft > outline)와 의미(brand/neutral/semantic)를 자유 선택. 단일 size — pill 폼 안 micro 라벨 톤 통일.
+구조는 당근 [SEED Badge](https://seed-design.io/components/badge)(Apache-2.0)를 따른다 — 둥근 사각 상자 · 앞 아이콘 · 글, 변형 셋(weak · solid · outline) × 톤 여섯, 크기 둘. 값은 porest 토큰이고, SEED 와 다른 자리는 맨 아래 "SEED 와 다른 점" 에 적었다(2026-10-03 사용자 결정). 옛 Badge(알약 · 11 / 600 · solid · soft · outline 12변형 · 누르는 배지)를 대신한다.
+
+수치 원본은 [`badge.yaml`](badge.yaml)이다. 수치 표 자리(`[표: …]`)와 그림 자리(`[그림: …]`)는 사이트가 그 파일로 그린다 — GitHub 에서는 그 파일 · 그림 코드로 가는 링크로 보인다.
+
+[그림: 가계부 줄의 상태 · 카드 상세 머리 · 캘린더 공유 권한 — 라이트 · 다크](../../site/components/specs/badge.tsx#hero)
+
+### 직접 골라 보기
+
+변형 · 톤 · 크기 · 앞 아이콘 · 글 길이를 고르면 스펙대로 그린 배지와 그 코드가 바뀐다. 줄 안 · 상세 머리 두 자리에 놓아 본다.
+
+[그림: 플레이그라운드](../../site/components/specs/badge.tsx#playground)
 
 ## Anatomy
 
+[그림: 배지는 상자 · 앞 아이콘 · 글로, 여럿이면 사이 4](../../site/components/specs/badge.tsx#anatomy)
+
+| ⓐ Container | 상자 — 둥근 사각(4 · 6). 글만큼 넓어지고 최대 폭이 없다. |
+| ⓑ Prefix Icon | 앞 아이콘 — 글자색을 따른다. 없어도 된다. |
+| ⓒ Label | 글 — 한두 낱말, 한 줄. |
+
+[표: 부위](badge.yaml#slots)
+
+## Properties
+
+### Variant
+
+세 가지다. 같은 톤이면 weak → outline → solid 순으로 강해진다.
+
+| 변형 | 모양 | 쓰는 자리 |
+|---|---|---|
+| `weak` *(기본)* | 옅은 바탕(`bg-{톤}-weak`) + 진한 글자(`fg-{톤}-contrast`) · 500 | 반복되는 목록 · 분류 · 부가 정보 — 줄마다 있어도 무겁지 않다 |
+| `outline` | 투명 + 안쪽 1px 옅은 선(`stroke-{톤}-weak`) + 의미 색 글자(`fg-{톤}`) · 700 | 상세 · 본문의 중간 강조 — 권한 · 카드 종류처럼 한 화면에 몇 개 |
+| `solid` | 채움(`bg-{톤}-solid`) + 흰 글자 · 700 | 눈에 띄어야 할 상태 하나, 사진 위 |
+
+중립(`neutral`)만 짝이 다르다 — weak 는 `bg-neutral-weak` + `fg-neutral-muted`, solid 는 `bg-neutral-inverted` + `fg-neutral-inverted`(다크에서 밝은 면 + 짙은 글자), outline 은 `stroke-neutral-weak` + `fg-neutral-muted`.
+
+[그림: 변형 셋 × 톤 여섯 — 라이트 · 다크](../../site/components/specs/badge.tsx#variant)
+
+[표: 변형 — 굵기 · 테두리](badge.yaml#variant)
+
+### Tone
+
+| 톤 | 쓰는 자리 | porest 예 |
+|---|---|---|
+| `neutral` *(기본)* | 상태가 따로 없거나 분명하지 않은 것 · 분류 | 예정 · 환불됨 · 기록만 · 일시정지 · 단종 · 기본 · 신용 · 체크 |
+| `informative` | 안내 · 권한 제한 · 베타 | 읽기 전용 · 새로 |
+| `positive` | 완료 · 승인 · 연결 | 달성 · 승인 · 연결됨 · 정상 속도 |
+| `warning` | 곧 문제가 될 것 · 빠진 것 | 만료 임박 · 빠른 속도 · 투자 주의 |
+| `critical` | 거절 · 실패 · 넘침 · 제재 | 반려 · 연체 · 한도 초과 |
+| `brand` | 브랜드와 닿는 자리만 — 아껴 쓴다 | 요금제(Pro) · 본인 표시(나) |
+
+[표: weak — 옅은 바탕](badge.yaml#grid.tone.variant.weak)
+
+[표: solid — 채움](badge.yaml#grid.tone.variant.solid)
+
+[표: outline — 옅은 선](badge.yaml#grid.tone.variant.outline)
+
+outline 의 의미 색 테두리 넷(`stroke-informative-weak` · `-positive-weak` · `-warning-weak` · `-critical-weak`)은 이 결정으로 새로 둔 역할 색이다(v117 — 팔레트 300 · 다크 400).
+
+### Size
+
+`medium` 20 *(기본)* · `large` 24. medium 은 목록 줄 · 표 · 이름 옆, large 는 상세 머리 · 카드 제목 옆이다. 글은 medium `t1` 11 / 15 · large `t2` 12 / 16, 앞 아이콘 12 · 14 와 글 사이 2. 글은 글자 크기 설정을 따르고(최소 높이는 그대로 두고 상자가 글을 따라 커진다), 줄을 바꾸지 않는다.
+
+[그림: 크기 — medium 20 은 줄 안, large 24 는 상세 머리](../../site/components/specs/badge.tsx#size)
+
+[표: 크기](badge.yaml#size)
+
+[표: 공통](badge.yaml#base.enabled)
+
+### State
+
+상태는 `enabled` 하나다 — 배지는 누르지 않아 호버 · 누름 · 포커스 · 비활성이 없다(SEED).
+
+## Guidelines
+
+### 상태 · 분류만 배지로
+
+배지는 대상이 **어떤 상태인지 · 무엇으로 분류되는지**를 한두 낱말로 보인다. 시간 · 개수 · 길이 · 금액 같은 메타 정보는 배지가 아니라 [Tag Group](tag-group.md)(" · " 로 이은 회색 줄)이다(SEED Image Frame — "Badge 는 상태나 분류를 표현할 때만").
+
+| 보이려는 것 | 쓰는 것 |
+|---|---|
+| 상태 한 낱말(예정 · 승인 · 연체) | **Badge** |
+| 대상의 종류를 앞세우는 분류 라벨(신용 · 체크 · 할인형) | **Badge** `neutral` weak |
+| 설명 줄의 메타 — 카테고리 이름 · 자산 · 시각 · 거리 · 개수 · 금액 | [Tag Group](tag-group.md) |
+| 안 읽은 알림이 있음 · 몇 개 | [Notification Badge](notification-badge.md) |
+| 고르기 · 거르기 · 넣은 값 빼기 | [Chip](chip.md) |
+| 실행 | [Button](button.md) |
+| 문장이 되는 안내 | 그냥 글 · [Callout](callout.md) |
+
+[그림: 상태는 배지, 메타는 Tag Group, 고르기는 Chip — 한 줄에 함께](../../site/components/specs/badge.tsx#role-guide)
+
+### 누르지 않는다
+
+배지는 누르는 것처럼 생기지 않았고, 누르는 동작이 없다. 누르면 무언가 되는 라벨이 필요하면 [Chip](chip.md)(고르기 · 거르기 — 알약) 또는 [Button](button.md) 이다. 배지의 뜻을 더 설명해야 하면 배지 옆에 ⓘ [Help Bubble](help-bubble.md) 을 둔다 — 배지 안에 버튼을 넣지 않는다.
+
+[그림: 누르는 것은 알약 Chip — 둥근 사각 배지는 누르지 않는다](../../site/components/specs/badge.tsx#press-guide)
+
+### 반복되는 줄은 weak
+
+목록처럼 같은 모양이 되풀이되는 자리는 `weak` 다 — 줄마다 채운 배지가 있으면 화면이 무거워지고 정작 눈에 띄어야 할 것이 묻힌다. `solid` 는 한 화면에서 꼭 눈에 띄어야 할 상태 하나 · 사진 위에만, `outline` 은 상세 · 본문의 중간 강조에 쓴다. 한 목록 안에서는 한 변형으로 맞추고 뜻은 톤으로 가른다.
+
+[그림: 목록은 weak — 줄마다 solid 인 목록](../../site/components/specs/badge.tsx#weak-guide)
+
+### 흰 표면 위에서
+
+중립 weak 의 바탕(`bg-neutral-weak`)은 회색 바탕(`bg-layer-basement`)과 같은 색이라 거기서는 상자가 사라진다 — 배지는 흰 표면(`bg-layer-default`) · 시트 위에 둔다. 회색 바탕 위에 둬야 하면 outline 을 쓴다.
+
+[그림: 흰 표면 위 weak · 회색 바탕 위 weak](../../site/components/specs/badge.tsx#surface-guide)
+
+### 한 대상에 둘까지
+
+한 대상(한 줄 · 한 카드)에는 배지를 둘까지 둔다(SEED). 셋 이상 필요하면 중요한 것만 남기고 나머지는 상세에서 보인다. 둘이면 사이 4 — 줄바꿈하지 않는다.
+
+[그림: 줄 하나에 배지 둘까지 · 배지 넷](../../site/components/specs/badge.tsx#count-guide)
+
+### 색은 뜻으로, 브랜드는 아껴서
+
+톤은 뜻을 나타낸다 — 완료는 positive, 거절 · 넘침은 critical 처럼 위 표대로 고른다. 뜻이 없는 분류(카드 종류 · 시장)는 neutral 이다. brand 는 요금제 · 본인 표시처럼 브랜드와 닿는 자리에만 쓴다 — 브랜드 색 배지가 흔해지면 브랜드 버튼(주요 동작)과 다툰다. 같은 뜻은 어느 화면에서나 같은 변형 · 톤이다("달성" 이 웹은 브랜드 · 앱은 초록이면 안 된다).
+
+[그림: 달성은 positive — 브랜드 색으로 칠한 "달성"](../../site/components/specs/badge.tsx#tone-guide)
+
+### 합계에 안 드는 줄
+
+예정 · 환불 거래처럼 합계에 들지 않는 줄은 줄 전체를 흐리지 않는다 — 그 줄을 가르는 단서가 배지이므로 배지는 보통 대비 그대로 두고, 제목 · 금액만 옅게(환불은 금액에 취소선) 한다. 규칙은 [List — 합계에 안 드는 줄](list.md#합계에-안-드는-줄)에 있다.
+
+### 글
+
+- 한두 낱말 · 명사로 짧게 — "예정" · "연체 3" · "한도 초과". 문장이 되면 배지가 아니다.
+- 상태는 "~됨" · "~중" 처럼 지금 상태를 말하고, 같은 뜻은 같은 말로("달성" · "달성!" 을 섞지 않는다).
+- 영어 · 코드값을 그대로 내지 않는다 — "NEW" 는 "새로", `ROLE_ADMIN` 은 "관리자", 정책 코드는 정책 이름(Writing v106). 요금제 이름 Pro · Free 는 이름이라 그대로 둔다.
+- 대문자 · 자간을 따로 주지 않는다.
+
+[그림: 글 — 한두 낱말 · 코드값 · 영어 대문자](../../site/components/specs/badge.tsx#writing-guide)
+
+## 코드
+
+레시피 `recipes/shadcn/components/ui/badge.tsx` 를 쓴다 — `Badge` · `BadgeGroup`. 기본은 `variant="weak"` · `tone="neutral"` · `size="medium"` 이고, 글은 `children`, 앞 아이콘은 `prefixIcon`(lucide, 크기는 배지가 정한다)이다. `<span>` 으로 그려 글 안 · 줄 안 어디에나 놓인다. 아래 미리보기는 스펙 값으로 그린 모습이다.
+
+### 목록 줄의 상태 — weak
+
+[그림: 가계부 줄 — 예정 · 연체](../../site/components/specs/badge.tsx#ex-row)
+
+```tsx
+import { Badge } from "@/components/ui/badge"
+
+<span className="flex items-center gap-x1_5">
+  <span className="truncate">넷플릭스</span>
+  <Badge className="shrink-0">예정</Badge>
+</span>
+
+<Badge tone="critical">연체 3</Badge>
 ```
-┌─────────────┐
-│ ⓐ children  │  ← inline-flex + 토큰 padding
-└─────────────┘
- ▲ ⓑ pill border (radius-full)
+
+### 상세 머리 — large · 둘
+
+[그림: 카드 상세 머리 — 신용 · 단종](../../site/components/specs/badge.tsx#ex-detail)
+
+```tsx
+import { Badge, BadgeGroup } from "@/components/ui/badge"
+
+<BadgeGroup>
+  <Badge size="large">신용</Badge>
+  <Badge size="large" variant="solid">단종</Badge>
+</BadgeGroup>
 ```
 
-| ⓐ root | `<div>` — `inline-flex items-center rounded-full px-[var(--spacing-sm)] py-0.5 text-badge font-semibold transition-colors duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]` |
-| ⓑ shape | `rounded-full` pill — 모든 variant 공통. square badge는 spec 외 범위. |
-| ⓒ dot indicator (선택) | 좌측 6×6 colored dot — outline variant에 색상 의미 부가 시(예: 온라인/자리비움/오프라인). `mr-1.5` 또는 `var(--spacing-xs)`. |
-| ⓓ children | 텍스트(한글/영문/숫자) 또는 dot + 텍스트. uppercase 변환은 옵션(`uppercase tracking-wide` className) — 한국어 라벨은 base 그대로. |
-| ⓔ focus ring | `focus:ring-2 ring-ring ring-offset-2` — 인터랙티브 badge(clickable filter chip)일 때만. 정적 라벨은 focus 대상 아님. |
+### 권한 — outline · 앞 아이콘
 
-**규칙**
+[그림: 캘린더 공유 — 편집 가능 · 읽기 전용](../../site/components/specs/badge.tsx#ex-outline)
 
-- 폼은 항상 pill(`rounded-full`) — sharp corner badge는 사용 안 함. micro 라벨의 부드러운 시각 단위.
-- font는 항상 `text-badge`(11/600/1.2) — 폰트 위계 최하단. 본문 영역 안에서 자기 주장 약함.
-- padding-y는 literal `0.5`(2px) — `--spacing` 토큰에 2px 단위 없어 Tailwind shortcut 유지. padding-x는 `var(--spacing-sm)`(8) 토큰.
-- uppercase + letter-spacing은 영문 약어(STATUS/INFO/등) 전용 — 한국어 라벨엔 가독성 저해. 사용처에서 `uppercase tracking-wide` className로 opt-in.
+```tsx
+import { Eye, Pencil } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 
-## Variants (style × tone 매트릭스)
-
-### Style: `solid` (3 variants)
-
-[표: solid](badge.yaml#solid)
-
-### Style: `soft` (4 semantic — preview SoT 정합)
-
-[표: soft](badge.yaml#soft)
-
-### Style: `outline` (5 — neutral + 4 semantic)
-
-[표: outline](badge.yaml#outline)
-
-**선택 기준** — 강조 강도: `solid` > `soft` > `outline`. 의미 분기: neutral(default/secondary/outline)는 brand-neutral, semantic(info/success/warning/error)은 의미 분기.
-
-## Sizes
-
-Badge는 **size variant 없음** — 단일 spec. micro 라벨이라 사이즈 분기는 시각 noise. 큰 라벨이 필요하면 [`Chip`](./) 또는 별도 spec.
-
-[표: 크기와 모양](badge.yaml#base.default)
-
-[표: 전환](badge.yaml#motion)
-
-## States
-
-[표: style 별로 바뀌는 값](badge.yaml#states.style)
-
-모든 style 에 공통인 값:
-
-[표: 공통](badge.yaml#matrix)
-
-**규칙**: 정적 라벨 badge는 hover/focus state 불필요. clickable badge(filter chip, dismissable tag)일 때만 state 부여.
-
-## Layout
-
-**Inline label**
-
-- 텍스트 흐름 안 — `align-items: center` flex item 또는 text-baseline 정렬. badge가 부모 텍스트(`text-body-md`/`text-title-sm`)보다 작아 baseline 살짝 위.
-
-**Row-end indicator**
-
-- list row 우측 끝 — list item 우측 status badge. `justify-between` 패턴. badge.tsx examples "In list (HR 시나리오)" 참조.
-
-**Stack of badges**
-
-- `flex flex-wrap gap-[var(--spacing-xs)]` (4) — 여러 라벨 동시 표시. 한 라벨에 여러 의미 분기 동시 불필요(중복 의미는 압축).
-
-**With dot indicator (outline only)**
-
-- 좌측 6×6 colored dot — 텍스트 라벨 + 색상 메타. WCAG 1.4.1(색만 의존 금지) 충족 — 색 + 텍스트 두 단서.
+<Badge variant="outline" tone="positive" prefixIcon={<Pencil />}>편집 가능</Badge>
+<Badge variant="outline" tone="informative" prefixIcon={<Eye />}>읽기 전용</Badge>
+```
 
 ## Behavior
 
 | 인터랙션 | 동작 |
 |---|---|
-| Click (interactive) | filter chip — toggle on/off. dismissable tag — onDismiss 콜백. 정적 라벨은 인터랙션 없음. |
-| `Enter` / `Space` (interactive focus) | toggle/dismiss. |
-| `Tab` | interactive badge만 focus 진입. 정적 라벨은 skip. |
-| screen reader | 정적 라벨은 `role` 없음(텍스트 그대로 읽음). interactive는 `role="button"` 또는 `aria-pressed`(filter chip). |
+| 누르기 · 호버 · 키보드 | 없다 — 포커스가 서지 않는다. 배지가 놓인 줄 · 카드가 눌리면 그 동작이다 |
+| 글이 길 때 | 줄을 바꾸지 않는다. 부모가 폭을 막을 때(flex 줄 안 · 폭이 정해진 칸)만 글이 한 줄 말줄임(…) — 글 전체는 보조 기술이 읽는다 |
+| 글자 크기 설정 | 글이 커지면 상자가 따라 커진다(최소 높이 20 · 24 는 그대로) |
+| 상태가 바뀜 | 배지 글 · 색이 바로 바뀐다(모션 없음) |
 
 ## Accessibility
 
 | 기준 | 검증 |
 |---|---|
-| **WCAG 1.4.1** Use of Color | 색 + 텍스트 둘 다 필수 — 색 단독 의미 금지. dot indicator도 텍스트 라벨 동반. |
-| **WCAG 1.4.3** Color contrast (solid text × bg) | `text-on-accent` × `primary` 7:1+ / `text-on-accent` × `error` 5:1+ / `text-primary` × `surface-input` 12:1+ ✓ |
-| **WCAG 1.4.3** Color contrast (soft text × bg) | 약한 배경(`bg-*-weak`) 위 contrast 글자(`fg-*-contrast`): informative `#1B65B9` 4.96:1 · positive `#14753A` 4.92:1 · warning `#AD420C` 4.97:1 · critical `#C11F1F` 5.00:1 — 모두 AA ✓. hover 의 `bg-*-weak-pressed` 위에서도 4.5:1 이상(4.51 ~ 4.55). v102 전에는 의미 색 16% 섞음 위 의미 색 글자라 3.73 ~ 4.03:1 로 미달이었다. micro 텍스트 11px 는 large text 기준(18px · 굵게 14px)에 들지 않는다. |
-| **WCAG 1.4.11** Non-text contrast (outline border × bg-page) | `info` 4.5:1+ / `error` 5:1+ / `border-default` 1.4:1 — border-default outline은 약함이라 dot indicator + 텍스트로 시각 식별 보강. |
-| **WCAG 2.4.7** Focus Visible | interactive badge `focus-visible:ring-2 ring-ring ring-offset-2` ✓ |
-| **WCAG 2.5.5** Target Size (AAA, 44×44) | static badge — 미달(⚠). static 라벨은 touch target 아니라 무관. interactive badge는 wrapper로 padding 확장 권장. |
-| **WCAG 2.5.8** Target Size Minimum (AA, 24×24) | static — 18px 미달(⚠). interactive 필요 시 wrapper 확장. |
-| **ARIA** | static — `role` 없음. interactive — `role="button"` + (toggle) `aria-pressed` / (dismiss) `aria-label="<label> 제거"`. |
+| **WCAG 1.4.3** Color contrast(글자 ≥ 4.5:1) | weak — 중립 6.58 · 다크 5.93, 의미 색 5.65 ~ 5.72 · 7.78 ~ 7.84, 브랜드 Desk 8.74 · 5.48 · HR 5.58 · 5.42. solid — 흰 글자 5.06 ~ 5.09 · 5.77 ~ 5.79, 브랜드 Desk 8.38 · 8.36 · HR 5.06 · 5.06, 중립 16.41 · 13.42. outline(흰 표면 위) — 의미 색 5.06 ~ 5.09 · 6.07 ~ 6.12, 중립 7.11 · 7.70, 브랜드 Desk 8.38 · 6.10 · HR 5.06 · 6.23 ✓ — 11 · 12px 라 큰 글자 기준을 쓰지 않는다 |
+| **WCAG 1.4.11** Non-text contrast(≥ 3:1) | 상자 바탕(weak 1.08 ~ 1.30) · 옅은 선(1.51 ~ 1.73, 중립 1.23 · 1.56)은 배지를 알리는 유일한 표시가 아니다 — 글이 알린다(SEED 와 같다) |
+| **WCAG 1.4.1** Use of color | 뜻은 글에 있다 — 색(톤)은 거드는 것이다. "연체" 를 빨간 점만으로 알리지 않는다 |
+| **WCAG 1.4.4** Resize text | 글이 글자 크기 설정을 따라 커지고 상자가 함께 커진다 ✓ |
+| **WCAG 2.5.8** Target Size — Minimum(AA ≥ 24×24) | 해당 없음 — 누르지 않는다 |
+| **WCAG 2.5.5** Target Size — Enhanced(AAA ≥ 44×44) | 해당 없음 — 누르지 않는다 |
+| **ARIA** | `<span>` · 역할 없음 — 글이 앞뒤 글(줄 이름)과 이어 읽힌다("넷플릭스 예정 구독 현대카드"). 앞 아이콘은 `aria-hidden`. 말줄임해도 글 전체를 읽는다 |
 
 ## Do / Don't
 
 ### ✅ Do
 
-- 상태/카테고리/메타 — 짧은 라벨(1–4글자) 압축 표시.
-- semantic variant(soft/outline)는 의미와 일치 — 완료=success, 거절=destructive/error, 정보=info.
-- **같은 카테고리(같은 list/같은 column)는 한 style 톤으로 통일** — 결재 상태 4종은 모두 `soft`로, 우선순위 3종은 모두 `outline-semantic`으로. 의미 분기는 **색**으로만, style은 일관 유지. 한 카테고리 안에서 solid/soft/outline 섞으면 시각 위계가 깨져 "왜 어떤 건 강하고 어떤 건 약한가" 사용자 혼란.
-- list row 우측 끝 또는 카드 header에 배치 — 시각 위계 안에서 status hint 역할.
-- 색 + 텍스트 두 단서로 의미 전달 — WCAG 1.4.1 색맹 사용자 대응.
+- 상태 · 분류를 한두 낱말로.
+- 반복되는 목록은 weak, 한 목록 안은 한 변형으로.
+- 뜻에 맞는 톤 — 브랜드는 아껴서.
+- 흰 표면 위에, 한 대상에 둘까지.
 
 ### ❌ Don't
 
-- 한 list 안에서 style 섞기 — solid(승인) + soft(대기) + destructive(반려) + outline(완료)처럼 strength가 들쑥날쑥하면 의미 분기와 style 분기가 충돌. **같은 카테고리는 한 style**, 다른 카테고리(상태 vs 우선순위)면 style 분리 가능.
-- 긴 문장(5단어 이상)을 badge로 — pill 시각 무너짐. 긴 라벨은 inline text 또는 [`Callout`](callout.md).
-- 한 row에 5+ badge — 시각 노이즈. 압축 또는 카테고리 분리.
-- uppercase + 한국어 조합 — `letter-spacing: 0.04em` + 한글은 의미 없음(자모 분리 안 됨). uppercase는 영문 약어 전용.
-- semantic 색을 의미 없이 변형 — 정보성 라벨에 `error` 톤 사용 금지(사용자 혼란).
-- interactive badge에 hover state 없이 click 처리 — affordance 부재. clickable이면 hover/focus state 필수.
+- 배지를 누르게 하기 · 지우기 버튼 달기 — Chip 이다.
+- 시간 · 개수 · 길이를 배지로 — Tag Group 이다.
+- 알약 모양 배지 — 알약은 누르는 Chip 의 모양이다.
+- 배지가 든 줄을 불투명도로 흐리기 — 배지까지 흐려진다.
+- 영어 대문자 · 코드값 배지("NEW" · `ROLE_ADMIN`).
+
+## Specification
+
+`badge.yaml` 의 규칙을 하나도 빼지 않고 조건마다 그린다 — 웹 · 앱이 Badge 를 만들 때 이 값을 그대로 쓴다. 조건이 없는 `Base` 가 모든 조합에 걸리고, 뒤의 규칙이 앞의 같은 값을 덮는다.
+
+[그림: Specification — badge.yaml 의 규칙 전부](../../site/components/specs/spec-sheet.tsx#badge)
+
+## SEED 와 다른 점
+
+- **기본은 weak · neutral · medium** — SEED React 기본은 solid · neutral · medium 이다. SEED 디자인 문서가 반복 목록 · 분류 · 부가 정보에 weak 를 권하므로 그쪽을 기본으로 둔다.
+- **중립 solid 는 역할 색** — `bg-neutral-inverted` + `fg-neutral-inverted`(SEED 는 palette gray-800 + fg.on-neutral-solid).
+- **warning solid 는 주황 + 흰 글자** — SEED 는 노랑 + 검정 81.6% 글자. porest 의 주의 색은 주황(v108)이고, 흰 글자가 5.06 · 5.79:1 이다(Page Banner 와 같다).
+- **의미 색 옅은 선의 다크는 팔레트 400** — SEED 는 300. porest 다크 표면은 SEED 보다 밝아 300 이 1.38 ~ 1.40:1(시트 위 1.19 ~ 1.21)로 묻힌다. 400 은 1.71 ~ 1.73:1 — SEED 다크(1.77)와 같은 관계다(v117).
+- **중립 outline 테두리는 `stroke-neutral-weak`** — SEED stroke.neutral-muted 는 투명도가 있는 색이라 porest 에 없다.
+- **대비는 WCAG AA** — SEED 의 흰 글자 on 주황(2.94) · 의미 색 solid(3.8 ~ 4.0) · 라이트 outline(3.8 ~ 4.1)처럼 4.5:1 에 못 미치는 짝이 없다.
+- **Action(정보 아이콘 버튼)은 두지 않는다** — SEED React 3(2026-10-01)의 배지 안 정보 버튼은 누르는 영역이 12 · 14 이고, 누르지 않는 배지 안에 따로 눌리는 것이 생긴다. 설명은 배지 옆 ⓘ Help Bubble 이다.
 
 ## Migration notes
 
-- 기존 `badge.tsx`는 4 variants(default/secondary/destructive/outline)만 — preview SoT(soft semantic 4 + outline-semantic 4)를 통합해 spec의 3 styles × neutral·semantic 매트릭스로 확장.
-- `px-2.5 py-0.5` Tailwind 기본(10px/2px) → `px-[var(--spacing-sm)] py-0.5` 토큰 직접 인용(8px/2px) — preview SoT(`padding: 2px 8px`) 정합. padding-y 2px는 `--spacing` 토큰에 단위 없어 literal 유지.
-- preview-html `.badge` `font-size: 11px` 픽셀 하드코드 → `var(--text-badge)` 토큰 직접 인용. `font-weight: 600` → `var(--text-badge--font-weight)` 또는 그대로 600. `padding: 2px 8px` → `padding: 2px var(--spacing-sm)`.
-- preview-html `.badge` `text-transform: uppercase` + `letter-spacing: 0.04em` → base에서 **제거**. brand vignette dense 라벨이 영문 약어 위주라 보존됐으나 한국어 도메인 라벨엔 부적합. spec base는 자연 텍스트 그대로. uppercase 필요 시 사용처 className으로 opt-in.
-- preview-html `.badge-success/error/warning/info` 4 semantic soft variants는 spec `soft` style로 정식 채택 — site shadcn에는 없던 변형을 spec에 통합.
-- transition 추가 — `transition-colors duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)]` (hover state가 있는 interactive badge 대비).
-- focus ring은 interactive badge일 때만 작동 — `focus:` (모든 focus) → `focus-visible:` (키보드 only) 정정.
+### 2026-10-03 — SEED Badge 로 새로 둔다
+
+사용자가 [비교 페이지](https://claude.ai/artifact/4ySVacsdnG4fgraR1HRK3G)에서 정했다 — 모양은 SEED 둥근 사각(1A — medium 20 · 모서리 4 · 11/15, large 24 · 모서리 6 · 12/16, weak 500 · solid · outline 700, 알약은 Chip 에만), 체계는 SEED variant × tone, outline 테두리는 옅은 선(2A — `stroke-*-weak` 토큰 넷을 새로, v117), 합계에 안 드는 줄은 배지를 또렷하게(3A — List 규칙). 옛 Badge(알약 · `text-badge` 11/600 · solid 3 · soft 4 · outline 5 · 누르는 배지 · 지우는 태그)는 걷었다 — 옛 스펙은 `badge.history/v-pre-seed-display.*`. 누르는 배지 · 지우는 태그는 Chip(`ChipToggle` · `InputChip`)이다. DESIGN.md 의 옛 Badge 절(18 · 22 · 28 세 크기 · 채운 의미 색 넷)도 이 스펙으로 바꿨다.
+
+| 옛 이름(웹 `Badge` · 앱 `PBadge` · HR shadcn) | 새 이름 |
+|---|---|
+| default · primary · HR default | `solid` + `brand`(브랜드와 닿는 자리만 — 아니면 `solid` `neutral`) |
+| secondary | `weak` `neutral` |
+| destructive · danger | `solid` `critical` |
+| soft — info · success · warning · error(웹) · softInfo · softSuccess · softWarning · softError(앱) | `weak` `informative` · `positive` · `warning` · `critical` |
+| softBrand(앱) | `weak` `brand` |
+| outline | `outline` `neutral` |
+| outline-info · -success · -warning · -error · outlineSuccess … | `outline` `informative` · `positive` · `warning` · `critical` |
+
+제품은 앱 적용 단계에서 옮긴다(2026-10-03 조사 — Desk 웹 · HR 은 크로미움에 띄워 쟀고, Desk 앱은 위젯 테스트로 쟀다).
+
+- **세 벌** — 웹 `Badge` 19.2 · 알약 · 11/600(`shared/ui/badge.tsx:17-71`, 호출 23), 앱 `PBadge` 17(테두리 있으면 19) · 알약 · 11/700(`shared/widgets/p_badge.dart:14-163`, 호출 31), HR shadcn 22 · 모서리 6 · 12/500(`shared/ui/shadcn/badge.tsx:7-46`, 호출 49). 손으로 만든 배지가 웹 약 40 · 앱 약 15곳이다(모서리 2 · 4 · 알약, 글자 9.5 ~ 12, 굵기 600 ~ 800) — 모두 이 Badge 로. 9.5 · 10 · 10.5 · 11.5px 글자(웹 `CardBenefitPage.tsx:214 · 274 · 495` "단종" · `porest.css:1454-1462` "NEW" · `DutchPayPage.tsx:1860-1910` "결제자")는 medium 11 로 올린다.
+- **흐린 줄 안의 배지** — 예정 · 환불 거래의 "예정" · "환불됨" 이 줄 전체 불투명도 0.6 에 함께 흐려져 웹 2.30 · 다크 2.77, 앱 2.39 · 2.87:1 이다(웹 `shared/ui/porest/ledger.tsx:555 · 692-708`, 앱 `features/expense/presentation/widgets/expense_row.dart:84-86 · 124-164`). List 의 "합계에 안 드는 줄" 규칙으로 바꾼다.
+- **옅은 배지가 4.5:1 아래** — 웹 info · success · warning · error 4.03 · 4.04 · 3.71 · 3.75(`badge.tsx:36-42`), 앱 soft 3.93 ~ 4.25(`p_badge.dart:141-150`), 할 일 우선순위 3.83 ~ 4.16(웹 `TodoPage.tsx:93-117` · 앱 `todo_meta.dart:49-64`). weak(`fg-*-contrast`)는 5.65 이상이다.
+- **다크 outline 테두리가 라이트 색 그대로** — 2.89 ~ 3.12:1(웹 `badge.tsx:46-53` · 앱 `p_badge.dart:153-160`). 브랜드 채움 배지는 다크 표면과 1.73:1.
+- **정의 없는 색** — 웹 "현재 기기"(`widgets/account-settings/ui/DevicesSection.tsx:244-258`) · "남은 원금 정리됨"(`AssetDetailDialog.tsx:984-990`)이 없는 토큰(`--border-success` · `--fg-success`)을 불러 테두리 · 색 없는 보통 글자로 보인다. 앱은 outlineSuccess 다.
+- **같은 뜻 다른 모양** — "달성"(웹 브랜드 옅은 사각 · 앱 초록 알약 "달성!"), 증권 "기본" · "Pro 시작"(웹 solid · 앱 soft), "연체"(웹 안에서도 사각 · 알약 두 모양 — `DashboardPage.tsx:1862-1875 · 2805-2817`).
+- **HR 결재 상태에 다크 짝이 없다** — `shared/lib/vacationStatus.tsx:18-43`(`dark:` 0개)이라 다크 화면에 밝은 알약이 뜬다(바탕 : 표면 13 ~ 15:1). 입금 · 출금 · 통계 "대기" · 현재 결재자도 같다(`culture-dues/ui/DuesTableContent.tsx:181-186` · `VacationRequestStatsItem.tsx:85-138`). 톤으로 옮기면 다크 짝이 생긴다 — 대기 `neutral` · 진행 `informative` · 승인 `positive` · 반려 `critical` · 취소 `neutral`(SEED 톤 표대로 — 앱 적용 때 확인).
+- **HR 흰 글자 미달** — 가입 상태 노랑 1.91 · 초록 2.22 · 빨강 3.81, 근무 시간 2.13 ~ 3.75(`admin-users-management/ui/UserTable.tsx:137-170`), destructive 3.76(`badge.tsx:17`), 증감 초록 글자 2.22(`vacation-history/ui/VacationStatsItem.tsx:21`). 근무 시간처럼 뜻 없는 분류 색은 톤이 아니라 글(또는 Tag Group)로 가른다.
+- **영어 · 코드값** — HR 역할 코드 `ROLE_ADMIN` 배지(`admin-authority/ui/MobileRoleSelector.tsx:124` · `UserRoleAssignment.tsx:74`) → "관리자", 휴가 정책 코드값 배지(`admin-vacation-plan/ui/VacationPlanPolicyDialog.tsx:122-125`) → 정책 이름, "3 포함된 정책"(`:85-87`) → "정책 3개", 웹 "NEW"(`widgets/constellation/ui/CollectionCard.tsx:132-148`) → "새로", 매수 유의 코드값 폴백(`TossStocksPage.tsx:1157`) → 이름을 못 찾으면 배지를 빼고 기록. 요금제 이름 Pro · Free 는 그대로.
+- **누르는 것처럼 보이는 배지** — 웹 `Badge` 의 호버 색(누르지 않는데), 웹 `AssetFilterBadge`(글 + ×, `ExpensePage.tsx:1365-1407`)는 Chip(입력값)으로, 상세 빠른 동작 위의 "연결됨" · "2개"(`shared/ui/porest/detail.tsx:211-215`)는 버튼 이름에 붙어 "연결됨 반복 설정" 으로 읽힌다 — 개수는 Notification Badge 규칙, 말은 버튼 글로.

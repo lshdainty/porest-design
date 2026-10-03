@@ -170,6 +170,53 @@ export const PROP_ORDER = Object.keys(PROP_LABEL);
 // 키는 YAML 의 name. 칸 순서는 PROP_LABEL 의 것을 그대로 쓴다
 export const PROP_LABEL_BY_COMPONENT = {
   WheelPicker: { 'indicator.insetX': '띠 들임' },
+  // 알림 숫자 — 글 부위(label)는 알약 안의 숫자다
+  NotificationBadge: { 'root.gap': '글 끝과 사이', 'label.foreground': '숫자 색', 'label.numerals': '숫자 폭', 'label.typography': '숫자 글자', 'label.fontWeight': '숫자 굵기' },
+  // 메타 줄 — 부위마다 항목 · 구분(보이는 글자) · 읽는 구분(보이지 않는 글)
+  TagGroup: {
+    'item.typography': '항목 글자',
+    'item.foreground': '항목 글자색',
+    'item.fontWeight': '항목 굵기',
+    'item.gap': '아이콘과 글 사이',
+    'item.shrink': '항목 줄어듦',
+    'icon.size': '아이콘',
+    'icon.color': '아이콘 색',
+    'separator.glyph': '구분 글자',
+    'separator.typography': '구분 글자 크기',
+    'separator.foreground': '구분 색',
+    'separator.fontWeight': '구분 굵기',
+    'separator.shrink': '구분 줄어듦',
+    'srSeparator.glyph': '읽는 구분',
+  },
+  // 이니셜 · 사진 · 안쪽 테두리
+  Avatar: {
+    'initial.background': '이니셜 바탕',
+    'initial.foreground': '이니셜 글자색',
+    'initial.fontSize': '이니셜 글자',
+    'initial.fontWeight': '이니셜 굵기',
+    'initial.lineHeight': '이니셜 줄 높이',
+    'initial.textTransform': '이니셜 대소문자',
+    'image.objectFit': '사진 맞춤',
+    'border.borderWidth': '안쪽 테두리 두께',
+    'border.borderColor': '안쪽 테두리',
+  },
+  // 묶음 — 겹침(음수 간격) · 바탕색 링(바깥 외곽선) · "+N" 원
+  AvatarStack: {
+    'root.gap': '겹침',
+    'root.items': '보이는 사람',
+    'item.size': '아바타 크기',
+    'item.outlineWidth': '링 두께',
+    'item.outlineColor': '링 색',
+    'overflow.size': '"+N" 크기',
+    'overflow.outlineWidth': '"+N" 링 두께',
+    'overflow.outlineColor': '"+N" 링 색',
+    'overflow.fontSize': '"+N" 글자',
+    'overflow.fontWeight': '"+N" 굵기',
+    'overflow.background': '"+N" 바탕',
+    'overflow.foreground': '"+N" 글자색',
+  },
+  // 배지 묶음의 사이
+  Badge: { 'root.gap': '앞 아이콘과 글 사이', 'group.gap': '배지 사이' },
 };
 // `부위.속성` 의 이름표 — 컴포넌트 것 → 공용 `부위.속성` → 공용 속성 → 키 그대로
 export function propLabelFor(name, slot, prop) {

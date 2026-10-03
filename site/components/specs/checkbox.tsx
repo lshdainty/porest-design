@@ -298,7 +298,7 @@ const TouchTarget: Fig = ({ caption }) => (
             ['점심 식사', '-12,000원', false],
             ['버스', '-1,500원', true],
           ].map(([t, a, on], i) => (
-            <div key={String(t)} className="relative flex items-center gap-3 px-5 py-3" style={{ borderTop: i ? `1px solid ${rc('stroke-neutral-weak')}` : undefined }}>
+            <div key={String(t)} className="relative flex items-center gap-3 px-5 py-3" style={{ borderTop: i ? `1px solid ${rc('stroke-neutral-subtle')}` : undefined }}>
               {i === 0 && <span className="absolute inset-0 z-0" style={{ background: MARK, outline: `1px dashed ${MARK_LINE}` }} />}
               <C checked={on ? 'checked' : 'unchecked'} ariaLabel={`${t} 선택`} style={{ position: 'relative', zIndex: 1 }} />
               <span className="relative z-[1] flex-1 text-[15px] pk-text">{t}</span>
@@ -324,7 +324,8 @@ function ExportGroup({ picked, bordered = false, message, mode = 'auto', tone = 
       </span>
       <div className="flex flex-col" style={{ gap: GROUP_GAP() }}>
         <C tone={tone} shape={shape} weight="bold" checked={parent} state="enabled" mode={mode} label="전체" boxStyle={bordered ? redBox : undefined} />
-        <span className="h-px" style={{ background: rc('stroke-neutral-weak', mode) }} />
+        {/* 줄 사이 · 묶음 안 선 — Divider(divider.yaml)와 같은 stroke-neutral-subtle */}
+        <span className="h-px" style={{ background: rc('stroke-neutral-subtle', mode) }} />
         {items.map((it, i) => (
           <C key={it} tone={tone} shape={shape} checked={picked.includes(i) ? 'checked' : 'unchecked'} state="enabled" mode={mode} label={it} boxStyle={bordered ? redBox : undefined} />
         ))}
@@ -530,7 +531,7 @@ const ExCheckmark: Fig = ({ caption }) => (
         ['월급', '+3,200,000원', 'checked'],
         ['점심 식사', '-12,000원', 'unchecked'],
       ].map(([t, a, ch], i) => (
-        <div key={t} className="flex items-center gap-3 px-6 py-3" style={{ borderTop: i ? `1px solid ${rc('stroke-neutral-weak')}` : undefined }}>
+        <div key={t} className="flex items-center gap-3 px-6 py-3" style={{ borderTop: i ? `1px solid ${rc('stroke-neutral-subtle')}` : undefined }}>
           <C checked={ch as Checked} ariaLabel={`${t} 선택`} />
           <span className="flex-1 text-[15px] pk-text">{t}</span>
           <span className="text-[15px] font-semibold tabular-nums pk-text">{a}</span>

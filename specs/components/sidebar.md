@@ -35,7 +35,7 @@ Porest Sidebar는 **2 sides × 3 variants × 3 collapsible modes × menu item �
 | ⓢ SidebarMenuButton | `<button>` 또는 `asChild` `<a>` — `flex w-full items-center gap-[var(--spacing-sm)] overflow-hidden rounded-sm p-[var(--spacing-sm)] text-left text-body-md text-text-primary transition-colors duration-[var(--motion-duration-fast)] ease-[var(--motion-ease-out)] hover:bg-surface-input focus-visible:ring-2 focus-visible:ring-ring active:bg-surface-input data-[active=true]:bg-surface-input data-[active=true]:font-medium`. icon 16 + 라벨. |
 | ⓗ SidebarFooter | `flex flex-col gap-[var(--spacing-sm)] p-[var(--spacing-sm)] border-t border-border-default mt-auto` — 사용자/설정 등. |
 | ⓘ SidebarInset | 메인 콘텐츠 영역 — `relative flex min-h-svh flex-1 flex-col bg-bg-page`. Sidebar 옆에 자리. variant=floating/inset 시 `m-[var(--spacing-sm)] rounded-md shadow`. |
-| ⓙ SidebarSeparator | `[`Separator`](separator.md)` 인용 — `-mx-[var(--spacing-xs)] my-[var(--spacing-xs)] h-px bg-border-default`. |
+| ⓙ SidebarSeparator | [`Divider`](divider.md)(옛 Separator) — 선 색 · 두께는 Divider 그대로(`stroke-neutral-subtle` 1px), 좌우만 8 들인다(`mx-2 w-auto`). |
 | ⓚ SidebarInput | [Input](input.md) medium(40) — 데스크톱 사이드바 검색칸(2026-10-01 Input 이 SEED Text Input 이 되며 32 → 40). 앞 아이콘 · 지우기는 Input 의 `prefixIcon` · `clearable`. |
 | ⓛ SidebarMenuSkeleton | [`Skeleton`](skeleton.md) 인용 — 로딩 중 menu item placeholder(`h-8 + animate-pulse`). |
 

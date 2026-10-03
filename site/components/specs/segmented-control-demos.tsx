@@ -27,7 +27,7 @@ function Row({ look, mode, title, sub, amount, hue, lead }: { look: SegLook; mod
   return (
     <li className="flex items-center gap-3 py-2.5">
       {lead ?? (
-        <span aria-hidden className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[14px] font-bold" style={{ background: t(look, `chart-${hue ?? 'blue'}-weak` as SegTone, mode), color: t(look, `chart-${hue ?? 'blue'}-contrast` as SegTone, mode) }}>
+        <span aria-hidden className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[11px] text-[14px] font-bold" style={{ background: t(look, `chart-${hue ?? 'blue'}-weak` as SegTone, mode), color: t(look, `chart-${hue ?? 'blue'}-contrast` as SegTone, mode) }}>
           {title.slice(0, 1)}
         </span>
       )}

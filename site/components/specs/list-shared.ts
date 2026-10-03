@@ -1,7 +1,9 @@
 // List 의 모양 — 서버(list-look) · 브라우저(list-view · 플레이그라운드)가 함께 쓰는 상수 · 타입.
 // 파일 읽기(서버 전용)를 들이지 않는다.
+import type { ReactNode } from 'react';
 import type { ButtonLook } from './button-look';
 import type { CheckLook } from './checkbox-shared';
+import type { AvatarLook } from './display-shared';
 import type { RadioLook } from './radio-group-shared';
 import type { SwitchLook } from './switch-shared';
 
@@ -51,6 +53,11 @@ export type ListLook = {
   // 줄에 끼우는 컨트롤 · 작은 버튼 — 그 컴포넌트의 YAML 에서(스위치 32 · 체크 · 라디오 large)
   marks: { switch: SwitchLook; check: CheckLook; radio: RadioLook; headerAction: ButtonLook; iconButton: ButtonLook };
   surface: Record<'default' | 'basement' | 'floating', Record<Mode, string>>;
+  // 사람 줄의 앞 붙이개 — Avatar(avatar.yaml). 한 줄이면 36, 이름 + 설명 두 줄이면 42(list.md Prefix)
+  avatar: AvatarLook;
+  avatarSize: { one: '36'; two: '42' };
+  // 제목 ↔ 제목 옆 배지(badge.md 코드의 gap-x1_5)
+  titleGap: number;
 };
 
 // 그림의 아이콘 — 이름으로 넘긴다(서버 그림 → 브라우저 그림)
@@ -90,7 +97,8 @@ export const LIST_ICONS = [
 ] as const;
 export type ListIcon = (typeof LIST_ICONS)[number];
 
-export type PrefixSpec = { icon: ListIcon } | { tile: string; icon: ListIcon } | { avatar: string; hue: string };
+// 사람은 Avatar(이름으로 이니셜 · 이름 색, photo 는 사진 그림 번호) — 물건 · 분류는 타일
+export type PrefixSpec = { icon: ListIcon } | { tile: string; icon: ListIcon } | { person: string; photo?: number };
 export type SuffixSpec = { text?: string; chevron?: boolean; amount?: string; buttons?: ListIcon[]; icon?: ListIcon };
 
 // 한 줄 — 종류 · 글 · 앞 · 뒤. state 를 주면 그 상태로 멈춘 그림
@@ -110,4 +118,11 @@ export type RowSpec = {
   // 나쁜 예 — 컨트롤만 막고 줄은 그대로 둔 모습
   markDisabled?: boolean;
   state?: ListState;
+  // 제목 옆 상태 배지(Badge) · 설명 줄을 Tag Group 으로(분류 · 자산 · 시각)
+  titleBadge?: ReactNode;
+  detailNode?: ReactNode;
+  // 뒤 붙이개 자리에 직접 그린 것(권한 배지처럼)
+  suffixNode?: ReactNode;
+  // 합계에 안 드는 줄(list.md) — 제목 · 금액만 fg-neutral-subtle, 환불은 금액에 취소선. 배지 · 앞 타일 · 설명은 보통 줄과 같다
+  excluded?: 'scheduled' | 'refunded';
 };

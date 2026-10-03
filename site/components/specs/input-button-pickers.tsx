@@ -8,6 +8,8 @@ import { Check } from 'lucide-react';
 import type { ButtonLook } from './button-look';
 import { ButtonView } from './button-view';
 import { CATEGORIES, PEOPLE, catText, type CatItem, type Person } from './input-button-data';
+import type { AvatarLook } from './display-shared';
+import { AvatarView } from './display-view';
 import { TODAY, formatDay, type DateKit, type Day } from './date-shared';
 import { DatePickerView } from './date-view';
 import type { OvKit, OverlayLook } from './overlay-shared';
@@ -67,7 +69,7 @@ export function CategoryGrid({ look, mode = 'auto', items = CATEGORIES, selected
                 const on = i.value === selected;
                 const body = (
                   <>
-                    <span className="relative flex h-11 w-11 items-center justify-center rounded-full" style={{ background: tone(look, `chart-${i.hue}-weak` as SelTone, mode) }}>
+                    <span className="relative flex h-11 w-11 items-center justify-center rounded-[13px]" style={{ background: tone(look, `chart-${i.hue}-weak` as SelTone, mode) }}>
                       <SelIconView name={i.icon} size={22} color={tone(look, `chart-${i.hue}-contrast` as SelTone, mode)} />
                       {on && (
                         <span className="absolute -bottom-0.5 -right-0.5 flex h-[18px] w-[18px] items-center justify-center rounded-full" style={{ background: tone(look, 'bg-neutral-inverted', mode), boxShadow: `0 0 0 2px ${tone(look, 'bg-layer-floating', mode)}` }}>
@@ -99,7 +101,7 @@ export function CategoryGrid({ look, mode = 'auto', items = CATEGORIES, selected
 }
 
 // 사람 — 결재자 · 참조자
-export function PeopleList({ look, mode = 'auto', people, query = '', selected, onPick, rowRef }: { look: SelectLook; mode?: ViewMode; people: Person[]; query?: string; selected?: string; onPick?: (v: string) => void; rowRef?: (v: string, el: HTMLButtonElement | null) => void }) {
+export function PeopleList({ look, avatar, mode = 'auto', people, query = '', selected, onPick, rowRef }: { look: SelectLook; avatar: AvatarLook; mode?: ViewMode; people: Person[]; query?: string; selected?: string; onPick?: (v: string) => void; rowRef?: (v: string, el: HTMLButtonElement | null) => void }) {
   const fg = tone(look, 'fg-neutral', mode);
   const sub = tone(look, 'fg-neutral-subtle', mode);
   if (!people.length)
@@ -114,9 +116,8 @@ export function PeopleList({ look, mode = 'auto', people, query = '', selected, 
         const on = p.value === selected;
         const body = (
           <>
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[15px] font-bold" style={{ background: tone(look, `chart-${p.hue}-weak` as SelTone, mode), color: tone(look, `chart-${p.hue}-contrast` as SelTone, mode) }}>
-              {p.name.slice(1, 2)}
-            </span>
+            {/* 사람 — Avatar 42(이름 + 팀 두 줄). 이름이 옆에 있어 장식 */}
+            <AvatarView look={avatar} mode={mode} size="42" name={p.name} />
             <span className="flex min-w-0 flex-1 flex-col text-left">
               <span className="text-[16px] leading-[22px]" style={{ color: fg }}>
                 {query && p.name.startsWith(query) ? (
@@ -232,6 +233,8 @@ export type InputButtonDemoProps = {
   width?: number | string;
   // 여는 자리(시트 · 팝오버)의 모양 — bottom-sheet · popover.yaml
   kit: OvKit;
+  // 사람(people) 줄의 아바타 — avatar.yaml
+  avatar?: AvatarLook;
   // 값이 바뀔 때(폼의 바뀐 값 확인)
   onValue?: (v: string | undefined) => void;
 };
@@ -266,6 +269,7 @@ export function InputButtonDemo({
   done,
   width,
   kit,
+  avatar,
   onValue,
 }: InputButtonDemoProps) {
   const [value, setOwnValue] = useState<string | undefined>(initial);
@@ -364,7 +368,7 @@ export function InputButtonDemo({
           )}
         </div>
         <div className="max-h-[300px] overflow-y-auto">
-          <PeopleList look={look} mode={mode} people={filtered} query={query} selected={value} onPick={(v) => commit(v)} />
+          {avatar && <PeopleList look={look} avatar={avatar} mode={mode} people={filtered} query={query} selected={value} onPick={(v) => commit(v)} />}
         </div>
       </div>
     );

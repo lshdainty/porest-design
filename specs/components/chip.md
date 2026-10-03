@@ -1,6 +1,6 @@
 # Chip
 
-> 고르거나 넣은 값을 보이는 작은 알약. 2 ~ 4개 짧은 폼 값 고르기 · 누르면 값을 채워 주는 제안 · 목록 위 필터 바 · 넣은 값(지우기 버튼으로 뺀다)을 맡는다. 5개 이상은 [Select](select.md), 글이 긴 2 ~ 4개는 [Radio](radio-group.md) · [Checkbox](checkbox.md), 다른 구역으로 옮기는 탭 · 같은 내용을 바로 거르는 2 ~ 4개는 Tabs · Segmented Control(그 차례에), 누를 수 없는 표시는 Badge · Tag Group(그 차례에)이다.
+> 고르거나 넣은 값을 보이는 작은 알약. 2 ~ 4개 짧은 폼 값 고르기 · 누르면 값을 채워 주는 제안 · 목록 위 필터 바 · 넣은 값(지우기 버튼으로 뺀다)을 맡는다. 5개 이상은 [Select](select.md), 글이 긴 2 ~ 4개는 [Radio](radio-group.md) · [Checkbox](checkbox.md), 다른 구역으로 옮기는 탭 · 같은 내용을 바로 거르는 2 ~ 4개는 Tabs · Segmented Control(그 차례에), 누를 수 없는 표시는 [Badge](badge.md) · [Tag Group](tag-group.md) 이다.
 
 구조는 당근 [SEED Chip](https://seed-design.io/components/chip)(Apache-2.0)을 따른다 — 알약(Container) · 글(Label) · 앞 아이콘 · 뒤 아이콘. 하나 고르기는 라디오(Chip.RadioItem), 여럿 고르기는 체크박스(Chip.Toggle), 제안 · 여는 칩은 버튼(Chip.Button)이다. 값은 porest 토큰이고, SEED 와 다른 자리는 맨 아래 "SEED 와 다른 점" 에 적었다(2026-10-01 · 02 사용자 결정).
 
@@ -158,7 +158,7 @@ Solid 의 옅은 바탕은 흰 표면 위에서만 보인다 — 회색 바탕(`
 | 5개 이상 · 글이 긴 2 ~ 4개 | Select · Radio · Checkbox |
 | 다른 구역으로 옮긴다(2차) | Tabs 의 Chip Tabs(그 차례에) |
 | 같은 내용 2 ~ 4가지 보기 · 정렬 | Segmented Control(그 차례에) |
-| 누를 수 없는 상태 · 분류 | Badge · Tag Group(그 차례에) |
+| 누를 수 없는 상태 · 분류 · 메타 | [Badge](badge.md) · [Tag Group](tag-group.md) |
 
 ## 코드
 

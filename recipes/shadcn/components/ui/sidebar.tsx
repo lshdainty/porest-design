@@ -8,7 +8,7 @@ import { PanelLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
+import { Divider } from "@/components/ui/divider";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -340,14 +340,15 @@ const SidebarFooter = React.forwardRef<HTMLDivElement, React.ComponentProps<"div
 );
 SidebarFooter.displayName = "SidebarFooter";
 
+// 묶음 사이 선 — Divider(stroke-neutral-subtle 하나 — 자리마다 색을 바꾸지 않는다). 좌우 8 은 사이드바가 정한 자리 여백이다
 const SidebarSeparator = React.forwardRef<
-  React.ElementRef<typeof Separator>,
-  React.ComponentProps<typeof Separator>
+  React.ElementRef<typeof Divider>,
+  React.ComponentProps<typeof Divider>
 >(({ className, ...props }, ref) => (
-  <Separator
+  <Divider
     ref={ref}
     data-sidebar="separator"
-    className={cn("mx-2 w-auto bg-border-default", className)}
+    className={cn("mx-2 w-auto", className)}
     {...props}
   />
 ));

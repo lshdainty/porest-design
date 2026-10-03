@@ -76,6 +76,8 @@ export type ButtonViewProps = {
   prefix?: IconName;
   suffix?: IconName;
   icon?: IconName;
+  // 아이콘만 있는 버튼에 이름 대신 직접 그린 아이콘(알림 점 · 숫자를 감싼 아이콘처럼) — 크기는 부르는 쪽이 이 버튼의 아이콘 크기(faces.*.icon)로 맞춘다
+  iconNode?: ReactNode;
   fill?: boolean;
   width?: number | string;
   flush?: 'left' | 'right';
@@ -89,7 +91,7 @@ export type ButtonViewProps = {
   rootProps?: ButtonHTMLAttributes<HTMLButtonElement>;
 };
 
-export function ButtonView({ look, mode = 'auto', state = 'live', label, prefix, suffix, icon, fill, width, flush, truncate, ariaLabel, onClick, style, buttonRef, rootProps }: ButtonViewProps) {
+export function ButtonView({ look, mode = 'auto', state = 'live', label, prefix, suffix, icon, iconNode, fill, width, flush, truncate, ariaLabel, onClick, style, buttonRef, rootProps }: ButtonViewProps) {
   const [hover, setHover] = useState(false);
   const [press, setPress] = useState(false);
   const [focusRing, setFocusRing] = useState(false);
@@ -239,8 +241,8 @@ export function ButtonView({ look, mode = 'auto', state = 'live', label, prefix,
       }
     >
       {prefix && !iconOnly && <Icon name={prefix} size={f.icon} color={inner} />}
-      {iconOnly && icon ? (
-        <Icon name={icon} size={f.icon} color={inner} />
+      {iconOnly && (icon || iconNode) ? (
+        (iconNode ?? (icon && <Icon name={icon} size={f.icon} color={inner} />))
       ) : (
         <span style={{ color: inner, ...(truncate ? { overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 } : {}) }}>{label}</span>
       )}

@@ -18,7 +18,8 @@
 #   - 웹의 hovered 상태는 누름과 같은 바탕(축소 없음 — v106). SEED 도 마우스 호버에 같은 바탕을 칠한다.
 #   - 안 고른 칸을 올리거나 누르는 동안 글을 fg-neutral-muted 로 — 누름 바탕 위 fg-neutral-subtle 이 다크에서 3.91:1 이다.
 #   - 줄바꿈은 단어 단위(v114) — 긴 글은 여러 줄이 되고 모든 칸이 가장 높은 칸에 맞춘다(SEED).
-#   - 알림 점은 브랜드 색(bg-brand-solid) — Desk · HR 이 다르다. SEED 도 브랜드 색이다.
+#   - 알림 점은 브랜드 글자색(fg-brand — 다크에서 밝은 짝, Desk · HR 이 다르다) — Notification Badge small 과 같다(notification-badge.yaml).
+#     SEED 는 bg.brand-solid 이고, porest 다크에서는 그 색이 바탕에 묻힌다.
 
 name: SegmentedControl
 

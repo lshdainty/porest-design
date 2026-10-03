@@ -524,6 +524,16 @@ colors:
   stroke-warning-solid-dark: "{colors.orange-800-dark}"
   stroke-informative-solid: "{colors.blue-700}"
   stroke-informative-solid-dark: "{colors.blue-800-dark}"
+  # v117 — Badge outline 의 옅은 테두리(SEED stroke.*-weak = 300). 다크는 400 — 300 은 다크 표면과 1.4:1 · 시트 위 1.2:1 로 묻히고,
+  # 800 은 글자(fg-*) · stroke-*-solid 와 같은 색이라 옅은 선이 아니다(사용자 결정 2026-10-03 표시 비교 2A — 토큰 넷을 알고 골랐다)
+  stroke-critical-weak: "{colors.red-300}"
+  stroke-critical-weak-dark: "{colors.red-400-dark}"
+  stroke-positive-weak: "{colors.green-300}"
+  stroke-positive-weak-dark: "{colors.green-400-dark}"
+  stroke-warning-weak: "{colors.orange-300}"
+  stroke-warning-weak-dark: "{colors.orange-400-dark}"
+  stroke-informative-weak: "{colors.blue-300}"
+  stroke-informative-weak-dark: "{colors.blue-400-dark}"
   # @sync:shared-end (colors-3)
   
   # (border-focus 정의 완료 — v16)
@@ -1289,6 +1299,23 @@ components:
     backgroundColor: "{colors.stroke-informative-solid}"
   role-stroke-informative-solid-dark:
     backgroundColor: "{colors.stroke-informative-solid-dark}"
+  # v117 — Badge outline 의 옅은 테두리
+  role-stroke-critical-weak-light:
+    backgroundColor: "{colors.stroke-critical-weak}"
+  role-stroke-critical-weak-dark:
+    backgroundColor: "{colors.stroke-critical-weak-dark}"
+  role-stroke-positive-weak-light:
+    backgroundColor: "{colors.stroke-positive-weak}"
+  role-stroke-positive-weak-dark:
+    backgroundColor: "{colors.stroke-positive-weak-dark}"
+  role-stroke-warning-weak-light:
+    backgroundColor: "{colors.stroke-warning-weak}"
+  role-stroke-warning-weak-dark:
+    backgroundColor: "{colors.stroke-warning-weak-dark}"
+  role-stroke-informative-weak-light:
+    backgroundColor: "{colors.stroke-informative-weak}"
+  role-stroke-informative-weak-dark:
+    backgroundColor: "{colors.stroke-informative-weak-dark}"
   
   # === v102 — 브랜드 역할 색 짝. 짝마다 대비를 lint 가 잰다(라이트 · 다크) ===
   role-brand-on-layer-light:
@@ -1919,6 +1946,7 @@ v108 로 크게 바뀐 색을 지금 제품 값(Desk 웹 `porest-tokens.css` · 
 | fg-* | 700 | 800 | 700 / 700 |
 | fg-*-contrast | 800 | 900 | 900 / 900 (v109) |
 | stroke-*-solid | 700 | 800 | 700 / 700 |
+| stroke-*-weak | 300 | 400 | 300 / 300 (v117 — Badge outline 의 옅은 테두리) |
 
 SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채움 300 / 800 · 눌림 400 / 900 — 옅은 노랑 위 검은 글자).
 
@@ -1946,6 +1974,7 @@ SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채�
 - 브랜드 글자 · 선 · 포커스 링의 다크 — SEED 700 → 900. 다크 700 은 어두운 표면 위 Desk 2.27:1 · HR 2.86:1 이다.
 - stroke-brand-solid 의 라이트 — SEED 700 → 600. 브랜드 색 그대로다.
 - stroke-brand-weak 의 다크 — SEED 300 → 800. 다크 300 은 표면과 1.3:1 안팎(Desk 1.29 · HR 1.36)이라 선이 보이지 않는다.
+- (v117) 의미 색 stroke-*-weak 의 다크 — SEED 300 → 400. 다크 300 은 표면과 1.38 ~ 1.40:1(시트 위 1.19 ~ 1.21)로 선이 묻히고, 브랜드처럼 800 으로 올리면 글자(fg-*) · stroke-*-solid 와 같은 색이 되어 옅은 선이 아니다. 400 은 1.71 ~ 1.73:1 — SEED 다크(1.77)와 같은 관계이고 라이트 300(1.51 ~ 1.53)과 무게가 맞는다.
 - stroke-focus-ring — SEED 는 파랑(blue-600)이다. porest 는 옛 border-focus 대로 브랜드 색이다.
 - (v109) 다크 약한 배경 · 눌림(의미 색 · 브랜드) — SEED 100 · 200 → 200 · 300. porest 는 다크 카드 표면(#242938, L* 16.7)이 SEED(#16171B, L* 8)보다 밝아서, 100 단계가 표면과 1.00 ~ 1.02:1 로 묻혔다. 200 · 300 이 SEED 의 표면 대비 관계(약한 배경 1.2:1 · 눌림 1.4:1)와 같다 — 지금 1.15 · 1.4:1.
 - (v109) 대비 글자의 라이트 — SEED 900 → 800. 900 은 거의 검정에 가까운 짙은 색(8:1)이었다. 800 은 약한 배경 · 눌림 위 5.0 ~ 5.7:1 이다. 규칙은 "대비 글자는 일반 글자보다 한 단계 바깥" — 라이트 700 → 800, 다크 800 → 900.
@@ -2038,6 +2067,10 @@ SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채�
 | `stroke-positive-solid` | `#167F3F` | `#25C062` | success | status-success-border |
 | `stroke-warning-solid` | `#BE490D` | `#FF8758` | warning | status-warning-border |
 | `stroke-informative-solid` | `#1D6EC9` | `#69ABFF` | info | status-info-border |
+| `stroke-critical-weak` | `#FEC4BC` | `#93231F` | — | — |
+| `stroke-positive-weak` | `#BBDAC1` | `#1A582F` | — | — |
+| `stroke-warning-weak` | `#F5C7B6` | `#833615` | — | — |
+| `stroke-informative-weak` | `#B9D4F6` | `#1C4E8A` | — | — |
 
 #### 브랜드 역할
 
@@ -2074,7 +2107,7 @@ porest 화면에 아직 쓰는 자리가 없다. 자리가 생기면 위 규칙�
 - bg.neutral-solid — 짙은 회색 채움(bg.neutral-inverted-pressed 는 v112 에 Button 의 누름으로 들였다)
 - bg.neutral-weak-alpha · bg.transparent-*(4) — 투명도 있는 배경. 필요하면 overlay 처럼 표 토큰으로 따로 둔다
 - bg.overlay · bg.overlay-muted — Elevation 의 overlay-dim 이 같은 자리다
-- stroke.neutral-muted · stroke.*-weak(4) — Desk 는 구분선을 한 값으로 쓴다(stroke.neutral-contrast 는 v113 에 Select Box 의 고른 테두리로 들였다)
+- stroke.neutral-muted — 구분선은 stroke-neutral-subtle 하나로 그린다(Divider 2026-10-03 — SEED 기본 neutral-muted 와 같은 진하기 1.15). stroke.neutral-contrast 는 v113 에 Select Box 의 고른 테두리로, stroke.*-weak(4)는 v117 에 Badge outline 의 옅은 테두리로 들였다
 - bg.magic-weak · bg.layer-fill — 당근 AI 기능 전용 · SEED 에서도 없어질 이름
 
 #### Desk 전용 별칭
@@ -3563,25 +3596,18 @@ HR과 동일 (공유 토큰):
 
 #### Layout
 - 본문과 `xs` (4px) 간격, 카드 내 footer 영역에 정렬 시 `sm` (8px)
+- 메타 줄(분류 · 자산 · 시각)은 Tag Group(2026-10-03 SEED — DESIGN.md Caption 절 · `specs/components/tag-group.md`) — 항목 사이 " · " 글자, 웹 2px 점 · 앱 " · " 합치기를 하나로
 
-### Badge
+### Badge · Notification Badge · Tag Group — Desk
 
-Desk — 할일 우선순위/카테고리, 가계부 분류, 메모 태그. semantic 4종 + 일반 tag(가계부 카테고리는 chart-color 사용 — 별도).
+> 모양 · 쓰는 규칙은 DESIGN.md 의 같은 이름 절(2026-10-03 SEED)과 `specs/components/badge.md` · `notification-badge.md` · `tag-group.md`. Desk 의 쓰는 자리만 적는다. 옛 Desk Badge 절(18 · 22 · 28 · 알약 위주)은 걷었다.
 
-#### Variant
-공유 토큰 그대로. contrast 5.27~6.31:1 모두 본문 AA.
-
-#### Size
-- 할일 inline은 `sm` (18px), 일반 카테고리 라벨은 `md` (22px), 우선순위 강조는 `lg` (28px)
-- shape: pill(`radius-full`) 위주 — 친근감 톤
-
-#### Layout
-- 할일 텍스트와 `sm` (8px) 간격
-- 가계부 entry 카테고리 + 금액 그룹 시 `md` 간격
-
-#### A11y
-- 1.4.1: 우선순위/카테고리를 색상만으로 표현 금지 — 텍스트/아이콘 보강
-- count badge (알림 등): `aria-live="polite"` + `aria-label`
+- **거래 줄의 상태** — 예정 · 환불됨 · 기록만은 Badge `weak` `neutral` medium. 줄은 흐리지 않는다 — 제목 · 금액만 `fg-neutral-subtle`, 환불 금액 취소선(List 의 "합계에 안 드는 줄").
+- **같은 뜻은 같은 모양** — 달성은 `positive` weak "달성"(앱의 "달성!" 을 맞춘다), 증권 "기본" · "Pro 시작" 은 웹 · 앱 한 변형, 연체는 `critical` weak 하나. 할 일 우선순위(중요 · 보통 · 여유)의 톤은 앱 적용 때 정한다.
+- **작은 손 배지** — 9.5 · 10 · 10.5px(단종 · NEW · 결제자)는 medium 11 로, "NEW" 는 "새로". 요금제 이름 Pro · Free 는 그대로.
+- **현재 기기** — 웹은 정의 없는 색을 불러 보통 글자로 보인다 — `outline` `positive`.
+- **알림 점** — 상단 바 알림(웹 · 앱)은 브랜드 점 6(`fg-brand`, 지금 빨강 3 × 3 · 7 × 7), 버튼 이름 "알림, 새 알림 있음". 필터 개수(웹 · 앱)는 Chip 필터 바로 옮기며 걷는다. 상세 빠른 동작 위의 "2개" · "연결됨" 은 알림이 아니다 — 버튼 글로.
+- **메타 줄** — 거래 · 할 일 · 메모 · 이체 줄의 설명 줄은 Tag Group(`t3` · 한 줄 말줄임). 웹 2px 점 · 앱 " · " 합치기 · 할 일 2px 점을 하나로, 웹 · 앱 항목(분류 · 자산 · 시각)을 맞춘다. 분할 개수(아이콘 + 숫자)는 읽을 글 "분할 2건".
 
 ### Alert text
 
@@ -3641,21 +3667,13 @@ Desk는 brand `primary`가 진해서 모든 표면에서 본문 AA(4.5:1) 충족
 - 모바일 키보드 사용자(외장 키보드 연결 시) 우선 — focus visible 강조
 - 다크 모드 자동 전환은 HR과 동일 패턴
 
-### Divider
+### Divider — Desk
 
-Desk — 메모/할일 list separator, section break (월/주별 가계부 분할 등).
+> 모양 · 쓰는 규칙은 DESIGN.md 의 Divider 절(2026-10-03 SEED)과 `specs/components/divider.md`. Desk 의 쓰는 자리만 적는다.
 
-#### Mode pair
-- `divider-light` → `border-default` (`#E5E8EF`)
-- `divider-dark` → `border-default-dark` (`#353B4D`)
-
-#### Layout
-- list item 사이 inline divider, padding 안쪽 inset (`lg` 16px) — Desk는 여백 톤
-- section break 위/아래 `xl`/`2xl` (24~32px)
-- 메모 카드 내부는 divider 자제 — surface 휘도 차로 분리
-
-#### A11y
-- HR과 동일
+- 선은 1px `stroke-neutral-subtle` 하나 — 웹 · 앱의 border-subtle 과 border-default 가 같은 값이라 "옅은 구분선"(`LedgerDivider subtle`)이 효과가 없었다.
+- 거래 · 할 일 · 메모 줄 사이는 List 규칙 하나(기본 선 없음) — 지금 가계부는 선이 없고 할 일 · 메모는 들인 선이다.
+- 크게 다른 내용(홈 카드 묶음 사이)은 선이 아니라 8 간격 — 회색 바탕 위 흰 카드.
 
 ### Outline (border 시각 요소)
 
@@ -3750,7 +3768,7 @@ Desk — 데이터 내보내기 · 카드 혜택 필터 checkbox, 메모 즐겨�
 
 ### Tabs · Segmented Control
 
-공통 정의는 `DESIGN.md` 의 Tabs · Segmented Control 절, 원본은 `specs/components/tabs.md` · `segmented-control.md`(2026-10-02 SEED). 고른 표시는 중립색이라 브랜드와 관계없이 같고, 알림 점만 브랜드 색(`bg-brand-solid`)이다.
+공통 정의는 `DESIGN.md` 의 Tabs · Segmented Control 절, 원본은 `specs/components/tabs.md` · `segmented-control.md`(2026-10-02 SEED). 고른 표시는 중립색이라 브랜드와 관계없이 같고, 알림 점만 브랜드 글자색(`fg-brand` — Notification Badge small)이다.
 
 - **1차 Line** — 통계(카테고리 · 추이 · 비교) · 설정 > 자산 관리(계좌 · 예금 · 카드 · 투자) · 카테고리(지출 · 수입) · 증권사(나무증권 · 토스증권)는 Fill, 금액 가리기(9개)는 Hug. 모바일 · 데스크톱이 같은 모양이다(지금은 기기마다 밑줄 · 알약이 갈린다).
 - **2차 Chip Tabs** — 증권 보유 · 관심 · 발견.
@@ -3816,25 +3834,15 @@ HR과 달리 Desk는 사용자 정의 카테고리가 많으므로 **hue 의미 
 - 1.4.1 색상 단독 금지, 패턴/라벨 보강
 - screen reader: `<table>` fallback 또는 svg `role="img"`
 
-### Avatar (v58 추가)
+### Avatar — Desk
 
-Desk(B2C) — 사용자 본인 프로필 + 메모/할일 작성자 + 가계부 카테고리 아이콘 대체. 모바일 우선 톤이라 md/lg 사이즈 위주, 44×44 hit target 충족.
+> 모양 · 쓰는 규칙은 DESIGN.md 의 Avatar · Avatar Stack 절(2026-10-03 SEED)과 `specs/components/avatar.md`. Desk 의 쓰는 자리만 적는다. 옛 Desk 패턴(브랜드 단색 기본 · 24 메모 작성자)은 걷었다.
 
-#### Desk 사용 패턴
-- **bottom nav 사용자 프로필**: `md` 32px 원형 (`radius-full`).
-- **메모 author**: `sm` 24px inline + 작성자 `caption` 12px.
-- **profile settings 페이지**: `xl` 56px 원형 + 편집 버튼.
-- **할일 owner**: `sm` 24px 원형 (개인 + 공유 메모 구분).
-
-#### Color
-- B2C는 단일 사용자 → **Desk primary** `#0147AD` 단색 default 권장 (단순).
-- 공유 메모/할일에서 다른 사용자는 chart palette categorical 분배.
-
-#### Touch target
-모바일 우선 — `sm` 24px hit area 작아 외곽 padding `sm` (8px) 적용해 44×44 충족. `md` 32px 이상 권장 (default).
-
-#### Sparse 매핑
-DESIGN.md와 동일 (`avatar` chart-blue × text-on-accent, lint contrast 활성).
+- **사진이 없다** — 사람은 모두 이니셜 + 이름 색이다. 사이드바(브랜드 옅은 이니셜) · 설정(브랜드 채움) · 더치페이(차트 해시) 세 갈래를 하나로.
+- **크기** — 더치페이 참가자 줄 · 캘린더 공유 멤버 · 사이드바 36, 설정의 계정 줄 42, 계정 화면 머리 80(지금 72), 더치페이 목록의 참여자 묶음 24(앞 4명 + "+N").
+- **더치페이 색** — 웹 · 앱 해시가 달라 같은 사람이 다른 색이다(84.5%). 한 규칙(코드 포인트 합 % 10 · v110 순서)으로, 다크 흰 이니셜(1.91 ~ 2.08)은 짙은 글자로, 안 낸 사람은 흐리지 않고 배지 · 글로.
+- **캘린더 공유 멤버** — 권한 아이콘 원 대신 아바타 + 권한 Badge(`outline`).
+- 자산 로고 · 주식 · 카테고리 타일은 아바타가 아니다(Image Frame · List 붙이개 차례에).
 
 ### 날짜 · 시각 고르기 — Desk
 

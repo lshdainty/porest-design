@@ -465,6 +465,16 @@ colors:
   stroke-warning-solid-dark: "{colors.orange-800-dark}"
   stroke-informative-solid: "{colors.blue-700}"
   stroke-informative-solid-dark: "{colors.blue-800-dark}"
+  # v117 — Badge outline 의 옅은 테두리(SEED stroke.*-weak = 300). 다크는 400 — 300 은 다크 표면과 1.4:1 · 시트 위 1.2:1 로 묻히고,
+  # 800 은 글자(fg-*) · stroke-*-solid 와 같은 색이라 옅은 선이 아니다(사용자 결정 2026-10-03 표시 비교 2A — 토큰 넷을 알고 골랐다)
+  stroke-critical-weak: "{colors.red-300}"
+  stroke-critical-weak-dark: "{colors.red-400-dark}"
+  stroke-positive-weak: "{colors.green-300}"
+  stroke-positive-weak-dark: "{colors.green-400-dark}"
+  stroke-warning-weak: "{colors.orange-300}"
+  stroke-warning-weak-dark: "{colors.orange-400-dark}"
+  stroke-informative-weak: "{colors.blue-300}"
+  stroke-informative-weak-dark: "{colors.blue-400-dark}"
   # @sync:shared-end (colors-3)
   
   # (border-focus 정의 완료 — v16)
@@ -1213,6 +1223,23 @@ components:
     backgroundColor: "{colors.stroke-informative-solid}"
   role-stroke-informative-solid-dark:
     backgroundColor: "{colors.stroke-informative-solid-dark}"
+  # v117 — Badge outline 의 옅은 테두리
+  role-stroke-critical-weak-light:
+    backgroundColor: "{colors.stroke-critical-weak}"
+  role-stroke-critical-weak-dark:
+    backgroundColor: "{colors.stroke-critical-weak-dark}"
+  role-stroke-positive-weak-light:
+    backgroundColor: "{colors.stroke-positive-weak}"
+  role-stroke-positive-weak-dark:
+    backgroundColor: "{colors.stroke-positive-weak-dark}"
+  role-stroke-warning-weak-light:
+    backgroundColor: "{colors.stroke-warning-weak}"
+  role-stroke-warning-weak-dark:
+    backgroundColor: "{colors.stroke-warning-weak-dark}"
+  role-stroke-informative-weak-light:
+    backgroundColor: "{colors.stroke-informative-weak}"
+  role-stroke-informative-weak-dark:
+    backgroundColor: "{colors.stroke-informative-weak-dark}"
   # === v108 — 팔레트 보기용. 역할이 쓰지 않는 단계도 검사기가 "쓰는 색" 으로 세게 한다 ===
   palette-gray-00:
     backgroundColor: "{colors.gray-00}"
@@ -1765,6 +1792,7 @@ v108 로 크게 바뀐 색을 지금 제품 값(Desk 웹 `porest-tokens.css` · 
 | fg-* | 700 | 800 | 700 / 700 |
 | fg-*-contrast | 800 | 900 | 900 / 900 (v109) |
 | stroke-*-solid | 700 | 800 | 700 / 700 |
+| stroke-*-weak | 300 | 400 | 300 / 300 (v117 — Badge outline 의 옅은 테두리) |
 
 SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채움 300 / 800 · 눌림 400 / 900 — 옅은 노랑 위 검은 글자).
 
@@ -1792,6 +1820,7 @@ SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채�
 - 브랜드 글자 · 선 · 포커스 링의 다크 — SEED 700 → 900. 다크 700 은 어두운 표면 위 Desk 2.27:1 · HR 2.86:1 이다.
 - stroke-brand-solid 의 라이트 — SEED 700 → 600. 브랜드 색 그대로다.
 - stroke-brand-weak 의 다크 — SEED 300 → 800. 다크 300 은 표면과 1.3:1 안팎(Desk 1.29 · HR 1.36)이라 선이 보이지 않는다.
+- (v117) 의미 색 stroke-*-weak 의 다크 — SEED 300 → 400. 다크 300 은 표면과 1.38 ~ 1.40:1(시트 위 1.19 ~ 1.21)로 선이 묻히고, 브랜드처럼 800 으로 올리면 글자(fg-*) · stroke-*-solid 와 같은 색이 되어 옅은 선이 아니다. 400 은 1.71 ~ 1.73:1 — SEED 다크(1.77)와 같은 관계이고 라이트 300(1.51 ~ 1.53)과 무게가 맞는다.
 - stroke-focus-ring — SEED 는 파랑(blue-600)이다. porest 는 옛 border-focus 대로 브랜드 색이다.
 - (v109) 다크 약한 배경 · 눌림(의미 색 · 브랜드) — SEED 100 · 200 → 200 · 300. porest 는 다크 카드 표면(#242938, L* 16.7)이 SEED(#16171B, L* 8)보다 밝아서, 100 단계가 표면과 1.00 ~ 1.02:1 로 묻혔다. 200 · 300 이 SEED 의 표면 대비 관계(약한 배경 1.2:1 · 눌림 1.4:1)와 같다 — 지금 1.15 · 1.4:1.
 - (v109) 대비 글자의 라이트 — SEED 900 → 800. 900 은 거의 검정에 가까운 짙은 색(8:1)이었다. 800 은 약한 배경 · 눌림 위 5.0 ~ 5.7:1 이다. 규칙은 "대비 글자는 일반 글자보다 한 단계 바깥" — 라이트 700 → 800, 다크 800 → 900.
@@ -1884,6 +1913,10 @@ SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채�
 | `stroke-positive-solid` | `#167F3F` | `#25C062` | success | status-success-border |
 | `stroke-warning-solid` | `#BE490D` | `#FF8758` | warning | status-warning-border |
 | `stroke-informative-solid` | `#1D6EC9` | `#69ABFF` | info | status-info-border |
+| `stroke-critical-weak` | `#FEC4BC` | `#93231F` | — | — |
+| `stroke-positive-weak` | `#BBDAC1` | `#1A582F` | — | — |
+| `stroke-warning-weak` | `#F5C7B6` | `#833615` | — | — |
+| `stroke-informative-weak` | `#B9D4F6` | `#1C4E8A` | — | — |
 
 #### 브랜드 역할
 
@@ -1907,7 +1940,7 @@ porest 화면에 아직 쓰는 자리가 없다. 자리가 생기면 위 규칙�
 - bg.neutral-solid — 짙은 회색 채움(bg.neutral-inverted-pressed 는 v112 에 Button 의 누름으로 들였다)
 - bg.neutral-weak-alpha · bg.transparent-*(4) — 투명도 있는 배경. 필요하면 overlay 처럼 표 토큰으로 따로 둔다
 - bg.overlay · bg.overlay-muted — Elevation 의 overlay-dim 이 같은 자리다
-- stroke.neutral-muted · stroke.*-weak(4) — Desk 는 구분선을 한 값으로 쓴다(stroke.neutral-contrast 는 v113 에 Select Box 의 고른 테두리로 들였다)
+- stroke.neutral-muted — 구분선은 stroke-neutral-subtle 하나로 그린다(Divider 2026-10-03 — SEED 기본 neutral-muted 와 같은 진하기 1.15). stroke.neutral-contrast 는 v113 에 Select Box 의 고른 테두리로, stroke.*-weak(4)는 v117 에 Badge outline 의 옅은 테두리로 들였다
 - bg.magic-weak · bg.layer-fill — 당근 AI 기능 전용 · SEED 에서도 없어질 이름
 
 ### v104 — 그라디언트 (2026-09-29)
@@ -3504,15 +3537,16 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 | `switch` (track + thumb) | `full` | 9999px | 알약 |
 | `list` 줄 바탕 · 타일 | `r2_5` · `r3` | 10px · 12px | 누르면 들어오는 바탕 · 앞 타일 — 카드 안 바탕은 동심 모서리(itemRadius). 2026-09-30 SEED List(`list.yaml`) |
 | **Display** | | | |
-| `badge` | `full` | 9999px | pill |
-| `avatar` | `full` | 9999px | 원형 |
+| `badge` | `r1` · `r1_5` | 4px · 6px | medium · large — 둥근 사각(알약은 누르는 Chip). 2026-10-03 SEED Badge(`badge.yaml`) |
+| `notification-badge` | `full` | 9999px | 점 · 숫자 알약 — 2026-10-03 SEED Notification Badge(`notification-badge.yaml`) |
+| `avatar` | `full` | 9999px | 원 하나(사각 변형을 걷었다) — 2026-10-03 SEED Avatar(`avatar.yaml`) |
 | `card` | `md` | 8px | 콘텐츠 컨테이너 — 살짝 부드럽게 |
 | `callout` | `r2_5` | 10px | 본문 안 안내 상자 — 2026-10-02 SEED Callout(`callout.yaml`) |
 | `page-banner` | — | 0 | 화면 폭 띠, 모서리 없음 — 2026-10-02 SEED Page Banner(`page-banner.yaml`) |
 | `progress` (track + indicator) | `full` | 9999px | |
 | `skeleton` | `sm` | 4px | placeholder, 컴포넌트 형상 따라감 |
 | `aspect-ratio` / `carousel` slide | `md` | 8px | 이미지 컨테이너 |
-| `separator` | — | — | 1px line, radius 무관 |
+| divider(옛 `separator`) | — | — | 1px 선, 모서리 무관 — 2026-10-03 SEED Divider(`divider.yaml`) |
 | `scroll-area` / `resizable` | — | — | 부모 컨테이너에 따름 |
 | `typography` | — | — | 텍스트, radius 무관 |
 | **Overlay** | | | |
@@ -3817,50 +3851,49 @@ contrast 확인:
 
 #### Layout
 - 본문 텍스트와 `xs` (4px) 간격
-- meta 그룹(예: 닉네임 + "·" + 시간)은 `xs` 또는 `sm` 간격 + `·` 구분자 사용
+- 메타 줄(예: 닉네임 · 시간, 분류 · 자산 · 시각)은 Tag Group 이다(2026-10-03 SEED — `specs/components/tag-group.md`) — 항목 사이 " · " 글자(앞 항목에 붙는다), 기본 12/16 `fg-neutral-subtle`, 구분 `fg-disabled`. 2px 점 · "•" 를 쓰지 않는다
 
 #### A11y
 - semantic HTML: 메타 정보는 `<small>` 또는 `<span>` 클래스로
 - 타임스탬프는 `<time datetime="...">` 사용 (스크린 리더 + 검색엔진 친화)
 
-### Badge
+### Badge · Notification Badge · Tag Group
 
-semantic 채움 라벨 — status indicator, count, category tag. small/inline 강조.
+> 2026-10-03 SEED Badge · Notification Badge · Tag Group 구조로 다시 정했다(사용자 결정 — 비교 페이지 https://claude.ai/artifact/4ySVacsdnG4fgraR1HRK3G, 1A · 2A · 3A · 4A 와 "따라오는 것"). 수치 원본은 `specs/components/badge.yaml` · `notification-badge.yaml` · `tag-group.yaml`, 쓰는 규칙은 같은 이름의 `.md` 다. 옛 Badge 절(채운 의미 색 넷 · 18 · 22 · 28 · 알약 또는 모서리 4 · 개수는 `aria-live`)은 걷었다 — 옛 스펙은 `specs/components/badge.history/v-pre-seed-display.*`. 머리말의 `badge-success` · `badge-error` · `badge-warning` · `badge-info` 대비 쌍은 solid 배지의 흰 글자(라이트)를 잰다. 의미 색 outline 의 옅은 테두리 넷(`stroke-critical-weak` · `stroke-positive-weak` · `stroke-warning-weak` · `stroke-informative-weak`)을 이 묶음에서 들였다(v117).
 
-#### Variant (semantic 4)
-| Token | fill | text | contrast |
+#### 나누기
+
+| 보이려는 것 | 쓰는 것 |
+|---|---|
+| 대상의 상태 · 분류(예정 · 연체 · 승인 · 신용) | Badge — 누르지 않는다 |
+| 설명 줄의 메타(카테고리 이름 · 자산 · 시각 · 거리 · 개수 · 금액) | Tag Group — " · " 로 이은 글줄 |
+| 안 읽은 알림이 있음 · 몇 개 | Notification Badge — 점 · 숫자 |
+| 고르기 · 거르기 · 넣은 값 빼기 | Chip — 누르는 알약(Chip 절) |
+
+#### 모양
+
+| | Badge | Notification Badge | Tag Group |
 |---|---|---|---|
-| `badge-success` | `success` (`#167F3F`) | `text-on-accent` (`#FFFFFF`) | **5.07:1** ✅ |
-| `badge-error` | `error` (`#D72323`) | `text-on-accent` | **5.06:1** ✅ |
-| `badge-warning` | `warning` (`#BE490D`) | `text-on-accent` | **5.06:1** ✅ |
-| `badge-info` | `info` (`#1D6EC9`) | `text-on-accent` | **5.09:1** ✅ |
+| 크기 | medium 20(좌우 6 · 위아래 2 · 글 11/15) · large 24(8 · 4 · 12/16), 앞 아이콘 12 · 14 | 점 6 · 숫자 18(좌우 4 · 11/15 · 700 — 글자 크기 설정을 따르지 않는다) | 12/16(기본) · 13/18 · 14/19, 아이콘 12 · 13 · 14 |
+| 모양 | 둥근 사각 — 모서리 `radius-r1` 4 · `radius-r1_5` 6. 알약은 Chip 에만 | 원 · 알약 | 글 — 항목 사이 " · " 글자(앞 항목에 붙는다) |
+| 색 | weak `bg-*-weak` + `fg-*-contrast` · 500 / solid `bg-*-solid` + `static-white` · 700 / outline 투명 + 안쪽 1px `stroke-*-weak` + `fg-*` · 700. 중립은 `bg-neutral-weak` + `fg-neutral-muted` · `bg-neutral-inverted` + `fg-neutral-inverted` · `stroke-neutral-weak`, warning solid 는 주황 + 흰 글자 | 점은 브랜드 글자색(다크에서 밝은 짝), 숫자는 브랜드 채움 + 흰 글자 — 브랜드 파일 | 기본 `fg-neutral-subtle`(흰 바탕 5.50) · 앞세울 항목 `fg-neutral` 700 · 구분 `fg-disabled` |
+| 자리 | 줄 · 상세 머리 — 한 대상에 둘까지, 사이 4 | 아이콘 상자 기준 — 점 오른쪽 위 안쪽 1(24 아이콘 x 17 ~ 23 · y 1 ~ 7), 숫자 왼쪽 아래 꼭짓점 (아이콘 폭 − 8, 14). 글이면 끝 + 2 · 줄 상자 위 | List 의 설명 줄 · 카드 · 상세 머리의 메타 |
 
-모두 본문 4.5:1 통과. badge text는 작은 크기(12px)이지만 `text-on-accent` (#FFFFFF) × semantic의 충분한 대비로 가독성 확보.
+#### 쓰는 규칙
 
-#### Size
-| Size | height | padding (V/H) | text token | radius |
-|---|---|---|---|---|
-| sm | 18px | 0px / `xs` 4px | `caption` (12/400) | `radius-sm` (4px) 또는 `full` (pill) |
-| **md** (default) | 22px | `xs` 2px / `sm` 8px | `caption` (12/400) | `radius-sm` 또는 `full` |
-| lg | 28px | `xs` 4px / `sm` 8px | `caption` (12/600 — 강조) | `radius-sm` 또는 `full` |
+- **배지는 누르지 않는다** — 누르는 라벨은 Chip(알약). 배지의 뜻을 더 알려야 하면 옆에 ⓘ Help Bubble.
+- **반복되는 목록은 weak** — 한 목록 안은 한 변형, 뜻은 톤으로. brand 는 요금제 · 본인 표시처럼 브랜드와 닿는 자리에만.
+- **흰 표면 위에** — 중립 weak 의 바탕은 회색 바탕(`bg-layer-basement`)과 같은 색이라 거기서 사라진다.
+- **합계에 안 드는 줄(예정 · 환불)은 흐리지 않는다** — 제목 · 금액만 `fg-neutral-subtle`, 환불 금액은 취소선, 배지는 보통 대비(List 절).
+- **알림 점 · 숫자는 확인할 새 것에만** — 보면 사라진다. 0 은 안 보이고 100 이상은 "99+". 한 화면에 아껴서(여러 탭에 동시에 달지 않는다).
+- **메타 줄 구분은 " · " 글자** — 2px 점 그림 · "•" 를 쓰지 않는다. 항목은 6 ~ 10자, 한 묶음은 한 크기.
+- **글** — 배지 · 메타에 영어 · 코드값을 내지 않는다("NEW" → "새로", `ROLE_ADMIN` → "관리자", "Day 2 of 3" → "2/3일째", "9:00 AM" → "오전 9:00"). 요금제 이름 Pro · Free 는 그대로.
 
-shape:
-- **rounded** (default `radius-sm`): 카드와 같은 라운드 — 정보 카드 밀도
-- **pill** (`radius-full`): count badge, status pill — 인터랙션 톤
+#### 접근성
 
-#### Layout
-- inline 텍스트와 `xs` (4px) 간격
-- 여러 badge 그룹은 `xs` 간격 + 줄바꿈 wrap
-
-#### Motion
-- 등장/사라짐: `motion-duration-fast` × `motion-ease-out` (`opacity` + `scale(0.9 → 1)`)
-- count 변경 (예: 5 → 6): `motion-duration-fast` 페이드
-
-#### Accessibility
-- [ ] semantic 색상에만 의존 금지 — 텍스트/아이콘으로 의미 보강 ("승인됨" / "거부됨" 등)
-- [ ] 1.4.1 Use of Color: success/error만으로 정보 전달하지 않기 — 색맹/저시력 사용자 대응
-- [ ] aria: 동적 count badge는 `aria-live="polite"` + `aria-label="알림 5개"` 등 명시
-- [ ] screen reader: text-only badge는 `<span>`, 아이콘 only는 `aria-label` 필수
+- Badge: 역할 없는 글 — 줄 이름에 이어 읽힌다. 뜻은 글이 말하고 색은 거든다. 모든 짝이 4.5:1 이상이다.
+- Notification Badge: 점 · 숫자는 숨기고 붙은 버튼 · 탭 이름에 넣는다("알림, 새 알림 3개"). 수가 바뀌어도 소리로 알리지 않는다(라이브 영역 없음).
+- Tag Group: 구분 " · " 는 숨기고 그 자리에 보이지 않는 ", " — 항목마다 끊어 읽는다. 뜻이 있는 아이콘 항목은 읽을 글("분할 2건")을 준다.
 
 ### Alert text
 
@@ -3956,30 +3989,19 @@ surface 위 inline 상태 텍스트 — form validation error, status notificati
 
 ### Divider
 
-콘텐츠 섹션 분리용 1px 수평/수직 선. list separator, section break, sidebar/main 분할.
+> 2026-10-03 SEED Divider 로 다시 정했다(옛 Separator 를 대신 — 사용자 결정, 비교 페이지 https://claude.ai/artifact/4ySVacsdnG4fgraR1HRK3G 의 "따라오는 것"). 수치 원본은 `specs/components/divider.yaml`, 쓰는 규칙은 `divider.md` 다. 옛 절(`border-default` 1px · dashed 예약 · margin-only)은 걷었다 — 옛 스펙은 `specs/components/separator.history/v-pre-seed-display.*`. 머리말의 `divider-light` · `divider-dark` 는 옛 v40 짝(값은 옛 `border-default`)이고, 글자가 없어 대비 검사 대상이 아니다.
 
-#### Mode pair
-- `divider-light` (`divider-light`): `surface-default` / `surface-input` 위에 `border-default` (`#E5E8EF`) 사용
-- `divider-dark` (`divider-dark`): 다크 표면 위에 `border-default-dark` (`#353B4D`) 사용
+| 세기 | 쓰는 것 | 자리 |
+|---|---|---|
+| 약함 | 들인 선 — 양끝 16 | 같은 묶음 안 |
+| 중간 | 끝까지 선 | 묶음 사이 · 액션 영역 위 · 스크롤되는 본문 위 머리 |
+| 강함 | 8 간격 — 회색 바탕(`bg-layer-basement`) 위 흰 층(`bg-layer-default`) 사이. 선이 아니다 | 크게 다른 내용 사이 |
 
-#### Spec
-- 두께: 1px (single line)
-- 색상: `border-default` 토큰 (sparse 매핑 — `border-*` 토큰을 1px element의 `backgroundColor`로 사용)
-- 길이: 부모 컨테이너 width/height 100% 또는 padding 이내 inset
-
-#### Layout
-- list item 사이: `divider-light` 1px, list item padding 안쪽 inset(`md`/`lg`)
-- section break: 위/아래 `lg` (16px) 간격 + `divider-light`
-- sidebar/main 분할: 수직 divider 1px, full height
-
-#### Style variants (CSS, 토큰 외)
-- **solid** (default): 단순 1px line
-- **dashed** (예약): 향후 `divider-dashed`로 추가 후보 — 임시 분리 표현
-- **margin-only** (no line): spacing 토큰만 사용해 시각적 분리 — 캐주얼 톤
-
-#### Accessibility
-- [ ] 1.4.11: divider는 **시각적 grouping** 보조 — 정보 전달 단독 의존 금지. semantic HTML(`<hr>`, `<section>`, `<aside>`)로 의미 분리 우선
-- [ ] aria: 단순 시각 divider는 `<hr>` (자동으로 `role="separator"`), 또는 inline divider는 `aria-hidden="true"`
+- 선은 하나 — 1px `stroke-neutral-subtle`(흰 바탕 1.15 · 다크 1.30, SEED 기본 neutral-muted 와 같은 진하기 — 새 토큰 없이). 굵은 선 · 짙은 선 · 점선 · "8px 구분선" 을 두지 않는다.
+- 가로(부모 폭) · 세로(부모 높이 — 통계 세 칸 사이). 바깥 여백이 없다 — 간격은 쓰는 자리가 정한다.
+- 반복되는 목록 줄 사이는 List 의 줄 사이 선(기본 없음 · 같은 색 · 들임 24). 화면 · 묶음의 마지막 아래에는 두지 않는다.
+- 기본은 장식(보조 기술에 숨김) — 이름 있는 구획을 나눌 때만 `role="separator"`(SEED 는 `<hr>` 가 기본).
+- 웹 · 앱의 border-subtle 과 border-default 가 같은 값이라 "옅은 구분선" 이 효과가 없다 — 구분선은 이 한 색으로 정리한다.
 
 ### Outline (border 시각 요소)
 
@@ -4265,7 +4287,7 @@ red → orange → yellow → green → blue → indigo → violet → pink → 
 | 목록 | `bg-layer-default` + 바닥 안쪽 1px `stroke-neutral-subtle` |
 | 폭 | Fill — 5개 이하 · 짧은 글, 칸을 나누고 막대를 좌우 16 들인다. Hug — 6개 이상 · 긴 글 · 넓은 데스크톱 자리, 목록 좌우 16 · 넘치면 가로 스크롤(고른 탭으로 16 여유를 두고 스크롤) |
 | 누름 · 포커스 · 비활성 | 탭 2px 거리 축소만(색 · 호버 모양 없음) · 탭 안쪽 링 2px · 글 `fg-disabled` |
-| 알림 점 | 6 · 브랜드 채움 색(브랜드 파일의 bg-brand-solid), 글 오른쪽 위 2 — 새 소식이 있는 탭 하나에만 |
+| 알림 점 | Notification Badge small — 6 · 브랜드 글자색(브랜드 파일의 fg-brand, 다크에서 밝은 짝), 글 끝 2 · 줄 상자 위 — 새 소식이 있는 탭 하나에만 |
 
 #### Chip Tabs
 
@@ -4404,53 +4426,19 @@ binary on/off 상태 또는 group 선택을 표현하는 form control 3종. 공�
 - 펼침: 고른 상자 아래로 딸린 입력 · 안내가 열린다(안쪽 좌우 20 · 아래 16, 높이 400ms · 투명도 300ms). 닫히면 보이지 않고 Tab 도 닿지 않는다.
 - 누르는 순간 바뀌는 고르기(테마 같은)는 List 의 라디오 줄, 누르면 바로 무언가를 하는 자리는 버튼이다.
 
-### Avatar (v58 추가)
+### Avatar · Avatar Stack
 
-사용자 식별 시각 요소 — 이미지 또는 이름 이니셜 + categorical color. HR 직원 카드 / Desk 사용자 메모 작성자 표현 핵심. **새 토큰 추가 0** (기존 chart palette + text-on-accent 활용).
+> 2026-10-03 SEED Avatar · Avatar Stack 구조로 다시 정했다(사용자 결정 — 비교 페이지 https://claude.ai/artifact/4ySVacsdnG4fgraR1HRK3G, 5C · 6B). 수치 원본은 `specs/components/avatar.yaml` · `avatar-stack.yaml`, 쓰는 규칙은 `avatar.md` 다. 옛 Avatar v58 절(24 · 32 · 40 · 56 · 사각 변형 · 최대 3 + "+N more" · 호버 축소 · 상태 점)은 걷었다 — 옛 스펙은 `specs/components/avatar.history/v-pre-seed-display.*`. 머리말의 `avatar` 대비 쌍(`chart-blue` × 흰 글자)은 라이트 이니셜 하나를 잰다.
 
-#### Size
-| Size | px | text | 사용 |
-|---|---|---|---|
-| sm | 24 | `caption` 12/400 | inline (table row, dropdown) |
-| **md** (default) | 32 | `body-lg` 15/600 | list item, comment author |
-| lg | 40 | `title-sm` 16/600 | profile card, detail header |
-| xl | 56 | `title-sm` 21/700 | hero profile, settings |
+| | Avatar | Avatar Stack |
+|---|---|---|
+| 크기 | 20 · 24 · 36 · 42 · 48 · 56 · 64 · 80 · 96 · 108 — 자리마다 대표 크기(한 줄 목록 36 · 두 줄 목록 42 · 줄 안 묶음 24 · Desk 계정 머리 80 · HR 큰 사진 96 · 프로필 수정 108) | 같은 10단계 — 묶음이 정하고 안의 아바타가 모두 따른다 |
+| 모양 | 원 하나 · 1px 안쪽 `stroke-neutral-subtle`(모든 크기) | 지름 1/4 겹침(−5 ~ −27) · 놓인 바탕색 링 1 ~ 5(`bg-layer-default`, 시트 안은 `bg-layer-floating`) · 뒤가 위 |
+| 사진이 없을 때 | 이니셜 + 이름 색 — 차트 10색(v110) 바탕, 글자 `fg-neutral-inverted` 700(지름의 40%, 가장 작아도 10) | 앞 4명 + "+N" 원(같은 크기 · `bg-neutral-weak` + `fg-neutral-muted` 700) |
 
-#### Shape
-- 원형 default (`radius-full`) — 일반 사용자.
-- 사각형 변형 (`radius-md`) — list view 컴팩트 (HR 데이터 그리드 inline).
-
-#### Color (chart palette categorical)
-hash(name) % 10 → `chart-{red,orange,yellow,green,blue,indigo,violet,pink,brown,gray}` 분배. brand-neutral (chart palette 통일). 텍스트는 `fg-neutral-inverted` — 라이트는 흰색(700 위 4.55:1 이상), 다크는 `chart-{name}-dark` 위 어두운 글자(6.07:1 이상). 다크에서 흰 글자를 쓰면 2.4:1 이다(v110).
-
-#### Status indicator (선택)
-- online: `success` 12×12 dot + `surface-default` 1px 외곽선 (avatar 우하단).
-- offline: `text-tertiary` 또는 `surface-input`.
-- HR-specific 상태(재직/휴직/퇴직)는 brand 파일 prose 참조.
-
-#### Layout
-- avatar + 이름 inline: gap `sm` (8px). 이름은 `body-lg` 15/400 default.
-- avatar group (다중 사용자): overlap -25% 너비, 최대 3개 + `+N more` indicator (`caption` 12px).
-
-#### Motion
-- hover: opacity 0.9 + scale(1.05) `motion-duration-fast` × `motion-ease-out`. interactive avatar (link/button)에만 적용.
-- `prefers-reduced-motion: reduce`: 0ms 즉시.
-
-#### Accessibility
-- `aria-label="{name} 프로필 사진"` 또는 alt text 필수 — 이미지 없으면 이니셜 대체.
-- focus ring: `border-focus` 2px outline + 1px offset (interactive avatar).
-- 이니셜 텍스트는 시각만 — screen reader는 `aria-label` 의 이름 발화.
-
-#### Sparse component 매핑 (lint contrast 활성)
-`avatar` 단일 매핑 (`{colors.chart-blue}` background + `{colors.text-on-accent}` text). 실제 categorical 분배는 컴포넌트 레벨 hash 로직 처리. lint는 단일 페어로 활성화 — chart-blue × text-on-accent 5.02:1 통과(v21 chart-blue 손계산 4.66:1 + 흰 텍스트 contrast).
-
-#### 추가 이유
-1. v33-v48 컴포넌트 batch는 form/feedback/structure 위주 — 사용자 식별 컴포넌트(avatar) 부재.
-2. HR 직원 카드(preview Phase 2 직원 상세) / Desk 사용자 메모(작성자 표시)에서 핵심.
-3. **새 토큰 추가 0** — 기존 chart palette + text-on-accent 활용. lint contrast 부담 0.
-
-#### HR / Desk 듀얼 브랜드
-spec 자체는 brand-neutral. brand 파일에서 사용 패턴 차이 prose — HR(데이터 그리드 inline 작은 사이즈), Desk(profile/메모 inline 중-대 사이즈) 분기.
+- **이니셜** = 표시 이름의 첫 글자 하나(로마자는 대문자 — "Kim Minsu" → "K"). **이름 색** = 표시 이름의 유니코드 코드 포인트 합 % 10 → blue · green · orange · violet · pink · indigo · red · yellow · brown · gray(v110 순서) — 웹 · 앱이 같다("김민수" → blue · "이서연" → brown · "Kim Minsu" → indigo). 대비 라이트 4.55 ~ 5.50 · 다크 6.07 ~ 7.70:1 — 다크에서 흰 글자는 2.4:1 이라 쓰지 않는다.
+- **사람만 아바타다** — 자산 · 카드 로고 · 주식 · 카테고리 타일은 원 아바타가 아니다(Image Frame · List 붙이개 차례에).
+- **이름 옆 아바타는 장식**(이름을 한 번만 읽는다), 혼자면 이름을 가진다. 상태(안 낸 사람)는 흐리게 하지 않고 배지 · 글로.
 
 ### 날짜 · 시각 고르기 — Date Picker · Time Picker · Wheel Picker
 
@@ -5316,7 +5304,7 @@ spec brand-neutral. brand 파일 — HR(Sonner top-right 결재 알림 stack / C
 
 ### Chip
 
-수치 · 규칙의 원본은 `specs/components/chip.md` · `chip.yaml` 이다 — 2026-10-02 SEED Chip 구조로 새로 정했다(옛 v73 Tag / Chip 을 대신한다). 고르거나 넣은 값을 보이는 작은 알약이고, 누를 수 없는 표시(상태 · 분류)는 Badge · Tag Group(그 차례에)이다. 이 절은 토큰과 닿는 자리만 모은다.
+수치 · 규칙의 원본은 `specs/components/chip.md` · `chip.yaml` 이다 — 2026-10-02 SEED Chip 구조로 새로 정했다(옛 v73 Tag / Chip 을 대신한다). 고르거나 넣은 값을 보이는 작은 알약이고, 누를 수 없는 표시(상태 · 분류 · 메타)는 Badge · Tag Group 이다(위 "Badge · Notification Badge · Tag Group" 절). 이 절은 토큰과 닿는 자리만 모은다.
 
 #### 쓰임
 

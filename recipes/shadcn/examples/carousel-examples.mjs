@@ -12,6 +12,35 @@ function arrow({ direction = "next", disabled = false } = {}) {
   return `<button type="button" aria-label="${direction === "prev" ? "이전 슬라이드" : "다음 슬라이드"}" style="display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:var(--radius-full); border:1px solid var(--color-border-default); background:var(--color-surface-default); color:var(--color-text-primary); cursor:pointer;${disabled ? " opacity:0.5; cursor:not-allowed; pointer-events:none;" : ""}"${disabled ? " disabled" : ""}>${direction === "prev" ? ARROW_LEFT : ARROW_RIGHT}</button>`;
 }
 
+// ── avatar.tsx 의 상수 · 규칙과 같은 값(이 파일이 쓰는 64 만 — avatar-examples.mjs 의 것과 같다) ──
+// 옛 아바타(48 · 브랜드 채움 이니셜 · 600)는 걷었다 — 사진이 없으면 이니셜 + 이름 색(차트 10색), 프로필 카드 · 캐러셀은 64(avatar.md)
+const AVATAR_ROOT = [
+  "relative inline-flex shrink-0 select-none items-center justify-center overflow-hidden rounded-full align-middle",
+  "after:pointer-events-none after:absolute after:inset-0 after:rounded-full after:shadow-[inset_0_0_0_1px_var(--color-stroke-neutral-subtle)] after:content-['']",
+].join(" ");
+const AVATAR_INITIAL = "flex size-full items-center justify-center font-sans font-bold uppercase text-fg-neutral-inverted";
+const AVATAR_LINE_HEIGHT_1 = "leading-none";
+const AVATAR_SIZE_64 = { box: "size-[64px]", initial: "text-[26px]" };
+const AVATAR_HUE_BG = {
+  blue: "bg-chart-blue",
+  green: "bg-chart-green",
+  orange: "bg-chart-orange",
+  violet: "bg-chart-violet",
+  pink: "bg-chart-pink",
+  indigo: "bg-chart-indigo",
+  red: "bg-chart-red",
+  yellow: "bg-chart-yellow",
+  brown: "bg-chart-brown",
+  gray: "bg-chart-gray",
+};
+const AVATAR_HUES = Object.keys(AVATAR_HUE_BG);
+// 이름 색 — 코드 포인트 합 % 10 → 차트 10색(avatarHue), 이니셜 — 첫 글자(avatarInitial)
+const avatarHue = (name) => (name.trim() ? AVATAR_HUES[[...name.trim()].reduce((a, ch) => a + ch.codePointAt(0), 0) % 10] : "gray");
+const avatarInitial = (name) => ([...new Intl.Segmenter(undefined, { granularity: "grapheme" }).segment(name.trim())][0]?.segment ?? "").toUpperCase();
+// <Avatar size={64}> — 옆에 이름이 있어 장식(aria-hidden)이다
+const avatar64 = (name) =>
+  `<span data-slot="avatar" data-status="none" aria-hidden="true" class="${AVATAR_ROOT} ${AVATAR_SIZE_64.box}"><span aria-hidden="true" data-slot="avatar-initial" class="${AVATAR_INITIAL} ${AVATAR_HUE_BG[avatarHue(name)]} ${AVATAR_SIZE_64.initial} ${AVATAR_LINE_HEIGHT_1}">${avatarInitial(name)}</span></span>`;
+
 export const carouselExamples = [
   {
     title: "Default",
@@ -42,16 +71,14 @@ export const carouselExamples = [
 
   {
     title: "HR — 신규 입사자 안내",
-    description: "입사자 프로필 카드 carousel — avatar(`h-12 w-12` round) + 이름(`text-title-sm` 600) + 부서(`text-body-sm secondary`) + 입사일(`text-caption tertiary`). dot indicator(`h-1.5 w-1.5 rounded-full`)로 현재 위치 표시.",
+    description: "입사자 프로필 카드 carousel — Avatar 64(프로필 카드 · 캐러셀 자리 — 사진이 없으면 이니셜 + 이름 색, 옆에 이름이 있어 장식) + 이름(`text-title-sm` 600) + 부서(`text-body-sm secondary`) + 입사일(`text-caption tertiary`). dot indicator(`h-1.5 w-1.5 rounded-full`)로 현재 위치 표시.",
     jsx: `<Carousel className="max-w-sm">
   <CarouselContent>
     {newcomers.map(p => (
       <CarouselItem key={p.id}>
         <div className="flex flex-col items-center gap-[var(--spacing-md)] p-[var(--spacing-xl)] bg-surface-default rounded-md"
           style={{ boxShadow: "var(--shadow-sm)" }}>
-          <Avatar className="h-12 w-12">
-            <AvatarFallback>{p.initial}</AvatarFallback>
-          </Avatar>
+          <Avatar size={64} name={p.name} src={p.photoUrl} />
           <div className="text-center">
             <h4 className="text-title-sm font-semibold text-text-primary">{p.name}</h4>
             <p className="text-body-sm text-text-secondary mt-1">{p.dept}</p>
@@ -68,8 +95,8 @@ export const carouselExamples = [
   </div>
 </Carousel>`,
     render: () => {
-      const card = (initial, name, dept, date) => `<div style="display:flex; flex-direction:column; align-items:center; gap:var(--spacing-md); padding:var(--spacing-xl); background:var(--color-surface-default); border-radius:var(--radius-md); box-shadow:var(--shadow-sm);">
-  <div style="width:48px; height:48px; border-radius:var(--radius-full); background:var(--color-primary, var(--color-text-primary)); color:var(--color-text-on-accent, #fff); display:flex; align-items:center; justify-content:center; font-size:var(--text-title-sm); font-weight:600;">${initial}</div>
+      const card = (name, dept, date) => `<div style="display:flex; flex-direction:column; align-items:center; gap:var(--spacing-md); padding:var(--spacing-xl); background:var(--color-surface-default); border-radius:var(--radius-md); box-shadow:var(--shadow-sm);">
+  ${avatar64(name)}
   <div style="text-align:center;">
     <h4 style="margin:0; font-size:var(--text-title-sm); line-height:var(--text-title-sm--line-height); font-weight:var(--text-title-sm--font-weight); color:var(--color-text-primary);">${name}</h4>
     <p style="margin:var(--spacing-xs) 0 0; font-size:var(--text-body-sm); line-height:var(--text-body-sm--line-height); color:var(--color-text-secondary);">${dept}</p>
@@ -79,7 +106,7 @@ export const carouselExamples = [
       const dot = (active) => `<button type="button" aria-label="슬라이드로 이동" style="width:6px; height:6px; border-radius:var(--radius-full); border:0; padding:0; background:${active ? "var(--color-text-primary)" : "var(--color-border-default)"}; cursor:pointer;"></button>`;
       return `<div style="position:relative; max-width:384px; margin:0 56px;">
   <div style="overflow:hidden; border-radius:var(--radius-md);">
-    ${card("김", "김지원", "디자인 본부", "2026-05-12")}
+    ${card("김지원", "디자인 본부", "2026-05-12")}
   </div>
   <div style="position:absolute; left:-44px; top:50%; transform:translateY(-50%);">${arrow({ direction: "prev", disabled: true })}</div>
   <div style="position:absolute; right:-44px; top:50%; transform:translateY(-50%);">${arrow({ direction: "next" })}</div>

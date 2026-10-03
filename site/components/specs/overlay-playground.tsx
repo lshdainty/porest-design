@@ -67,7 +67,7 @@ function Rows({ kit, mode, n = 4 }: { kit: OvKit; mode: ViewMode; n?: number }) 
     <div className="flex flex-col rounded-xl" style={{ background: tone(kit, 'bg-layer-default', mode) }}>
       {rows.slice(0, n).map(([t, s, a, hue]) => (
         <div key={t} className="flex items-center gap-3 py-2">
-          <span aria-hidden className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[14px] font-bold" style={{ background: tone(kit, `chart-${hue}-weak` as OvTone, mode), color: tone(kit, `chart-${hue}-contrast` as OvTone, mode) }}>
+          <span aria-hidden className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[11px] text-[14px] font-bold" style={{ background: tone(kit, `chart-${hue}-weak` as OvTone, mode), color: tone(kit, `chart-${hue}-contrast` as OvTone, mode) }}>
             {t.slice(0, 1)}
           </span>
           <span className="flex min-w-0 flex-1 flex-col">

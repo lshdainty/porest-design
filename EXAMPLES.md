@@ -244,7 +244,9 @@ Card grid — 3열 그리드, hover 시 `shadow-md` lift. Desk 카드 list 톤.
 
 ## Badge / Chip
 
-> Chip 은 2026-10-02 SEED Chip 으로 다시 정했다 — 원본은 `specs/components/chip.md`, 코드는 레시피 `chip.tsx`(고르기 묶음은 Field 안에 둔다). 칩이 맡는 일은 넷(고르기 · 제안 · 필터 바 · 입력값)이고, 고른 칩은 브랜드 색이 아니라 중립색이다. 옛 Tag / Chip 예시(지우기 × · 태그 입력칸)는 걷었다 — 넣은 값은 입력값 칩(`InputChip`)으로 보인다. Badge 는 아직 옛 모양이다.
+> Chip 은 2026-10-02 SEED Chip 으로 다시 정했다 — 원본은 `specs/components/chip.md`, 코드는 레시피 `chip.tsx`(고르기 묶음은 Field 안에 둔다). 칩이 맡는 일은 넷(고르기 · 제안 · 필터 바 · 입력값)이고, 고른 칩은 브랜드 색이 아니라 중립색이다. 옛 Tag / Chip 예시(지우기 × · 태그 입력칸)는 걷었다 — 넣은 값은 입력값 칩(`InputChip`)으로 보인다.
+>
+> Badge 는 2026-10-03 SEED Badge 로 다시 정했다 — 원본은 `specs/components/badge.md`(둥근 사각 medium 20 · large 24, weak · solid · outline × 톤 여섯, 누르지 않는다). 메타 줄은 `tag-group.md`, 알림 점 · 숫자는 `notification-badge.md`. 아래 Badge 마크업은 옛 모양이다.
 
 ```html
 <!-- Badge (정적, status indicator) -->
@@ -624,6 +626,8 @@ Hover Card — non-interactive preview. delay 700ms hover, link/avatar에 mentio
 ---
 
 ## Avatar
+
+> 2026-10-03 — 사람 아바타는 `specs/components/avatar.md`(SEED Avatar · Avatar Stack — 크기 10단계, 사진이 없으면 이니셜 + 이름 색, 묶음은 앞 4명 + "+N")가 원본이다. 아래 마크업은 옛 모양이다.
 
 ```html
 <!-- Image -->

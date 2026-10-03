@@ -18,17 +18,18 @@ export const CATEGORIES: CatItem[] = [
 ];
 export const catText = (c: CatItem) => `${c.group} · ${c.label}`;
 
-export type Person = { value: string; name: string; team: string; hue: 'orange' | 'blue' | 'green' | 'violet' | 'pink' };
+// 사람 — 앞 붙이개는 Avatar(이름으로 이니셜 · 이름 색 — avatar.md). 이름 + 팀 두 줄이라 42
+export type Person = { value: string; name: string; team: string };
 export const PEOPLE: Person[] = [
-  { value: 'pore', name: '김포레', team: '디자인팀 · 팀장', hue: 'green' },
-  { value: 'haneul', name: '김하늘', team: '개발팀', hue: 'blue' },
-  { value: 'minjun', name: '김민준', team: '인사팀', hue: 'violet' },
-  { value: 'seoyeon', name: '김서연', team: '디자인팀', hue: 'pink' },
-  { value: 'jiwoo', name: '이지우', team: '개발팀', hue: 'orange' },
-  { value: 'doyun', name: '박도윤', team: '재무팀', hue: 'blue' },
-  { value: 'yuna', name: '최유나', team: '인사팀 · 팀장', hue: 'green' },
-  { value: 'siwoo', name: '정시우', team: '영업팀', hue: 'violet' },
-  { value: 'hayun', name: '강하윤', team: '개발팀 · 팀장', hue: 'pink' },
-  { value: 'junho', name: '조준호', team: '영업팀', hue: 'orange' },
+  { value: 'pore', name: '김포레', team: '디자인팀 · 팀장' },
+  { value: 'haneul', name: '김하늘', team: '개발팀' },
+  { value: 'minjun', name: '김민준', team: '인사팀' },
+  { value: 'seoyeon', name: '김서연', team: '디자인팀' },
+  { value: 'jiwoo', name: '이지우', team: '개발팀' },
+  { value: 'doyun', name: '박도윤', team: '재무팀' },
+  { value: 'yuna', name: '최유나', team: '인사팀 · 팀장' },
+  { value: 'siwoo', name: '정시우', team: '영업팀' },
+  { value: 'hayun', name: '강하윤', team: '개발팀 · 팀장' },
+  { value: 'junho', name: '조준호', team: '영업팀' },
 ];
 
