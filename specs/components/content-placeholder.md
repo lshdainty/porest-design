@@ -1,6 +1,6 @@
 # Content Placeholder
 
-> 이미지가 없거나 불러오지 못했을 때 그 자리를 채우는 대체 그림 — 옅은 면 가운데에 무엇이 없는지 말하는 선 아이콘. 카드 그림 · 혜택 그림 · 첨부 사진처럼 이미지가 들어갈 틀이 비었을 때 쓴다. 불러오는 동안에는 같은 모서리의 [Skeleton](skeleton.md) 이고, 사람의 사진이 없으면 [Avatar](avatar.md) 의 이니셜이다.
+> 이미지가 없거나 불러오지 못했을 때 그 자리를 채우는 대체 그림 — 옅은 면 가운데에 무엇이 없는지 말하는 선 아이콘. 카드 그림 · 혜택 그림 · 첨부 사진처럼 이미지가 들어갈 틀이 비었을 때 쓴다 — 보통은 [Image Frame](image-frame.md) 이 제 대체 그림으로 그린다. 불러오는 동안에는 같은 모서리의 [Skeleton](skeleton.md) 이고, 사람의 사진이 없으면 [Avatar](avatar.md) 의 이니셜, 물건 타일의 그림이 없으면 [Logo Tile](logo-tile.md) 의 첫 글자다.
 
 구조는 당근 [SEED Content Placeholder](https://seed-design.io/components/content-placeholder)(Apache-2.0)를 따른다 — 면 · 그림, 그림은 틀 높이의 50%(16 ~ 160), 제 모서리 없음. 값은 porest 토큰이고, SEED 와 다른 자리는 맨 아래 "SEED 와 다른 점" 에 적었다(2026-10-03 사용자 결정). porest 에 처음 두는 부품이다 — 옛 [Aspect Ratio](aspect-ratio.md) 스펙의 "이미지 로딩 전 placeholder" 한 줄을 대신한다.
 
@@ -66,12 +66,13 @@
 ### 이 부품이 아닌 것
 
 - 사람의 사진이 없으면 [Avatar](avatar.md) 의 이니셜이다.
-- 자산 · 카드 로고의 글자 모노그램(로고를 못 불러오면 이름 첫 글자)은 이것이 아니다 — 물건 아이콘 타일과 함께 Image Frame 차례에 정한다.
+- 자산 · 카드 로고의 글자 모노그램(로고를 못 불러오면 이름 첫 글자)은 이것이 아니다 — [Logo Tile](logo-tile.md) 의 첫 글자다.
+- 그림이 없는 카드 가운데 아는 카드사의 카드는 이것이 아니다 — 기관 색 면에 회사 · 카드 이름을 쓴 카드 면이다([Image Frame](image-frame.md) 의 카드 그림). 모르는 카드사만 이 그림(`credit-card`)이다.
 - 비어 있는 목록 · 화면은 [Result Section](result-section.md) `empty` 다.
 
 ## 코드
 
-레시피 `recipes/shadcn/components/ui/content-placeholder.tsx` 를 쓴다. 아래 미리보기는 스펙 값으로 그린 모습이다.
+레시피 `recipes/shadcn/components/ui/content-placeholder.tsx` 를 쓴다. 그림 틀은 [Image Frame](image-frame.md) 이 이 그림을 대체 그림으로 쓰므로(아이콘은 `fallbackIcon`, 대체 글은 그림의 `alt`), 따로 부르는 것은 Image Frame 이 아닌 틀을 짤 때뿐이다. 아래 미리보기는 스펙 값으로 그린 모습이다.
 
 - `ContentPlaceholder` — `icon`(lucide 아이콘 — 기본 `ImageIcon`), `label`(대체 글 — 주면 `role="img"` + 이름, 안 주면 보조 기술에 숨긴다). 크기 · 비율 · 모서리는 담는 틀이 정한다.
 
@@ -81,19 +82,13 @@
 
 ```tsx
 import { CreditCard } from "lucide-react"
-import { ContentPlaceholder } from "@/components/ui/content-placeholder"
+import { ImageFrame } from "@/components/ui/image-frame"
 
-const [failed, setFailed] = React.useState(!card.imageUrl)
-
-{/* 틀 — 크기 · 비율 · 모서리는 틀이 정한다 */}
-<div className="aspect-[1.586] w-28 overflow-hidden rounded-r2">
-  {failed ? (
-    <ContentPlaceholder icon={<CreditCard />} label={`${card.name} 카드 그림`} />
-  ) : (
-    <img src={card.imageUrl} alt={`${card.name} 카드 그림`} onError={() => setFailed(true)} className="size-full object-cover" />
-  )}
-</div>
+{/* 틀 — 비율 · 모서리(폭 112 → 8)는 Image Frame 이 정하고, 없거나 못 불러오면 이 그림을 그린다. 대체 글은 alt 를 이어받는다 */}
+<ImageFrame ratio="card" width={112} src={card.imageUrl} alt={`${card.name} 카드 그림`} fallbackIcon={<CreditCard />} />
 ```
+
+카드 그림은 보통 `CardArt` 로 그린다 — 아는 카드사는 카드 면, 모르는 카드사만 이 그림이다([Image Frame](image-frame.md) 의 "카드 그림").
 
 ## Behavior
 
@@ -154,4 +149,4 @@ const [failed, setFailed] = React.useState(!card.imageUrl)
 - **Desk 웹** — `<img>` 11곳 중 실패 대체가 있는 곳은 4곳. 7곳은 실패하면 브라우저의 깨진 이미지 아이콘 + 대체 글이 보인다(`widgets/card-detail/ui/CardInfoHeader.tsx:26 · 37` · `AvailableBenefitsList.tsx:64` · `CardCatalogCombobox.tsx:76 · 125` · `AssetEditDialog.tsx:934 · 1042`). 불러오는 동안은 빈 자리이고(`entities/asset/ui/asset-logo.tsx:32-50` — 투명 40 × 40), 카드 혜택 그림만 회색 상자가 미리 자리를 잡는다(`CardBenefitPage.tsx:191-205`, 페이지 위 1.04:1).
 - **Desk 앱** — 이미지 9곳 모두 실패 대체는 있고(`errorBuilder`) 불러오는 동안의 표시는 0곳이다(`loadingBuilder`). 카드 목록은 회색 + 카드 아이콘(`card/card_screen.dart:410-420`), 카드 혜택 · 상세 · 혜택 시트 · 카드 추가(`card_benefits_screen.dart:581-585` · `card_detail_screen.dart:66-75` · `card_benefit_detail_sheet.dart:314-320` · `asset/card_add_dialog.dart:871 · 1046`).
 - **HR 웹** — 규정 그림 12곳(`culture-regulation/ui/Rule*.tsx`)에 자리 · 실패 대체가 없다. 프로필 사진 실패 대체가 외부 `github.com/shadcn.png` 다(`features/user-profile/ui/UserEditDialog.tsx:261-269`).
-- 자산 · 카드 로고의 글자 모노그램(웹 `asset-logo.tsx:40` · 앱 `asset/widgets/asset_logo.dart:24-37`)은 Image Frame 차례에 정한다.
+- 자산 · 카드 로고의 글자 모노그램(웹 `asset-logo.tsx:40` · 앱 `asset/widgets/asset_logo.dart:24-37`)은 2026-10-04 [Logo Tile](logo-tile.md) 로 정했다(첫 글자 먼저 · 그림이 오면 덮기 · 실패하면 첫 글자). 그림 틀은 [Image Frame](image-frame.md) 이 이 그림을 대체 그림으로 쓴다.

@@ -1,6 +1,6 @@
 # Avatar
 
-> 사람 한 명을 보이는 원 — 사진이 있으면 사진, 없으면 이름의 첫 글자(이니셜) + 이름 색. 여러 사람은 겹친 묶음(Avatar Stack — 이 문서 아래)이다. 자산 · 카드 · 주식 · 카테고리 같은 물건의 로고 · 그림 타일은 아바타가 아니다(Image Frame 차례에).
+> 사람 한 명을 보이는 원 — 사진이 있으면 사진, 없으면 이름의 첫 글자(이니셜) + 이름 색. 여러 사람은 겹친 묶음(Avatar Stack — 이 문서 아래)이다. 은행 · 증권 · 카드 같은 물건은 [Logo Tile](logo-tile.md)(각진 타일 — 같은 첫 글자 · 이름 색 규칙), 사진 · 카드 그림은 [Image Frame](image-frame.md), 카테고리는 [List](list.md) 의 타일이다 — 아바타가 아니다.
 
 구조는 당근 [SEED Avatar](https://seed-design.io/components/avatar)(Apache-2.0)를 따른다 — 원 · 사진 · 1px 안쪽 테두리, 크기 10단계(20 ~ 108)와 자리마다 대표 크기, 묶음은 지름의 1/4 겹침 · 바탕색 링. 사진이 없을 때는 SEED 의 사람 그림이 아니라 이니셜 + 이름 색이고, 넘친 사람은 "+N" 원이다 — 맨 아래 "SEED 와 다른 점"(2026-10-03 사용자 결정). 옛 Avatar(32 · 40 · 48 · 64 · 회색 · 브랜드 채움 · 600)를 대신한다.
 
@@ -21,7 +21,7 @@
 | ⓐ Container | 원 — 폭 = 높이. 사진 · 이니셜을 원으로 자른다. |
 | ⓑ Image | 사진 — 원을 채운다. |
 | ⓒ Initial | 이니셜 — 사진이 없을 때. 이름의 첫 글자 + 이름 색 바탕. |
-| ⓓ Border | 1px 안쪽 테두리 — 모든 크기. 흰 사진이 바탕에 묻히지 않게. |
+| ⓓ Border | 1px 안쪽 투명 테두리 — 모든 크기. 흰 사진이 바탕에 묻히지 않게(Image Frame 의 윤곽과 같은 색). |
 
 [표: 부위](avatar.yaml#slots)
 
@@ -81,7 +81,7 @@
 
 ### 사람만 아바타 — 물건은 타일
 
-아바타는 사람(본인 · 더치페이 참가자 · 공유 멤버 · HR 구성원)에만 쓴다. 자산 · 카드 로고 · 주식 · 카테고리처럼 물건 · 분류를 보이는 것은 각진 타일이다 — 원 아바타로 그리지 않는다(Image Frame · List 붙이개 차례에).
+아바타는 사람(본인 · 더치페이 참가자 · 공유 멤버 · HR 구성원)에만 쓴다. 은행 · 증권 · 카드 · 코인 · 금 · 회사처럼 물건을 보이는 것은 [Logo Tile](logo-tile.md), 카테고리처럼 분류를 보이는 것은 [List](list.md) 의 타일이다 — 둘 다 각진 타일이고, 원 아바타로 그리지 않는다. 첫 글자 · 이름 색은 Logo Tile 도 이 규칙을 쓴다.
 
 [그림: 사람은 원 아바타, 자산 · 카테고리는 각진 타일](../../site/components/specs/avatar.tsx#thing-guide)
 
@@ -201,7 +201,6 @@ import { Avatar, AvatarStack } from "@/components/ui/avatar"
 
 - **사진이 없으면 이니셜 + 이름 색** — SEED 는 사람 그림(Identity Placeholder)이고 이니셜이 없다. Desk 는 사진이 없어 사람이 모두 같은 회색 그림이 되고, 묶음에서 누가 누구인지 갈리지 않는다(사용자 결정 5C). 이름 색은 차트 10색(v110)에서 이름 해시로 하나, 글자는 `fg-neutral-inverted`.
 - **넘친 사람은 "+N" 원** — SEED 는 "앞에서부터 숨긴다" 뿐이다(사용자 결정 6B).
-- **1px 테두리는 불투명한 `stroke-neutral-subtle`** — SEED 는 투명도 있는 검정 4.7% · 흰 5%.
 - **링은 놓인 바탕색** — SEED 는 `bg.layer-default` 하나. porest 다크에서 시트(`bg-layer-floating`)는 기본 표면과 달라 그 바탕색을 쓴다.
 - **오른쪽 아래 배지(원 · 방패 · 꽃 마스크)는 두지 않는다** — porest 에 쓰는 자리가 없다.
 - **80 · 96 의 자리는 porest 화면에서** — SEED 는 설명이 없다(Desk 계정 머리 · HR 큰 프로필 사진).
@@ -228,4 +227,8 @@ import { Avatar, AvatarStack } from "@/components/ui/avatar"
 - **안 낸 사람 흐림** — 더치페이 아바타를 불투명도 0.5 로 흐려 앱 라이트 1.43:1 이다. 흐리지 않고 배지 · 글로 알린다.
 - **Desk 앱 `PAvatar`** — 낭독이 "김 김"(라벨 + 글자 — `shared/widgets/p_avatar.dart:56-59`), 영문 이름은 앞 두 글자 "Ki"(`:82-87`). `PAvatarGroup` 은 쓰는 곳이 없다("+3 +3" 으로 읽힌다).
 - **HR shadcn Avatar** — 대체 글자가 크기와 관계없이 16 / 400(`shared/ui/shadcn/avatar.tsx:37-50`, 24 ~ 160), 사이드바만 모서리 8 사각(`widgets/sidebar/ui/SidebarFooter.tsx:80-83`), 근무표는 `alt` 가 없고 `baseUrl` 없이 `profile_url` 을 써 사진이 깨질 수 있다(`work-schedule/ui/ScheduleTable.tsx:258-261`), 일정 필터의 `text-xxs` 는 정의가 없다(`calendar/ui/header/event-filter.tsx:142`). 사진이 실패하면 이름 없이 "김" 만 읽힌다.
-- **물건 타일은 이번 범위 밖** — 자산 로고(웹 모서리 크기 × 0.3 · 800 · oklch 해시 ↔ 앱 모서리 12 · 700 · HSL 해시 — `entities/asset/ui/asset-logo.tsx:23-87` ↔ `asset_logo.dart`) · 주식 · 카테고리 타일은 Image Frame · List 붙이개 차례에 정한다.
+- **물건 타일은 Logo Tile 로 정했다**(2026-10-04) — 자산 로고(웹 · 앱 모두 모서리 12 고정 — 2026-10-03 표시 조사의 "웹 크기 × 0.3" 은 틀렸다, 렌더로 다시 쟀다 · 웹 800 · oklch 해시 ↔ 앱 700 · HSL 해시 — `entities/asset/ui/asset-logo.tsx:23-87` ↔ `asset_logo.dart`)는 [Logo Tile](logo-tile.md) 의 Migration notes, 카테고리 타일은 [List](list.md) 의 Migration notes 에 있다. 주식 타일은 증권 화면 차례에 정한다.
+
+### 2026-10-04 — 테두리를 투명 윤곽으로(v118)
+
+사용자가 [이미지 비교 페이지](https://claude.ai/artifact/G351nuKcYX2xhorvA5UD6X) 1A 에서 정했다 — "투명 윤곽 토큰 하나를 새로 두고 Avatar 윤곽도 이 색으로". 1px 안쪽 테두리가 불투명한 `stroke-neutral-subtle`(#EDEFF3 · 다크 #353B4D)에서 `stroke-neutral-overlay`(검정 4.7% · 다크 흰 5% — SEED stroke.neutral-subtle 의 값, v118)로 바뀐다. 흰 사진 둘레는 그대로 잡히고, 어두운 사진 · 이니셜 원 둘레에 생기던 옅은 테가 사라진다. 크기 · 두께는 그대로다. 사람 아바타의 "SEED 와 다른 점" 에서 이 줄이 빠졌다 — 이제 SEED 와 같다.

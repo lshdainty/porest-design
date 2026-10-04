@@ -352,6 +352,8 @@ function Prefix({ spec, f, look, mode, twoLine }: { spec: PrefixSpec; f: ListFac
       </span>
     );
   }
+  // 물건 · 카드 그림 — 그 부품의 그림 그대로(Logo Tile · Image Frame)
+  if ('node' in spec) return <>{spec.node}</>;
   // 사람 — Avatar(이니셜 + 이름 색 · 1px 안쪽 테두리). 줄의 제목이 이름이라 아바타는 장식
   if ('person' in spec) return <AvatarView look={look.avatar} mode={mode} size={twoLine ? look.avatarSize.two : look.avatarSize.one} name={spec.person} photo={spec.photo} />;
   const I = ICONS[spec.icon];

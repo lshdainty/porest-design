@@ -10,7 +10,7 @@
 #
 # SEED 와 다른 자리(list.md 의 "SEED 와 다른 점")
 #   - 좌우 여백은 화면 가장자리 규칙 spacing-global-gutter 24(SEED 16 — porest 2026-09-14 결정).
-#   - 앞 타일(내용 줄의 색 상자 40)을 둔다 — SEED 앞 자리는 아이콘 · 아바타 · 컨트롤뿐(사용자 결정).
+#   - 앞 타일(내용 줄의 색 상자 40)을 둔다 — SEED 앞 자리는 아이콘 · 아바타 · 컨트롤뿐(사용자 결정). 물건 줄의 로고 타일은 logo-tile.yaml.
 #   - 누름 · 호버 바탕은 불투명한 bg-layer-default-pressed(SEED transparent-pressed 는 투명도가 있어 검사기가 받지 않는다 — v102).
 #   - 막힌 줄은 값 글자 · 타일도 비활성 색(SEED 는 제목 · 설명 · 아이콘만 — porest 비활성은 전용 색, v106).
 #   SEED 와 같은 자리: 누르면 콘텐츠 층만 준다(SEED scaleScope: content — 배율은 기초 Feedback v104 의 2px 거리).
@@ -85,9 +85,9 @@ rules:
       tile:
         size: 40px
         radius: { value: $radius-r3, note: "크기 × 0.3 — 타일 크기를 바꾸면 모서리도 그 비율로" }
-        background: { value: "chart-{색}-weak", note: "카테고리 색의 옅은 바탕(v111)" }
+        background: { value: "chart-{색}-weak", note: "카테고리 색의 옅은 바탕(v111) — 이체 줄은 회색(chart-gray-weak, 2026-10-04). 은행 · 카드 같은 물건 줄은 Logo Tile(logo-tile.yaml)" }
         iconSize: 20px
-        color: { value: "chart-{색}", note: "카테고리 색 — 옅은 바탕 위 3:1 이상(가장 낮은 yellow 라이트 3.63). 글자(이니셜)를 넣으면 chart-{색}-contrast" }
+        color: { value: "chart-{색}", note: "카테고리 색 — 옅은 바탕 위 3:1 이상(가장 낮은 yellow 라이트 3.63). 이체 줄은 chart-gray. 아이콘이 없는 카테고리는 태그 아이콘(lucide tag) — 빈 칸 · 첫 글자를 넣지 않는다(2026-10-04)" }
       body:
         gap: $spacing-x0_5
         paddingRight: { value: $spacing-x2_5, note: "본문과 뒤 붙이개 사이" }

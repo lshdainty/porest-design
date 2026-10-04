@@ -29,9 +29,9 @@
 
 ### 모서리
 
-곧 올 내용의 모양을 따른다 — 글 · 숫자 8 *(기본)*, 목록 앞 타일 12(List 타일 — 거래 · 카테고리 줄), 카드 · 썸네일 16, 아바타 · 원 아이콘 · 칩 full, 화면 끝에 붙는 사진 0.
+곧 올 내용의 모양을 따른다 — 글 · 숫자 8 *(기본)*, 그림 자리(썸네일 · 카드 그림)는 [Image Frame](image-frame.md) 의 모서리(폭 24 이하 4 · 48 이하 6 · 그 위 8 — 다 받은 그림과 같은 모서리), 목록 앞 타일 12(List 타일 · Logo Tile 40 — 거래 · 카테고리 · 자산 줄), 카드 면 16(Card 모양 자리 전체), 아바타 · 원 아이콘 · 칩 full, 화면 끝에 붙는 사진 0. 카드 그림(신용카드 그림)은 카드 면이 아니라 그림이라 4 · 6 · 8 이다.
 
-[그림: 모서리 다섯 — 글 8 · 타일 12 · 카드 16 · 아바타 full · 화면 폭 사진 0](../../site/components/specs/skeleton.tsx#radius)
+[그림: 모서리 — 글 8 · 그림 4 · 6 · 8(폭으로) · 타일 12 · 카드 면 16 · 아바타 full · 화면 폭 사진 0](../../site/components/specs/skeleton.tsx#radius)
 
 [표: 모서리](skeleton.yaml#radius)
 
@@ -142,7 +142,7 @@
 | 목록 끝 더 불러오기 | 목록 아래 가운데 Progress Circle 24 |
 | 저장 · 제출 | 누른 버튼의 로딩([Button](button.md)) |
 | 올리기 · 받기(진행을 안다) | 값 있는 Progress Circle 24 |
-| 이미지 | 같은 모서리의 스켈레톤 — 없거나 실패하면 [Content Placeholder](content-placeholder.md) |
+| 이미지 | [Image Frame](image-frame.md) 이 그린다 — 같은 모서리의 스켈레톤, 없거나 실패하면 [Content Placeholder](content-placeholder.md). 물건 타일([Logo Tile](logo-tile.md))은 이름을 아니까 첫 글자부터 |
 
 [그림: 자리마다 — 첫 진입 스켈레톤 · 섹션 새로 고침 원 24 · 목록 끝 원 · 저장 버튼 로딩](../../site/components/specs/skeleton.tsx#which-guide)
 
@@ -170,7 +170,7 @@
 
 레시피 `recipes/shadcn/components/ui/skeleton.tsx` 를 쓴다. 조각은 `Skeleton`, 기다리는 영역은 `LoadingRegion`(시간표 · `aria-busy` · 오래 걸림 글 · 실패로 바꿈)이고, 앱 맨 위에 `LoadingAnnouncer` 를 한 번 둔다(화면의 상태 글 하나). 아래 미리보기는 스펙 값으로 그린 모습이다.
 
-- `Skeleton` — `radius`(`"0"` · `"8"` 기본 · `"16"` · `"full"`), `text`(`"t1"` ~ `"t14"` — 그 글자의 줄 높이를 높이로, 모서리 8), 크기 · 폭은 `className`. 늘 `aria-hidden` 이고, 글 자리(`span` · `p`) 안에도 둘 수 있게 `span`(블록)으로 그린다.
+- `Skeleton` — `radius`(`"0"` · `"4"` · `"6"` · `"8"` 기본 · `"12"` · `"16"` · `"full"` — 그림 자리는 Image Frame 의 `imageFrameRadius(폭)` 으로 고른다), `text`(`"t1"` ~ `"t14"` — 그 글자의 줄 높이를 높이로, 모서리 8), 크기 · 폭은 `className`. 늘 `aria-hidden` 이고, 글 자리(`span` · `p`) 안에도 둘 수 있게 `span`(블록)으로 그린다.
 - `LoadingRegion` — `pending`(처음 받는 중 · 내용 없음) · `failed`(내용 없이 실패) · `fallback`(스켈레톤, 또는 `"circle"` — 영역 가운데 Progress Circle 40) · `failure`(실패 때 — Result Section) · `children`(내용). 1초까지 `fallback` 을 보이지 않게 그려 높이를 지키고, 5초에 오래 걸림 글을 더하고, `pending` 동안 `aria-busy` 를 단다. 내용이 이미 있으면(같은 내용을 다시 받는 중) `pending` 이 아니다 — 내용을 그대로 둔다.
 - `LoadingAnnouncer` — 화면의 상태 글 하나. `LoadingRegion` 들이 여기에 알리고, 같은 글은 한 번만 읽는다.
 - `useWaitPhase(pending)` — `"quiet"`(0 ~ 1초) · `"waiting"`(1초 ~) · `"slow"`(5초 ~). 영역을 직접 짤 때 쓴다.
@@ -224,13 +224,14 @@ function TransactionRowsSkeleton({ rows }: { rows: number }) {
 </Card>
 ```
 
-### 모양 넷
+### 모양 다섯
 
-[그림: 글 · 카드 · 아바타 · 화면 폭 사진](../../site/components/specs/skeleton.tsx#ex-shapes)
+[그림: 글 · 썸네일 · 카드 면 · 아바타 · 화면 폭 사진](../../site/components/specs/skeleton.tsx#ex-shapes)
 
 ```tsx
 <Skeleton text="t4" className="w-40" />                  {/* 글 — 높이 19, 모서리 8(기본) */}
-<Skeleton radius="16" className="h-28 w-full" />          {/* 카드 · 썸네일 */}
+<Skeleton radius="6" className="size-10" />               {/* 썸네일 40 — Image Frame 모서리(폭 48 이하 6) */}
+<Skeleton radius="16" className="h-28 w-full" />          {/* 카드 면 */}
 <Skeleton radius="full" className="size-10" />            {/* 아바타 */}
 <Skeleton radius="0" className="aspect-[4/3] w-full" />  {/* 화면 폭 사진 */}
 ```
@@ -307,7 +308,7 @@ new QueryClient({
 ### ✅ Do
 
 - 틀(머리 · 탭 · 제목 · 버튼 · 카드 면)은 그리고 데이터 자리만 스켈레톤.
-- 글 자리는 그 글자의 줄 높이, 모서리는 내용대로(글 8 · 타일 12 · 카드 16 · 아바타 full · 사진 0).
+- 글 자리는 그 글자의 줄 높이, 모서리는 내용대로(글 8 · 그림 4 · 6 · 8 · 타일 12 · 카드 면 16 · 아바타 full · 화면 폭 사진 0).
 - 흰 면(카드 · 시트 · 대화상자) 위에.
 - 1초까지 기다렸다 보이고, 5초에 한 줄, 10초에 실패 + 다시 시도.
 - 달을 바꾸면 머리는 바로, 바뀔 숫자 · 목록 자리만 기다린다.
@@ -335,6 +336,7 @@ new QueryClient({
 - **모션 줄이기면 띠가 멈춘다**(v104) — SEED 는 계속 돈다.
 - **보조 기술에 알린다** — 영역 `aria-busy` + 화면의 상태 글 하나. SEED 웹은 아무것도 남기지 않는다.
 - **모서리 기본값 8** — SEED 코드와 같다(rootage 는 0 을 기본이라 적었다).
+- **썸네일 자리는 Image Frame 의 모서리(4 · 6 · 8)** — SEED Skeleton 표는 "카드 및 썸네일 16" 이지만, 같은 문서 그림의 상품 썸네일은 약 8 이고 SEED Image Frame 은 폭으로 4 · 6 · 8 이다. 다 받은 그림과 같은 모서리로 둔다 — 16 은 카드 면만.
 - **magic(AI) 톤은 두지 않는다** — 그 띠(gradient)도 들이지 않았다(v104).
 - **기다리는 동안의 시간표 · 요청 제한 · 다시 시도를 수치로 둔다** — SEED 는 Loading 패턴의 시나리오(5초 안내 · 10초 실패)로만 적었고 구현에는 장치가 없다.
 
@@ -350,3 +352,7 @@ new QueryClient({
 - **Desk 앱** — `PSkeleton`(`shared/widgets/p_skeleton.dart:16-119`, 308개 · 38파일 · 화면 스켈레톤 46)은 깜빡임 2초 · #f0f2f7 · 모서리 4, 스켈레톤마다 컨트롤러가 따로라 엇갈려 깜빡인다(`p_skeleton.dart:53-58`). 의미 트리가 비어 있다(증권 4곳만 이름 — `stocks/toss_stocks_view.dart:2352 · 2450 · 2471 · 2774`). riverpod 기본 재시도 10번이 전역에 켜져(`app/session_scope.dart:74-80`) 0.3초 만에 실패하는 조회가 41초 동안 스켈레톤이다. `.when` 38파일(예: `expense/expense_screen.dart:271-279`)은 달을 바꾸면 화면 통째 스켈레톤으로 돌아가고, 새로 고침이 실패하면 보던 내용을 지운다. `PDayGroupSkeleton` 64 ↔ 65(`shared/widgets/p_day_group.dart:136-162`).
 - **HR 웹** — shadcn `Skeleton`(`shared/ui/shadcn/skeleton.tsx:3-11`, 398개 · 53파일)은 `bg-accent` #f8f8f8 로 흰 바탕 위 1.06:1, 모서리 6, 모션 줄이기에도 깜빡인다. 재시도 3번 약 7초 · 요청 제한 없음(`app/providers/QueryProvider.tsx:14-20`), 연도 · 필터를 바꿀 때마다 새 키로 다시 스켈레톤. 세션 확인 동안 화면을 덮는 회색 막 "Loading"(`shared/ui/loading/Loading.tsx:3-7` · `app/router/Router.tsx:78-81`). 사진 올리는 중 자리는 다크에서도 밝은 그라디언트이고 전역 `@keyframes shimmer` 를 덮어쓴다(`features/user-profile/ui/UserEditDialog.tsx:236-255`).
 - 앱 적용 때 화면마다 정할 자리 — 어느 쿼리가 화면을 통째로 기다리는지(웹 페이지 스켈레톤 · 첫 번만 3화면), 지연 로딩 페이지 이동 중 표시, 홈 히어로의 흰 정지 막대(앱 `dashboard/dashboard_screen.dart:713-726`).
+
+### 2026-10-04 — 그림 자리의 모서리를 Image Frame 대로
+
+사용자가 [이미지 비교 페이지](https://claude.ai/artifact/G351nuKcYX2xhorvA5UD6X) 2A 에서 정했다 — 그림 모서리는 SEED 폭 기준(24 이하 4 · 48 이하 6 · 그 위 8 · 화면 폭 0)이고, 불러오는 동안의 스켈레톤도 다 받은 그림과 같은 모서리다. 그래서 "카드 · 썸네일 16" 을 둘로 나눴다 — 썸네일 · 카드 그림 같은 그림 자리는 [Image Frame](image-frame.md) 의 모서리(`radius` 에 `"4"` · `"6"` 을 더하고 `"8"` 이 49 이상의 그림도 맡는다), `"16"` 은 카드 면(Card 모양 자리 전체)만이다. 그림 자리의 모서리는 레시피의 `imageFrameRadius(폭)` 이 고른다 — 손으로 고르지 않는다. 레시피 `Skeleton` 의 `radius` 에 `"4"` · `"6"` 이 더해진다. Image Frame 은 제 스켈레톤을 그 틀 안에 그리므로, 이 값을 쓰는 것은 줄이 통째로 기다릴 때처럼 틀 밖에서 그림 자리를 그릴 때다. 물건 타일([Logo Tile](logo-tile.md))은 이름을 알면 스켈레톤 없이 첫 글자부터 그린다(이미지 비교 6B).

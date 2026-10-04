@@ -18,7 +18,7 @@
 
 [그림: 한 줄은 앞 붙이개 · 본문(제목 · 설명) · 뒤 붙이개로 이뤄지고, 목록 위에 목록 제목을 둔다](../../site/components/specs/list.tsx#anatomy)
 
-| ⓐ Prefix | 앞 붙이개 — 설정 · 메뉴 줄은 아이콘 22, 색이 뜻을 가진 내용 줄은 타일 40. 아바타 · 체크 · 라디오도 둔다. |
+| ⓐ Prefix | 앞 붙이개 — 설정 · 메뉴 줄은 아이콘 22, 색이 뜻을 가진 내용 줄은 타일 40, 은행 · 카드 같은 물건 줄은 로고 타일 40. 아바타 · 카드 그림 · 체크 · 라디오도 둔다. |
 | ⓑ Title | 제목 — 16 · 400. 무엇인지 한 줄로. |
 | ⓒ Detail | 설명 — 13 · 옅은 색. 제목만으로 모자랄 때만. |
 | ⓓ Suffix | 뒤 붙이개 — 값 글자 · 오른쪽 화살표 · 스위치 · 체크 · 라디오 · 작은 버튼. |
@@ -109,10 +109,12 @@
 앞 붙이개는 줄이 무엇인지 먼저 알린다.
 
 - **아이콘 22**(`fg-neutral`) — 설정 · 메뉴 줄.
-- **타일 40**(모서리 12) — 색이 뜻을 가진 내용 줄(거래 · 카테고리 · 알림 종류). 바탕은 카테고리 색의 옅은 바탕(`chart-{색}-weak`, v111), 아이콘 20 은 그 색이다. 크기를 바꾸면 모서리도 크기 × 0.3 으로.
+- **타일 40**(모서리 12) — 색이 뜻을 가진 내용 줄(거래 · 카테고리 · 알림 종류). 바탕은 카테고리 색의 옅은 바탕(`chart-{색}-weak`, v111), 아이콘 20 은 그 색이다. 아이콘이 없는 카테고리는 태그 아이콘(lucide `tag`) 하나로 그린다 — 빈 칸 · 첫 글자를 넣지 않는다. 이체 줄은 회색(`chart-gray-weak` + `chart-gray`)이다 — 카테고리가 아니라 돈의 이동이다. 크기를 바꾸면 모서리도 크기 × 0.3 으로.
+- **로고 타일 40**([Logo Tile](logo-tile.md)) — 은행 · 증권 · 카드 · 코인 · 금 같은 물건 줄(자산 · 계좌 관리). 기관 색 + 첫 글자, 그림이 있으면 덮는다. 막힌 줄에서도 그대로다.
+- **카드 그림 56**([Image Frame](image-frame.md) 의 카드 그림) — 카드 혜택 목록처럼 카드 자체가 줄인 자리. 폭 56 · 카드 비율.
 - **아바타**([Avatar](avatar.md) — 한 줄이면 36, 이름 + 설명 두 줄이면 42) · **체크 · 라디오**(컨트롤 줄 — 24).
 
-[그림: 앞 붙이개 — 아이콘 · 타일 · 아바타 · 체크](../../site/components/specs/list.tsx#prefix)
+[그림: 앞 붙이개 — 아이콘 · 타일 · 로고 타일 · 카드 그림 · 아바타 · 체크](../../site/components/specs/list.tsx#prefix)
 
 ### Suffix
 
@@ -208,7 +210,7 @@
 
 ### 앞 붙이개 고르기
 
-설정 · 메뉴 줄은 아이콘, 색이 뜻을 가진 내용 줄은 타일이다(사용자 결정). 한 목록 안에서 섞지 않는다.
+설정 · 메뉴 줄은 아이콘, 색이 뜻을 가진 내용 줄은 타일이다(사용자 결정). 물건(은행 · 카드 · 증권) 줄은 로고 타일이다. 한 목록 안에서 섞지 않는다 — 자산 목록은 로고 타일, 거래 목록은 카테고리 타일.
 
 [그림: 설정은 아이콘, 가계부는 타일](../../site/components/specs/list.tsx#prefix-guide)
 
@@ -383,3 +385,15 @@ import { List, ListButtonItem, ListItem } from "@/components/ui/list"
 ### 2026-10-03 — 합계에 안 드는 줄
 
 사용자가 [표시 비교 페이지](https://claude.ai/artifact/4ySVacsdnG4fgraR1HRK3G) 3A 로 정했다 — 불투명도를 걷고 제목 · 금액만 `fg-neutral-subtle`, 환불 금액은 취소선, 배지는 보통 대비. 지금 웹 · 앱은 예정 · 환불 줄 전체를 불투명도 0.6 으로 흐려 "예정" · "환불됨" 배지가 웹 2.30 · 다크 2.77, 앱 2.39 · 2.87:1 이다(웹 `shared/ui/porest/ledger.tsx:555` · `entities/expense/ui/expense-row.tsx:58 · 81-84` · `entities/asset/ui/transfer-row.tsx:75`, 앱 `features/expense/presentation/widgets/expense_row.dart:84-86` · `transfer_row.dart:130`). 코드 주석은 "흐림만으로는 아직 안 온 것과 구별이 안 돼 배지로 가른다" 고 적었는데 그 배지가 흐려진다. 메타 줄은 2.47 · 3.02 였다. 줄의 설명 줄은 [Tag Group](tag-group.md) 으로 그린다.
+
+### 2026-10-04 — 카테고리 타일 세부 · 물건 줄
+
+사용자가 [이미지 비교 페이지](https://claude.ai/artifact/G351nuKcYX2xhorvA5UD6X)의 "따라오는 것" 에서 정했다 — 카테고리 타일의 아이콘은 이 스펙의 20, 아이콘이 없는 카테고리는 태그 아이콘 하나, 이체 줄 타일은 회색. 은행 · 증권 · 카드 같은 물건 줄의 앞은 [Logo Tile](logo-tile.md)(같은 40 · 모서리 × 0.3), 카드 혜택 목록의 앞은 카드 그림 56([Image Frame](image-frame.md))이다.
+
+제품은 앱 적용 단계에서 옮긴다(2026-10-03 조사).
+
+- **아이콘 18** — 웹 `CategoryChip` md(`shared/ui/porest/category-chip.tsx:9-40` — 32 / 40 / 48 에 16 / 18 / 22)와 앱 줄 타일이 18 이다. 40 타일은 20 으로.
+- **없는 아이콘의 대체가 셋** — 웹 줄 타일은 빈 칸(`shared/ui/porest/primitives.tsx:76-82`), 웹 고르는 칸 · 손 타일은 첫 글자(`shared/lib/icon-map.tsx:31` — `CategoryTile` 이 "구 구독" 으로 읽힌다), 앱은 태그 아이콘(`shared/icons/lucide_icon_map.dart:11-14`). 태그 아이콘 하나로.
+- **이체 줄 타일이 브랜드 파랑** — 웹 `entities/asset/ui/transfer-row.tsx:60` 이 `color="var(--fg-tertiary)"` 로 회색을 뜻했는데, 색 이름이 아니라 `var(...)` 라 표에서 못 찾고 색 없음 분기(브랜드 18% + #0147ad · 다크 #5fa0e5 — `shared/lib/porest/chart-palette.ts:103-140`)로 간다. 앱은 회색이다(`features/expense/presentation/widgets/transfer_row.dart:82`). `chart-gray-weak` + `chart-gray` 로.
+- **손으로 짠 타일** — 웹 약 20곳(18 ~ 48, 예산 36 · 12 처럼 × 0.3 이 아닌 모서리 — `pages/budget/ui/BudgetPage.tsx:1314`), 앱 `PRadius.tile(` 39곳 · 24파일. 앱 `PCategoryTile` 은 버튼으로 읽히지 않는다(`shared/widgets/p_category_tile.dart:37` — 라벨 + 누르기뿐). List 의 타일로 옮긴다.
+- **자산 줄 · 계좌 관리 줄의 로고 타일**은 [Logo Tile](logo-tile.md) 의 Migration notes 에 있다. 대시보드 결제 예정(반복 = 구독) 줄의 "D-3" 글 타일(`pages/dashboard/ui/DashboardPage.tsx:1790-1812`)은 가맹점 · 구독 로고와 함께 다음 차례에 정한다.

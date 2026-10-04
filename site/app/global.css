@@ -572,3 +572,22 @@ html > body[data-scroll-locked] {
 .pdp-noscroll::-webkit-scrollbar {
   display: none;
 }
+/* 이미지 묶음 그림(image-view) — 기관 색 면의 짙은 글자(라이트 fg-neutral · 다크 fg-neutral-inverted)처럼 모드마다 다른 토큰을 쓰는 글자.
+   라이트(-l) · 다크(-d) 값을 둘 다 싣고, 사이트가 다크면 -d 를 쓴다(data-mode=auto 일 때) */
+.pimg {
+  --pi-fg: var(--pi-fg-l);
+}
+.dark .pimg[data-mode='auto'] {
+  --pi-fg: var(--pi-fg-d);
+}
+/* 그림이 옴(image-frame.yaml motion) — 투명도 전환. 시간 · 곡선은 그림이 YAML 값으로 싣는다. 모션 줄이기면 바로 나타난다 */
+.pif-reveal {
+  transition-property: opacity;
+  transition-duration: var(--pif-d);
+  transition-timing-function: var(--pif-e);
+}
+@media (prefers-reduced-motion: reduce) {
+  .pif-reveal {
+    transition: none;
+  }
+}

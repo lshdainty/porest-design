@@ -14,6 +14,7 @@ import { Verdict, rc, type Mode } from './kit';
 import { ChipGroupView, ChipView } from './chip-view';
 import { chipLook } from './chip-look';
 import { SK_RADII, type SkRadius, type SkText } from './loading-look';
+import { imageFrameLook, imageFrameRadius } from './image-look';
 import { SkeletonListDemo, SkeletonPeriodDemo } from './loading-demos';
 import { SkeletonPlayground } from './loading-playground';
 import { Bone, CardBox, Circle, L, LdPhone, MonthNav, SCREEN, SK_ROW, SlowText, SpendHead, StatRows, TimelineBar, TxList, TxSkeletonRows, keepMark, rowDims, type Fig } from './loading-screens';
@@ -44,14 +45,16 @@ function LedgerLoading({ mode, still }: { mode: Mode; still?: boolean }) {
     </div>
   );
 }
-// 카드 혜택 — 카드 그림(16) · 이름, 혜택 줄(썸네일 16)
+// 카드 혜택 — 카드 그림 · 이름, 혜택 줄(썸네일). 그림 자리는 Image Frame 의 모서리(폭으로 — 112 → 8 · 40 → 6), 카드 면만 16
+const CARD_W = 112;
 function BenefitLoading({ mode }: { mode: Mode }) {
   const d = rowDims();
+  const f = imageFrameLook();
   return (
     <div className="flex flex-col gap-3 px-4 pt-1">
       <CardBox mode={mode} padBottom={0}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: 24 }}>
-          <Bone mode={mode} radius="16" width={112} height={Math.round(112 / 1.586)} />
+          <Bone mode={mode} radius={imageFrameRadius(CARD_W, f.bands)} width={CARD_W} height={CARD_W / f.ratios.card.value} />
           <span className="flex flex-col" style={{ gap: d.bodyGap }}>
             <Bone mode={mode} text="t5" width={120} />
             <Bone mode={mode} text="t3" width={88} />
@@ -59,7 +62,7 @@ function BenefitLoading({ mode }: { mode: Mode }) {
         </div>
       </CardBox>
       <CardBox mode={mode} title="받을 수 있는 혜택">
-        <TxSkeletonRows n={3} mode={mode} avatar="16" amount={false} widths={{ ...SK_ROW, title: 150, detail: 110 }} />
+        <TxSkeletonRows n={3} mode={mode} avatar={imageFrameRadius(SK_ROW.avatar, imageFrameLook().bands)} amount={false} widths={{ ...SK_ROW, title: 150, detail: 110 }} />
       </CardBox>
     </div>
   );
@@ -153,47 +156,63 @@ const Anatomy: Fig = ({ caption }) => {
 };
 
 // ── Properties ────────────────────────────────────────────
-// 모서리 넷 — 값 · 토큰 · 쓰는 곳은 skeleton.yaml 의 radius 축
-const RADIUS_ORDER: SkRadius[] = ['8', '12', '16', 'full', '0'];
+// 모서리 — 값 · 토큰 · 쓰는 곳은 skeleton.yaml 의 radius 축. 그림 자리(썸네일 24 · 40 · 카드 그림 112)는 Image Frame 이 폭으로 고른 모서리와 같아야 한다
+const PIC_W = { r4: 24, r6: 40, r8: 112 };
 const Radius: Fig = ({ caption }) => {
   const spec = loadComponentSpec('skeleton');
-  if (RADIUS_ORDER.length !== SK_RADII.length) throw new Error('skeleton.tsx 의 모서리 그림이 radius 축과 다르다');
+  const f = imageFrameLook();
   const token = (r: SkRadius) => {
     const raw = resolveState(spec, { radius: r }, 'enabled')['root.radius'];
     const v = String(raw && typeof raw === 'object' && 'value' in raw ? (raw as { value: unknown }).value : raw);
     return v.startsWith('$') ? v.slice(1) : v;
   };
-  const shape: Record<SkRadius, ReactNode> = {
-    '8': <Bone text="t4" width={120} />,
-    '12': <Bone radius="12" width={40} height={40} />,
-    '16': <Bone radius="16" width={120} height={96} />,
-    full: <Bone radius="full" width={40} height={40} />,
-    '0': (
-      <div className="overflow-hidden" style={{ width: 120, borderRadius: 18, border: '5px solid var(--p-frame)', background: rc('bg-layer-default') }}>
-        <Bone radius="0" width="100%" height={82} />
-        <div className="flex flex-col gap-1.5 p-3">
-          <Bone text="t4" width={70} />
-        </div>
-      </div>
-    ),
+  // 그림 자리 — 그 폭의 Image Frame 모서리가 스켈레톤 값과 같은지(바뀌면 그림을 고친다)
+  const pic = (w: number, want: SkRadius) => {
+    const got = imageFrameRadius(w, f.bands);
+    if (got !== want || f.radius[got].px !== sk().radius[want]) throw new Error(`skeleton.tsx — 폭 ${w} 그림 자리의 Image Frame 모서리(${got})가 스켈레톤 ${want} 과 다르다`);
+    return want;
   };
+  const cells: { r: SkRadius; what: string; shape: ReactNode }[] = [
+    { r: '8', what: '글 · 숫자', shape: <Bone text="t4" width={120} /> },
+    { r: pic(PIC_W.r4, '4'), what: `그림 ${PIC_W.r4}`, shape: <Bone radius="4" width={PIC_W.r4} height={PIC_W.r4} /> },
+    { r: pic(PIC_W.r6, '6'), what: `그림 ${PIC_W.r6}`, shape: <Bone radius="6" width={PIC_W.r6} height={PIC_W.r6} /> },
+    { r: pic(PIC_W.r8, '8'), what: `카드 그림 ${PIC_W.r8}`, shape: <Bone radius="8" width={PIC_W.r8} height={PIC_W.r8 / f.ratios.card.value} /> },
+    { r: '12', what: '목록 앞 타일 40', shape: <Bone radius="12" width={40} height={40} /> },
+    { r: '16', what: '카드 면', shape: <Bone radius="16" width={120} height={96} /> },
+    { r: 'full', what: '아바타', shape: <Bone radius="full" width={40} height={40} /> },
+    {
+      r: '0',
+      what: '화면 폭 사진',
+      shape: (
+        <div className="overflow-hidden" style={{ width: 120, borderRadius: 18, border: '5px solid var(--p-frame)', background: rc('bg-layer-default') }}>
+          <Bone radius="0" width="100%" height={82} />
+          <div className="flex flex-col gap-1.5 p-3">
+            <Bone text="t4" width={70} />
+          </div>
+        </div>
+      ),
+    },
+  ];
+  const seen = new Set(cells.map((c) => c.r));
+  if (SK_RADII.some((r) => !seen.has(r))) throw new Error('skeleton.tsx 의 모서리 그림이 radius 축을 모두 그리지 않는다');
   return (
-    <Figure caption={caption}>
-      <div className="grid grid-cols-2 gap-4">
-        {RADIUS_ORDER.map((r) => (
-          <div key={r} className="flex w-[150px] flex-col items-center gap-3">
-            <div className="flex h-[170px] w-full items-center justify-center rounded-xl pk-surface">{shape[r]}</div>
+    <Panel caption={caption}>
+      <div className="mx-auto grid max-w-[680px] grid-cols-2 gap-3 md:grid-cols-4">
+        {cells.map((c, i) => (
+          <div key={i} className="flex min-w-0 flex-col items-center gap-3">
+            <div className="flex h-[170px] w-full items-center justify-center overflow-hidden rounded-xl pk-surface">{c.shape}</div>
             <span className="flex flex-col items-center gap-0.5 text-center text-[12px] leading-4 pk-muted">
               <b className="text-[13px] pk-text">
-                {r} · {token(r)}
-                {r === sk().defaultRadius ? '(기본)' : ''}
+                {c.r} · {token(c.r)}
+                {c.r === sk().defaultRadius && i === 0 ? '(기본)' : ''}
               </b>
-              {axisDesc(spec, 'radius', r)}
+              <span className="pk-text">{c.what}</span>
+              {axisDesc(spec, 'radius', c.r)}
             </span>
           </div>
         ))}
       </div>
-    </Figure>
+    </Panel>
   );
 };
 
@@ -625,17 +644,21 @@ const RefreshGuide: Fig = ({ caption }) => {
 
 // ── 코드 미리보기 ─────────────────────────────────────────
 const ExList: Fig = () => <SkeletonListDemo kit={L()} screen={SCREEN()} result={resultSectionLook()} list={listLook()} />;
-// 모양 넷 — 코드 그대로: w-40(160) · h-28 w-full(112) · size-10(40) · aspect-[4/3] w-full
-const ExShapes: Fig = () => (
-  <Figure>
-    <div className="flex w-[320px] flex-col gap-4 rounded-2xl p-6 pk-surface">
-      <Bone text="t4" width={160} />
-      <Bone radius="16" width="100%" height={112} />
-      <Bone radius="full" width={40} height={40} />
-      <Bone radius="0" width="100%" style={{ aspectRatio: '4 / 3' }} />
-    </div>
-  </Figure>
-);
+// 모양 다섯 — 코드 그대로: w-40(160) · size-10(40, 모서리 6 — 폭 40 의 Image Frame 모서리) · h-28 w-full(112) · size-10 · aspect-[4/3] w-full
+const ExShapes: Fig = () => {
+  if (imageFrameRadius(40, imageFrameLook().bands) !== '6') throw new Error('skeleton.md 의 썸네일 40 예시(radius="6")가 Image Frame 모서리와 다르다');
+  return (
+    <Figure>
+      <div className="flex w-[320px] flex-col gap-4 rounded-2xl p-6 pk-surface">
+        <Bone text="t4" width={160} />
+        <Bone radius="6" width={40} height={40} />
+        <Bone radius="16" width="100%" height={112} />
+        <Bone radius="full" width={40} height={40} />
+        <Bone radius="0" width="100%" style={{ aspectRatio: '4 / 3' }} />
+      </div>
+    </Figure>
+  );
+};
 const ExPeriod: Fig = () => <SkeletonPeriodDemo kit={L()} screen={SCREEN()} />;
 
 export const skeletonFigures: Record<string, Fig> = {

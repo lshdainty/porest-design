@@ -12,14 +12,17 @@ import { cn } from "@/lib/utils";
  *   avatarHue      이름 색 — 표시 이름의 유니코드 코드 포인트(UTF-16 단위가 아니다) 합 % 10 → 차트 10색(v110 순서)
  *                  blue · green · orange · violet · pink · indigo · red · yellow · brown · gray.
  *                  "김민수" 142420 → blue · "이서연" 151168 → brown · "Kim Minsu" 845 → indigo. 이름이 비면 gray(글자 없음)
- *                  앱은 같은 규칙을 Dart 로 두고(characters.first · runes) 이 예시 이름으로 같은 답이 나오는지 시험한다
+ *                  앱은 같은 규칙을 Dart 로 두고(characters.first · runes) 이 예시 이름으로 같은 답이 나오는지 시험한다.
+ *                  물건(은행 · 증권 · 카드 · 코인 · 금 · 회사)의 Logo Tile 도 이 두 함수로 첫 글자 · 이름 색을 고른다(logo-tile.tsx)
  *
  * 크기 10단계 — 20 · 24 · 36 · 42 · 48(기본) · 56 · 64 · 80 · 96 · 108. 자리마다 대표 크기를 쓴다(한 줄 목록 36 · 두 줄 42 ·
  * 줄 안 묶음 24 · Desk 계정 머리 80 · HR 큰 사진 96 · 사진 수정 108). 이 밖의 크기를 만들지 않는다.
- * 모든 크기에 1px 안쪽 테두리 stroke-neutral-subtle — ::after 로 사진 · 이니셜 위에 겹친다(크기가 변하지 않는다, 흰 사진이
- * 흰 바탕에 묻히지 않게). 이니셜은 이름 색(chart-{색} — 라이트 700 · 다크 800-dark) 바탕에 fg-neutral-inverted(라이트 흰 ·
- * 다크 짙은 글자 — 다크에서 흰 글자는 1.88 ~ 2.39 라 쓰지 않는다) · 700 · 줄 높이 1, 글자는 지름의 40%(가장 작아도 10)이고
- * 글자 크기 설정을 따르지 않는 px 다(원 안에서 넘치지 않게). 사람 그림 · 회색 한 색 · 브랜드 채움 · 두 글자 이니셜은 쓰지 않는다.
+ * 모든 크기에 1px 안쪽 투명 테두리 stroke-neutral-overlay(v118 — 검정 4.7% · 다크 흰 5%, SEED stroke.neutral-subtle 의 값) —
+ * ::after 로 사진 · 이니셜 위에 겹친다(크기가 변하지 않는다). 흰 사진이 흰 바탕에 묻히지 않고, 어두운 사진 · 이니셜 원 둘레에는
+ * 옅은 테가 생기지 않는다. Image Frame · Logo Tile 의 윤곽과 같은 색이다.
+ * 이니셜은 이름 색(chart-{색} — 라이트 700 · 다크 800-dark) 바탕에 fg-neutral-inverted(라이트 흰 · 다크 짙은 글자 — 다크에서
+ * 흰 글자는 1.88 ~ 2.39 라 쓰지 않는다) · 700 · 줄 높이 1, 글자는 지름의 40%(가장 작아도 10)이고 글자 크기 설정을 따르지 않는
+ * px 다(원 안에서 넘치지 않게). 사람 그림 · 회색 한 색 · 브랜드 채움 · 두 글자 이니셜은 쓰지 않는다.
  * 이니셜이 먼저 그려지고 사진이 오면 덮는다(다 불러오면 이니셜을 걷는다 — 스켈레톤을 따로 두지 않는다). 사진을 못 불러오면
  * 이니셜 그대로라 깨진 그림 · 빈 원이 보이지 않는다. 이름이 바뀌면 이니셜 · 이름 색이 바로 바뀐다.
  *
@@ -66,10 +69,10 @@ function avatarHue(name: string): AvatarHue {
 }
 
 // ── 아바타 ───────────────────────────────────────────────────
-// 원 — 사진 · 이니셜을 원으로 자른다. ::after 가 1px 안쪽 테두리(사진 · 이니셜 위)
+// 원 — 사진 · 이니셜을 원으로 자른다. ::after 가 1px 안쪽 투명 테두리(사진 · 이니셜 위)
 const ROOT = [
   "relative inline-flex shrink-0 select-none items-center justify-center overflow-hidden rounded-full align-middle",
-  "after:pointer-events-none after:absolute after:inset-0 after:rounded-full after:shadow-[inset_0_0_0_1px_var(--color-stroke-neutral-subtle)] after:content-['']",
+  "after:pointer-events-none after:absolute after:inset-0 after:rounded-full after:shadow-[inset_0_0_0_1px_var(--color-stroke-neutral-overlay)] after:content-['']",
 ].join(" ");
 
 // 이니셜 — 이름 색 바탕 · fg-neutral-inverted · 700 · 줄 높이 1(px — 글자 크기 설정을 따르지 않는다).

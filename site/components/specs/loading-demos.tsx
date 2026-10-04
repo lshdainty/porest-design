@@ -15,7 +15,7 @@ import type { ListLook } from './list-shared';
 import { ListView } from './list-view';
 import { CATEGORY, FILTER_CHIPS, MONTH_STATS, TERMS, TX } from './loading-data';
 import { FONT, lcv, phaseAt, type LdScreen, type LdTone, type LoadingKit, type RowDims, type SkeletonLook, type ViewMode } from './loading-shared';
-import { ContentPlaceholderView, ProgressCircleView, ScrollFogView, SkeletonRowsView, SkeletonView, SlowTextView } from './loading-view';
+import { ProgressCircleView, ScrollFogView, SkeletonRowsView, SkeletonView, SlowTextView } from './loading-view';
 import type { OvKit } from './overlay-shared';
 import { DemoFrame, ResponsiveLayer } from './overlay-demos';
 import { useReducedMotion } from './overlay-view';
@@ -544,61 +544,6 @@ export function FogRowDemo({ kit, chip, screen, mode = 'auto' }: { kit: LoadingK
           </ScrollFogView>
         </div>
       </div>
-    </Board>
-  );
-}
-
-// ── Content Placeholder — 카드 그림(ex-basic) ─────────────────
-type CardItem = { name: string; image: 'none' | 'broken' | 'ok' };
-const CARDS: CardItem[] = [
-  { name: '현대카드 M', image: 'none' },
-  { name: '국민 체크카드', image: 'broken' },
-  { name: '신한카드 Deep', image: 'ok' },
-];
-// 카드 그림(불러온 그림) — 그림 장식
-function CardArt() {
-  return <span aria-hidden style={{ display: 'block', width: '100%', height: '100%', background: 'linear-gradient(135deg, #2F3A57 0%, #4D5B82 55%, #7F8DB8 100%)' }} />;
-}
-export function PlaceholderCardDemo({ kit, screen, mode = 'auto' }: { kit: LoadingKit; screen: LdScreen; mode?: ViewMode }) {
-  const [round, setRound] = useState(0);
-  const [t, setT] = useState<number | null>(null);
-  useEffect(() => {
-    if (round === 0) return;
-    const t0 = performance.now();
-    setT(0);
-    const id = window.setInterval(() => {
-      const e = performance.now() - t0;
-      setT(e);
-      if (e > 2600) window.clearInterval(id);
-    }, 100);
-    return () => window.clearInterval(id);
-  }, [round]);
-  const sk = kit.skeleton;
-  // 불러오기 — 그림 없음은 처음부터 대체 그림, 실패는 2초에, 성공은 1.6초에 온다(1초까지는 비워 둔다)
-  const view = (c: CardItem) => {
-    if (c.image === 'none') return <ContentPlaceholderView look={kit.placeholder} mode={mode} icon="credit-card" label={`${c.name} 카드 그림`} />;
-    const loading = t !== null && t < (c.image === 'ok' ? 1600 : 2000);
-    if (loading) return <SkeletonView look={sk} mode={mode} radius="8" width="100%" height="100%" hidden={(t ?? 0) < sk.region.showAfter} style={{ borderRadius: 0 }} />;
-    if (c.image === 'broken') return <ContentPlaceholderView look={kit.placeholder} mode={mode} icon="credit-card" label={`${c.name} 카드 그림`} />;
-    return <CardArt />;
-  };
-  return (
-    <Board w={420}>
-      <div style={{ background: tone(screen, 'bg-layer-default', mode), borderRadius: 20, padding: '8px 0', fontFamily: FONT }}>
-        {CARDS.map((c) => (
-          <div key={c.name} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '12px 24px' }}>
-            {/* 틀 — 크기 · 비율 · 모서리는 틀이 정한다(aspect-[1.586] w-28 rounded-r2) */}
-            <div style={{ width: 112, aspectRatio: '1.586', overflow: 'hidden', borderRadius: sk.radius['8'], flexShrink: 0 }}>{view(c)}</div>
-            <span style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <span style={{ fontSize: 16, lineHeight: '22px', fontWeight: 500, color: tone(screen, 'fg-neutral', mode) }}>{c.name}</span>
-              <span style={{ fontSize: 13, lineHeight: '18px', color: tone(screen, 'fg-neutral-subtle', mode) }}>{c.image === 'none' ? '그림 없음' : c.image === 'broken' ? '그림을 불러오지 못함' : '그림을 불러옴'}</span>
-            </span>
-          </div>
-        ))}
-      </div>
-      <CtlRow note={t !== null && t < 2600 ? `${secs(t)}` : undefined}>
-        <Ctl onClick={() => setRound((r) => r + 1)}>다시 불러오기</Ctl>
-      </CtlRow>
     </Board>
   );
 }

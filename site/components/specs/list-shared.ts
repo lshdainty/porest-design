@@ -99,8 +99,9 @@ export const LIST_ICONS = [
 ] as const;
 export type ListIcon = (typeof LIST_ICONS)[number];
 
-// 사람은 Avatar(이름으로 이니셜 · 이름 색, photo 는 사진 그림 번호) — 물건 · 분류는 타일
-export type PrefixSpec = { icon: ListIcon } | { tile: string; icon: ListIcon } | { person: string; photo?: number };
+// 사람은 Avatar(이름으로 이니셜 · 이름 색, photo 는 사진 그림 번호) — 분류는 타일. 물건(Logo Tile) · 카드 그림(Image Frame)은
+// 그 부품의 그림을 node 로 넘긴다(막힌 줄에서도 그대로 — logo-tile.md)
+export type PrefixSpec = { icon: ListIcon } | { tile: string; icon: ListIcon } | { person: string; photo?: number } | { node: ReactNode };
 export type SuffixSpec = { text?: string; chevron?: boolean; amount?: string; buttons?: ListIcon[]; icon?: ListIcon };
 
 // 한 줄 — 종류 · 글 · 앞 · 뒤. state 를 주면 그 상태로 멈춘 그림

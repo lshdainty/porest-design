@@ -84,7 +84,7 @@ export function SkeletonView({ look, mode = 'auto', radius, text, width = '100%'
   );
 }
 
-// 거래 줄 스켈레톤 — 껍데기는 List 의 줄 그대로(dims), 글 자리는 그 글자의 줄 높이(제목 t5 · 메타 t3 · 금액 t5), 앞 자리는 List 타일 12(썸네일이면 16 · 사람이면 full)
+// 거래 줄 스켈레톤 — 껍데기는 List 의 줄 그대로(dims), 글 자리는 그 글자의 줄 높이(제목 t5 · 메타 t3 · 금액 t5), 앞 자리는 List 타일 12(썸네일이면 Image Frame 모서리 — 40 은 6 · 사람이면 full)
 export type SkRowPart = 'avatar' | 'title' | 'detail' | 'amount';
 export function SkeletonRowsView({
   look,

@@ -10,7 +10,11 @@ import { ProgressCircle } from "@/components/ui/progress-circle";
  * 옛 Skeleton(깜빡임 · surface-input · 모서리 4 · 브랜드 25% 띠의 SkeletonShimmer)을 대신한다.
  *
  *   Skeleton          면 하나 — 곧 나타날 내용 하나의 자리. 크기 · 폭은 className 으로 준다
- *     radius          "0"(화면 끝에 붙는 사진) · "8"(기본 — 글 · 숫자 · 작은 조각) · "12"(목록 앞 타일 — List 타일) · "16"(카드 · 썸네일) · "full"(아바타 · 원 아이콘 · 칩)
+ *     radius          "0"(화면 끝에 붙는 사진) · "4" · "6"(폭 24 이하 · 48 이하의 그림 자리 — Image Frame 모서리) ·
+ *                     "8"(기본 — 글 · 숫자 · 작은 조각 · 폭 49 이상의 그림 자리) · "12"(목록 앞 타일 — List 타일 · Logo Tile 40) ·
+ *                     "16"(카드 면 — Card 모양 자리 전체만) · "full"(아바타 · 원 아이콘 · 칩).
+ *                     그림 자리(썸네일 · 카드 그림)는 다 받은 그림과 같은 모서리다 — 손으로 고르지 않고 Image Frame 의
+ *                     imageFrameRadius(폭) 으로 고른다. 카드 그림(신용카드 그림)은 카드 면이 아니라 그림이라 4 · 6 · 8 이다
  *     text            "t1" ~ "t14" — 높이를 그 글자의 줄 높이로(t3 13 → 18 · t4 14 → 19 · t5 16 → 22). 글로 바뀌어도 줄이 밀리지
  *                     않는다. 글 줄의 폭은 실제 글 길이와 비슷하게, 여러 줄이면 마지막 줄을 짧게(60 ~ 80%)
  *   LoadingRegion     기다리는 영역 — 데이터 자리 하나(쿼리 하나). 아래 "기다리는 영역"
@@ -68,12 +72,14 @@ const SLOW_TEXT = "평소보다 오래 걸리고 있어요.";
 const TIMEOUT_GRACE = 1000;
 
 // ── 스켈레톤 ─────────────────────────────────────────────────
-export type SkeletonRadius = "0" | "8" | "12" | "16" | "full";
+export type SkeletonRadius = "0" | "4" | "6" | "8" | "12" | "16" | "full";
 export type SkeletonText = "t1" | "t2" | "t3" | "t4" | "t5" | "t6" | "t7" | "t8" | "t9" | "t10" | "t11" | "t12" | "t13" | "t14";
 
-// 모서리 — 화면 폭 사진 0 · 글 8 · 카드 16 · 원 full
+// 모서리 — 화면 폭 사진 0 · 그림 자리 4 · 6 · 8(Image Frame — 폭으로) · 글 8 · 타일 12 · 카드 면 16 · 원 full
 const RADIUS: Record<SkeletonRadius, string> = {
   "0": "rounded-none",
+  "4": "rounded-r1",
+  "6": "rounded-r1_5",
   "8": "rounded-r2",
   "12": "rounded-r3",
   "16": "rounded-r4",
@@ -118,7 +124,7 @@ function alignShimmer(e: React.AnimationEvent<HTMLSpanElement>) {
 }
 
 export interface SkeletonProps extends Omit<React.HTMLAttributes<HTMLSpanElement>, "children"> {
-  /** "0"(화면 폭 사진) · "8"(기본 — 글 · 숫자) · "16"(카드 · 썸네일) · "full"(아바타 · 원 아이콘 · 칩) */
+  /** "0"(화면 폭 사진) · "4" · "6"(그림 자리 — imageFrameRadius(폭)) · "8"(기본 — 글 · 숫자 · 폭 49 이상의 그림 자리) · "12"(목록 앞 타일) · "16"(카드 면) · "full"(아바타 · 원 아이콘 · 칩) */
   radius?: SkeletonRadius;
   /** 글 자리 — 그 글자의 줄 높이를 높이로(t4 → 19). 폭은 className 으로 */
   text?: SkeletonText;

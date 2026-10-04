@@ -18,7 +18,8 @@ export const FONT = "'Pretendard Variable', Pretendard, sans-serif";
 export const px = (v: string | number) => (typeof v === 'number' ? v : parseFloat(v));
 
 // ── Skeleton ─────────────────────────────────────────────
-export const SK_RADII = ['0', '8', '12', '16', 'full'] as const;
+// 모서리 — 0 · 그림 자리 4 · 6(Image Frame 모서리, 2026-10-04) · 글 8 · 타일 12 · 카드 면 16 · full
+export const SK_RADII = ['0', '4', '6', '8', '12', '16', 'full'] as const;
 export type SkRadius = (typeof SK_RADII)[number];
 export const SK_TEXTS = ['t1', 't2', 't3', 't4', 't5', 't6', 't7', 't8', 't9', 't10', 't11', 't12', 't13', 't14'] as const;
 export type SkText = (typeof SK_TEXTS)[number];

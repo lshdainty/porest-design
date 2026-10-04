@@ -19,10 +19,10 @@
 
 // ── avatar.tsx 의 상수와 같은 값 ─────────────────────────────────────────
 
-// 원 — 사진 · 이니셜을 원으로 자른다. ::after 가 1px 안쪽 테두리 stroke-neutral-subtle(사진 · 이니셜 위)
+// 원 — 사진 · 이니셜을 원으로 자른다. ::after 가 1px 안쪽 투명 테두리 stroke-neutral-overlay(v118 — 사진 · 이니셜 위)
 const ROOT = [
   "relative inline-flex shrink-0 select-none items-center justify-center overflow-hidden rounded-full align-middle",
-  "after:pointer-events-none after:absolute after:inset-0 after:rounded-full after:shadow-[inset_0_0_0_1px_var(--color-stroke-neutral-subtle)] after:content-['']",
+  "after:pointer-events-none after:absolute after:inset-0 after:rounded-full after:shadow-[inset_0_0_0_1px_var(--color-stroke-neutral-overlay)] after:content-['']",
 ].join(" ");
 
 // 이니셜 — 이름 색 바탕 · fg-neutral-inverted · 700 · 줄 높이 1(px — 글자 크기 설정을 따르지 않는다). cn(INITIAL, HUE_BG[색], SIZES[크기].initial, LINE_HEIGHT_1)
@@ -185,7 +185,7 @@ export const avatarExamples = [
   {
     title: "이름 옆 — 장식",
     description:
-      "사람 한 명을 보이는 원이다 — 사진(src)이 있으면 사진, 없으면 이름의 첫 글자(이니셜) + 이름 색이다. 아바타 옆에는 대개 이름이 있어 아바타는 장식이다(decorative 기본 true — aria-hidden) — 보조 기술은 이름을 한 번만 읽는다(\"김 김민수\" 가 아니다). 한 줄 목록은 36, 이름 + 설명 두 줄이면 42 — 같은 자리는 어느 화면에서나 같은 크기다. 모든 크기에 1px 안쪽 테두리(stroke-neutral-subtle)를 겹쳐 흰 사진이 흰 바탕에 묻히지 않는다. 상태(안 낸 사람)는 아바타를 흐리게 하지 않고 이름 옆 글 · Badge 로 알린다.",
+      "사람 한 명을 보이는 원이다 — 사진(src)이 있으면 사진, 없으면 이름의 첫 글자(이니셜) + 이름 색이다. 아바타 옆에는 대개 이름이 있어 아바타는 장식이다(decorative 기본 true — aria-hidden) — 보조 기술은 이름을 한 번만 읽는다(\"김 김민수\" 가 아니다). 한 줄 목록은 36, 이름 + 설명 두 줄이면 42 — 같은 자리는 어느 화면에서나 같은 크기다. 모든 크기에 1px 안쪽 투명 테두리(stroke-neutral-overlay — 검정 4.7% · 다크 흰 5%, Image Frame · Logo Tile 의 윤곽과 같은 색)를 겹쳐 흰 사진이 흰 바탕에 묻히지 않고, 어두운 사진 · 이니셜 원 둘레에는 테가 생기지 않는다. 상태(안 낸 사람)는 아바타를 흐리게 하지 않고 이름 옆 글 · Badge 로 알린다.",
     jsx: `import { Avatar } from "@/components/ui/avatar"
 
 <span className="flex items-center gap-x3">

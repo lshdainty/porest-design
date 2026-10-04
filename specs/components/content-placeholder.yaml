@@ -2,8 +2,9 @@
 # 형식은 button.yaml 머리 주석, 규칙은 specs/CLAUDE.md.
 #
 # 이미지가 없거나 불러오지 못했을 때 그 자리를 채우는 대체 그림 — 옅은 면 + 가운데 그림. 불러오는 동안에는 쓰지 않는다
-# (그건 같은 모서리의 Skeleton 이다). 깨진 이미지 아이콘 · 빈 칸을 보이지 않는다. 자산 · 카드 로고의 글자 모노그램은 이것이 아니다 —
-# Image Frame 차례에 정한다.
+# (그건 같은 모서리의 Skeleton 이다). 깨진 이미지 아이콘 · 빈 칸을 보이지 않는다. 그림 틀은 Image Frame(image-frame.yaml)이 이것을
+# 대체 그림으로 쓴다. 자산 · 카드 로고의 글자 모노그램은 이것이 아니다 — Logo Tile(logo-tile.yaml)의 첫 글자다. 아는 카드사의 그림 없는
+# 카드도 이것이 아니다 — 카드 면(card-art.yaml)이다.
 #
 # SEED 와 다른 자리(content-placeholder.md 의 "SEED 와 다른 점")
 #   - 그림은 lucide 선 아이콘(기본 image, v106) — SEED 의 12가지 그림(당근 서비스별)은 브랜드 자산이라 쓰지 않는다.

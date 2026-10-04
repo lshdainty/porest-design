@@ -2,6 +2,7 @@
 // scripts/gen-content.mjs 에서 <SpecFigure name id caption /> 가 되고, 여기서 그 그림을 찾아 그린다.
 import type { ReactNode } from 'react';
 import { alertDialogFigures } from './alert-dialog';
+import { aspectRatioFigures } from './aspect-ratio';
 import { avatarFigures } from './avatar';
 import { badgeFigures } from './badge';
 import { bottomSheetFigures } from './bottom-sheet';
@@ -16,9 +17,11 @@ import { dialogFigures } from './dialog';
 import { dividerFigures } from './divider';
 import { fieldFigures } from './field';
 import { helpBubbleFigures } from './help-bubble';
+import { imageFrameFigures } from './image-frame';
 import { inputFigures } from './input';
 import { inputButtonFigures } from './input-button';
 import { listFigures } from './list';
+import { logoTileFigures } from './logo-tile';
 import { menuFigures } from './menu';
 import { menuSheetFigures } from './menu-sheet';
 import { notificationBadgeFigures } from './notification-badge';
@@ -45,6 +48,7 @@ import { SpecSheet } from './spec-sheet';
 
 const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactNode>> = {
   'alert-dialog': alertDialogFigures,
+  'aspect-ratio': aspectRatioFigures,
   avatar: avatarFigures,
   badge: badgeFigures,
   'bottom-sheet': bottomSheetFigures,
@@ -58,9 +62,11 @@ const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactN
   divider: dividerFigures,
   field: fieldFigures,
   'help-bubble': helpBubbleFigures,
+  'image-frame': imageFrameFigures,
   input: inputFigures,
   'input-button': inputButtonFigures,
   list: listFigures,
+  'logo-tile': logoTileFigures,
   menu: menuFigures,
   'menu-sheet': menuSheetFigures,
   'notification-badge': notificationBadgeFigures,

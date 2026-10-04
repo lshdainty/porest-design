@@ -575,8 +575,8 @@ export function brandProfile(brandName, tokens) {
       secondary: "초안 저장",
     },
     skeleton: {
-      title: "Skeleton — 모양 넷",
-      description: "모서리는 곧 올 내용의 모양대로 — 글 · 숫자 8(글 자리는 그 글자의 줄 높이) · 아바타 full · 카드 · 썸네일 16 · 화면 폭 사진 0. 흰 면 위에만 두고, 흰 띠가 1.5초(motion-ease-easing)에 지나간다 · 모션 줄이기면 면만(03p).",
+      title: "Skeleton — 모양 다섯",
+      description: "모서리는 곧 올 내용의 모양대로 — 글 · 숫자 8(글 자리는 그 글자의 줄 높이) · 그림 자리(썸네일 · 카드 그림)는 Image Frame 의 모서리(폭 24 이하 4 · 48 이하 6 · 그 위 8) · 아바타 full · 카드 면 16 · 화면 폭 사진 0. 흰 면 위에만 두고, 흰 띠가 1.5초(motion-ease-easing)에 지나간다 · 모션 줄이기면 면만(03p).",
       layout: "demo",
       items: 4,
     },
@@ -1504,10 +1504,10 @@ export function renderListGallery(brand) {
     ]),
   );
 
-  // 2. 앞 붙이개 — 아이콘 22 · 타일 40 · 체크 24
+  // 2. 앞 붙이개 — 아이콘 22 · 타일 40 · 로고 타일 40 · 카드 그림 56 · 체크 24. 로고 타일 · 카드 그림은 03q 의 Logo Tile · CardArt 그대로다
   const prefixPanel = panel(
-    "앞 붙이개 — 아이콘 22 · 타일 40 · 체크 24",
-    "앞 붙이개는 줄이 무엇인지 먼저 알리고 본문과 12 떨어진다. 설정 · 메뉴 줄은 아이콘 22(fg-neutral), 색이 뜻을 가진 내용 줄은 타일 40 — 모서리 12, 카테고리 색의 옅은 바탕(chart-{색}-weak) 위에 그 색의 아이콘 20. 여럿 고르기는 체크 24 를 앞에 둔다. 한 목록 안에서 섞지 않는다. 오른쪽 금액(16 · 700)은 가계부 화면이 정한 자리다.",
+    "앞 붙이개 — 아이콘 22 · 타일 40 · 로고 타일 40 · 카드 그림 56 · 체크 24",
+    "앞 붙이개는 줄이 무엇인지 먼저 알리고 본문과 12 떨어진다. 설정 · 메뉴 줄은 아이콘 22(fg-neutral), 색이 뜻을 가진 내용 줄(거래 · 카테고리 · 알림 종류)은 타일 40 — 모서리 12, 카테고리 색의 옅은 바탕(chart-{색}-weak) 위에 그 색의 아이콘 20(아이콘이 없는 카테고리는 태그 아이콘, 이체 줄은 회색). 은행 · 증권 · 카드 · 코인 · 금 같은 물건 줄은 로고 타일 40(Logo Tile — 기관 색 + 첫 글자, 막힌 줄에서도 그대로), 카드 혜택처럼 카드 자체가 줄인 자리는 카드 그림 56(카드 비율 · 모서리 8)이다 — 모양은 03q. 여럿 고르기는 체크 24 를 앞에 둔다. 한 목록 안에서 섞지 않는다 — 자산 목록은 로고 타일, 거래 목록은 카테고리 타일. 오른쪽 금액(16 · 700)은 가계부 화면이 정한 자리다.",
     frames([
       listFrame("아이콘 22 · 설정 줄", "prefix icon", listOf([
         listRow({ kind: "button", prefix: icon("user"), title: "계정", suffix: listChevron() }),
@@ -1518,6 +1518,15 @@ export function renderListGallery(brand) {
         listRow({ prefix: listTile("orange", "utensils"), title: "점심", detail: "식비 · 신한카드", suffix: amount("12,000원") }),
         listRow({ prefix: listTile("blue", "bus"), title: "버스", detail: "교통 · 체크카드", suffix: amount("1,500원") }),
         listRow({ prefix: listTile("violet", "bag"), title: "생활용품", detail: "쇼핑 · 현금", suffix: amount("23,400원") }),
+      ])),
+      listFrame("로고 타일 40 · 물건 줄", "LogoTile — 기관 색 · 첫 글자(기관이 없으면 이름 색)", listOf([
+        listRow({ kind: "button", prefix: logoTile({ name: "신한" }), title: "신한 주거래", detail: "신한 · 입출금", suffix: amount("1,284,000원") }),
+        listRow({ kind: "button", prefix: logoTile({ name: "NH농협" }), title: "NH 청년 적금", detail: "NH농협 · 적금", suffix: amount("3,600,000원") }),
+        listRow({ kind: "button", prefix: logoTile({ name: "비상금", face: "name" }), title: "비상금", detail: "현금", suffix: amount("300,000원") }),
+      ])),
+      listFrame("카드 그림 56 · 카드 혜택", "CardArt width={56} — 세로 그림은 돌린다", listOf([
+        listRow({ kind: "button", prefix: cardArt({ issuer: "삼성카드", name: "iD SELECT ALL", src: PIMG.cardV, width: 56, rotated: true }), title: "iD SELECT ALL", detail: "신용 · 삼성카드" }),
+        listRow({ kind: "button", prefix: cardArt({ issuer: "NH농협카드", name: "올원 Pay", width: 56 }), title: "올원 Pay", detail: "체크 · NH농협카드" }),
       ])),
       listFrame("체크 24 · 여럿 고르기", "ListCheckGroup(fieldset) · ListCheckItem — 앞(기본)", checkGroup([
         listRow({ kind: "control", as: "div", prefix: check24({ state: "checked" }), title: "거래 내역" }),
@@ -1539,7 +1548,7 @@ export function renderListGallery(brand) {
         listRow({ kind: "button", prefix: icon("user"), title: "계정", suffix: listChevron() }),
       ])),
       listFrame("작은 버튼 — 따로 눌린다", "suffix button", listOf([
-        listRow({ kind: "button", prefix: listTile("indigo", "card"), title: "신한카드", detail: "이번 달 452,300원", suffix: smallButton("결제") + listChevron() }),
+        listRow({ kind: "button", prefix: logoTile({ name: "신한카드" }), title: "신한카드", detail: "이번 달 452,300원", suffix: smallButton("결제") + listChevron() }),
         listRow({ prefix: listTile("gray", "receipt"), title: "월세", detail: "매월 25일 반복 이체", suffix: iconButton("moreVertical", "월세 더보기") }),
       ])),
       listFrame("스위치 32", "ListSwitchItem", listOf([
@@ -5108,7 +5117,7 @@ export function renderDateTimeGallery(brand) {
 //   이름은 붙은 버튼 · 탭에 단다. 0 이면 그리지 않고 100 이상은 "99+"(formatNotificationCount — 레시피와 같은 함수).
 // 태그 묶음 .ptag(span) > 항목 .ptag-item(+ 아이콘 .ptag-icon · 읽을 글 srLabel) · 구분 .ptag-sep(" · " — 앞 공백 U+00A0 · aria-hidden) · 보이지 않는 ", " .ptag-sr.
 //   크기 .ptag--t2 · --t3 · --t4, 한 줄 말줄임 .ptag--truncate(항목마다 --ptag-shrink). 톤 · 굵기는 항목마다 .ptag-item--neutral · --brand · --bold.
-// 아바타 .pavatar(원 — 크기 .pavatar--{지름}) > 이니셜 .pavatar-initial(이름 색 .pavatar--{색}) 위에 사진 .pavatar-img 를 덮고, 1px 안쪽 테두리는 ::after 다.
+// 아바타 .pavatar(원 — 크기 .pavatar--{지름}) > 이니셜 .pavatar-initial(이름 색 .pavatar--{색}) 위에 사진 .pavatar-img 를 덮고, 1px 안쪽 투명 테두리(stroke-neutral-overlay)는 ::after 다.
 //   묶음 .pav-stack(크기 .pav-stack--{지름}) — 아바타마다 바깥 링 · 겹침, 넘치면 끝에 "+N" .pav-more. 시트 · 대화상자 안이면 .pav-stack--floating(링이 그 바탕색).
 // 구분선 .pdivider(div) — 가로(기본) · 세로 --vertical, 들임 --inset(16). 장식이 기본(aria-hidden), 이름 있는 구획만 role=separator.
 // 이니셜 · 이름 색은 avatarLib 이 정한다 — 빌드(그림)와 페이지 끝 스크립트(이름 바꿔 보기)가 같은 코드를 쓴다. 페이지에는 toString 으로 옮기므로 바깥 이름을 부르지 않고 ES5 로 쓴다.
@@ -5437,7 +5446,7 @@ export function renderDisplayGallery(brand) {
   // 9. Avatar — 크기 10단계(같은 사람 — 김민수 · blue)
   const avatarSizePanel = panel(
     "Avatar — 크기 10단계 · 자리마다 대표 크기",
-    "크기는 SEED 의 10단계 20 · 24 · 36 · 42 · 48 · 56 · 64 · 80 · 96 · 108 이고 이 밖의 크기를 만들지 않는다. 같은 자리는 어느 화면에서나 같은 크기다 — 글 한 줄 안 20, 줄 안 묶음 24, 한 줄 목록 36, 이름 + 설명 두 줄 목록 42, Desk 계정 머리 80, HR 큰 사진 96, 사진 수정 108. 원(폭 = 높이)이고 모든 크기에 1px 안쪽 테두리(stroke-neutral-subtle — 흰 사진이 흰 바탕에 묻히지 않게)를 겹친다. 이니셜은 지름의 40%(가장 작아도 10)이고 글자 크기 설정을 따르지 않는 px 다(원 안에서 넘치지 않게). 누르지 않는다 — 누르는 자리(프로필 열기)는 감싼 버튼 · 링크가 누름 · 포커스를 가진다.",
+    "크기는 SEED 의 10단계 20 · 24 · 36 · 42 · 48 · 56 · 64 · 80 · 96 · 108 이고 이 밖의 크기를 만들지 않는다. 같은 자리는 어느 화면에서나 같은 크기다 — 글 한 줄 안 20, 줄 안 묶음 24, 한 줄 목록 36, 이름 + 설명 두 줄 목록 42, Desk 계정 머리 80, HR 큰 사진 96, 사진 수정 108. 원(폭 = 높이)이고 모든 크기에 1px 안쪽 투명 테두리(stroke-neutral-overlay — v118 검정 4.7% · 다크 흰 5%, Image Frame 의 윤곽과 같은 색)를 겹친다 — 흰 사진은 흰 바탕에 묻히지 않고, 어두운 사진 · 이니셜 원 둘레에는 테가 생기지 않는다. 이니셜은 지름의 40%(가장 작아도 10)이고 글자 크기 설정을 따르지 않는 px 다(원 안에서 넘치지 않게). 누르지 않는다 — 누르는 자리(프로필 열기)는 감싼 버튼 · 링크가 누름 · 포커스를 가진다.",
     surface(`<div class="pdsp-ladder">${AVATAR_SIZES.map(s => `<span class="pdsp-ladder-item">${avatar({ name: "김민수", size: s })}<span class="pdsp-cap">${s} · 글자 ${AVATAR_FONT[s]}<br>${escape(AVATAR_PLACE[s])}</span></span>`).join("")}</div>`),
   );
 
@@ -5557,7 +5566,8 @@ const PLD_GLYPH = {
 const pldLen = (v) => (typeof v === "number" ? `${v}px` : v);
 
 // 스켈레톤 한 조각 — skeleton.tsx 의 Skeleton. 늘 aria-hidden 이고, 글 자리(span · p) 안에도 둘 수 있게 span(블록)이다.
-//   radius  "0"(화면 폭 사진) · "8"(글 · 숫자 — 기본) · "12"(목록 앞 타일) · "16"(카드 · 썸네일) · "full"(아바타 · 원 아이콘 · 칩)
+//   radius  "0"(화면 폭 사진) · "4" · "6"(그림 자리 — 폭 24 이하 · 48 이하, Image Frame 의 imageFrameRadius) · "8"(글 · 숫자 — 기본 · 폭 49 이상의 그림 자리) ·
+//           "12"(목록 앞 타일 · Logo Tile 40) · "16"(카드 면 — Card 모양 자리 전체) · "full"(아바타 · 원 아이콘 · 칩)
 //   text    "t1" ~ "t14" — 높이가 그 글자의 줄 높이(14 글자 t4 → 19). 모서리는 8
 //   w · h   폭 · 높이(px 수 또는 CSS 길이) — 곧 올 내용의 크기
 //   still   모션 줄이기의 모습 — 띠를 멈추고 면만 남긴다(갤러리에서 그 모습을 보일 때만)
@@ -5709,7 +5719,7 @@ export function renderLoadingGallery(brand) {
   const stillPhone = phone(480, `${title("가계부")}${sum(skeleton({ text: "t9", w: 144, still: true }))}${listHeader({ text: "최근 거래" })}${pldRegion({ fallback: pldSkeletonRows(4, { still: true }) })}`);
   const listPanel = panel(
     "Skeleton — 틀은 그리고 데이터 자리만 · 반짝임 1.5초",
-    "화면의 틀(제목 · 목록 제목 · 카드 면)은 처음부터 실제로 그리고, 서버에서 올 데이터 자리만 스켈레톤이다. 줄 껍데기는 실제 List 줄 그대로 — 앞 원 40(full) · 제목 자리 t5 줄 높이 22 · 설명 자리 t3 18 · 금액 자리 t5 22 라 줄 높이가 내용과 같은 66 이다(데이터가 와도 목록이 밀리지 않는다). 면은 bg-neutral-weak(흰 면 위 1.08 · 다크 1.30:1)이고, 흰 띠(gradient-shimmer-neutral · 다크는 흰 10% 짝)가 면 위를 자기 폭만큼 왼쪽 밖에서 오른쪽 밖으로 1.5초(motion-duration-loop) · motion-ease-easing 으로 쉬지 않고 지난다 — 같은 화면의 스켈레톤은 한 박자로 지난다. 깜빡임(펄스)은 없다. 모션 줄이기면 띠가 멈추고 면만 남는다(v104). 스켈레톤 · 목록은 보조 기술에 숨기고, 영역에 aria-busy 를 단다.",
+    "화면의 틀(제목 · 목록 제목 · 카드 면)은 처음부터 실제로 그리고, 서버에서 올 데이터 자리만 스켈레톤이다. 줄 껍데기는 실제 List 줄 그대로 — 앞 타일 40(모서리 12) · 제목 자리 t5 줄 높이 22 · 설명 자리 t3 18 · 금액 자리 t5 22 라 줄 높이가 내용과 같은 66 이다(데이터가 와도 목록이 밀리지 않는다). 면은 bg-neutral-weak(흰 면 위 1.08 · 다크 1.30:1)이고, 흰 띠(gradient-shimmer-neutral · 다크는 흰 10% 짝)가 면 위를 자기 폭만큼 왼쪽 밖에서 오른쪽 밖으로 1.5초(motion-duration-loop) · motion-ease-easing 으로 쉬지 않고 지난다 — 같은 화면의 스켈레톤은 한 박자로 지난다. 깜빡임(펄스)은 없다. 모션 줄이기면 띠가 멈추고 면만 남는다(v104). 스켈레톤 · 목록은 보조 기술에 숨기고, 영역에 aria-busy 를 단다.",
     `${samples([
       sample("폰 — 첫 진입", "LoadingRegion fallback=<TransactionRowsSkeleton rows={4} /> — 제목 · \"최근 거래\" 는 그린다", listPhone),
       sample("다 옴 — 같은 자리 · 같은 높이", "content — 줄 66 · 금액 t9 32 그대로(투명도 150ms 로 바뀐다)", donePhone),
@@ -5719,12 +5729,13 @@ export function renderLoadingGallery(brand) {
     ], `${DESKTOP} pov-samples--next`)}`,
   );
 
-  // 2. 모서리 넷 · 글은 글줄 높이 · 흰 면 위에만
+  // 2. 모서리 — 내용의 모양대로(그림 자리는 Image Frame 의 4 · 6 · 8) · 글은 글줄 높이 · 흰 면 위에만
   const shape = (cap, en, html, cls = "") => `<div class="pld-shape${cls}"><div class="pld-shape-art">${html}</div><div class="ptf-cap">${escape(cap)}<span>${escape(en)}</span></div></div>`;
   const shapes = `<div class="pld-shapes">${[
     shape("글 · 숫자 — 8", "radius=\"8\"(기본) · text=\"t4\" → 19", skeleton({ text: "t4", w: 160 })),
-    shape("목록 앞 타일 — 12", "radius=\"12\" — List 타일 40", skeleton({ radius: "12", w: 40, h: 40 })),
-    shape("카드 · 썸네일 — 16", "radius=\"16\"", skeleton({ radius: "16", w: "100%", h: 112 })),
+    shape("그림 자리 — 폭으로 4 · 6 · 8", "radius={imageFrameRadius(폭)} — 24 → \"4\" · 40 → \"6\" · 56 → \"8\"", `<span class="pld-shape-row">${skeleton({ radius: "4", w: 24, h: 24 })}${skeleton({ radius: "6", w: 40, h: 40 })}${skeleton({ radius: "8", w: 56, h: 35.3 })}</span>`),
+    shape("목록 앞 타일 · Logo Tile — 12", "radius=\"12\" — List 타일 · Logo Tile 40", skeleton({ radius: "12", w: 40, h: 40 })),
+    shape("카드 면 — 16", "radius=\"16\" — Card 모양 자리 전체", skeleton({ radius: "16", w: "100%", h: 112 })),
     shape("아바타 · 원 아이콘 · 칩 — full", "radius=\"full\"", skeleton({ radius: "full", w: 40, h: 40 })),
     shape("화면 폭 사진 — 0", "radius=\"0\" · 비율 4:3 — 화면 끝에 붙는다", skeleton({ radius: "0", w: "100%", cls: "pld-photo" }), " pld-shape--bleed"),
   ].join("")}</div>`;
@@ -5732,10 +5743,10 @@ export function renderLoadingGallery(brand) {
   const textHeights = `<div class="pld-texth">${heights.map(([t, size, lh]) => `<div class="pld-texth-row"><span class="pld-texth-text" style="font-size: var(--text-${t}); line-height: var(--text-${t}--line-height);">${size} 글자</span>${skeleton({ text: t, w: 96 })}<span class="pld-texth-cap">${t} ${size} → ${lh}</span></div>`).join("")}</div>`;
   const surface = (cls, label) => `<div class="pld-surface ${cls}">${pldSkeletonRows(2)}<div class="pld-surface-cap">${escape(label)}</div></div>`;
   const shapePanel = panel(
-    "Skeleton — 모서리 넷 · 글은 글줄 높이 · 흰 면 위에만",
-    "모서리는 곧 올 내용의 모양을 따른다 — 글 · 숫자 8(기본 · radius-r2), 목록 앞 타일 12(r3), 카드 · 썸네일 16(r4), 아바타 · 원 아이콘 · 칩 full, 화면 끝에 붙는 사진 0. 크기는 그 자리에 올 내용의 크기이고, 글 · 숫자 자리는 그 글자의 줄 높이만큼 높다 — 12 글자(t2) 16 · 13(t3) 18 · 14(t4) 19 · 16(t5) 22 · 20(t7) 27. 글자보다 낮은 막대로 그리면 글이 오는 순간 줄이 밀린다(아래 견본은 글과 스켈레톤이 같은 높이다). 스켈레톤 면은 흰 면(카드 · 시트 · 대화상자 — bg-layer-default · bg-layer-floating) 위에서 1.08:1 로 보이고 띠가 지나가며 모양이 드러난다 — 회색 페이지 바탕(bg-layer-basement)은 같은 gray-200 이라 1.00:1 로 사라진다. 바탕 위의 자리는 카드 면을 먼저 그리고 그 안에 둔다.",
+    "Skeleton — 모서리는 내용의 모양대로 · 글은 글줄 높이 · 흰 면 위에만",
+    "모서리는 곧 올 내용의 모양을 따른다 — 글 · 숫자 8(기본 · radius-r2), 그림 자리(썸네일 · 카드 그림)는 Image Frame 의 모서리 — 폭 24 이하 4(r1) · 48 이하 6(r1_5) · 그 위 8(r2) — 로 다 받은 그림과 같다(imageFrameRadius(폭)), 목록 앞 타일 · Logo Tile 40 은 12(r3), 카드 면(Card 모양 자리 전체)은 16(r4), 아바타 · 원 아이콘 · 칩 full, 화면 끝에 붙는 사진 0. 카드 그림(신용카드 그림)은 카드 면이 아니라 그림이라 4 · 6 · 8 이다. 크기는 그 자리에 올 내용의 크기이고, 글 · 숫자 자리는 그 글자의 줄 높이만큼 높다 — 12 글자(t2) 16 · 13(t3) 18 · 14(t4) 19 · 16(t5) 22 · 20(t7) 27. 글자보다 낮은 막대로 그리면 글이 오는 순간 줄이 밀린다(아래 견본은 글과 스켈레톤이 같은 높이다). 스켈레톤 면은 흰 면(카드 · 시트 · 대화상자 — bg-layer-default · bg-layer-floating) 위에서 1.08:1 로 보이고 띠가 지나가며 모양이 드러난다 — 회색 페이지 바탕(bg-layer-basement)은 같은 gray-200 이라 1.00:1 로 사라진다. 바탕 위의 자리는 카드 면을 먼저 그리고 그 안에 둔다.",
     `${samples([
-      sample("모서리 — 내용의 모양대로", "Skeleton radius — \"0\" · \"8\" · \"12\" · \"16\" · \"full\"", shapes),
+      sample("모서리 — 내용의 모양대로", "Skeleton radius — \"0\" · \"4\" · \"6\" · \"8\" · \"12\" · \"16\" · \"full\"", shapes),
     ], "ptf-samples pld-samples--wide")}${samples([
       sample("글 자리 = 그 글자의 줄 높이", "text=\"t2\" ~ \"t7\" — 왼쪽 글과 같은 높이", textHeights),
       sample("흰 면 위 — 보인다", "bg-layer-default 위 1.08:1 · 다크 1.30:1", surface("pld-surface--white", "흰 카드 · 시트 위")),
@@ -5938,22 +5949,23 @@ export function renderLoadingGallery(brand) {
   // 9. Content Placeholder — 크기(그림 = 틀 높이의 50% · 16 ~ 160) · 그림 · 불러오는 동안은 스켈레톤
   const frame = (w, h, radius, html, cls = "") => `<div class="pld-cph${cls}" style="width: ${pldLen(w)}; height: ${pldLen(h)}; border-radius: ${radius};">${html}</div>`;
   const cphSizes = `<div class="pld-cph-sizes">${[
-    ["40 썸네일 → 20", frame(40, 40, "var(--radius-r2)", contentPlaceholder({ glyph: "receipt" }))],
-    ["120 카드 → 60", frame(120, 120, "var(--radius-r4)", contentPlaceholder())],
-    ["좁고 긴 40 × 120 → 40(폭)", frame(40, 120, "var(--radius-r2)", contentPlaceholder())],
+    ["40 썸네일 → 20", frame(40, 40, "var(--radius-r1_5)", contentPlaceholder({ glyph: "receipt" }))],
+    ["120 카드 → 60", frame(120, 120, "var(--radius-r2)", contentPlaceholder())],
+    ["좁고 긴 40 × 120 → 40(폭)", frame(40, 120, "var(--radius-r1_5)", contentPlaceholder())],
   ].map(([cap, html]) => `<div class="pld-cph-item">${html}<span class="pld-row-cap">${escape(cap)}</span></div>`).join("")}</div>`;
   const cphWide = `<div class="pld-cph-item">${frame("100%", "auto", "0", contentPlaceholder(), " pld-cph--photo")}<span class="pld-row-cap">화면 폭 4:3(360 × 270) → 135</span></div>`;
-  const cphBig = `<div class="pld-cph-item">${frame("100%", 360, "var(--radius-r4)", contentPlaceholder({ label: "가게 사진" }))}<span class="pld-row-cap">높이 360 → 160(최대)</span></div>`;
-  const glyphs = `<div class="pld-cph-sizes">${[["image", "사진 — 기본"], ["creditCard", "카드 그림"], ["receipt", "영수증 사진"], ["fileText", "문서"]].map(([g, cap]) => `<div class="pld-cph-item">${frame(72, 72, "var(--radius-r3)", contentPlaceholder({ glyph: g }))}<span class="pld-row-cap">${escape(cap)}</span></div>`).join("")}</div>`;
-  const card = (html) => `<div class="pld-cph pld-cph--card">${html}</div>`;
-  const cphStates = `<div class="pld-cph-sizes">${[
-    ["불러오는 중 — 같은 모서리의 스켈레톤", card(skeleton({ w: "100%", h: "100%" }))],
-    ["불러오지 못함 — 대체 그림", card(contentPlaceholder({ glyph: "creditCard", label: "현대카드 M 카드 그림" }))],
-    ["불러옴", card('<span class="pld-card-art" role="img" aria-label="현대카드 M 카드 그림"><span>Hyundai M</span></span>')],
+  const cphBig = `<div class="pld-cph-item">${frame("100%", 360, "var(--radius-r2)", contentPlaceholder({ label: "가게 사진" }))}<span class="pld-row-cap">높이 360 → 160(최대)</span></div>`;
+  const glyphs = `<div class="pld-cph-sizes">${[["image", "사진 — 기본"], ["creditCard", "카드 그림"], ["receipt", "영수증 사진"], ["fileText", "문서"]].map(([g, cap]) => `<div class="pld-cph-item">${frame(72, 72, "var(--radius-r2)", contentPlaceholder({ glyph: g }))}<span class="pld-row-cap">${escape(cap)}</span></div>`).join("")}</div>`;
+  // 카드 그림 — 틀은 Image Frame(03q — 비율 card · 폭 112 → 모서리 8 · 투명 윤곽)이고, 없거나 못 불러오면 이 그림을 제 대체 그림으로 그린다(대체 글은 alt 를 이어받는다)
+  const card = (state) => imageFrame({ ratio: "card", width: 112, src: PIMG.cardH2, alt: "현대카드 M 카드 그림", state, glyph: "creditCard" });
+  const cphStates = `<div class="pld-cph-sizes pld-cph-sizes--top">${[
+    ["불러오는 중 — 같은 모서리의 스켈레톤", card("loading")],
+    ["불러오지 못함 — 대체 그림", card("fallback")],
+    ["불러옴", card("loaded")],
   ].map(([cap, html]) => `<div class="pld-cph-item">${html}<span class="pld-row-cap">${escape(cap)}</span></div>`).join("")}</div>`;
   const cphPanel = panel(
     "Content Placeholder — 틀을 채운 면 · 그림은 틀 높이의 50%(16 ~ 160)",
-    "이미지가 없거나 불러오지 못했을 때 그 자리를 채우는 대체 그림이다 — 면 bg-neutral-weak(스켈레톤 면과 같은 색)이 담는 틀을 채우고, 가운데에 무엇이 없는지 말하는 lucide 선 아이콘(stroke-neutral-weak · 24 격자 선 1.5 — 그림이 커지면 같은 비율로 굵어진다)을 둔다. 그림은 틀 높이의 50% 정사각이고 16 보다 작아지지 않고 160 보다 커지지 않으며, 틀 폭이 그보다 좁으면 폭에 맞춘다(40 썸네일 20 · 화면 폭 4:3 사진 135 · 그보다 크면 160). 제 모서리 · 테두리 · 그림자가 없다 — 담는 틀이 자른다. 면 위 그림은 1.14 · 다크 1.20:1 로 옅은 장식이고, 무엇이 없는지는 대체 글이 말한다 — 대체 글이 있던 이미지면 그 글을 자리 이름(role=img)으로 남기고, 장식이었으면 자리도 숨긴다. 불러오는 동안은 이 그림이 아니라 같은 모서리 · 같은 크기의 스켈레톤이다. 깨진 이미지 아이콘 · 빈 칸 · 외부 기본 그림을 보이지 않는다.",
+    "이미지가 없거나 불러오지 못했을 때 그 자리를 채우는 대체 그림이다 — 면 bg-neutral-weak(스켈레톤 면과 같은 색)이 담는 틀을 채우고, 가운데에 무엇이 없는지 말하는 lucide 선 아이콘(stroke-neutral-weak · 24 격자 선 1.5 — 그림이 커지면 같은 비율로 굵어진다)을 둔다. 그림은 틀 높이의 50% 정사각이고 16 보다 작아지지 않고 160 보다 커지지 않으며, 틀 폭이 그보다 좁으면 폭에 맞춘다(40 썸네일 20 · 화면 폭 4:3 사진 135 · 그보다 크면 160). 제 모서리 · 테두리 · 그림자가 없다 — 담는 틀이 자른다. 면 위 그림은 1.14 · 다크 1.20:1 로 옅은 장식이고, 무엇이 없는지는 대체 글이 말한다 — 대체 글이 있던 이미지면 그 글을 자리 이름(role=img)으로 남기고, 장식이었으면 자리도 숨긴다. 불러오는 동안은 이 그림이 아니라 같은 모서리 · 같은 크기의 스켈레톤이다. 깨진 이미지 아이콘 · 빈 칸 · 외부 기본 그림을 보이지 않는다. 그림 틀은 보통 Image Frame(03q)이 이 그림을 제 대체 그림으로 그린다(아이콘은 fallbackIcon) — 따로 부르는 것은 Image Frame 이 아닌 틀을 짤 때뿐이다. 틀의 모서리는 Image Frame 의 폭 규칙(40 → 6 · 그 위 8)으로 그렸다.",
     `${samples([
       sample("크기 — 틀 높이의 50%", "ContentPlaceholder — 40 → 20 · 120 → 60 · 좁으면 폭", cphSizes),
       sample("크기 — 화면 폭 사진", "aspect-[4/3] · 모서리 0", cphWide),
@@ -5961,11 +5973,11 @@ export function renderLoadingGallery(brand) {
     ])}${samples([
       sample("그림 — 무엇이 없는지", "icon={<ImageIcon />}(기본) · <CreditCard /> · <Receipt /> · <FileText />", glyphs),
     ], "ptf-samples pov-samples--next")}${samples([
-      sample("카드 그림 — 불러오는 중 · 못 함 · 옴", "aspect-[1.586] w-28 rounded-r2 — 같은 틀 · 같은 모서리", cphStates),
+      sample("카드 그림 — 불러오는 중 · 못 함 · 옴", "<ImageFrame ratio=\"card\" width={112} fallbackIcon={<CreditCard />} /> — 같은 틀 · 같은 모서리 8 · 윤곽", cphStates),
     ], `${DESKTOP} pov-samples--next`)}`,
   );
 
-  const lede = "SEED Skeleton · Progress Circle · Pull To Refresh · Scroll Fog · Content Placeholder 와 Loading 패턴의 시간표 — 기다리는 동안의 모습이다. 화면의 틀은 처음부터 그리고, 구조가 보이는 데이터 자리는 스켈레톤(면 bg-neutral-weak + 흰 띠 1.5초 · 모서리 글 8 · 카드 16 · 원 full · 사진 0 · 글 자리 = 글줄 높이 · 흰 면 위에만), 행동 하나를 기다리는 작은 자리는 Progress Circle(24 · 40 · 두께 3 · 5, 호가 늘었다 줄며 1.2초, 값을 알면 12시부터 채움)이다. 모든 불러오기는 1초 안에는 아무것도 보이지 않고 · 1초부터 스켈레톤 · 원 · 5초 \"평소보다 오래 걸리고 있어요.\" · 10초 실패(다시 시도)다. 앱의 당겨서 새로 고침은 원판 없는 원 24(문턱 88 · 끝날 때까지 88). 막대(Progress)는 기다림이 아니라 \"얼마나 찼나\" 의 미터(높이 8 · fg-brand · 넘친 한도만 fg-critical + \"N원 초과\" · 달성은 글자만)다. 스크롤 영역의 끝은 늘 켜진 마스크(Scroll Fog — 가로 좌우 20 · 시트 · 대화상자 본문 위 20 · 아래 80)로 흐리고, 이미지가 없거나 못 불러오면 Content Placeholder 다. 모션 줄이기면 띠 · 회전 · 채움 전환이 멈춘다. 옛 Skeleton(깜빡임 · 모서리 4) · Spinner(16 · 24 · 32 · 48 · 브랜드 4분의 1 호) · Progress(2 · 4 · 8 · 흐르는 막대) · 시트 · 대화상자의 \"넘칠 때만 아래 48 흐림\" 은 걷었다."
+  const lede = "SEED Skeleton · Progress Circle · Pull To Refresh · Scroll Fog · Content Placeholder 와 Loading 패턴의 시간표 — 기다리는 동안의 모습이다. 화면의 틀은 처음부터 그리고, 구조가 보이는 데이터 자리는 스켈레톤(면 bg-neutral-weak + 흰 띠 1.5초 · 모서리 글 8 · 그림 자리 4 · 6 · 8(폭으로 — Image Frame) · 타일 12 · 카드 면 16 · 원 full · 화면 폭 사진 0 · 글 자리 = 글줄 높이 · 흰 면 위에만), 행동 하나를 기다리는 작은 자리는 Progress Circle(24 · 40 · 두께 3 · 5, 호가 늘었다 줄며 1.2초, 값을 알면 12시부터 채움)이다. 모든 불러오기는 1초 안에는 아무것도 보이지 않고 · 1초부터 스켈레톤 · 원 · 5초 \"평소보다 오래 걸리고 있어요.\" · 10초 실패(다시 시도)다. 앱의 당겨서 새로 고침은 원판 없는 원 24(문턱 88 · 끝날 때까지 88). 막대(Progress)는 기다림이 아니라 \"얼마나 찼나\" 의 미터(높이 8 · fg-brand · 넘친 한도만 fg-critical + \"N원 초과\" · 달성은 글자만)다. 스크롤 영역의 끝은 늘 켜진 마스크(Scroll Fog — 가로 좌우 20 · 시트 · 대화상자 본문 위 20 · 아래 80)로 흐리고, 이미지가 없거나 못 불러오면 Content Placeholder 다(그림 틀은 03q 의 Image Frame 이 둘을 함께 그린다). 모션 줄이기면 띠 · 회전 · 채움 전환이 멈춘다. 옛 Skeleton(깜빡임 · 모서리 4) · Spinner(16 · 24 · 32 · 48 · 브랜드 4분의 1 호) · Progress(2 · 4 · 8 · 흐르는 막대) · 시트 · 대화상자의 \"넘칠 때만 아래 48 흐림\" 은 걷었다."
     + (brand.key === "shared" ? " 공유 토큰에는 브랜드 역할 색이 없어 brand 톤 · 막대 채움이 여기서는 중립으로 보인다 — HR · Desk 미리보기에서 브랜드 색이다." : "");
 
   return `
@@ -5985,6 +5997,504 @@ export function renderLoadingGallery(brand) {
     ${meterPanel}
     ${fogPanel}
     ${cphPanel}
+  </section>`;
+}
+
+
+// 이미지 — spec: specs/components/image-frame.md · logo-tile.md · aspect-ratio.md · 수치 image-frame.yaml · card-art.yaml · logo-tile.yaml · aspect-ratio.yaml ·
+// 기관 색 institution-colors.yaml. 구조는 SEED Image Frame · Aspect Ratio(2026-10-04) — Logo Tile · 카드 그림은 porest 만의 부품이다.
+// 그림 틀 .pif(비율 .pif--{1x1 · 2x1 · 16x9 · 4x3 · 6x7 · 4x5 · 2x3 · card} · 모서리 .pif--r{4 · 6 · 8 · 0} — 폭으로 고른다, 상태 data-state loaded · loading · fallback) >
+//   그림 .pif-img(cover — fit contain 이면 .pif--contain 의 흰 판 위) · 불러오는 동안 03p 의 .psk · 없음 · 실패면 03p 의 .pcph(또는 카드 면 .pcart-face) ·
+//   그림 위 자리 .pif-floater(--top-start · --top-end · --bottom-start · --bottom-end — 모서리에서 6) > 배지(03o 의 .pbadge solid) · 장수 글 .pif-ind.
+//   안쪽 1px 투명 윤곽은 ::after(stroke-neutral-overlay — 그림 · 스켈레톤 · 대체 그림 · 카드 면 위에 늘)이다. 세로 카드 그림은 .pif--rotated(시계 방향 90°).
+// 카드 면 .pcart-face(기관 색 · 글자색 .pcart-face--white · --dark) > 회사 .pcart-issuer · 카드 이름 .pcart-name · 첫 글자 .pcart-initial — 크기는 틀의 폭으로
+//   CSS 가 고른다(폭 96 미만 small 첫 글자만 · 240 이상 large).
+// 로고 타일 .plt(크기 .plt--{32 · 40 · 48} · 면 .plt--white · --dark(기관 색) · .plt--name + 이름 색 .plt--{색}) > 첫 글자 .plt-initial 위에 그림 판 .plt-plate
+//   (--card 옅은 판 + 카드 그림 틀 · --logo 흰 판 + 로고), 1px 투명 윤곽은 ::after.
+// 비율 상자 .par(.par--{비율}) > 자식 하나(.par-child — 상자를 채운다). 모서리 · 바탕 · 윤곽이 없다.
+// 그림은 손으로 칠한 대역(SVG)이다 — 실제 사진 · 카드 그림 · 로고가 아니다. 원래 크기(width · height)를 가진 SVG 라 <img> 의 naturalWidth · naturalHeight 가 그 크기다.
+// "직접" 이 붙은 견본은 페이지 끝 스크립트가 불러오기 · 실패 · 10초를 흉내 낸다.
+
+// 기관 색 표 — specs/components/institution-colors.yaml 을 빌드 때 읽는다(78곳). 한 줄에 한 기관인 흐름 표기라 줄마다 푼다(바깥 의존성 없이).
+// 기관 색은 그 표에만 있다(DESIGN.md "기관 색" — 다른 곳에 hex 를 적지 않는다) — 미리보기도 표를 읽어 그린다. 기관이 든 줄을 하나라도 못 풀면 빌드를 멈춘다
+const INSTITUTIONS = (() => {
+  const src = readFileSync(resolve(ROOT, "specs/components/institution-colors.yaml"), "utf8");
+  const line = /^\s*-\s*\{\s*name:\s*([^,]+?),\s*category:\s*([^,]+?),\s*aliases:\s*\[([^\]]*)\],\s*color:\s*"(#[0-9A-Fa-f]{6})",\s*(?:ci:\s*"(#[0-9A-Fa-f]{6})",\s*)?text:\s*(white|dark)\s*\}\s*(?:#\s*(.*))?$/;
+  const out = [];
+  for (const raw of src.split("\n")) {
+    if (!/^\s*-\s*\{\s*name:/.test(raw)) continue;
+    const m = line.exec(raw);
+    if (!m) throw new Error(`institution-colors.yaml 을 풀지 못했다: ${raw.trim()}`);
+    const de = /ΔE2000\s*([\d.]+)/.exec(m[7] || "");
+    out.push({ name: m[1].trim(), category: m[2].trim(), aliases: m[3].split(",").map((s) => s.trim()).filter(Boolean), color: m[4].toUpperCase(), ci: m[5] ? m[5].toUpperCase() : "", text: m[6], deltaE: de ? de[1] : "" });
+  }
+  if (!out.length) throw new Error("institution-colors.yaml 에 기관이 없다");
+  return out;
+})();
+
+// 기관 찾기 — institution-colors.yaml 머리의 차례 그대로(웹 · 앱이 같다). 페이지 끝 스크립트(이름 바꿔 보기)도 같은 코드를 쓰므로 바깥 이름을 부르지 않고 ES5 로 쓴다.
+//   1. 찾는 이름과 표의 name · aliases 의 공백을 모두 뺀다  2. 같으면 그 기관  3. 아니면 찾는 이름에 든 name · aliases 가운데 가장 긴 것(대소문자 그대로)
+//   4. 없으면 null — Logo Tile 은 이름 색, 카드 면은 대체 그림. 표의 이름이 찾는 이름을 품는 거꾸로 맞추기는 하지 않는다
+function institutionLib(ENTRIES) {
+  function squash(s) { return String(s == null ? "" : s).replace(/\s+/g, ""); }
+  function find(name) {
+    var q = squash(name);
+    if (!q) return null;
+    var best = null, bestLen = 0;
+    for (var i = 0; i < ENTRIES.length; i++) {
+      var keys = [ENTRIES[i].name].concat(ENTRIES[i].aliases);
+      for (var j = 0; j < keys.length; j++) {
+        var k = squash(keys[j]);
+        if (!k) continue;
+        if (k === q) return ENTRIES[i];
+        if (q.indexOf(k) >= 0 && k.length > bestLen) { best = ENTRIES[i]; bestLen = k.length; }
+      }
+    }
+    return best;
+  }
+  return { find: find };
+}
+const INSTITUTION = institutionLib(INSTITUTIONS);
+
+// 대비 — WCAG 상대 휘도. 그림의 설명 글에 적는 수만 셈한다(색은 CSS 가 토큰 · 표로 칠한다)
+const pimgLum = (hex) => {
+  const v = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+  return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2];
+};
+const pimgContrast = (a, b) => {
+  const [x, y] = [pimgLum(a), pimgLum(b)].sort((p, q) => q - p);
+  return ((x + 0.05) / (y + 0.05)).toFixed(2);
+};
+// 토큰 → hex — var() 를 따라간다(짙은 글자의 라이트 fg-neutral · 다크 fg-neutral-inverted 값을 설명 글에 적을 때)
+function pimgTokenHex(tokens, name) {
+  const map = Object.fromEntries((tokens?.colors || []).map((c) => [c.name, c.value]));
+  let v = map[name];
+  for (let i = 0; i < 8 && v && /^var\(--color-/.test(v); i++) v = map[/^var\(--color-([a-z0-9-]+)\)/.exec(v)[1]];
+  return v && /^#[0-9a-f]{6}$/i.test(v) ? v.toUpperCase() : "";
+}
+
+// 그림 재료 — 손으로 칠한 대역(실제 사진 · 카드 그림 · 로고가 아니다). 그림은 모드를 따르지 않는다(라이트 · 다크 같다)
+const pimgUri = (w, h, body) => `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${body}</svg>`)}`;
+// 풍경 — 하늘 그라디언트 · 해 · 언덕 두 겹
+const pimgScene = (w, h, [sky1, sky2, sun, hill1, hill2]) => pimgUri(w, h,
+  `<defs><linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${sky1}"/><stop offset="1" stop-color="${sky2}"/></linearGradient></defs>` +
+  `<rect width="${w}" height="${h}" fill="url(#s)"/><circle cx="${w * 0.68}" cy="${h * 0.32}" r="${Math.round(Math.min(w, h) * 0.09)}" fill="${sun}"/>` +
+  `<path d="M0 ${h * 0.7}C${w * 0.18} ${h * 0.58} ${w * 0.34} ${h * 0.6} ${w * 0.5} ${h * 0.68}S${w * 0.82} ${h * 0.56} ${w} ${h * 0.62}V${h}H0Z" fill="${hill1}"/>` +
+  `<path d="M0 ${h * 0.84}C${w * 0.25} ${h * 0.74} ${w * 0.55} ${h * 0.8} ${w * 0.72} ${h * 0.86}S${w * 0.92} ${h * 0.8} ${w} ${h * 0.82}V${h}H0Z" fill="${hill2}"/>`);
+// 카드 그림 — 가로(856 × 540 · ISO 1.586) · 세로(540 × 856). 세로 카드는 글이 세로 방향이다
+const pimgCardH = (c1, c2, name, ink = "#ffffff", chip = ["#f6d365", "#c9a227"]) => pimgUri(856, 540,
+  `<defs><linearGradient id="c" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient><linearGradient id="p" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${chip[0]}"/><stop offset="1" stop-color="${chip[1]}"/></linearGradient></defs>` +
+  `<rect width="856" height="540" fill="url(#c)"/><rect x="72" y="150" width="120" height="92" rx="14" fill="url(#p)"/>` +
+  `<text x="790" y="470" text-anchor="end" font-family="sans-serif" font-size="64" font-weight="800" letter-spacing="3" fill="${ink}">${name}</text>`);
+const pimgCardV = (c1, c2, name) => pimgUri(540, 856,
+  `<defs><linearGradient id="c" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient><linearGradient id="p" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6d365"/><stop offset="1" stop-color="#c9a227"/></linearGradient></defs>` +
+  `<rect width="540" height="856" fill="url(#c)"/><rect x="76" y="72" width="150" height="104" rx="14" fill="url(#p)"/>` +
+  `<text transform="translate(300 470) rotate(-90)" text-anchor="middle" font-family="sans-serif" font-size="76" font-weight="800" letter-spacing="5" fill="#ffffff">${name}</text>` +
+  `<text x="76" y="800" font-family="sans-serif" font-size="44" font-weight="700" fill="#ffffff" fill-opacity=".85">CREDIT</text>`);
+// 흰 그림 — 흰 바탕의 흰 카드(9월 24일 dev 캡처의 흰 "SELECT" 카드 자리) · 흰 바탕 위 물건 사진
+const PIMG_CARD_WHITE = pimgCardH("#ffffff", "#f3f5f8", "SELECT", "#c9ced6", ["#e6e9ee", "#c9ced6"]);
+const PIMG_WHITE = pimgUri(800, 600,
+  `<rect width="800" height="600" fill="#ffffff"/><ellipse cx="400" cy="452" rx="196" ry="30" fill="#000000" fill-opacity=".06"/>` +
+  `<rect x="300" y="170" width="200" height="270" rx="30" fill="#eef0f4"/><rect x="336" y="220" width="128" height="16" rx="8" fill="#dde1e7"/><rect x="336" y="252" width="88" height="16" rx="8" fill="#dde1e7"/>`);
+const PIMG = {
+  night: pimgScene(800, 600, ["#1b2036", "#3a3550", "#f5e6a8", "#262a43", "#12162a"]),
+  dawn: pimgScene(800, 600, ["#f6c9a8", "#f7e6d3", "#fff3c4", "#c7a38a", "#8f6f5c"]),
+  forest: pimgScene(800, 600, ["#cfe7f2", "#eef6f1", "#ffffff", "#6fa77f", "#3f7552"]),
+  sea: pimgScene(800, 600, ["#9fc7ec", "#dcecf8", "#ffffff", "#4f86b8", "#245b8a"]),
+  dusk: pimgScene(800, 600, ["#5b4a8a", "#e7a3a1", "#ffe0b0", "#6a4f74", "#3a2d4a"]),
+  snow: pimgScene(800, 600, ["#dfe6ee", "#f6f8fb", "#ffffff", "#c9d3de", "#aab6c4"]),
+  white: PIMG_WHITE,
+  cardH: pimgCardH("#283c86", "#45a247", "SHOPPING+"),
+  cardH2: pimgCardH("#1c1c1c", "#5a5a5a", "M EDITION"),
+  cardWhite: PIMG_CARD_WHITE,
+  cardV: pimgCardV("#e52d27", "#7b1fa2", "SELECT ALL"),
+  cardV2: pimgCardV("#0f2f5c", "#2f7fb8", "TRAVEL"),
+  // 로고 그림 — 흰 바탕에 맞춰 만든 검은 마크 + 글(가상의 회사). 판 없이 다크에 두면 검은 부분이 사라진다
+  logoA: pimgUri(360, 120, `<circle cx="60" cy="60" r="38" fill="none" stroke="#111111" stroke-width="10"/><path d="M60 36c14 8 18 28 0 46-18-18-14-38 0-46Z" fill="#1e7d4c"/><text x="118" y="78" font-family="sans-serif" font-size="46" font-weight="800" letter-spacing="2" fill="#111111">HANBIT</text>`),
+  logoB: pimgUri(360, 120, `<path d="M60 20 95 40v40L60 100 25 80V40Z" fill="none" stroke="#111111" stroke-width="10"/><circle cx="60" cy="60" r="12" fill="#111111"/><text x="118" y="78" font-family="sans-serif" font-size="46" font-weight="800" letter-spacing="2" fill="#111111">DAON</text>`),
+  // HR 규정 그림 — 1:1 그림(달력 · 옷 · 책 · 잔). 제목 · 설명이 내용을 말한다(장식)
+  ruleLeave: pimgUri(800, 800, `<rect width="800" height="800" fill="#e7f3ec"/><rect x="200" y="230" width="400" height="360" rx="36" fill="#ffffff"/><rect x="200" y="230" width="400" height="96" rx="36" fill="#2f8a5d"/><rect x="200" y="290" width="400" height="36" fill="#2f8a5d"/><g fill="#cfe6d8">${[0, 1, 2].map((r) => [0, 1, 2, 3].map((c) => `<rect x="${238 + c * 86}" y="${360 + r * 70}" width="60" height="44" rx="10"/>`).join("")).join("")}</g><rect x="410" y="430" width="60" height="44" rx="10" fill="#2f8a5d"/>`),
+  ruleAttire: pimgUri(800, 800, `<rect width="800" height="800" fill="#eef1f8"/><path d="M300 220h200l120 90-50 90-50-30v240H280V370l-50 30-50-90Z" fill="#ffffff" stroke="#5b6b8c" stroke-width="14" stroke-linejoin="round"/><path d="M360 220l40 70 40-70" fill="none" stroke="#5b6b8c" stroke-width="14" stroke-linejoin="round"/>`),
+  ruleEducation: pimgUri(800, 800, `<rect width="800" height="800" fill="#fbf1e2"/><path d="M200 260c80-30 150-20 200 20 50-40 120-50 200-20v300c-80-30-150-20-200 20-50-40-120-50-200-20Z" fill="#ffffff" stroke="#b07a2a" stroke-width="14" stroke-linejoin="round"/><path d="M400 280v300" stroke="#b07a2a" stroke-width="14"/>`),
+  ruleCulture: pimgUri(800, 800, `<rect width="800" height="800" fill="#f6ecf3"/><path d="M250 330h260v170a90 90 0 0 1-90 90h-80a90 90 0 0 1-90-90Z" fill="#ffffff" stroke="#9a4f7d" stroke-width="14"/><path d="M510 370h40a50 50 0 0 1 0 100h-40" fill="none" stroke="#9a4f7d" stroke-width="14"/><path d="M320 270c0-30 30-30 30-60M390 270c0-30 30-30 30-60" fill="none" stroke="#c98fb2" stroke-width="12" stroke-linecap="round"/>`),
+  // 동영상 첫 장면 — 비율 상자(Aspect Ratio)의 자식
+  video: pimgUri(1280, 720, `<defs><linearGradient id="v" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1f2a44"/><stop offset="1" stop-color="#3d5a80"/></linearGradient></defs><rect width="1280" height="720" fill="url(#v)"/><rect x="380" y="170" width="520" height="340" rx="28" fill="#ffffff" fill-opacity=".12"/><circle cx="640" cy="340" r="72" fill="#ffffff" fill-opacity=".9"/><path d="M618 300v80l64-40Z" fill="#1f2a44"/>`),
+};
+// 여러 장(12장 — "1 / 12")의 사진 — 풍경 여섯을 돌려 쓴다
+const PIMG_ALBUM = ["dawn", "forest", "sea", "dusk", "snow", "night"];
+
+// 그림 틀의 모서리 — image-frame.yaml radius(SEED 의 폭 기준): 폭 24 이하 4 · 48 이하 6 · 그 위 8 · 화면 폭 0(imageFrameRadius 와 같은 규칙)
+const imageFrameRadius = (width) => (width <= 24 ? "4" : width <= 48 ? "6" : "8");
+// 비율 → 클래스 · 값(image-frame.yaml · aspect-ratio.yaml ratio — 여덟 가지)
+const PIMG_RATIO = { "1:1": ["1x1", 1], "2:1": ["2x1", 2], "16:9": ["16x9", 16 / 9], "4:3": ["4x3", 4 / 3], "6:7": ["6x7", 6 / 7], "4:5": ["4x5", 4 / 5], "2:3": ["2x3", 2 / 3], card: ["card", 1.586] };
+const pimgPx = (v) => (typeof v === "number" ? `${v}px` : v);
+
+// 그림 틀 — image-frame.tsx 의 ImageFrame. 그림은 cover(가운데를 남겨 자른다), fit contain 은 흰 판 위에 잘리지 않게.
+//   ratio     "1:1" · "2:1" · "16:9" · "4:3"(기본) · "6:7" · "4:5" · "2:3" · "card"(1.586)
+//   width     고정 폭(px) — 모서리를 그 폭으로 고른다. 없으면 부모 폭을 채우고 모서리 8. bleed 면 화면 폭 — 모서리 0
+//   state     loaded · loading(스켈레톤 — 그림은 보이지 않게 둔다) · fallback(없음 · 실패 · 10초 — 대체 그림, 이름은 alt 를 이어받는다)
+//   rotated   세로 카드 그림을 시계 방향 90° 돌려 채운다(ratio card 만 — 레시피는 다 받은 뒤 원래 크기로 정한다. 그림의 대역은 빌드가 원래 크기를 안다)
+//   fallback  대체 그림을 통째로 바꿀 때(카드 면) · glyph 대체 그림의 아이콘 · floaters [{ placement, html }] 둘까지
+//   cls · attrs  갤러리에서 덧붙이는 클래스 · 속성(직접 견본의 data-*, 쓰지 않는 모습의 표시)
+function imageFrame({ ratio = "4:3", width = null, bleed = false, fit = "cover", src = "", alt = "", state = "loaded", rotated = false, fallback = "", glyph = "image", floaters = [], cls = "", attrs = "" } = {}) {
+  const radius = bleed ? "0" : width == null ? "8" : imageFrameRadius(width);
+  const st = !src && state === "loaded" ? "fallback" : state;
+  const c = ["pif", `pif--${PIMG_RATIO[ratio][0]}`, radius !== "8" && `pif--r${radius}`, fit === "contain" && "pif--contain", rotated && "pif--rotated", cls].filter(Boolean).join(" ");
+  const img = src && st !== "fallback" ? `<img class="pif-img" src="${src}" alt="${escape(alt)}" loading="lazy" decoding="async">` : "";
+  const skel = st === "loading" ? '<span class="psk" aria-hidden="true"></span>' : "";
+  const fb = st === "fallback" ? fallback || contentPlaceholder({ glyph, label: alt }) : "";
+  const fl = floaters.slice(0, 2).map((f) => `<span class="pif-floater pif-floater--${f.placement}">${f.html}</span>`).join("");
+  return `<div ${attrsOf([`class="${c}"`, `data-state="${st}"`, width != null && !bleed && `style="width: ${pimgPx(width)};"`, attrs])}>${img}${skel}${fb}${fl}</div>`;
+}
+// 장수 글(Indicator) — 보이는 글은 숨기고 읽는 글(label — 무엇의 수인지)을 숨은 글로 읽는다
+const imageFrameIndicator = (text, label) => `<span class="pif-ind"><span aria-hidden="true">${escape(text)}</span><span class="pif-sr">${escape(label)}</span></span>`;
+
+// 카드 그림 — image-frame.tsx 의 CardArt(ratio card). 그림이 없거나 못 불러오면 카드사로 가른다 — 기관 색 표에 있으면 카드 면(기관 색 한 색 + 회사 · 카드 이름,
+// 폭 96 미만은 회사 첫 글자만 가운데), 없으면 대체 그림(credit-card). decorative(기본)면 옆에 이름이 있어 그림 · 면을 보조 기술에 숨기고, 아니면 "카드사 카드 이름" 을 읽는다
+function cardFace({ issuer, name = "", label = "" }) {
+  const inst = INSTITUTION.find(issuer);
+  if (!inst) return "";
+  const a11y = label ? `role="img" aria-label="${escape(label)}"` : 'aria-hidden="true"';
+  return `<span class="pcart-face pcart-face--${inst.text}" style="--pcart-bg: ${inst.color};" ${a11y}><span class="pcart-initial" aria-hidden="true">${escape(AVATAR.initial(issuer))}</span><span class="pcart-issuer" aria-hidden="true">${escape(issuer)}</span>${name ? `<span class="pcart-name" aria-hidden="true">${escape(name)}</span>` : ""}</span>`;
+}
+function cardArt({ issuer, name = "", src = "", width = null, decorative = true, state = "loaded", rotated = false, floaters = [], cls = "", attrs = "" } = {}) {
+  const label = decorative ? "" : `${issuer} ${name}`.trim();
+  const face = cardFace({ issuer, name, label });
+  const fallback = face || contentPlaceholder({ glyph: "creditCard", label });
+  return imageFrame({ ratio: "card", width, src, alt: label, state, rotated, fallback, floaters, cls, attrs });
+}
+
+// 로고 타일 — logo-tile.tsx 의 LogoTile. 이름(기관 이름, 없으면 자산 이름)의 첫 글자를 먼저 그리고, 그림이 오면 판 · 그림이 덮는다(실패하면 첫 글자 그대로).
+//   face   institution(기관 색 표에서 찾고 없으면 이름 색 — 기본) · name(표를 보지 않고 이름 색 — 기관 없는 자산 · 회사)
+//   size   32 · 40(기본) · 48 — 모서리 크기 × 0.3(10 · 12 · 14) · 첫 글자 크기의 40%(13 · 16 · 19)
+//   src · imageType  그림(card — 옅은 판 위 카드 전체 · logo — 흰 판 위 잘리지 않게) · state  loaded(그림이 덮음) · initial(아직 · 실패 — 첫 글자)
+//   rotated  카드 그림이 세로면 판 안의 카드 틀에서 돌린다 · decorative  옆에 이름이 있으면 숨긴다(기본), 아니면 role=img + 이름
+// 판 + 그림 — 카드는 옅은 판 위 카드 비율 Image Frame(폭 크기 − 8 — 모서리는 그 폭으로), 로고는 흰 판 위 contain. 그림은 장식(alt="")이다
+const logoTilePlate = ({ size = 40, src, imageType = "logo", rotated = false }) => (imageType === "card"
+  ? `<span class="plt-plate plt-plate--card">${imageFrame({ ratio: "card", width: size - 8, src, rotated })}</span>`
+  : `<span class="plt-plate plt-plate--logo"><img src="${src}" alt=""></span>`);
+function logoTile({ name, face = "institution", size = 40, src = "", imageType = "logo", state = "loaded", rotated = false, decorative = true, cls = "", attrs = "" } = {}) {
+  const inst = face === "institution" ? INSTITUTION.find(name) : null;
+  const tone = inst ? `plt--${inst.text}` : `plt--name plt--${AVATAR.hue(name)}`;
+  const a11y = decorative ? 'aria-hidden="true"' : `role="img" aria-label="${escape(AVATAR.display(name))}"`;
+  const plate = src && state === "loaded" ? logoTilePlate({ size, src, imageType, rotated }) : "";
+  return `<span ${attrsOf([`class="${["plt", `plt--${size}`, tone, cls].filter(Boolean).join(" ")}"`, inst && `style="--plt-bg: ${inst.color};"`, a11y, attrs])}><span class="plt-initial">${escape(AVATAR.initial(name))}</span>${plate}</span>`;
+}
+
+// 비율 상자 — aspect-ratio.tsx 의 AspectRatio. 모서리 · 바탕 · 윤곽이 없고 자식 하나(.par-child)가 상자를 채운다(동영상은 cover)
+const aspectRatioBox = ({ ratio = "4:3", child = "", cls = "" } = {}) => `<div class="${["par", `par--${PIMG_RATIO[ratio][0]}`, cls].filter(Boolean).join(" ")}">${child}</div>`;
+
+// 이미지 갤러리 — 비율 · 모서리 · 윤곽 · 상태 · 세로 카드 · 카드 면 · 그림 위 요소 · 로고 타일 둘 · 화면 둘 · 여러 장 · 비율 상자 열세 판을 흰 표면(.vignette-card) 위에 그린다.
+// 견본 틀(.ptf-samples · .ptf-cap)은 Text Field 갤러리 것, 라이트 · 다크 나란히 틀(.pdsp-pair · .pdsp-theme)은 03o 것, 화면 틀(overlayFrame)은 03k 것, 목록 줄은 03e 것,
+// 배지는 03o 것, 스켈레톤 · 대체 그림은 03p 것이다. 글은 Desk(카드 혜택 · 자산 · 카드 상세)와 HR(규정 · 회사별 인원)에서 빌렸다 — image-frame.md · logo-tile.md ·
+// aspect-ratio.md 코드 예와 같은 자리다. 기관 색 · 글자색은 institution-colors.yaml 에서 읽고, 설명 글의 대비는 그 값으로 셈한다.
+export function renderImageGallery(brand, tokens) {
+  const panel = (title, sub, body) => `
+    <div class="vignette-card cb-panel">
+      <div class="vignette-head">
+        <div class="vignette-title">${escape(title)}</div>
+        <div class="vignette-sub">${escape(sub)}</div>
+      </div>${body}
+    </div>`;
+  const samples = (items, cls = "ptf-samples") => `
+      <div class="${cls}">${items.join("")}
+      </div>`;
+  const sample = (cap, en, body) => `
+        <div class="ptf-sample">
+          <div class="ptf-cap">${escape(cap)}<span>${escape(en)}</span></div>
+          ${body}
+        </div>`;
+  const DESKTOP = "ptf-samples pov-samples--desktop";
+  // 라이트 · 다크 나란히 — 페이지 테마와 관계없이 그 테마로 그린다(03o 의 틀)
+  const pair = (body) => `<div class="pdsp-pair">${["light", "dark"].map((t) => `<div class="pdsp-theme pdsp-theme--${t}"><div class="pdsp-theme-cap">${t === "light" ? "라이트" : "다크"}</div>${typeof body === "function" ? body(t) : body}</div>`).join("")}</div>`;
+  const surface = (body, cls = "") => `<div class="pimg-surface${cls ? ` ${cls}` : ""}">${body}</div>`;
+  const row = (items, cls = "") => `<div class="pimg-row${cls ? ` ${cls}` : ""}">${items.join("")}</div>`;
+  const item = (html, cap, sub = "") => `<div class="pimg-item">${html}<span class="pimg-cap">${escape(cap)}${sub ? `<span>${escape(sub)}</span>` : ""}</span></div>`;
+  const phone = (height, page) => overlayFrame({ device: "phone", height, page });
+  const desktop = (height, page) => overlayFrame({ device: "desktop", height, page });
+  const title = (t) => `<div class="pov-page-title">${escape(t)}</div>`;
+  const amount = (t) => `<span class="plst-amount">${escape(t)}</span>`;
+  const num = (n) => {
+    const v = Math.round(n * 10) / 10;
+    return Number.isInteger(v) ? String(v) : v.toFixed(1);
+  };
+  const solid = (text) => badge({ text, variant: "solid" });
+  // 짙은 글자의 값 — 라이트 fg-neutral · 다크 fg-neutral-inverted(institution-colors.yaml 의 text dark)
+  const INK_LIGHT = pimgTokenHex(tokens, "fg-neutral") || "#1A1F2E";
+  const INK_DARK = pimgTokenHex(tokens, "fg-neutral-inverted-dark") || "#242938";
+  const contrastOf = (inst) => (inst.text === "white" ? `흰 글자 ${pimgContrast("#FFFFFF", inst.color)}` : `짙은 글자 ${pimgContrast(INK_LIGHT, inst.color)} · 다크 ${pimgContrast(INK_DARK, inst.color)}`);
+  const inst = (name) => INSTITUTION.find(name);
+
+  // 1. 비율 여덟 — 같은 폭 120. 그림은 cover(가운데를 남겨 자른다), 로고 · 글이 든 그림은 contain + 흰 판
+  const RATIOS = [["1:1", "정사각"], ["2:1", "넓은 띠"], ["16:9", "동영상"], ["4:3", "사진 — 기본"], ["6:7", "조금 세로"], ["4:5", "세로 · 여러 장"], ["2:3", "긴 세로"], ["card", "카드 1.586 — porest"]];
+  const ratioRow = row(RATIOS.map(([r, ko]) => item(imageFrame({ ratio: r, width: 120, src: r === "card" ? PIMG.cardH : PIMG.forest }), `${r === "card" ? "card" : r} — ${ko}`, `120 × ${num(120 / PIMG_RATIO[r][1])}`)), "pimg-row--ratios");
+  const fitRow = row([
+    item(imageFrame({ ratio: "4:3", width: 160, src: PIMG.dawn }), "cover — 사진", "가운데를 남겨 자른다(기본)"),
+    item(imageFrame({ ratio: "4:3", width: 160, src: PIMG.logoA, fit: "contain" }), "contain — 로고 · 글이 든 그림", "잘리지 않게 · 둘레는 흰 판(static-white)"),
+  ]);
+  const ratioPanel = panel(
+    "Image Frame — 비율 여덟 · 같은 폭 120 · cover · contain",
+    "비율은 여덟 가지다 — SEED 의 일곱(1:1 · 2:1 · 16:9 · 4:3 · 6:7 · 4:5 · 2:3)과 카드 1.586(ISO 카드 85.6 × 53.98 — porest). 기본은 4:3 이다. 틀은 그림이 오기 전에 비율로 자리를 잡아(높이 = 폭 ÷ 비율) 그림이 와도 줄이 밀리지 않고, 모서리로 그림을 자른다(overflow hidden · isolation). 사진 · 카드 그림은 꽉 채우고 가운데를 남겨 자른다(cover). 로고처럼 잘리면 안 되는 그림은 잘리지 않게 넣고(contain) 둘레를 흰 판으로 채운다 — 판은 두 모드 모두 흰색이라 다크에서도 그림의 검은 부분이 사라지지 않는다. 카드 그림은 목록 · 격자 · 상세 모두 1.586 이다 — 최대 높이를 걸어 비율을 바꾸지 않는다. 이 밖의 비율(3:4 · 21:9)은 만들지 않는다.",
+    `${samples([sample("비율 — 폭 120 에서 높이", "ratio=\"1:1\" · \"2:1\" · \"16:9\" · \"4:3\"(기본) · \"6:7\" · \"4:5\" · \"2:3\" · \"card\"", surface(ratioRow))], "ptf-samples pimg-samples--wide")}${samples([
+      sample("Fit — 라이트 · 다크", "fit=\"cover\"(기본) · fit=\"contain\" — 흰 판은 두 모드 같다", pair(fitRow)),
+    ], "ptf-samples pov-samples--next pimg-samples--wide")}`,
+  );
+
+  // 2. 모서리 — 폭으로. 24 이하 4 · 48 이하 6 · 그 위 8 · 화면 폭 0. 불러오는 동안의 스켈레톤도 같은 모서리
+  const WIDTHS = [24, 40, 48, 56, 150];
+  const radiusRow = row([...WIDTHS.map((w) => item(imageFrame({ ratio: "card", width: w, src: PIMG.cardH }), `${w} × ${num(w / 1.586)} → ${imageFrameRadius(w)}`, w === 56 ? "목록 카드 그림" : w === 40 ? "목록 앞 썸네일" : w === 150 ? "혜택 격자" : "")), item(imageFrame({ ratio: "card", width: 312, src: PIMG.cardH }), "312 × 196.7 → 8", "상세")], "pimg-row--radius");
+  const skelRow = row(WIDTHS.slice(0, 4).map((w) => item(skeleton({ radius: imageFrameRadius(w), w, h: +(w / 1.586).toFixed(1) }), `Skeleton radius="${imageFrameRadius(w)}"`, `${w} 자리`)), "pimg-row--radius");
+  const bleedPhone = phone(410, `${title("가게 사진")}${imageFrame({ ratio: "4:3", bleed: true, src: PIMG.sea, alt: "" })}<div class="pimg-page-text">좌우가 화면 끝에 닿는 그림 — 모서리 0, 윤곽은 그대로</div>`);
+  const radiusPanel = panel(
+    "Image Frame — 모서리는 폭으로: 24 이하 4 · 48 이하 6 · 그 위 8 · 화면 폭 0",
+    "모서리는 틀의 폭으로 고른다(SEED — \"가로 크기 24까지 r1, 48까지 r1.5, 그 이상은 r2\") — 24 이하 4(radius-r1), 25 ~ 48 은 6(radius-r1_5), 49 이상 8(radius-r2), 좌우가 화면 끝에 닿는 그림은 0. 작은 그림일수록 모서리를 줄인다 — 24 그림에 8 을 주면 폭의 1/3 이 둥글어 알약처럼 보인다. 고정 폭(목록 · 썸네일)은 그 폭으로, 부모 폭을 채우는 틀은 8 이다. 불러오는 동안의 스켈레톤 · 대체 그림도 같은 모서리다 — 틀 안은 틀이 자르고, 줄이 통째로 기다릴 때처럼 틀 밖에서 그림 자리를 그리면 Skeleton 의 radius 를 그 폭의 모서리(imageFrameRadius(폭) — \"4\" · \"6\" · \"8\")로 준다. Skeleton 의 \"16\" 은 카드 면(Card 모양 자리 전체)만이다.",
+    `${samples([sample("폭으로 고른 모서리 — 카드 그림", "imageFrameRadius(width) — 24 → 4 · 40 · 48 → 6 · 56 · 150 · 312 → 8", surface(radiusRow))], "ptf-samples pimg-samples--wide")}${samples([
+      sample("틀 밖 스켈레톤 — 같은 모서리", "<Skeleton radius={imageFrameRadius(w)} /> — 다 받은 그림과 같다", surface(skelRow)),
+      sample("화면 폭 — 0", "bleed — 좌우가 화면 끝에 닿는다", bleedPhone),
+    ], "ptf-samples pov-samples--next")}`,
+  );
+
+  // 3. 윤곽 — 안쪽 1px stroke-neutral-overlay(검정 4.7% · 다크 흰 5%), 늘. 흰 그림 · 어두운 그림 · 스켈레톤 · 대체 그림 위. 모서리를 4배로
+  const zoom = (frame, cap, sub) => item(`<span class="pimg-zoom" aria-hidden="true"><span class="pimg-zoom-in">${frame}</span></span>`, cap, sub);
+  const strokeBody = surface(`${row([
+    item(imageFrame({ ratio: "card", width: 150, src: PIMG.cardWhite }), "흰 그림", "흰 바탕 위 1.11 · 다크 1.17 — 둘레가 잡힌다"),
+    item(imageFrame({ ratio: "card", width: 150, src: PIMG.cardH2 }), "어두운 그림", "선이 보이지 않는다 — 테가 생기지 않는다"),
+    item(imageFrame({ ratio: "card", width: 150, src: PIMG.cardH2, state: "loading" }), "스켈레톤 위", "같은 선"),
+    item(imageFrame({ ratio: "card", width: 150, state: "fallback", glyph: "creditCard" }), "대체 그림 위", "같은 선"),
+  ], "pimg-row--stroke")}<div class="pimg-gap"></div>${row([
+    zoom(imageFrame({ ratio: "card", width: 150, src: PIMG.cardWhite }), "흰 그림 모서리 × 4", "stroke-neutral-overlay"),
+    zoom(imageFrame({ ratio: "card", width: 150, src: PIMG.cardH2 }), "어두운 그림 모서리 × 4", "stroke-neutral-overlay"),
+    zoom(imageFrame({ ratio: "card", width: 150, src: PIMG.cardH2, cls: "pimg-opaque" }), "불투명한 테 × 4 — 쓰지 않는다", "stroke-neutral-subtle — 어두운 그림 둘레에 옅은 테"),
+  ], "pimg-row--stroke")}`);
+  const strokePanel = panel(
+    "Image Frame — 투명 윤곽 1px · 늘",
+    "그림 위에 안쪽 1px 윤곽을 늘 그린다 — stroke-neutral-overlay(v118 — 검정 4.7% · 다크 흰 5%, SEED stroke.neutral-subtle 의 값). 투명한 선이라 흰 그림 둘레는 살짝 잡히고(흰 바탕 위 1.11:1) 어두운 그림 위에서는 보이지 않는다. 불투명한 선(stroke-neutral-subtle)을 두르면 어두운 사진 · 카드 둘레에 옅은 테가 생긴다(오른쪽 아래 — 쓰지 않는 모습). 안쪽 그림자(inset box-shadow)라 크기가 변하지 않고, 그림 위(::after)에 그려 누르기를 막지 않으며 모서리는 틀을 따른다. 끄는 속성이 없다 — 스켈레톤 · 대체 그림 · 카드 면 위에도 같은 선이다. 윤곽은 장식이다(그림 · 이름 글이 내용을 알린다). 아래 넷째 줄은 모서리를 4배로 키웠다.",
+    pair(strokeBody),
+  );
+
+  // 4. 상태 — 불러오는 중(스켈레톤) · 다 받음(투명도 150ms) · 없음 · 실패(대체 그림 — 이름을 이어받는다). 직접 — 1.2초에 옴 · 실패 · 10초
+  const stateBody = surface(row([
+    item(imageFrame({ ratio: "4:3", width: 150, src: PIMG.sea, alt: "바다 사진", state: "loading" }), "loading — 스켈레톤", "같은 모서리 · 면 + 반짝임 · 처음부터 깐다"),
+    item(imageFrame({ ratio: "4:3", width: 150, src: PIMG.sea, alt: "바다 사진" }), "loaded — 그림", "스켈레톤을 걷고 투명도 150ms"),
+    item(imageFrame({ ratio: "4:3", width: 150, alt: "" }), "없음 — 대체 그림", "src 없음 · 장식(alt=\"\")이면 숨긴다"),
+    item(imageFrame({ ratio: "4:3", width: 150, src: PIMG.sea, alt: "바다 사진", state: "fallback" }), "실패 · 10초 — 대체 그림", "role=img · 이름 \"바다 사진\"(alt 를 이어받는다)"),
+  ], "pimg-row--states"));
+  // 직접 — 틀 · 대체 그림(<template> — 실패 · 10초에 넣는다) · 버튼 · 지난 시간
+  const pifLive = (kind, frame, fallback, buttons, note) => `<div class="pld-live" data-pif-live="${kind}">${surface(frame, "pimg-surface--live")}<template data-pif-fallback="">${fallback}</template><div class="pld-controls">${buttons.map(([label, run]) => `<button class="btn btn-neutral-weak btn-size-small" type="button" data-pif-run="${run}"><span>${escape(label)}</span></button>`).join("")}</div><p class="pld-clock" data-pif-clock="" aria-hidden="true">${escape(note)}</p></div>`;
+  const RUNS = [["1.2초에 옴", "1200"], ["1.2초에 실패", "fail"], ["10초까지 — 오지 않음", "never"]];
+  const livePhoto = pifLive("photo", imageFrame({ ratio: "4:3", width: 240, src: PIMG.dusk, alt: "저녁 하늘 사진", attrs: `data-pif-src="${PIMG.dusk}"` }), contentPlaceholder({ label: "저녁 하늘 사진" }), RUNS, "버튼을 누르면 처음부터 다시 받는다");
+  const liveCard = pifLive("card", cardArt({ issuer: "삼성카드", name: "iD SELECT ALL", src: PIMG.cardV, width: 240, rotated: true, decorative: false, attrs: `data-pif-src="${PIMG.cardV}"` }), cardFace({ issuer: "삼성카드", name: "iD SELECT ALL", label: "삼성카드 iD SELECT ALL" }), RUNS, "세로 카드 — 다 받은 뒤 원래 크기(540 × 856)로 방향을 정한다");
+  const statePanel = panel(
+    "Image Frame — 불러오는 중 · 다 받음 · 없음 · 실패",
+    "불러오는 동안은 같은 모서리의 Skeleton(면 bg-neutral-weak + 반짝임 — 화면의 스켈레톤과 한 박자, 모션 줄이기면 멈춘다)이고 면을 처음부터 깐다 — 빈 칸이 없다. 그림은 받는 동안 보이지 않게(투명도 0) 두고 다 받으면 스켈레톤을 걷고 150ms(motion-duration-d3 · ease-enter)로 나타난다. 그림이 없거나 · 못 불러오거나 · 10초가 지나도 안 오면 Content Placeholder(틀 높이의 50% 아이콘 · stroke-neutral-weak)다 — 깨진 그림 아이콘 · alt 글 · 빈 칸이 보이지 않고, 10초에 바꾼 뒤에 그림이 와도 다시 바꾸지 않는다(다음에 열 때 다시 받는다). 실패해도 이름이 남는다 — 대체 그림이 alt 를 이름으로 이어받는다(role=img). 실패 · 없음으로 바뀔 때는 움직임이 없다. 카드 그림은 아는 카드사면 대체 그림 대신 카드 면이다(아래 \"직접\" 의 삼성카드). 아래 둘은 실제로 시간이 흐른다.",
+    `${pair(stateBody)}${samples([
+      sample("직접 — 사진", "ImageFrame src · 1.2초 · 실패 · 10초까지", livePhoto),
+      sample("직접 — 카드 그림(세로 · 아는 카드사)", "CardArt issuer=\"삼성카드\" decorative={false} — 실패하면 카드 면", liveCard),
+    ], "ptf-samples pov-samples--next")}`,
+  );
+
+  // 5. 세로 카드 그림 — 원래 폭 < 높이면 시계 방향 90° 돌려 가로 틀을 채운다(목록 56 · 격자 · 상세 312)
+  // 카드 혜택 줄 — ListButtonItem 의 짜임(list.tsx · 03e)에 제목 옆 배지(weak — 그림 위에 얹기에는 작다)를 둔다(03o 의 .pdsp-title-line)
+  const benefitRow = ({ issuer, name, src = "", rotated = false, type = "신용", badges = [] }) => `<li class="plst-row"><div class="plst-content"><span class="plst-prefix">${cardArt({ issuer, name, src, width: 56, rotated })}</span><button type="button" class="plst-body plst-action" data-list-action=""><span class="pdsp-title-line"><span class="plst-title pdsp-title">${escape(name)}</span>${badges.join("")}</span><span class="plst-detail">${escape(`${type} · ${issuer}`)}</span></button></div></li>`;
+  const rotatePhone = phone(300, `${title("카드 혜택")}${listOf([
+    benefitRow({ issuer: "삼성카드", name: "iD SELECT ALL", src: PIMG.cardV, rotated: true }),
+    benefitRow({ issuer: "현대카드", name: "M EDITION", src: PIMG.cardH2 }),
+    benefitRow({ issuer: "신한카드", name: "트래블", src: PIMG.cardV2, rotated: true, type: "체크" }),
+  ])}`);
+  const rotateGrid = surface(`${row([
+    item(cardArt({ issuer: "삼성카드", name: "iD SELECT ALL", src: PIMG.cardV, width: 150, rotated: true }), "격자 150 — 돌림", "540 × 856 → 시계 방향 90°"),
+    item(cardArt({ issuer: "현대카드", name: "M EDITION", src: PIMG.cardH2, width: 150 }), "가로 그림 — 그대로", "856 × 540"),
+    item(cardArt({ issuer: "삼성카드", name: "iD SELECT ALL", src: PIMG.cardV, width: 150 }), "가운데만 잘린 지금 — 쓰지 않는다", "세로를 가로 틀에 cover — 높이의 29 ~ 41%"),
+  ], "pimg-row--stroke")}<div class="pimg-gap"></div>${item(`<div class="pimg-detail">${cardArt({ issuer: "삼성카드", name: "iD SELECT ALL", src: PIMG.cardV, width: 312, rotated: true })}<h3 class="pimg-detail-name">iD SELECT ALL</h3><p class="pimg-detail-sub">삼성카드</p></div>`, "상세 312 — 돌림 · 카드 이름은 글로", "eager — 첫 화면의 큰 그림만 바로 받는다")}`);
+  const rotatePanel = panel(
+    "카드 그림 — 세로 그림은 시계 방향 90°",
+    "카드 그림은 비율 card(1.586)의 Image Frame 이다 — 목록 56 · 혜택 격자 · 상세가 모두 같은 비율이다. 그림의 반이 세로 카드다(dev 표본 150장 중 80장, 0.62 ~ 0.64). 그림의 원래 폭이 높이보다 작으면 시계 방향으로 90° 돌려 가로 틀을 채운다 — 그림 상자를 틀의 높이 × 폭으로 잡아 돌리고 cover 로 채워 카드 전체가 거의 그대로 들어간다. 방향은 다 받은 뒤 원래 크기로 정하고, 그때까지는 스켈레톤이다(돌기 전 모습이 보이지 않는다). 가로 · 정사각 그림은 그대로다. 세로 그림을 가로 틀에 그대로 채우면 높이의 29 ~ 41% 만 보이고(가운데 띠), 잘리지 않게 넣으면 작아지며, 세로 틀을 따로 두면 목록 · 격자의 크기가 카드마다 달라진다. 상세에는 그림이 떠도 카드 이름을 그림 아래에 글로 둔다. 목록 · 격자의 그림은 옆 · 아래에 이름이 있어 장식이다(decorative 기본).",
+    samples([
+      sample("폰 — 카드 혜택 목록 56", "<CardArt width={56} …> — 모서리 8 · 높이 35.3", rotatePhone),
+      sample("격자 · 상세", "CardArt — 같은 비율 · 세로는 돌린다", rotateGrid),
+    ]),
+  );
+
+  // 6. 그림 없는 카드 — 아는 카드사(기관 색 표)는 카드 면, 모르는 카드사는 대체 그림(credit-card). 크기는 폭으로(96 미만 첫 글자 · 240 이상 크게)
+  const FACES = [["NH농협카드", "올원 Pay"], ["하나카드", "트래블로그"], ["롯데카드", "LOCA 365"], ["KB국민카드", "톡톡 With"], ["SC제일은행", "글로벌 체크"], ["BC카드", "바로 카드"]];
+  const faceCap = (issuer) => {
+    const e = inst(issuer);
+    return e ? `${contrastOf(e)}${e.ci ? ` · 고친 색 ${e.color}(ci ${e.ci})` : ""}` : "표에 없음 — 대체 그림";
+  };
+  const faceBody = surface(`${row(FACES.map(([issuer, name]) => item(cardArt({ issuer, name, width: 150 }), issuer, faceCap(issuer))), "pimg-row--faces")}<div class="pimg-gap"></div>${row([
+    ...[["KB국민카드", 44, "카탈로그 44"], ["NH농협카드", 56, "목록 56"], ["롯데카드", 68, "추가 미리보기 68"], ["BC카드", 56, "모르는 카드사"]].map(([issuer, w, cap]) => item(cardArt({ issuer, name: "", width: w }), `${cap} → ${inst(issuer) ? `"${AVATAR.initial(issuer)}" ${Math.max(10, Math.round((w / 1.586) * 0.4))}` : "credit-card"}`, inst(issuer) ? "small — 회사 첫 글자만 · 면 높이의 40%(정수 · 가장 작아도 10)" : "대체 그림")),
+  ], "pimg-row--small")}<div class="pimg-gap"></div>${item(cardArt({ issuer: "하나카드", name: "트래블로그 체크카드 해외 결제 수수료 면제", width: 282 }), "large 282 — 데스크톱 혜택 격자", "회사 t3 · 카드 이름 t5 · 두 줄까지 · 좌우 16 · 아래 14")}`);
+  const facePanel = panel(
+    "카드 그림 — 그림이 없으면 카드사 색 면 · 모르는 카드사는 대체 그림",
+    "그림이 없거나 못 불러오면 카드사로 가른다(dev 활성 카드의 82% 가 그림이 없다). 기관 색 표(institution-colors.yaml)에 있는 카드사는 카드 면 — 기관 색 한 색 위 왼쪽 아래에 회사 이름(500 · 한 줄 말줄임)과 카드 이름(700 · medium 한 줄 · large 두 줄까지 — 넘치면 말줄임)이다. 크기는 폭으로 — 96 미만(목록 56 · 미리보기 68 · 카탈로그 44)은 회사 첫 글자만 가운데(면 높이의 40% · 가장 작아도 10), 96 ~ 239 는 회사 t2 · 이름 t4 한 줄 · 좌우 10 · 아래 8, 240 이상은 회사 t3 · 이름 t5 두 줄까지 · 좌우 16 · 아래 14. 글자색은 표의 text — 흰 글자가 4.5:1 에 못 미치는 색은 짙은 글자(라이트 fg-neutral · 다크 fg-neutral-inverted)라 78곳 모두 4.52 이상이다. 기관 색은 모드를 따르지 않는다. 광택 띠 · 그라디언트를 두지 않는다. 표에 없는 카드사(BC카드)는 대체 그림(credit-card)이다 — 브랜드 파랑 · 회색 면으로 회사 색인 척하지 않는다. 투명 윤곽은 면 위에도 늘이다. 롯데카드 · SC제일은 흰 · 짙은 글자 모두 모자라 표가 명도만 고친 색이다.",
+    pair(faceBody),
+  );
+
+  // 7. 그림 위 요소 — 배지(solid · 상태) · Indicator(장수 · 길이), 네 모서리 · 모서리에서 6 · 틀 하나에 둘까지 · 짧은 변 80 이상
+  const overlayBody = surface(`${row([
+    item(cardArt({ issuer: "삼성카드", name: "iD SELECT ALL", src: PIMG.cardV, width: 150, rotated: true, floaters: [{ placement: "top-start", html: solid("단종") }] }), "배지 — 위 시작", "Badge solid · medium 20 — 단종은 흐리지 않고 배지로"),
+    item(imageFrame({ ratio: "4:3", width: 150, src: PIMG.white, alt: "", floaters: [{ placement: "bottom-end", html: imageFrameIndicator("1 / 12", "사진 12장 중 1번째") }] }), "Indicator — 아래 끝", "\"1 / 12\" — 흰 그림 위 흰 글자 7.00"),
+    item(imageFrame({ ratio: "1:1", width: 120, src: PIMG.night, alt: "", floaters: [{ placement: "bottom-end", html: imageFrameIndicator("+9", "사진 9장 더 있음") }] }), "Indicator — 나머지 장수", "\"+9\" — 읽는 글 \"사진 9장 더 있음\""),
+    item(imageFrame({ ratio: "4:3", width: 150, src: PIMG.forest, alt: "", floaters: [{ placement: "top-start", html: solid("대표") }, { placement: "bottom-end", html: imageFrameIndicator("3:24", "동영상 3분 24초") }] }), "둘까지 — 배지 + Indicator", "한 자리에 하나 · 셋 이상 얹지 않는다"),
+  ], "pimg-row--stroke")}<div class="pimg-gap"></div>${listOf([benefitRow({ issuer: "롯데카드", name: "LOCA 365", badges: [badge({ text: "단종" })] })])}<div class="pimg-cap pimg-cap--note">작은 틀(짧은 변 80 미만 — 목록 56)에는 얹지 않는다 — 배지는 줄의 글 옆(weak)이다</div>`);
+  const overlayPanel = panel(
+    "Image Frame — 그림 위 요소: 배지 · Indicator",
+    "그림 위에는 네 모서리(위 시작 · 위 끝 · 아래 시작 · 아래 끝)에 하나씩, 틀 하나에 둘까지 얹는다 — 틀 가장자리에서 6(spacing-x1_5). 상태 · 분류는 배지 — Badge solid medium 20(그림 위는 늘 solid — SEED Badge), 보기 전에 알면 좋은 장수 · 길이는 Indicator — 알약 · 검정 65%(overlay-dim-dark) 바탕 · 흰 11/15 500 · 좌우 6 · 위아래 2 · 높이 19 다. Indicator 바탕은 두 모드 모두 검정 65% 다 — 그림은 모드를 따르지 않는다(흰 그림 위에서도 흰 글자 7.00:1). 보이는 글(\"1 / 12\")은 숨기고 무엇의 수인지(\"사진 12장 중 1번째\")를 읽는다. 틀의 짧은 변이 80 이상일 때만 얹는다 — 그보다 작은 틀은 배지 · 장수를 줄의 글로 둔다. 관심(하트) 버튼 · 콘텐츠 종류 아이콘 · 점 지시자는 두지 않는다. 그림 위 요소는 누르지 않는다.",
+    pair(overlayBody),
+  );
+
+  // 8. Logo Tile — 크기 32 · 40 · 48 · 기관 색 면(표의 글자색) · 이름 색 면 · 첫 글자. 표가 명도를 고친 다섯 곳
+  const tileCap = (name, face = "institution") => {
+    const e = face === "institution" ? inst(name) : null;
+    return e ? `${e.name} ${e.color} · ${contrastOf(e)}` : `표를 보지 않는다 → 이름 색 ${AVATAR.hue(name)} · fg-neutral-inverted`;
+  };
+  const sizeRow = row([[32, "10", "13"], [40, "12", "16"], [48, "14", "19"]].map(([s, r, f]) => item(logoTile({ name: "신한", size: s }), `${s} — 모서리 ${r} · 글자 ${f}`, s === 40 ? "목록 줄 — 기본" : s === 48 ? "상세 머리" : "좁은 줄 · 회사 표시")), "pimg-row--tiles");
+  const TILES = [["신한"], ["KB국민"], ["NH농협"], ["유안타증권"], ["삼성증권"], ["케이뱅크"], ["BoA"], ["카카오뱅크"], ["업비트"], ["비상금", "name"]];
+  const faceRow = row(TILES.map(([n, f = "institution"]) => item(logoTile({ name: n, face: f }), `${n} → "${AVATAR.initial(n)}"`, tileCap(n, f))), "pimg-row--tiles");
+  const FIXED = INSTITUTIONS.filter((e) => e.ci);
+  const fixedRow = row(FIXED.map((e) => item(`<span class="pimg-fixed"><span class="pimg-swatch" style="background: ${e.ci};" aria-hidden="true"></span><span class="pimg-arrow" aria-hidden="true">→</span>${logoTile({ name: e.name })}</span>`, `${e.name} ${e.ci} → ${e.color}${e.deltaE ? ` · ΔE ${e.deltaE}` : ""}`, `${contrastOf(e)}(ci 는 흰 ${pimgContrast("#FFFFFF", e.ci)} · 짙은 ${pimgContrast(INK_LIGHT, e.ci)})`)), "pimg-row--tiles");
+  const tilePanel = panel(
+    "Logo Tile — 32 · 40 · 48 · 기관 색 · 이름 색 · 첫 글자",
+    "은행 · 증권 · 카드 · 코인 · 금 같은 물건과 회사를 보이는 각진 타일이다(사람은 원 Avatar, 카테고리는 List 의 타일). 크기는 List 의 타일과 같다 — 40(기본 · 목록 줄) · 48(상세 머리) · 32(좁은 줄 · 카드 옆 회사 표시), 모서리는 크기 × 0.3(10 · 12 · 14), 첫 글자는 크기의 40%(13 · 16 · 19 — 글자 크기 설정을 따르지 않는 px) · 700 · 줄 높이 1 이다. 이름은 기관이 있으면 기관 이름, 없으면 자산 이름이다. 기관 이름이 기관 색 표에 있으면 그 색 면 + 표의 글자색(흰 글자가 4.5:1 에 못 미치면 짙은 글자 — 라이트 fg-neutral · 다크 fg-neutral-inverted) — 지금 흰 글자인 유안타 2.54 · NH농협 3.19 가 짙은 글자로 바뀐다. 표에 없거나 기관이 아닌 이름(비상금 · HR 회사)은 Avatar 와 같은 이름 색(코드 포인트 합 % 10 → 차트 10색 — 라이트 700 · 다크 800-dark) + fg-neutral-inverted 다. 첫 글자는 이름의 첫 글자 하나(글자 단위) · 로마자 대문자다. 기관 색은 모드를 따르지 않는다. 아래 줄은 흰 · 짙은 글자 모두 4.5 에 못 미치던 다섯 곳 — 표가 명도만 고쳤다(ci 원래 색 → 고친 색).",
+    `${samples([sample("크기 — 32 · 40 · 48", "size={32} · 40(기본) · 48 — 모서리 × 0.3 · 첫 글자 40%", surface(sizeRow))], "ptf-samples pimg-samples--wide")}${samples([
+      sample("면 — 기관 색(표의 글자색) · 이름 색", "face=\"institution\"(기본) · face=\"name\" — 라이트 · 다크", pair(surface(faceRow))),
+    ], "ptf-samples pov-samples--next pimg-samples--wide")}${samples([
+      sample("표가 고친 다섯 곳 — ci → 고친 색", "institution-colors.yaml 의 ci — 명도만 옮겼다(OKLCH 색상 · 채도 그대로)", surface(fixedRow)),
+    ], "ptf-samples pov-samples--next pimg-samples--wide")}`,
+  );
+
+  // 9. Logo Tile — 윤곽(짙은 남색 · 노랑) · 그림(카드 · 로고) · 첫 글자 먼저 · 실패하면 첫 글자
+  const zoomTile = (html, cap, sub) => item(`<span class="pimg-zoom pimg-zoom--tile" aria-hidden="true"><span class="pimg-zoom-in pimg-zoom-in--tile">${html}</span></span>`, cap, sub);
+  const strokeTiles = (t) => surface(row(t === "dark"
+    ? [zoomTile(logoTile({ name: "케이뱅크", size: 48 }), "케이뱅크 × 3 — 윤곽", "다크 표면과 1.12 → 둘레 1.14"), zoomTile(logoTile({ name: "케이뱅크", size: 48, cls: "pimg-no-stroke" }), "윤곽 없음 — 쓰지 않는다", "타일이 사라지고 글자만 뜬다"), item(row(["BoA", "현대차증권", "삼성증권"].map((n) => logoTile({ name: n }))), "짙은 남색 — 다크 표면 위", "BoA 1.02 · 현대차증권 1.05 · 삼성증권")]
+    : [zoomTile(logoTile({ name: "카카오뱅크", size: 48 }), "카카오뱅크 × 3 — 윤곽", "흰 표면과 1.28 → 둘레 1.11"), zoomTile(logoTile({ name: "카카오뱅크", size: 48, cls: "pimg-no-stroke" }), "윤곽 없음 — 쓰지 않는다", "노랑이 흰 바탕에 묻힌다"), item(row(["카카오페이증권", "OK저축", "KB국민"].map((n) => logoTile({ name: n }))), "노랑 — 흰 표면 위", "짙은 글자")], "pimg-row--zoom"));
+  const imageRow = row([
+    item(logoTile({ name: "삼성카드", src: PIMG.cardV, imageType: "card", rotated: true, state: "initial" }), "1. 첫 글자 먼저", "이름을 아니까 바로 — 스켈레톤을 두지 않는다"),
+    item(logoTile({ name: "삼성카드", src: PIMG.cardV, imageType: "card", rotated: true }), "2. 그림이 오면 덮는다", "옅은 판 + 카드 32 × 20(모서리 6) · 세로는 돌림"),
+    item(logoTile({ name: "삼성카드", src: PIMG.cardV, imageType: "card", state: "initial" }), "3. 실패하면 첫 글자 그대로", "깨진 그림 · 빈 칸이 없다"),
+    ...[32, 48].map((s) => item(logoTile({ name: "현대카드", size: s, src: PIMG.cardH2, imageType: "card" }), `${s} — 카드 ${s - 8} × ${num(+((s - 8) / 1.586).toFixed(1))}`, `판 안쪽 4 · 모서리 ${imageFrameRadius(s - 8)}`)),
+  ], "pimg-row--tiles");
+  const logoRow = (t) => surface(row([
+    item(logoTile({ name: "한빛상사", face: "name", size: 32, src: PIMG.logoA, imageType: "logo" }), "로고 — 흰 판 · contain", t === "dark" ? "다크에서도 판은 흰색 — 검은 마크가 남는다" : "판 안쪽 4 · 잘리지 않게"),
+    item(logoTile({ name: "다온테크", face: "name", size: 32, src: PIMG.logoB, imageType: "logo" }), "로고 — 흰 판", "회사는 기관이 아니다 — face=\"name\""),
+    item(logoTile({ name: "새회사", face: "name", size: 32 }), "로고가 없는 회사", `첫 글자 · 이름 색 ${AVATAR.hue("새회사")}`),
+  ], "pimg-row--tiles"));
+  const tileLive = `<div class="pld-live" data-plt-live="">${surface(`<div class="pimg-live-tile">${logoTile({ name: "삼성카드", size: 48, src: PIMG.cardV, imageType: "card", rotated: true, state: "initial" })}<span class="pimg-live-name">삼성카드 iD SELECT ALL</span></div>`, "pimg-surface--live")}<template data-plt-plate="">${logoTilePlate({ size: 48, src: PIMG.cardV, imageType: "card", rotated: true })}</template><div class="pld-controls"><button class="btn btn-neutral-weak btn-size-small" type="button" data-plt-run="load"><span>그림이 옴 — 0.8초</span></button><button class="btn btn-neutral-weak btn-size-small" type="button" data-plt-run="fail"><span>실패</span></button></div><p class="pld-clock" data-plt-clock="" aria-hidden="true">처음에는 첫 글자 — 그림이 오면 전환 없이 바로 덮는다</p></div>`;
+  const tileImagePanel = panel(
+    "Logo Tile — 투명 윤곽 · 그림(카드 · 로고) · 첫 글자 먼저",
+    "안쪽 1px 투명 윤곽(stroke-neutral-overlay)을 늘 그린다 — 다크 표면과 1.02 ~ 1.12 인 짙은 남색 타일(케이뱅크 · BoA · 현대차증권 …), 흰 표면과 1.28 인 노랑 타일(카카오뱅크 · 카카오페이증권)이 표면에 묻히지 않게 둘레를 잡는다(장식 — 이름 글이 물건을 알린다). 타일 색을 바꾸지 않는다. 그림이 있으면 첫 글자를 먼저 그리고 그림이 오면 판 · 그림이 덮는다(전환 없이 바로 — Avatar 와 같다), 못 불러오면 첫 글자 그대로다 — 줄의 이름 · 금액은 이미 와 있으니 스켈레톤을 따로 두지 않는다. 판 안쪽은 4 다. 카드 그림은 옅은 판(bg-neutral-weak) 위에 카드 비율의 Image Frame(32 → 24 × 15 · 40 → 32 × 20 · 48 → 40 × 25, 모서리는 그 폭으로 4 · 6 · 6)으로 카드 전체를 보이고 세로 그림은 돌린다 — 정사각에 잘라 넣으면 카드의 63% 만 보인다. 로고 그림은 흰 판(static-white — 두 모드 같다) 위에 잘리지 않게(contain) 둔다. 옆에 이름이 있으면 타일은 장식이다(첫 글자 · 그림을 읽지 않는다).",
+    `${samples([sample("윤곽 — 라이트 노랑 · 다크 짙은 남색(× 3)", "stroke-neutral-overlay — 윤곽 없음은 쓰지 않는 모습", pair(strokeTiles))], "ptf-samples pimg-samples--wide")}${samples([
+      sample("그림 — 카드: 첫 글자 먼저 · 덮기 · 실패", "imageType=\"card\" — 옅은 판 + 카드 비율 Image Frame", surface(imageRow)),
+      sample("직접 — 그림이 옴 · 실패", "LogoTile size={48} src imageType=\"card\"", tileLive),
+    ], "ptf-samples pov-samples--next")}${samples([
+      sample("그림 — 로고(HR 회사 로고 32)", "imageType=\"logo\" — 흰 판 · 라이트 · 다크", pair(logoRow)),
+    ], "ptf-samples pov-samples--next pimg-samples--wide")}`,
+  );
+
+  // 10. 화면 — 폰: Desk 자산(Logo Tile 40) · 카드 혜택(카드 그림 56) · 카드 상세(312 + 이름 글)
+  const assetRow = (name, assetName, face, detail, money) => listRow({ kind: "button", prefix: logoTile({ name, face }), title: assetName, detail, suffix: amount(money) });
+  const assetPhone = phone(430, `${title("자산")}${listOf([
+    assetRow("신한", "신한 주거래", "institution", "신한 · 입출금", "1,284,000원"),
+    assetRow("KB국민", "KB 청년 적금", "institution", "KB국민 · 적금", "3,600,000원"),
+    assetRow("키움증권", "키움 주식 계좌", "institution", "키움증권 · 증권", "7,412,500원"),
+    assetRow("업비트", "업비트", "institution", "업비트 · 코인", "523,180원"),
+    assetRow("비상금", "비상금", "name", "현금", "300,000원"),
+  ])}`);
+  const benefitPhone = phone(430, `${title("카드 혜택")}${listOf([
+    benefitRow({ issuer: "삼성카드", name: "iD SELECT ALL", src: PIMG.cardV, rotated: true }),
+    benefitRow({ issuer: "현대카드", name: "M EDITION", src: PIMG.cardH2 }),
+    benefitRow({ issuer: "NH농협카드", name: "올원 Pay", type: "체크" }),
+    benefitRow({ issuer: "BC카드", name: "바로 카드" }),
+    benefitRow({ issuer: "롯데카드", name: "LOCA 365", badges: [badge({ text: "단종" })] }),
+  ])}`);
+  const detailPhone = phone(430, `${title("카드 상세")}<div class="pimg-page-pad">${cardArt({ issuer: "삼성카드", name: "iD SELECT ALL", src: PIMG.cardV, width: 312, rotated: true })}<h3 class="pimg-detail-name">iD SELECT ALL</h3><p class="pimg-detail-sub">신용 · 삼성카드</p></div>${listOf([listRow({ title: "전월 실적", suffix: escape("30만원 이상") }), listRow({ title: "연회비", suffix: escape("2만원") })])}`);
+  const screensPanel = panel(
+    "화면 — 폰: 자산 · 카드 혜택 · 카드 상세",
+    "자산 줄의 앞은 Logo Tile 40 이다 — 이름은 기관 이름(신한 · KB국민 · 키움증권 · 업비트), 기관이 없는 자산(비상금)은 자산 이름이고 표를 보지 않아 이름 색이다. 옆에 이름이 있어 타일은 장식이다. 카드 혜택 목록의 앞은 카드 그림 56(높이 35.3 · 모서리 8) — 세로 카드는 돌리고, 그림이 없는 아는 카드사(NH농협카드)는 카드 면의 첫 글자, 모르는 카드사(BC카드)는 대체 그림이다. 단종은 흐리지 않고 이름 옆 배지다(그림 위에 얹기에는 작다). 카드 상세는 그림 312(폰 폭 − 좌우 24) 아래에 카드 이름 · 카드사를 글로 둔다.",
+    samples([
+      sample("폰 — 자산", "ListButtonItem prefix={<LogoTile name={기관 ?? 자산 이름} face=… />}", assetPhone),
+      sample("폰 — 카드 혜택", "prefix={<CardArt width={56} … />}", benefitPhone),
+      sample("폰 — 카드 상세", "<CardArt width={312} loading=\"eager\" /> + 이름 글", detailPhone),
+    ]),
+  );
+
+  // 11. 화면 — 데스크톱 웹: 카드 혜택 격자(282 · 단종 배지) · HR 규정 그림(1:1 · 장식) · HR 회사 로고(32)
+  const gridCard = ({ issuer, name, src = "", rotated = false, discontinued = false }) => `<div class="pimg-grid-card">${cardArt({ issuer, name, src, rotated, floaters: discontinued ? [{ placement: "top-start", html: solid("단종") }] : [] })}<p class="pimg-grid-name">${escape(name)}</p><p class="pimg-grid-sub">${escape(issuer)}</p></div>`;
+  const benefitDesk = desktop(440, `${title("카드 혜택")}<div class="pov-page-card pimg-page-card"><div class="pimg-grid">${[
+    gridCard({ issuer: "삼성카드", name: "iD SELECT ALL", src: PIMG.cardV, rotated: true }),
+    gridCard({ issuer: "현대카드", name: "M EDITION", src: PIMG.cardH2, discontinued: true }),
+    gridCard({ issuer: "하나카드", name: "트래블로그 체크" }),
+  ].join("")}</div></div>`);
+  const RULES = [["ruleLeave", "연차 · 휴가", "입사 1년 뒤 15일, 2년마다 1일 더한다"], ["ruleAttire", "복장", "평일은 자유, 외부 미팅은 단정하게"], ["ruleEducation", "교육", "직무 교육비는 연 100만원까지"], ["ruleCulture", "문화", "매달 마지막 금요일은 일찍 퇴근"]];
+  const ruleDesk = desktop(400, `${title("문화 · 규정")}<div class="pimg-rules">${RULES.map(([img, t, d]) => `<div class="pimg-rule">${imageFrame({ ratio: "1:1", src: PIMG[img], alt: "" })}<h3 class="pimg-grid-name">${escape(t)}</h3><p class="pimg-grid-sub">${escape(d)}</p></div>`).join("")}</div>`);
+  const COMPANIES = [["한빛상사", PIMG.logoA, 128], ["다온테크", PIMG.logoB, 64], ["새회사", "", 12]];
+  const companyDesk = desktop(300, `${title("회사별 인원")}<div class="pov-page-card pimg-page-card"><div class="pimg-companies">${COMPANIES.map(([n, src, count]) => `<div class="pimg-company"><span class="pimg-company-head">${logoTile({ name: n, face: "name", size: 32, src, imageType: "logo" })}<h3 class="pimg-company-name">${escape(n)}</h3></span><span class="pimg-company-count">${count}명</span></div>`).join("")}</div></div>`);
+  const deskPanel = panel(
+    "화면 — 데스크톱 웹: 카드 혜택 격자 · HR 규정 그림 · 회사 로고",
+    "데스크톱 혜택 격자의 카드 그림은 부모 폭을 채우고(모서리 8) 카드 면의 크기도 그 폭으로 고른다 — 240 이상이면 크게(회사 t3 · 이름 t5). 단종 카드는 흐리지 않고 그림 위 시작에 배지(solid)다 — 이름은 그림 아래 글이라 그림은 장식이다. HR 규정 그림은 1:1 Image Frame · 늦게 받기(lazy 기본) · 장식(alt=\"\" — 제목 · 설명이 내용을 말한다)이고 마우스를 올려도 키우지 않는다. 회사별 인원의 회사 로고는 Logo Tile 32 · 흰 판 위 로고 그림이고, 회사는 기관이 아니라 face=\"name\" 이다 — 로고가 없는 회사는 회사 이름의 첫 글자 · 이름 색이다. 이름 옆이라 장식이다.",
+    `${samples([
+      sample("데스크톱 웹 — 카드 혜택 격자", "<CardArt …><ImageFrameFloater placement=\"top-start\"><Badge variant=\"solid\">단종</Badge>…", benefitDesk),
+    ], `${DESKTOP} pimg-samples--wide`)}${samples([
+      sample("데스크톱 웹 — HR 문화 · 규정", "<ImageFrame ratio=\"1:1\" src alt=\"\" />", ruleDesk),
+    ], `${DESKTOP} pov-samples--next pimg-samples--wide`)}${samples([
+      sample("데스크톱 웹 — HR 회사별 인원", "<LogoTile size={32} face=\"name\" src imageType=\"logo\" />", companyDesk),
+    ], `${DESKTOP} pov-samples--next`)}`,
+  );
+
+  // 12. 여러 장 — Scroll Fog row 가로 줄(4:5 · 사이 8 · 다음 장이 보인다) · 한 장 크게 "1 / 12" · 묶음 "+9". 화살표 · 점 · 자동 넘김 없음
+  // 장의 폭은 화면이 정한다 — 그림은 줄 폭에서 여백 24 · 사이 8 둘 · 다음 장 44(흐림 20 포함)를 빼고 두 장이 들게 잡는다(.pimg-strip > .pif)
+  const strip = `<div class="pfog pfog--row scrollbar-hide" tabindex="0" role="region" aria-label="사진"><div class="pimg-strip">${Array.from({ length: 12 }, (_, i) => imageFrame({ ratio: "4:5", src: PIMG[PIMG_ALBUM[i % PIMG_ALBUM.length]], alt: `사진 ${i + 1}` })).join("")}</div></div>`;
+  const stripPhone = phone(330, `${title("사진")}${strip}<div class="pimg-page-text">4:5 · 사이 8 · 여백 24 — 다음 장이 44 보인다(끝 20 은 흐림). 장의 폭은 화면이 정한다</div>`);
+  const onePhone = phone(590, `${title("사진")}${imageFrame({ ratio: "1:1", bleed: true, src: PIMG.dusk, alt: "저녁 하늘", floaters: [{ placement: "bottom-end", html: imageFrameIndicator("1 / 12", "사진 12장 중 1번째") }] })}<div class="pimg-thumbs">${["forest", "sea", "snow"].map((k, i) => imageFrame({ ratio: "1:1", width: 96, src: PIMG[k], alt: "", floaters: i === 2 ? [{ placement: "bottom-end", html: imageFrameIndicator("+9", "사진 9장 더 있음") }] : [] })).join("")}</div>`);
+  const galleryPanel = panel(
+    "여러 장 — 끝이 보이는 가로 줄 · \"1 / 12\" · \"+9\"",
+    "그림 여러 장은 Scroll Fog row 가로 줄에 틀을 사이 8 로 잇는다 — 다음 장이 20 이상 보이게 폭을 잡아 넘길 수 있음을 알린다(SEED 그림 — 4:5 · 사이 8 · 다음 장 20). 줄의 양 끝은 늘 흐리고(좌우 20) 안쪽 여백은 화면 여백 24 라 처음 · 끝 장은 흐리지 않는다. 안에 초점 가는 것이 없으면 줄이 키보드로 스크롤되게 tabIndex · 이름(\"사진\")을 단다. 한 장씩 크게 볼 때는 화면 폭(모서리 0) 그림의 오른쪽 아래 Indicator \"1 / 12\"(지금 장 / 전체), 묶음 썸네일은 마지막 칸에 \"+9\"(나머지 장수)다. 화살표 · 점 · 자동 넘김은 두지 않는다 — Carousel 은 걷었다(2026-10-04). 가로 줄은 실제로 스크롤된다.",
+    samples([
+      sample("가로 줄 — 4:5 · 사이 8", "<ScrollFog use=\"row\" tabIndex={0} aria-label=\"사진\"> — 좌우 20 흐림 · 여백 24", stripPhone),
+      sample("한 장 크게 · 묶음 썸네일", "bleed ratio=\"1:1\" + Indicator \"1 / 12\" · 96 썸네일 + \"+9\"", onePhone),
+    ]),
+  );
+
+  // 13. Aspect Ratio — 그림이 아닌 비율 상자(동영상 · 지도 · 바깥 페이지). 모서리 · 바탕 · 윤곽이 없다
+  const video = (label) => `<video class="par-child" poster="${PIMG.video}" preload="none" aria-label="${escape(label)}"></video>`;
+  const arRow = row(RATIOS.map(([r, ko]) => item(`<span class="pimg-ar-guide">${aspectRatioBox({ ratio: r, child: `<span class="par-child pimg-ar-fill" aria-hidden="true"></span>` })}</span>`, `${r === "card" ? "card" : r} — ${r === "4:3" ? "기본" : ko.replace(" — porest", "")}`, `120 × ${num(120 / PIMG_RATIO[r][1])}`)), "pimg-row--ratios");
+  const videoPhone = phone(360, `${title("자산 연결 안내")}${aspectRatioBox({ ratio: "16:9", child: video("자산 연결 안내 동영상") })}<div class="pimg-page-text">16:9 동영상 — 모서리 · 바탕 · 윤곽 없이 상자를 채운다(cover)</div>`);
+  const whichGuide = surface(row([
+    item(cardArt({ issuer: "현대카드", name: "SELECT", src: PIMG.cardWhite, width: 150 }), "카드 그림 — Image Frame", "모서리 8 · 윤곽 · 스켈레톤 · 대체 그림"),
+    item(`<span class="pimg-ar-w150">${aspectRatioBox({ ratio: "16:9", child: video("안내 동영상") })}</span>`, "동영상 — Aspect Ratio", "비율만 — 모서리 0"),
+    item(`<span class="pimg-ar-w150 pimg-dont-ar">${aspectRatioBox({ ratio: "card", child: `<img class="par-child" src="${PIMG.cardWhite}" alt="">` })}</span>`, "Aspect Ratio 에 그림 + 손으로 모서리 12 — 쓰지 않는다", "윤곽이 없어 흰 그림이 바탕에 묻힌다 · 모서리 · 대체 그림이 화면마다 갈린다"),
+  ], "pimg-row--stroke"));
+  const arPanel = panel(
+    "Aspect Ratio — 그림이 아닌 비율 상자",
+    "폭이 정해지면 비율로 높이가 정해지는 상자 하나다(SEED Aspect Ratio — 기본 4:3, 자식 하나). 폭은 부모가 정하고 높이는 폭 ÷ 비율이라 내용이 오기 전에 자리를 잡는다. 모서리 · 바탕 · 테두리 · 윤곽 · 불러오는 동안 · 대체 그림이 없고 자식 하나가 상자를 채운다(absolute · inset 0 — 동영상은 cover, 지도 · 바깥 페이지는 상자 크기 그대로). 비율은 Image Frame 과 같은 여덟 가지다(아래 점선은 상자 자리 — 그림의 표시다). 동영상 · 지도 · 바깥 페이지 · 차트처럼 그림이 아니면서 비율만 지키면 되는 자리에 쓴다 — 사진 · 카드 그림 · 규정 그림은 Image Frame 이다(그 안의 비율 상자가 이것이다). Aspect Ratio 에 그림을 넣고 모서리 · 바탕을 손으로 두르면 모서리 · 윤곽 · 대체 그림이 화면마다 갈린다. 상자는 역할 · 이름이 없다 — 자식이 말한다(동영상의 aria-label).",
+    `${samples([sample("비율 여덟 — 폭 120", "AspectRatio ratio — 상자 자리(점선)", surface(arRow))], "ptf-samples pimg-samples--wide")}${samples([
+      sample("폰 — 안내 동영상 16:9", "<AspectRatio ratio=\"16:9\"><video … className=\"size-full object-cover\" /></AspectRatio>", videoPhone),
+      sample("무엇을 쓰나 — 그림은 Image Frame", "카드 그림 · 동영상 · 쓰지 않는 모습", whichGuide),
+    ], "ptf-samples pov-samples--next")}`,
+  );
+
+  const lede = "SEED Image Frame · Aspect Ratio 구조와 porest 의 카드 그림 · Logo Tile — 그림과 물건을 보이는 부품이다. 그림은 Image Frame 하나로 그린다 — 비율 상자(여덟 비율 · 기본 4:3 · 카드 1.586)에 그림을 꽉 채우고(cover), 그림 위에 안쪽 1px 투명 윤곽(stroke-neutral-overlay · v118 — 검정 4.7% · 다크 흰 5%)을 늘 그리며, 모서리는 폭으로(24 이하 4 · 48 이하 6 · 그 위 8 · 화면 폭 0) 고른다. 불러오는 동안은 같은 모서리의 Skeleton, 없거나 · 못 불러오거나 · 10초가 지나면 Content Placeholder 이고 이름(alt)이 남는다. 그림 위에는 배지(solid) · 장수 글(Indicator — 검정 65%)을 네 모서리에 둘까지 얹는다. 카드 그림은 세로 그림을 시계 방향 90° 돌려 채우고, 그림이 없으면 아는 카드사는 기관 색 면(표의 글자색 — 78곳 모두 4.52:1 이상), 모르면 대체 그림이다. 은행 · 증권 · 카드 · 코인 · 금 · 회사는 Logo Tile(32 · 40 · 48 · 모서리 × 0.3) — 기관 색 또는 이름 색 면 + 첫 글자를 먼저 그리고 그림이 오면 덮는다. 그림이 아닌 비율 상자(동영상 · 지도)는 Aspect Ratio(모서리 · 바탕 없음)다. 여러 장은 끝이 보이는 가로 줄 + \"1 / 12\" 이고, Carousel(화살표 · 점 · 자동 넘김)은 걷었다. 기관 색은 institution-colors.yaml 에서 읽어 그렸다.";
+
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">03q — 이미지: Image Frame · Logo Tile · Aspect Ratio</div>
+      <h2 class="section-title">이미지 — 그림 틀 · 카드 그림 · 로고 타일 · 비율 상자</h2>
+      <p class="section-lede">${escape(lede)}</p>
+    </header>
+    ${ratioPanel}
+    ${radiusPanel}
+    ${strokePanel}
+    ${statePanel}
+    ${rotatePanel}
+    ${facePanel}
+    ${overlayPanel}
+    ${tilePanel}
+    ${tileImagePanel}
+    ${screensPanel}
+    ${deskPanel}
+    ${galleryPanel}
+    ${arPanel}
   </section>`;
 }
 
@@ -6366,7 +6876,8 @@ export function renderSkeleton(brand) {
     body = `<div class="psk-card psk-shapes" aria-hidden="true">${[
       ["글 · 숫자 — 8 · 줄 높이(t4 19)", `<div class="psk-memo-lines">${skeleton({ text: "t4", w: "100%" })}${skeleton({ text: "t4", w: "60%" })}</div>`],
       ["아바타 · 원 아이콘 — full", skeleton({ radius: "full", w: 40, h: 40 })],
-      ["카드 · 썸네일 — 16", skeleton({ radius: "16", w: "100%", h: 80 })],
+      ["썸네일 40 — 6(Image Frame 모서리)", skeleton({ radius: "6", w: 40, h: 40 })],
+      ["카드 면 — 16", skeleton({ radius: "16", w: "100%", h: 80 })],
       ["화면 폭 사진 — 0", skeleton({ radius: "0", w: "100%", cls: "pld-photo" })],
     ].map(([cap, html]) => `<div class="psk-shape"><div class="psk-shape-cap">${escape(cap)}</div>${html}</div>`).join("")}</div>`;
   }
@@ -6773,13 +7284,14 @@ export function renderShadcnDisclose(brand) {
 }
 
 export function renderShadcnData(brand) {
-  // v71 Data 5. 표의 상태는 03o 의 Badge(weak — 한 목록은 한 변형, 뜻은 톤으로)다 — 옛 .dt-badge(알약 · 채운 의미 색 + 흰 글자)는 걷었다
+  // v71 Data 5. 표의 상태는 03o 의 Badge(weak — 한 목록은 한 변형, 뜻은 톤으로)다 — 옛 .dt-badge(알약 · 채운 의미 색 + 흰 글자)는 걷었다.
+  // Carousel 칸(화살표 32 · 점 · 자동 넘김)은 걷었다(2026-10-04 — carousel.history) — 여러 장은 03q 의 가로 줄(Scroll Fog row · Indicator "1 / 12")이다
   return `
   <section class="section">
     <header class="section-head">
       <div class="section-eyebrow">18 — Data (v71)</div>
-      <h2 class="section-title">Table · Data Table · Carousel · Scroll Area · Resizable</h2>
-      <p class="section-lede">5 data display 컴포넌트 — 표, 정렬·필터, 슬라이더, 커스텀 scroll, 분할 panel.</p>
+      <h2 class="section-title">Table · Data Table · Scroll Area · Resizable</h2>
+      <p class="section-lede">4 data display 컴포넌트 — 표, 정렬·필터, 커스텀 scroll, 분할 panel. 옛 Carousel 은 걷었다 — 여러 장은 03q 의 끝이 보이는 가로 줄과 장수 글(\"1 / 12\")이다.</p>
     </header>
     <div class="sc-grid">
       <div class="sc-card sc-card--full">
@@ -6794,21 +7306,6 @@ export function renderShadcnData(brand) {
               <tr><td>${cbox({ state: "checked", name: "이 행 선택" })}</td><td>${brand.key === "hr" ? "최가람" : brand.key === "desk" ? "참고 자료" : "border-focus"}</td><td>${brand.key === "hr" ? "5/20" : brand.key === "desk" ? "3일 전" : "#357B5F"}</td><td>${badge({ text: brand.key === "hr" ? "반려" : brand.key === "desk" ? "보관" : "색", tone: brand.key === "hr" ? "critical" : "neutral" })}</td></tr>
             </tbody>
           </table>
-        </div>
-      </div>
-      <div class="sc-card">
-        <div class="sc-head">Carousel</div>
-        <div class="car">
-          <button class="car-arrow">‹</button>
-          <div class="car-frame">${brand.key === "hr" ? "Slide 2 / 5" : brand.key === "desk" ? "Onboarding · 1/4" : "Slide"}</div>
-          <button class="car-arrow">›</button>
-        </div>
-        <div class="car-dots">
-          <span class="car-dot"></span>
-          <span class="car-dot car-dot--active"></span>
-          <span class="car-dot"></span>
-          <span class="car-dot"></span>
-          <span class="car-dot"></span>
         </div>
       </div>
       <div class="sc-card">
@@ -6830,7 +7327,7 @@ export function renderShadcnExtras(brand) {
     <header class="section-head">
       <div class="section-eyebrow">19 — Extras (v72)</div>
       <h2 class="section-title">Snackbar · Aspect Ratio · Chart · 기간 · Time Picker</h2>
-      <p class="section-lede">5 추가 컴포넌트 — 스낵바, 비율 wrapper, 차트, 기간/시각 선택.</p>
+      <p class="section-lede">5 추가 컴포넌트 — 스낵바, 비율 상자, 차트, 기간/시각 선택.</p>
     </header>
     <div class="sc-grid">
       <!-- Snackbar — 옛 Sonner(흰 카드 · 그림자 · 아이콘 넷 · 3장 쌓기)를 03l 의 짙은 띠 하나로 -->
@@ -6839,11 +7336,11 @@ export function renderShadcnExtras(brand) {
         <div class="pfb-strip">${snackbar(undo)}</div>
         <div class="sc-note">짙은 띠(bg-neutral-inverted) · 아래 가운데 · 4초(액션이 있으면 6초) · 액션은 fg-brand-inverted — 모양 · 자리 · 시간은 03l — 알림 메시지. 옛 Sonner(흰 카드 · 그림자 · 3장 쌓기)는 걷었다.</div>
       </div>
+      <!-- Aspect Ratio — 옛 모양(surface-input 바탕 · 모서리 8 · 안의 그림)을 03q 의 비율 상자(모서리 · 바탕 없음 · 자식 하나)로. 그림은 Image Frame 이다 -->
       <div class="sc-card">
-        <div class="sc-head">Aspect Ratio (16:9)</div>
-        <div class="ar ar--16-9">
-          <div class="ar-content">${brand.key === "hr" ? "직원 cover" : brand.key === "desk" ? "메모 attachment" : "16:9 image"}</div>
-        </div>
+        <div class="sc-head">Aspect Ratio — 16:9 동영상</div>
+        ${aspectRatioBox({ ratio: "16:9", child: `<video class="par-child" poster="${PIMG.video}" preload="none" aria-label="${brand.key === "hr" ? "신규 입사 안내 동영상" : "자산 연결 안내 동영상"}"></video>` })}
+        <div class="sc-note">폭이 정해지면 높이가 비율로 정해지는 상자 — 모서리 · 바탕 · 윤곽이 없고 자식 하나가 채운다(동영상은 cover). 비율은 여덟(1:1 · 2:1 · 16:9 · 4:3 기본 · 6:7 · 4:5 · 2:3 · 카드 1.586). 사진 · 카드 그림은 Image Frame 이다 — 모양 · 쓰임은 03q. 옛 Aspect Ratio(바탕 · 모서리 8 · 3:4 · 21:9)는 걷었다.</div>
       </div>
       <div class="sc-card">
         <div class="sc-head">Chart (bar mini)</div>
@@ -11440,8 +11937,8 @@ export function pageCss() {
     .ptag--truncate .ptag-sep { flex-shrink: 0; white-space: pre; }
 
     /* Avatar — avatar.tsx 와 같은 짜임 · 값. 원 .pavatar(폭 = 높이) > 이니셜 .pavatar-initial(이름 색 바탕 chart-{색} — 라이트 700 · 다크 800-dark · fg-neutral-inverted · 700 · 줄 높이 1 ·
-       글자 지름의 40%, 가장 작아도 10 · 글자 크기 설정을 따르지 않는 px) 위에 사진 .pavatar-img(원을 채운다 — object-fit cover), 1px 안쪽 테두리 stroke-neutral-subtle(::after —
-       사진 · 이니셜 위에 겹친다). 레시피는 사진을 다 불러오면 이니셜을 걷는다 — 미리보기는 사진이 늘 불러와져 이니셜 위에 덮는다.
+       글자 지름의 40%, 가장 작아도 10 · 글자 크기 설정을 따르지 않는 px) 위에 사진 .pavatar-img(원을 채운다 — object-fit cover), 1px 안쪽 투명 테두리 stroke-neutral-overlay
+       (v118 — 검정 4.7% · 다크 흰 5%, Image Frame · Logo Tile 의 윤곽과 같은 색. ::after — 사진 · 이니셜 위에 겹친다). 레시피는 사진을 다 불러오면 이니셜을 걷는다 — 미리보기는 사진이 늘 불러와져 이니셜 위에 덮는다.
        크기 10단계 20 · 24 · 36 · 42 · 48 · 56 · 64 · 80 · 96 · 108 — 글자 10 · 10 · 14 · 17 · 19 · 22 · 26 · 32 · 38 · 43 */
     .pavatar {
       position: relative;
@@ -11456,7 +11953,7 @@ export function pageCss() {
       vertical-align: middle;
       user-select: none;
     }
-    .pavatar::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius-full); box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-subtle); pointer-events: none; }
+    .pavatar::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius-full); box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-overlay); pointer-events: none; }
     .pavatar-initial { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background: var(--pav-bg); color: var(--color-fg-neutral-inverted); font-family: var(--font-sans); font-size: var(--pav-font); line-height: 1; font-weight: 700; text-transform: uppercase; }
     .pavatar-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
     .pavatar--20 { --pav-size: 20px; --pav-font: 10px; }
@@ -11645,6 +12142,7 @@ export function pageCss() {
       --color-fg-disabled: var(--color-fg-disabled-dark);
       --color-stroke-neutral-weak: var(--color-stroke-neutral-weak-dark);
       --color-stroke-neutral-subtle: var(--color-stroke-neutral-subtle-dark);
+      --color-stroke-neutral-overlay: var(--color-stroke-neutral-overlay-dark);
       --color-bg-brand-weak: var(--color-bg-brand-weak-dark);
       --color-bg-brand-solid: var(--color-bg-brand-solid-dark);
       --color-fg-brand: var(--color-fg-brand-dark);
@@ -11711,6 +12209,8 @@ export function pageCss() {
       animation: shimmer var(--motion-duration-loop) var(--motion-ease-easing) infinite;
     }
     .psk--r0 { border-radius: 0; }
+    .psk--r4 { border-radius: var(--radius-r1); }
+    .psk--r6 { border-radius: var(--radius-r1_5); }
     .psk--r12 { border-radius: var(--radius-r3); }
     .psk--r16 { border-radius: var(--radius-r4); }
     .psk--rfull { border-radius: var(--radius-full); }
@@ -11840,7 +12340,7 @@ export function pageCss() {
     .pmeter[data-state="reached"] .pmeter-status { color: var(--color-fg-neutral); font-weight: 700; }
 
     /* Scroll Fog — 스크롤 상자에 거는 마스크(색을 덮지 않는다). 처음 · 끝 쪽에 gradient-fade-mask 단계(--pfog-stops)를 방향을 붙여 깔고 가운데는 꽉 찬 층으로 잇는다.
-       --pfog-start · --pfog-end 는 그 축의 처음 · 끝 깊이 — 세로(box · overlayBody · page · 시트 · 대화상자 · 팝오버 본문)는 위 · 아래, 가로(칩 줄 · Chip Tabs)는 왼쪽 · 오른쪽.
+       --pfog-start · --pfog-end 는 그 축의 처음 · 끝 깊이 — 세로(box · overlayBody · page · 시트 · 대화상자 · 팝오버 본문)는 위 · 아래, 가로(칩 줄 · Chip Tabs · 03q 의 그림 가로 줄 .pfog--row)는 왼쪽 · 오른쪽.
        스크롤 위치 · 넘침과 상관없이 늘 켜져 있고 누르기를 막지 않는다. 흐린 쪽에는 깊이 이상의 여백과 같은 만큼의 스크롤 여유를 둔다 */
     :is(.pfog--box, .pfog--overlay-body, .pfog--page, .pov-body--fog) {
       --pfog-start: 20px;
@@ -11854,7 +12354,7 @@ export function pageCss() {
       -webkit-mask-repeat: no-repeat;
       mask-repeat: no-repeat;
     }
-    :is(.pchip-group--scroll, .ptab-chips) {
+    :is(.pchip-group--scroll, .ptab-chips, .pfog--row) {
       --pfog-start: 20px;
       --pfog-end: 20px;
       -webkit-mask-image: linear-gradient(to right, var(--pfog-stops)), linear-gradient(#000, #000), linear-gradient(to left, var(--pfog-stops));
@@ -11901,6 +12401,7 @@ export function pageCss() {
     .pld-shape { display: flex; flex-direction: column; gap: var(--spacing-x2); min-width: 0; }
     .pld-shape-art { display: flex; align-items: center; justify-content: center; min-height: 150px; padding: var(--spacing-x4); border-radius: var(--radius-r3); background: var(--color-bg-layer-default); box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-subtle); }
     .pld-shape--bleed .pld-shape-art { align-items: flex-start; padding: 0; border-radius: 0; overflow: hidden; }
+    .pld-shape-row { display: flex; align-items: flex-end; gap: var(--spacing-x4); }
     .pld-shape .ptf-cap { margin: 0; }
     .psk.pld-photo { width: 100%; aspect-ratio: 4 / 3; }
     .pld-texth { display: flex; flex-direction: column; gap: var(--spacing-x3); padding: var(--spacing-x4); border-radius: var(--radius-r3); background: var(--color-bg-layer-default); box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-subtle); font-family: var(--font-sans); }
@@ -11951,11 +12452,11 @@ export function pageCss() {
     .pld-terms { margin: 0; font-family: var(--font-sans); font-size: var(--text-t4); line-height: 1.7; color: var(--color-fg-neutral-muted); word-break: keep-all; overflow-wrap: break-word; }
     .pld-cph-sizes { display: flex; flex-wrap: wrap; gap: var(--spacing-x4); align-items: flex-end; }
     .pld-cph-sizes .pld-row-cap { max-width: 168px; }
+    .pld-cph-sizes--top { align-items: flex-start; }
     .pld-cph-item { display: flex; flex-direction: column; gap: var(--spacing-x2); min-width: 0; max-width: 100%; }
     .pld-cph { overflow: hidden; max-width: 100%; }
     .pld-cph--photo { width: 100%; max-width: 360px; aspect-ratio: 4 / 3; }
-    .pld-cph--card { width: 112px; aspect-ratio: 1.586; border-radius: var(--radius-r2); }
-    .pld-card-art { display: flex; align-items: flex-end; width: 100%; height: 100%; padding: var(--spacing-x2); background: linear-gradient(135deg, var(--color-gray-1000), var(--color-gray-800)); font-family: var(--font-sans); font-size: 11px; font-weight: 700; color: var(--color-static-white); }
+    /* 카드 그림 상태 셋은 03q 의 Image Frame(.pif)이다 — 옛 .pld-cph--card(손으로 짠 1.586 틀) · .pld-card-art 는 걷었다 */
     @media (max-width: 900px) {
       .pld-matrix .cb-matrix-row { grid-template-columns: 120px repeat(var(--cb-cols), minmax(80px, 1fr)); }
     }
@@ -11990,6 +12491,257 @@ export function pageCss() {
     [data-theme="dark"] .psk { --psk-band: var(--gradient-shimmer-neutral-dark); }
     [data-theme="dark"] .pld-swatch--dim { background: linear-gradient(var(--overlay-dim-dark), var(--overlay-dim-dark)), linear-gradient(135deg, var(--color-chart-orange), var(--color-chart-violet)); }
     [data-theme="dark"] .pld-photo-dim { background: var(--overlay-dim-dark); }
+
+    /* === 이미지 — Image Frame · 카드 그림 · Logo Tile · Aspect Ratio ===
+       specs/components/image-frame.md · logo-tile.md · aspect-ratio.md(수치 원본은 image-frame.yaml · card-art.yaml · logo-tile.yaml · aspect-ratio.yaml,
+       기관 색은 institution-colors.yaml — 빌드가 읽어 인라인 --pcart-bg · --plt-bg 로 넘긴다). 구조는 SEED Image Frame · Aspect Ratio(2026-10-04) —
+       카드 그림 · Logo Tile 은 porest 만의 부품이다. 모두 누르지 않는다(누르는 자리는 감싼 줄 · 칸). 윤곽은 stroke-neutral-overlay(v118 — 검정 4.7% · 다크 흰 5%)이고
+       안쪽 1px(inset box-shadow)라 크기가 변하지 않는다. 기관 색 · 그림은 모드를 따르지 않는다. 다크 짝은 이 블록 끝의 [data-theme="dark"] 에서 바꾼다 —
+       03o 의 라이트 · 다크 나란히 틀(.pdsp-theme--light · --dark)은 페이지 테마와 관계없이 그 테마로 그린다. */
+
+    /* Image Frame — 틀 .pif: 폭은 부르는 쪽(인라인 width — 없으면 부모 폭), 높이는 폭 ÷ 비율. 모서리로 자르고(overflow hidden) 안의 층을 따로 쌓는다(isolation).
+       크기 컨테이너(pif)라 돌린 그림 · 카드 면 · 대체 그림이 틀의 폭 · 높이(cqw · cqh)를 잰다. 모서리는 폭으로 — 24 이하 4 · 48 이하 6 · 그 위 8(기본) · 화면 폭 0 */
+    .pif {
+      position: relative;
+      display: block;
+      flex-shrink: 0;
+      width: 100%;
+      max-width: 100%;
+      overflow: hidden;
+      isolation: isolate;
+      container: pif / size;
+      border-radius: var(--radius-r2);
+      aspect-ratio: 4 / 3;
+    }
+    /* 윤곽 — 그림 · 스켈레톤 · 대체 그림 · 카드 면 위에 늘(끄는 속성이 없다). 누르기를 막지 않는다 */
+    .pif::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: inherit; box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-overlay); pointer-events: none; }
+    .pif--r4 { border-radius: var(--radius-r1); }
+    .pif--r6 { border-radius: var(--radius-r1_5); }
+    .pif--r0 { border-radius: 0; }
+    .pif--1x1 { aspect-ratio: 1; }
+    .pif--2x1 { aspect-ratio: 2; }
+    .pif--16x9 { aspect-ratio: 16 / 9; }
+    .pif--4x3 { aspect-ratio: 4 / 3; }
+    .pif--6x7 { aspect-ratio: 6 / 7; }
+    .pif--4x5 { aspect-ratio: 4 / 5; }
+    .pif--2x3 { aspect-ratio: 2 / 3; }
+    .pif--card { aspect-ratio: 1.586; }
+    /* 그림 — 틀을 채우고 가운데를 남겨 자른다(cover). contain 은 잘리지 않게 넣고 둘레는 흰 판(static-white — 두 모드 같다) */
+    .pif-img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .pif--contain { background: var(--color-static-white); }
+    .pif--contain .pif-img { object-fit: contain; }
+    /* 세로 카드 그림 — 그림 상자를 틀의 높이 × 폭으로 잡아 시계 방향 90° 돌리고 cover 로 채운다(카드 전체가 거의 그대로 든다) */
+    .pif--rotated .pif-img { position: absolute; top: 50%; left: 50%; width: 100cqh; height: 100cqw; transform: translate(-50%, -50%) rotate(90deg); }
+    /* 상태 — 받는 동안 그림은 보이지 않게(자리 · 대체 글은 그대로), 대체 그림이면 그림을 걷는다. 다 받으면 투명도 150ms(d3 · enter) */
+    .pif[data-state="loading"] .pif-img { opacity: 0; }
+    .pif[data-state="fallback"] .pif-img { display: none; }
+    .pif[data-enter] .pif-img { animation: fade-in var(--motion-duration-d3) var(--motion-ease-enter) both; }
+    /* 스켈레톤(03p .psk) · 대체 그림(03p .pcph) · 카드 면 — 틀을 채우고 틀이 모서리를 자른다(제 모서리 없음) */
+    .pif > :is(.psk, .pcph, .pcart-face) { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 0; }
+    /* 그림 위 자리 — 네 모서리, 틀 가장자리에서 6(spacing-x1_5). 한 자리에 하나 · 틀 하나에 둘까지 · 윤곽 위.
+       틀의 짧은 변이 80 이상일 때만 보인다(레시피와 같은 컨테이너 조건) — 작은 틀(목록 56 · 썸네일 40)은 배지 · 장수를 줄의 글로 둔다 */
+    .pif-floater { position: absolute; z-index: 2; display: none; }
+    @container pif (min-width: 80px) and (min-height: 80px) {
+      .pif-floater { display: flex; }
+    }
+    .pif-floater--top-start { top: var(--spacing-x1_5); inset-inline-start: var(--spacing-x1_5); }
+    .pif-floater--top-end { top: var(--spacing-x1_5); inset-inline-end: var(--spacing-x1_5); }
+    .pif-floater--bottom-start { bottom: var(--spacing-x1_5); inset-inline-start: var(--spacing-x1_5); }
+    .pif-floater--bottom-end { bottom: var(--spacing-x1_5); inset-inline-end: var(--spacing-x1_5); }
+    /* 장수 글(Indicator) — 알약 · 검정 65%(overlay-dim-dark — 두 모드 같다) · 흰 11/15 500 · 좌우 6 · 위아래 2 · 최소 높이 19. 글은 rem 이라 글자 크기 설정을 따른다 */
+    .pif-ind {
+      display: inline-flex;
+      align-items: center;
+      box-sizing: border-box;
+      min-height: 19px;
+      padding: var(--spacing-x0_5) var(--spacing-x1_5);
+      border-radius: var(--radius-full);
+      background: var(--overlay-dim-dark);
+      color: var(--color-static-white);
+      font-family: var(--font-sans);
+      font-size: var(--text-t1);
+      line-height: var(--text-t1--line-height);
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    .pif-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+    /* 카드 면 — 그림이 없는 아는 카드사. 기관 색 한 색(광택 띠 · 그라디언트 없음) + 왼쪽 아래 회사(500 · 한 줄 말줄임) · 카드 이름(700 · medium 한 줄 · large 두 줄까지).
+       글자색은 표의 text — white 는 static-white, dark 는 라이트 fg-neutral · 다크 fg-neutral-inverted(--pinst-ink — 다크 블록이 정한다).
+       크기는 틀의 폭으로 — medium(96 ~ 239 · 기본) 회사 t2 · 이름 t4 한 줄 · 좌우 10 · 아래 8(폭 96 면은 높이 60.5 라 두 줄이 넘친다),
+       small(96 미만) 회사 첫 글자만 가운데(면 높이의 40% 를 정수로 · 가장 작아도 10), large(240 이상) 회사 t3 · 이름 t5 두 줄까지 · 좌우 16 · 아래 14 */
+    .pcart-face {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      box-sizing: border-box;
+      padding: 0 var(--spacing-x2_5) var(--spacing-x2);
+      background: var(--pcart-bg);
+      color: var(--pcart-fg);
+      font-family: var(--font-sans);
+      text-align: start;
+    }
+    .pcart-face--white { --pcart-fg: var(--color-static-white); }
+    .pcart-face--dark { --pcart-fg: var(--pinst-ink, var(--color-fg-neutral)); }
+    .pcart-issuer { overflow: hidden; font-size: var(--text-t2); line-height: var(--text-t2--line-height); font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+    .pcart-name { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 1; font-size: var(--text-t4); line-height: var(--text-t4--line-height); font-weight: 700; word-break: keep-all; overflow-wrap: break-word; }
+    .pcart-initial { display: none; font-size: max(10px, round(40cqh, 1px)); line-height: 1; font-weight: 700; text-transform: uppercase; }
+    @container pif (max-width: 95.98px) {
+      .pcart-face { align-items: center; justify-content: center; padding: 0; }
+      .pcart-face > :is(.pcart-issuer, .pcart-name) { display: none; }
+      .pcart-initial { display: block; }
+    }
+    @container pif (min-width: 240px) {
+      .pcart-face { padding: 0 var(--spacing-x4) var(--spacing-x3_5); }
+      .pcart-issuer { font-size: var(--text-t3); line-height: var(--text-t3--line-height); }
+      .pcart-name { -webkit-line-clamp: 2; font-size: var(--text-t5); line-height: var(--text-t5--line-height); }
+    }
+
+    /* Logo Tile — 정사각 · 모서리 크기 × 0.3(32 → 10 · 40 → 12 · 48 → 14) · 첫 글자 크기의 40%(13 · 16 · 19 — 글자 크기 설정을 따르지 않는 px) · 700 · 줄 높이 1.
+       면은 기관 색(인라인 --plt-bg) + 표의 글자색, 또는 이름 색(chart-{색} — 라이트 700 · 다크 800-dark) + fg-neutral-inverted. 그림이 오면 판(안쪽 4)이 첫 글자를 덮는다 —
+       카드는 옅은 판(bg-neutral-weak) 위 카드 비율 Image Frame, 로고는 흰 판(static-white — 두 모드 같다) 위 contain. 윤곽(::after)은 면 · 판 · 그림 위에 늘 */
+    .plt {
+      position: relative;
+      display: inline-grid;
+      flex-shrink: 0;
+      place-items: center;
+      width: var(--plt-size);
+      height: var(--plt-size);
+      overflow: hidden;
+      isolation: isolate;
+      border-radius: var(--plt-radius);
+      background: var(--plt-bg);
+      color: var(--plt-fg);
+      vertical-align: middle;
+      user-select: none;
+    }
+    .plt::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: inherit; box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-overlay); pointer-events: none; }
+    .plt--32 { --plt-size: 32px; --plt-radius: var(--radius-r2_5); --plt-font: 13px; }
+    .plt--40 { --plt-size: 40px; --plt-radius: var(--radius-r3); --plt-font: 16px; }
+    .plt--48 { --plt-size: 48px; --plt-radius: var(--radius-r3_5); --plt-font: 19px; }
+    .plt-initial { font-family: var(--font-sans); font-size: var(--plt-font); line-height: 1; font-weight: 700; text-transform: uppercase; }
+    .plt--white { --plt-fg: var(--color-static-white); }
+    .plt--dark { --plt-fg: var(--pinst-ink, var(--color-fg-neutral)); }
+    .plt--name { --plt-fg: var(--color-fg-neutral-inverted); }
+    .plt--blue { --plt-bg: var(--color-chart-blue); }
+    .plt--green { --plt-bg: var(--color-chart-green); }
+    .plt--orange { --plt-bg: var(--color-chart-orange); }
+    .plt--violet { --plt-bg: var(--color-chart-violet); }
+    .plt--pink { --plt-bg: var(--color-chart-pink); }
+    .plt--indigo { --plt-bg: var(--color-chart-indigo); }
+    .plt--red { --plt-bg: var(--color-chart-red); }
+    .plt--yellow { --plt-bg: var(--color-chart-yellow); }
+    .plt--brown { --plt-bg: var(--color-chart-brown); }
+    .plt--gray { --plt-bg: var(--color-chart-gray); }
+    .plt-plate { position: absolute; inset: 0; display: grid; place-items: center; box-sizing: border-box; padding: var(--spacing-x1); }
+    .plt-plate--card { background: var(--color-bg-neutral-weak); }
+    .plt-plate--logo { background: var(--color-static-white); }
+    .plt-plate--logo > img { display: block; width: 100%; height: 100%; object-fit: contain; }
+
+    /* Aspect Ratio — 폭은 부모, 높이는 폭 ÷ 비율. 모서리 · 바탕 · 테두리 · 윤곽이 없다. 자식 하나(.par-child)가 상자를 채운다(absolute · inset 0 — img · video 는 cover) */
+    .par { position: relative; display: block; width: 100%; overflow: hidden; aspect-ratio: 4 / 3; }
+    .par--1x1 { aspect-ratio: 1; }
+    .par--2x1 { aspect-ratio: 2; }
+    .par--16x9 { aspect-ratio: 16 / 9; }
+    .par--6x7 { aspect-ratio: 6 / 7; }
+    .par--4x5 { aspect-ratio: 4 / 5; }
+    .par--2x3 { aspect-ratio: 2 / 3; }
+    .par--card { aspect-ratio: 1.586; }
+    .par-child { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; }
+
+    /* 모션 줄이기 — 그림은 바로 나타난다(스켈레톤 반짝임은 03p 의 .psk 가 멈춘다) */
+    @media (prefers-reduced-motion: reduce) {
+      .pif[data-enter] .pif-img { animation: none; }
+    }
+
+    /* 갤러리 — 견본 줄 .pimg-row(그림 + 아래 글 .pimg-cap) · 흰 표면 .pimg-surface · 모서리 4배 .pimg-zoom · 화면 조각(.pimg-grid · .pimg-rules · .pimg-companies · .pimg-strip).
+       모두 갤러리 것이고 컴포넌트의 일부가 아니다. 견본은 흰 표면 위에 둔다 — 스켈레톤 · 대체 그림의 면(bg-neutral-weak)이 페이지 바탕과 같은 gray-200 이다 */
+    .pimg-samples--wide { grid-template-columns: minmax(0, 1fr); }
+    .pimg-surface { padding: var(--spacing-x4) var(--spacing-x5); border-radius: var(--radius-r4); background: var(--color-bg-layer-default); box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-subtle); color: var(--color-fg-neutral); font-family: var(--font-sans); }
+    .pdsp-theme > .pimg-surface { padding: 0; box-shadow: none; }
+    .pimg-surface--live { display: flex; justify-content: center; }
+    .pimg-row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--spacing-x5) var(--spacing-x4); }
+    .pimg-row--radius { align-items: flex-end; }
+    .pimg-row--tiles { align-items: flex-start; gap: var(--spacing-x4) var(--spacing-x5); }
+    .pimg-item { display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-x2); min-width: 0; max-width: 100%; }
+    .pimg-row--stroke > .pimg-item, .pimg-row--states > .pimg-item, .pimg-row--faces > .pimg-item { width: 150px; }
+    .pimg-row--tiles > .pimg-item { width: 132px; }
+    .pimg-row--zoom > .pimg-item { width: 168px; }
+    .pimg-cap { display: block; max-width: 100%; font-family: var(--font-sans); font-size: var(--text-caption); line-height: 1.4; font-weight: 600; color: var(--color-fg-neutral-muted); overflow-wrap: anywhere; }
+    .pimg-cap > span { display: block; font-weight: 400; color: var(--color-fg-neutral-subtle); }
+    .pimg-cap--note { margin-top: var(--spacing-x2); padding: 0 var(--spacing-global-gutter); font-weight: 400; color: var(--color-fg-neutral-subtle); }
+    .pimg-gap { height: var(--spacing-x5); }
+    /* 모서리 4배 — 틀의 왼쪽 위 모서리를 키워 1px 윤곽을 보인다(그림의 표시) */
+    .pimg-zoom { position: relative; display: block; width: 150px; height: 104px; overflow: hidden; border-radius: var(--radius-r2); background: var(--color-bg-layer-default); outline: 1px dashed var(--color-fg-neutral-subtle); outline-offset: -1px; }
+    .pimg-zoom-in { position: absolute; top: 16px; left: 16px; width: 150px; transform: scale(4); transform-origin: 0 0; }
+    .pimg-zoom--tile { width: 168px; height: 168px; }
+    .pimg-zoom-in--tile { top: 12px; left: 12px; width: auto; transform: scale(3); }
+    /* 쓰지 않는 모습 — 불투명한 테(stroke-neutral-subtle) · 윤곽 없는 타일 · 손으로 모서리를 두른 비율 상자 */
+    .pimg-opaque::after { box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-subtle); }
+    .pimg-no-stroke::after { box-shadow: none; }
+    .pimg-dont-ar > .par { border-radius: var(--radius-r3); background: var(--color-bg-neutral-weak); }
+    /* 고친 색 — 원래 색(ci) 칸 → 고친 색 타일 */
+    .pimg-fixed { display: inline-flex; align-items: center; gap: var(--spacing-x2); }
+    .pimg-swatch { width: 24px; height: 24px; border-radius: var(--radius-r1_5); box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-overlay); }
+    .pimg-arrow { color: var(--color-fg-neutral-subtle); font-size: var(--text-t3); }
+    /* 화면 조각 */
+    .pimg-page-text { padding: var(--spacing-x3) var(--spacing-global-gutter) 0; font-size: var(--text-t3); line-height: var(--text-t3--line-height); color: var(--color-fg-neutral-subtle); }
+    .pimg-page-pad { padding: 0 var(--spacing-global-gutter) var(--spacing-x2); }
+    .pimg-page-card { padding: var(--spacing-x6); }
+    .pimg-detail { display: flex; flex-direction: column; width: 312px; max-width: 100%; }
+    .pimg-detail-name { margin: var(--spacing-x4) 0 0; font-size: var(--text-t7); line-height: var(--text-t7--line-height); font-weight: 700; color: var(--color-fg-neutral); }
+    .pimg-detail-sub { margin: var(--spacing-x1) 0 0; font-size: var(--text-t4); line-height: var(--text-t4--line-height); color: var(--color-fg-neutral-subtle); }
+    .pimg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: var(--spacing-x6) var(--spacing-x4); }
+    .pimg-grid-card, .pimg-rule { display: flex; flex-direction: column; min-width: 0; }
+    .pimg-grid-name { margin: var(--spacing-x3) 0 0; font-size: var(--text-t4); line-height: var(--text-t4--line-height); font-weight: 700; color: var(--color-fg-neutral); }
+    .pimg-grid-sub { margin: var(--spacing-x1) 0 0; font-size: var(--text-t3); line-height: var(--text-t3--line-height); color: var(--color-fg-neutral-subtle); }
+    .pimg-rules { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 140px), 1fr)); gap: var(--spacing-x6) var(--spacing-x4); }
+    .pimg-rule { padding: var(--spacing-x4); border-radius: var(--radius-r4); background: var(--color-bg-layer-default); }
+    .pimg-companies { display: flex; flex-direction: column; gap: var(--spacing-x4); }
+    .pimg-company { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-x3); }
+    .pimg-company-head { display: flex; align-items: center; gap: var(--spacing-x2); min-width: 0; }
+    .pimg-company-name { margin: 0; font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 700; color: var(--color-fg-neutral); }
+    .pimg-company-count { font-size: var(--text-t4); line-height: var(--text-t4--line-height); color: var(--color-fg-neutral-subtle); font-variant-numeric: tabular-nums; }
+    .pimg-strip { display: flex; gap: var(--spacing-x2); width: max-content; padding-inline: var(--spacing-global-gutter); }
+    .pfog--row { overflow-x: auto; scroll-padding-inline: var(--spacing-global-gutter); container: pimgrow / inline-size; }
+    .pimg-strip > .pif { width: calc((100cqw - var(--spacing-global-gutter) - 2 * var(--spacing-x2) - 44px) / 2); }
+    .pfog--row:focus-visible { outline: 2px solid var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral))); outline-offset: -2px; }
+    .pimg-thumbs { display: flex; gap: var(--spacing-x2); padding: var(--spacing-x4) var(--spacing-global-gutter) 0; }
+    .pimg-live-tile { display: flex; align-items: center; gap: var(--spacing-x3); }
+    .pimg-live-name { font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 700; color: var(--color-fg-neutral); }
+    .pimg-ar-guide, .pimg-ar-w150 { display: block; width: 120px; max-width: 100%; outline: 1px dashed var(--color-fg-neutral-subtle); outline-offset: 0; }
+    .pimg-ar-w150 { width: 150px; outline: none; }
+    .pimg-ar-fill { background: repeating-linear-gradient(135deg, transparent 0 6px, var(--color-bg-neutral-weak) 6px 12px); }
+
+    /* 다크 — 역할 색을 이미지 부품 · 견본 칸 안에서만 다크 짝으로 바꾼다(.psk · .pdsp-* 와 같다 — 전역 다크 블록은 옛 이름만 바꾼다).
+       윤곽은 흰 5%, 짙은 글자(--pinst-ink)는 fg-neutral-inverted 다크(#242938 — 기관 색은 모드를 따르지 않아 글자도 짙은 채로 둔다), 이름 색은 800-dark.
+       03o 의 라이트 · 다크 나란히 틀 — 다크 틀은 페이지가 라이트여도 바꾸고, 라이트 틀 안의 스켈레톤 · 대체 그림은 페이지가 다크여도 라이트 값으로 되돌린다 */
+    [data-theme="dark"] :is(.pif, .plt, .par, .pimg-surface, .pimg-cap, .pimg-zoom, .pimg-fixed, .pimg-ar-guide, .pimg-dont-ar):not(.pdsp-theme--light, .pdsp-theme--light *),
+    .pdsp-theme--dark {
+      --color-stroke-neutral-overlay: var(--color-stroke-neutral-overlay-dark);
+      --color-bg-layer-default: var(--color-bg-layer-default-dark);
+      --color-bg-neutral-weak: var(--color-bg-neutral-weak-dark);
+      --color-fg-neutral: var(--color-fg-neutral-dark);
+      --color-fg-neutral-muted: var(--color-fg-neutral-muted-dark);
+      --color-fg-neutral-subtle: var(--color-fg-neutral-subtle-dark);
+      --color-fg-neutral-inverted: var(--color-fg-neutral-inverted-dark);
+      --color-stroke-neutral-weak: var(--color-stroke-neutral-weak-dark);
+      --color-stroke-neutral-subtle: var(--color-stroke-neutral-subtle-dark);
+      --color-chart-blue: var(--color-chart-blue-dark);
+      --color-chart-green: var(--color-chart-green-dark);
+      --color-chart-orange: var(--color-chart-orange-dark);
+      --color-chart-violet: var(--color-chart-violet-dark);
+      --color-chart-pink: var(--color-chart-pink-dark);
+      --color-chart-indigo: var(--color-chart-indigo-dark);
+      --color-chart-red: var(--color-chart-red-dark);
+      --color-chart-yellow: var(--color-chart-yellow-dark);
+      --color-chart-brown: var(--color-chart-brown-dark);
+      --color-chart-gray: var(--color-chart-gray-dark);
+      --pinst-ink: var(--color-fg-neutral-inverted-dark);
+    }
+    .pdsp-theme--dark .psk { --psk-band: var(--gradient-shimmer-neutral-dark); }
+    [data-theme="dark"] .pdsp-theme--light :is(.psk, .pcph) { --color-bg-neutral-weak: inherit; --color-stroke-neutral-weak: inherit; --psk-band: var(--gradient-shimmer-neutral); }
 
     /* todo-card */
     .todo-list { display: flex; flex-direction: column; gap: 2px; }
@@ -12630,14 +13382,7 @@ export function pageCss() {
     .dt-table td { padding: var(--spacing-sm) var(--spacing-md); border-bottom: 1px solid var(--color-border-default); }
     .dt-sort { color: var(--color-primary, var(--color-text-primary)); font-weight: 700; }
 
-    /* Carousel */
-    .car { display: flex; gap: var(--spacing-sm); align-items: center; }
-    .car-arrow { width: 32px; height: 32px; border: 1px solid var(--color-border-default); background: var(--color-surface-default); border-radius: var(--radius-full); cursor: pointer; font-size: 16px; flex-shrink: 0; }
-    .car-arrow:hover { background: var(--color-surface-input); }
-    .car-frame { flex: 1; height: 100px; background: var(--color-bg-page); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--color-text-secondary); }
-    .car-dots { display: flex; gap: var(--spacing-xs); justify-content: center; margin-top: var(--spacing-sm); }
-    .car-dot { width: 8px; height: 8px; border-radius: var(--radius-full); background: var(--color-surface-input); }
-    .car-dot--active { background: var(--color-primary, var(--color-text-primary)); width: 24px; }
+    /* 옛 Carousel(.car-* — 화살표 32 · 점 · 고른 점 24 알약)은 걷었다(2026-10-04). 여러 장은 이미지 블록의 가로 줄(.pfog--row · .pimg-strip)과 장수 글(.pif-ind)이다(03q) */
 
     /* Scroll Area */
     .sa { max-height: 100px; overflow-y: auto; padding: var(--spacing-sm); background: var(--color-bg-page); border-radius: var(--radius-md); }
@@ -12645,9 +13390,7 @@ export function pageCss() {
 
     /* 옛 Sonner 쌓기(.son · .son-toast)는 걷었다 — 19 의 Snackbar 칸은 알림 메시지 블록의 .psnack 이다(2026-10-02) */
 
-    /* Aspect Ratio */
-    .ar { background: var(--color-surface-input); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--color-text-tertiary); font-family: ui-monospace, monospace; font-size: var(--text-caption); }
-    .ar--16-9 { aspect-ratio: 16 / 9; }
+    /* 옛 Aspect Ratio(.ar — surface-input 바탕 · 모서리 8)는 걷었다. 19 의 칸은 이미지 블록의 비율 상자 .par 다(03q) */
 
     /* Chart mini */
     .chart-mini { display: flex; gap: var(--spacing-xs); align-items: flex-end; height: 100px; padding: var(--spacing-sm); background: var(--color-bg-page); border-radius: var(--radius-md); }
@@ -12750,7 +13493,6 @@ export function pageCss() {
     [data-theme="dark"] .batch-card,
     [data-theme="dark"] .drw-side,
     [data-theme="dark"] .sc-card,
-    [data-theme="dark"] .car-arrow,
     [data-theme="dark"] .sl,
     [data-theme="dark"] .ipk-trigger,
     [data-theme="dark"] .swatch { background: var(--color-surface-default-dark); }
@@ -12764,18 +13506,14 @@ export function pageCss() {
     [data-theme="dark"] .ipk-cell:hover { background: var(--color-surface-input-dark); }
     [data-theme="dark"] .sb,
     [data-theme="dark"] .cmd,
-    [data-theme="dark"] .car-frame,
     [data-theme="dark"] .sa,
     [data-theme="dark"] .chart-mini,
     [data-theme="dark"] .dt-table thead { background: var(--color-bg-page-dark); }
     [data-theme="dark"] .cb,
     [data-theme="dark"] .otp-cell,
-    [data-theme="dark"] .otp-cell--filled,
-    [data-theme="dark"] .ar,
-    [data-theme="dark"] .car-dot { background: var(--color-surface-input-dark); }
+    [data-theme="dark"] .otp-cell--filled { background: var(--color-surface-input-dark); }
     [data-theme="dark"] .otp-cell--filled { background: var(--color-surface-default-dark); }
     [data-theme="dark"] .col-trigger,
-    [data-theme="dark"] .car-arrow,
     [data-theme="dark"] .tg,
     [data-theme="dark"] .tgg,
     [data-theme="dark"] .tgg-item + .tgg-item,
@@ -12790,7 +13528,6 @@ export function pageCss() {
     [data-theme="dark"] .col-trigger:hover,
     [data-theme="dark"] .nm-item:hover,
     [data-theme="dark"] .cmd-item:hover,
-    [data-theme="dark"] .car-arrow:hover,
     [data-theme="dark"] .sb-item:hover { background: var(--color-surface-input-dark); }
     /* solid segmented active 는 다크에서도 primary 유지(subtle dark override 보다 specificity 우선). */
     [data-theme="dark"] .tgg--solid .tgg-item--active { background: var(--color-primary); color: var(--color-text-on-accent, #fff); }
@@ -13003,6 +13740,7 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     ${renderDateTimeGallery(brand)}
     ${renderDisplayGallery(brand)}
     ${renderLoadingGallery(brand)}
+    ${renderImageGallery(brand, tokens)}
     ${renderVignettes(brand)}
     ${renderListingDetail(brand)}
     ${renderCalendar(brand)}
@@ -14688,6 +15426,112 @@ function renderHtml(brandName, css, tokens, sourceFile) {
       }
       place();
       window.addEventListener("load", place);
+    })();
+    // 이미지 (2026-10-04) — image-frame.tsx 의 ImageFrame · CardArt 와 logo-tile.tsx 의 LogoTile 이 하는 일 가운데 그림에 필요한 것을 흉내 낸다(03q 의 "직접" 견본).
+    // 그림 틀 — 누르면 처음부터 다시 받는다: 그림을 걷고 스켈레톤(면 + 반짝임 — 화면의 스켈레톤과 한 박자)을 깐다. 1.2초에 그림을 받으면(load) 카드 그림은 원래 크기로
+    // 방향을 정하고(폭 < 높이면 시계 방향 90°) 스켈레톤을 걷어 투명도 150ms 로 보인다. 실패면 대체 그림(<template> — 카드 그림은 아는 카드사의 카드 면)이 이름을
+    // 이어받는다. 10초가 지나도 안 오면 실패와 같다 — 그 뒤에 와도 다시 바꾸지 않는다. 실패 · 없음으로 바뀔 때는 움직임이 없다. 지난 시간은 견본 아래 글이 보인다.
+    // 로고 타일 — 처음에는 첫 글자, 그림이 오면 판 · 그림이 전환 없이 바로 덮고, 실패하면 첫 글자 그대로다.
+    (function () {
+      // 반짝임 — 문서 시계 0 에 맞춘다(늦게 붙은 스켈레톤도 같은 박자)
+      function sync(root) {
+        if (!root || !root.getAnimations) return;
+        root.getAnimations({ subtree: true }).forEach(function (a) {
+          if (a.animationName === "shimmer" && a.startTime !== 0) a.startTime = 0;
+        });
+      }
+      var TIMEOUT = 10000;
+      document.querySelectorAll("[data-pif-live]").forEach(function (live) {
+        var frame = live.querySelector(".pif");
+        var clock = live.querySelector("[data-pif-clock]");
+        var tpl = live.querySelector("template[data-pif-fallback]");
+        if (!frame || !clock || !tpl) return;
+        var src = frame.getAttribute("data-pif-src");
+        var first = frame.querySelector(".pif-img");
+        var alt = first ? first.getAttribute("alt") || "" : "";
+        var card = frame.classList.contains("pif--card");
+        var run = null;
+        function stop() {
+          if (!run) return;
+          run.timers.forEach(clearTimeout);
+          clearInterval(run.tick);
+          run = null;
+        }
+        function clear() {
+          Array.prototype.forEach.call(frame.querySelectorAll(":scope > :is(.pif-img, .psk, .pcph, .pcart-face)"), function (el) { el.remove(); });
+          frame.classList.remove("pif--rotated");
+          frame.removeAttribute("data-enter");
+        }
+        function done(text) {
+          clock.textContent = text;
+          stop();
+        }
+        function fail(text) {
+          clear();
+          frame.setAttribute("data-state", "fallback");
+          frame.insertAdjacentHTML("afterbegin", tpl.innerHTML);
+          done(text);
+        }
+        function show(img, at) {
+          if (!run) return;
+          // 방향은 다 받은 뒤 원래 크기로 정한다 — 그때까지는 스켈레톤이다
+          if (card && img.naturalWidth < img.naturalHeight) frame.classList.add("pif--rotated");
+          var sk = frame.querySelector(":scope > .psk");
+          if (sk) sk.remove();
+          frame.setAttribute("data-state", "loaded");
+          void frame.offsetWidth;
+          frame.setAttribute("data-enter", "");
+          done(at + "초에 옴 — " + (frame.classList.contains("pif--rotated") ? "원래 " + img.naturalWidth + " × " + img.naturalHeight + " · 시계 방향 90° · " : "") + "스켈레톤을 걷고 투명도 150ms");
+        }
+        function start(kind) {
+          stop();
+          clear();
+          var t0 = performance.now();
+          var img = document.createElement("img");
+          img.className = "pif-img";
+          img.alt = alt;
+          img.decoding = "async";
+          frame.insertAdjacentElement("afterbegin", img);
+          img.insertAdjacentHTML("afterend", '<span class="psk" aria-hidden="true"></span>');
+          frame.setAttribute("data-state", "loading");
+          sync(frame);
+          run = { timers: [], tick: 0 };
+          run.tick = setInterval(function () {
+            clock.textContent = "지난 시간 " + Math.min((performance.now() - t0) / 1000, 10).toFixed(1) + "초 · 스켈레톤";
+          }, 100);
+          run.timers.push(setTimeout(function () { fail("10초 — 실패와 같다(대체 그림이 이름을 이어받는다 · 그 뒤에 와도 바꾸지 않는다)"); }, TIMEOUT));
+          if (kind === "fail") run.timers.push(setTimeout(function () { fail("1.2초에 실패 — 대체 그림" + (card ? "(아는 카드사 — 카드 면)" : "") + " · 이름을 이어받는다"); }, 1200));
+          else if (kind !== "never") run.timers.push(setTimeout(function () {
+            img.addEventListener("load", function () { show(img, (Number(kind) / 1000).toFixed(1)); }, { once: true });
+            img.src = src;
+          }, Number(kind)));
+        }
+        live.addEventListener("click", function (e) {
+          var b = e.target && e.target.closest ? e.target.closest("[data-pif-run]") : null;
+          if (b) start(b.getAttribute("data-pif-run"));
+        });
+      });
+      document.querySelectorAll("[data-plt-live]").forEach(function (live) {
+        var tile = live.querySelector(".plt");
+        var clock = live.querySelector("[data-plt-clock]");
+        var tpl = live.querySelector("template[data-plt-plate]");
+        if (!tile || !clock || !tpl) return;
+        var timer = 0;
+        live.addEventListener("click", function (e) {
+          var b = e.target && e.target.closest ? e.target.closest("[data-plt-run]") : null;
+          if (!b) return;
+          clearTimeout(timer);
+          var plate = tile.querySelector(".plt-plate");
+          if (plate) plate.remove();
+          var kind = b.getAttribute("data-plt-run");
+          clock.textContent = "첫 글자 — 그림을 받는 중";
+          timer = setTimeout(function () {
+            if (kind === "fail") { clock.textContent = "실패 — 첫 글자 그대로(깨진 그림 · 빈 칸이 없다)"; return; }
+            tile.insertAdjacentHTML("beforeend", tpl.innerHTML);
+            clock.textContent = "0.8초에 옴 — 판 · 그림이 전환 없이 바로 덮는다";
+          }, 800);
+        });
+      });
     })();
   </script>
 </body>
