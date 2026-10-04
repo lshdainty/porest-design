@@ -1,6 +1,10 @@
 /*
  * shadcn List 예제 — docs site components/list.html 에서 Preview + Code 토글로 보인다.
- * 각 예제 = { title, description, jsx, render() }. 차례 · 제목 · 코드는 specs/components/list.md 의 "코드" 절을 따른다.
+ * 각 예제 = { title, description, jsx, render() }. 차례 · 제목 · 코드는 specs/components/list.md 의 "코드" 절을 따르고, 마지막(앞 붙이개 —
+ * 타일 · 로고 타일 · 카드 그림)은 md 의 Prefix 를 코드로 더 보인다 — 그 줄의 Logo Tile · 카드 그림(CardArt)은 LOGO_* 가 logo-tile.tsx,
+ * FRAME_* · IMAGE_* · CARD_FACE_* · FIXED_WIDTH 가 image-frame.tsx, RATIO_* 가 aspect-ratio.tsx 의 것(logo-tile-examples.mjs · image-frame-examples.mjs 의 것)과 같다 —
+ * 이 줄이 쓰는 크기 · 모서리만 옮겼다. 기관 색은 recipes/shadcn/lib/institution-colors.ts 의 표를 그대로 읽고, institutionColor · avatarInitial ·
+ * avatarHue · imageFrameRadius 는 레시피의 규칙 함수와 같은 답을 낸다.
  *
  * LIST_BASE · CHECK_GROUP · ITEM_* · CONTENT_* · PREFIX_* · BODY_BASE · TITLE_* · HIGHLIGHT_MUTED · DETAIL_* · SUFFIX_* · ACTION_BASE ·
  * CONTROL_BASE · DIVIDER_* · HEADER_* · TILE_BASE · MARK_NO_SCALE 는 recipes/shadcn/components/ui/list.tsx 의 cva 정의 · 상수와
@@ -21,6 +25,8 @@
  * 포인터를 잡아 둔다(setPointerCapture — 콘텐츠 층이 줄어 가장자리를 누른 포인터가 밖에 남아도 click 이 그 줄로 간다).
  * 정적 HTML 에는 그 스크립트가 없어 미리보기를 눌러도 바탕만 바뀌고 콘텐츠 층은 줄지 않는다.
  */
+
+import { readFileSync } from "node:fs";
 
 // ── list.tsx 의 cva 와 같은 값 ─────────────────────────────────────────────
 
@@ -144,6 +150,65 @@ const TILE_BASE = "inline-grid size-10 shrink-0 place-items-center rounded-r3 [&
 // 끼운 컨트롤은 따로 줄지 않는다 — 줄의 콘텐츠가 함께 준다. 컨트롤에도 data-list-action 을 단다(switchmark · checkmark · radiomark) —
 // 키보드(Space)로 누르면 :active 가 라벨이 아니라 컨트롤에 걸려도 줄의 누름이 선다
 const MARK_NO_SCALE = "active:[scale:1]";
+
+// ── logo-tile.tsx 의 상수와 같은 값 — 물건 줄의 앞(Logo Tile 40) ─────────────
+
+const LOGO_SIZES = { 40: { box: "size-[40px] rounded-r3", initial: "text-[16px]", card: 32 } };
+const LOGO_HUE_BG = { indigo: "bg-chart-indigo" };
+const LOGO_INSTITUTION_TEXT = {
+  white: "text-static-white",
+  dark: "text-fg-neutral dark:text-fg-neutral-inverted",
+};
+const LOGO_ROOT = [
+  "relative inline-flex shrink-0 select-none items-center justify-center overflow-hidden align-middle",
+  "after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:shadow-[inset_0_0_0_1px_var(--color-stroke-neutral-overlay)] after:content-['']",
+].join(" ");
+const LOGO_INITIAL = "absolute inset-0 flex items-center justify-center font-sans font-bold uppercase";
+const LOGO_LINE_HEIGHT_1 = "leading-none";
+// logo-tile.tsx 의 JSX — 이름 색 면의 글자
+const LOGO_NAME_TEXT = "text-fg-neutral-inverted";
+
+// ── image-frame.tsx · aspect-ratio.tsx 의 cva · 상수와 같은 값 — 카드 혜택 줄의 앞(카드 그림 56) ──
+
+const FRAME_BASE = [
+  "relative isolate block max-w-full overflow-hidden [container-name:image-frame] [container-type:size]",
+  "after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:shadow-[inset_0_0_0_1px_var(--color-stroke-neutral-overlay)] after:content-['']",
+].join(" ");
+const FRAME_VARIANTS = { radius: { "8": "rounded-r2" } };
+const FRAME_DEFAULTS = { radius: "8" };
+const IMAGE_BASE = "absolute block";
+const IMAGE_VARIANTS = {
+  rotate: {
+    false: "inset-0 size-full",
+    true: "left-1/2 top-1/2 h-[158.6%] w-[calc(100%/1.586)] -translate-x-1/2 -translate-y-1/2 rotate-90",
+  },
+  fit: { cover: "object-cover" },
+};
+const IMAGE_DEFAULTS = { rotate: false, fit: "cover" };
+const RATIO_VARIANTS = { ratio: { card: "aspect-[1.586]" } };
+const RATIO_DEFAULTS = { ratio: "4:3" };
+const CARD_FACE_TEXT = {
+  white: "text-static-white",
+  dark: "text-fg-neutral dark:text-fg-neutral-inverted",
+};
+const CARD_FACE = "relative size-full overflow-hidden font-sans";
+const CARD_FACE_INITIAL = [
+  "absolute inset-0 flex items-center justify-center font-bold uppercase @min-[96px]/image-frame:hidden",
+  "text-[length:max(10px,round(40cqh,1px))]",
+  "leading-none",
+].join(" ");
+const CARD_FACE_LABEL =
+  "absolute inset-x-0 bottom-0 hidden flex-col px-x2_5 pb-x2 @min-[96px]/image-frame:flex @min-[240px]/image-frame:px-x4 @min-[240px]/image-frame:pb-x3_5";
+const CARD_FACE_ISSUER = "truncate text-t2 font-medium @min-[240px]/image-frame:text-t3";
+const CARD_FACE_NAME = "line-clamp-1 break-keep text-t4 font-bold [overflow-wrap:break-word] @min-[240px]/image-frame:line-clamp-2 @min-[240px]/image-frame:text-t5";
+// image-frame.tsx 의 JSX — 고정 폭 · 대체 그림 자리
+const FIXED_WIDTH = "shrink-0";
+const FALLBACK = "absolute inset-0 flex";
+
+// 기관 색 표 — lib/institution-colors.ts 의 INSTITUTION_COLORS 를 그대로 읽는다(정적 미리보기는 TS 를 불러오지 못해 표의 글자를 푼다)
+const INSTITUTION_COLORS = new Function(
+  `return ${/export const INSTITUTION_COLORS[^=]*=\s*(\[[\s\S]*?\n\]);/.exec(readFileSync(new URL("../lib/institution-colors.ts", import.meta.url), "utf8"))[1]};`,
+)();
 
 // ── switch.tsx · checkbox.tsx · radio-group.tsx 의 cva 와 같은 값 ──────────
 
@@ -369,6 +434,58 @@ const listControlVariants = cvaOf(CONTROL_BASE);
 const listDividerVariants = cvaOf(DIVIDER_BASE, { variants: DIVIDER_VARIANTS, defaultVariants: DIVIDER_DEFAULTS });
 const listHeaderVariants = cvaOf(HEADER_BASE, { variants: HEADER_VARIANTS, defaultVariants: HEADER_DEFAULTS });
 const listTileVariants = cvaOf(TILE_BASE);
+const imageFrameVariants = cvaOf(FRAME_BASE, { variants: FRAME_VARIANTS, defaultVariants: FRAME_DEFAULTS });
+const imageFrameImageVariants = cvaOf(IMAGE_BASE, { variants: IMAGE_VARIANTS, defaultVariants: IMAGE_DEFAULTS });
+const aspectRatioVariants = cvaOf("", { variants: RATIO_VARIANTS, defaultVariants: RATIO_DEFAULTS });
+
+// ── 레시피의 규칙 함수와 같은 답 — 기관 찾기(lib/institution-colors.ts) · 첫 글자 · 이름 색(avatar.tsx) · 모서리(image-frame.tsx) ──
+
+const squash = (value) => value.replace(/\s+/g, "");
+const KEYS = INSTITUTION_COLORS.map((entry) => ({ entry, keys: [entry.name, ...entry.aliases].map(squash).filter((key) => key !== "") }));
+
+/** 기관 이름 → 기관 색 표의 한 줄(color · text …). 같은 이름 · 별칭, 아니면 든 가장 긴 이름, 없으면 null */
+function institutionColor(name) {
+  const query = squash(name ?? "");
+  if (query === "") return null;
+  for (const { entry, keys } of KEYS) if (keys.includes(query)) return entry;
+  let found = null;
+  let longest = 0;
+  for (const { entry, keys } of KEYS) {
+    for (const key of keys) {
+      if (key.length > longest && query.includes(key)) {
+        found = entry;
+        longest = key.length;
+      }
+    }
+  }
+  return found;
+}
+
+const AVATAR_HUES = ["blue", "green", "orange", "violet", "pink", "indigo", "red", "yellow", "brown", "gray"];
+const displayName = (name) => String(name).trim();
+const graphemes = new Intl.Segmenter(undefined, { granularity: "grapheme" });
+
+/** 이니셜 — 표시 이름의 첫 글자 하나(사용자가 보는 글자 단위), 로마자는 대문자. 이름이 비면 "" */
+function avatarInitial(name) {
+  const shown = displayName(name);
+  if (shown === "") return "";
+  return (graphemes.segment(shown)[Symbol.iterator]().next().value?.segment ?? "").toUpperCase();
+}
+
+/** 이름 색 — 표시 이름의 유니코드 코드 포인트 합 % 10 → 차트 10색(v110 순서). 이름이 비면 gray */
+function avatarHue(name) {
+  const shown = displayName(name);
+  if (shown === "") return "gray";
+  let sum = 0;
+  for (const ch of shown) sum += ch.codePointAt(0) ?? 0;
+  return AVATAR_HUES[sum % 10] ?? "gray";
+}
+
+/** 폭 → 모서리(SEED) — 24 이하 "4" · 48 이하 "6" · 그 위 "8". 폭을 모르면(부모 폭을 채운다) "8" */
+function imageFrameRadius(width) {
+  if (width == null || Number.isNaN(width)) return "8";
+  return width <= 24 ? "4" : width <= 48 ? "6" : "8";
+}
 const switchmarkVariants = cvaOf(SWITCHMARK_BASE, {
   variants: SWITCHMARK_VARIANTS,
   defaultVariants: SWITCHMARK_DEFAULTS,
@@ -447,6 +564,9 @@ const ICONS = {
     '<path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/>',
   ),
   info: svg('<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>'),
+  utensils: svg('<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>'),
+  arrowLeftRight: svg('<path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/>'),
+  tag: svg('<path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/>'),
   chevronRight: svg('<path d="m9 18 6-6-6-6"/>'),
 };
 
@@ -615,6 +735,48 @@ const listDivider = (inset, as = "li") =>
 const listTile = (html, className = "") =>
   `<span data-list-tile="" class="${merge(`${listTileVariants()} ${className}`)}">${html}</span>`;
 
+// <LogoTile name face> — logo-tile.tsx 그대로(크기 40 · 그림 없음 — 첫 글자 타일). 옆에 이름이 있어 장식(aria-hidden)
+function logoTile({ name, face = "institution" }) {
+  const shown = name.trim();
+  const institution = face === "institution" ? institutionColor(shown) : null;
+  const box = LOGO_SIZES[40];
+  const tone = institution ? LOGO_INSTITUTION_TEXT[institution.text] : `${LOGO_HUE_BG[avatarHue(shown)]} ${LOGO_NAME_TEXT}`;
+  const initial = `<span ${attrs([
+    'aria-hidden="true"',
+    'data-slot="logo-tile-initial"',
+    `class="${[LOGO_INITIAL, tone, box.initial, LOGO_LINE_HEIGHT_1].join(" ")}"`,
+    institution && `style="background-color:${institution.color}"`,
+  ])}>${avatarInitial(shown)}</span>`;
+  return `<span data-slot="logo-tile" data-face="${institution ? "institution" : "name"}" data-image="none" data-status="none" aria-hidden="true" class="${LOGO_ROOT} ${box.box}">${initial}</span>`;
+}
+
+// <CardArt width={56}> — image-frame.tsx 그대로(카드 비율 · 고정 폭 56 → 모서리 8 · 장식). 그림이 있으면 그림(세로는 다 받은 모습 — 돌림),
+// 없으면 아는 카드사의 카드 면(폭 96 미만 — 회사 첫 글자만)
+function cardArt56({ issuer, name, src, portrait = false }) {
+  const institution = institutionColor(issuer);
+  const radius = imageFrameRadius(56);
+  const rotate = !!src && portrait;
+  const inner = src
+    ? `<img data-slot="image-frame-image" loading="lazy" alt="" src="${src}" class="${imageFrameImageVariants({ rotate })}">`
+    : `<div data-slot="image-frame-fallback" class="${FALLBACK}" aria-hidden="true"><div data-slot="card-art-face" data-text="${institution.text}" class="${CARD_FACE} ${CARD_FACE_TEXT[institution.text]}" style="background-color:${institution.color}"><span data-slot="card-art-initial" class="${CARD_FACE_INITIAL}">${avatarInitial(issuer)}</span><span data-slot="card-art-label" class="${CARD_FACE_LABEL}"><span data-slot="card-art-issuer" class="${CARD_FACE_ISSUER}">${issuer}</span><span data-slot="card-art-name" class="${CARD_FACE_NAME}">${name}</span></span></div></div>`;
+  return `<div ${attrs([
+    'data-slot="card-art"',
+    `data-state="${src ? "loaded" : "fallback"}"`,
+    'data-ratio="card"',
+    `data-radius="${radius}"`,
+    'data-fit="cover"',
+    rotate && 'data-rotated="true"',
+    `data-issuer="${institution ? "known" : "unknown"}"`,
+    `class="${imageFrameVariants({ radius })} ${aspectRatioVariants({ ratio: "card" })} ${FIXED_WIDTH}"`,
+    'style="width:56px"',
+  ])}>${inner}</div>`;
+}
+
+// 세로 카드 그림(540 × 856) — 손으로 칠한 대역(SVG). 실제 카드 그림이 아니다
+const CARD_PORTRAIT = `data:image/svg+xml,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="540" height="856" viewBox="0 0 540 856"><defs><linearGradient id="c" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e52d27"/><stop offset="1" stop-color="#7b1fa2"/></linearGradient></defs><rect width="540" height="856" fill="url(#c)"/><rect x="76" y="72" width="150" height="104" rx="14" fill="#d9b44a"/><text transform="translate(300 470) rotate(-90)" text-anchor="middle" font-family="sans-serif" font-size="76" font-weight="800" letter-spacing="5" fill="#ffffff">SELECT ALL</text></svg>',
+)}`;
+
 // 줄은 화면의 기본 면(bg-layer-default) 위에 놓인다 — 폭 360 의 휴대폰 화면처럼 그린다. 사이트 미리보기 칸의 바탕(bg-page)은
 // 누름 바탕(bg-layer-default-pressed)과 거의 같은 색이라 그 위에 바로 그리면 호버 · 누름이 보이지 않는다.
 // 면의 모서리 16 · 위아래 6 은 누름 바탕(좌우 6 · 모서리 10)과 동심이다(list.md "카드 안의 목록").
@@ -768,5 +930,59 @@ import { List, ListButtonItem, ListItem } from "@/components/ui/list"
           }),
         ]),
       ),
+  },
+
+  {
+    title: "앞 붙이개 — 타일 · 로고 타일 · 카드 그림",
+    description:
+      "색이 뜻을 가진 내용 줄(거래 · 카테고리 · 알림 종류)은 타일 40(ListTile — 모서리 12) — 카테고리 색의 옅은 바탕(chart-{색}-weak) 위에 그 색의 아이콘 20 이다. 아이콘이 없는 카테고리는 태그 아이콘 하나로 그리고(빈 칸 · 첫 글자를 넣지 않는다), 이체 줄은 회색(chart-gray-weak + chart-gray)이다 — 카테고리가 아니라 돈의 이동이다. 은행 · 증권 · 카드 · 코인 · 금 같은 물건 줄은 로고 타일 40(Logo Tile — 기관 색 + 첫 글자, 기관이 없으면 이름 색)이고 막힌 줄에서도 그대로다. 카드 혜택처럼 카드 자체가 줄인 자리는 카드 그림 56(Image Frame 카드 비율 · 모서리 8 — 세로 그림은 돌리고, 그림이 없는 아는 카드사는 카드 면의 첫 글자)이다. 한 목록 안에서 섞지 않는다 — 자산 목록은 로고 타일, 거래 목록은 카테고리 타일.",
+    jsx: `import { ArrowLeftRight, Tag, Utensils } from "lucide-react"
+import { CardArt } from "@/components/ui/image-frame"
+import { List, ListButtonItem, ListItem, ListTile } from "@/components/ui/list"
+import { LogoTile } from "@/components/ui/logo-tile"
+
+{/* 거래 — 카테고리 타일(아이콘이 없으면 Tag), 이체는 회색 */}
+<List>
+  <ListItem prefix={<ListTile className="bg-chart-orange-weak text-chart-orange"><Utensils /></ListTile>} title="김밥천국" detail="식비 · 현대카드" />
+  <ListItem prefix={<ListTile className="bg-chart-violet-weak text-chart-violet"><Tag /></ListTile>} title="동네 서점" detail="취미 · 현대카드" />
+  <ListItem prefix={<ListTile className="bg-chart-gray-weak text-chart-gray"><ArrowLeftRight /></ListTile>} title="비상금으로 이체" detail="신한 주거래 → 비상금" />
+</List>
+
+{/* 자산 — 로고 타일 */}
+<List>
+  <ListButtonItem prefix={<LogoTile name="신한" />} title="신한 주거래" detail="신한 · 입출금" />
+  <ListButtonItem prefix={<LogoTile name="비상금" face="name" />} title="비상금" detail="현금" />
+</List>
+
+{/* 카드 혜택 — 카드 그림 56 */}
+<List>
+  <ListButtonItem prefix={<CardArt width={56} src={card.imgUrl} issuer="삼성카드" name="iD SELECT ALL" />} title="iD SELECT ALL" detail="신용 · 삼성카드" />
+  <ListButtonItem prefix={<CardArt width={56} src={null} issuer="NH농협카드" name="올원 Pay" />} title="올원 Pay" detail="체크 · NH농협카드" />
+</List>`,
+    render: () =>
+      `<div style="display:flex; flex-wrap:wrap; align-items:flex-start; gap:var(--spacing-x5) var(--spacing-x6);">
+  ${captioned(
+    "거래 · ListTile — 카테고리 · 태그 · 이체(회색)",
+    list([
+      listItem({ prefix: listTile(ICONS.utensils, "bg-chart-orange-weak text-chart-orange"), title: "김밥천국", detail: "식비 · 현대카드" }),
+      listItem({ prefix: listTile(ICONS.tag, "bg-chart-violet-weak text-chart-violet"), title: "동네 서점", detail: "취미 · 현대카드" }),
+      listItem({ prefix: listTile(ICONS.arrowLeftRight, "bg-chart-gray-weak text-chart-gray"), title: "비상금으로 이체", detail: "신한 주거래 → 비상금" }),
+    ]),
+  )}
+  ${captioned(
+    "자산 · LogoTile 40",
+    list([
+      listButtonItem({ prefix: logoTile({ name: "신한" }), title: "신한 주거래", detail: "신한 · 입출금" }),
+      listButtonItem({ prefix: logoTile({ name: "비상금", face: "name" }), title: "비상금", detail: "현금" }),
+    ]),
+  )}
+  ${captioned(
+    "카드 혜택 · CardArt 56",
+    list([
+      listButtonItem({ prefix: cardArt56({ issuer: "삼성카드", name: "iD SELECT ALL", src: CARD_PORTRAIT, portrait: true }), title: "iD SELECT ALL", detail: "신용 · 삼성카드" }),
+      listButtonItem({ prefix: cardArt56({ issuer: "NH농협카드", name: "올원 Pay" }), title: "올원 Pay", detail: "체크 · NH농협카드" }),
+    ]),
+  )}
+</div>`,
   },
 ];

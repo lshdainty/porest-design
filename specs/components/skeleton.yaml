@@ -15,6 +15,8 @@
 #   - 모서리 기본값은 8(SEED 코드와 같다 — rootage 는 0 을 기본값이라 적었다).
 #   - magic(AI) 톤은 두지 않는다(v104 — 그 띠도 들이지 않았다).
 #   - 기다리는 영역의 시간표 · 요청 제한 · 다시 시도를 수치로 둔다(SEED Loading 패턴의 시나리오를 규칙으로).
+#   - 그림 자리(썸네일 · 카드 그림)는 Image Frame 의 모서리(폭 24 이하 4 · 48 이하 6 · 그 위 8)다 — SEED Skeleton 표의 "카드 및 썸네일 16" 이
+#     아니다(2026-10-04 이미지 비교 2A — 다 받은 그림과 같은 모서리). 16 은 카드 면(Card 모양 자리 전체)만이다.
 
 name: Skeleton
 
@@ -27,9 +29,11 @@ slots:
 variants:
   radius:
     "0": 화면 폭 사진 — 화면 끝에 붙는 그림(상세 위 사진)
-    "8": 글 · 숫자 · 작은 조각 — 기본
-    "12": 목록 앞 타일 — List 의 타일(40 · 크기 × 0.3)과 같은 모서리
-    "16": 카드 · 썸네일
+    "4": 폭 24 이하의 그림 자리 — Image Frame 모서리
+    "6": 폭 25 ~ 48 의 그림 자리 — 목록 앞 썸네일 40 · 48(Image Frame 모서리)
+    "8": 글 · 숫자 · 작은 조각 · 폭 49 이상의 그림 자리(카드 그림 56 · 격자 · 상세) — 기본
+    "12": 목록 앞 타일 — List 의 타일 · Logo Tile 40(크기 × 0.3)과 같은 모서리
+    "16": 카드 면 — Card 모양 자리 전체. 카드 그림(신용카드 그림)은 그림이라 4 · 6 · 8
     full: 아바타 · 원 아이콘 · 칩
 
 defaults:
@@ -69,18 +73,26 @@ rules:
     enabled:
       root:
         radius: { value: 0px, note: "화면 끝에 붙는 사진 — 상세 위 사진. 담는 틀에 모서리가 있으면 그 틀과 같게" }
+  - when: { radius: "4" }
+    enabled:
+      root:
+        radius: { value: $radius-r1, note: "Image Frame — 폭 24 이하. 다 받은 그림과 같은 모서리" }
+  - when: { radius: "6" }
+    enabled:
+      root:
+        radius: { value: $radius-r1_5, note: "Image Frame — 폭 25 ~ 48(목록 앞 썸네일 40 · 48)" }
   - when: { radius: "8" }
     enabled:
       root:
-        radius: $radius-r2
+        radius: { value: $radius-r2, note: "글 · 숫자 · 작은 조각, Image Frame 폭 49 이상" }
   - when: { radius: "12" }
     enabled:
       root:
-        radius: { value: $radius-r3, note: "List 타일 모서리와 같다 — 거래 · 카테고리 줄의 앞 자리" }
+        radius: { value: $radius-r3, note: "List 타일 · Logo Tile 40 의 모서리와 같다 — 거래 · 카테고리 · 자산 줄의 앞 자리(줄이 통째로 기다릴 때 — 이름을 알면 Logo Tile 은 첫 글자부터 그린다)" }
   - when: { radius: "16" }
     enabled:
       root:
-        radius: $radius-r4
+        radius: { value: $radius-r4, note: "카드 면 — Card 모양 자리 전체. 그림 자리(썸네일 · 카드 그림)는 Image Frame 의 4 · 6 · 8" }
   - when: { radius: full }
     enabled:
       root:

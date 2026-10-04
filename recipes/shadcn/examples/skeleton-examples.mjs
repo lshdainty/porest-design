@@ -1,6 +1,6 @@
 /*
  * shadcn Skeleton 예제 — docs site components/skeleton.html 에서 Preview + Code 토글로 보인다.
- * 각 예제 = { title, description, jsx, render() }. 앞의 넷(목록 — 틀은 그리고 데이터 자리만 · 모양 넷 · 다른 달 · 앱 맨 위 · 요청 설정)은 차례 · 제목 ·
+ * 각 예제 = { title, description, jsx, render() }. 앞의 넷(목록 — 틀은 그리고 데이터 자리만 · 모양 다섯 · 다른 달 · 앱 맨 위 · 요청 설정)은 차례 · 제목 ·
  * 코드가 specs/components/skeleton.md 의 "코드" 절과 같고, 뒤의 둘(가운데 원 · 모션 줄이기)은 md 의 "기다리는 동안" · State 를 코드로 더 보인다.
  * 옛 예제(animate-pulse · surface-input · 모서리 4 · 글자보다 낮은 막대 · SkeletonShimmer 브랜드 25% 띠)를 대신한다.
  *
@@ -27,9 +27,11 @@
 const WAITING_TEXT = "불러오는 중…";
 const SLOW_TEXT = "평소보다 오래 걸리고 있어요.";
 
-// 모서리 — 화면 폭 사진 0 · 글 8 · 카드 16 · 원 full
+// 모서리 — 화면 폭 사진 0 · 그림 자리 4 · 6 · 8(Image Frame — 폭으로) · 글 8 · 타일 12 · 카드 면 16 · 원 full
 const RADIUS = {
   "0": "rounded-none",
+  "4": "rounded-r1",
+  "6": "rounded-r1_5",
   "8": "rounded-r2",
   "12": "rounded-r3",
   "16": "rounded-r4",
@@ -394,7 +396,7 @@ export const skeletonExamples = [
   {
     title: "목록 — 틀은 그리고 데이터 자리만",
     description:
-      "화면의 틀(카드 면 · 카드 제목 \"최근 거래\")은 처음부터 실제로 그리고, 서버에서 올 데이터 자리만 스켈레톤이다. 줄 껍데기는 실제 List 줄 그대로다 — 앞 원 40(radius=\"full\") · 제목 자리 text=\"t5\"(16 글자의 줄 높이 22) · 설명 자리 text=\"t3\"(18) · 금액 자리 t5 라 줄 높이가 내용과 같은 66 이다(데이터가 와도 목록이 밀리지 않는다). 면은 bg-neutral-weak(흰 면 위 1.08:1 — 흰 면 위에만 둔다)이고 흰 띠가 자기 폭만큼 1.5초(motion-duration-loop · motion-ease-easing)에 지난다. LoadingRegion 이 시간표를 맡는다 — 1초까지는 보이지 않게 그려 높이만 지키고, 1초부터 스켈레톤(그림은 이 순간), 5초에 오래 걸림 글, 10초에 failure. 영역에 aria-busy, 스켈레톤은 aria-hidden 이다.",
+      "화면의 틀(카드 면 · 카드 제목 \"최근 거래\")은 처음부터 실제로 그리고, 서버에서 올 데이터 자리만 스켈레톤이다. 줄 껍데기는 실제 List 줄 그대로다 — 앞 타일 40(radius=\"12\" — List 타일 · Logo Tile 과 같은 모서리) · 제목 자리 text=\"t5\"(16 글자의 줄 높이 22) · 설명 자리 text=\"t3\"(18) · 금액 자리 t5 라 줄 높이가 내용과 같은 66 이다(데이터가 와도 목록이 밀리지 않는다). 면은 bg-neutral-weak(흰 면 위 1.08:1 — 흰 면 위에만 둔다)이고 흰 띠가 자기 폭만큼 1.5초(motion-duration-loop · motion-ease-easing)에 지난다. LoadingRegion 이 시간표를 맡는다 — 1초까지는 보이지 않게 그려 높이만 지키고, 1초부터 스켈레톤(그림은 이 순간), 5초에 오래 걸림 글, 10초에 failure. 영역에 aria-busy, 스켈레톤은 aria-hidden 이다.",
     jsx: `import { LoadingRegion, Skeleton } from "@/components/ui/skeleton"
 import { Card, CardHeader, CardTitle } from "@/components/ui/card"
 import { List, ListItem } from "@/components/ui/list"
@@ -440,17 +442,19 @@ function TransactionRowsSkeleton({ rows }: { rows: number }) {
   },
 
   {
-    title: "모양 넷",
+    title: "모양 다섯",
     description:
-      "모서리는 곧 올 내용의 모양을 따른다 — 글 · 숫자 8(기본 · rounded-r2), 카드 · 썸네일 16(rounded-r4), 아바타 · 원 아이콘 · 칩 full, 화면 끝에 붙는 사진 0. 크기는 그 자리에 올 내용의 크기이고, 글 자리는 text 로 그 글자의 줄 높이를 높이로 준다(t4 14 → 19). 폭은 className 이다.",
+      "모서리는 곧 올 내용의 모양을 따른다 — 글 · 숫자 8(기본 · rounded-r2), 그림 자리(썸네일 · 카드 그림)는 Image Frame 의 모서리 — 폭 24 이하 4(rounded-r1) · 48 이하 6(rounded-r1_5) · 그 위 8 — 로 다 받은 그림과 같다(손으로 고르지 않고 imageFrameRadius(폭) 으로 고른다), 카드 면(Card 모양 자리 전체)만 16(rounded-r4), 아바타 · 원 아이콘 · 칩 full, 화면 끝에 붙는 사진 0. 목록 앞 타일 · Logo Tile 40 은 12 다. 크기는 그 자리에 올 내용의 크기이고, 글 자리는 text 로 그 글자의 줄 높이를 높이로 준다(t4 14 → 19). 폭은 className 이다.",
     jsx: `<Skeleton text="t4" className="w-40" />                  {/* 글 — 높이 19, 모서리 8(기본) */}
-<Skeleton radius="16" className="h-28 w-full" />          {/* 카드 · 썸네일 */}
+<Skeleton radius="6" className="size-10" />               {/* 썸네일 40 — Image Frame 모서리(폭 48 이하 6) */}
+<Skeleton radius="16" className="h-28 w-full" />          {/* 카드 면 */}
 <Skeleton radius="full" className="size-10" />            {/* 아바타 */}
 <Skeleton radius="0" className="aspect-[4/3] w-full" />  {/* 화면 폭 사진 */}`,
     render: () =>
       `<div style="${GRID}">${[
         [skeleton({ text: "t4", className: "w-40" }), "text=\"t4\" — 19 · 모서리 8"],
-        [skeleton({ radius: "16", className: "h-28 w-full" }), "radius=\"16\" — 카드 · 썸네일"],
+        [skeleton({ radius: "6", className: "size-10" }), "radius=\"6\" — 썸네일 40(Image Frame)"],
+        [skeleton({ radius: "16", className: "h-28 w-full" }), "radius=\"16\" — 카드 면"],
         [skeleton({ radius: "full", className: "size-10" }), "radius=\"full\" — 아바타"],
         [skeleton({ radius: "0", className: "aspect-[4/3] w-full" }), "radius=\"0\" — 화면 폭 사진"],
       ]

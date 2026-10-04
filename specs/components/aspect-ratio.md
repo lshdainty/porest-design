@@ -1,108 +1,130 @@
 # Aspect Ratio
 
-> 자식 요소(이미지, 비디오, iframe, placeholder)를 지정한 비율(`16:9`, `1:1`, `4:3` 등)에 정확히 맞춰 박스 크기를 보장하는 layout primitive. 콘텐츠 로딩 전·후 모두 레이아웃 안정성 보장(CLS 방지). Radix `AspectRatio` 베이스 — **스타일 0**, 비율 계산만.
+> 폭이 정해지면 비율로 높이가 정해지는 상자 하나. 모서리 · 윤곽 · 바탕 · 불러오는 동안 · 대체 그림이 없고, 자식 하나가 상자를 채운다. 동영상 · 지도 · 바깥 페이지처럼 그림이 아니면서 비율만 지키면 되는 자리에 쓴다 — 사진 · 카드 그림 · 규정 그림은 [Image Frame](image-frame.md) 이다(그 안의 비율 상자가 이것이다).
 
-Porest Aspect Ratio는 **단일 spec × 비율 자유**입니다. 컴포넌트 자체는 시각 토큰 없음 — 자식 요소의 시각 톤(이미지 `rounded-md`, placeholder `bg-surface-input`)으로만 분기. 부모 폭 100% 차지 후 `ratio` prop 비율에 맞춰 높이 자동 계산.
+구조는 당근 [SEED Aspect Ratio](https://seed-design.io/react/components/aspect-ratio)(Apache-2.0)를 따른다 — "가로(width)가 정해지면 비율에 따라 세로(height)가 자동으로 결정되는 레이아웃 컨테이너", 기본 4:3, 자식 하나, 모서리 0. SEED 에는 이 부품의 디자인 문서가 없고 React 문서뿐이다. 비율은 Image Frame 과 같은 여덟 가지다 — 맨 아래 "SEED 와 다른 점"(2026-10-04 사용자 결정). 옛 Aspect Ratio(Radix · 권장 16:9 · 4:3 · 1:1 · 3:4 · 21:9 · 2:1 · 자식이 모서리 · 바탕을 맡음)를 대신한다.
+
+수치 원본은 [`aspect-ratio.yaml`](aspect-ratio.yaml)이다. 수치 표 자리(`[표: …]`)와 그림 자리(`[그림: …]`)는 사이트가 그 파일로 그린다 — GitHub 에서는 그 파일 · 그림 코드로 가는 링크로 보인다.
+
+[그림: 비율 상자 — 4:3 기본 · 16:9 동영상 · 카드 1.586 — 라이트 · 다크](../../site/components/specs/aspect-ratio.tsx#hero)
+
+### 직접 골라 보기
+
+비율과 부모 폭을 고르면 스펙대로 그린 상자와 그 코드가 바뀐다. 폭을 바꾸면 높이가 비율대로 따라간다.
+
+[그림: 플레이그라운드](../../site/components/specs/aspect-ratio.tsx#playground)
 
 ## Anatomy
 
+[그림: 비율 상자와 그 상자를 채운 자식 하나](../../site/components/specs/aspect-ratio.tsx#anatomy)
+
+| ⓐ Root | 비율 상자 — 폭은 부모, 높이는 폭 ÷ 비율. 모서리 · 바탕이 없다. |
+| ⓑ Child | 자식 하나 — 상자를 채운다. 동영상은 가운데를 남겨 자른다(cover). |
+
+[표: 부위](aspect-ratio.yaml#slots)
+
+## Properties
+
+### Ratio
+
+비율은 여덟 가지다 — SEED 의 일곱(1:1 · 2:1 · 16:9 · 4:3 · 6:7 · 4:5 · 2:3)과 카드 1.586. 기본은 4:3 이다. 이 밖의 비율(옛 3:4 · 21:9 · 황금비 같은 숫자)을 만들지 않는다 — 비율이 늘면 한 화면의 그림 · 상자가 제각각이 된다.
+
+[그림: 같은 폭에 여덟 비율](../../site/components/specs/aspect-ratio.tsx#ratio)
+
+[표: 비율](aspect-ratio.yaml#ratio)
+
+[표: 공통](aspect-ratio.yaml#base.enabled)
+
+### State
+
+상태는 `enabled` 하나다 — 상자일 뿐이라 누르지 않고 초점이 서지 않는다. 누르면 무언가 되는 자리는 감싼 버튼 · 링크가 상태를 가진다.
+
+## Guidelines
+
+### 그림은 Image Frame, 그 밖이 Aspect Ratio
+
+사진 · 카드 그림 · 규정 그림처럼 그림 파일을 보이는 자리는 [Image Frame](image-frame.md) 이다 — 모서리(폭으로) · 투명 윤곽 · 불러오는 동안의 스켈레톤 · 대체 그림 · 그림 위 배지를 함께 가진다. Aspect Ratio 에 `<img>` 를 넣고 모서리 · 바탕을 손으로 두르면 그 넷이 화면마다 갈린다(지금 카드 그림 모서리가 12 · 6 · 4 · 8 로 갈린 까닭이다). Aspect Ratio 는 동영상 · 지도 · 바깥 페이지 · 차트처럼 비율만 지키면 되는 자리에 쓴다.
+
+[그림: 카드 그림은 Image Frame · 동영상은 Aspect Ratio — Aspect Ratio 에 그림을 넣고 모서리를 손으로 두른 화면](../../site/components/specs/aspect-ratio.tsx#which-guide)
+
+### 한 화면은 한두 비율
+
+같은 목록 · 격자 안에서는 비율을 하나로 맞춘다. 한 화면에 쓰는 비율은 한두 가지다 — 칸마다 비율이 다르면 줄 높이가 들쭉날쭉해진다.
+
+[그림: 한 격자는 한 비율 · 칸마다 다른 비율](../../site/components/specs/aspect-ratio.tsx#ratio-guide)
+
+## 코드
+
+레시피 `recipes/shadcn/components/ui/aspect-ratio.tsx` 를 쓴다 — `AspectRatio` 는 `ratio`(`"1:1"` · `"2:1"` · `"16:9"` · `"4:3"` · `"6:7"` · `"4:5"` · `"2:3"` · `"card"`, 기본 `"4:3"`)와 자식 하나를 받는다. 폭은 부모가 정하고, 그 밖은 `div` 속성이다. 앱은 `AspectRatio(aspectRatio: …)` 에 같은 여덟 값을 쓴다. 아래 미리보기는 스펙 값으로 그린 모습이다.
+
+### 동영상 — 16:9
+
+[그림: 안내 동영상 16:9](../../site/components/specs/aspect-ratio.tsx#ex-video)
+
+```tsx
+import { AspectRatio } from "@/components/ui/aspect-ratio"
+
+<AspectRatio ratio="16:9">
+  <video src={guide.url} controls preload="metadata" className="size-full object-cover" aria-label="자산 연결 안내 동영상" />
+</AspectRatio>
 ```
-┌─────────────────────────────┐
-│                             │  ← 16:9 box (width=480, height=270)
-│  ⓐ children (img/video/...) │
-│                             │
-└─────────────────────────────┘
-
-┌─────────┐
-│         │  ← 1:1 box (width=240, height=240)
-│ ⓐ child │
-│         │
-└─────────┘
-```
-
-| ⓐ root | `<div>` (Radix `AspectRatioPrimitive.Root`) — `position:relative` + `aspect-ratio:<ratio>` CSS 자동 부여. children은 `position:absolute; inset:0`으로 박스 채움. |
-
-**규칙**
-
-- Aspect Ratio 자체는 시각 토큰 없음 — 자식의 background/border-radius/overflow가 시각 표현 담당.
-- 부모 컨테이너 폭이 결정해야 동작 — `<AspectRatio>` 단독으론 `width:0`. 부모에 `max-w-*` 또는 명시적 width 필수.
-- 콘텐츠가 비율 안 맞으면 `object-fit` 권장 — img `object-cover`(잘림) / `object-contain`(여백). Aspect Ratio는 박스만, fit은 자식 책임.
-- `radius`/`overflow`도 자식 또는 wrapper에서 — `<AspectRatio>` 자체엔 className 추가 가능하지만 의미상 자식이 맡는 게 자연.
-
-## Variants
-
-Aspect Ratio는 **variant 없음** — `ratio` prop 값으로만 분기.
-
-### 권장 ratio
-
-[표: 권장 비율](aspect-ratio.yaml#ratio)
-
-비표준 비율(예: `1.618` 황금비)도 자유 사용 — `ratio` prop은 number 허용.
-
-## Sizes
-
-Aspect Ratio는 **size variant 없음** — 폭은 부모 컨테이너가 결정. 사용처에서 `max-w-*` 또는 명시적 width로 폭 조정.
-
-[표: 크기와 자식](aspect-ratio.yaml#base)
-
-## States
-
-Aspect Ratio는 **state 없음** — 정적 layout primitive.
-
-## Layout
-
-**Media wrapper**
-
-- `<AspectRatio ratio={16/9}><img className="object-cover" /></AspectRatio>` — 동영상, hero banner, listing thumbnail.
-
-**불러오는 동안 · 없을 때** (2026-10-03)
-
-- 상자는 비율로 크기를 먼저 잡는다 — CLS(Cumulative Layout Shift) 방지.
-- 불러오는 동안은 같은 모서리의 [Skeleton](skeleton.md), 이미지가 없거나 불러오지 못하면 [Content Placeholder](content-placeholder.md)(옅은 면 + 그림)다 — 불러오는 중과 없음을 같은 그림으로 두지 않는다.
-
-**Card thumbnail**
-
-- Card 최상단에 `<AspectRatio>` — 카드 폭에 맞춰 자동 비율. card 라운드는 외곽 [`Card`](card.md)가 담당, AspectRatio는 비율만.
-
-**Avatar grid**
-
-- 1:1 비율 + `rounded-full` — circular avatar grid. [`Avatar`](avatar.md)와 별개로 비율만 보장 시 사용.
 
 ## Behavior
 
 | 인터랙션 | 동작 |
 |---|---|
-| 모든 인터랙션 | **없음** — 정적 layout primitive. focus 불가, click 무반응(자식이 처리). |
-| Resize | 부모 폭 변경 시 자동으로 ratio 유지 비율 height 재계산. CSS `aspect-ratio` property 네이티브 동작. |
+| 부모 폭이 바뀜 | 높이가 비율대로 다시 정해진다 |
+| 내용이 오기 전 | 상자가 먼저 자리를 잡는다 — 내용이 와도 줄이 밀리지 않는다 |
+| 누르기 · 키보드 | 없다 — 자식(동영상 · 지도)의 동작이다 |
 
 ## Accessibility
 
 | 기준 | 검증 |
 |---|---|
-| **WCAG 1.1.1** Non-text Content | img/video 자식 — `alt`/`<track>` 등 의미 전달은 **자식 책임**. AspectRatio는 layout primitive라 ARIA 없음. |
-| **WCAG 1.4.10** Reflow | 반응형 — 부모 폭이 줄어들면 height도 비율 유지하며 줄어듦 ✓ |
-| **CLS (Web Vitals)** | 이미지 로딩 전 박스 크기 보장 — Cumulative Layout Shift 0 ✓ |
-| **ARIA** | Radix가 별도 role 부여 안 함(시각 wrapper). 자식이 `<img>` 등 시맨틱 요소면 그 자체로 충분. |
+| **WCAG 1.1.1** Non-text Content | 상자는 역할 · 이름이 없다 — 자식이 말한다(동영상의 `aria-label` · 자막, 지도의 이름) |
+| **WCAG 1.4.10** Reflow | 부모 폭이 줄면 높이가 비율대로 줄어든다 ✓ |
+| **WCAG 2.5.8** Target Size — Minimum(AA ≥ 24×24) | 해당 없음 — 누르지 않는다 |
+| **WCAG 2.5.5** Target Size — Enhanced(AAA ≥ 44×44) | 해당 없음 — 누르지 않는다 |
+| **ARIA** | 없다(SEED 와 같다 — 자식이 말한다) |
 
 ## Do / Don't
 
 ### ✅ Do
 
-- 동영상/이미지/iframe wrapper — 콘텐츠 로딩 전후 박스 크기 보장.
-- 불러오는 동안은 Skeleton, 없거나 실패하면 Content Placeholder — 빈 상자 · 깨진 이미지를 두지 않는다.
-- Card thumbnail 최상단에 16:9 — listing 패턴 표준.
-- 1:1 + `rounded-full` — circular avatar 비율 보장.
-- 비율은 콘텐츠 의미에 맞게 — 동영상 16:9, 프로필 1:1, 모바일 portrait 3:4.
+- 동영상 · 지도 · 바깥 페이지처럼 그림이 아닌 자리의 비율.
+- 여덟 비율 안에서 — 한 화면은 한두 가지.
+- 부모가 폭을 정한다.
 
 ### ❌ Don't
 
-- 부모 width 없이 단독 사용 — `width:0`으로 collapse. 부모 `max-w-*` 또는 grid cell 필수.
-- AspectRatio 자체에 padding — children이 `inset:0`로 박스 채움. padding은 자식 안에서.
-- 비표준 비율 남발 — 페이지 안 비율 종류 많으면 시각 위계 깨짐. 페이지당 1–2 비율로 통일.
-- 이미지 fit 미지정 — `object-cover` 또는 `object-contain` 명시. 미지정 시 stretch.
+- 사진 · 카드 그림을 Aspect Ratio 로 — 모서리 · 윤곽 · 대체 그림이 빠진다(Image Frame 이다).
+- 상자에 모서리 · 바탕 · 테두리를 손으로 두르기.
+- 3:4 · 21:9 · 임의의 숫자 비율.
+
+## Specification
+
+`aspect-ratio.yaml` 의 규칙을 하나도 빼지 않고 조건마다 그린다 — 웹 · 앱이 Aspect Ratio 를 만들 때 이 값을 그대로 쓴다. 조건이 없는 `Base` 가 모든 조합에 걸리고, 뒤의 규칙이 앞의 같은 값을 덮는다.
+
+[그림: Specification — aspect-ratio.yaml 의 규칙 전부](../../site/components/specs/spec-sheet.tsx#aspect-ratio)
+
+## SEED 와 다른 점
+
+- **비율을 여덟 가지로 묶는다** — SEED React 는 아무 숫자나 받는다(Figma 의 Image Frame 은 일곱 가지다). porest 는 그 일곱에 카드 1.586 을 더해 Image Frame 과 같은 여덟 가지만 쓴다.
+- **그림에는 쓰지 않는다** — SEED 도 그림은 Image Frame 이지만 Aspect Ratio 예제에 `<img>` 를 넣는다. porest 는 그림을 모두 Image Frame 으로 그린다.
 
 ## Migration notes
 
-- 기존 `aspect-ratio.tsx`는 Radix Primitive 그대로 export — 스타일 0. 변경 없음(이미 SoT).
-- preview-html에 별도 `.ar-*` CSS 없음 — site preview/component page에서 직접 렌더. preview-html 안 `.hero-card-art` (Hero 카드 아트 박스)가 같은 비율 패턴(`aspect-ratio:16/9` 등) 사용.
-- examples mjs `Card with image` 시나리오 — 기존 `border: 1px solid var(--color-border-default)` 외곽 + `border-radius: var(--radius-lg)` 패턴이 [`Card`](card.md) spec(border 제거, shadow-only)과 어긋남. **card.md SoT 정합으로 정정** — border 제거 유지하되, `box-shadow: var(--shadow-sm)`만으로 elevation.
+### 2026-10-04 — SEED Aspect Ratio 로 다시 쓴다
+
+사용자가 [이미지 비교 페이지](https://claude.ai/artifact/G351nuKcYX2xhorvA5UD6X)의 "따라오는 것" 에서 정했다 — 비율은 SEED 일곱 + 카드 1.586, 기본 4:3, 3:4 · 21:9 는 걷는다. 그림은 새로 둔 [Image Frame](image-frame.md) 이 맡는다. 옛 스펙(Radix `AspectRatio` · 권장 비율 여섯 · 자식이 모서리 `radius-md` · 바탕 `surface-input` · `object-fit` 을 정함)은 `aspect-ratio.history/v-pre-seed-image.*` 다.
+
+| 옛 | 새 |
+|---|---|
+| 권장 16:9 · 4:3 · 1:1 · 3:4 · 21:9 · 2:1, 숫자 자유 | 1:1 · 2:1 · 16:9 · 4:3 · 6:7 · 4:5 · 2:3 · 카드 1.586, 기본 4:3 |
+| 이미지 · 카드 썸네일 · 아바타 격자의 비율 | 그림은 Image Frame, 사람은 Avatar — 이 부품은 그림이 아닌 자리만 |
+| 자식이 모서리 8 · 바탕 · fit 을 정함 | 상자는 모서리 0 · 바탕 없음, 동영상은 cover |
+
+제품은 앱 적용 단계에서 옮긴다(2026-10-03 조사).
+
+- **porest 의 이 부품을 쓰는 곳이 없다** — Desk 웹은 CSS `aspect-ratio` 를 손으로 쓴다(카드 그림 틀 `pages/card-benefit/ui/CardBenefitPage.tsx:191-226` · `CardBenefitDetailDialog.tsx:92-101`, 스켈레톤 셋, 통계의 정사각 `pages/stats/ui/StatsPage.tsx:1790`). 앱은 Flutter `AspectRatio` 를 여덟 곳에 쓴다 — 카드 그림(`features/card/presentation/card_benefit_detail_sheet.dart:308 · 625` · 진입 없는 `card_detail_screen.dart:64 · 261`), 별숲 그림(`features/constellation/presentation/my_sky_card.dart:145` · `night_sky_hero.dart:119`), 통계(`features/stats/presentation/stats_screen.dart:926 · 1709`). 카드 그림은 Image Frame 으로, 그림이 아닌 별숲 · 통계 자리는 이 부품의 여덟 비율로 옮긴다.
+- 옛 스펙의 "기존 `aspect-ratio.tsx` 는 Radix 그대로" 는 레시피 이야기였다 — 제품에는 그 부품이 없었다.

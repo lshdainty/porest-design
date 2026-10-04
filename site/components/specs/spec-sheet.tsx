@@ -83,6 +83,20 @@ function ScalarValue({ raw, omitWeight = false }: { raw: unknown; omitWeight?: b
       </span>
     );
   }
+  // 딤(prose 표 토큰 — overlay-dim-light · -dark). 모드를 따르지 않는 값이라 이름 · 견본 · 값 하나(Image Frame 의 Indicator 바탕)
+  const ov = /^\$(overlay-[a-z0-9-]+)$/.exec(v);
+  if (ov) {
+    const value = proseValue(ov[1]);
+    return (
+      <span className="flex flex-col gap-1">
+        <code className="text-[12.5px] text-fd-foreground">{ov[1]}</code>
+        <span className="flex items-center gap-1.5 text-[12px] tabular-nums text-fd-muted-foreground">
+          <Chip hex={value} />
+          {value}
+        </span>
+      </span>
+    );
+  }
   const m = /^\$(spacing|radius|text|font|motion|shadow)-(.+)$/.exec(v);
   if (m) {
     const front = design().front;

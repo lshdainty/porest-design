@@ -51,11 +51,11 @@ horizontal multi-item (basis-1/3):
 
 Carousel은 **size variant 없음** — 사용처 className으로 width/height 결정. 화살표 크기는 `xsmall`(32) 기본, 사용처가 `size` 로 [`Button`](button.md) `medium`(40) · `large`(48) 를 줄 수 있다.
 
-[표: 공통 크기](carousel.yaml#base.default)
+[표: 공통 크기](v-pre-seed-image.yaml#base.default)
 
-[표: 방향별 간격·화살표 위치](carousel.yaml#orientation)
+[표: 방향별 간격·화살표 위치](v-pre-seed-image.yaml#orientation)
 
-[표: 슬라이드 너비](carousel.yaml#items)
+[표: 슬라이드 너비](v-pre-seed-image.yaml#items)
 
 ## States
 

@@ -6,7 +6,8 @@ import { ImageOff } from 'lucide-react';
 import { contrast } from '@/lib/design-tokens';
 import { Figure, Panel, MARK, MARK_LINE } from '../foundations/ui';
 import { Verdict, rc, type Mode } from './kit';
-import { PlaceholderCardDemo } from './loading-demos';
+import { FrameCardDemo, type CardRow } from './image-demos';
+import { dcv, findInstitution, imageFrameLook, imageFrameRadius, imageTones, institutions } from './image-look';
 import { CP_GLYPHS, glyphSize, type CpGlyph } from './loading-look';
 import { PlaceholderPlayground } from './loading-playground';
 import { Bone, CardBox, L, LdPhone, Placeholder, SCREEN, type Fig } from './loading-screens';
@@ -21,11 +22,15 @@ const pin = (n: string, style: CSSProperties) => (
     <Pin n={n} />
   </span>
 );
-// 틀 — 크기 · 비율 · 모서리는 틀이 정한다(대체 그림은 제 모서리가 없다)
-function Frame({ w, h, r = L().skeleton.radius['8'], children, style }: { w: number; h: number; r?: number; children: ReactNode; style?: CSSProperties }) {
+// 틀 — 크기 · 비율 · 모서리는 틀이 정한다(대체 그림은 제 모서리가 없다). 그림 틀은 Image Frame 이라 모서리는 폭으로(24 이하 4 · 48 이하 6 · 그 위 8 ·
+// 화면 폭 0 — image-frame.yaml), 안쪽 1px 투명 윤곽을 대체 그림 위에도 늘 그린다. r 은 나쁜 예(손으로 고른 모서리), stroke=false 는 Anatomy · 나쁜 예
+function Frame({ w, h, r, bleed = false, stroke = true, mode = 'auto', children, style }: { w: number; h: number; r?: number; bleed?: boolean; stroke?: boolean; mode?: Mode; children: ReactNode; style?: CSSProperties }) {
+  const f = imageFrameLook();
+  const rad = r ?? f.radius[imageFrameRadius(w, f.bands, bleed)].px;
   return (
-    <div className="relative shrink-0 overflow-hidden" style={{ width: w, height: h, borderRadius: r, ...style }}>
+    <div className="relative shrink-0 overflow-hidden" style={{ width: w, height: h, borderRadius: rad, isolation: 'isolate', ...style }}>
       {children}
+      {stroke && <span aria-hidden style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, zIndex: 2, borderRadius: 'inherit', boxShadow: `inset 0 0 0 ${f.stroke.width}px ${dcv(f.stroke.color, mode)}`, pointerEvents: 'none' }} />}
     </div>
   );
 }
@@ -34,20 +39,21 @@ const CardArt = ({ hue = '#2F3A57' }: { hue?: string }) => <span aria-hidden cla
 const GiftArt = () => <span aria-hidden className="block h-full w-full" style={{ background: 'linear-gradient(150deg, #F4B860 0%, #E5793B 100%)' }} />;
 
 // ── Overview ──────────────────────────────────────────────
+// 카드 목록 — 그림이 없는 줄은 모르는 카드사(BC)다. 아는 카드사의 그림 없는 카드는 이 그림이 아니라 카드 면이다(image-frame.md 카드 그림)
 function CardList({ mode }: { mode: Mode }) {
   const w = 96;
   const h = Math.round(w / CARD_RATIO);
   const rows: [string, string, 'none' | 'ok'][] = [
-    ['현대카드 M', '10월 352,400원', 'none'],
+    ['BC 바로 카드', '10월 352,400원', 'none'],
     ['신한카드 Deep', '10월 128,000원', 'ok'],
-    ['국민 체크카드', '10월 64,500원', 'none'],
+    ['BC 그린 카드', '10월 64,500원', 'none'],
   ];
   return (
     <div className="px-4 pt-1">
       <CardBox mode={mode} title="카드">
         {rows.map(([name, sub, img]) => (
           <div key={name} className="flex items-center gap-4" style={{ padding: '12px 24px' }}>
-            <Frame w={w} h={h}>{img === 'ok' ? <CardArt /> : <Placeholder mode={mode} icon="credit-card" label={`${name} 카드 그림`} w={w} h={h} />}</Frame>
+            <Frame w={w} h={h} mode={mode}>{img === 'ok' ? <CardArt /> : <Placeholder mode={mode} icon="credit-card" label={`${name} 카드 그림`} w={w} h={h} />}</Frame>
             <span className="flex flex-col gap-0.5">
               <span className="text-[16px] font-medium" style={{ color: rc('fg-neutral', mode) }}>
                 {name}
@@ -74,7 +80,7 @@ function BenefitList({ mode }: { mode: Mode }) {
       <CardBox mode={mode} title="받을 수 있는 혜택">
         {rows.map(([name, sub, img]) => (
           <div key={name} className="flex items-center gap-4" style={{ padding: '12px 24px' }}>
-            <Frame w={s} h={s} r={L().skeleton.radius['16']}>{img === 'ok' ? <GiftArt /> : <Placeholder mode={mode} label={`${name} 그림`} w={s} h={s} />}</Frame>
+            <Frame w={s} h={s} mode={mode}>{img === 'ok' ? <GiftArt /> : <Placeholder mode={mode} label={`${name} 그림`} w={s} h={s} />}</Frame>
             <span className="flex flex-col gap-0.5">
               <span className="text-[16px] font-medium" style={{ color: rc('fg-neutral', mode) }}>
                 {name}
@@ -99,7 +105,7 @@ function Attachment({ mode }: { mode: Mode }) {
   ];
   return (
     <div className="flex flex-col" style={{ background: rc('bg-layer-default', mode) }}>
-      <Frame w={w} h={h} r={0}>
+      <Frame w={w} h={h} bleed mode={mode}>
         <Placeholder mode={mode} icon="receipt" label="점심 식사 영수증 사진" w={w} h={h} />
       </Frame>
       <div style={{ padding: '8px 0' }}>
@@ -137,7 +143,11 @@ const Hero: Fig = ({ caption }) => (
   </Figure>
 );
 
-const Playground: Fig = () => <PlaceholderPlayground kit={L()} screen={SCREEN()} />;
+const Playground: Fig = () => {
+  const f = imageFrameLook();
+  const cls = (r: '4' | '6' | '8') => `rounded-${f.radius[r].token.replace(/^radius-/, '')}`;
+  return <PlaceholderPlayground kit={L()} screen={SCREEN()} radii={{ r4: f.bands.r4, r6: f.bands.r6, px: { s: f.radius['4'].px, m: f.radius['6'].px, l: f.radius['8'].px }, cls: { s: cls('4'), m: cls('6'), l: cls('8') } }} />;
+};
 
 // ── Anatomy ───────────────────────────────────────────────
 const Anatomy: Fig = ({ caption }) => {
@@ -149,7 +159,7 @@ const Anatomy: Fig = ({ caption }) => {
       <div className="flex flex-col items-center gap-6">
         <div className="rounded-2xl p-10 pk-surface">
           <div className="relative">
-            <Frame w={w} h={h} style={{ outline: `1px dashed ${MARK_LINE}`, outlineOffset: 3 }}>
+            <Frame w={w} h={h} stroke={false} style={{ outline: `1px dashed ${MARK_LINE}`, outlineOffset: 3 }}>
               <Placeholder icon="receipt" label="영수증 사진" w={w} h={h} />
             </Frame>
             <span aria-hidden className="absolute" style={{ left: (w - g) / 2, top: (h - g) / 2, width: g, height: g, outline: `1px dashed ${MARK_LINE}`, background: MARK }} />
@@ -170,24 +180,24 @@ const Anatomy: Fig = ({ caption }) => {
 
 // ── Properties ────────────────────────────────────────────
 // 크기 — 그림은 틀 높이의 50%(16 ~ 160), 틀 폭이 좁으면 폭
-const SIZES: [string, number, number, number, string][] = [
-  ['40 썸네일', 40, 40, 1, ''],
-  ['카드 그림 120', Math.round(120 * CARD_RATIO), 120, 1, ''],
-  ['화면 폭 4:3 사진', 360, 270, 0.6, '(60% 로 줄여 그렸다)'],
-  ['좁고 긴 틀', 48, 200, 1, '— 폭이 좁아 폭에 맞춘다'],
+const SIZES: [string, number, number, number, string, boolean][] = [
+  ['40 썸네일', 40, 40, 1, '', false],
+  ['카드 그림 120', Math.round(120 * CARD_RATIO), 120, 1, '', false],
+  ['화면 폭 4:3 사진', 360, 270, 0.6, '(60% 로 줄여 그렸다)', true],
+  ['좁고 긴 틀', 48, 200, 1, '— 폭이 좁아 폭에 맞춘다', false],
 ];
 const Sizes: Fig = ({ caption }) => {
   const g = cp().glyph;
   return (
     <Figure caption={caption}>
       <div className="grid grid-cols-2 items-end gap-x-6 gap-y-8 rounded-2xl px-8 py-8 pk-surface">
-        {SIZES.map(([t, w, h, s, extra]) => {
+        {SIZES.map(([t, w, h, s, extra, bleed]) => {
           const size = glyphSize(g, w, h);
           return (
             <div key={t} className="flex w-[240px] flex-col items-center gap-3">
               <div className="relative" style={{ width: w * s, height: h * s }}>
                 <div style={{ width: w, height: h, transform: s === 1 ? undefined : `scale(${s})`, transformOrigin: 'top left' }}>
-                  <Frame w={w} h={h} r={w <= 48 ? L().skeleton.radius['8'] : L().skeleton.radius['16']}>
+                  <Frame w={w} h={h} bleed={bleed}>
                     <Placeholder w={w} h={h} />
                   </Frame>
                 </div>
@@ -199,7 +209,7 @@ const Sizes: Fig = ({ caption }) => {
               </div>
               <span className="flex flex-col items-center gap-0.5 text-center text-[12px] leading-4 pk-muted">
                 <b className="text-[13px] pk-text">{t}</b>
-                {w} × {h} → 그림 {Math.round(size)} {extra}
+                {w} × {h} → 그림 {Math.round(size)} · 모서리 {imageFrameLook().radius[imageFrameRadius(w, imageFrameLook().bands, bleed)].px} {extra}
               </span>
             </div>
           );
@@ -220,7 +230,7 @@ const Colors: Fig = ({ caption }) => {
       <div className="flex flex-wrap justify-center gap-4">
         {(['light', 'dark'] as const).map((m) => (
           <div key={m} className="flex flex-col items-center gap-3 rounded-2xl px-8 py-6" style={{ background: rc('bg-layer-default', m) }}>
-            <Frame w={200} h={150}>
+            <Frame w={200} h={150} mode={m}>
               <Placeholder mode={m} icon="image" w={200} h={150} />
             </Frame>
             <span className="text-center text-[12px] leading-5 tabular-nums" style={{ color: rc('fg-neutral-subtle', m) }}>
@@ -243,7 +253,7 @@ const Glyphs: Fig = ({ caption }) => (
     <div className="flex flex-wrap justify-center gap-4 rounded-2xl px-8 py-7 pk-surface">
       {CP_GLYPHS.map((g) => (
         <div key={g} className="flex flex-col items-center gap-2">
-          <Frame w={120} h={120} r={L().skeleton.radius['16']}>
+          <Frame w={120} h={120}>
             <Placeholder icon={g} w={120} h={120} />
           </Frame>
           <span className="flex flex-col items-center text-center text-[12px] leading-4 pk-muted">
@@ -277,14 +287,14 @@ const LoadingGuide: Fig = ({ caption }) => {
       <Pair>
         <Verdict ok note="불러오는 동안은 같은 모서리 · 같은 크기의 스켈레톤, 다 불러왔는데 없거나 실패하면 대체 그림" bg={BASEMENT}>
           <div className="w-[290px] rounded-2xl px-6 py-3 pk-surface">
-            {row('현대카드 M', '불러오는 중', <Bone radius="8" width="100%" height="100%" />)}
-            {row('국민 체크카드', '불러오지 못함', <Placeholder icon="credit-card" label="국민 체크카드 카드 그림" w={w} h={h} />)}
+            {row('BC 바로 카드', '불러오는 중', <Bone radius={imageFrameRadius(w, imageFrameLook().bands)} width="100%" height="100%" />)}
+            {row('BC 그린 카드', '불러오지 못함', <Placeholder icon="credit-card" label="BC 그린 카드 카드 그림" w={w} h={h} />)}
           </div>
         </Verdict>
         <Verdict ok={false} note="불러오는 중과 실패가 같은 그림 — 기다려야 하는지 알 수 없다" bg={BASEMENT}>
           <div className="w-[290px] rounded-2xl px-6 py-3 pk-surface">
-            {row('현대카드 M', '불러오는 중', <Placeholder icon="credit-card" w={w} h={h} />)}
-            {row('국민 체크카드', '불러오지 못함', <Placeholder icon="credit-card" w={w} h={h} />)}
+            {row('BC 바로 카드', '불러오는 중', <Placeholder icon="credit-card" w={w} h={h} />)}
+            {row('BC 그린 카드', '불러오지 못함', <Placeholder icon="credit-card" w={w} h={h} />)}
           </div>
         </Verdict>
       </Pair>
@@ -309,7 +319,7 @@ const BrokenGuide: Fig = ({ caption }) => {
           <div className="rounded-2xl px-6 py-5 pk-surface">
             {cell(
               <Frame w={w} h={h}>
-                <Placeholder icon="credit-card" label="현대카드 M 카드 그림" w={w} h={h} />
+                <Placeholder icon="credit-card" label="BC 바로 카드 카드 그림" w={w} h={h} />
               </Frame>,
               '대체 그림',
             )}
@@ -318,15 +328,15 @@ const BrokenGuide: Fig = ({ caption }) => {
         <Verdict ok={false} note="브라우저의 깨진 이미지 아이콘과 대체 글이 그대로 · 투명한 빈 칸 · 다른 곳의 기본 그림(외부 주소)" bg={BASEMENT}>
           <div className="flex gap-4 rounded-2xl px-5 py-5 pk-surface">
             {cell(
-              <Frame w={w} h={h} r={0}>
+              <Frame w={w} h={h} r={0} stroke={false}>
                 <span className="flex items-start gap-1 p-1 text-[11px] leading-4" style={{ color: rc('fg-neutral-muted') }}>
                   <ImageOff aria-hidden size={14} strokeWidth={1.5} className="shrink-0" />
-                  현대카드 M 카드 그림
+                  BC 바로 카드 카드 그림
                 </span>
               </Frame>,
               '깨진 이미지 + 대체 글',
             )}
-            {cell(<Frame w={w} h={h} style={{ outline: `1px dashed ${MARK_LINE}`, outlineOffset: -1 }}>{null}</Frame>, '투명한 빈 칸(점선은 그림 표시)')}
+            {cell(<Frame w={w} h={h} stroke={false} style={{ outline: `1px dashed ${MARK_LINE}`, outlineOffset: -1 }}>{null}</Frame>, '투명한 빈 칸(점선은 그림 표시)')}
           </div>
         </Verdict>
       </Pair>
@@ -335,7 +345,26 @@ const BrokenGuide: Fig = ({ caption }) => {
 };
 
 // ── 코드 미리보기 ─────────────────────────────────────────
-const ExBasic: Fig = () => <PlaceholderCardDemo kit={L()} screen={SCREEN()} />;
+// 코드 그대로 — <ImageFrame ratio="card" width={112} … fallbackIcon={<CreditCard />} />. 카드사는 기관 색 표에 없는 BC 로 둔다
+// (아는 카드사의 그림 없는 카드는 CardArt 의 카드 면이라 이 그림이 아니다 — image-frame.md 카드 그림)
+const EX_CARDS: CardRow[] = [
+  { name: 'BC 바로 카드', image: 'none' },
+  { name: 'BC 그린 카드', image: 'broken', pic: 'card-h2' },
+  { name: 'BC 데일리 카드', image: 'ok', pic: 'card-h' },
+];
+const ExBasic: Fig = () => {
+  for (const c of EX_CARDS) if (findInstitution(c.name, institutions())) throw new Error(`content-placeholder ex-basic 의 ${c.name} 이 기관 색 표에 있다 — 표에 없는 카드사로 둔다`);
+  const t = imageTones();
+  return (
+    <figure className="not-prose mb-0 mt-6">
+      <div className="flex min-h-[110px] items-center justify-center rounded-t-xl border border-b-0 border-fd-border px-2 py-6" style={{ background: rc('bg-layer-basement') }}>
+        <div className="w-full max-w-[400px]">
+          <FrameCardDemo look={imageFrameLook()} rows={EX_CARDS} sub={{ title: t['fg-neutral'], detail: t['fg-neutral-subtle'], surface: t['bg-layer-default'] }} />
+        </div>
+      </div>
+    </figure>
+  );
+};
 
 export const contentPlaceholderFigures: Record<string, Fig> = {
   hero: Hero,

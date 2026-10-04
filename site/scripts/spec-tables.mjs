@@ -179,6 +179,15 @@ export const PROP_LABEL = {
   placement: '흐리는 쪽',
   fog: '끝 흐림',
   strokeWidth: '선 굵기',
+  // 이미지 묶음(2026-10-04) — Image Frame · 카드 그림 · Logo Tile · Aspect Ratio
+  overflow: '넘침',
+  loading: '받기',
+  display: '보이기',
+  shimmer: '반짝임',
+  glyphSize: '그림 크기',
+  glyphColor: '그림 색',
+  lineClamp: '줄 수',
+  inset: '자리',
 };
 export const PROP_ORDER = Object.keys(PROP_LABEL);
 
@@ -233,6 +242,58 @@ export const PROP_LABEL_BY_COMPONENT = {
   },
   // 배지 묶음의 사이
   Badge: { 'root.gap': '앞 아이콘과 글 사이', 'group.gap': '배지 사이' },
+  // 틀 · 그림 · 윤곽 · 그림 위 자리 · 불러오는 동안 · 대체 그림 — 부위 이름까지 한국어로
+  ImageFrame: {
+    'image.width': '그림 너비',
+    'image.height': '그림 높이',
+    'image.objectFit': '그림 맞춤',
+    'image.loading': '그림 받기',
+    'image.opacity': '그림 불투명도',
+    'image.display': '그림 보이기',
+    'image.rotate': '그림 회전',
+    'plate.background': '판 배경',
+    'stroke.borderWidth': '윤곽 두께',
+    'stroke.borderColor': '윤곽 색',
+    'floater.offset': '가장자리와 거리',
+    'skeleton.background': '스켈레톤 면',
+    'skeleton.shimmer': '스켈레톤 반짝임',
+    'fallback.background': '대체 그림 면',
+    'fallback.glyphSize': '대체 그림 크기',
+    'fallback.glyphColor': '대체 그림 색',
+  },
+  // 카드 면 — 회사 이름 · 카드 이름 · 작은 면의 첫 글자
+  CardArt: {
+    'face.background': '면 배경',
+    'face.foreground': '면 글자색',
+    'face.paddingX': '면 좌우 여백',
+    'face.paddingBottom': '면 아래 여백',
+    'issuer.typography': '회사 이름 글자',
+    'issuer.fontWeight': '회사 이름 굵기',
+    'issuer.overflowX': '회사 이름 넘칠 때',
+    'name.typography': '카드 이름 글자',
+    'name.fontWeight': '카드 이름 굵기',
+    'name.lineClamp': '카드 이름 줄 수',
+    'initial.fontSize': '첫 글자 크기',
+    'initial.fontWeight': '첫 글자 굵기',
+    'initial.lineHeight': '첫 글자 줄 높이',
+    'initial.textTransform': '첫 글자 대소문자',
+  },
+  // 타일 · 첫 글자 · 그림 판 · 윤곽
+  LogoTile: {
+    'initial.fontSize': '첫 글자 크기',
+    'initial.fontWeight': '첫 글자 굵기',
+    'initial.lineHeight': '첫 글자 줄 높이',
+    'initial.textTransform': '첫 글자 대소문자',
+    'initial.foreground': '첫 글자 색',
+    'plate.padding': '판 여백',
+    'plate.background': '판 배경',
+    'stroke.borderWidth': '윤곽 두께',
+    'stroke.borderColor': '윤곽 색',
+    'image.objectFit': '그림 맞춤',
+    'image.radius': '그림 모서리',
+  },
+  // 비율 상자의 자식 하나
+  AspectRatio: { 'child.inset': '자식 자리', 'child.objectFit': '자식 맞춤' },
 };
 // `부위.속성` 의 이름표 — 컴포넌트 것 → 공용 `부위.속성` → 공용 속성 → 키 그대로
 export function propLabelFor(name, slot, prop) {

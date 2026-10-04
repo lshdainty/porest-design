@@ -457,6 +457,10 @@ colors:
   # v113 — 고른 선택 상자(Select Box)의 짙은 테두리(SEED stroke.neutral-contrast = gray-1000)
   stroke-neutral-contrast: "{colors.gray-1000}"
   stroke-neutral-contrast-dark: "{colors.gray-1000-dark}"
+  # v118 — 이미지 위 안쪽 1px 윤곽(Image Frame · Avatar · Logo Tile). SEED stroke.neutral-subtle 의 값 그대로 — 검정 4.7% · 다크 흰 5%.
+  # 투명도가 있는 색이라 팔레트 단계가 없다(static-white 처럼 값을 바로 적는다). 구분선 stroke-neutral-subtle 은 불투명 그대로다(사용자 결정 2026-10-04 이미지 비교 1A)
+  stroke-neutral-overlay: "#0000000C"
+  stroke-neutral-overlay-dark: "#FFFFFF0D"
   stroke-critical-solid: "{colors.red-700}"
   stroke-critical-solid-dark: "{colors.red-800-dark}"
   stroke-positive-solid: "{colors.green-700}"
@@ -1207,6 +1211,11 @@ components:
     backgroundColor: "{colors.stroke-neutral-contrast}"
   role-stroke-neutral-contrast-dark:
     backgroundColor: "{colors.stroke-neutral-contrast-dark}"
+  # v118 — 이미지 위 투명 윤곽
+  role-stroke-neutral-overlay-light:
+    backgroundColor: "{colors.stroke-neutral-overlay}"
+  role-stroke-neutral-overlay-dark:
+    backgroundColor: "{colors.stroke-neutral-overlay-dark}"
   role-stroke-critical-solid-light:
     backgroundColor: "{colors.stroke-critical-solid}"
   role-stroke-critical-solid-dark:
@@ -1780,6 +1789,7 @@ v108 로 크게 바뀐 색을 지금 제품 값(Desk 웹 `porest-tokens.css` · 
 | `stroke-neutral-weak` | gray-400 | gray-400 | — |
 | `stroke-neutral-solid` | gray-600 | gray-600 | gray-800 / gray-800 (v109) |
 | `stroke-neutral-contrast` | gray-1000 | gray-1000 | — (v113) |
+| `stroke-neutral-overlay` | 검정 4.7%(`#0000000C`) | 흰 5%(`#FFFFFF0D`) | — (v118 — SEED stroke.neutral-subtle 의 값. 투명도가 있어 팔레트 단계가 아니다) |
 
 의미 색은 네 역할이 같은 단계를 쓴다 — critical → red · positive → green · warning → orange · informative → blue.
 
@@ -1814,6 +1824,7 @@ SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채�
 - fg-placeholder — SEED 600 → 700. 600 은 입력칸(bg-neutral-weak) 위에서 3.87:1(다크 3.18:1)이다.
 - 의미 색 글자 · 선(fg-* · stroke-*-solid)의 다크 — SEED 700 → 800. 다크 700 은 어두운 표면 위 2.9:1 안팎이다 — 흰 글자를 얹는 채움 눌림 자리라 어두워야 한다.
 - stroke-neutral-subtle — SEED 는 투명도 있는 검정 · 흰색이다. 검사기가 8자리 hex 를 받지 않아 gray-300 에 둔다.
+- (v118) stroke-neutral-overlay — SEED stroke.neutral-subtle 의 투명한 값(검정 4.7% · 흰 5%)을 이미지 · 아바타 · 로고 타일 위 1px 윤곽에만 쓰는 역할로 따로 둔다. porest 의 stroke-neutral-subtle 은 구분선 · 목록 선이라 불투명 그대로다 — 같은 이름에 두 값을 둘 수 없어 이름을 나눴다. 이름의 overlay 는 "내용 위에 얹는"(SEED bg.overlay 와 같은 뜻)이다 — 굵기 단계(subtle · weak · solid · contrast)가 아니라 자리를 말한다. 불투명한 선을 그림 둘레에 그리면 어두운 사진 · 카드 둘레에 옅은 테가 생긴다(사용자 결정 2026-10-04 이미지 비교 1A). 검사기(`@google/design.md`)를 0.4 로 올려 8자리 hex 를 받는다 — 위 줄의 "받지 않아" 는 0.1 때 이유다.
 - warning — SEED 의 주의 색은 노랑이고 채움 위 글자가 검정이다. porest 는 주황 + 흰 글자를 그대로 두고, 단계는 다른 의미 색과 같은 규칙으로 앉혔다.
 - bg-positive-solid 의 다크 — SEED 는 500(눌림 600)이다. 다른 의미 색과 맞춰 600(눌림 700)에 둔다.
 - 브랜드 채움의 다크 — Desk 는 브랜드 색이 어두워(L* 33) 채움을 지금 값(#0147AD)과 같은 무게인 500 에 둔다(ΔE 1.4). 눌림은 SEED 의 800 이 흰 글자 3.76:1 이라 700 이다. HR 은 채움이 SEED 대로 700 이고, 눌림은 800 이 흰 글자 3.61:1 이라 600(더 어둡게)이다.
@@ -1909,6 +1920,7 @@ SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채�
 | `stroke-neutral-weak` | `#E5E8EF` | `#404757` | border-default | border-default |
 | `stroke-neutral-solid` | `#767C8B` | `#838997` | border-strong | border-strong |
 | `stroke-neutral-contrast` | `#1A1F2E` | `#F5F6FA` | — | — |
+| `stroke-neutral-overlay` | `#0000000C` | `#FFFFFF0D` | — | — |
 | `stroke-critical-solid` | `#D72323` | `#FF8477` | error | status-danger-border |
 | `stroke-positive-solid` | `#167F3F` | `#25C062` | success | status-success-border |
 | `stroke-warning-solid` | `#BE490D` | `#FF8758` | warning | status-warning-border |
@@ -1938,9 +1950,9 @@ v102 때의 규칙이다. v108 부터 값은 팔레트 단계에서 온다 — �
 porest 화면에 아직 쓰는 자리가 없다. 자리가 생기면 위 규칙으로 더한다.
 
 - bg.neutral-solid — 짙은 회색 채움(bg.neutral-inverted-pressed 는 v112 에 Button 의 누름으로 들였다)
-- bg.neutral-weak-alpha · bg.transparent-*(4) — 투명도 있는 배경. 필요하면 overlay 처럼 표 토큰으로 따로 둔다
+- bg.neutral-weak-alpha · bg.transparent-*(4) — 투명도 있는 배경. 필요하면 v118 의 stroke-neutral-overlay 처럼 역할 색으로 둔다(검사기 0.4 부터 8자리 hex 를 받는다)
 - bg.overlay · bg.overlay-muted — Elevation 의 overlay-dim 이 같은 자리다
-- stroke.neutral-muted — 구분선은 stroke-neutral-subtle 하나로 그린다(Divider 2026-10-03 — SEED 기본 neutral-muted 와 같은 진하기 1.15). stroke.neutral-contrast 는 v113 에 Select Box 의 고른 테두리로, stroke.*-weak(4)는 v117 에 Badge outline 의 옅은 테두리로 들였다
+- stroke.neutral-muted — 구분선은 stroke-neutral-subtle 하나로 그린다(Divider 2026-10-03 — SEED 기본 neutral-muted 와 같은 진하기 1.15). stroke.neutral-contrast 는 v113 에 Select Box 의 고른 테두리로, stroke.*-weak(4)는 v117 에 Badge outline 의 옅은 테두리로, stroke.neutral-subtle 의 투명한 값은 v118 에 이미지 위 윤곽(stroke-neutral-overlay)으로 들였다
 - bg.magic-weak · bg.layer-fill — 당근 AI 기능 전용 · SEED 에서도 없어질 이름
 
 ### v104 — 그라디언트 (2026-09-29)
@@ -3545,9 +3557,11 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 | `page-banner` | — | 0 | 화면 폭 띠, 모서리 없음 — 2026-10-02 SEED Page Banner(`page-banner.yaml`) |
 | `progress` (트랙 · 채움) | `full` | 9999px | 막대 8 — 2026-10-03(`progress.yaml`) |
 | `progress-circle` | — | — | 원(SVG) · 끝이 둥근 호 — 2026-10-03 SEED Progress Circle(`progress-circle.yaml`) |
-| `skeleton` | `r2` · `r4` · `full` · — | 8px · 16px · 9999px · 0 | 글 8(기본) · 카드 · 썸네일 16 · 아바타 full · 화면 폭 사진 0 — 2026-10-03 SEED Skeleton(`skeleton.yaml`) |
+| `skeleton` | `r1` · `r1_5` · `r2` · `r3` · `r4` · `full` · — | 4px · 6px · 8px · 12px · 16px · 9999px · 0 | 글 8(기본) · 그림 자리는 Image Frame 대로 4 · 6 · 8 · 타일 12 · 카드 면 16 · 아바타 full · 화면 폭 사진 0 — 2026-10-03 SEED Skeleton · 그림 자리 2026-10-04(`skeleton.yaml`) |
 | `content-placeholder` | — | 0 | 제 모서리 없음 — 담는 틀이 자른다. 2026-10-03 SEED Content Placeholder(`content-placeholder.yaml`) |
-| `aspect-ratio` / `carousel` slide | `md` | 8px | 이미지 컨테이너 |
+| `image-frame` | `r1` · `r1_5` · `r2` · — | 4px · 6px · 8px · 0 | 폭으로 — 24 이하 · 48 이하 · 그 위 · 화면 폭. 스켈레톤 · 대체 그림 · 카드 면도 같다 — 2026-10-04 SEED Image Frame(`image-frame.yaml` · `card-art.yaml`) |
+| `logo-tile` | `r2_5` · `r3` · `r3_5` | 10px · 12px · 14px | 32 · 40 · 48 — 크기 × 0.3(List 타일과 같다) — 2026-10-04(`logo-tile.yaml`) |
+| `aspect-ratio` | — | 0 | 비율 상자만 — 둥근 그림 틀은 Image Frame. 2026-10-04 SEED Aspect Ratio(`aspect-ratio.yaml`). Carousel 은 걷었다 |
 | divider(옛 `separator`) | — | — | 1px 선, 모서리 무관 — 2026-10-03 SEED Divider(`divider.yaml`) |
 | `scroll-area` / `resizable` | — | — | 부모 컨테이너에 따름 |
 | `scroll-fog` | — | — | 마스크(모양 없음) — 2026-10-03 SEED Scroll Fog(`scroll-fog.yaml`) |
@@ -4408,7 +4422,7 @@ binary on/off 상태 또는 group 선택을 표현하는 form control 3종. 공�
 
 - 구조: 목록(List) · 한 줄(List Item) · 목록 제목(List Header) · 줄 사이 선(ListDivider) — SEED List(2026-10-01). 설정 · 메뉴 · 선택 · 키-값 줄과 거래 · 할 일 · 알림 같은 내용 줄을 모두 List 로 그린다. RadioList 는 걷었다 — 하나 고르기는 오른쪽 라디오 줄(`ListRadioItem`).
 - 한 줄: 위아래 `spacing-x3` (12) · 좌우 `spacing-global-gutter` (24) · 제목 `t5` 16 · 400 `fg-neutral` · 설명 `t3` 13 `fg-neutral-subtle`(제목 아래 2) — 한 줄 46 · 두 줄 66.
-- 앞: 설정 · 메뉴 줄은 아이콘 22(`fg-neutral`), 색이 뜻을 가진 내용 줄은 타일 40(모서리 `radius-r3` 12 · `chart-{색}-weak` 바탕 · 아이콘 20). 체크 · 라디오는 24, 스위치는 32.
+- 앞: 설정 · 메뉴 줄은 아이콘 22(`fg-neutral`), 색이 뜻을 가진 내용 줄은 타일 40(모서리 `radius-r3` 12 · `chart-{색}-weak` 바탕 · 아이콘 20 — 아이콘이 없으면 태그 아이콘, 이체 줄은 회색). 은행 · 카드 같은 물건 줄은 로고 타일 40(Logo Tile), 카드 혜택 줄은 카드 그림 56(Image Frame). 체크 · 라디오는 24, 스위치는 32.
 - 뒤: 값 글자(`t5` · `fg-neutral-subtle`) · 오른쪽 화살표 18(화면을 옮기는 줄에만) · 컨트롤 · 작은 버튼.
 - 누름 · 호버(웹): 바탕 층이 좌우 6 들어와 모서리 10 의 `bg-layer-default-pressed` 가 되고, 콘텐츠 층만 2px 거리로 준다(v104). 끼운 컨트롤은 따로 줄지 않는다. 포커스 링은 줄 안쪽 2px.
 - 강조: 바탕만 옅은 브랜드 색(브랜드 파일의 brand-weak 역할 색 — 누름 · 호버는 한 단계 짙은 짝, 그동안 설명 · 값 글자는 `fg-neutral-muted` 로 4.5:1 을 지킨다).
@@ -4436,11 +4450,11 @@ binary on/off 상태 또는 group 선택을 표현하는 form control 3종. 공�
 | | Avatar | Avatar Stack |
 |---|---|---|
 | 크기 | 20 · 24 · 36 · 42 · 48 · 56 · 64 · 80 · 96 · 108 — 자리마다 대표 크기(한 줄 목록 36 · 두 줄 목록 42 · 줄 안 묶음 24 · Desk 계정 머리 80 · HR 큰 사진 96 · 프로필 수정 108) | 같은 10단계 — 묶음이 정하고 안의 아바타가 모두 따른다 |
-| 모양 | 원 하나 · 1px 안쪽 `stroke-neutral-subtle`(모든 크기) | 지름 1/4 겹침(−5 ~ −27) · 놓인 바탕색 링 1 ~ 5(`bg-layer-default`, 시트 안은 `bg-layer-floating`) · 뒤가 위 |
+| 모양 | 원 하나 · 1px 안쪽 `stroke-neutral-overlay`(투명 — v118, 모든 크기) | 지름 1/4 겹침(−5 ~ −27) · 놓인 바탕색 링 1 ~ 5(`bg-layer-default`, 시트 안은 `bg-layer-floating`) · 뒤가 위 |
 | 사진이 없을 때 | 이니셜 + 이름 색 — 차트 10색(v110) 바탕, 글자 `fg-neutral-inverted` 700(지름의 40%, 가장 작아도 10) | 앞 4명 + "+N" 원(같은 크기 · `bg-neutral-weak` + `fg-neutral-muted` 700) |
 
 - **이니셜** = 표시 이름의 첫 글자 하나(로마자는 대문자 — "Kim Minsu" → "K"). **이름 색** = 표시 이름의 유니코드 코드 포인트 합 % 10 → blue · green · orange · violet · pink · indigo · red · yellow · brown · gray(v110 순서) — 웹 · 앱이 같다("김민수" → blue · "이서연" → brown · "Kim Minsu" → indigo). 대비 라이트 4.55 ~ 5.50 · 다크 6.07 ~ 7.70:1 — 다크에서 흰 글자는 2.4:1 이라 쓰지 않는다.
-- **사람만 아바타다** — 자산 · 카드 로고 · 주식 · 카테고리 타일은 원 아바타가 아니다(Image Frame · List 붙이개 차례에).
+- **사람만 아바타다** — 은행 · 증권 · 카드 같은 물건은 Logo Tile, 카테고리는 List 의 타일이다("이미지" 절). 주식 타일은 증권 화면 차례에 정한다.
 - **이름 옆 아바타는 장식**(이름을 한 번만 읽는다), 혼자면 이름을 가진다. 상태(안 낸 사람)는 흐리게 하지 않고 배지 · 글로.
 
 ### 날짜 · 시각 고르기 — Date Picker · Time Picker · Wheel Picker
@@ -4532,7 +4546,7 @@ Field 는 머리(라벨 · 필수 점 또는 "선택" · 보조 액션) · 입�
 | 올리기 · 받기 | 값 있는 Progress Circle 24 |
 | 앱 목록 · 대시보드를 다시 받음 | 당겨서 새로 고침 — 원판 없는 원 24 |
 | 예산 · 목표가 얼마나 찼나 | Progress — 막대(미터) |
-| 이미지가 없거나 못 불러옴 | Content Placeholder — 불러오는 동안은 Skeleton |
+| 이미지가 없거나 못 불러옴 | Content Placeholder — Image Frame 이 대체 그림으로 그린다(불러오는 동안은 같은 모서리의 Skeleton, "이미지" 절) |
 | 스크롤 영역에 더 있음 | Scroll Fog |
 
 #### 시간표 — 1초 · 5초 · 10초
@@ -4544,7 +4558,7 @@ Field 는 머리(라벨 · 필수 점 또는 "선택" · 보조 액션) · 입�
 | | Skeleton | Progress Circle | Progress | Content Placeholder | Scroll Fog |
 |---|---|---|---|---|---|
 | 크기 | 내용의 크기 · 글은 그 글자의 줄 높이(14 → 19) | 24(두께 3) · 40(두께 5) · 버튼 안은 Button | 높이 8 | 틀을 채움 · 그림 = 틀 높이의 50%(16 ~ 160) | 기본 20 · 가로 좌우 20 · 세로 위 20 · 아래 80 |
-| 모양 | 모서리 글 8 · 카드 16 · 아바타 full · 화면 폭 사진 0 | 끝이 둥근 호 · 12시 시작 | 모서리 full | 제 모서리 없음 | 마스크 — 색이 없다 |
+| 모양 | 모서리 글 8 · 그림 자리 4 · 6 · 8(Image Frame 대로) · 타일 12 · 카드 면 16 · 아바타 full · 화면 폭 사진 0 | 끝이 둥근 호 · 12시 시작 | 모서리 full | 제 모서리 없음 | 마스크 — 색이 없다 |
 | 색 | 면 `bg-neutral-weak` + 흰 띠 `gradient-shimmer-neutral`(다크 짝) | 원 `stroke-neutral-solid` · 트랙 `stroke-neutral-subtle`, 톤 brand · staticWhite · inherit | 트랙 `bg-neutral-weak` · 채움 브랜드 글자색(넘친 한도만 `fg-critical`) | 면 `bg-neutral-weak` · 그림 `stroke-neutral-weak` | `gradient-fade-mask` |
 | 움직임 | 반짝임 `motion-duration-loop` · `motion-ease-easing` | 1.2초 회전 + 호 · 채움 300ms | 채움 300ms | 없음 | 없음 — 늘 켜짐 |
 | 모션 줄이기 | 띠가 멈춘다 | 돌지 않는 3/4 호 | 바로 바뀐다 | — | — |
@@ -4563,6 +4577,57 @@ Field 는 머리(라벨 · 필수 점 또는 "선택" · 보조 액션) · 입�
 - 기다리는 영역에 `aria-busy`, 화면에 상태 글 하나(`role="status"`) — "불러오는 중…" · "평소보다 오래 걸리고 있어요." 를 한 번씩 읽는다. 결과는 Result Section 이 알린다.
 - Progress Circle 은 `role="progressbar"` — 이름 "불러오는 중", 값 글 "40%"(영어 · 세 점을 쓰지 않는다). Progress 는 `role="meter"` — 이름 "식비 예산 400,000원 중 350,000원".
 - 스켈레톤 · 끝 흐림 · 대체 그림의 아이콘은 장식이다.
+
+### 이미지 — Image Frame · Aspect Ratio · Logo Tile
+
+> 2026-10-04 SEED Image Frame · Aspect Ratio 와 porest 의 물건 타일 · 카드 그림 규칙으로 새로 정했다(사용자 결정 — 비교 페이지 https://claude.ai/artifact/G351nuKcYX2xhorvA5UD6X, 1A · 2A · 3A · 4B · 5A · 6B · 7A · 8A · "따라오는 것"). 수치 원본은 `specs/components/image-frame.yaml` · `card-art.yaml` · `aspect-ratio.yaml` · `logo-tile.yaml`, 기관 색은 `institution-colors.yaml`, 쓰는 규칙은 `image-frame.md` · `aspect-ratio.md` · `logo-tile.md`. 옛 Aspect Ratio(v72) · Carousel(v71) 절은 걷었다 — 옛 스펙은 `specs/components/aspect-ratio.history` · `carousel.history` 의 `v-pre-seed-image.*`. 토큰은 v118 의 `stroke-neutral-overlay` 하나를 더했다(이미지 위 투명 윤곽 — Avatar 의 테두리도 이 색).
+
+#### 나누기
+
+| 보이려는 것 | 쓰는 것 |
+|---|---|
+| 사람 | Avatar — 원, 사진 또는 이니셜 + 이름 색 |
+| 은행 · 증권 · 카드 · 코인 · 금 · 회사(물건) | Logo Tile — 각진 타일, 기관 색 + 첫 글자(그림이 있으면 덮는다) |
+| 사진 · 카드 그림 · 규정 그림 | Image Frame |
+| 카테고리 · 기능 | List 의 타일 — 옅은 색 + 아이콘 |
+| 그림이 아닌 비율 상자(동영상 · 지도) | Aspect Ratio |
+| 그림 여러 장 | Scroll Fog `row` 가로 줄 + Indicator("1 / 12" · "+9") — Carousel 은 걷었다 |
+
+#### 모양
+
+| | Image Frame | Logo Tile | Aspect Ratio |
+|---|---|---|---|
+| 비율 · 크기 | 1:1 · 2:1 · 16:9 · 4:3(기본) · 6:7 · 4:5 · 2:3 · 카드 1.586 | 32 · 40(기본) · 48 | Image Frame 과 같은 여덟, 기본 4:3 |
+| 모서리 | 폭으로 — 24 이하 4 · 48 이하 6 · 그 위 8 · 화면 폭 0 | 크기 × 0.3 — 10 · 12 · 14 | 0 |
+| 윤곽 | 안쪽 1px `stroke-neutral-overlay`(v118 — 검정 4.7% · 다크 흰 5%), 그림 위에 늘 | 같다 | 없다 |
+| 맞춤 | 사진 · 카드 그림 cover, 로고 contain(흰 판 `static-white`) | 카드 그림은 옅은 판 위 카드 전체 · 로고는 흰 판 위 contain | 동영상 cover |
+| 불러오는 동안 | 같은 모서리의 Skeleton(면 `bg-neutral-weak` + 반짝임) | 첫 글자 먼저 — 그림이 오면 덮는다 | — |
+| 없음 · 실패 | Content Placeholder(10초가 지나도 안 오면 실패) | 첫 글자 그대로 | — |
+
+#### 그림 위 요소
+
+네 모서리에 하나씩, 틀 하나에 둘까지, 틀 가장자리에서 6(`spacing-x1_5`) — 틀의 짧은 변이 80 이상일 때만. 상태 · 분류는 Badge `solid`, 장수 · 길이는 Indicator(알약 · `overlay-dim-dark` 검정 65% 두 모드 같게 · `static-white` 11/15 500 · 좌우 6 · 위아래 2 · 높이 19 — 흰 그림 위 7.00:1). 관심(하트) 버튼 · 콘텐츠 종류 아이콘 · 점 지시자 · 화살표 · 자동 넘김은 두지 않는다.
+
+#### 카드 그림
+
+- 비율 1.586(ISO 카드) — 목록 56 · 혜택 격자 · 상세 모두 같다. 최대 높이로 비율을 바꾸지 않는다.
+- 세로 그림(원래 폭 < 높이)은 시계 방향으로 90° 돌려 가로 틀을 cover 로 채운다 — 다 받은 뒤 방향을 정한다.
+- 그림이 없으면 아는 카드사는 카드 면(기관 색 한 색 + 회사 · 카드 이름, 폭 96 미만은 회사 첫 글자), 모르는 카드사는 Content Placeholder(카드 아이콘). 광택 띠 · 그라디언트 · 브랜드 파랑 대역은 두지 않는다.
+- 상세는 그림이 떠도 카드 이름을 글로 둔다. 단종은 흐리지 않고 "단종" 배지.
+
+#### 기관 색 — 브랜드 hex 는 표 하나에만
+
+은행 · 증권 · 카드사 · 코인 · 금 기관의 브랜드 색은 디자인 토큰이 아니라 데이터다 — 모드를 따르지 않고(라이트 · 다크 같다), 기관이 늘면 행이 는다. 그래서 머리말 `colors` 가 아니라 `specs/components/institution-colors.yaml`(78곳 — 자산 70 + 카드사 8)에 둔다. 브랜드 hex 를 화면 · 컴포넌트 · 제품 코드에 따로 적지 않는다 — 웹 · 앱은 그 표에서 만든 파일(레시피 `lib/institution-colors.ts` — 앱도 같은 표에서)과 찾기 규칙(기관 이름으로만 — 공백을 뺀 이름 · 별칭이 같으면 그 기관, 아니면 든 가장 긴 이름)만 쓴다. 토큰이 아닌 raw 색은 이 표와 차트 팔레트뿐이다(앱의 "chart palette · bank colors 는 raw palette 예외" 가 가리키는 자리).
+
+- 같은 회사는 한 색 — 하나 #008485 · NH농협 #00A651(두 표가 달랐다).
+- 글자색은 표의 `text` — 흰 글자(`static-white`)가 4.5:1 이상이면 흰색, 아니면 짙은 글자(라이트 `fg-neutral` · 다크 `fg-neutral-inverted`). 둘 다 모자라던 중간 밝기 다섯 곳은 명도만 고쳤다(원래 색은 `ci`). 78곳 모두 4.52:1 이상이다.
+- 표에 없는 기관은 Logo Tile 이 Avatar 의 이름 색(차트 10색 + `fg-neutral-inverted`)을, 카드 면이 Content Placeholder 를 쓴다.
+
+#### 접근성
+
+- 이름 옆 그림 · 타일은 장식이다 — 그림 `alt=""`, 타일은 첫 글자까지 숨긴다. 이름을 한 번만 읽는다. 혼자면 이름(그림의 `alt` · 타일의 `role="img"` + `aria-label`)이고, 실패해도 그 이름이 대체 그림 · 첫 글자에 남는다.
+- Indicator 는 보이는 글("+9") 대신 무엇의 수인지 읽는 글("사진 9장 더 있음")을 읽는다.
+- 파일 이름 · "Image" · "logo" 를 이름으로 두지 않는다. 마우스에 그림을 키우지 않는다.
 
 ### Pagination (v67 추가)
 
@@ -5098,34 +5163,7 @@ Table + 정렬/필터/페이지네이션/선택. **새 토큰 0** — Table + Pa
 
 ### Carousel (v71 추가)
 
-이미지/카드 슬라이더 — 좌우 화살표 + dot indicator. **새 토큰 0**.
-
-#### Anatomy
-- track: 가로 flex, items 일렬 배치
-- viewport: track 부모, overflow:hidden, scroll-snap-type
-- arrow buttons: 좌/우 (`touch-min` 44 hit), 외곽선 또는 fill, hover 강조
-- dot indicators: 하단 가운데 dot list, current dot `primary` 채움, 다른 dot `surface-input`
-- pagination text (옵션): "3 / 12" 카운터
-
-#### Variant
-| Variant | 사용 |
-|---|---|
-| **single** | viewport 1 item — hero, 광고 배너 |
-| **multi** | viewport 2-4 items 동시 표시 — 카드 list |
-| **infinite** | 끝에 도달 시 처음으로 loop — 광고 배너 |
-
-#### Motion
-- slide: `motion-duration-base` (200ms) `motion-ease-out` translateX
-- swipe: 사용자 finger 따라 transform, 30% threshold 또는 velocity
-- autoplay (옵션): 5-7초마다 자동 next, hover 시 pause, `prefers-reduced-motion`에서 비활성
-
-#### Accessibility
-- `role="region" aria-roledescription="carousel" aria-label="..."`
-- 각 slide: `role="group" aria-roledescription="slide" aria-label="3 / 12: ..."`
-- arrow buttons: `aria-label="이전 슬라이드"` / "다음 슬라이드"
-- dot indicator: button list, `aria-label="슬라이드 3로 이동"` + `aria-current="true"` (active)
-- autoplay: pause 컨트롤 필수 (2.2.2)
-- 키보드: Tab으로 carousel 진입, arrow keys로 slide 이동
+> 2026-10-04 걷었다 — 세 제품에 쓰는 곳이 0이고 SEED 에도 캐러셀 컴포넌트가 없다(사용자 결정 — 이미지 비교 7A). 그림 여러 장은 끝이 보이는 가로 줄(Scroll Fog `row`)에 Image Frame 을 잇고, 장수는 Indicator 글("1 / 12" · "+9")로 알린다 — "이미지 — Image Frame · Aspect Ratio · Logo Tile" 절. 점 지시자 · 화살표 · 자동 넘김은 두지 않는다. 옛 스펙은 `specs/components/carousel.history/v-pre-seed-image.*`.
 
 ### Scroll Area (v71 추가)
 
@@ -5197,7 +5235,7 @@ drag-able split panel — 좌우 또는 상하 분할 layout 사용자 조정. *
 - 키보드: arrow keys로 ±1% 조정, Home/End로 min/max, Enter/Space로 collapse 토글
 
 #### HR / Desk 듀얼 브랜드 (v71 5종 공통)
-spec brand-neutral. brand 파일 — HR(Data Table 결재/직원/평가 그리드 핵심 / Resizable 좌측 nav + 우측 detail / Scroll Area 데이터 그리드 sticky thead), Desk(Carousel onboarding hero / Table 가계부 거래 list / Scroll Area 메모 본문 긴 글 / Data Table 영수증 보관함).
+spec brand-neutral. brand 파일 — HR(Data Table 결재/직원/평가 그리드 핵심 / Resizable 좌측 nav + 우측 detail / Scroll Area 데이터 그리드 sticky thead), Desk(Table 가계부 거래 list / Scroll Area 메모 본문 긴 글 / Data Table 영수증 보관함 — Carousel 은 2026-10-04 걷었다).
 
 ### Sonner (v72 추가, Toast 강화)
 
@@ -5205,38 +5243,7 @@ spec brand-neutral. brand 파일 — HR(Data Table 결재/직원/평가 그리�
 
 ### Aspect Ratio (v72 추가)
 
-비율 유지 wrapper — image, video, embed가 layout shift 없이 비율 보존. **새 토큰 0** — 단순 utility component.
-
-#### Common ratios
-| Ratio | 용도 |
-|---|---|
-| **16:9** (default) | video, hero image, og:image preview |
-| **4:3** | 기존 monitor, photography |
-| **1:1** | profile avatar (large), gallery thumbnail |
-| **3:2** | DSLR photo |
-| **21:9** | cinema, wide hero |
-| **9:16** | mobile portrait video |
-
-#### Implementation
-- CSS `aspect-ratio` property (modern browsers) — `aspect-ratio: 16 / 9`
-- fallback: padding-bottom hack (`padding-bottom: 56.25%` for 16:9)
-- 안에 image/video는 `object-fit: cover` (비율 유지 + crop)
-
-#### Anatomy
-- wrapper: `aspect-ratio` 명시, `position: relative`
-- 내부 element (img/video/iframe): `width: 100%; height: 100%; object-fit: cover`
-
-#### Use cases
-- listing 카드 image (16:9)
-- gallery grid (1:1 또는 3:2)
-- video embed (16:9)
-- hero banner (21:9)
-- profile cover image (3:1)
-
-#### Accessibility
-- wrapper에 시맨틱 없음 — 안에 image/video 자체의 a11y 적용
-- image: `<img alt="">` (장식이면 빈 alt) 또는 의미 alt 텍스트
-- decorative wrapper만 — `role` 부여 X
+> 2026-10-04 SEED Aspect Ratio 로 다시 정했다 — "이미지 — Image Frame · Aspect Ratio · Logo Tile" 절과 `specs/components/aspect-ratio.md`. 그림이 아닌 자리(동영상 · 지도)의 비율 상자이고, 비율은 Image Frame 과 같은 여덟 가지다(기본 4:3 — 옛 16:9 기본 · 3:2 · 21:9 · 9:16 을 걷었다). 그림은 Image Frame 이다. 옛 스펙은 `specs/components/aspect-ratio.history/v-pre-seed-image.*`.
 
 ### Chart (v72 추가)
 

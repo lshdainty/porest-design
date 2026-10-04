@@ -62,7 +62,7 @@ const ratio = (a: string, b: string) => {
 type SkShape = 'text' | 'card' | 'avatar' | 'photo';
 const SK_SHAPES = [
   ['text', '글'],
-  ['card', '카드'],
+  ['card', '카드 면'],
   ['avatar', '아바타'],
   ['photo', '사진'],
 ] as const;
@@ -168,7 +168,7 @@ export function SkeletonPlayground({ kit, screen, result }: { kit: LoadingKit; s
           ) : (
             <div className="flex flex-col gap-1.5 text-[12px] text-fd-muted-foreground">
               <span className="font-medium">모서리 radius</span>
-              <span>{shape === 'card' ? '카드 · 썸네일 16' : shape === 'avatar' ? '아바타 full' : '화면 끝에 붙는 사진 0'} — 곧 올 내용의 모양을 따른다.</span>
+              <span>{shape === 'card' ? '카드 면 16(썸네일 · 카드 그림 같은 그림 자리는 Image Frame 의 모서리 4 · 6 · 8)' : shape === 'avatar' ? '아바타 full' : '화면 끝에 붙는 사진 0'} — 곧 올 내용의 모양을 따른다.</span>
             </div>
           )}
           <Slider label="기다린 시간" value={t} min={0} max={end} step={100} onChange={(v) => (setPlaying(false), setT(v))} ticks={[0, r.showAfter, r.slowAfter, r.timeout]} format={(v) => `${(v / 1000).toFixed(v % 1000 ? 1 : 0)}초`} />
@@ -443,7 +443,9 @@ type CpRatio = (typeof CP_RATIOS)[number][0];
 const ratioOf = (r: CpRatio) => (r.includes('/') ? Number(r.split('/')[0]) / Number(r.split('/')[1]) : Number(r));
 const CP_LUCIDE: Record<CpGlyph, string> = { image: 'ImageIcon', 'credit-card': 'CreditCard', receipt: 'Receipt', 'file-text': 'FileText' };
 const CP_LABEL: Record<CpGlyph, string> = { image: '사진', 'credit-card': '카드 그림', receipt: '영수증 사진', 'file-text': '문서' };
-export function PlaceholderPlayground({ kit, screen }: { kit: LoadingKit; screen: LdScreen }) {
+// 틀의 모서리 — 그림 틀이라 Image Frame 처럼 폭으로 고른다(폭 r4 이하 · r6 이하 · 그 위 — image-frame.yaml). 서버가 값을 넘긴다
+export type FrameRadii = { r4: number; r6: number; px: { s: number; m: number; l: number }; cls: { s: string; m: string; l: string } };
+export function PlaceholderPlayground({ kit, screen, radii }: { kit: LoadingKit; screen: LdScreen; radii: FrameRadii }) {
   const [ratioV, setRatio] = useState<CpRatio>('4/3');
   const [w, setW] = useState(240);
   const [glyph, setGlyph] = useState<CpGlyph>('image');
@@ -451,10 +453,11 @@ export function PlaceholderPlayground({ kit, screen }: { kit: LoadingKit; screen
   const g = kit.placeholder.glyph;
   const h = Math.round(w / ratioOf(ratioV));
   const size = glyphSize(g, w, h);
+  const rk = w <= radii.r4 ? 's' : w <= radii.r6 ? 'm' : 'l';
   const code = useMemo(() => {
     const aspect = ratioV === '1' ? 'aspect-square' : `aspect-[${ratioV}]`;
-    return `${glyph === 'image' ? '' : `import { ${CP_LUCIDE[glyph]} } from "lucide-react"\n`}import { ContentPlaceholder } from "@/components/ui/content-placeholder"\n\n{/* 틀 — 크기 · 비율 · 모서리는 틀이 정한다 */}\n<div className="${aspect} w-[${w}px] overflow-hidden rounded-r2">\n  <ContentPlaceholder${glyph === 'image' ? '' : ` icon={<${CP_LUCIDE[glyph]} />}`} label=${q(CP_LABEL[glyph])} />\n</div>`;
-  }, [ratioV, w, glyph]);
+    return `${glyph === 'image' ? '' : `import { ${CP_LUCIDE[glyph]} } from "lucide-react"\n`}import { ContentPlaceholder } from "@/components/ui/content-placeholder"\n\n{/* 틀 — 크기 · 비율 · 모서리는 틀이 정한다(그림 틀은 Image Frame 처럼 폭으로 — ${w} → ${radii.px[rk]}) */}\n<div className="${aspect} w-[${w}px] overflow-hidden ${radii.cls[rk]}">\n  <ContentPlaceholder${glyph === 'image' ? '' : ` icon={<${CP_LUCIDE[glyph]} />}`} label=${q(CP_LABEL[glyph])} />\n</div>`;
+  }, [ratioV, w, glyph, rk, radii]);
   const why = h * g.ratio < g.min ? `틀 높이의 ${g.ratio * 100}% 가 ${g.min} 보다 작아 ${g.min}` : h * g.ratio > g.max ? `틀 높이의 ${g.ratio * 100}% 가 ${g.max} 보다 커 ${g.max}` : `틀 높이의 ${g.ratio * 100}%`;
   // 대체 그림의 면은 페이지 바탕과 같은 색 — 흰 면(카드) 위에 둔다
   return (
@@ -463,11 +466,11 @@ export function PlaceholderPlayground({ kit, screen }: { kit: LoadingKit; screen
       code={code}
       stage={
         <div className="flex flex-col items-center gap-3">
-          <div style={{ width: w, maxWidth: '100%', height: h, overflow: 'hidden', borderRadius: 8 }}>
+          <div style={{ width: w, maxWidth: '100%', height: h, overflow: 'hidden', borderRadius: radii.px[rk] }}>
             <ContentPlaceholderView look={kit.placeholder} mode={mode} icon={glyph} label={CP_LABEL[glyph]} w={w} h={h} />
           </div>
           <span className="self-stretch text-center text-[12px] leading-4 text-fd-muted-foreground">
-            틀 {w} × {h} — 그림 {Math.round(size)}({size < h * g.ratio && size === w ? '틀 폭이 좁아 폭에 맞춤' : why})
+            틀 {w} × {h} · 모서리 {radii.px[rk]} — 그림 {Math.round(size)}({size < h * g.ratio && size === w ? '틀 폭이 좁아 폭에 맞춤' : why})
           </span>
         </div>
       }

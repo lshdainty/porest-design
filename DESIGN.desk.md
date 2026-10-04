@@ -516,6 +516,10 @@ colors:
   # v113 — 고른 선택 상자(Select Box)의 짙은 테두리(SEED stroke.neutral-contrast = gray-1000)
   stroke-neutral-contrast: "{colors.gray-1000}"
   stroke-neutral-contrast-dark: "{colors.gray-1000-dark}"
+  # v118 — 이미지 위 안쪽 1px 윤곽(Image Frame · Avatar · Logo Tile). SEED stroke.neutral-subtle 의 값 그대로 — 검정 4.7% · 다크 흰 5%.
+  # 투명도가 있는 색이라 팔레트 단계가 없다(static-white 처럼 값을 바로 적는다). 구분선 stroke-neutral-subtle 은 불투명 그대로다(사용자 결정 2026-10-04 이미지 비교 1A)
+  stroke-neutral-overlay: "#0000000C"
+  stroke-neutral-overlay-dark: "#FFFFFF0D"
   stroke-critical-solid: "{colors.red-700}"
   stroke-critical-solid-dark: "{colors.red-800-dark}"
   stroke-positive-solid: "{colors.green-700}"
@@ -1283,6 +1287,11 @@ components:
     backgroundColor: "{colors.stroke-neutral-contrast}"
   role-stroke-neutral-contrast-dark:
     backgroundColor: "{colors.stroke-neutral-contrast-dark}"
+  # v118 — 이미지 위 투명 윤곽
+  role-stroke-neutral-overlay-light:
+    backgroundColor: "{colors.stroke-neutral-overlay}"
+  role-stroke-neutral-overlay-dark:
+    backgroundColor: "{colors.stroke-neutral-overlay-dark}"
   role-stroke-critical-solid-light:
     backgroundColor: "{colors.stroke-critical-solid}"
   role-stroke-critical-solid-dark:
@@ -1934,6 +1943,7 @@ v108 로 크게 바뀐 색을 지금 제품 값(Desk 웹 `porest-tokens.css` · 
 | `stroke-neutral-weak` | gray-400 | gray-400 | — |
 | `stroke-neutral-solid` | gray-600 | gray-600 | gray-800 / gray-800 (v109) |
 | `stroke-neutral-contrast` | gray-1000 | gray-1000 | — (v113) |
+| `stroke-neutral-overlay` | 검정 4.7%(`#0000000C`) | 흰 5%(`#FFFFFF0D`) | — (v118 — SEED stroke.neutral-subtle 의 값. 투명도가 있어 팔레트 단계가 아니다) |
 
 의미 색은 네 역할이 같은 단계를 쓴다 — critical → red · positive → green · warning → orange · informative → blue.
 
@@ -1968,6 +1978,7 @@ SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채�
 - fg-placeholder — SEED 600 → 700. 600 은 입력칸(bg-neutral-weak) 위에서 3.87:1(다크 3.18:1)이다.
 - 의미 색 글자 · 선(fg-* · stroke-*-solid)의 다크 — SEED 700 → 800. 다크 700 은 어두운 표면 위 2.9:1 안팎이다 — 흰 글자를 얹는 채움 눌림 자리라 어두워야 한다.
 - stroke-neutral-subtle — SEED 는 투명도 있는 검정 · 흰색이다. 검사기가 8자리 hex 를 받지 않아 gray-300 에 둔다.
+- (v118) stroke-neutral-overlay — SEED stroke.neutral-subtle 의 투명한 값(검정 4.7% · 흰 5%)을 이미지 · 아바타 · 로고 타일 위 1px 윤곽에만 쓰는 역할로 따로 둔다. porest 의 stroke-neutral-subtle 은 구분선 · 목록 선이라 불투명 그대로다 — 같은 이름에 두 값을 둘 수 없어 이름을 나눴다. 이름의 overlay 는 "내용 위에 얹는"(SEED bg.overlay 와 같은 뜻)이다 — 굵기 단계(subtle · weak · solid · contrast)가 아니라 자리를 말한다. 불투명한 선을 그림 둘레에 그리면 어두운 사진 · 카드 둘레에 옅은 테가 생긴다(사용자 결정 2026-10-04 이미지 비교 1A). 검사기(`@google/design.md`)를 0.4 로 올려 8자리 hex 를 받는다 — 위 줄의 "받지 않아" 는 0.1 때 이유다.
 - warning — SEED 의 주의 색은 노랑이고 채움 위 글자가 검정이다. porest 는 주황 + 흰 글자를 그대로 두고, 단계는 다른 의미 색과 같은 규칙으로 앉혔다.
 - bg-positive-solid 의 다크 — SEED 는 500(눌림 600)이다. 다른 의미 색과 맞춰 600(눌림 700)에 둔다.
 - 브랜드 채움의 다크 — Desk 는 브랜드 색이 어두워(L* 33) 채움을 지금 값(#0147AD)과 같은 무게인 500 에 둔다(ΔE 1.4). 눌림은 SEED 의 800 이 흰 글자 3.76:1 이라 700 이다. HR 은 채움이 SEED 대로 700 이고, 눌림은 800 이 흰 글자 3.61:1 이라 600(더 어둡게)이다.
@@ -2063,6 +2074,7 @@ SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채�
 | `stroke-neutral-weak` | `#E5E8EF` | `#404757` | border-default | border-default |
 | `stroke-neutral-solid` | `#767C8B` | `#838997` | border-strong | border-strong |
 | `stroke-neutral-contrast` | `#1A1F2E` | `#F5F6FA` | — | — |
+| `stroke-neutral-overlay` | `#0000000C` | `#FFFFFF0D` | — | — |
 | `stroke-critical-solid` | `#D72323` | `#FF8477` | error | status-danger-border |
 | `stroke-positive-solid` | `#167F3F` | `#25C062` | success | status-success-border |
 | `stroke-warning-solid` | `#BE490D` | `#FF8758` | warning | status-warning-border |
@@ -2105,9 +2117,9 @@ v102 때의 규칙이다. v108 부터 값은 팔레트 단계에서 온다 — �
 porest 화면에 아직 쓰는 자리가 없다. 자리가 생기면 위 규칙으로 더한다.
 
 - bg.neutral-solid — 짙은 회색 채움(bg.neutral-inverted-pressed 는 v112 에 Button 의 누름으로 들였다)
-- bg.neutral-weak-alpha · bg.transparent-*(4) — 투명도 있는 배경. 필요하면 overlay 처럼 표 토큰으로 따로 둔다
+- bg.neutral-weak-alpha · bg.transparent-*(4) — 투명도 있는 배경. 필요하면 v118 의 stroke-neutral-overlay 처럼 역할 색으로 둔다(검사기 0.4 부터 8자리 hex 를 받는다)
 - bg.overlay · bg.overlay-muted — Elevation 의 overlay-dim 이 같은 자리다
-- stroke.neutral-muted — 구분선은 stroke-neutral-subtle 하나로 그린다(Divider 2026-10-03 — SEED 기본 neutral-muted 와 같은 진하기 1.15). stroke.neutral-contrast 는 v113 에 Select Box 의 고른 테두리로, stroke.*-weak(4)는 v117 에 Badge outline 의 옅은 테두리로 들였다
+- stroke.neutral-muted — 구분선은 stroke-neutral-subtle 하나로 그린다(Divider 2026-10-03 — SEED 기본 neutral-muted 와 같은 진하기 1.15). stroke.neutral-contrast 는 v113 에 Select Box 의 고른 테두리로, stroke.*-weak(4)는 v117 에 Badge outline 의 옅은 테두리로, stroke.neutral-subtle 의 투명한 값은 v118 에 이미지 위 윤곽(stroke-neutral-overlay)으로 들였다
 - bg.magic-weak · bg.layer-fill — 당근 AI 기능 전용 · SEED 에서도 없어질 이름
 
 #### Desk 전용 별칭
@@ -3743,7 +3755,7 @@ Desk — 데이터 내보내기 · 카드 혜택 필터 checkbox, 메모 즐겨�
 
 - 구조: 목록(List) · 한 줄(List Item) · 목록 제목(List Header) · 줄 사이 선(ListDivider) — SEED List(2026-10-01). 설정 · 메뉴 · 선택 · 키-값 줄과 거래 · 할 일 · 알림 같은 내용 줄을 모두 List 로 그린다. RadioList 는 걷었다 — 하나 고르기는 오른쪽 라디오 줄(`ListRadioItem`).
 - 한 줄: 위아래 `spacing-x3` (12) · 좌우 `spacing-global-gutter` (24) · 제목 `t5` 16 · 400 `fg-neutral` · 설명 `t3` 13 `fg-neutral-subtle`(제목 아래 2) — 한 줄 46 · 두 줄 66.
-- 앞: 설정 · 메뉴 줄은 아이콘 22(`fg-neutral`), 색이 뜻을 가진 내용 줄은 타일 40(모서리 `radius-r3` 12 · `chart-{색}-weak` 바탕 · 아이콘 20). 체크 · 라디오는 24, 스위치는 32.
+- 앞: 설정 · 메뉴 줄은 아이콘 22(`fg-neutral`), 색이 뜻을 가진 내용 줄은 타일 40(모서리 `radius-r3` 12 · `chart-{색}-weak` 바탕 · 아이콘 20 — 아이콘이 없으면 태그 아이콘, 이체 줄은 회색). 은행 · 카드 같은 물건 줄은 로고 타일 40(Logo Tile), 카드 혜택 줄은 카드 그림 56(Image Frame). 체크 · 라디오는 24, 스위치는 32.
 - 뒤: 값 글자(`t5` · `fg-neutral-subtle`) · 오른쪽 화살표 18(화면을 옮기는 줄에만) · 컨트롤 · 작은 버튼.
 - 누름 · 호버(웹): 바탕 층이 좌우 6 들어와 모서리 10 의 `bg-layer-default-pressed` 가 되고, 콘텐츠 층만 2px 거리로 준다(v104). 끼운 컨트롤은 따로 줄지 않는다. 포커스 링은 줄 안쪽 2px.
 - 강조: 바탕만 `bg-brand-weak`(누름 · 호버 `bg-brand-weak-pressed` — 그동안 설명 · 값 글자는 `fg-neutral-muted`, 4.5:1 을 지키려고).
@@ -3842,7 +3854,7 @@ HR과 달리 Desk는 사용자 정의 카테고리가 많으므로 **hue 의미 
 - **크기** — 더치페이 참가자 줄 · 캘린더 공유 멤버 · 사이드바 36, 설정의 계정 줄 42, 계정 화면 머리 80(지금 72), 더치페이 목록의 참여자 묶음 24(앞 4명 + "+N").
 - **더치페이 색** — 웹 · 앱 해시가 달라 같은 사람이 다른 색이다(84.5%). 한 규칙(코드 포인트 합 % 10 · v110 순서)으로, 다크 흰 이니셜(1.91 ~ 2.08)은 짙은 글자로, 안 낸 사람은 흐리지 않고 배지 · 글로.
 - **캘린더 공유 멤버** — 권한 아이콘 원 대신 아바타 + 권한 Badge(`outline`).
-- 자산 로고 · 주식 · 카테고리 타일은 아바타가 아니다(Image Frame · List 붙이개 차례에).
+- 자산 로고는 Logo Tile, 카테고리는 List 의 타일이다 — 아바타가 아니다(아래 "이미지 — Desk"). 주식 타일은 증권 화면 차례에 정한다.
 
 ### 날짜 · 시각 고르기 — Desk
 
@@ -3874,9 +3886,18 @@ HR과 달리 Desk는 사용자 정의 카테고리가 많으므로 **hue 의미 
 - **당겨서 새로 고침(앱)** — 원판 없는 원 24, 새로 받기가 끝날 때까지 돈다(홈 · 통계 · 메모 · 카드 혜택이 지금 기다리지 않는다). 보던 내용은 그대로 — 카드 혜택이 목록을 비우지 않게 한다.
 - **원** — 섹션 새로 고침 · 카드 혜택 목록 끝 24, 앱 업데이트 받기는 값 있는 원 24. 할 일 체크 원 위의 같은 색 호를 걷는다.
 - **막대** — 예산 · 카드 사용은 한도, 저축 목표 · 카드 실적은 목표 — 높이 8 · 채움 `fg-brand`(넘친 한도만 `fg-critical` + "N원 초과", 달성은 글자 "달성"). 카드 실적의 웹 장미 · 호박 · 초록과 앱 브랜드 → 성공 색을 하나로 맞춘다.
-- **이미지** — 카드 그림 · 혜택 그림은 불러오는 동안 스켈레톤, 못 불러오면 대체 그림(카드 아이콘). 자산 · 카드 로고의 모노그램은 Image Frame 차례에 정한다.
+- **이미지** — 카드 그림 · 혜택 그림은 Image Frame 이 불러오는 동안 스켈레톤, 그림이 없거나 못 불러오면 아는 카드사는 카드 면 · 모르는 카드사는 대체 그림을 그린다. 자산 로고는 Logo Tile — 첫 글자 먼저, 그림이 오면 덮는다(아래 "이미지 — Desk").
 - **끝 흐림** — 필터 칩 줄 · 2차 탭 · 카테고리 고르기 · 거래 상세처럼 넘칠 수 있는 시트 본문.
 - **요청** — 앱의 riverpod 기본 재시도 10번(약 41초)을 읽기 2번 · 10초 안으로 줄인다. 웹은 요청 제한 10초를 더한다.
+
+### 이미지 — Desk
+
+> 2026-10-04 — 모양 · 쓰는 규칙은 DESIGN.md 의 "이미지 — Image Frame · Aspect Ratio · Logo Tile" 절과 `specs/components/image-frame.md` · `logo-tile.md`. Desk 의 쓰는 자리만 적는다.
+
+- **카드 그림** — 카드 혜택 격자 · 목록 56 · 상세 312 · 카드 추가 미리보기 68 · 카탈로그 목록 44 가 모두 카드 그림(1.586)이다. 세로 그림(표본의 53%)은 시계 방향으로 돌린다. 그림이 없는 카드(활성 카드의 82%)는 아는 카드사의 면 · 모르는 카드사의 대체 그림이다. 웹 상세 대화상자는 최대 높이 220 을 걷고 폭 312 로, 그림 아래 카드 이름 글을 둔다. 단종은 흐리지 않고 배지.
+- **자산 로고** — 은행 · 증권 · 카드 · 코인 · 금 자산은 Logo Tile — 자산 목록 · 계좌 관리 40, 자산 상세 · 계좌 · 투자 추가 미리보기 48. 카드 자산은 카드 그림(옅은 판 위 카드 전체)이 첫 글자를 덮는다. 색은 기관 색 표에서 찾고(저장된 자산 색이 아니라), 기관이 없는 자산은 Avatar 의 이름 색이다 — 웹 oklch · 앱 HSL 해시를 걷는다.
+- **카테고리 타일** — 아이콘 20, 없는 아이콘은 태그 아이콘, 이체 줄은 회색(List).
+- **다음 차례** — 종목 타일(증권 화면), 가맹점 · 구독 로고(그림 출처가 없다 — 지금처럼 카테고리 타일), 확대 보기 · 첨부(영수증 사진) 썸네일.
 
 ### Pagination / Drawer / Spinner / Stepper (v67 추가 batch)
 
@@ -3996,10 +4017,8 @@ Desk(B2C) 5 data display 컴포넌트 — 모바일 우선 + 친근 톤.
 - 모바일에서는 Data Table 기능 일부 비활성 (column visibility는 데스크탑만).
 
 #### Carousel — Desk
-- **onboarding hero**: 첫 사용 시 4-5 슬라이드 (메모 / 할일 / 가계부 / 캘린더 소개).
-- **인기 태그 carousel**: 메모 입력 시 자주 쓰는 태그 horizontal swipe.
-- **이미지 attachment viewer**: 메모 안 첨부 이미지 다중 view (좌우 swipe + dot indicator).
-- 모바일 swipe gesture 적극.
+
+> 2026-10-04 걷었다 — 그림 여러 장은 공유 DESIGN.md 의 "이미지 — Image Frame · Aspect Ratio · Logo Tile" 절(끝이 보이는 가로 줄 + 장수 글). 점 · 화살표 · 자동 넘김은 두지 않는다.
 
 #### Scroll Area — Desk
 - **메모 본문 긴 글**: 메모 안 scroll area로 분리 — 외부 페이지 scroll과 독립.

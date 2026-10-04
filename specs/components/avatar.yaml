@@ -2,7 +2,8 @@
 # 형식은 button.yaml 머리 주석, 규칙은 specs/CLAUDE.md.
 #
 # 사람 한 명을 보이는 원 — 사진이 있으면 사진, 없으면 이름의 첫 글자(이니셜) + 이름 색. 누르지 않는다(누르는 자리는 감싼 버튼 ·
-# 링크가 상태를 가진다). 물건(자산 · 카드 · 주식 · 카테고리)의 로고 · 그림 타일은 아바타가 아니다(Image Frame 차례).
+# 링크가 상태를 가진다). 물건(은행 · 증권 · 카드 · 코인 · 금 · 회사)은 Logo Tile(logo-tile.yaml — 같은 첫 글자 · 이름 색 규칙),
+# 카테고리는 List 의 타일이다 — 아바타가 아니다.
 #
 # 이니셜 · 이름 색 — 웹 · 앱이 같은 규칙(avatar.md 의 "이니셜과 이름 색")
 #   이니셜  = 표시 이름(앞뒤 공백을 뺀)의 첫 글자 하나(grapheme) — 로마자는 대문자. "김민수" → "김", "Kim Minsu" → "K"
@@ -13,7 +14,6 @@
 #
 # SEED 와 다른 자리(avatar.md 의 "SEED 와 다른 점")
 #   - 사진이 없으면 이니셜 + 이름 색(사용자 결정 5C) — SEED 는 사람 그림(Identity Placeholder)이고 이니셜이 없다.
-#   - 1px 안쪽 테두리 색은 porest stroke-neutral-subtle(불투명 — SEED 는 투명도 있는 검정 4.7% · 흰 5%).
 #   - 오른쪽 아래 배지(원 · 방패 · 꽃 마스크)는 두지 않는다 — porest 에 쓰는 자리가 없다.
 #   - 80 · 96 의 자리는 porest 화면에서 정했다(SEED 설명 없음).
 
@@ -60,7 +60,7 @@ rules:
         textTransform: { value: uppercase, note: "로마자 첫 글자만 대문자 — \"Kim Minsu\" → \"K\". 한글 · 숫자 · 그림 글자는 그대로" }
       border:
         borderWidth: { value: 1px, note: "모든 크기 1 — 원 안쪽(inset box-shadow), 크기가 변하지 않는다(SEED)" }
-        borderColor: { value: $color-stroke-neutral-subtle, note: "흰 사진이 흰 바탕에 묻히지 않게 — 이니셜 원 위에도 같은 선" }
+        borderColor: { value: $color-stroke-neutral-overlay, note: "v118 — 검정 4.7% · 다크 흰 5%(SEED stroke.neutral-subtle 의 값). 흰 사진이 흰 바탕에 묻히지 않고, 어두운 사진 · 이니셜 원 둘레에는 테가 생기지 않는다. Image Frame · Logo Tile 의 윤곽과 같은 색" }
 
   # ── 크기 ──────────────────────────────────────────────
   # 이니셜 글자 = 지름의 40%(가장 작아도 10) — 비교 페이지 그림의 값

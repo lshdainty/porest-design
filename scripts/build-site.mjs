@@ -37,13 +37,14 @@ import { listExamples } from "../recipes/shadcn/examples/list-examples.mjs";
 import { dividerExamples } from "../recipes/shadcn/examples/divider-examples.mjs";
 import { skeletonExamples } from "../recipes/shadcn/examples/skeleton-examples.mjs";
 import { aspectRatioExamples } from "../recipes/shadcn/examples/aspect-ratio-examples.mjs";
+import { imageFrameExamples } from "../recipes/shadcn/examples/image-frame-examples.mjs";
+import { logoTileExamples } from "../recipes/shadcn/examples/logo-tile-examples.mjs";
 import { progressExamples } from "../recipes/shadcn/examples/progress-examples.mjs";
 import { progressCircleExamples } from "../recipes/shadcn/examples/progress-circle-examples.mjs";
 import { scrollFogExamples } from "../recipes/shadcn/examples/scroll-fog-examples.mjs";
 import { contentPlaceholderExamples } from "../recipes/shadcn/examples/content-placeholder-examples.mjs";
 import { scrollAreaExamples } from "../recipes/shadcn/examples/scroll-area-examples.mjs";
 import { typographyExamples } from "../recipes/shadcn/examples/typography-examples.mjs";
-import { carouselExamples } from "../recipes/shadcn/examples/carousel-examples.mjs";
 import { resizableExamples } from "../recipes/shadcn/examples/resizable-examples.mjs";
 import { calloutExamples } from "../recipes/shadcn/examples/callout-examples.mjs";
 import { pageBannerExamples } from "../recipes/shadcn/examples/page-banner-examples.mjs";
@@ -131,13 +132,14 @@ const SHADCN_EXAMPLES = {
   divider: dividerExamples,
   skeleton: skeletonExamples,
   "aspect-ratio": aspectRatioExamples,
+  "image-frame": imageFrameExamples,
+  "logo-tile": logoTileExamples,
   progress: progressExamples,
   "progress-circle": progressCircleExamples,
   "scroll-area": scrollAreaExamples,
   "scroll-fog": scrollFogExamples,
   "content-placeholder": contentPlaceholderExamples,
   typography: typographyExamples,
-  carousel: carouselExamples,
   resizable: resizableExamples,
   callout: calloutExamples,
   "page-banner": pageBannerExamples,
@@ -1984,16 +1986,17 @@ const SHADCN_CATALOG = [
   { slug: "toggle-group", name: "Toggle Group", category: "Form", description: "단일 또는 복수 선택 토글 그룹." },
   { slug: "wheel-picker", name: "Wheel Picker", category: "Form", description: "순서가 있는 값을 세로로 굴려 고르는 휠 — 칼럼 · 항목 · 가운데 선택 띠 · 위아래 안개. Time Picker 의 바탕이고, 달력의 연 · 월 휠 · 달만 고르는 자리에 쓴다 (SEED Wheel Picker 구조)." },
 
-  // Display (20)
-  { slug: "aspect-ratio", name: "Aspect Ratio", category: "Display", description: "고정 비율 컨테이너 (16:9, 4:3 등)." },
+  // Display (21)
+  { slug: "aspect-ratio", name: "Aspect Ratio", category: "Display", description: "폭이 정해지면 비율로 높이가 정해지는 상자 하나 — 동영상 · 지도 · 바깥 페이지처럼 그림이 아닌 자리에 쓰고, 비율은 여덟(기본 4:3 · 카드 1.586)이며 모서리 · 바탕 없이 자식 하나가 채운다 (SEED Aspect Ratio 구조)." },
   { slug: "avatar", name: "Avatar", category: "Display", description: "사람 한 명을 보이는 원 — 사진이 있으면 사진, 없으면 이니셜 + 이름 색이고, 여러 사람은 지름 1/4 을 겹친 묶음(Avatar Stack — 앞 4명 + \"+N\")이다 (SEED Avatar 구조)." },
   { slug: "badge", name: "Badge", category: "Display", description: "대상의 상태 · 분류를 한두 낱말로 보이는 누르지 않는 작은 라벨(예정 · 연체 · 승인). weak · outline · solid × 톤 6 × medium 20 · large 24 (SEED Badge 구조)." },
   { slug: "callout", name: "Callout", category: "Display", description: "화면 안, 그 기능 · 내용 가까이에 늘 보이는 안내 상자 — 팁 · 제약 · 주의와 그 자리에서 난 오류(저장 실패)를 알린다 (SEED Callout 구조)." },
   { slug: "card", name: "Card", category: "Display", description: "콘텐츠 컨테이너 (header / content / footer)." },
-  { slug: "carousel", name: "Carousel", category: "Display", description: "슬라이드 갤러리 — Embla 베이스." },
   { slug: "content-placeholder", name: "Content Placeholder", category: "Display", description: "이미지가 없거나 불러오지 못한 자리를 옅은 면과 무엇이 없는지 말하는 선 아이콘으로 채운다 — 그림은 틀 높이의 50%(16 ~ 160), 모서리는 틀이 정한다 (SEED Content Placeholder 구조)." },
   { slug: "divider", name: "Divider", category: "Display", description: "내용 사이를 나누는 1px 선 — 같은 묶음 안은 들인 선, 묶음 사이는 끝까지 선이고, 크게 다른 내용 사이는 선이 아니라 8 간격이다 (SEED Divider 구조)." },
+  { slug: "image-frame", name: "Image Frame", category: "Display", description: "그림 한 장을 보이는 틀 — 비율 상자에 그림을 꽉 채우고 안쪽 1px 투명 윤곽을 늘 그리며, 모서리는 폭으로(4 · 6 · 8) 고르고, 불러오는 동안은 Skeleton · 없거나 실패하면 Content Placeholder, 그림 위에는 배지 · 장수 글을 둘까지 얹는다 — 카드 그림은 세로 그림을 돌리고 그림이 없으면 카드사 색 면이다 (SEED Image Frame 구조)." },
   { slug: "list", name: "List", category: "Display", description: "설정 · 메뉴 · 선택 · 내용 줄을 세로로 잇는 목록 (SEED List 구조)." },
+  { slug: "logo-tile", name: "Logo Tile", category: "Display", description: "은행 · 증권 · 카드 · 코인 · 금 같은 물건과 회사를 보이는 각진 타일 — 기관 색(표에 없으면 이름 색) 면에 이름의 첫 글자를 먼저 그리고 그림이 오면 덮는다, 32 · 40 · 48 · 모서리 크기 × 0.3 (SEED 에 물건 타일이 없어 porest 가 정한 부품 — 윤곽은 SEED Image Frame)." },
   { slug: "notification-badge", name: "Notification Badge", category: "Display", description: "안 읽은 알림 · 확인하지 않은 새 것이 있다는 신호 — 점(있음)과 숫자(몇 개 · 99+)를 아이콘 버튼 · 탭 글에 붙이고, 보면 사라진다 (SEED Notification Badge 구조)." },
   { slug: "page-banner", name: "Page Banner", category: "Display", description: "페이지 머리 바로 아래 화면 폭 전체로 놓여 그 페이지 전체의 상태(연결 끊김 · 만료 예정 · 새 버전)를 알리는 띠 — 한 화면에 하나 (SEED Page Banner 구조)." },
   { slug: "progress", name: "Progress", category: "Display", description: "\"얼마나 찼나\" 를 보이는 높이 8 미터 막대 — 예산 · 카드 한도처럼 쓸수록 차는 것과 저축 목표 · 카드 실적처럼 모을수록 차는 것, 넘친 한도만 위험 색 (SEED 에 선형 막대가 없어 porest 가 정한 부품 — 진행은 Progress Circle)." },

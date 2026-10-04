@@ -34,6 +34,7 @@ import {
   tone,
 } from './display-screens';
 import { Cap } from './select-screens';
+import { Logo } from './image-screens';
 import { Verdict, rc, type Mode } from './kit';
 
 type Fig = (p: { caption?: string }) => ReactNode;
@@ -262,13 +263,13 @@ const Stack: Fig = ({ caption }) => {
 const ThingGuide: Fig = ({ caption }) => (
   <Panel caption={caption}>
     <Pair stack>
-      <Verdict ok note="사람(공유 멤버)은 원 아바타, 자산 · 카테고리는 각진 타일">
+      <Verdict ok note="사람(공유 멤버)은 원 아바타, 자산은 로고 타일 · 카테고리는 List 타일 — 둘 다 각진 타일">
         <PhoneBoard>
           <Rows
             rows={[
               { kind: 'view', prefix: { person: '김민수' }, title: '김민수' },
               { kind: 'view', prefix: { person: '이서연' }, title: '이서연' },
-              { kind: 'button', prefix: { tile: 'blue', icon: 'credit-card' }, title: '현대카드 M', detailNode: <T items={items('신용', '결제일 14일')} size="t3" truncate />, suffix: { chevron: true } },
+              { kind: 'button', prefix: { node: <Logo name="현대카드" /> }, title: '현대카드 M', detailNode: <T items={items('신용', '결제일 14일')} size="t3" truncate />, suffix: { chevron: true } },
               { kind: 'button', prefix: { tile: 'orange', icon: 'utensils' }, title: '식비', detailNode: <T items={items('이번 달', '12건')} size="t3" truncate />, suffix: { chevron: true } },
             ]}
           />

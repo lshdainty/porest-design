@@ -7,29 +7,8 @@ description: |
   all-ages accessibility.
 
 colors:
-  # @sync:brand-start (colors-0)
-  # === v108 — 브랜드 팔레트(HR 초록). 파일 안에서는 접미사 없이 brand-100 ~ 1000, 단계마다 라이트 · 다크(-dark) ===
-  brand-100: "#EDF5F0"
-  brand-100-dark: "#222D28"
-  brand-200: "#E0EDE7"
-  brand-200-dark: "#25372E"
-  brand-300: "#B4CCC0"
-  brand-300-dark: "#264437"
-  brand-400: "#6AB192"
-  brand-400-dark: "#25523F"
-  brand-500: "#60927B"
-  brand-500-dark: "#216048"
-  brand-600: "#357B5F"
-  brand-600-dark: "#256D51"
-  brand-700: "#256D52"
-  brand-700-dark: "#357B5F"
-  brand-800: "#145A42"
-  brand-800-dark: "#599279"
-  brand-900: "#03452F"
-  brand-900-dark: "#72B898"
-  brand-1000: "#052B1E"
-  brand-1000-dark: "#CED6D2"
-  # @sync:brand-end (colors-0)
+  # === Brand-specific 토큰은 DESIGN.hr.md / DESIGN.desk.md로 분리 (v17) ===
+  # primary, primary-light, border-focus, border-focus-light: 각 brand 파일에서 정의
   
   # @sync:shared-start (colors-0)
   # === v108 — 팔레트(SEED 식 모드별). 가족마다 100 ~ 1000(회색은 00 을 더해 11단), 단계마다 라이트 · 다크(-dark) ===
@@ -239,12 +218,6 @@ colors:
   brown-1000-dark: "#F7F0EA"
   # @sync:shared-end (colors-0)
   
-  # @sync:brand-start (colors-1)
-  # === Brand (HR primary, single-brand 명명 — DESIGN.hr.md context) ===
-  primary: "{colors.fg-brand}"
-  primary-light: "{colors.fg-brand-dark}"
-  # @sync:brand-end (colors-1)
-  
   # @sync:shared-start (colors-1)
   # === Neutral - Page background (HR/Desk 공유) ===
   bg-page: "{colors.bg-layer-basement}"
@@ -274,11 +247,7 @@ colors:
   border-strong-dark: "{colors.stroke-neutral-solid-dark}"
   # @sync:shared-end (colors-1)
   
-  # @sync:brand-start (colors-2)
-  # === Brand - Focus ring (HR primary 시맨틱 alias) ===
-  border-focus: "{colors.stroke-focus-ring}"
-  border-focus-light: "{colors.stroke-focus-ring-dark}"
-  # @sync:brand-end (colors-2)
+  # === border-focus는 brand 파일로 분리 (v17) ===
   
   # @sync:shared-start (colors-2)
   # === Semantic - Status (functional palette, base + light 페어, 듀얼 브랜드 공유) ===
@@ -387,34 +356,6 @@ colors:
   chart-gray-light: "{colors.chart-gray-dark}"
   # @sync:shared-end (colors-2)
   
-  # @sync:brand-start (colors-3)
-  # === v102 — 브랜드 역할 색 (HR). 파일 안에서는 접미사 없이 같은 이름 ===
-  # 글자 (fg)
-  fg-brand: "{colors.brand-600}"
-  fg-brand-dark: "{colors.brand-900-dark}"
-  fg-brand-contrast: "{colors.brand-700}"
-  fg-brand-contrast-dark: "{colors.brand-900-dark}"
-  # v115 — 반전 표면(bg-neutral-inverted — 스낵바 액션) 위의 브랜드 글자. 라이트는 fg-brand 의 다크 값, 다크는 라이트 값
-  fg-brand-inverted: "{colors.brand-900-dark}"
-  fg-brand-inverted-dark: "{colors.brand-600}"
-  # 배경 (bg)
-  bg-brand-solid: "{colors.brand-600}"
-  bg-brand-solid-dark: "{colors.brand-700-dark}"
-  bg-brand-solid-pressed: "{colors.brand-700}"
-  bg-brand-solid-pressed-dark: "{colors.brand-600-dark}"
-  bg-brand-weak: "{colors.brand-100}"
-  bg-brand-weak-dark: "{colors.brand-200-dark}"
-  bg-brand-weak-pressed: "{colors.brand-200}"
-  bg-brand-weak-pressed-dark: "{colors.brand-300-dark}"
-  # 선 (stroke)
-  stroke-focus-ring: "{colors.brand-600}"
-  stroke-focus-ring-dark: "{colors.brand-900-dark}"
-  stroke-brand-solid: "{colors.brand-600}"
-  stroke-brand-solid-dark: "{colors.brand-900-dark}"
-  stroke-brand-weak: "{colors.brand-400}"
-  stroke-brand-weak-dark: "{colors.brand-800-dark}"
-  # @sync:brand-end (colors-3)
-  
   # @sync:shared-start (colors-3)
   # === v102 — SEED 역할 색 (fg · bg · stroke). 값은 porest 색이고, 옛 이름(text-* · surface-* · border-* · success …)은 같은 값의 별칭이다 ===
   # 글자 (fg)
@@ -516,10 +457,6 @@ colors:
   # v113 — 고른 선택 상자(Select Box)의 짙은 테두리(SEED stroke.neutral-contrast = gray-1000)
   stroke-neutral-contrast: "{colors.gray-1000}"
   stroke-neutral-contrast-dark: "{colors.gray-1000-dark}"
-  # v118 — 이미지 위 안쪽 1px 윤곽(Image Frame · Avatar · Logo Tile). SEED stroke.neutral-subtle 의 값 그대로 — 검정 4.7% · 다크 흰 5%.
-  # 투명도가 있는 색이라 팔레트 단계가 없다(static-white 처럼 값을 바로 적는다). 구분선 stroke-neutral-subtle 은 불투명 그대로다(사용자 결정 2026-10-04 이미지 비교 1A)
-  stroke-neutral-overlay: "#0000000C"
-  stroke-neutral-overlay-dark: "#FFFFFF0D"
   stroke-critical-solid: "{colors.red-700}"
   stroke-critical-solid-dark: "{colors.red-800-dark}"
   stroke-positive-solid: "{colors.green-700}"
@@ -772,15 +709,8 @@ spacing:
   screen-bottom: "56px"  # x14
 
 components:
-  # === Primary 버튼 (HR primary 채움 + 흰 텍스트) ===
-  button-primary:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.text-on-accent}"
-  
-  # === Outlined 버튼 (어두운 표면 위 primary-light 텍스트) ===
-  button-outline-on-dark:
-    backgroundColor: "{colors.surface-default-dark}"
-    textColor: "{colors.primary-light}"
+  # === Brand-specific 컴포넌트(button-primary, button-outline-on-dark)는
+  # === DESIGN.hr.md / DESIGN.desk.md로 분리 (v17)
   
   # === 카드 (surface 위 primary 텍스트) ===
   card-light:
@@ -826,11 +756,7 @@ components:
   outline-strong-dark:
     backgroundColor: "{colors.border-strong-dark}"
   
-  # === Focus ring (1px outline, sparse — primary 토큰이 contrast 검증 담당) ===
-  focus-ring-on-light:
-    backgroundColor: "{colors.border-focus}"
-  focus-ring-on-dark:
-    backgroundColor: "{colors.border-focus-light}"
+  # === focus-ring 컴포넌트는 brand 파일로 분리 (v17)
   
   # === Semantic 채움 badge (semantic 배경 + 흰 텍스트) ===
   badge-success:
@@ -1137,12 +1063,6 @@ components:
   role-critical-on-inverted-dark:
     backgroundColor: "{colors.bg-neutral-inverted-dark}"
     textColor: "{colors.fg-critical-inverted-dark}"
-  role-brand-on-inverted-light:
-    backgroundColor: "{colors.bg-neutral-inverted}"
-    textColor: "{colors.fg-brand-inverted}"
-  role-brand-on-inverted-dark:
-    backgroundColor: "{colors.bg-neutral-inverted-dark}"
-    textColor: "{colors.fg-brand-inverted-dark}"
   role-critical-on-layer-light:
     backgroundColor: "{colors.bg-layer-default}"
     textColor: "{colors.fg-critical}"
@@ -1287,11 +1207,6 @@ components:
     backgroundColor: "{colors.stroke-neutral-contrast}"
   role-stroke-neutral-contrast-dark:
     backgroundColor: "{colors.stroke-neutral-contrast-dark}"
-  # v118 — 이미지 위 투명 윤곽
-  role-stroke-neutral-overlay-light:
-    backgroundColor: "{colors.stroke-neutral-overlay}"
-  role-stroke-neutral-overlay-dark:
-    backgroundColor: "{colors.stroke-neutral-overlay-dark}"
   role-stroke-critical-solid-light:
     backgroundColor: "{colors.stroke-critical-solid}"
   role-stroke-critical-solid-dark:
@@ -1325,50 +1240,6 @@ components:
     backgroundColor: "{colors.stroke-informative-weak}"
   role-stroke-informative-weak-dark:
     backgroundColor: "{colors.stroke-informative-weak-dark}"
-  
-  # === v102 — 브랜드 역할 색 짝. 짝마다 대비를 lint 가 잰다(라이트 · 다크) ===
-  role-brand-on-layer-light:
-    backgroundColor: "{colors.bg-layer-default}"
-    textColor: "{colors.fg-brand}"
-  role-brand-on-layer-dark:
-    backgroundColor: "{colors.bg-layer-default-dark}"
-    textColor: "{colors.fg-brand-dark}"
-  role-on-brand-solid-light:
-    backgroundColor: "{colors.bg-brand-solid}"
-    textColor: "{colors.static-white}"
-  role-on-brand-solid-dark:
-    backgroundColor: "{colors.bg-brand-solid-dark}"
-    textColor: "{colors.static-white}"
-  role-on-brand-solid-pressed-light:
-    backgroundColor: "{colors.bg-brand-solid-pressed}"
-    textColor: "{colors.static-white}"
-  role-on-brand-solid-pressed-dark:
-    backgroundColor: "{colors.bg-brand-solid-pressed-dark}"
-    textColor: "{colors.static-white}"
-  role-brand-contrast-on-weak-light:
-    backgroundColor: "{colors.bg-brand-weak}"
-    textColor: "{colors.fg-brand-contrast}"
-  role-brand-contrast-on-weak-dark:
-    backgroundColor: "{colors.bg-brand-weak-dark}"
-    textColor: "{colors.fg-brand-contrast-dark}"
-  role-brand-contrast-on-weak-pressed-light:
-    backgroundColor: "{colors.bg-brand-weak-pressed}"
-    textColor: "{colors.fg-brand-contrast}"
-  role-brand-contrast-on-weak-pressed-dark:
-    backgroundColor: "{colors.bg-brand-weak-pressed-dark}"
-    textColor: "{colors.fg-brand-contrast-dark}"
-  role-stroke-focus-ring-light:
-    backgroundColor: "{colors.stroke-focus-ring}"
-  role-stroke-focus-ring-dark:
-    backgroundColor: "{colors.stroke-focus-ring-dark}"
-  role-stroke-brand-solid-light:
-    backgroundColor: "{colors.stroke-brand-solid}"
-  role-stroke-brand-solid-dark:
-    backgroundColor: "{colors.stroke-brand-solid-dark}"
-  role-stroke-brand-weak-light:
-    backgroundColor: "{colors.stroke-brand-weak}"
-  role-stroke-brand-weak-dark:
-    backgroundColor: "{colors.stroke-brand-weak-dark}"
   # === v108 — 팔레트 보기용. 역할이 쓰지 않는 단계도 검사기가 "쓰는 색" 으로 세게 한다 ===
   palette-gray-00:
     backgroundColor: "{colors.gray-00}"
@@ -1774,55 +1645,21 @@ components:
     backgroundColor: "{colors.brown-1000}"
   palette-brown-1000-dark:
     backgroundColor: "{colors.brown-1000-dark}"
-  palette-brand-100:
-    backgroundColor: "{colors.brand-100}"
-  palette-brand-100-dark:
-    backgroundColor: "{colors.brand-100-dark}"
-  palette-brand-200:
-    backgroundColor: "{colors.brand-200}"
-  palette-brand-200-dark:
-    backgroundColor: "{colors.brand-200-dark}"
-  palette-brand-300:
-    backgroundColor: "{colors.brand-300}"
-  palette-brand-300-dark:
-    backgroundColor: "{colors.brand-300-dark}"
-  palette-brand-400:
-    backgroundColor: "{colors.brand-400}"
-  palette-brand-400-dark:
-    backgroundColor: "{colors.brand-400-dark}"
-  palette-brand-500:
-    backgroundColor: "{colors.brand-500}"
-  palette-brand-500-dark:
-    backgroundColor: "{colors.brand-500-dark}"
-  palette-brand-600:
-    backgroundColor: "{colors.brand-600}"
-  palette-brand-600-dark:
-    backgroundColor: "{colors.brand-600-dark}"
-  palette-brand-700:
-    backgroundColor: "{colors.brand-700}"
-  palette-brand-700-dark:
-    backgroundColor: "{colors.brand-700-dark}"
-  palette-brand-800:
-    backgroundColor: "{colors.brand-800}"
-  palette-brand-800-dark:
-    backgroundColor: "{colors.brand-800-dark}"
-  palette-brand-900:
-    backgroundColor: "{colors.brand-900}"
-  palette-brand-900-dark:
-    backgroundColor: "{colors.brand-900-dark}"
-  palette-brand-1000:
-    backgroundColor: "{colors.brand-1000}"
-  palette-brand-1000-dark:
-    backgroundColor: "{colors.brand-1000-dark}"
 ---
 
-## Overview — Porest HR (B2B)
+## Overview
 
-본 파일은 **Porest HR(B2B 조직 관리)** 단독 self-contained 디자인 시스템(v17~). 공유 baseline은 `DESIGN.md` 참조. 본 파일에서 토큰명의 `-hr` 접미사는 컨텍스트가 HR로 암묵적이라 생략 — `primary` = `#357B5F` (forest green), `button-primary` 등.
-
-Desk(B2C 개인 생산성)는 별도 `DESIGN.desk.md` 파일 — `primary` = `#0147AD` (deep navy).
+Porest는 "사람과 일상이 숲처럼 자라나는" 가치를 담은 듀얼 브랜드 시스템입니다.
+HR(조직 관리, B2B)과 Desk(개인 생산성, B2C)는 동일한 골격을 공유하되 primary 색상으로만 분기합니다.
 
 레퍼런스 — 토스의 신뢰감 있는 미니멀리즘, 전 연령 가독성.
+
+### 파일 분리 (v17부터)
+- **`DESIGN.md`** (이 파일): 공유 baseline — typography, spacing, rounded, neutral colors, neutral components. brand-agnostic이므로 `primary` literal 미정의 → lint missingPrimary warning 1건 영구 수용(공유 라이브러리 진실 신호).
+- **`DESIGN.hr.md`**: HR 브랜드 self-contained 시스템 — 공유 토큰 복제 + HR primary `#357B5F` + HR brand 컴포넌트. brand 컨텍스트가 암묵적이라 토큰명에 `-hr` 접미사 없음(`primary`, `border-focus`, `button-primary` 등).
+- **`DESIGN.desk.md`**: Desk 브랜드 self-contained 시스템 — 공유 토큰 복제 + Desk primary `#0147AD`.
+- **lint**: `npm run lint:all`로 3파일 검증. HR/Desk 파일은 0 warnings, DESIGN.md만 missingPrimary 1건.
+- **공유 토큰 변경 시**: 3파일 모두 수동 동기 — design.md spec이 cross-file token reference 미지원이라 자동화 불가.
 
 ## Colors
 
@@ -1943,7 +1780,6 @@ v108 로 크게 바뀐 색을 지금 제품 값(Desk 웹 `porest-tokens.css` · 
 | `stroke-neutral-weak` | gray-400 | gray-400 | — |
 | `stroke-neutral-solid` | gray-600 | gray-600 | gray-800 / gray-800 (v109) |
 | `stroke-neutral-contrast` | gray-1000 | gray-1000 | — (v113) |
-| `stroke-neutral-overlay` | 검정 4.7%(`#0000000C`) | 흰 5%(`#FFFFFF0D`) | — (v118 — SEED stroke.neutral-subtle 의 값. 투명도가 있어 팔레트 단계가 아니다) |
 
 의미 색은 네 역할이 같은 단계를 쓴다 — critical → red · positive → green · warning → orange · informative → blue.
 
@@ -1978,7 +1814,6 @@ SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채�
 - fg-placeholder — SEED 600 → 700. 600 은 입력칸(bg-neutral-weak) 위에서 3.87:1(다크 3.18:1)이다.
 - 의미 색 글자 · 선(fg-* · stroke-*-solid)의 다크 — SEED 700 → 800. 다크 700 은 어두운 표면 위 2.9:1 안팎이다 — 흰 글자를 얹는 채움 눌림 자리라 어두워야 한다.
 - stroke-neutral-subtle — SEED 는 투명도 있는 검정 · 흰색이다. 검사기가 8자리 hex 를 받지 않아 gray-300 에 둔다.
-- (v118) stroke-neutral-overlay — SEED stroke.neutral-subtle 의 투명한 값(검정 4.7% · 흰 5%)을 이미지 · 아바타 · 로고 타일 위 1px 윤곽에만 쓰는 역할로 따로 둔다. porest 의 stroke-neutral-subtle 은 구분선 · 목록 선이라 불투명 그대로다 — 같은 이름에 두 값을 둘 수 없어 이름을 나눴다. 이름의 overlay 는 "내용 위에 얹는"(SEED bg.overlay 와 같은 뜻)이다 — 굵기 단계(subtle · weak · solid · contrast)가 아니라 자리를 말한다. 불투명한 선을 그림 둘레에 그리면 어두운 사진 · 카드 둘레에 옅은 테가 생긴다(사용자 결정 2026-10-04 이미지 비교 1A). 검사기(`@google/design.md`)를 0.4 로 올려 8자리 hex 를 받는다 — 위 줄의 "받지 않아" 는 0.1 때 이유다.
 - warning — SEED 의 주의 색은 노랑이고 채움 위 글자가 검정이다. porest 는 주황 + 흰 글자를 그대로 두고, 단계는 다른 의미 색과 같은 규칙으로 앉혔다.
 - bg-positive-solid 의 다크 — SEED 는 500(눌림 600)이다. 다른 의미 색과 맞춰 600(눌림 700)에 둔다.
 - 브랜드 채움의 다크 — Desk 는 브랜드 색이 어두워(L* 33) 채움을 지금 값(#0147AD)과 같은 무게인 500 에 둔다(ΔE 1.4). 눌림은 SEED 의 800 이 흰 글자 3.76:1 이라 700 이다. HR 은 채움이 SEED 대로 700 이고, 눌림은 800 이 흰 글자 3.61:1 이라 600(더 어둡게)이다.
@@ -2074,7 +1909,6 @@ SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채�
 | `stroke-neutral-weak` | `#E5E8EF` | `#404757` | border-default | border-default |
 | `stroke-neutral-solid` | `#767C8B` | `#838997` | border-strong | border-strong |
 | `stroke-neutral-contrast` | `#1A1F2E` | `#F5F6FA` | — | — |
-| `stroke-neutral-overlay` | `#0000000C` | `#FFFFFF0D` | — | — |
 | `stroke-critical-solid` | `#D72323` | `#FF8477` | error | status-danger-border |
 | `stroke-positive-solid` | `#167F3F` | `#25C062` | success | status-success-border |
 | `stroke-warning-solid` | `#BE490D` | `#FF8758` | warning | status-warning-border |
@@ -2086,20 +1920,7 @@ SEED 의 warning 은 주황이 아니라 yellow 이고 단계도 다르다(채�
 
 #### 브랜드 역할
 
-이 파일에만 있다. 다른 브랜드 파일에 같은 이름으로 다른 값이 있다.
-
-| 역할 | 라이트 | 다크 | 옛 이름 | Desk 웹 이름 |
-|---|---|---|---|---|
-| `fg-brand` | `#357B5F` | `#72B898` | primary · primary-light | fg-brand · fg-link |
-| `fg-brand-contrast` | `#256D52` | `#72B898` | — | fg-brand-strong |
-| `fg-brand-inverted` | `#72B898` | `#357B5F` | — | — |
-| `bg-brand-solid` | `#357B5F` | `#357B5F` | primary | bg-brand |
-| `bg-brand-solid-pressed` | `#256D52` | `#256D51` | — | bg-brand-press · bg-brand-hover |
-| `bg-brand-weak` | `#EDF5F0` | `#25372E` | — | bg-brand-subtle |
-| `bg-brand-weak-pressed` | `#E0EDE7` | `#264437` | — | bg-brand-muted |
-| `stroke-focus-ring` | `#357B5F` | `#72B898` | border-focus · border-focus-light | border-focus |
-| `stroke-brand-solid` | `#357B5F` | `#72B898` | — | border-brand |
-| `stroke-brand-weak` | `#6AB192` | `#599279` | — | border-brand-soft |
+브랜드 파일(DESIGN.hr.md · DESIGN.desk.md)에만 있다 — fg-brand · fg-brand-contrast · bg-brand-solid · bg-brand-solid-pressed · bg-brand-weak · bg-brand-weak-pressed · stroke-focus-ring · stroke-brand-solid · stroke-brand-weak. 파일 안에서는 같은 이름이다.
 
 #### 값을 만든 규칙
 
@@ -2117,14 +1938,10 @@ v102 때의 규칙이다. v108 부터 값은 팔레트 단계에서 온다 — �
 porest 화면에 아직 쓰는 자리가 없다. 자리가 생기면 위 규칙으로 더한다.
 
 - bg.neutral-solid — 짙은 회색 채움(bg.neutral-inverted-pressed 는 v112 에 Button 의 누름으로 들였다)
-- bg.neutral-weak-alpha · bg.transparent-*(4) — 투명도 있는 배경. 필요하면 v118 의 stroke-neutral-overlay 처럼 역할 색으로 둔다(검사기 0.4 부터 8자리 hex 를 받는다)
+- bg.neutral-weak-alpha · bg.transparent-*(4) — 투명도 있는 배경. 필요하면 overlay 처럼 표 토큰으로 따로 둔다
 - bg.overlay · bg.overlay-muted — Elevation 의 overlay-dim 이 같은 자리다
-- stroke.neutral-muted — 구분선은 stroke-neutral-subtle 하나로 그린다(Divider 2026-10-03 — SEED 기본 neutral-muted 와 같은 진하기 1.15). stroke.neutral-contrast 는 v113 에 Select Box 의 고른 테두리로, stroke.*-weak(4)는 v117 에 Badge outline 의 옅은 테두리로, stroke.neutral-subtle 의 투명한 값은 v118 에 이미지 위 윤곽(stroke-neutral-overlay)으로 들였다
+- stroke.neutral-muted — 구분선은 stroke-neutral-subtle 하나로 그린다(Divider 2026-10-03 — SEED 기본 neutral-muted 와 같은 진하기 1.15). stroke.neutral-contrast 는 v113 에 Select Box 의 고른 테두리로, stroke.*-weak(4)는 v117 에 Badge outline 의 옅은 테두리로 들였다
 - bg.magic-weak · bg.layer-fill — 당근 AI 기능 전용 · SEED 에서도 없어질 이름
-
-#### HR 웹
-
-HR 웹은 아직 porest 색에 이어지지 않았다 — shadcn 기본 테마 그대로라 주 색이 파랑(#2563EB)이다. 2026-09-29 사용자가 앱 적용 단계에서 이 파일의 HR 색(초록 #357B5F)으로 옮기기로 정했다.
 
 ### v104 — 그라디언트 (2026-09-29)
 
@@ -2155,9 +1972,7 @@ HR 웹은 아직 porest 색에 이어지지 않았다 — shadcn 기본 테마 �
 - 본문 텍스트 4.5:1 대상
   - `#000` on `surface-default` = **21.0:1** ✅ / `#FFF` on `surface-default-dark` = **14.3:1** ✅
   - `#000` on `surface-input` = **18.8:1** ✅ / `#FFF` on `surface-input-dark` = **12.3:1** ✅
-- 브랜드 accent 호환 (버튼/아이콘 1차 용도 — UI 3:1 기준)
-  - `primary` on `surface-default` **5.16:1** / on `surface-input` **4.61:1** — 본문도 통과
-  - (당시 Desk primary 검증은 `DESIGN.desk.md` 참조 — 본 파일은 HR 단독)
+- 브랜드 primary 호환 (버튼/아이콘 1차 용도): brand 파일에서 자체 검증. v1 시점 `accent-*` 시리즈는 라이트 표면 위 ~5:1대로 본문 통과 (v14에서 `primary-*` 신규 값으로 갱신, brand 파일 v14 prose 참조).
 - 표면 간 elevation 대비(`surface-default` vs `bg-page` ≈ 1.08:1)는 WCAG 3:1 비대상(본문/UI 컴포넌트 규정 아님). 의도된 미묘 elevation.
 
 #### HR / Desk 듀얼 브랜드
@@ -2192,10 +2007,10 @@ surface 페어 위에서 본문 가독성을 확보하기 위한 최소 텍스�
 | text-secondary | surface-input | 6.32 | AA |
 | text-secondary-dark `#B0B8C4` | surface-default-dark | 7.41 | AAA |
 | text-secondary-dark | surface-input-dark | 6.37 | AA |
-| text-on-accent `#FFFFFF` | primary | 5.16 | AA |
+| text-on-accent `#FFFFFF` | (brand primary) | brand 파일에서 검증 | — |
 
 #### HR / Desk 듀얼 브랜드
-- `text-on-accent` 단일 값(`#FFFFFF`)이 양 브랜드 accent에서 본문 4.5:1 통과 — 브랜드별 분기 불필요.
+- `text-on-accent` 단일 값(`#FFFFFF`)이 양 브랜드 primary에서 본문 4.5:1 통과 (각 brand 파일에서 자체 검증) — 브랜드별 분기 불필요.
 - primary·secondary는 neutral 토큰으로 양 브랜드 공유. accent 색상에 의존하지 않음.
 
 ### Border (v3 추가)
@@ -2208,7 +2023,7 @@ border는 시맨틱 계층을 둘로 분리합니다 — 장식적 외곽선과 
 #### 추가 이유
 1. v1 surface 페어 + v2 text 페어가 확정됐으므로 표면 위 컴포넌트 외곽선 검증이 가능 — 입력·버튼 컴포넌트 스펙 작성의 차단 요소 해소.
 2. 장식/필수 분리로 디자이너가 "어느 border를 써야 3:1을 충족하는가" 의사결정을 토큰 이름에서 즉시 판단 가능.
-3. `border-focus`는 이번 배치에서 보류 — HR primary가 `surface-default-dark`에서 3:1 미달(2.77:1)이므로 `accent-*-light` 변형이 정의된 후 추가하는 편이 안전. 그 전까지 포커스 링은 `border-strong`을 임시 활용 가능. (v7~v16에서 단계적 해소, 본 파일에서 `border-focus` 토큰 정의 완료.)
+3. `border-focus`는 이번 배치에서 보류 — 당시 brand accent가 어두운 표면 대비 3:1 미달(brand 파일 v7 prose 참조)이라 brand light 변형 도입 후 추가가 안전. 임시로는 `border-strong` 활용 가능. (v7~v16에서 단계적 해소 완료, brand 파일에서 `border-focus` 토큰 정의됨.)
 
 #### WCAG 검증 (사전 계산)
 
@@ -2235,45 +2050,6 @@ border는 시맨틱 계층을 둘로 분리합니다 — 장식적 외곽선과 
 #### HR / Desk 듀얼 브랜드
 - 모든 border는 neutral 토큰 — 브랜드 accent에 의존하지 않음, 양 브랜드 공유.
 - 미래 `border-focus`는 accent 기반(브랜드 분기) 또는 neutral 기반 단일 토큰 중 선택 — 다크 모드 accent 변형 결정 후 일관 적용.
-
-### Brand light variants (v7 추가, v8 명명 정정)
-
-어두운 표면(다크 모드의 모든 표면 + 라이트 모드의 검정 배너·hero 등 포함, **모드 무관**) 위에서 브랜드 accent를 텍스트·아이콘·외곽선·focus 링 등 **비채움 사용**으로 안전하게 쓰기 위한 lightness 변형 페어. v3 `border-focus` 보류의 차단 사유였던 "accent의 어두운 표면 3:1 미달"을 해소합니다.
-
-> **v8 명명 정정**: 초기 명칭 `accent-*-on-dark`는 mode pair 접미사(`-dark`: 다크 모드 사용)와 표면 컨텍스트 접미사를 혼동시켜 → `accent-*-light`로 변경. `-light`는 lightness variant 의미로 고정(accent에는 mode pair `-dark`가 존재하지 않으므로 충돌 없음). 라이트 모드의 어두운 영역(검정 배너, dark hero)에서도 정당한 사용이 명명에 반영됨.
-
-| 토큰 | hex | 사용 |
-|---|---|---|
-| `primary-light` | `#3FBF74` | 어두운 표면(다크 모드 + 라이트 모드 검정 배너 등) 위 HR primary 텍스트·아이콘·outline 버튼·focus 링 |
-
-#### 추가 이유
-1. v3에서 `border-focus`가 보류된 직접 원인 해소 — HR primary 2.77:1로 `surface-default-dark` 대비 3:1 미달. 다크 lightness 변형으로 4.5:1 이상 확보.
-2. **5개 한도 중 2개만 추가** — CLAUDE.md "사용자가 명시적으로 요청하지 않은 토큰 추가 금지" 준수. 별도 `border-focus` 토큰은 컴포넌트 레벨 표면 컨텍스트 분기(밝은 표면=`accent-{brand}`, 어두운 표면=`accent-{brand}-light`)로 해결 가능하므로 미추가.
-3. 동일 brand family 내 lightness만 조정 — HR 녹색, Desk 청색의 시각 식별성 유지.
-
-#### WCAG 검증 (사전 계산)
-
-본문 4.5:1 — 모든 다크 표면 통과:
-
-| 텍스트 | 다크 표면 | 대비 | 결과 |
-|---|---|---|---|
-| primary-light `#3FBF74` (L=0.396) | surface-default-dark | 6.07 | ✅ AAA |
-| primary-light | bg-page-dark | 6.89 | ✅ AAA |
-| primary-light | surface-input-dark | 5.23 | ✅ AA |
-
-#### 채움 fill 비호환 — 사용 경계 명시
-
-`accent-*-light` 위에 `text-on-accent` (`#FFFFFF`) 사용 시 본문 대비:
-- on `primary-light`: **2.36:1** ❌
-
-따라서 **다크 모드 채움 버튼 fill은 `primary`(원래 값)를 유지**합니다. 흰 텍스트 5.16:1로 본문 통과. 단, 이 경우 버튼 외곽 vs 다크 표면 대비는 2.77:1로 3:1 미달 — Toss·Material 패턴처럼 **inset shadow 또는 명시적 1px 외곽선**(예: `border-strong-dark`)으로 컴포넌트 식별 보강 필요(컴포넌트 스펙에서 처리).
-
-요약하면:
-- **다크 채움 버튼**: bg = `primary`, text = `text-on-accent`(`#FFFFFF`), 외곽선 = `border-strong-dark` 보강
-- **어두운 표면 비채움 사용**(outline 버튼 텍스트·링크·아이콘·focus, 라이트/다크 모드 무관): `primary-light`
-
-#### HR / Desk 듀얼 브랜드
-- 각 브랜드 dedicated 변형 — neutral 토큰이 아닌 brand-specific. 표면 컨텍스트 페어: 밝은 표면용 `accent-{brand}` · 어두운 표면용 `accent-{brand}-light`.
 
 ### Text tertiary (v11 추가)
 
@@ -2353,9 +2129,11 @@ design.md `contrastCheck` 룰은 incidental 인지 없이 모든 `backgroundColo
 #### HR / Desk 듀얼 브랜드
 - neutral 토큰 — 양 브랜드 공유. accent에 의존 없음.
 
-### Semantic colors (v10 추가, v51-v52에서 vivid refresh)
+### Semantic colors (v10 추가)
 
-상태 전달을 위한 functional palette — 브랜드 정체성과 분리된 4개 status. HR/Desk 양 브랜드 공유, 라이트 표면 base만 이번 배치에서 확정. **현재 사용 hex는 v51-v52 이후 vivid 톤** (DESIGN.md `### Semantic refresh` 섹션 참조). v10 시점 hex는 변천 history.
+상태 전달을 위한 functional palette — 브랜드 정체성과 분리된 4개 status. HR/Desk 양 브랜드 공유, 라이트 표면 base만 이번 배치에서 확정.
+
+**현재 사용 hex는 v51-v52 vivid refresh 후** (아래 `Semantic refresh` 섹션 참조). v10 시점 hex는 변천 history.
 
 | 토큰 | v10 hex (이전) | v51-v52 hex (**현재**) | 시맨틱 |
 |---|---|---|---|
@@ -2391,23 +2169,139 @@ design.md `contrastCheck` 룰은 incidental 인지 없이 모든 `backgroundColo
 - 다크 표면 위 semantic 표시: ~v19까지 `success`/`error` base 색은 다크 표면 위 contrast 미달 → **v20에서 `-light` 변형 도입으로 해소** (아래 v20 섹션 참조).
 - `border-vs-surface` 패턴은 spec에 borderColor 없어 영구 자동 검증 불가 (v9 한계 그대로).
 
-### Chart palette (v21 추가, 4 배치 진행 중)
+### Semantic refresh — vivid tone (v51 추가)
 
-데이터 시각화용 hue-균등 10색 팔레트. 양 brand 공유(unified, primary는 brand-specific 유지). L≈0.16-0.18로 통일.
+base 4개 vivid 갱신. light 변형은 v20에서 검증된 다크 alert contrast 회귀 회피 위해 보존.
 
-**v21 (1/4)**: light 표면 5색 — red, orange, yellow, green, blue. **v22 예정**: indigo, violet, pink, brown, gray. **v23-v24 예정**: dark 변형 10색.
+| 토큰 | v10 → v51 | 변화 |
+|---|---|---|
+| `success` | `#117A3A` → `#16803F` | deep forest → emerald (Tailwind green-700 톤) |
+| `error` | `#C53030` → `#DC2626` | brick → vivid red (Linear/Tailwind red-600 톤) |
+| `warning` | `#A85800` → `#C84D0E` | brown amber → 명확한 orange. v52에서 미세 brighten (1차 `#C2410C` 어두운 인상 → L 0.15 → 0.17) |
+| `info` | `#006395` → `#1D6FCB` | deep navy → sky blue |
 
-토큰(v21 기록 — v110 에서 팔레트 700 단계로 옮겼다, 지금 값은 Colors 의 v110 절): `chart-red` `#C73838`, `chart-orange` `#B36418`, `chart-yellow` `#8C7400`, `chart-green` `#2D8060`, `chart-blue` `#2C70BF`. sparse component(`chart-color-{name}`)로 referencing. chart는 brand 분기 비대상 — 양 brand 동일 사용. primary와 hue 비슷할 수 있으나 역할 분리(별도 토큰).
+#### 변경 이유
+v10 base는 본문 4.5:1 안전 마진을 위해 L 0.13~0.17로 어둡게 잡혀 UI 무드가 칙칙. `text-on-accent`(white) 위 contrast 5~7:1로 과도한 마진 — L을 0.16~0.22로 조정해 4.5:1 통과 (`success`는 emerald hue 특성상 가장 빠듯하게 L 0.16). hue rotate는 최소화 (warning만 brown amber → orange로 미세 이동 — 갈색 인상이 칙칙함의 주범).
 
-#### v20 추가, v53 vivid refresh — semantic 다크 변형 4개
+#### 색상 대비 — lint 실측 결과 (손계산 아님)
 
-다크 표면 위 alert·toast·인라인 semantic 텍스트용 lightness 변형. base는 라이트 표면 전용(흰 텍스트 fill 4.5:1↑), light는 다크 표면 위 텍스트 4.5:1↑. **현재 사용 hex는 v53 이후 Tailwind 400 톤** (DESIGN.md `### Semantic light refresh` 섹션 참조).
+기존 8 페어를 그대로 사용 — components 섹션 변경 없음. lint가 새 hex 기준으로 contrast-ratio 자동 재검증.
 
-| 토큰 | v20 hex (이전) | v53 hex (**현재**) | 다크 표면 contrast |
+| component | bg | text | v51 lint 판정 |
+|---|---|---|---|
+| `badge-success` | success `#16803F` | text-on-accent | ✅ ≥4.5:1 |
+| `badge-error` | error `#DC2626` | text-on-accent | ✅ ≥4.5:1 |
+| `badge-warning` | warning `#C84D0E` | text-on-accent | ✅ ≥4.5:1 |
+| `badge-info` | info `#1D6FCB` | text-on-accent | ✅ ≥4.5:1 |
+| `alert-text-success` | surface-default | success | ✅ ≥4.5:1 |
+| `alert-text-error` | surface-default | error | ✅ ≥4.5:1 |
+| `alert-text-warning` | surface-default | warning | ✅ ≥4.5:1 |
+| `alert-text-info` | surface-default | info | ✅ ≥4.5:1 |
+
+(`npm run lint:all` 통과 — 0 errors, 0 contrast warnings. 8 페어 전부 silent pass.)
+
+#### light 변형 보존 이유 (v51 시점)
+v51에서는 `success-light`/`error-light`/`warning-light`/`info-light`를 v20 검증 hex 그대로 유지 — 변경 시 다크 alert contrast 회귀 위험을 우선 고려. **v53에서 vivid 톤으로 갱신** — 아래 `Semantic light refresh` 섹션 참조.
+
+### Semantic light refresh — vivid tone (v53 추가)
+
+v51에서 보류했던 light 변형 4개를 base와 hue 일관성 + 시각 통일감 위해 vivid 톤으로 갱신. Tailwind 400 톤 채택 (base는 600/700, light는 400 — 표준 lighter scale).
+
+| 토큰 | v20 → v53 | 변화 |
+|---|---|---|
+| `success-light` | `#5DC07B` → `#4ADE80` | cool emerald → vivid green-400 (saturation ↑) |
+| `error-light` | `#F08080` → `#F87171` | coral 유지, 살짝 saturated red-400 |
+| `warning-light` | `#E8A05A` → `#FB923C` | amber → 명확한 orange-400 (가장 큰 변화 — base와 hue 일치) |
+| `info-light` | `#6FAEDF` → `#60A5FA` | sky 유지, vivid blue-400 |
+
+#### 변경 이유
+1. v51 base를 vivid 톤으로 갱신 후 v20 light는 hue 일관성 약간 어긋남 (warning base orange vs light amber, success base emerald vs light cool-green).
+2. 다크 alert 4.5:1 contrast 마진은 v20 4.75~6.5:1로 충분 — vivid 톤(L 0.4~0.6)으로 가도 통과.
+3. Tailwind 400 톤 채택 — base 600/700과 hue 일관, lighter scale 표준.
+
+#### 색상 대비 — lint 실측 결과 (손계산 아님)
+
+4 페어를 components 섹션의 `alert-text-{semantic}-on-dark`로 lint contrast-ratio 직접 검증:
+
+| component | text | bg | v53 lint 판정 |
+|---|---|---|---|
+| `alert-text-success-on-dark` | success-light `#4ADE80` | surface-input-dark | ✅ ≥4.5:1 |
+| `alert-text-error-on-dark` | error-light `#F87171` | surface-input-dark | ✅ ≥4.5:1 |
+| `alert-text-warning-on-dark` | warning-light `#FB923C` | surface-input-dark | ✅ ≥4.5:1 |
+| `alert-text-info-on-dark` | info-light `#60A5FA` | surface-input-dark | ✅ ≥4.5:1 |
+
+(`npm run lint:all` 통과 — 0 errors, 0 contrast warnings. 4 페어 silent pass.)
+
+#### 채움 fill 비호환 유지
+v20과 동일 — light 위에 white 올리면 contrast 2~3:1 미달. 다크 모드 채움 badge는 여전히 base 색 + 외곽선 보강 또는 별도 패턴(향후 검토).
+
+### Chart palette (v21 도입, 4 배치 완료)
+
+**v110 에서 팔레트 단계로 옮겼다** — 아래 표는 v21 ~ v24 값의 기록이다. 지금 값은 Colors 의 v110 절(라이트 700 · 다크 800-dark)에 있다.
+
+데이터 시각화용 hue-균등 10색 팔레트. 양 brand 공유(unified, primary는 brand-specific 유지). L≈0.16-0.18로 통일해 어떤 색이 데이터 차원을 강조하지 않게 시각 균형 확보.
+
+| Batch | Status | 토큰 | 표면 | L 범위 |
+|---|---|---|---|---|
+| v21 (1/4) | ✅ | `chart-{red,orange,yellow,green,blue}` | light bg-page | 0.15-0.19 |
+| v22 (2/4) | ✅ | `chart-{indigo,violet,pink,brown,gray}` | light bg-page | 0.16-0.19 |
+| v23 (3/4) | ✅ | `chart-{red,orange,yellow,green,blue}-light` | dark surface | ≈0.45-0.55 |
+| v24 (4/4) | ✅ | `chart-{indigo,violet,pink,brown,gray}-light` | dark surface | ≈0.45-0.55 |
+
+#### 손계산 휘도 (lint sparse 검증, contrast 룰 미발동)
+
+| 토큰 | v21 hex | L | bg-page 위 contrast | v110 |
+|---|---|---|---|---|
+| `chart-red` | `#C73838` | 0.153 | 4.85 | `#D72323` |
+| `chart-orange` | `#B36418` | 0.187 | 4.10 | `#BE490D` |
+| `chart-yellow` | `#8C7400` | 0.180 | 4.22 | `#8C7400` |
+| `chart-green` | `#2D8060` | 0.169 | 4.45 | `#167F3F` |
+| `chart-blue` | `#2C70BF` | 0.159 | 4.66 | `#1D6EC9` |
+
+`chart-orange`(4.10), `chart-yellow`(4.22)는 본문 4.5:1 미달이나 chart fill 용도라 **UI 1.4.11 (3:1)** 기준 통과 — chart bar/line/marker로 사용 시 적정. 차트 위 inline 텍스트로는 사용 부적합 (텍스트는 `text-primary`/`text-secondary` 사용).
+
+#### v22 hex (light surface 추가 5색 — sparse 손계산 휘도)
+
+| 토큰 | v22 hex | v110 |
+|---|---|---|
+| `chart-indigo` | `#5E60C8` | `#5E60C8` |
+| `chart-violet` | `#8B4DBA` | `#8B4DBA` |
+| `chart-pink` | `#B83B7A` | `#B83B7A` |
+| `chart-brown` | `#9A6536` | `#9A6536` |
+| `chart-gray` | `#6B7484` | `#62697A` |
+
+v21 동일 정책 — light 표면 위 chart fill, UI 1.4.11 (3:1) 기준 통과. 일부 본문 4.5:1 미달도 chart bar/line/marker 용도 적정.
+
+#### v23-v24 hex (dark surface — `chart-*-light`, L≈0.45-0.55 — v110 에서 `chart-*-dark` 로, 옛 이름은 별칭)
+
+| 토큰 | hex | 토큰 | hex |
+|---|---|---|---|
+| `chart-red-light` | `#ECA0A0` | `chart-indigo-light` | `#ABB0F0` |
+| `chart-orange-light` | `#E8B266` | `chart-violet-light` | `#D2A8EC` |
+| `chart-yellow-light` | `#D4B83A` | `chart-pink-light` | `#ECA0BC` |
+| `chart-green-light` | `#6BCB86` | `chart-brown-light` | `#DCB088` |
+| `chart-blue-light` | `#7BBBED` | `chart-gray-light` | `#B5BBC5` |
+
+다크 표면 위 chart fill — 정량 lint 검증은 `chart-color-{name}-on-dark` 컴포넌트 sparse 매핑 시 활성 (현재 `chart-color-{name}` 단일 매핑, light surface 기준).
+
+#### sparse component 패턴
+각 chart 토큰은 `chart-color-{name}` (backgroundColor만)에서 referencing. v9 divider, v13 disabled-label, v16 focus-ring과 동일 — orphan 회피 + spec 한계(chart는 component property 아님) 우회.
+
+#### 듀얼 브랜드 — unified (배치 1과 다름)
+- chart는 functional data palette — brand 분기 비대상. HR/Desk 동일 10/20색 사용 (v22 5색 + v23-v24 dark 변형 모두 동일 정책).
+- primary는 brand별 유지(`DESIGN.hr.md` `#357B5F`, `DESIGN.desk.md` `#0147AD`). chart-green과 primary-hr는 비슷한 hue지만 별도 토큰 — 역할 분리.
+
+#### v20 추가 — semantic 다크 변형 4개
+
+다크 표면 위 alert·toast·인라인 semantic 텍스트용 lightness 변형. base는 라이트 표면 전용(흰 텍스트 fill 4.5:1↑), light는 다크 표면 위 텍스트 4.5:1↑.
+
+**현재 사용 hex는 v53 vivid refresh 후** (Tailwind 400 톤). v20 시점 hex는 변천 history.
+
+| 토큰 | v20 hex (이전) | v53 hex (**현재**) | 다크 표면 contrast (Tailwind 400 톤) |
 |---|---|---|---|
 | `success-light` | `#5DC07B` | `#4ADE80` | surface-default-dark ≥4.5:1 ✅ (Tailwind green-400) |
 | `error-light` | `#F08080` | `#F87171` | surface-default-dark ≥4.5:1 ✅ (Tailwind red-400) |
-| `warning-light` | `#E8A05A` | `#FB923C` | surface-default-dark ≥4.5:1 ✅ (Tailwind orange-400 — 가장 큰 hue 변화, base와 일치) |
+| `warning-light` | `#E8A05A` | `#FB923C` | surface-default-dark ≥4.5:1 ✅ (Tailwind orange-400) |
 | `info-light` | `#6FAEDF` | `#60A5FA` | surface-default-dark ≥4.5:1 ✅ (Tailwind blue-400) |
 
 4개 컴포넌트(`alert-text-{semantic}-on-dark`)에서 lint contrast 룰로 검증 — 모두 ≥4.5:1 통과.
@@ -2416,141 +2310,25 @@ design.md `contrastCheck` 룰은 incidental 인지 없이 모든 `backgroundColo
 
 #### HR / Desk 듀얼 브랜드
 - 8개 토큰 모두 양 브랜드 동일 사용 — functional state 전달은 브랜드 분기 비대상.
-- 시각 차별화: `success`(forest)는 HR `primary`(emerald 계열)와 미세 hue 분리, `info`(deep navy)는 Desk primary(vibrant blue 계열)와 채도 분리. 단 단독 노출 시 식별성을 위해 컴포넌트 레벨에서 아이콘(✓/✕/!/i) 동반을 권장.
+- 시각 차별화: `success`(forest)는 HR primary(emerald 계열)와 미세 hue 분리, `info`(deep navy)는 Desk primary(vibrant blue 계열)와 채도 분리. 단 단독 노출 시 식별성을 위해 컴포넌트 레벨에서 아이콘(✓/✕/!/i) 동반을 권장(prose 가이드 영역).
 - 컴포넌트는 brand 컨텍스트(HR vs Desk) × 모드 컨텍스트(light vs dark) 매트릭스로 4값 분기 — 토큰 자체에 분기 표현됨.
 
-### Brand refresh + Desk neutral fork (v14 추가)
+### Brand history (v7~v16) — brand 파일로 이전 (v17 분리)
 
-브랜드 리프레시: HR/Desk **primary** 색을 더 깊고 차분한 톤으로 갱신, neutral page background를 브랜드별로 분리. 이전 `accent-*` 시리즈는 모두 `primary-*`로 rename 됨(spec 권장 명명 정합).
+v7 (brand light variants) · v14 (brand refresh + temporary bg-page fork) · v16 (border-focus) prose는 모두 brand-specific이므로 v17 file split 시 `DESIGN.hr.md` / `DESIGN.desk.md`로 이전. 본 파일은 brand-agnostic이라 history도 보유하지 않음.
 
-#### 토큰 변경 매트릭스
+요약 trace (전체는 brand 파일 참조):
+- v7: 어두운 표면용 brand light variant 도입 (`primary-*-light`)
+- v8: `accent-*-on-dark` → `accent-*-light` 명명 정정
+- v14: `accent-*` → `primary-*` rename + brand 톤 갱신, bg-page를 일시 brand 분리
+- v15: bg-page 단일 `#F5F6FA`로 재통합 (현재 상태)
+- v16: `border-focus-*` 시맨틱 alias 도입
 
-| 작업 | 이전 | 이후 | 비고 |
-|---|---|---|---|
-| rename + value | `accent-hr` `#1E7D4C` | `primary` `#357B5F` | HR 브랜드 — forest green |
-| rename + value | `accent-light` `#3FBF74` | `primary-light` `#6BAE8C` | 새 base에 맞춰 lighten 도출 |
-| split | `bg-page` `#F5F6FA` | `bg-page-hr` `#ECE8E5` + `bg-page-desk` `#DCDCDC` | 브랜드별 fork (HR=warm beige, Desk=light gray) |
-| 유지 | `bg-page-dark` `#1A1F2E` | (변경 없음) | 다크 페어 미언급 → 공유 |
-
-#### 변경 이유
-1. **브랜드 톤 갱신**: 새 primary 색이 Porest = People + Forest 감각에 더 가깝게 정착(HR forest green, Desk deep navy).
-2. **Desk neutral 분리**: B2B(HR)와 B2C(Desk)는 동일 페이지 베이스를 공유할 필요가 없음 — HR은 따뜻한 베이지, Desk는 차분한 light gray로 첫인상 차별화.
-3. **명명 정합**: design.md spec은 `primary` 명명을 권장 — 기존 `accent-*` 명칭에서 `primary-*`로 정렬, 추후 spec 도구 호환성 확보.
-
-#### lint 실측 결과 (변경 영향 6개 페어 모두 통과)
-
-| component | bg | text | 결과 |
-|---|---|---|---|
-| `button-primary` | primary `#357B5F` | text-on-accent | ✅ ≥4.5:1 |
-| `button-outline-on-dark` | surface-default-dark | primary-light `#6BAE8C` | ✅ ≥4.5:1 |
-| `page-text-light` | bg-page-hr `#ECE8E5` | text-primary | ✅ ≥4.5:1 |
-| `page-text-desk-light` | bg-page-desk `#DCDCDC` | text-primary | ✅ ≥4.5:1 |
-
-(`npm run lint` 출력 기준: 0 errors, 0 contrast warnings.)
-
-#### Edge case — 운영 가이드
-
-자동 검증 미모델 페어에서 1건 contrast 미달 발견:
-
-- **`primary` as inline 텍스트 on `bg-page-hr`**: 손계산 **4.14:1** (4.5:1 미달, 3:1 통과)
-  - **운영 규칙**: HR `primary`는 **fill 전용**(button bg, badge, fill icon). 페이지 베이지 위 inline 링크·body-lg 텍스트로 사용 금지 — 본문 가독성 미달.
-  - 대신 inline 링크 needs use `text-primary` (대비 13.32:1) + 밑줄/hover 시그널로 link affordance 확보.
-- **`text-tertiary` on `bg-page-desk`**: 손계산 **4.01:1** ❌ — 현재 modeled 컴포넌트에 없는 페어이나, 페이지 베이스 위 직접 caption 노출 시 미달. caption은 항상 `surface-default`(흰 카드) 위에 사용 권장.
-
-#### 다크 모드 검증 (회귀 0건)
-
-본 변경은 라이트 모드 토큰만 수정:
-- 다크 페어 토큰(`bg-page-dark`, `surface-default-dark`, `text-primary-dark` 등) 그대로 유지.
-- HR 다크 채움 버튼: 새 `primary` `#357B5F` (L=0.158) on white text **5.05:1** ✅. 단 외곽 vs 다크 surface는 2.83:1로 3:1 미달 — `border-strong-dark` 보강 패턴 그대로 유효(이전 `accent-hr` 2.77과 동급).
-- HR/Desk outline 다크: 새 `primary-*-light` 모든 다크 표면에서 4.62~6.23:1 통과.
-
-#### 이전 prose 항목과의 정합
-
-- v1 prose의 "bg-page #F5F6FA" 표기는 v14 이전 단일 token 시점 기록 — 현재는 `bg-page-hr`/`bg-page-desk`로 fork됨.
-- v3 prose의 "primary 2.77" 다크 surface 대비 수치는 v7 시점 `accent-hr` `#1E7D4C` 기준 — 새 `primary` `#357B5F`는 2.83로 이동했으나 결론(3:1 미달, light 변형 필요)은 동일.
-- 이전 prose는 **역사적 기록**으로 보존 — v14 시점 현행 값은 본 섹션 표 기준.
-
-### bg-page 재통합 (v15)
-
-v14에서 fork했던 `bg-page-hr`/`bg-page-desk`를 단일 `bg-page #F5F6FA`로 되돌립니다. HR/Desk가 동일한 페이지 베이스를 공유 — neutral 시스템 단순화.
-
-#### 변경 매트릭스
-
-| 작업 | 이전(v14) | 이후(v15) |
-|---|---|---|
-| **제거** | `bg-page-hr` `#ECE8E5` | — |
-| **제거** | `bg-page-desk` `#DCDCDC` | — |
-| **추가** | — | `bg-page` `#F5F6FA` (v13 이전 값으로 복귀) |
-| **컴포넌트 통합** | `page-text-light` + `page-text-desk-light` | `page-text-light` (단일) |
-| **유지** | `bg-page-dark` `#1A1F2E` | (그대로) |
-
-`primary` 등 v14 브랜드 리프레시는 그대로 유지 — 본 변경은 neutral fork만 되돌림.
-
-#### v14 edge case 해소
-
-`bg-page #F5F6FA` (L=0.9223)는 v14 fork(L=0.812/0.716)보다 더 밝아 contrast headroom 증가:
-
-| 페어 | v14 (fork) | v15 (unified) | 상태 |
-|---|---|---|---|
-| `primary` inline on bg-page | 4.14 ❌ | **4.67** ✅ | 해소 |
-| `text-tertiary` on bg-page | 5.09 ✅ (HR) / 4.01 ❌ (Desk) | **5.09** ✅ | Desk 미달 해소 |
-
-v14에서 명시했던 운영 규칙 **"primary는 fill 전용, inline link 금지"는 v15에서 무효화** — 단일 `bg-page` 위에서 `primary`를 inline link/text로 사용 가능.
-
-#### 변경 이유
-1. **운영 규칙 단순화**: v14 fork는 브랜드별 페이지 톤 차별화를 의도했으나, primary inline 4.14 미달 등 edge case가 운영 부담으로 작용. 단일 bg-page는 이 부담 제거.
-2. **HR/Desk neutral 일관성**: 페이지 베이스가 동일하면 컴포넌트 동작도 동일 — 다운스트림 코드의 분기 로직 감소.
-3. **브랜드 차별화는 primary로 충분**: HR `primary` `#357B5F`(forest green) vs Desk primary(deep navy 계열, `DESIGN.desk.md` 참조)의 채도·hue 차이가 이미 강력한 식별 신호 제공. 페이지 베이스까지 분기할 동기 약화.
-
-#### lint 실측
-- ✅ 0 errors / 0 contrast warnings
-- 27 colors (v14 28에서 -1: bg-page-hr/desk 2개 제거, bg-page 1개 추가)
-- 30 components (v14 31에서 -1: page-text-hr/desk-light 2개 통합)
-- regression: false
-
-#### v14 prose 정합 노트
-- v14 prose의 "primary는 fill 전용" 운영 규칙·edge case 표는 v15 시점에서 **부분 무효화** — bg-page 통합으로 4.14 미달이 4.67로 해소됨. v14 prose는 fork 시점 기록으로 보존.
-- "Desk neutral fork" 동기 부분도 보류 — 차별화는 primary 색에 위임.
-
-### Border focus (v16 추가)
-
-키보드 포커스 링·인터랙션 강조 외곽선용 4개 토큰. **primary-* / primary-*-light 값을 그대로 mirror하는 시맨틱 alias** — focus 역할을 명시 토큰화하여 컴포넌트 spec 작성 시 의도 명확화 + 향후 분기 여지 확보.
-
-| 토큰 | hex (mirror) | 용도 |
-|---|---|---|
-| `border-focus` | `#357B5F` (= primary) | HR 라이트 표면 위 focus ring |
-| `border-focus-light` | `#6BAE8C` (= primary-light) | HR 다크 표면 위 focus ring |
-
-#### 추가 이유
-1. **v3 차단 사유 해소 완료**: v3 시점 "primary가 다크 surface 3:1 미달"로 보류했던 focus 토큰 — v7에서 `primary-*-light` 도입, v14 명명 정렬, v15 운영 규칙 단순화로 차단 모두 해소.
-2. **시맨틱 alias 패턴**: 값은 primary와 동일하지만 `border-focus-*` 명명으로 focus 역할 명시. 컴포넌트 spec(추후 Button·Input 등)에서 `focus-ring color = border-focus-{brand}` 형태로 의도 표현. primary가 변경되어도 focus 의미가 따라가야 한다면 mirror 유지 필요(현재는 수동 동기화).
-3. **WCAG 2.4.11 (Focus Appearance, AA in WCAG 2.2)**: focus indicator가 인접 표면에 ≥3:1 contrast 요구 — 4개 토큰 모두 4.5+:1 통과 (UI 3:1 기준 대비 여유).
-
-#### WCAG 검증 — focus ring vs 인접 surface (손계산, lint 미모델)
-
-`backgroundColor`만 가진 sparse component(`focus-ring-*-on-*`)로 referenced — contrastCheck 미발동(textColor 부재). focus ring vs 인접 surface 대비는 spec에 borderColor 프로퍼티 없어 자동 검증 불가, 손계산 의존.
-
-| focus ring | 인접 surface | 대비 (손계산) | 결과 |
-|---|---|---|---|
-| `border-focus` `#357B5F` | surface-default | 5.05 | ✅ |
-| `border-focus` | surface-input | 4.51 | ✅ |
-| `border-focus` | bg-page | 4.67 | ✅ |
-| `border-focus-light` `#6BAE8C` | surface-default-dark | 5.49 | ✅ |
-| `border-focus-light` | surface-input-dark | 4.72 | ✅ |
-| `border-focus-light` | bg-page-dark | 6.23 | ✅ |
-
-값이 primary-* mirror이므로 `button-primary-*` / `button-outline-*` 컴포넌트가 lint contrast 룰로 이미 4.5:1 검증 — focus 토큰의 contrast 안정성도 간접 보장.
-
-#### sparse component 패턴 정당성
-`focus-ring-*-on-*` 컴포넌트 4개는 textColor 없는 sparse 모델 (v13 text-disabled에서 정착). focus ring은 1px outline의 시각 요소로 textColor 페어가 자연스럽지 않음. orphan 회피 + spec 한계(no borderColor) 우회 두 목적 충족. v9 divider/outline-strong과 동일 패턴.
-
-#### HR / Desk 듀얼 브랜드
-- 각 브랜드별 dedicated focus 색 — HR forest green, Desk deep navy. 사용자 인지(어느 제품에 있는지) 즉시 전달.
-- 컴포넌트 spec에서 brand context에 따라 `border-focus-{brand}`/`-light` 분기 적용. 토큰 자체에 분기 표현 완료.
+본 파일에 남은 v15 핵심 사실: **`bg-page` `#F5F6FA` 단일 — HR/Desk 공유**. 휘도 L=0.9223로 모든 neutral 텍스트 contrast headroom 충분.
 
 ## Typography
 
-한국어 본문 가독성 우선. Pretendard를 기본 패밀리로, 영문 fallback Inter.
+한국어 본문 가독성 우선. Pretendard를 기본 패밀리, 영문 fallback Inter. v82에서 21 토큰을 15로 정리 — Airbnb 태그 명명 컨벤션(`display`/`title`/`body`/`label`/`caption`/`badge`/`overline`)을 채택, 사양은 한국어 본문 가독성을 기준으로 재정의.
 
 ### v100 — SEED 타입 스케일 (2026-09-29)
 
@@ -2612,36 +2390,84 @@ html {
 - 당근(SEED)은 전역 규칙 없이 읽는 글(게시글 본문 · 시트 · 패널 제목 · 도움말 말풍선)만 단어 단위이고, 컴포넌트 라벨 · 설명은 글자 단위다(daangn.com CSS · SEED 레시피, 2026-10-01). porest 는 컴포넌트 라벨 · 설명까지 단어 단위로 한다 — 사용자 결정(2026-10-01).
 - 제품은 앱 적용 단계에서 옮긴다 — Desk 웹은 4곳(카드 혜택 2 · 일정 상세 2)에만 손으로 `keep-all` 을 걸었고 HR 웹 · Desk 앱은 없다. 전역 규칙을 걸고 그 4곳은 걷는다.
 
-### v5 추가 — 5단계 타입 스케일 (기록 — 지금 스케일은 위 v100)
+### v82 — 15단계 타입 스케일 (v100 에서 SEED 스케일로 옮기는 중 — 값은 그대로)
 
-| 토큰 | size | weight | line-height | 주 용도 |
-|---|---|---|---|---|
-| `caption` | 12px | 400 | 1.5 | 메타·헬프·타임스탬프 |
-| `body` | 15px | 400 | 1.6 | default 본문 (한국어 가독성) |
-| `body-strong` | 15px | 600 | 1.6 | 본문 강조·입력 라벨·버튼 텍스트 |
-| `heading-md` | 18px | 600 | 1.4 | 카드·섹션 제목 |
-| `heading-lg` | 24px | 700 | 1.3 | 페이지 제목 |
+| 토큰 | size | weight | lh | letter-spacing | 주 용도 |
+|---|---|---|---|---|---|
+| `display-xl` | 56px | 700 | 1.05 | -1.12px | Hero 큰 마케팅 헤더 (랜딩, KPI 영역) |
+| `display-lg` | 40px | 700 | 1.1 | -0.4px | Tablet landscape hero, 큰 섹션 헤더 |
+| `display-md` | 32px | 700 | 1.2 | -0.32px | 페이지 제목 (Toss 톤 한국어 헤더) |
+| `display-sm` | 24px | 700 | 1.3 | — | 큰 섹션 제목 |
+| `title-lg` | 20px | 700 | 1.4 | — | 큰 카드 제목, modal heading |
+| `title-md` | 18px | 600 | 1.4 | — | 카드/섹션 제목 |
+| `title-sm` | 16px | 500 | 1.4 | — | 작은 제목, 버튼/nav 텍스트 (한국어 16px Medium 가독) |
+| `body-lg` | 16px | 400 | 1.6 | — | 강조 본문, hero subtitle |
+| `body-md` | 15px | 400 | 1.6 | — | **default 본문** (한국어 가독성 — Toss/네이버 톤) |
+| `body-sm` | 14px | 400 | 1.5 | — | 보조 본문, dense list |
+| `label-md` | 14px | 500 | 1.4 | — | form label, 보조 버튼 |
+| `label-sm` | 13px | 400 | 1.4 | — | 작은 라벨, helper text (Regular — 한국어 부드러움 우선) |
+| `caption` | 12px | 400 | 1.5 | — | 캡션, 메타, 타임스탬프 |
+| `badge` | 11px | 600 | 1.2 | — | 배지 마이크로 라벨 |
+| `overline` | 10px | 700 | 1.3 | 0.8px | uppercase eyebrow / 카테고리 태그 |
 
-#### 추가 이유
-1. v1~v4 색상·spacing 토큰만으로는 컴포넌트의 텍스트 치수가 결정되지 않음 — 카드 제목 vs 본문, 라벨 vs 캡션의 시각 위계 의사결정 차단 요소 해소.
-2. 5단계는 80% 이상 일반 컴포넌트(버튼·카드·입력·헬프 텍스트·페이지 헤더)를 커버. `heading-sm(16px)`, `heading-xl(32px+)`는 사용 사례 등장 후 추가 — 추측성 선행 토큰 회피.
-3. `body` 15px / line-height 1.6은 한국어 본문 가독성 기준(Toss·네이버 본문 톤). 14px도 흔하나 한글 hinting 안정성과 노안 대응을 고려해 15px 채택.
+#### 명명 정책 (Airbnb 태그명 + 한국어 사양)
+- **카테고리**: `display`(헤드라인) / `title`(제목) / `body`(본문) / `label`(폼·버튼) / `caption`(메타) / `badge`(배지) / `overline`(eyebrow).
+- **사이즈 modifier**: `xl > lg > md > sm` (각 카테고리 내 위계). Airbnb 14단계와 동일한 명명 컨벤션이지만 사양은 한국어 본문(15/1.6) 우선.
+- **`body-md` 15px / 1.6**가 한국어 default 본문 — Pretendard hinting 안정성 + 한글 받침 영역 가독성을 위한 lh 1.6 유지.
 
 #### 폰트 패밀리
 모든 토큰: `Pretendard, Inter, sans-serif`
-- **Pretendard**: 한글 hinting과 영문 호환을 모두 지원하는 한국어 우선 가변폰트(CLAUDE.md 규칙).
-- **Inter**: 영문 fallback — Pretendard 미설치 환경에서도 일관된 영문 자형.
+- **Pretendard**: 한국어 우선 가변폰트(CLAUDE.md 규칙). 한글·영문 자형 균형.
+- **Inter**: 영문 fallback.
 - **sans-serif**: 시스템 fallback.
 
 #### WCAG 검증
-- **1.4.3 Contrast (4.5:1 본문)**: 본 토큰은 색상이 아닌 치수만 정의. 색상 대비는 v2 `text-*` 토큰이 담당, 모든 표면 페어에서 사전 통과 완료(`text-primary`: 11.40~16.22, `text-secondary`: 6.32~7.41, `text-on-accent`: 5.02~5.16).
-- **1.4.12 Text Spacing (line-height ≥1.5 본문)**: `caption` 1.5, `body`/`body-strong` 1.6 — 모두 통과. 헤딩은 단락 본문 비대상.
-- **1.4.4 Resize text (200% zoom)**: px 단위 사용하나 브라우저 zoom에 정상 대응.
-- **한국어 자형 안정성**: Pretendard는 한글 폭(전각) 자모와 영문 폭(반각)을 균형 있게 처리, 본문 lh 1.6은 한글 받침 영역 가독성을 확보.
+- **1.4.3 Contrast (4.5:1 본문)**: 색상이 아닌 치수 토큰. 본문 색상 대비는 `text-*` 토큰이 담당, 모든 표면 페어 사전 통과.
+- **1.4.12 Text Spacing (line-height ≥1.5 본문)**: `body-lg`/`body-md` 1.6, `body-sm`/`caption` 1.5 — 본문 카테고리 통과. 큰 헤딩(display/title)은 단락 본문 비대상.
+- **1.4.4 Resize text (200% zoom)**: 모든 토큰 px 단위, 브라우저 zoom 정상 대응. 가독성 한계 사이즈(`badge` 11px, `overline` 10px)는 인라인 라벨/eyebrow에만 사용 — 본문 미사용 원칙.
+
+#### Responsive hero (mobile-first)
+페이지 hero typography는 viewport에 따라 스케일 분기. 토큰 재사용으로 4단계.
+
+| Breakpoint | 토큰 | size / lh / weight | 사용 |
+|---|---|---|---|
+| `breakpoint-lg` (1280+) | `display-xl` | 56 / 1.05 / 700 | Desktop landing hero |
+| `breakpoint-md` (768~) | `display-lg` | 40 / 1.1 / 700 | Tablet |
+| `breakpoint-sm` (480~) | `display-md` | 32 / 1.2 / 700 | 큰 폰 · 작은 태블릿, 한국어 페이지 제목 |
+| 기본 (~479) | `display-sm` | 24 / 1.3 / 700 | Phone |
+
+v101 에서 중단점이 SEED 값(480 · 768 · 1280 · 1440)으로 바뀌며 단계를 옮겼다 — 데스크톱 hero(`display-xl`)는 v54 의 1069 대신 `breakpoint-lg`(1280)부터다.
+
+CSS 패턴 (mobile-first, `@media (min-width)`):
+
+```css
+.hero-h1 {
+  font: var(--text-display-sm--font-weight) var(--text-display-sm) / var(--text-display-sm--line-height) var(--font-sans);
+}
+@media (min-width: 480px) {
+  .hero-h1 { font: var(--text-display-md--font-weight) var(--text-display-md) / var(--text-display-md--line-height) var(--font-sans); }
+}
+@media (min-width: 768px) {
+  .hero-h1 { font: var(--text-display-lg--font-weight) var(--text-display-lg) / var(--text-display-lg--line-height) var(--font-sans); }
+}
+@media (min-width: 1280px) {
+  .hero-h1 { font: var(--text-display-xl--font-weight) var(--text-display-xl) / var(--text-display-xl--line-height) var(--font-sans); }
+}
+```
+
+#### v82 변경 정책 (옛 21 → 새 15)
+- **카테고리 정리**: `display`/`title`/`body`/`label`/`caption`/`badge`/`overline` 7 카테고리. 각 카테고리 내 사이즈 modifier(`xl/lg/md/sm`)로 위계.
+- **사이즈 통합**: 16px weight 600 계열을 `title-sm` 단일 토큰으로 통합.
+- **사양 일원화**: 본문 카테고리(`body-lg`/`body-md`)는 한국어 lh 1.6 통일, 영문 1.5 분기 제거. weight 강조는 별도 토큰 대신 인라인 modifier(`font-semibold`).
+- **추가**: `overline` 10px 700 +0.8px (uppercase eyebrow). 옛 prose-only spec(56/40 hero)을 `display-xl`/`display-lg`로 정형 토큰화.
+- **삭제**: 옛 가독성 한계(8px) 및 영문 전용 모호 토큰. 사양은 `DESIGN.history/v82-typography-15.md`에 보존.
 
 #### HR / Desk 듀얼 브랜드
-- 모든 typography 토큰은 brand-neutral — 양 브랜드 동일 스케일.
-- 향후 브랜드별 분위기 조정이 필요하면 컴포넌트 레벨에서 weight·tracking 조정으로 처리(예: HR 헤딩 weight 700, Desk 헤딩 weight 600). 토큰 자체 분기 불필요.
+모든 typography 토큰은 brand-neutral — 양 브랜드 동일 스케일. 사용 컨텍스트만 컴포넌트 레벨에서 분기 (HR 헤딩 weight 700 강조 / Desk 모바일 친화 사이즈 등).
+
+#### 자동 검증
+- design.md lint contrast 룰은 색상에만 적용 — typography 자체는 통과.
+- letterSpacing은 modifier로 export (`--text-{name}--letter-spacing`). v82에서 `display-xl/lg/md` + `overline`이 letterSpacing 사용.
 
 ## Layout
 
@@ -2804,74 +2630,222 @@ CLAUDE.md "4px 베이스 추천" 규칙을 준수하는 t-shirt 사이즈 스케
 
 아래는 v54 의 기록이다. 지금 값은 위 v101 절에 있다 — 이 표는 토큰으로 읽히지 않게 이름 · 값의 백틱을 뺐다.
 
-반응형 layout breakpoint — 5단계 (Apple Store reference). spec이 breakpoint 카테고리 미지원이라 prose-token 패턴(shadow/motion/overlay와 동일) — yaml 정의 없이 표만 운영. DESIGN.md / .hr.md / .desk.md 수동 동기.
+반응형 layout breakpoint — 5단계 (Apple Store reference). spec이 breakpoint 카테고리 미지원이라 prose-token 패턴(shadow/motion/overlay와 동일) — yaml 정의 없이 표만 운영. 모든 파일(DESIGN.md / .hr.md / .desk.md) 수동 동기.
 
 | 토큰 | 값 | 의미 (Apple Store 가이드) |
 |---|---|---|
-| breakpoint-sm | 640px | Phone max — 이하 single-column |
-| breakpoint-md | 736px | Tablet portrait — global nav hamburger |
-| breakpoint-lg | 834px | Tablet landscape — full nav, 3-col → 2-col |
-| breakpoint-xl | 1069px | Desktop — full layout, 4-5 col grids |
-| breakpoint-2xl | 1441px | Wide — content lock at 1440px |
+| breakpoint-sm | 640px | Phone max — 이하 single-column tiles, hero h1 34px |
+| breakpoint-md | 736px | Tablet portrait — global nav hamburger collapse |
+| breakpoint-lg | 834px | Tablet landscape — global nav full, 3-col → 2-col grids |
+| breakpoint-xl | 1069px | Desktop — full layout, 4-5 col store grids |
+| breakpoint-2xl | 1441px | Wide — content locks at 1440px |
 
-#### HR 적용 가이드 (B2B 데이터 밀도)
-HR은 데이터 그리드(직원 목록, 결재 큐, 출퇴근 표) 위주라 desktop(`breakpoint-xl` 1069+) 기본 가정. tablet portrait(736~833)에서는 inline action(승인/반려)을 dropdown으로 collapse, phone(640 이하)은 carded list로 전환. 모바일 화면(approval 앱 등)은 `lg` 사이즈 컴포넌트로 44×44 hit target 충족.
+#### 추가 이유
+1. v1~v53까지 토큰은 색상·typography·spacing·radius·shadow·motion·overlay만 — 반응형 breakpoint 부재. 컴포넌트 spec(Button/Card/Tabs)에 "모바일 권장 사이즈 lg" prose는 있으나 *어떤 width에서* 모바일이 시작되는지 토큰화되지 않음 → 결정 차단.
+2. **Apple Store reference**: iPad portrait/landscape 분리(736/834) + desktop 시작(1069) + wide lock(1441)로 한국 디자이너 친화적 모바일 우선 톤. iPad 라인업(mini portrait 768 / Air landscape 1180 / Pro 11" landscape 1194 / Pro 12.9" landscape 1366) 정합.
+
+#### 단위·명명
+- **px**: 한국 디자이너 친화적 + Figma frame 단위 일치 + Apple HIG 친화 (rem 변환은 build 단계에서 가능).
+- **`breakpoint-{size}`**: Tailwind v4 namespace 표준 (`--breakpoint-*`). 값은 Apple Store 톤 — Tailwind default(640/768/1024/1280/1536)와 다름. 외부 라이브러리 마이그레이션 시 매핑 필요.
 
 #### 사용 패턴
-- min-width (mobile-first): `@media (min-width: var(--breakpoint-lg))` — 834 이상 (tablet landscape +).
-- `--breakpoint-*` namespace는 Tailwind v4 표준이라 별칭 없이 직접 사용. 값은 Apple Store 톤 (Tailwind default와 다름).
+- min-width 기준 (mobile-first): `@media (min-width: var(--breakpoint-lg))` — 834 이상 적용 (tablet landscape +).
+- max-width 기준: `@media (max-width: calc(var(--breakpoint-md) - 1px))` — 735 이하 (phone).
+
+#### Touch targets (Apple reference)
+- Pill CTAs: `touch-pill-w` (100) × `touch-min` (44 height) + `radius-full`. Button `large` (48px height — 2026-09-30 전 이름 `lg`)는 본 pill min(44)을 자연스럽게 초과 — pill CTA에 사용 시 padding 그대로 OK.
+- Circular chips: `touch-circular` (44 × 44, icon button, Avatar)
+- Global nav utility links: `touch-nav-w` (80) × `touch-nav-h` (32, precision desktop only, breakpoint-xl 이상)
+- WCAG 2.5.5 AAA (44 × 44 minimum) 충족.
+
+**v59에서 5 토큰화 완료** — 자세한 spec은 아래 `### Touch targets` sub-section 참조.
+
+#### Collapsing strategy (Apple reference, 토큰화 미적용)
+- Global nav: full row → 햄버거 collapse at 834px (`breakpoint-lg`)
+- Product/data tiles: 2-col → 1-col at 834px
+- Hero typography scale: 56px → 40px → 34px → 28px (responsive type 4단계 — breakpoint-xl/lg/md/sm 분기)
+
+responsive container layout / responsive typography spec은 별도 작업.
+
+#### 듀얼 브랜드 — unified
+HR (B2B 데이터 밀도) / Desk (B2C 모바일 우선) 모두 동일 5단계. 컴포넌트 spec에서 brand별 권장 사이즈(HR 데이터 그리드 우선, Desk 모든 사이즈 44×44 hit area) 차이는 prose 가이드.
+
+#### 자동 검증 미적용
+breakpoint는 functional layout token — contrast 룰 무관. spec 외부(prose-token)라 lint missingPrimary/contrast 영향 0.
 
 ### Touch targets (v59 추가, prose-token)
 
-WCAG 2.5.5 AAA + Apple Store reference 톤 5 토큰화 — DESIGN.md shared baseline과 동일. spec 외부(prose-token)라 자체 namespace.
+WCAG 2.5.5 AAA (Target Size 44×44 minimum) + Apple Store reference 톤을 정형 토큰화. spec이 layout/component size 카테고리 미지원이라 prose-token 패턴(shadow/motion/overlay/breakpoint와 동일). 5 토큰. v54 Breakpoints sub-sub의 reference 가이드를 토큰으로 격상.
 
 | 토큰 | 값 | 의미 |
 |---|---|---|
-| `touch-min` | `44px` | WCAG minimum (default — 모든 hit target 권장) |
-| `touch-pill-w` | `100px` | Pill CTA min-width |
-| `touch-circular` | `44px` | Circular chip (= touch-min alias) |
-| `touch-nav-h` | `32px` | Precision desktop nav height (`breakpoint-lg` 이상) |
+| `touch-min` | `44px` | WCAG 2.5.5 AAA minimum (default, 모든 hit target 권장) |
+| `touch-pill-w` | `100px` | Pill CTA min-width (Apple Store: ~44 × 100) |
+| `touch-circular` | `44px` | Circular chip / icon button (= touch-min, explicit alias) |
+| `touch-nav-h` | `32px` | Precision desktop nav height (`breakpoint-lg` 이상, mouse pointer 가정) |
 | `touch-nav-w` | `80px` | Precision desktop nav min-width |
 
-#### HR 적용 가이드 (B2B 데이터 밀도)
-HR은 데이터 그리드 inline action(승인/반려 row 액션, 결재 메뉴, 평가 등급 선택) 위주 — desktop(`breakpoint-lg` 1280+)에서 `touch-nav-h` 32 / `touch-nav-w` 80 적극 사용 (mouse pointer 가정, 정밀도 우선). 모바일 화면(approval 앱, 모바일 dashboard)은 `touch-min` 44 / `touch-circular` 44 strict 적용 — 데이터 밀도 톤이지만 hit target은 보수.
+#### 추가 이유
+1. v33-v48 컴포넌트 batch에 size prose 있으나 *어떤 토큰 값 기준* 인지 명시 부재 — 컴포넌트별 각자 hex/px 기재. 통합 토큰화로 시스템 일관성 ↑.
+2. **WCAG 2.5.5 AAA 명시**: `touch-min` 44px는 hit target minimum — 모든 컴포넌트 spec에서 인용 가능. `touch-circular`는 의미적 alias (44 = touch-min, but circular shape 의도 명시).
+3. **Apple Store reference**: Pill (44 × 100) / Nav utility (32 × 80) 정형화. v54 Breakpoints prose의 reference 가이드를 토큰으로 격상.
+
+#### 사용 패턴
+- 모든 hit target: `min-height: var(--touch-min); min-width: var(--touch-min);` (44 × 44 충족).
+- Pill CTA: `height: var(--touch-min); min-width: var(--touch-pill-w); border-radius: var(--radius-full);`.
+- Circular icon button: `width: var(--touch-circular); height: var(--touch-circular); border-radius: var(--radius-full);`.
+- Precision desktop nav (`@media (min-width: var(--breakpoint-lg))`): `height: var(--touch-nav-h); min-width: var(--touch-nav-w);`.
+
+#### 단위·명명
+- **px**: 한국 디자이너 친화적 + Figma frame 단위 일치.
+- **`touch-{name}`**: WCAG "target" / "hit target" 어휘. spec 외부(prose-token)라 자체 namespace.
+
+#### 듀얼 브랜드 — unified
+- HR (B2B 데이터 밀도) / Desk (B2C 모바일 우선) 모두 동일 5 토큰. brand-agnostic.
+- 사용 강도 차이: HR은 `breakpoint-lg` 이상 정밀 desktop에서 `touch-nav-h`/`-w` 적극 (데이터 그리드 inline action), Desk는 모든 viewport에서 `touch-min`/`touch-circular` 우선 (모바일 hit target).
+
+#### 4px 베이스 호환
+- 44/100/80/32 모두 4의 배수 (11×4, 25×4, 20×4, 8×4). v4 spacing 정신과 일치.
+- spacing 카테고리 추가 안 함 — touch target은 padding/margin/gap과 의미적으로 다름(컴포넌트 outer size).
+
+#### export 통합 (build-tailwind-v4.mjs)
+v59에서 `parseTouchTargets` 추가, prose 표 직접 추출. CSS variable: `--touch-min`, `--touch-pill-w`, `--touch-circular`, `--touch-nav-h`, `--touch-nav-w`.
+
+#### 자동 검증 미적용
+touch target은 functional layout token — contrast 룰 무관. spec 외부(prose-token)라 lint 영향 0.
 
 ### Z-index (v65 추가, prose-token)
 
-레이어 10 토큰(v116) — DESIGN.md shared baseline 과 같은 값이다. 층(L0 ~ L9)과 순서의 이유는 baseline 과 `specs/z-index.md` 에 있다.
+v116(2026-10-03) — 층 이름으로 다시 정했다. 값은 `specs/z-index.md` 의 층 표(L0 ~ L9) 그대로이고, 이름은 그 층을 부른다. 이 표가 원본이다 — 층 표 · 컴포넌트 YAML · 레시피는 여기 값을 따른다. 사용자 결정(2026-10-03 — porest 층 표를 정본으로, 새 토큰은 층 이름으로). spec 이 z-index 카테고리를 지원하지 않아 prose-token 이다(shadow · motion · overlay · breakpoint · touch-target 과 같다).
 
-| 토큰 | 값 | HR 에서 쓰는 곳 |
+| 토큰 | 값 | 층 · 쓰는 곳 |
 |---|---|---|
-| `z-base` | `auto` | L0 페이지 — 데이터 그리드 · 결재 목록 |
-| `z-sticky` | `50` | L1 고정 헤더 · 결재 큐 sticky 패널 · sticky CTA |
-| `z-modal` | `100` | L2 딤 — Sheet(직원 detail · 권한 설정 옆 패널) · Dialog(휴가 신청 확인 · 결재 의견) |
-| `z-modal-content` | `101` | L2 표면 — 위 패널 · 대화상자 |
-| `z-floating` | `200` | L3 Popover · Select 목록 · Menu(결재 행 동작) — 패널 · 대화상자 안에서도 같은 값 |
-| `z-tooltip` | `210` | L4 Help Bubble · Tooltip(규정 설명) |
-| `z-alert` | `300` | L5 Alert Dialog 딤(권한 변경 확인) |
+| `z-base` | `auto` | L0 페이지 — 쌓임 맥락을 만들지 않는다 |
+| `z-sticky` | `50` | L1 페이지에 붙은 것 — 고정 헤더 · 하단 탭바 · 플로팅 버튼 · 스피드 다이얼 |
+| `z-modal` | `100` | L2 딤 — Dialog · Bottom Sheet · Menu Sheet · Sheet(옆 패널) |
+| `z-modal-content` | `101` | L2 표면 — 자기 딤 바로 위 |
+| `z-floating` | `200` | L3 트리거에 붙어 뜨는 것 — Popover · Select 목록 · Menu. 페이지에서도 모달 안에서도 같은 값 |
+| `z-tooltip` | `210` | L4 말풍선 — Help Bubble · Tooltip |
+| `z-alert` | `300` | L5 Alert Dialog 딤 |
 | `z-alert-content` | `301` | L5 Alert Dialog 표면 |
-| `z-snackbar` | `400` | L6 Snackbar(결재 승인 알림 등) |
+| `z-snackbar` | `400` | L6 Snackbar 자리 |
 | `z-dev` | `9999` | L9 개발 환경 표시 — 운영에서는 그리지 않는다 |
 
-#### HR 적용 가이드
-- **결재 큐 sticky 패널**: 우측 sticky list = `z-sticky` — 페이지 스크롤과 독립.
-- **직원 detail 패널**: 직원 클릭 시 우측 슬라이드(Sheet) = 딤 `z-modal` · 패널 `z-modal-content` — 페이지 콘텐츠 위, 확인창 아래.
-- **권한 변경 확인**: 딤 `z-alert` · 확인창 `z-alert-content` — 패널 · 대화상자가 열린 상태에서도 확인창이 위.
-- **결재 승인 snackbar**: 어떤 층 위에서도 최상단 = `z-snackbar`.
-- 패널 · 대화상자 안에서 연 Select 목록 · 메뉴는 `z-floating` 그대로 — 표면(101) 위에 뜬다.
-- isolation 권장: 데이터 그리드 inline dropdown은 `isolation: isolate`로 island 격리 — 외부 layer와 우선순위 무관.
+#### 왜 이 순서인가
+
+- **트리거에 붙어 뜨는 것(L3)은 모달(L2) 위다** — 대화상자 · 시트 안에서 연 Select 목록 · 메뉴가 표면(101) 위에 떠야 한다. 페이지에서 열어도 같은 200 이라, 부르는 자리마다 값을 고르지 않는다. 페이지에는 L2 가 없으니 고정 헤더(50) 위로 뜨는 것도 자연스럽다.
+- **말풍선(L4)은 팝오버(L3) 위다** — 팝오버 · 메뉴 안의 ⓘ 로 연 말풍선이 가려지지 않는다.
+- **확인창(L5)은 메뉴(L3) 위다** — 되돌릴 수 없는 결정은 열린 모든 표면을 덮는다. SEED Elevation 의 "Alert Dialog 는 맨 위(Global 3)" 와 같다. SEED 의 CSS 는 팝오버 · 메뉴를 99999 로 확인창 위에 띄우지만, porest 는 문서 쪽을 따른다.
+- **스낵바(L6)는 모든 표면 위다** — 확인창이 열려 있어도 잠깐 뜨는 알림은 보인다.
+- **딤과 표면은 1 차이다**(100 · 101, 300 · 301) — 표면이 자기 딤 바로 위에 놓인다. 층과 층 사이는 넉넉히 비운다.
+- **화면 차례를 더하지 않는다** — SEED 는 대화상자 · 시트를 `2 + layerIndex`(쌓인 화면 차례 × 5)로 올리지만, porest 웹은 화면을 쌓지 않는다(주소가 바뀌면 화면이 바뀐다). 그래서 층마다 값이 하나다.
+- **앱(Flutter)은 숫자 없이 같은 순서를 따른다** — Flutter 에는 z-index 가 없고, 라우트 · 오버레이가 연 순서로 쌓인다. 페이지 → 시트 · 대화상자 → 메뉴 · 말풍선 → 확인창 → 스낵바 순서가 되게 띄운다.
+
+#### 쓰는 법
+
+- CSS: `z-index: var(--z-modal);` — 딤은 `--z-modal`, 표면은 `--z-modal-content`.
+- Tailwind v4: `z-(--z-floating)`(= `z-index: var(--z-floating)`). 숫자 클래스(`z-[200]` · `z-50`)로 층을 적지 않는다.
+- 한 컴포넌트 안에서 겹침을 정리하는 작은 값(줄 끝 버튼 `z-[1]` · 포커스 칸 `z-10`)은 층이 아니다 — 토큰으로 부르지 않는다.
+- 미리보기 · 문서 그림처럼 틀 안에 가둘 때는 틀에 `isolation: isolate` 를 둔다 — 안의 값이 틀 밖의 층과 겨루지 않는다.
+- 확인창 안에서 팝오버를 띄우는 드문 자리는 호출처가 올린다 — `specs/z-index.md`.
+
+#### v65 에서 바뀐 것
+
+v65 의 6 토큰(z-base 0 · z-dropdown 1000 · z-sticky 1100 · z-drawer 1200 · z-modal 1300 · z-toast 1400)은 걷었다. 레시피 · 스펙은 그동안 층 표의 숫자(`z-[100]` …)를 따로 적어 토큰과 값이 달랐다. 이름이 남은 셋은 값이 바뀌었다 — `z-base` 0 → `auto`, `z-sticky` 1100 → 50, `z-modal` 1300 → 100(이제 딤이고 표면은 `z-modal-content`). 옛 값을 복사해 둔 제품이 토큰을 새로 받을 때는 그 이름을 부른 자리를 층으로 다시 고른다 — 같은 이름이 더 낮은 층을 가리킨다.
+
+#### 듀얼 브랜드 — unified
+
+HR / Desk 모두 같은 10 토큰. brand-agnostic.
+
+#### export 통합 (build-tailwind-v4.mjs)
+
+`parseZIndex` 가 이 표를 읽어 `--z-base` · `--z-sticky` · `--z-modal` · `--z-modal-content` · `--z-floating` · `--z-tooltip` · `--z-alert` · `--z-alert-content` · `--z-snackbar` · `--z-dev` 를 내보낸다. 값은 정수나 `auto` 만 받는다.
 
 ### RTL support (v76 추가, prose-only)
 
-DESIGN.md baseline 정의 참고 — CSS logical property 기반 LTR ↔ RTL 자동 분기.
+CSS logical properties로 LTR(좌→우, 한국어/영어/일본어) ↔ RTL(우→좌, 아랍어/히브리어) 자동 분기. 컴포넌트 spec의 `padding-left`/`right` 같은 physical property를 `padding-inline-start`/`end` 로 일괄 치환하는 패턴.
 
-#### HR 적용 컨텍스트
-- **현 시점 active 사용 0** — Porest HR 1차 시장 한국어(LTR). RTL active 사용은 향후 글로벌 확장 시점에 평가.
-- **신규 컴포넌트 spec 작성 시 logical 우선** — `padding-inline-start`/`end`, `margin-inline-*`, `border-start-start-radius`, `inset-inline-*`, `text-align: start/end`. 추가 비용 0.
-- **결재 큐 sticky panel**: 우측 sticky → RTL 시 좌측. `inset-inline-end: 0` 선언 시 자동.
-- **직원 detail drawer**: 우측 슬라이드 → RTL 시 좌측에서 등장. keyframe `slide-in-left` ↔ `slide-in-right` `:dir(rtl)` 분기 필요.
-- **결재 row chevron icon**: forward `>` → RTL 시 mirror `<` (transform: scaleX(-1)).
-- **사번 / 결재번호** (HR-2026-0001 같은 LTR 식별자): RTL 환경에서도 LTR 강제 (`<bdi>` 또는 `direction: ltr`).
+#### 핵심 — Logical property 매핑
+
+| Physical (LTR 가정) | Logical (방향 자동) | 의미 |
+|---|---|---|
+| `margin-left` | `margin-inline-start` | 시작 측 (LTR=왼쪽, RTL=오른쪽) |
+| `margin-right` | `margin-inline-end` | 끝 측 (LTR=오른쪽, RTL=왼쪽) |
+| `padding-left` | `padding-inline-start` | 동일 |
+| `padding-right` | `padding-inline-end` | 동일 |
+| `border-left` | `border-inline-start` | 동일 (예: Banner stripe) |
+| `border-right` | `border-inline-end` | 동일 |
+| `border-top-left-radius` | `border-start-start-radius` | 시작-시작 (LTR=좌상단, RTL=우상단) |
+| `border-top-right-radius` | `border-start-end-radius` | 시작-끝 |
+| `border-bottom-left-radius` | `border-end-start-radius` | 끝-시작 |
+| `border-bottom-right-radius` | `border-end-end-radius` | 끝-끝 |
+| `left: 0` | `inset-inline-start: 0` | 시작 측 위치 |
+| `right: 0` | `inset-inline-end: 0` | 끝 측 위치 |
+| `text-align: left` | `text-align: start` | 시작 측 정렬 |
+| `text-align: right` | `text-align: end` | 끝 측 정렬 |
+| `width` | `inline-size` | 가로 (writing-mode 종속, 가로쓰기에선 동일) |
+| `height` | `block-size` | 세로 |
+| `max-width` | `max-inline-size` | 동일 |
+
+block 축(세로)은 `padding-block-start`/`padding-block-end` 등 — RTL과 무관(가로쓰기 기준 위/아래는 그대로). 하지만 일관성을 위해 모든 physical property를 logical로 통일하는 것을 권장.
+
+#### `dir="rtl"` HTML 속성
+
+```html
+<html lang="ar" dir="rtl">
+<!-- 또는 부분 영역 -->
+<div dir="rtl">아랍어 콘텐츠 영역</div>
+```
+
+CSS logical property 사용 시 자동 mirror — 추가 CSS 작성 불필요. JS는 `document.dir` 또는 `getComputedStyle(el).direction`으로 감지 가능.
+
+#### Direction-specific 처리
+
+| 처리 | 패턴 |
+|---|---|
+| **drawer left/right** | LTR `slide-in-left` (왼쪽에서) → RTL 자동 `slide-in-right` (오른쪽에서). keyframe `translateX` 부호 반대로 — `:dir(rtl) .drawer { animation-name: slide-in-right; }` |
+| **chevron / arrow icon** | `>` (forward), `<` (back) — RTL 시 `transform: scaleX(-1)` 또는 별도 RTL icon set |
+| **breadcrumb separator** | `/` 그대로 (방향성 없음) — `>` 사용 시 mirror 필요 |
+| **progress bar fill** | `width: 50%` + `inset-inline-start: 0` — 자동 mirror |
+| **숫자 / 통화** | RTL 환경에서도 LTR로 표시 (`<bdi>` 또는 `unicode-bidi: embed`) — 1,234.56 같은 숫자는 항상 LTR |
+| **이메일 / URL** | LTR 강제 — `direction: ltr` + `unicode-bidi: bidi-override` |
+
+#### 컴포넌트별 RTL 가이드
+
+| 컴포넌트 | RTL 처리 |
+|---|---|
+| Button (icon + text) | icon `margin-inline-end` — auto mirror |
+| Input (icon prefix) | icon `inset-inline-start: 8px` — auto mirror |
+| Dropdown (chevron) | chevron transform mirror 또는 `dir="ltr"` 영역 강제 |
+| Tabs | text-align start, indent inline-start |
+| Drawer right (LTR 우측 등장) | RTL 시 좌측에서 등장 (`slide-in-left` keyframe → `:dir(rtl) ... slide-in-right`) |
+| Breadcrumb | separator 자체가 방향성 없는 `/` 권장. `>` 사용 시 RTL은 `<` 또는 mirror |
+| Toast bottom-right | RTL 시 bottom-left (`inset-inline-end: 16px` → `inset-inline-end` 그대로 두면 자동) |
+| Banner stripe | `border-inline-start: 4px solid info` — auto mirror |
+| Calendar | weekday 헤더 / day cell layout direction 자동 |
+
+#### Tailwind v4 RTL utility
+
+Tailwind v4는 `me-*`/`ms-*` (margin-end/start), `pe-*`/`ps-*`, `text-start`/`text-end`, `start-0`/`end-0` 등 logical utility 기본 제공. v4 export에서 자동 활성. 변종 `rtl:` (예: `rtl:rotate-180`) 사용 가능.
+
+#### 추가 이유
+1. **Porest는 한국어 우선**이지만 향후 글로벌 확장 시 RTL 지원 vendor 이중 작업 회피.
+2. logical property는 **추가 비용 거의 0** — physical과 동일 syntax, 브라우저 호환(Chrome 87+, Safari 15+, Firefox 66+ 모두 지원).
+3. 컴포넌트 spec 작성 시 처음부터 logical property 사용 → 향후 RTL 추가 시 spec 자체 수정 불필요.
+4. **새 토큰 0**, 새 yaml 컴포넌트 0 — prose-only 가이드.
+
+#### Migration 가이드 (기존 spec 점진 변환)
+- 기존 컴포넌트 spec에서 `padding-left`/`right`, `margin-left`/`right`, `text-align: left/right`, `border-radius` 4-corner notation 사용 시 단계적으로 logical로 변환 권장.
+- 이번 v76엔 spec 변환 미시행 — RTL 문서만 명시. 향후 컴포넌트 추가/수정 시점에 logical 우선 작성.
+
+#### WCAG / 자동 검증
+- **1.4.10 Reflow**: logical property는 reflow 친화 (writing-mode 변경에도 의도 유지).
+- **1.4.8 Visual Presentation**: text-align start/end는 사용자 설정 언어 방향 자동 존중.
+- 자동 lint 비대상(prose-only). 시각 검토 — 향후 `dir="rtl"` 환경 preview 추가 가능.
+
+#### HR / Desk 듀얼 브랜드
+- direction은 brand-neutral. HR(B2B) / Desk(B2C) 모두 동일 logical property 가이드.
+- Porest 1차 시장 한국어(LTR), RTL은 향후 확장 옵션. 현 시점 active 사용 사례 0.
 
 ## Elevation & Depth
 
@@ -2991,14 +2965,14 @@ v12 시점에는 다크 모드 사용 사례가 적어 `shadow-*-dark` 변형 �
 
 ### v43 추가 — overlay dim (prose-token)
 
-modal/sheet/drawer dim overlay (alpha 채널 prose-token).
+modal/sheet/drawer 등 floating surface가 페이지 위에 떠 있을 때 배경을 어둡게 처리하는 dim overlay. shadow와 동일한 **prose-token** — alpha 채널이 들어가 design.md spec의 정형 hex 색상 토큰으로 정의 어려움.
 
 | 토큰 | 값 | 주 용도 |
 |---|---|---|
-| `overlay-dim-light` | `rgba(0, 0, 0, 0.50)` | 라이트 modal/sheet 배경 dim |
-| `overlay-dim-dark` | `rgba(0, 0, 0, 0.65)` | 다크 modal/sheet 배경 dim |
+| `overlay-dim-light` | `rgba(0, 0, 0, 0.50)` | 라이트 모드 modal/sheet 배경 dim |
+| `overlay-dim-dark` | `rgba(0, 0, 0, 0.65)` | 다크 모드 modal/sheet 배경 dim — 다크 표면 위 분리감 강화 |
 
-`scripts/build-tailwind-v4.mjs` 자동 추출 → `--overlay-dim-*`.
+`scripts/build-tailwind-v4.mjs`가 prose 표에서 추출해 `--overlay-dim-light` / `--overlay-dim-dark`로 출력. lint 자동 검증 비대상.
 
 ## Motion
 
@@ -3116,32 +3090,99 @@ modal/sheet/drawer dim overlay (alpha 채널 prose-token).
 
 ### Loop motion (v63 추가, prose-token)
 
-skeleton shimmer · spinner · pulse 등 **반복 애니메이션** 용 토큰 2종.
+skeleton shimmer · spinner · pulse 등 **반복 애니메이션** 용 토큰 2종. v32는 단발 전환(hover/modal entrance) 위주 → 반복 사용 사례(loading 상태) 등장으로 보완.
 
 | 토큰 | 값 | 주 용도 |
 |---|---|---|
 | `motion-duration-loop` | `1500ms` | 스켈레톤 반짝임 1주기(곡선은 `motion-ease-easing` — 2026-10-03), pulse 1주기 |
-| `motion-ease-linear` | `linear` | 일정한 속도가 필요한 반복 — 스켈레톤 · Progress Circle 은 쓰지 않는다(2026-10-03) |
+| `motion-ease-linear` | `linear` | 일정한 속도가 필요한 반복 (`ease-out` 반복은 끝에 멈춰 어색) — 스켈레톤 · Progress Circle 은 쓰지 않는다(2026-10-03) |
 
-DESIGN.md의 Loop motion 정의와 동일 (brand-neutral). HR `fast`/`base`/`loop` 조합이 일반적 — 결재 큐 row hover(`fast`) + dropdown(`base`) + skeleton(`loop`).
+#### 추가 이유
+1. Skeleton/Loading 시나리오에서 `1500ms × linear` 반복이 표준 (Material progress, Toss skeleton 등 실측). 단발 전환용 `motion-duration-slower` (500ms)보다 길어야 자연.
+2. `linear`는 v32에서 의도적으로 보류 — 단발 전환은 ease-out, 반복은 linear 분기가 자연스러움. 사용 사례(Skeleton) 등장으로 추가.
+3. **2 토큰 한도 내** — duration + ease 페어. spinner/pulse는 같은 토큰 재사용.
+
+#### WCAG / 자동 검증
+- **2.2.2 Pause / Stop / Hide**: 반복 애니메이션은 사용자가 멈출 수 있어야 — skeleton은 데이터 도착 시 자동 정지(=일시 노출), spinner는 5초 이상 지속 시 cancel/refresh 옵션 제공 권장.
+- **2.3.3**: `prefers-reduced-motion: reduce` 시 shimmer/spinner는 단순 색상 변화 또는 정지 — 컴포넌트 spec에서 명시.
+- prose-token이라 lint 비대상.
 
 ### Animation library (v74 추가, prose-token)
 
-DESIGN.md baseline 정의 참고 — 14 keyframes (단발 10 + loop 4): fade-in/out, slide-in-{up,down,left,right}, scale-in/out, bounce-in, shake, spin, pulse, shimmer, ping. CSS keyframe 정의 + 권장 duration/ease 매핑.
+> **v105(2026-09-29)**: 권장 지속 시간 · 이징을 v104 이름으로 옮겼다. 같은 값의 별칭은 새 이름으로(`motion-duration-fast` → `motion-duration-d3` · `base` → `d4` · `slow` → `d6`), 나타나는 키프레임은 `motion-ease-enter`, 사라지는 키프레임은 `motion-ease-exit`, 걷는 500ms 는 `motion-duration-d6` 로. 모션 줄이기는 v104 표를 따른다.
 
-#### HR 우선 패턴
-- **결재 row 등장** — `fade-in` + `motion-duration-base` (200ms): 새 결재 도착 시 row 위에서 스무스 등장. dramatic motion 회피, 절제 톤.
-- **Toast 알림** — `slide-in-down` + `motion-duration-base` (200ms): top-right 위치라 위에서 내려옴.
-- **Modal/Dialog** — `scale-in` + `motion-duration-base` (200ms): 결재 confirm dialog, 직원 detail.
-- **Drawer (직원 detail)** — `slide-in-left` + `motion-duration-slow` (300ms): 우측에서 등장.
-- **Skeleton (결재 큐 로딩)** — `shimmer` + `motion-duration-loop` (1500ms) linear: 결재 row placeholder.
-- **Spinner (저장 중)** — `spin` + `motion-duration-loop` (1500ms) linear.
-- **Form validation error** — `shake` + `motion-duration-slow` (300ms): 결재 의견 미입력 등 금지 시.
-- **bounce-in 제한 사용** — 결재 완료 후 success indicator 정도. 일상 UI엔 과도.
+v32 duration·ease 토큰만으론 컴포넌트별 transition 작성 시 keyframe 직접 작성이 반복 → 정형 keyframe 12종 + 사용 패턴 prose 표준화. CSS keyframes 정의 + 권장 duration/ease 매핑.
 
-#### HR 회피 패턴
-- `slide-in-right` (drawer 좌측 등장) — sidebar 좌측 고정 layout이므로 우측에서 등장이 자연.
-- `ping` — alert·notification 위치만, 일반 row엔 distraction.
+#### Single-shot keyframes (10종 — 단발 전환)
+
+| keyframe | 권장 duration | 권장 ease | 주 용도 |
+|---|---|---|---|
+| `fade-in` | `motion-duration-d4` (200ms) | `motion-ease-enter` | dropdown/popover/toast 등장 |
+| `fade-out` | `motion-duration-d3` (150ms) | `motion-ease-exit` | dropdown/popover/toast 사라짐 (등장보다 빠르게) |
+| `slide-in-up` | `motion-duration-d6` (300ms) | `motion-ease-enter` | drawer bottom / bottom sheet / Toast bottom |
+| `slide-in-down` | `motion-duration-d4` (200ms) | `motion-ease-enter` | dropdown / banner 등장 |
+| `slide-in-left` | `motion-duration-d6` (300ms) | `motion-ease-enter` | drawer right / sidebar 등장 |
+| `slide-in-right` | `motion-duration-d6` (300ms) | `motion-ease-enter` | drawer left / sidebar dismiss |
+| `scale-in` | `motion-duration-d4` (200ms) | `motion-ease-enter` | modal / dialog / popover (`scale(0.96 → 1)` + `opacity 0 → 1`) |
+| `scale-out` | `motion-duration-d3` (150ms) | `motion-ease-exit` | modal / dialog / popover dismiss |
+| `bounce-in` | `motion-duration-d6` (300ms) | `cubic-bezier(0.34, 1.56, 0.64, 1)` | empty state celebrate, success indicator (over-shoot) |
+| `shake` | `motion-duration-d6` (300ms) | `cubic-bezier(.36,.07,.19,.97)` | form validation error, 잘못된 input 강조 |
+
+#### Loop keyframes (4종 — 반복)
+
+v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부는 linear 외 ease 권장.
+
+| keyframe | duration | ease | 주 용도 |
+|---|---|---|---|
+| `spin` | `motion-duration-loop` (1500ms) | `linear` | 새로 고침 아이콘처럼 일정하게 도는 것 — Progress Circle 은 쓰지 않는다(1.2초 · `progress-circle.yaml`, 2026-10-03) |
+| `pulse` | `motion-duration-loop` (1500ms) | `cubic-bezier(0.4, 0, 0.6, 1)` | dot indicator, focus 강조 (in-out ease) |
+| `shimmer` | `motion-duration-loop` (1500ms) | `motion-ease-easing` | 스켈레톤 반짝임 띠(왼쪽 밖 → 오른쪽 밖) — SEED 곡선(2026-10-03) |
+| `ping` | `motion-duration-loop` (1500ms) | `cubic-bezier(0, 0, 0.2, 1)` | notification dot, attention attractor (`scale 1 → 2`, `opacity 1 → 0`) |
+
+#### CSS keyframes 정의 (export 대상)
+
+```css
+@keyframes fade-in { from { opacity: 0 } to { opacity: 1 } }
+@keyframes fade-out { from { opacity: 1 } to { opacity: 0 } }
+@keyframes slide-in-up { from { transform: translateY(8px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+@keyframes slide-in-down { from { transform: translateY(-8px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+@keyframes slide-in-left { from { transform: translateX(-8px); opacity: 0 } to { transform: translateX(0); opacity: 1 } }
+@keyframes slide-in-right { from { transform: translateX(8px); opacity: 0 } to { transform: translateX(0); opacity: 1 } }
+@keyframes scale-in { from { transform: scale(0.96); opacity: 0 } to { transform: scale(1); opacity: 1 } }
+@keyframes scale-out { from { transform: scale(1); opacity: 1 } to { transform: scale(0.96); opacity: 0 } }
+@keyframes bounce-in { 0% { transform: scale(0.3); opacity: 0 } 50% { transform: scale(1.05) } 70% { transform: scale(0.9) } 100% { transform: scale(1); opacity: 1 } }
+@keyframes shake { 10%, 90% { transform: translateX(-1px) } 20%, 80% { transform: translateX(2px) } 30%, 50%, 70% { transform: translateX(-4px) } 40%, 60% { transform: translateX(4px) } }
+@keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
+@keyframes pulse { 0%, 100% { opacity: 1 } 50% { opacity: 0.5 } }
+@keyframes shimmer { from { transform: translateX(-100%) } to { transform: translateX(100%) } }
+@keyframes ping { 75%, 100% { transform: scale(2); opacity: 0 } }
+```
+
+#### 권장 사용 패턴 — `animation` shorthand
+
+| 패턴 | shorthand 예시 |
+|---|---|
+| Toast 등장 | `animation: slide-in-up var(--motion-duration-d6) var(--motion-ease-enter) both` |
+| Modal 등장 | `animation: scale-in var(--motion-duration-d4) var(--motion-ease-enter) both` |
+| Modal dismiss | `animation: scale-out var(--motion-duration-d3) var(--motion-ease-exit) both` |
+| Skeleton 반짝임 | `animation: shimmer var(--motion-duration-loop) var(--motion-ease-easing) infinite` |
+| Progress Circle | 회전 · 호 · 채움 — `progress-circle.yaml` 의 motion(1.2초 숫자 곡선, 2026-10-03) |
+| Notification dot | `animation: ping var(--motion-duration-loop) cubic-bezier(0, 0, 0.2, 1) infinite` |
+| Form error | `animation: shake var(--motion-duration-d6) cubic-bezier(.36,.07,.19,.97)` |
+
+#### 추가 이유
+1. v32(duration/ease) + v63(loop) → 직접 keyframe 작성 사용 사례 누적: Modal/Dialog scale-in, Drawer slide-in, Toast slide-in, Skeleton shimmer, Spinner spin 등 spec prose에 반복 등장.
+2. **shadcn/ui + Material + Toss 표준 keyframe 합집합** — fade/slide/scale/bounce/shake (단발 8) + spin/pulse/shimmer/ping (loop 4). 14종 = "거의 모든 UI 애니메이션 cover".
+3. duration/ease 토큰과 결합 → 컴포넌트 spec에서 `animation: <keyframe> <duration-token> <ease>` 형태로 일관 표기 가능.
+
+#### WCAG / 자동 검증
+- **2.3.3 Animation from Interactions**: 줄이기 모드는 v104 "모션 줄이기 모드" 표를 따른다 — 큰 전환은 150ms 서서히 나타남 · 사라짐으로 바꾸고, 반복은 멈추고, 색 전환은 남긴다. 모든 애니메이션을 0.01ms 로 끄는 전역 규칙은 쓰지 않는다 — 서서히 나타남 · 색 전환까지 사라져 무엇이 바뀌었는지 안 보인다(v105).
+- **2.2.2 Pause/Stop/Hide**: loop 애니메이션은 데이터 도착 시 자동 정지(skeleton/shimmer) 또는 5초 이상 지속 시 cancel 옵션 제공.
+- prose-token이라 lint 비대상. 시각 검토 + 컴포넌트 spec에서 정확한 keyframe 이름 인용 필수 (오타 시 silent failure).
+
+#### HR / Desk 듀얼 브랜드
+- keyframe brand-neutral. 지속 시간 분기 권장 — HR(`motion-duration-d3`/`d4`), Desk(`d4`/`d6`)(v105 — v32 가이드를 새 이름으로).
+- HR(결재 row 등장 fade-in / Toast top-right slide-in-down / Skeleton shimmer) / Desk(메모 카드 scale-in / 가계부 거래 등장 slide-in-up / 알림 dot ping) 사용.
 
 ## State
 
@@ -3476,249 +3517,890 @@ DESIGN.md baseline 정의 참고 — 14 keyframes (단발 10 + loop 4): fade-in/
 - 모든 rounded 토큰은 brand-neutral — 양 브랜드 동일.
 - 브랜드 톤 분기는 적용 강도로 처리: HR(B2B 절제) `md`/`lg` 위주, Desk(B2C 친근) `lg`/`xl` 위주. 토큰 분기 불필요.
 
+### v83 추가 — 컴포넌트 ↔ radius 매핑 (Toss 톤)
+
+토큰 스케일만으로는 컴포넌트별 일관성이 보장되지 않음 — "button과 input의 radius가 같은가" 같은 의사결정을 매번 반복하지 않도록, 컴포넌트마다 어떤 radius 토큰을 쓸지 spec으로 명시. **Toss 톤** 채택 — 절제된 4px 위주(컴포넌트 80% 이상), 컨테이너만 8px, 모서리 강조용 작은 라운드(`xs` 2px) + 알약(`full`) 분기.
+
+| 컴포넌트 | radius | 값 | 비고 |
+|---|---|---|---|
+| **Form / Action** | | | |
+| `button` | `r2` · `r3` · `full` | 8px · 12px · 9999px | small · medium 8, large 12, xsmall 알약 — 2026-09-30 SEED Action Button 구조(v112, `specs/components/button.yaml`) |
+| `input` / `textarea` | `r3` · `r2` | 12px · 8px | large · medium — 2026-10-01 SEED Text Input · Textarea(`specs/components/input.yaml` · `textarea.yaml`) |
+| `select` 트리거 · Input Button | `r3` · `r2` | 12px · 8px | Input 과 같다 — 2026-10-01 SEED Select · Input Button(`select.yaml` · `input-button.yaml`) |
+| `select` 목록 | `r5` | 20px | 칸 아래 뜨는 목록 |
+| `select-box` | `r3` | 12px | 2026-09-30 SEED Select Box(`select-box.yaml`) |
+| `slider` (track) | `full` | 9999px | |
+| `toggle` / `toggle-group` item | `sm` | 4px | |
+| `chip` | `full` | 9999px | 알약 — 2026-10-02 SEED Chip(`specs/components/chip.yaml`) |
+| `checkbox` (칸) | `r1` | 4px | SEED Checkmark(2026-09-30, `specs/components/checkbox.yaml`). 이 표는 2px 이었지만 스펙 · 코드는 4px 이었다 |
+| `radio-group` (동그라미 · 점) | `full` | 9999px | 원형 — SEED Radiomark(2026-09-30, `specs/components/radio-group.yaml`) |
+| `switch` (track + thumb) | `full` | 9999px | 알약 |
+| `list` 줄 바탕 · 타일 | `r2_5` · `r3` | 10px · 12px | 누르면 들어오는 바탕 · 앞 타일 — 카드 안 바탕은 동심 모서리(itemRadius). 2026-09-30 SEED List(`list.yaml`) |
+| **Display** | | | |
+| `badge` | `r1` · `r1_5` | 4px · 6px | medium · large — 둥근 사각(알약은 누르는 Chip). 2026-10-03 SEED Badge(`badge.yaml`) |
+| `notification-badge` | `full` | 9999px | 점 · 숫자 알약 — 2026-10-03 SEED Notification Badge(`notification-badge.yaml`) |
+| `avatar` | `full` | 9999px | 원 하나(사각 변형을 걷었다) — 2026-10-03 SEED Avatar(`avatar.yaml`) |
+| `card` | `md` | 8px | 콘텐츠 컨테이너 — 살짝 부드럽게 |
+| `callout` | `r2_5` | 10px | 본문 안 안내 상자 — 2026-10-02 SEED Callout(`callout.yaml`) |
+| `page-banner` | — | 0 | 화면 폭 띠, 모서리 없음 — 2026-10-02 SEED Page Banner(`page-banner.yaml`) |
+| `progress` (트랙 · 채움) | `full` | 9999px | 막대 8 — 2026-10-03(`progress.yaml`) |
+| `progress-circle` | — | — | 원(SVG) · 끝이 둥근 호 — 2026-10-03 SEED Progress Circle(`progress-circle.yaml`) |
+| `skeleton` | `r2` · `r4` · `full` · — | 8px · 16px · 9999px · 0 | 글 8(기본) · 카드 · 썸네일 16 · 아바타 full · 화면 폭 사진 0 — 2026-10-03 SEED Skeleton(`skeleton.yaml`) |
+| `content-placeholder` | — | 0 | 제 모서리 없음 — 담는 틀이 자른다. 2026-10-03 SEED Content Placeholder(`content-placeholder.yaml`) |
+| `aspect-ratio` / `carousel` slide | `md` | 8px | 이미지 컨테이너 |
+| divider(옛 `separator`) | — | — | 1px 선, 모서리 무관 — 2026-10-03 SEED Divider(`divider.yaml`) |
+| `scroll-area` / `resizable` | — | — | 부모 컨테이너에 따름 |
+| `scroll-fog` | — | — | 마스크(모양 없음) — 2026-10-03 SEED Scroll Fog(`scroll-fog.yaml`) |
+| `typography` | — | — | 텍스트, radius 무관 |
+| **Overlay** | | | |
+| `dialog` / `alert-dialog` | `r5` | 20px | 2026-10-02 SEED Dialog · Alert Dialog(`dialog.yaml` · `alert-dialog.yaml`) |
+| `bottom-sheet` (위 모서리) | `r6` | 24px | 위 두 모서리만 — 2026-10-02 SEED Bottom Sheet(`bottom-sheet.yaml`) |
+| `menu-sheet` (위 모서리 · 묶음) | `r5` · `r4` | 20px · 16px | 2026-10-02 SEED Menu Sheet(`menu-sheet.yaml`) |
+| `sheet` | `sm` | 4px | 사이드 패널 |
+| `popover` · `menu` | `r5` | 20px | 떠 있는 표면 — 2026-10-02 SEED Popover · Menu(`popover.yaml` · `menu.yaml`). 메뉴 줄의 알약은 `r3` 12px |
+| `help-bubble` · `tooltip` | `r3` | 12px | 말풍선 — 2026-10-02 SEED Help Bubble(`help-bubble.yaml`) |
+| `snackbar` | `r2` | 8px | 2026-10-02 SEED Snackbar(`snackbar.yaml`) |
+| **Navigation** | | | |
+| `tabs` (Line) | — | 0 | 각진 막대 — 2026-10-02 SEED Tabs(`tabs.yaml`). Chip Tabs 는 `chip` |
+| `segmented-control` (트랙 · 알약) | `full` | 9999px | 2026-10-02 SEED Segmented Control(`segmented-control.yaml`) |
+| `menu` 줄 바탕(알약) | `r3` | 12px | 좌우 8 들인 알약 — 표면은 위 Overlay 의 `menu` |
+| `command` palette | `sm` | 4px | |
+| `pagination` button | `sm` | 4px | |
+| `breadcrumb` / `navigation-menu` / `sidebar` | — | — | 인라인, radius 무관 |
+| **Disclosure** | | | |
+| `accordion` / `collapsible` | — | — | 인라인 |
+| **Data** | | | |
+| `date-picker` 날짜 원 · 기간 띠 | `full` · — | 9999px · 0 | 원 42 · 띠는 줄 끝에서 각지게 끊는다 — 2026-10-03 SEED Date Picker(`date-picker.yaml`) |
+| `wheel-picker` 선택 띠 | `r2` | 8px | 2026-10-03 SEED Wheel Picker(`wheel-picker.yaml`) — Time Picker · 연 · 월 휠 |
+| `table` / `data-table` row | — | — | |
+| `chart` | — | — | |
+
+#### Toss 톤 vs Material/shadcn 표준 비교
+- **shadcn 표준**: button/input `md` 8px, card `lg` 12px, modal `lg` 12px (부드럽고 친근한 톤)
+- **Material**: button `xs` 4px, card `md` 8px (절제 + 직사각 강조)
+- **Toss (채택)**: button/input `sm` 4px, card `md` 8px, modal `md` 8px — 두 톤 사이 절충, 한국어 UI에 익숙한 절제
+
+#### 사용 가이드
+1. 새 컴포넌트 작성 시 위 표를 먼저 참조 — 임의 결정 금지.
+2. 표에 없는 컴포넌트는 가장 가까운 카테고리(Form/Display/Overlay/Nav)의 톤을 따름.
+3. **className은 토큰명을 인용**: `rounded-sm` (Tailwind utility), `border-radius: var(--radius-sm)` (직접 CSS) — 픽셀 값 하드코딩 금지.
+4. brand 분기 없음 — HR/Desk 양쪽 동일 매핑.
+
+#### 자동 검증 미적용
+컴포넌트별 radius 매핑은 prose-spec — design.md spec이 component → radius 자동 검증을 미지원. 매핑 위반은 시각 검토 + 코드 리뷰로 감지.
+
 ## Components
+
+이 파일(`DESIGN.md`)은 brand-agnostic 공유 baseline이라 컴포넌트 스펙은 brand 파일(`DESIGN.hr.md` / `DESIGN.desk.md`)에 작성합니다 — `primary` 등 brand 토큰을 직접 참조해야 자연스러운 표현이 되기 때문(spec이 cross-file `{colors.X}` reference 미지원).
+
+본 파일에서는 brand-neutral 컴포넌트(divider, page text, caption, chart color 등 — 공유 토큰만 사용)만 정의하고, brand-specific 컴포넌트(Button, Focus ring 등)는 brand 파일에서 자체 prose로 작성합니다.
 
 ### Button
 
-규칙 · 수치는 공유 `DESIGN.md` 의 Button 절과 `specs/components/button.md` 다(2026-09-30 SEED Action Button 구조, v112). 브랜드마다 달라지는 건 brandSolid 의 채움 · 누름과 brandOutline · ghost(brand) 의 글자뿐이다 — hover · 누름의 세기나 전환 시간을 브랜드마다 달리하지 않는다(옛 HR · Desk 차등은 2026-09-30 에 걷었다).
+수치 · 규칙의 원본은 `specs/components/button.md` · `specs/components/button.yaml` 이다 — 2026-09-30 SEED Action Button 구조로 다시 썼다(v112). 이 절은 토큰과 닿는 자리만 모은다.
 
-| 자리 | 토큰 | 라이트 | 다크 | 대비 |
-|---|---|---|---|---|
-| brandSolid 채움 | `bg-brand-solid` | `#357B5F` | `#357B5F` | 흰 글자 5.06:1 · 다크 5.06:1 |
-| brandSolid 누름 · 호버 · 로딩 | `bg-brand-solid-pressed` | `#256D52` | `#256D51` | 흰 글자 6.20:1 · 다크 6.20:1 |
-| 브랜드 글자(brandOutline · ghost brand) | `fg-brand` | `#357B5F` | `#72B898` | `bg-layer-default` 위 5.06:1 · 다크 6.23:1 |
-| 포커스 링 | `stroke-focus-ring` | 브랜드 역할 | 브랜드 역할 | 2px · 띄움 2px |
+#### 변형과 색
 
-HR 은 데이터 밀도가 높은 화면이 많다 — 표 · 툴바의 인라인 액션(승인 · 반려)은 `small` · `xsmall`, 모바일 결재 화면의 하단 CTA 는 `large` 를 쓴다. brandSolid 는 휴가 신청처럼 서비스의 핵심 액션 하나에만 쓰고, 저장 · 확인 같은 일반 CTA 는 neutralSolid 다.
+| 변형 | 쓰는 곳 | 바탕 → 누름 · 호버 | 글자 · 아이콘 |
+|---|---|---|---|
+| brandSolid | 서비스 핵심 액션 하나(Desk 거래 추가 · HR 휴가 신청) | 브랜드 채움 → 브랜드 누름(브랜드 파일) | `static-white` |
+| neutralSolid (기본) | 대부분의 CTA — 저장 · 확인 · 다음 | `bg-neutral-inverted` → `bg-neutral-inverted-pressed` | `fg-neutral-inverted` |
+| neutralWeak | CTA 옆 보조(취소) · CTA 를 뺀 대부분의 액션 | `bg-neutral-weak` → `bg-neutral-weak-pressed` | `fg-neutral` |
+| criticalSolid | 되돌릴 수 없는 작업의 확정(주로 Alert Dialog) | `bg-critical-solid` → `bg-critical-solid-pressed` | `static-white` |
+| brandOutline | Solid 보다 낮은 위계 — neutralOutline 과 짝 | 투명 + `stroke-neutral-weak` 1px → `bg-layer-default-pressed` | 브랜드 글자(브랜드 파일) |
+| neutralOutline | 가장 낮은 위계의 보조 액션 | 투명 + `stroke-neutral-weak` 1px → `bg-layer-default-pressed` | `fg-neutral` |
+| ghost | 메뉴 · 툴바 · 목록의 가벼운 액션 | 투명 → `bg-layer-default-pressed` | `fg-neutral` · `fg-neutral-subtle` · 브랜드 글자 · `fg-critical` |
+
+브랜드마다 달라지는 건 브랜드 채움 · 누름과 브랜드 글자뿐이다 — 값과 대비는 `DESIGN.hr.md` · `DESIGN.desk.md` 의 Button 절. 한 화면의 Solid 버튼은 하나, 확인 창을 여는 삭제는 ghost + `fg-critical` 이다.
+
+대비(라이트 · 다크, 글자 × 바탕):
+
+| 조합 | 라이트 | 다크 |
+|---|---|---|
+| neutralSolid | 16.41:1 | 13.42:1 |
+| neutralSolid 누름 | 7.11:1 | 7.70:1 |
+| neutralWeak | 15.20:1 | 10.32:1 |
+| criticalSolid | 5.06:1 | 5.77:1 |
+| ghost `fg-neutral-subtle` × `bg-layer-default` | 5.50:1 | 6.09:1 |
+| ghost `fg-critical` × `bg-layer-default` | 5.06:1 | 6.08:1 |
+
+모두 본문 4.5:1 을 넘는다. Outline 테두리(`stroke-neutral-weak` × `bg-layer-default` 1.23:1)는 글자가 버튼을 알려 주므로 1.4.11 대상이 아니다 — SEED 도 같다.
+
+#### 상태
+
+| 상태 | 표현 |
+|---|---|
+| hovered | 누름 색(v106) — 마우스 기기에서만, 축소는 없다 |
+| pressed | 누름 색 + 세로 2px 거리 축소(v104 — Motion 의 눌림 피드백). 축소는 `motion-duration-pressed-scale` · `motion-ease-pressed-scale`, 색은 `motion-duration-color-transition` · `motion-ease-easing` |
+| focused | `stroke-focus-ring` 2px · 띄움 2px(v106) — 키보드 포커스(`focus-visible`)에만 |
+| loading | 누름 색 위 로딩 원(Outline 은 투명 그대로), 라벨 자리 폭 유지 · 누르기를 막고 `aria-busy="true"` |
+| disabled | `bg-disabled` · `fg-disabled`(2.93:1 — 1.4.3 incidental 예외). 불투명도로 흐리게 하지 않는다(v106) |
+
+#### 크기
+
+| 크기 | 높이 | 좌우 여백 | 글자 | 모서리 | 아이콘 |
+|---|---|---|---|---|---|
+| xsmall | 32px | `spacing-x3_5` (14px) | t3 13px | `radius-full` (알약) | 14px |
+| small | 36px | `spacing-x3_5` (14px) | t4 14px | `radius-r2` (8px) | 14px |
+| medium (기본) | 40px | `spacing-x4` (16px) | t4 14px | `radius-r2` (8px) | 16px |
+| large | 48px | `spacing-x5` (20px) | t6 18px | `radius-r3` (12px) | 22px |
+
+글자 굵기는 모두 700. 아이콘만 있는 버튼은 정사각(높이 = 폭)이다. 크기는 이름이 아니라 높이로 고른다 — 모달 footer 는 small, 모바일 하단 CTA 는 large.
+
+#### 누르는 영역 · 배치
+
+- 누르는 영역은 보이는 크기와 따로 44 × 44 까지 넓힌다(v106) — 2.5.5 (AAA 44 × 44) 충족.
+- 2.5.8 (AA 24 × 24) 은 모든 크기가 충족한다.
+- 나란히 두는 버튼 사이는 8px, 셋까지. 화면 하단에 채운 두 버튼(닫기 · CTA)은 3:7 — 모달 footer 는 Dialog · Drawer 의 폭 나누기(지금은 균등)를 따른다.
+
+#### Accessibility 체크리스트
+- [ ] keyboard: `Enter` / `Space` 로 누르고 `Tab` 으로 포커스가 들어온다
+- [ ] 아이콘만 있는 버튼은 `aria-label` 필수
+- [ ] 로딩은 `aria-busy="true"` — 포커스는 그대로 두고 누르기만 막는다
+- [ ] 비활성: `aria-disabled="true"` 는 포커스가 남고, `disabled` 속성은 포커스를 뺀다 — 흐름에 맞춰 고른다
 
 ### Input · Textarea
 
-공통 정의는 `DESIGN.md` 의 Input · Textarea 절, 원본은 `specs/components/input.md` · `textarea.md`(2026-10-01 SEED Text Input · Textarea). 포커스 · 오류 · 비활성 색은 브랜드와 관계없이 같다 — 포커스는 `stroke-neutral-contrast` 2px(브랜드 색 아님).
+수치 · 규칙의 원본은 `specs/components/input.md` · `input.yaml`(한 줄 — SEED Text Input)과 `textarea.md` · `textarea.yaml`(여러 줄)이다 — 2026-10-01 SEED Text Input · Textarea 구조로 다시 썼다. 라벨 · 설명 · 오류 · 글자 수는 Field(아래 Field 절)가 둘레에서 그린다. 이 절은 토큰과 닿는 자리만 모은다.
 
-#### HR 쓰임
+#### 모양과 색
 
-- HR 웹은 데스크톱이 대부분 — 반응형 기본(1280 이상 medium 40 · 글자 14). 폰 폭에서는 large 52 로 커진다.
-- 결재 · 평가처럼 칸이 많은 폼도 크기를 섞지 않는다. 표(엑셀 셀) 안의 칸은 표 컴포넌트 차례에 정한다.
-- 읽기 전용 값은 입력처럼 생긴 상자를 흉내 내지 않고 읽기 전용 칸(`bg-disabled` 바탕 · 진한 값)으로 둔다.
+| 요소 | 값 |
+|---|---|
+| 바탕 | 투명 — 놓인 표면(`bg-layer-default` · `bg-layer-floating`)이 비친다 |
+| 테두리 | 안쪽 1px `stroke-neutral-weak`. 밑줄형은 아래만 |
+| 포커스 | 안쪽에 2px `stroke-neutral-contrast` 를 덧그린다 — 마우스 · 터치로 눌러도(입력 중). 내용은 밀리지 않는다. 읽기 전용이면 없다 |
+| 오류 | 안쪽 2px `stroke-critical-solid` — 포커스해도 그대로 |
+| 비활성 | 바탕 `bg-disabled` · 글자 · 아이콘 `fg-disabled`. 불투명도로 흐리게 하지 않는다(v106) |
+| 읽기 전용 | 바탕 `bg-disabled` · 값은 `fg-neutral` 그대로(밑줄형은 바탕 없이 값 `fg-neutral-muted`) |
+| 값 · placeholder | `fg-neutral` · `fg-placeholder` |
+| 앞 · 뒤 글자 · 아이콘 · 지우기 | `fg-neutral-subtle` · `fg-neutral-muted` · `fg-neutral-subtle` |
+
+덧그린 2px 의 색만 `motion-duration-d2` (100ms) · `motion-ease-easing` 로 바뀐다 — 두께는 바로 바뀐다(SEED).
+
+대비(라이트 · 다크, `bg-layer-default` 위): 값 16.41 · 13.42, placeholder · 앞뒤 글자 5.50 · 6.09, 포커스 테두리 16.41 · 13.42, 오류 테두리 5.06 · 6.08. 1px `stroke-neutral-weak`(1.23 · 1.56)는 칸을 알리는 유일한 표시가 아니다 — 라벨 · placeholder 가 함께 알린다(SEED 와 같다). lint 대비 쌍 `input-light` · `input-dark`(본문 × `surface-input`)는 읽기 전용 칸(값 × `bg-disabled` — 같은 색)을 잰다.
+
+#### 크기
+
+| 크기 | 높이 | 좌우 여백 | 글자 | 모서리 | 아이콘 · 지우기 |
+|---|---|---|---|---|---|
+| large | 52px | `spacing-x4` (16px) | `t5` 16px | `radius-r3` (12px) | 20 · 22 |
+| medium | 40px | `spacing-x3_5` (14px) | `t4` 14px | `radius-r2` (8px) | 16 · 18 |
+| underline large | 40px(위아래 8) | 0 | `t6` 18px | 0 | 24 · 22 |
+| underline medium | 34px(위아래 6) | 0 | `t5` 16px | 0 | 20 · 18 |
+
+- 웹의 기본은 반응형 — 1280 미만 large, 이상 medium(SEED `lg`). 앱은 늘 large. medium 은 데스크톱 웹(마우스)에서만 — 폰에서 40 은 누르는 영역 44(AAA)에 못 미친다. 한 폼 안에서 크기를 섞지 않는다.
+- Textarea 는 상자형 하나 — 자동 높이 3줄(large 94 · medium 82, 위아래 14 · 12)에서 쓴 만큼 자라고, 끄면 2줄(72 · 62) 이상 고정 높이에서 칸 안 스크롤. 손잡이(resize)는 두지 않는다.
+
+#### 쓰는 규칙
+
+- 밑줄형은 화면에 입력이 하나뿐일 때(금액을 먼저 받는 화면 · 목록 위 검색 · 초대 코드 · 잠금 해제).
+- 단위는 칸 안 뒤 글자로 — 라벨에 "(원)" 을 붙이지 않는다. 금액은 숫자 키보드 · 천 단위 쉼표, `type="number"` 는 쓰지 않는다.
+- 고르는 값(날짜 · 시각 · 카테고리 · 자산)은 타이핑으로 받지 않는다 — Input Button 으로 시트 · 달력 · 목록을 연다.
+- 형식이 정해진 값(전화번호 · 주민등록번호)은 칸을 나누지 않는다 — 한 칸에서 형식을 맞춰 준다.
+- 지우기 버튼은 검색칸 · 선택 사항인 칸에, 값이 있을 때만(이름 "지우기").
+
+#### Accessibility 체크리스트
+- [ ] 모든 칸에 라벨(Field) — placeholder 를 이름으로 쓰지 않는다
+- [ ] 오류면 `aria-invalid`, 설명 · 오류 · 글자 수 · 단위 글자는 `aria-describedby`
+- [ ] 포커스하면 테두리가 2px 로 짙어진다(키보드 · 마우스 모두)
+- [ ] 최대 글자 수는 자소 단위로 세고, 한글은 조합이 끝난 뒤 자른다
 
 ### Select · Input Button
 
-공통 정의는 `DESIGN.md` 의 Select · Input Button 절, 원본은 `specs/components/select.md` · `input-button.md`(2026-10-01 SEED Select · Input Button). 고른 표시 · 누름 · 포커스 색은 브랜드와 관계없이 같다.
+수치 · 규칙의 원본은 `specs/components/select.md` · `select.yaml`(짧은 선택지를 칸 아래 목록으로 — SEED Select)과 `input-button.md` · `input-button.yaml`(입력칸 모양의 버튼 — 시트 · 팝오버를 연다, SEED Input Button)이다 — 2026-10-01 사용자 결정. 라벨 · 설명 · 오류는 Field(아래 Field 절)가 둘레에서 그린다. 이 절은 토큰과 닿는 자리만 모은다.
 
-#### HR 쓰임
+#### 나누기
 
-- HR 웹은 데스크톱이 대부분 — 반응형 기본(1280 이상 트리거 40 · 선택지 39), Input Button 은 칸 아래 팝오버로 연다(1280 미만은 시트).
-- 휴가 신청 — 휴가 정책은 Select(설명 한 줄에 남은 일수), 날짜 · 기간은 Input Button(달력 팝오버 — "완료").
-- 결재자 · 사람 고르기는 Input Button + 검색 팝오버(위 검색칸 · 아래 목록). 예 / 아니오를 받는 Select 는 Checkbox 로, 2 ~ 4개 폼 값은 Chip.
+| 이런 자리 | 컴포넌트 |
+|---|---|
+| 짧은 선택지 5개 이상(한 줄 설명까지)에서 폼 값을 고른다 | Select — 칸 아래 목록. 폰에서도 시트로 바꾸지 않는다 |
+| 달력 · 시각 · 아이콘 격자 · 검색해 고르는 긴 목록 | Input Button — 1280 미만 아래 시트 · 이상 칸 아래 팝오버 |
+| 설명 · 그림 · 딸린 입력이 붙는 2 ~ 6개를 견줘 고른다 | Select Box |
+| 2 ~ 4개 짧은 선택지 | Chip — 글이 길면 Radio · Checkbox |
+
+#### 트리거 · 칸
+
+상자는 Input 의 상자형과 같다 — large 52 · medium 40 · 웹 기본 반응형(1280), 앱은 large. 모서리 `radius-r3` · `radius-r2`, 투명 바탕 + 안쪽 1px `stroke-neutral-weak`, 오류 안쪽 2px `stroke-critical-solid`, 비활성 · 읽기 전용 `bg-disabled`(흐림 없음 — 읽기 전용의 값은 진한 글자). 버튼이라 Input 과 다른 자리:
+
+| 요소 | 값 |
+|---|---|
+| 누름 · 호버 | 바탕 `bg-layer-default-pressed` + 값 · 아이콘만 2px 거리 축소(v104). 마우스는 호버에 같은 바탕 |
+| 포커스 | 키보드 포커스에만 바깥 링 2px · 띄움 2px `stroke-focus-ring` |
+| 셰브론(Select) | 20 · 16 `fg-neutral-muted`, 열리면 180°(열 때 `motion-duration-d3` · 닫을 때 `motion-duration-d2`) |
+| 뒤 아이콘(Input Button) | 무엇이 열리는지 — 달력 · 시계 · 아래 화살표 |
+| 지우기(Input Button) | 선택 사항인 칸에 값이 있을 때만, 22 · 18 `fg-neutral-subtle` — 값 뒤 · 뒤 붙이개 앞 |
+
+#### 목록(Select)
+
+| 요소 | 값 |
+|---|---|
+| 목록 | 트리거 폭 · 아래 8(모자라면 위) · 모서리 `radius-r5` · `bg-layer-floating` · `shadow-s3` · 위아래 8 · 높이 min(480, 남은 화면 — 200 은 둔다) |
+| 선택지 | large 46 · medium 39(설명이 있으면 66 · 57) · 좌우 16, 글 `t5` · `t4` `fg-neutral`, 설명 `t3` · `t2` `fg-neutral-subtle` |
+| 고른 표시 | 오른쪽 체크 14 · 12(선 2.5) `fg-neutral` — 바탕 · 굵기는 바꾸지 않는다 |
+| 누름 · 호버 · 키보드 위치 | 좌우 8 들인 알약(모서리 12) `bg-layer-floating-pressed` — 누르는 동안만 콘텐츠 2px 거리 축소 |
+| 묶음 | 제목 `t4` 500 · `t3` 400 `fg-neutral-subtle`, 묶음 사이 1px `stroke-neutral-subtle`(좌우 16 들임 — 8 + 1 + 8) |
+| 모션 | 열 때 `motion-duration-d3` · `motion-ease-enter`(0.95 → 1 · 투명 → 불투명), 닫을 때 `motion-duration-d2` · `motion-ease-exit` |
+
+#### 쓰는 규칙
+
+- 늘 Field 의 라벨과 함께. placeholder 는 "{값의 종류} 선택".
+- "없음" 이 답이면 "{칸 이름} 없음" 선택지를 맨 앞 따로 묶음에 — Select 에는 지우기 버튼이 없다. 꼭 골라야 하는 칸은 없음 없이 제출 때 오류, 늘 값이 있는 칸은 기본값을 골라 둔다.
+- 여럿 고르기는 열린 채 이어 고른다 — 칸에는 "식비, 교통", 넘치면 "식비 외 2개". 최대 개수는 Field 설명에, "전체 선택" 같은 선택지는 두지 않는다.
+- 선택지 글은 명사형으로 짧게 — 코드값(Y · N · ANNUAL)을 내지 않는다. 폼 값을 탭으로 고르지 않는다. 요일 7개도 여럿 고르는 Select.
+- Input Button 은 혼자 쓰지 않는다 — 늘 고르는 자리를 연다. 달력 · 시각은 "완료" 로 넣고(고르는 동안 칸의 값은 그대로), 목록은 누르면 바로 넣는다. 긴 목록은 검색 시트(Combobox 를 두지 않는다).
+
+#### Accessibility 체크리스트
+- [ ] 모든 칸에 라벨(Field) — placeholder 를 이름으로 쓰지 않는다. 라벨을 누르면 포커스만(열지 않는다)
+- [ ] Select 트리거 `role="combobox"` · `aria-expanded`, 목록 `role="listbox"` · 선택지 `role="option" aria-selected` · 짚은 선택지 `aria-activedescendant`
+- [ ] Input Button 이름은 라벨 + 고른 값, `aria-haspopup="dialog"` · `aria-expanded`, 필수는 설명으로 "필수"
+- [ ] 키보드 포커스 링 — 트리거 · 칸
+- [ ] large 52 · 선택지 46 은 AAA 44 ✓, medium 은 1280 이상 데스크톱(마우스)에서만
 
 ### Card
 
-HR(B2B 데이터 밀도) — `default`/`outline` variant 위주, dashboard widget·data list 적극. `interactive`는 row click 행 단위.
+콘텐츠 그룹화·elevation 표현의 기본 표면. dashboard 위젯·list item·detail panel 등 광범위 사용.
 
 #### Mode pair
-- `card-light` (`#FFFFFF`) / `card-dark` (`#242938`)
+- **card-light** (`card-light`): `surface-default` (`#FFFFFF`) 위에 `text-primary` 텍스트
+- **card-dark** (`card-dark`): `surface-default-dark` (`#242938`) 위에 `text-primary-dark` 텍스트
 
 #### Variant
-| Variant | shadow | border | 사용 |
+| Variant | shadow | border | hover |
 |---|---|---|---|
-| **default** | `shadow-sm` | none | 일반 widget |
-| **interactive** | `shadow-sm` → hover `shadow-md` | none | row click, list item |
-| **outline** | none | `border-default` 1px | flat 데이터 그리드 (밀도 우선) |
-| **flat** | none | none | inline 그룹 (dashboard 안 위젯) |
+| **default** | `shadow-sm` (light) / `shadow-sm-dark` | none | none |
+| **interactive** (clickable card) | `shadow-sm` → hover `shadow-md` | none | hover 시 shadow 상승 + cursor:pointer |
+| **outline** (저-elevation) | none | `border-default` 1px | none — flat 스타일 |
+| **flat** (서피스만) | none | none | none — surface 휘도 차로 식별 |
 
-다크 카드는 `interactive`에 `border-default-dark` 1px 보강.
+다크 모드는 elevation 표현이 어두운 표면 위에서 약하므로 `interactive` 카드는 `border-default-dark` 1px 보강 권장.
 
 #### Padding
 | Level | 값 | 사용 |
 |---|---|---|
-| sm | `md` (12px) | 작은 KPI 카드, inline list item |
-| **md** (default) | `lg` (16px) | 대시보드 위젯, 데이터 카드 |
-| lg | `xl` (24px) | detail panel (직원 상세, 평가 상세) |
+| sm | `md` (12px) 4면 | 작은 위젯, list item |
+| **md** (default) | `lg` (16px) 4면 | dashboard widget, content card |
+| lg | `xl` (24px) 4면 | detail panel, hero card |
+| xl | `2xl` (32px) 4면 | 큰 hero/marketing 카드 (Desk 친화) |
 
-HR은 `xl` padding은 hero 사용 사례 등장 시. 일반적으로 `sm`/`md` 위주.
+수직/수평 분리: `padding: 16px 20px;` 같은 비대칭은 컴포넌트별 결정 — spacing 토큰 조합으로 표현(`md` × `lg` 등).
 
 #### Radius
-- default `radius-md` (8px), 데이터 그리드 inline은 `radius-sm` (4px)
+- **default**: `radius-md` (8px) — 카드 톤 기본
+- **소형** (small chip-like card): `radius-sm` (4px)
+- **대형** (hero, modal-like): `radius-lg` (12px) 또는 `radius-2xl` (20px)
 
 #### Layout
-- 카드 그리드 gap: `md` (12px) — HR은 데이터 밀도 톤
-- 카드 내부 콘텐츠 간격: `sm` (8px)
+- 카드 외부 간격: 카드 그리드는 `lg` (16px) gap 권장
+- 카드 내부 콘텐츠 간격: `sm` ~ `md` (8~12px)
 
 #### Motion
-- interactive hover: `motion-duration-fast` × `motion-ease-out`
-- accordion expand: `motion-duration-base`
+- interactive variant hover/leave: `motion-duration-fast` × `motion-ease-out`
+- expand/collapse (accordion-card): `motion-duration-base`
 
-#### A11y
-- interactive: `<button>` 또는 `role="button"` + `tabindex="0"` + Enter/Space
-- focus: 카드 외곽 `border-focus` 2px outline + 1px offset
+#### Accessibility
+- [ ] interactive variant는 `<button>` 또는 `<a>` 또는 `role="button"` + `tabindex="0"` + `Enter`/`Space` 키핸들러
+- [ ] focus indicator는 카드 외곽 2px outline (Button 동일 패턴)
+- [ ] aria: 카드가 expand/collapse하면 `aria-expanded`, list item이면 `role="listitem"` 또는 `<li>` 사용
 
 ### Page text
 
-HR(B2B) — `bg-page` 위 본문은 dashboard layout, sidebar nav 텍스트 등. data-dense 화면에서 본문 가독성 우선.
+`bg-page` 위에 직접 놓이는 본문 텍스트 — 카드 외곽 영역(layout 본문, 빈 영역, sidebar 텍스트 등).
 
-#### Mode pair / contrast
-- `page-text-light`: `bg-page #F5F6FA` × `text-primary #1A1F2E` = **15.04:1** ✅ AAA
-- `page-text-dark`: `bg-page-dark #1A1F2E` × `text-primary-dark #F5F6FA` = **15.04:1** ✅ AAA
+#### Mode pair
+- **page-text-light** (`page-text-light`): `bg-page` (`#F5F6FA`) + `text-primary` (`#1A1F2E`)
+- **page-text-dark** (`page-text-dark`): `bg-page-dark` (`#1A1F2E`) + `text-primary-dark` (`#F5F6FA`)
 
-#### Typography
-- 본문 `body-md` (15/400/1.6), 강조 `body-md` (15/600), 데이터 라벨 `caption` (12/400) + `text-secondary`
-- 헤딩 위계: dashboard title `display-sm` (24/700), section `title-md` (18/600), widget title `title-sm` (16/600)
+contrast 확인:
+- light: `#1A1F2E` × `#F5F6FA` = **15.04:1** ✅ AAA
+- dark: `#F5F6FA` × `#1A1F2E` = **15.04:1** ✅ AAA
+
+#### Typography 적용
+- 본문: `body-md` (15/400/1.6)
+- 강조: `body-md` (15/600/1.6)
+- 보조 본문: `caption` (12/400/1.5) — `text-secondary` 또는 `text-tertiary` 색상 권장
+- 헤딩 위계: `title-sm`(16) → `title-sm`(18) → `display-sm`(24) → `title-md`(32)
 
 #### Layout
-- 본문 max-width: 640px (한국어 1줄 35~40자, 데이터 화면 본문은 짧게)
-- 단락 간 `md` (12px), 섹션 간 `lg`/`xl` (16~24px)
+- 본문 줄간격은 typography token의 `lineHeight` 1.6에서 처리
+- 단락 간 `md` (12px) 또는 `lg` (16px)
+- 본문 max-width: 640~720px (한국어 기준 1줄 35~45자) — 가독성 우선
 
 #### A11y
-- 1.4.3 / 1.4.12 / 1.4.4 — 위 contrast + lineHeight 1.6 + 200% reflow 충족
+- 1.4.3: 본문 텍스트 4.5:1 — 위 contrast 충족
+- 1.4.12 text spacing: `lineHeight` 1.5 이상 (현 1.6 OK), letter-spacing 자유 조정 가능 디자인
+- 1.4.4 resize: 200% 확대 시 가로 스크롤 없이 reflow 가능해야 — max-width + responsive
 
 ### Caption
 
-HR — meta 정보(직원명, 부서, 타임스탬프)·테이블 cell label에 적극.
+`surface-default` (카드) 위에 놓이는 보조 텍스트 — meta 정보, 타임스탬프, 부가 설명. 위계 2단계 (secondary / tertiary).
 
-#### 위계 / Mode pair / contrast
-| Token | text | contrast (HR) |
-|---|---|---|
-| `caption-on-card-light` | `text-secondary` (`#535866`) | 6.78:1 ✅ |
-| `caption-on-card-dark` | `text-secondary-dark` (`#B7BDCC`) | 6.85:1 ✅ |
-| `caption-tertiary-on-card-light` | `text-tertiary` (`#62697A`) | 5.36:1 ✅ |
-| `caption-tertiary-on-card-dark` | `text-tertiary-dark` (`#A2A8B7`) | 5.13:1 ✅ |
+#### 위계 / Mode pair
+| Token | 배경 | text | contrast |
+|---|---|---|---|
+| `caption-on-card-light` | `surface-default` (`#FFFFFF`) | `text-secondary` (`#535866`) | **6.78:1** ✅ |
+| `caption-on-card-dark` | `surface-default-dark` (`#242938`) | `text-secondary-dark` (`#B7BDCC`) | **6.85:1** ✅ |
+| `caption-tertiary-on-card-light` | `surface-default` | `text-tertiary` (`#62697A`) | **5.36:1** ✅ |
+| `caption-tertiary-on-card-dark` | `surface-default-dark` | `text-tertiary-dark` (`#A2A8B7`) | **5.13:1** ✅ |
+
+**위계 규칙**:
+- **secondary** (caption): 일반 보조 텍스트(닉네임, 카테고리, 카드 부제) — 본문보다 한 단계 약하지만 정보로서 의미 있음
+- **tertiary** (caption-tertiary): 부가 메타(타임스탬프, "방금", "수정됨" 등) — 정보 우선순위 가장 낮음, hint 톤
+- 둘 다 본문 4.5:1 통과 — 1.4.3 incidental 예외 없이 정상 본문
+
+#### Typography 적용
+- text: `caption` (12/400/1.5)
+- 강조 caption은 `caption-strong`(가칭, 미정) 또는 inline `body-lg` 활용 — 향후 토큰화 후보
 
 #### Layout
-- 본문과 `xs` (4px) 간격
-- 메타 줄(직원명 · 부서 · 시각)은 Tag Group(2026-10-03 SEED — DESIGN.md Caption 절 · `specs/components/tag-group.md`) — 항목 사이 " · " 글자, 공지 · 휴일 목록의 "•" 를 걷는다
+- 본문 텍스트와 `xs` (4px) 간격
+- 메타 줄(예: 닉네임 · 시간, 분류 · 자산 · 시각)은 Tag Group 이다(2026-10-03 SEED — `specs/components/tag-group.md`) — 항목 사이 " · " 글자(앞 항목에 붙는다), 기본 12/16 `fg-neutral-subtle`, 구분 `fg-disabled`. 2px 점 · "•" 를 쓰지 않는다
 
-### Badge · Notification Badge · Tag Group — HR
+#### A11y
+- semantic HTML: 메타 정보는 `<small>` 또는 `<span>` 클래스로
+- 타임스탬프는 `<time datetime="...">` 사용 (스크린 리더 + 검색엔진 친화)
 
-> 모양 · 쓰는 규칙은 DESIGN.md 의 같은 이름 절(2026-10-03 SEED)과 `specs/components/badge.md` · `notification-badge.md` · `tag-group.md`. HR 의 쓰는 자리만 적는다. 옛 HR Badge 절(18 · 22 · 28 · 알약 위주)은 걷었다.
+### Badge · Notification Badge · Tag Group
 
-- **결재 상태** — weak 배지 하나로, 톤은 SEED 톤 표대로: 대기 neutral · 진행 informative · 승인 positive · 반려 critical · 취소 neutral(앱 적용 때 확인). 지금은 Tailwind 날 색이라 다크 짝이 없어 다크 화면에 밝은 알약이 뜬다(입금 · 출금 · 통계 "대기" · 현재 결재자도 같다).
-- **공지 종류 · 휴일 · 가입 상태 · 근무 시간** — 관리 화면의 색 상자와 사용자 화면의 shadcn 변형 두 벌을 한 Badge 로. 흰 글자 채움(가입 상태 1.91 ~ 3.81 · 근무 시간 2.13 ~ 3.75)을 걷는다 — 시간대처럼 뜻 없는 분류는 톤이 아니라 글 · Tag Group 으로 가른다.
-- **역할 · 정책** — 코드값(`ROLE_ADMIN` · 정책 코드) 대신 이름("관리자" · 정책 이름), "3 포함된 정책" 은 "정책 3개".
-- **메타 줄** — 공지 · 휴일 목록의 "•"(3.07)를 Tag Group " · " 로, 조회수(눈 아이콘 + 숫자)는 읽을 글 "조회 12". 일정 칩의 "Day 2 of 3 •" · "9:00 AM" 은 "2/3일째" · "오전 9:00".
-- **알림 점** — HR 은 알림 기능이 아직 없다. 승인 내역 탭의 새 소식 점만 — 브랜드 글자색(`fg-brand`, 초록) 6.
-- **필터 개수** — 업무 보고의 "필터 3" 은 Chip 필터 바로 옮기며 걷는다.
+> 2026-10-03 SEED Badge · Notification Badge · Tag Group 구조로 다시 정했다(사용자 결정 — 비교 페이지 https://claude.ai/artifact/4ySVacsdnG4fgraR1HRK3G, 1A · 2A · 3A · 4A 와 "따라오는 것"). 수치 원본은 `specs/components/badge.yaml` · `notification-badge.yaml` · `tag-group.yaml`, 쓰는 규칙은 같은 이름의 `.md` 다. 옛 Badge 절(채운 의미 색 넷 · 18 · 22 · 28 · 알약 또는 모서리 4 · 개수는 `aria-live`)은 걷었다 — 옛 스펙은 `specs/components/badge.history/v-pre-seed-display.*`. 머리말의 `badge-success` · `badge-error` · `badge-warning` · `badge-info` 대비 쌍은 solid 배지의 흰 글자(라이트)를 잰다. 의미 색 outline 의 옅은 테두리 넷(`stroke-critical-weak` · `stroke-positive-weak` · `stroke-warning-weak` · `stroke-informative-weak`)을 이 묶음에서 들였다(v117).
+
+#### 나누기
+
+| 보이려는 것 | 쓰는 것 |
+|---|---|
+| 대상의 상태 · 분류(예정 · 연체 · 승인 · 신용) | Badge — 누르지 않는다 |
+| 설명 줄의 메타(카테고리 이름 · 자산 · 시각 · 거리 · 개수 · 금액) | Tag Group — " · " 로 이은 글줄 |
+| 안 읽은 알림이 있음 · 몇 개 | Notification Badge — 점 · 숫자 |
+| 고르기 · 거르기 · 넣은 값 빼기 | Chip — 누르는 알약(Chip 절) |
+
+#### 모양
+
+| | Badge | Notification Badge | Tag Group |
+|---|---|---|---|
+| 크기 | medium 20(좌우 6 · 위아래 2 · 글 11/15) · large 24(8 · 4 · 12/16), 앞 아이콘 12 · 14 | 점 6 · 숫자 18(좌우 4 · 11/15 · 700 — 글자 크기 설정을 따르지 않는다) | 12/16(기본) · 13/18 · 14/19, 아이콘 12 · 13 · 14 |
+| 모양 | 둥근 사각 — 모서리 `radius-r1` 4 · `radius-r1_5` 6. 알약은 Chip 에만 | 원 · 알약 | 글 — 항목 사이 " · " 글자(앞 항목에 붙는다) |
+| 색 | weak `bg-*-weak` + `fg-*-contrast` · 500 / solid `bg-*-solid` + `static-white` · 700 / outline 투명 + 안쪽 1px `stroke-*-weak` + `fg-*` · 700. 중립은 `bg-neutral-weak` + `fg-neutral-muted` · `bg-neutral-inverted` + `fg-neutral-inverted` · `stroke-neutral-weak`, warning solid 는 주황 + 흰 글자 | 점은 브랜드 글자색(다크에서 밝은 짝), 숫자는 브랜드 채움 + 흰 글자 — 브랜드 파일 | 기본 `fg-neutral-subtle`(흰 바탕 5.50) · 앞세울 항목 `fg-neutral` 700 · 구분 `fg-disabled` |
+| 자리 | 줄 · 상세 머리 — 한 대상에 둘까지, 사이 4 | 아이콘 상자 기준 — 점 오른쪽 위 안쪽 1(24 아이콘 x 17 ~ 23 · y 1 ~ 7), 숫자 왼쪽 아래 꼭짓점 (아이콘 폭 − 8, 14). 글이면 끝 + 2 · 줄 상자 위 | List 의 설명 줄 · 카드 · 상세 머리의 메타 |
+
+#### 쓰는 규칙
+
+- **배지는 누르지 않는다** — 누르는 라벨은 Chip(알약). 배지의 뜻을 더 알려야 하면 옆에 ⓘ Help Bubble.
+- **반복되는 목록은 weak** — 한 목록 안은 한 변형, 뜻은 톤으로. brand 는 요금제 · 본인 표시처럼 브랜드와 닿는 자리에만.
+- **흰 표면 위에** — 중립 weak 의 바탕은 회색 바탕(`bg-layer-basement`)과 같은 색이라 거기서 사라진다.
+- **합계에 안 드는 줄(예정 · 환불)은 흐리지 않는다** — 제목 · 금액만 `fg-neutral-subtle`, 환불 금액은 취소선, 배지는 보통 대비(List 절).
+- **알림 점 · 숫자는 확인할 새 것에만** — 보면 사라진다. 0 은 안 보이고 100 이상은 "99+". 한 화면에 아껴서(여러 탭에 동시에 달지 않는다).
+- **메타 줄 구분은 " · " 글자** — 2px 점 그림 · "•" 를 쓰지 않는다. 항목은 6 ~ 10자, 한 묶음은 한 크기.
+- **글** — 배지 · 메타에 영어 · 코드값을 내지 않는다("NEW" → "새로", `ROLE_ADMIN` → "관리자", "Day 2 of 3" → "2/3일째", "9:00 AM" → "오전 9:00"). 요금제 이름 Pro · Free 는 그대로.
+
+#### 접근성
+
+- Badge: 역할 없는 글 — 줄 이름에 이어 읽힌다. 뜻은 글이 말하고 색은 거든다. 모든 짝이 4.5:1 이상이다.
+- Notification Badge: 점 · 숫자는 숨기고 붙은 버튼 · 탭 이름에 넣는다("알림, 새 알림 3개"). 수가 바뀌어도 소리로 알리지 않는다(라이브 영역 없음).
+- Tag Group: 구분 " · " 는 숨기고 그 자리에 보이지 않는 ", " — 항목마다 끊어 읽는다. 뜻이 있는 아이콘 항목은 읽을 글("분할 2건")을 준다.
 
 ### Alert text
 
-HR — form validation(직원 정보 입력 에러), 결재 상태 변경 안내, 시스템 공지 등.
+surface 위 inline 상태 텍스트 — form validation error, status notification, 변경 사항 안내. icon + text 조합 권장.
 
-#### Variant
-공유 토큰 8종 그대로 — semantic 4 × {light/on-dark}. contrast 5.27~6.31:1 (light), 5.42~5.85:1 (on-dark) 모두 본문 AA.
+#### Variant (semantic 4 × 2 mode)
+**Light surface (`surface-default` 위)**:
+| Token | text | contrast |
+|---|---|---|
+| `alert-text-success` | `success` (`#167F3F`) | **5.07:1** ✅ |
+| `alert-text-error` | `error` (`#D72323`) | **5.06:1** ✅ |
+| `alert-text-warning` | `warning` (`#BE490D`) | **5.06:1** ✅ |
+| `alert-text-info` | `info` (`#1D6EC9`) | **5.09:1** ✅ |
+
+**Dark surface (`surface-default-dark` 위)** — `*-light` semantic 사용:
+| Token | text | contrast |
+|---|---|---|
+| `alert-text-success-on-dark` | `success-light` (`#25C062`) | **6.07:1** ✅ |
+| `alert-text-error-on-dark` | `error-light` (`#FF8477`) | **6.08:1** ✅ |
+| `alert-text-warning-on-dark` | `warning-light` (`#FF8758`) | **6.11:1** ✅ |
+| `alert-text-info-on-dark` | `info-light` (`#69ABFF`) | **6.12:1** ✅ |
+
+모두 본문 4.5:1 통과 — 1.4.3 통과.
 
 #### Typography
-- form helper(필드 아래): `caption` (12/400) + `xs` (4px) 간격
-- 일반 alert 본문: `body-md` (15/400)
-- alert 제목: `body-md` (15/600)
+- 본문 길이 alert: `body-md` (15/400/1.6)
+- inline form helper: `caption` (12/400/1.5)
+- alert 제목 (있을 시): `body-md` (15/600)
 
 #### Layout
-- icon + text 페어: icon `xs` 간격, size 16px (caption 높이에 맞춤)
-- alert 영역 padding `sm` ~ `md`
+- icon + text 페어: icon `xs` (4px) 간격, icon size 16~20px (text height에 맞춤)
+- alert 영역 padding: `sm` (8px) ~ `md` (12px)
+- 여러 alert 누적 시 `xs` 간격 + 시각적 grouping
 
 #### Motion
-- 등장: `motion-duration-base` × `motion-ease-out` (HR 절제 — 빠른 fade-in 권장)
-- dismiss: `motion-duration-fast`
+- 등장: `motion-duration-base` × `motion-ease-out` (slide-in + fade)
+- dismiss/사라짐: `motion-duration-fast` × `motion-ease-out` (fade out)
+- `prefers-reduced-motion: reduce` 시 즉시 표시
 
-#### A11y
-- error는 `role="alert"` (assertive), info/success는 `aria-live="polite"`
-- form `<input aria-describedby="err-1">` + `<span id="err-1" class="alert-text-error">...`
+#### Accessibility
+- [ ] 1.4.1: 색상에만 의존 금지 — 아이콘(`✓`/`!`/`⚠`/`ℹ`) + 텍스트 항상 동반
+- [ ] aria-live: 동적 alert는 `role="alert"` (assertive) 또는 `aria-live="polite"`. error는 `assertive`, info는 `polite` 권장
+- [ ] form validation: input의 `aria-describedby="error-id"`로 alert text 연결
+- [ ] dismissable alert는 `<button aria-label="알림 닫기">` 동반
 
 ### Focus ring
 
-HR 브랜드 — `border-focus` (`#357B5F`) / `border-focus-light` (`#6BAE8C`) 사용. 모든 인터랙티브 컴포넌트(button / input / card-interactive / tab / link)의 focus 표현 통일.
+모든 인터랙티브 컴포넌트(button / input / card-interactive / link / tab 등)의 focus 표현 통일 — 키보드 사용자의 시각적 navigation cue.
 
-#### Mode pair (sparse — primary 토큰이 contrast 검증 담당)
-| Token | 색상 | 사용 |
-|---|---|---|
-| `focus-ring-on-light` | `border-focus` (`#357B5F`) | 라이트 표면 위 모든 컴포넌트 |
-| `focus-ring-on-dark` | `border-focus-light` (`#6BAE8C`) | 다크 표면 위 모든 컴포넌트 |
+#### Mode pair (sparse — brand 토큰이 contrast 검증 담당)
+- **focus-ring-on-light** (`focus-ring-on-light`): 라이트 표면 위 focus
+- **focus-ring-on-dark** (`focus-ring-on-dark`): 다크 표면 위 focus
 
-#### Contrast (실측)
-| 페어 | 대비 |
-|---|---|
-| `border-focus` (`#357B5F`) vs `bg-page` (`#F5F6FA`) | **3.31:1** ✅ UI |
-| `border-focus` (`#357B5F`) vs `surface-default` (`#FFFFFF`) | **3.49:1** ✅ UI |
-| `border-focus` (`#357B5F`) vs `surface-input` (`#F5F6FA`) | **3.96:1** ✅ UI |
-| `border-focus-light` (`#6BAE8C`) vs `bg-page-dark` (`#1A1F2E`) | **5.16:1** ✅ UI/AA |
-| `border-focus-light` (`#6BAE8C`) vs `surface-default-dark` (`#242938`) | **4.72:1** ✅ UI |
-
-모든 라이트/다크 표면에서 2.4.11 (3:1 UI) 통과.
+(brand 파일에서 실제 색상 정의 — `focus-ring-on-light` → `border-focus`, `focus-ring-on-dark` → `border-focus-light`로 매핑.)
 
 #### Spec
-- 두께 2px, offset 2px(v106), shape 컴포넌트와 동일 `border-radius`. 입력칸 · 선택 상자는 입력 중 테두리 2px(State 절)
-- `focus-visible` pseudo만 사용 (마우스 클릭 시 미표시)
+- **두께**: 2px outline (1px은 시인성 부족)
+- **offset**: 컴포넌트 외곽 2px (즉 컴포넌트 + 2px gap + 2px ring → 총 4px 외곽 영역 — v106, 스펙 다수와 맞춤)
+- **입력칸 · 선택 상자**: 입력 중에는 링 대신 같은 색의 테두리 2px(v106 — State 절)
+- **shape**: 컴포넌트 outline 100% 둘러쌈 — `border-radius` 동일 적용
+- **trigger**: `focus-visible` pseudo만 (마우스 클릭 시 미표시, Tab/keyboard로 진입 시만)
+
+#### WCAG 검증
+- **2.4.11 Focus Appearance** (AA — 2.2): focus indicator는 (a) 인접 표면 대비 **3:1 이상**, (b) 컴포넌트 외곽선 둘레의 **최소 2 CSS pixel 두께** + **인접한 비-focus 상태 대비 3:1** 충족 — 본 시스템 모두 충족
+- **2.4.12 Focus Not Obscured (Minimum)** (AA — 2.2): focus 받은 요소가 author-created 컨텐츠에 의해 완전히 가려지면 안 됨 — sticky header / popup overlay 디자인 시 z-index + scroll-margin 고려
+- **2.4.13 Focus Appearance Enhanced** (AAA — 2.2): 컴포넌트 둘레 둘레 100% × 두께 4 CSS pixel 또는 **기준 2배 이상 대비** 권장 — 향후 enhanced focus 옵션 (`focus-ring-enhanced` 토큰) 추가 후보
+
+#### 사용 예시 (CSS 의사코드)
+```css
+.button:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm); /* 동일 라운드 */
+}
+.button-on-dark:focus-visible {
+  outline-color: var(--color-border-focus-light);
+}
+```
+
+#### Layout
+- focus ring은 `outline` 사용 (box-shadow도 가능하지만 outline이 layout shift 없음 — focus 시 element 크기 안 변함)
+- offset 2px → outline-offset: 2px (v106)
 
 #### Motion
-- focus ring 등장: `motion-duration-color-transition` × `motion-ease-easing`(v106)
-- `prefers-reduced-motion: reduce` 시 즉시 표시
+- focus ring 등장: `motion-duration-color-transition` × `motion-ease-easing` (opacity 0 → 1) — v106, v104 이름으로
+- `prefers-reduced-motion: reduce` 시 즉시 표시 (focus 인지 지연은 a11y 저해)
 
-#### A11y
-- 2.4.11 / 2.4.12 / 2.4.13 — 위 contrast 충족, sticky header 아래 자동 스크롤 권장 (`scroll-margin-top`)
-- 다크 모드는 `[data-theme="dark"]` 토글로 `--color-border-focus-light` 자동 적용
+#### Accessibility 체크리스트
+- [ ] 2.4.11: 모든 컴포넌트의 focus state는 `focus-ring-on-{light,dark}` 토큰 사용
+- [ ] `focus-visible`만 사용 — 마우스 사용자 방해 없음 (`:focus`로 일관 적용 시 클릭 후에도 ring 표시되어 산만)
+- [ ] 2.4.12: focus 가려짐 방지 — sticky header 아래 focus 받으면 자동 scroll 보강 (`scroll-margin-top: <header height>`)
+- [ ] 다크 모드 자동 전환: `[data-theme="dark"]` 또는 `prefers-color-scheme: dark`로 `--color-border-focus-light` 자동 적용
 
-### Divider — HR
+### Divider
 
-> 모양 · 쓰는 규칙은 DESIGN.md 의 Divider 절(2026-10-03 SEED)과 `specs/components/divider.md`. HR 의 쓰는 자리만 적는다.
+> 2026-10-03 SEED Divider 로 다시 정했다(옛 Separator 를 대신 — 사용자 결정, 비교 페이지 https://claude.ai/artifact/4ySVacsdnG4fgraR1HRK3G 의 "따라오는 것"). 수치 원본은 `specs/components/divider.yaml`, 쓰는 규칙은 `divider.md` 다. 옛 절(`border-default` 1px · dashed 예약 · margin-only)은 걷었다 — 옛 스펙은 `specs/components/separator.history/v-pre-seed-display.*`. 머리말의 `divider-light` · `divider-dark` 는 옛 v40 짝(값은 옛 `border-default`)이고, 글자가 없어 대비 검사 대상이 아니다.
 
-- 선은 1px `stroke-neutral-subtle` 하나 — 지금 shadcn `Separator` 10곳 · 메뉴 구분선 10곳(#eeeeee 1.16 · 다크 #353535 1.33)을 옮긴다.
-- 사이드바와 본문 사이는 세로선(끝까지), 대화상자 안 묶음 사이는 끝까지 선, 같은 묶음 안은 들인 선.
-- 데이터 표의 줄 사이 선은 Table 차례에 정한다.
+| 세기 | 쓰는 것 | 자리 |
+|---|---|---|
+| 약함 | 들인 선 — 양끝 16 | 같은 묶음 안 |
+| 중간 | 끝까지 선 | 묶음 사이 · 액션 영역 위 · 스크롤되는 본문 위 머리 |
+| 강함 | 8 간격 — 회색 바탕(`bg-layer-basement`) 위 흰 층(`bg-layer-default`) 사이. 선이 아니다 | 크게 다른 내용 사이 |
+
+- 선은 하나 — 1px `stroke-neutral-subtle`(흰 바탕 1.15 · 다크 1.30, SEED 기본 neutral-muted 와 같은 진하기 — 새 토큰 없이). 굵은 선 · 짙은 선 · 점선 · "8px 구분선" 을 두지 않는다.
+- 가로(부모 폭) · 세로(부모 높이 — 통계 세 칸 사이). 바깥 여백이 없다 — 간격은 쓰는 자리가 정한다.
+- 반복되는 목록 줄 사이는 List 의 줄 사이 선(기본 없음 · 같은 색 · 들임 24). 화면 · 묶음의 마지막 아래에는 두지 않는다.
+- 기본은 장식(보조 기술에 숨김) — 이름 있는 구획을 나눌 때만 `role="separator"`(SEED 는 `<hr>` 가 기본).
+- 웹 · 앱의 border-subtle 과 border-default 가 같은 값이라 "옅은 구분선" 이 효과가 없다 — 구분선은 이 한 색으로 정리한다.
 
 ### Outline (border 시각 요소)
 
-HR — modal 외곽선, 선택된 row highlight, inline editor in-progress.
+`border-strong` 토큰을 1px element의 배경색으로 사용 — 외곽선이 카드/section의 외곽 식별 강도를 높일 때.
 
-#### Mode pair / contrast
-- `outline-strong-light` → `border-strong` (`#7D8593`): surface-default 3.34:1 / bg-page 3.13:1 / surface-input 3.34:1 (모두 UI AA)
-- `outline-strong-dark` → `border-strong-dark` (`#8B95A8`): bg-page-dark 3.97:1 / surface-default-dark 3.39:1 / surface-input-dark 4.05:1 (모두 UI AA)
+#### Mode pair
+- `outline-strong-light` (`outline-strong-light`): `border-strong` (`#7D8593`) 사용
+- `outline-strong-dark` (`outline-strong-dark`): `border-strong-dark` (`#838997`) 사용
 
-#### 사용
-- modal: `shadow-xl` + `outline-strong-light` 동시 (focus 분리감)
-- 다크 modal: `shadow-xl-dark` + `outline-strong-dark`
-- 선택 row: `outline-strong-light` 1px + `surface-input` 6% tint (선택, 강조 시)
+#### Spec
+- 두께: 1px (border CSS 또는 1px element)
+- 색상: `border-strong` (default border보다 강한 식별)
+
+#### 사용 시나리오
+- modal/dialog 외곽선 (`shadow-xl` + `outline-strong-light` 1px) — focus 가려짐 방지(2.4.12) 시 시각 분리감 보강
+- highlighted card (선택된 list item, drag-over state)
+- inline editor의 in-progress 표시
+
+#### Contrast (UI 1.4.11)
+- `border-strong` (`#7D8593`) vs `surface-default` (`#FFFFFF`) = **3.34:1** ✅ UI
+- `border-strong` vs `bg-page` (`#F5F6FA`) = **3.13:1** ✅ UI (3:1 통과)
+- `border-strong` vs `surface-input` (`#F5F6FA`) = **3.87:1** ✅ UI
+- `border-strong-dark` (`#838997`) vs `bg-page-dark` (`#1A1F2E`) = **4.68:1** ✅ UI
+- `border-strong-dark` vs `surface-default-dark` (`#242938`) = **4.13:1** ✅ UI
+- `border-strong-dark` vs `surface-input-dark` (`#353B4D`) = **4.05:1** ✅ UI
+
+모든 표면에서 UI 1.4.11 (3:1) 통과 — 단순 외곽선만으로 컴포넌트 식별 가능.
+
+#### Accessibility
+- [ ] 1.4.11: 위 contrast 충족 — outline-strong은 외곽선 **단독 식별** 가능 (`border-default` 1.16:1과 다름)
+- [ ] 다크 모드에서 modal에 `outline-strong-dark` + `shadow-xl-dark` 동시 사용 권장 (다크 표면 위 elevation 보강)
 
 ### Disabled label
 
-HR — 권한 부재(비-승인자가 결재 버튼 보지만 누르지 못함), 기간 만료(평가 종료 후 입력 disabled) 등 사용 불가 상태 표현.
+비활성 상태 컴포넌트(disabled button/input/menu item)의 텍스트 라벨. **WCAG 1.4.3 incidental 예외** 명시 — 사용 불가 컴포넌트 텍스트는 본문 4.5:1 비대상.
 
-#### Mode pair (sparse — textColor only)
-- `disabled-label-light` → `text-disabled` (`#828995`, surface 위 약 3.69:1, 1.4.3 incidental 예외)
-- `disabled-label-dark` → `text-disabled-dark` (`#7A8294`, dark surface 위 약 3.74:1)
+#### Mode pair (sparse — textColor만 정의, backgroundColor 없음)
+- `disabled-label-light` (`disabled-label-light`): `text-disabled` (`#8A91A0`)
+- `disabled-label-dark` (`disabled-label-dark`): `text-disabled-dark` (`#838997`)
+
+contrast 참고 (incidental 예외라 통과 비대상):
+- `text-disabled` (`#8A91A0`) on `surface-default` (`#FFFFFF`) = 약 **3.16:1** (본문 4.5:1 미달, AA UI 3:1 통과 — 시인성은 있되 본문 의도 아님)
+- `text-disabled-dark` (`#838997`) on `surface-default-dark` (`#242938`) = 약 **4.13:1** (동일 패턴)
+
+#### 의도
+WCAG 1.4.3 (Contrast Minimum)의 명시적 예외:
+> *Text or images of text that are part of an inactive user interface component, that are pure decoration, that are not visible to anyone, or that are part of a picture that contains significant other visual content, have no contrast requirement.*
+
+→ disabled 컴포넌트의 라벨은 **인터랙션 불가** 상태를 시각적으로 알리는 역할이라 일부러 약한 contrast 사용. 4.5:1 통과해버리면 active 상태와 구분이 어려워 오히려 UX 저해.
 
 #### Spec
-- text color disabled, 배경 `bg-disabled` · 테두리 `stroke-neutral-weak` + cursor:not-allowed (v106 — 불투명도 0.5 는 걷음)
-- **권장 동반 표현**: 컴포넌트 옆 `caption` (12/400) + `text-tertiary` "권한 없음" / "마감 종료" 등 reason text — 정상 contrast
+- text color: `text-disabled` / `text-disabled-dark`
+- 추가 시각(v106): 불투명도를 쓰지 않는다 — 배경이 있으면 `bg-disabled`, 테두리는 `stroke-neutral-weak`, cursor:not-allowed (State 절)
+- 컴포넌트 외곽선/배경은 default 유지 — text만 disabled 색상
 
-#### A11y
-- 1.4.3 incidental 예외 명시
-- aria: form은 `disabled`, focus 필요 메뉴는 `aria-disabled="true"`
-- screen reader가 "비활성화됨" 읽음
+#### Layout
+- disabled 컴포넌트 그룹의 인접 텍스트(예: "비활성화됨" 부가 설명)는 `caption` (12/400) + `text-tertiary` 조합으로 정상 contrast(4.5:1) 유지 — 이 부가 설명은 incidental 예외 비대상
+
+#### Accessibility
+- [ ] 1.4.3 incidental 예외 — text 자체 contrast는 비대상
+- [ ] **그러나** 시각적 비활성 표현 보강 필수: 전용 색(`bg-disabled` · `fg-disabled` · `stroke-neutral-weak`) + cursor:not-allowed (v106 — 불투명도 0.5 는 걷음)
+- [ ] aria: `disabled` HTML 속성 (form 제어) 또는 `aria-disabled="true"` (focus 가능, 메뉴 아이템 등)
+- [ ] screen reader가 "비활성화됨"이라고 읽음 — 시각적 강조 없이도 전달
+- [ ] **disabled 컴포넌트 옆에 reason text 권장** (예: "권한 없음", "기간 만료") — `caption` 정상 contrast로
+
+### Chart color (palette)
+
+data visualization(bar/line/pie/donut/heatmap)·카테고리 색상·tag 분류용 10색 palette. fill / stroke 용도 sparse 매핑(`backgroundColor`만, `textColor` 페어 비대상).
+
+#### Mode pair (10색 × 2 = 20 토큰)
+**Light surface (`surface-default` 위)** — 팔레트 700 단계(v110, L* 45 ~ 50):
+| Token | hex | Hue |
+|---|---|---|
+| `chart-color-red` | `#D72323` | red |
+| `chart-color-orange` | `#BE490D` | orange |
+| `chart-color-yellow` | `#8C7400` | yellow |
+| `chart-color-green` | `#167F3F` | green |
+| `chart-color-blue` | `#1D6EC9` | blue |
+| `chart-color-indigo` | `#5E60C8` | indigo |
+| `chart-color-violet` | `#8B4DBA` | violet |
+| `chart-color-pink` | `#B83B7A` | pink |
+| `chart-color-brown` | `#9A6536` | brown |
+| `chart-color-gray` | `#62697A` | gray |
+
+**Dark surface (`surface-default-dark` 위)** — `chart-*-dark` = 팔레트 800-dark(v110, L* 69):
+| Token | hex |
+|---|---|
+| `chart-color-red-on-dark` | `#FF8477` |
+| `chart-color-orange-on-dark` | `#FF8758` |
+| `chart-color-yellow-on-dark` | `#C5A721` |
+| `chart-color-green-on-dark` | `#25C062` |
+| `chart-color-blue-on-dark` | `#69ABFF` |
+| `chart-color-indigo-on-dark` | `#99A1FE` |
+| `chart-color-violet-on-dark` | `#C793F3` |
+| `chart-color-pink-on-dark` | `#F485B6` |
+| `chart-color-brown-on-dark` | `#CF9F77` |
+| `chart-color-gray-on-dark` | `#B7BDCC` |
+
+#### Hue 정렬 의도
+red → orange → yellow → green → blue → indigo → violet → pink → brown → gray 순서는 **무지개 + 보조색 sort** — 인접 색상 간 시각 거리 균등. chart에서 1~3개 카테고리만 사용 시 처음 3개(red/orange/yellow) 또는 brand-친화 3개(green/blue/indigo) 권장.
+
+#### L 통일의 의도
+모든 chart 색상은 동일한 명도 → 휘도 차이로 인한 시각 우선순위 부여 없이 **hue 차이만으로** 카테고리 구분. 이는 색맹 사용자(특히 적-녹 색맹)에게 부분적 도움 — 명도 차이가 없으면 고대비 hue 색상도 동일 톤으로 보일 수 있어 **반드시 패턴/라벨 보강 필수**.
+
+#### Variant
+| 사용 | Token 그룹 | 비고 |
+|---|---|---|
+| 라이트 표면 fill | `chart-color-{hue}` | bar 채움, pie slice |
+| 라이트 표면 stroke | `chart-color-{hue}` | line 그래프 stroke |
+| 다크 표면 fill/stroke | `chart-color-{hue}-on-dark` | 다크 모드에서 `chart-{hue}-dark` 사용 |
+| 카테고리 tag | `chart-color-{hue}` | category badge, label dot |
+| 작은 면 옅은 바탕(v111) | `chart-{hue}-weak` + 글자 `chart-{hue}-contrast` · 아이콘 `chart-{hue}` | 카테고리 타일 · 캘린더 칩 · 주식 나라 표시 |
+| 넓은 면 옅은 바탕(v111) | `chart-{hue}-subtle` + 글자 `chart-{hue}-contrast` | 메모 카드 · 배너 |
+
+#### Layout
+- pie/donut: 1~5 slice 권장 (그 이상은 가독성 저하 → "기타"로 묶기)
+- bar/column: 카테고리 ≤7 권장
+- line graph: ≤5 lines (더 많으면 highlight + 나머지 회색 처리)
+- legend: chart 옆 또는 아래, `caption` (12) + `xs` 간격
+
+#### Motion
+- chart entrance: `motion-duration-slow` (300ms) × `motion-ease-out` — 막대 grow / 선 draw 자연스럽게
+- hover highlight: `motion-duration-fast` (150ms) opacity 변화
+- `prefers-reduced-motion: reduce` 시 즉시 표시 (애니메이션 없이)
+
+#### Accessibility
+- [ ] **1.4.1 Use of Color (강조)**: chart에서 색상 단독 의존 절대 금지 — 패턴(diagonal/dot 등) 또는 라벨 직접 표시 보강 필수. 특히 적-녹(red/green) 동시 사용 시 색맹 대응 필수
+- [ ] **1.4.11 Non-text Contrast**: chart element vs surface 대비 3:1 이상 — `chart-color-yellow` (`#8C7400`) vs `surface-default` = **5.45:1** ✅, 가장 약한 hue도 UI 3:1 통과
+- [ ] **legend / data label**: 각 색상 옆에 텍스트 라벨 또는 패턴 표시. 시각만으로 식별하는 chart 금지
+- [ ] **screen reader**: chart는 `<table>` fallback 또는 `<svg role="img" aria-label="...">` + 데이터 요약 텍스트 동반
+- [ ] **focus**: 데이터 포인트 keyboard 탐색 가능(`tabindex="0"` per data point) — 각 포인트 focus 시 tooltip 표시
+
+#### 사용 예시 (CSS 의사코드)
+```css
+.chart-bar-1 { background-color: var(--color-chart-color-red); }
+.chart-bar-1[data-pattern="diagonal"] {
+  background: repeating-linear-gradient(45deg, var(--color-chart-color-red), var(--color-chart-color-red) 4px, transparent 4px, transparent 8px);
+}
+@media (prefers-color-scheme: dark) {
+  .chart-bar-1 { background-color: var(--color-chart-color-red-on-dark); }
+}
+```
+
+### 시트 · 대화상자 · 확인창 · 팝오버
+
+수치 · 규칙의 원본은 `specs/components/bottom-sheet.md` · `dialog.md` · `alert-dialog.md` · `popover.md` 와 각 `.yaml` 이다 — 2026-10-02 SEED Bottom Sheet · Dialog · Responsive Dialog · Alert Dialog · Popover 구조로 새로 정했다(옛 Modal · Drawer · Alert Dialog · Popover 절을 대신한다). 이 절은 토큰과 닿는 자리만 모은다.
+
+#### 나누기
+
+| 일 | 1280 미만 | 1280 이상 |
+|---|---|---|
+| 입력 폼 · 상세(지금 화면을 떠나지 않고) | Bottom Sheet | Dialog — 한 부품(Responsive Dialog)이 폭으로 바꾼다 |
+| 날짜 · 시각 · 아이콘 격자 · 긴 목록 고르기 | Bottom Sheet(Input Button) | Popover |
+| 되돌릴 수 없는 확인 · 꼭 알릴 일 | Alert Dialog | Alert Dialog |
+| 줄의 동작 목록 | Menu Sheet(그 차례에) | Menu(그 차례에) |
+| 화면 높이 90% 를 넘는 내용 | 페이지 | 페이지 |
+
+#### 모양
+
+| 표면 | 값 |
+|---|---|
+| 공통 | 표면 `bg-layer-floating`, 딤 `overlay-dim-light` · `overlay-dim-dark`(Popover 는 딤 없음), 시트 · 대화상자 · 확인창은 그림자 없음 |
+| Bottom Sheet | 최대 480 · 위 모서리 `radius-r6` · 머리 위 24 · 제목 `t8` 22 · 700 · 설명 `t5` `fg-neutral-muted` · 좌우 `spacing-global-gutter` · 닫기 28 원(`bg-neutral-weak`, 누르는 영역 44) · 손잡이는 스냅 높이를 둘 때만 · 넘칠 수 있는 본문은 Scroll Fog 위 20 · 아래 80 · 바닥 버튼 large 48 + 안전 영역 · `motion-duration-d6` `motion-ease-enter-expressive` 로 올라오고 `d4` `exit` 로 내려간다 |
+| Dialog | medium 480 · large 800 · 최대 높이 80% · `radius-r5` · 머리 24 · 제목 `t8` · 본문만 스크롤(넘칠 수 있는 본문은 Scroll Fog — 늘 켜진 위 20 · 아래 80, 위로 스크롤하면 머리 아래 1px `stroke-neutral-subtle`) · 바닥 버튼 small 36 오른쪽 · `d4` `enter-expressive` 로 1.3 배에서 줄며 나타남 |
+| Alert Dialog | 최대 272 · `radius-r5` · 안쪽 20 · 제목 `t7` 20 · 700 · 설명 `t5` `fg-neutral`(짙은 글자) · 버튼 둘 나란히(길면 세로 · 확정 위) — 1280 미만 medium 40 · 이상 small 36 |
+| Popover | 폭 320 ~ 480 · 최대 높이 600 · `radius-r5` · `shadow-s3` · 트리거와 8 · 머리 제목 `t7` + 닫기 · `d3` `enter` 로 0.95 배에서 커진다 |
+| 쌓임 | specs/z-index.md — 시트 · 대화상자 L2(`z-modal` 100 · `z-modal-content` 101) · Popover L3(`z-floating` 200) · Alert Dialog L5(`z-alert` 300 · `z-alert-content` 301) |
+
+#### 쓰는 규칙
+
+- 입력 폼은 바깥 누르기 · 끌어내리기로 닫지 않는다 — 닫기 버튼 · 취소 · `Esc` · 뒤로 가기로 닫고, 바뀐 값이 있으면 "작성한 내용이 사라져요" 를 묻는다(Field).
+- 닫기 버튼과 바닥 취소를 함께 두지 않는다 — 대화상자의 입력 폼은 바닥 [취소] [저장], 시트의 입력 폼은 위 닫기 + 바닥 [저장], 조회 · 안내 · 고르기는 위 닫기.
+- 확인창은 닫기 버튼이 없고 바깥 누르기를 무시한다. `Esc` 는 취소. 확인창 안에 입력칸을 두지 않는다.
+- 버튼 글은 동작 이름("삭제" · "저장" · "그룹 삭제") — "확인" 으로 뭉뚱그리지 않는다.
+
+#### Accessibility 체크리스트
+- [ ] 모달(시트 · 대화상자 · 확인창) — `role="dialog"` · 확인창 `role="alertdialog"`, `aria-modal="true"`, 제목 `aria-labelledby` · 설명 `aria-describedby`, 열면 표면으로 초점 · 닫으면 연 자리로, 열린 동안 초점을 가두고 뒤 화면을 숨기고 스크롤을 잠근다
+- [ ] Popover — `role="dialog"`(aria-modal 없음), 초점은 안으로 · 가두지 않음 · Tab 으로 나가면 닫힘, 트리거 `aria-haspopup="dialog"` · `aria-expanded`
+- [ ] 닫기 버튼 이름 "닫기", 시트 닫기 누르는 영역 44
+- [ ] 대화상자 높이 80% 상한 — 머리 · 바닥이 화면 밖으로 나가지 않는다
+
+### 알림 메시지 — Snackbar · Callout · Page Banner · Result Section
+
+> 2026-10-02 SEED Snackbar · Callout · Page Banner · Result Section 구조로 다시 정했다(사용자 결정 — 비교 페이지 https://claude.ai/artifact/8t85WkZ3HLhMu8KibW3Vk1). 수치 원본은 `specs/components/snackbar.yaml` · `callout.yaml` · `page-banner.yaml` · `result-section.yaml`, 쓰는 규칙은 각 스펙 md 다. 옛 Toast 절(흰 카드 · 위 오른쪽 · 3장 쌓기 · 오류 8초)과 Sonner(v72) · Banner(v73) 절은 걷었다. 반전 짝 역할 셋(v115 — `fg-brand-inverted` · `fg-positive-inverted` · `fg-critical-inverted`)을 이 묶음에서 들였다.
+
+#### 나누기
+
+| 이런 일 | 쓰는 것 |
+|---|---|
+| 방금 한 일의 결과 · 뒤에서 끝난 일 · 다시 하면 되는 가벼운 실패 | Snackbar(토스트) |
+| 입력값이 틀림 | Field 의 오류 문구(칸 아래) |
+| 그 기능 · 내용 가까이의 팁 · 주의, 그 자리의 오류(저장 실패) | Callout |
+| 페이지 전체의 상태(연결 끊김 · 만료 예정 · 새 버전) | Page Banner — 페이지 맨 위, 한 화면 하나 |
+| 비어 있음 · 불러오기 실패 · 완료 · 404 · 화면 오류 | Result Section |
+| 되돌릴 수 없는 결정 | Alert Dialog |
+
+오류는 자리에서 알린다 — 모든 실패를 한곳에서 토스트로 띄우지 않는다(서버가 보낸 글 · 영어 · 코드를 그대로 보이지 않는다). 시트 · 대화상자 안의 결과 · 오류는 그 안 Callout, 토스트는 시트가 닫힌 뒤.
+
+#### 모양
+
+| | Snackbar | Callout | Page Banner | Result Section |
+|---|---|---|---|---|
+| 자리 | 화면 아래 가운데 · 탭 바 · 플로팅 버튼 위 8 · 최대 464 | 본문 안 · 콘텐츠 폭 | 페이지 맨 위 · 화면 폭 | 놓인 자리 가운데 |
+| 면 | `bg-neutral-inverted`(다크는 밝은 띠) · 모서리 8 · 그림자 없음 | `bg-*-weak` · 모서리 10 | `bg-*-weak` · `bg-*-solid` · 모서리 0 | 없음 |
+| 크기 · 여백 | 최소 44 · 10 + 6(글은 16) | 최소 50 · 14 | 최소 40 · 10 / 24 | 좌우 48 · 위아래 16 |
+| 글 | 14 / 19 | 14 / 19 · 제목 700 · 한 문단 | 14 / 19 · 제목 700 · 본문 500 | 제목 22 / 30 · 16 / 22 · 설명 muted |
+| 아이콘 | 24 — 성공 · 실패만(`fg-*-inverted`) | 16 · 톤 색 | 16 · 톤 색 | 40 |
+| 버튼 | 액션 하나 · `fg-brand-inverted` 14 · 700 | 링크 · 전체 누르기 · 닫기 | 글 버튼 하나 13 · 700 · 닫기 | neutralWeak 40 + 글 버튼 |
+| 시간 · 쌓임 | 4초 · 액션 6초 · 머무는 동안 멈춤 · 한 번에 하나 · z L6(400) | 늘 보임 | 늘 보임 · 한 화면 하나 | 늘 보임 |
+
+톤은 다섯(neutral · informative · positive · warning · critical) — 옅은 바탕은 `bg-*-weak` + `fg-*-contrast`, 짙은 바탕은 `bg-*-solid` + 흰 글(`static-white`). 아이콘은 lucide 선 아이콘(v106).
+
+#### 쓰는 규칙
+
+- **글** — 해요체 문장에 마침표(스낵바도 — Writing v106). 무엇이 됐는지 먼저("거래를 저장했어요."), 오류는 할 수 있는 일까지. "실패" 로 끝나는 말 · 서버가 보낸 글 · 영어 · 코드를 쓰지 않는다. 액션은 동작 이름("되돌리기").
+- **닫기** — Callout · Page Banner 는 한 번 보면 되는 안내에만 닫기를 두고, 닫은 것을 기억한다. 경고 · 오류는 닫지 못한다.
+- **실패는 비어 있음과 다르게** — 불러오기 실패를 "내역이 없어요" 로 보이지 않는다. Result Section 의 실패 + "다시 시도".
+
+#### 접근성
+
+- Snackbar: 자리 `aria-live="polite"` · 띠 `role="status"` + `aria-atomic`, 초점을 옮기지 않는다. 보조 기술용 닫기는 키보드 초점이 오면 보인다.
+- 나중에 나타나는 경고 · 위험(Callout · Page Banner)은 `role="alert"`. Result Section 은 결과로 바뀌면 `role="status"`, 제목은 제목 태그.
+
+### 메뉴 · 메뉴 시트 · 도움말 말풍선 · 툴팁
+
+> 2026-10-02 SEED Menu · Menu Sheet · Help Bubble · Help Bubble Tooltip 구조로 다시 정했다(사용자 결정 — 비교 페이지 https://claude.ai/artifact/QoxJ7ZmQCedRWfPQrDvFgA, 여덟 다 SEED 쪽). 수치 원본은 `specs/components/menu.yaml` · `menu-sheet.yaml` · `help-bubble.yaml`(툴팁도 이 파일), 쓰는 규칙은 각 스펙 md 다. 옛 Tooltip 절(반전 · 모서리 4 · 240 · hover 500ms)과 Dropdown 절(테두리 1px · 모서리 8 · 줄 36 · menu · select · multi-select · combobox 변형)은 걷었다 — 값 고르기는 Select · Input Button 절, 메뉴는 여기. Menubar · Hover Card · Context Menu 는 세 제품 모두 쓰는 곳이 없어 걷었다.
+
+#### 나누기
+
+| 이런 일 | 1280 미만 | 1280 이상 |
+|---|---|---|
+| 줄 · 화면의 동작(수정 · 복사 · 삭제 · 내보내기) | Menu Sheet | Menu |
+| 값 고르기(테마 · 정렬 · 보기) | Segmented Control · Select — 메뉴가 아니다 | 같다 |
+| 아이콘 버튼 · 줄인 글의 짧은 설명 | — (툴팁은 터치에서 안 열린다 — 이름은 `aria-label`) | Tooltip |
+| 몰라도 일은 할 수 있는 설명(규정 · 계산 방법) | Help Bubble(ⓘ 를 눌러서) | Help Bubble |
+| 버튼 · 입력이 있는 내용 | Bottom Sheet | Popover |
+
+#### 모양
+
+| | Menu | Menu Sheet | Help Bubble · Tooltip |
+|---|---|---|---|
+| 표면 | `bg-layer-floating` · 모서리 20 · `shadow-s3` · 폭 200 · 위아래 8 | `bg-layer-floating` · 위 모서리 20 · 최대 480 · 손잡이 늘 · 딤 | `bg-neutral-inverted` · 모서리 12 · 최대 280 · 화살표 12×8 · 그림자 없음 |
+| 줄 · 글 | 39(설명 있으면 57) · `t4` 14 · 아이콘 18 · 좌우 16 | 52 · `t5` 16 · 아이콘 22 · 묶음 `bg-neutral-weak` 모서리 16 | `t3` 13(제목 700) · 위아래 10 좌우 12 |
+| 누름 · 호버 | 좌우 8 들인 알약 `bg-layer-floating-pressed` · 내용만 축소 | 줄 `bg-neutral-weak-pressed` · 내용만 축소 — 설명은 `fg-neutral-muted` · 위험 글자는 `fg-critical-contrast` 로(누름 바탕 위 4.5:1) | 닫기 버튼만 축소 |
+| 키보드 | 알약 자리 2px 링(호버와 따로) · ↑↓ 순환 · 한 글자 찾기 | 줄 안쪽 링 · `Tab` | 닫기 버튼 안쪽 링(말풍선 글자색) |
+| 묶음 · 위험 | 묶음 사이에만 선 · 위험은 맨 아래 묶음 `fg-critical` | 묶음 사이는 간격 · 위험은 맨 아래 묶음 | — |
+| z-index | L3 `z-floating` 200 | L2 `z-modal` 100 / `z-modal-content` 101 | L4 `z-tooltip` 210 |
+
+#### 쓰는 규칙
+
+- **메뉴는 실행만** — 누르면 바로 실행하고 닫힌다. 고른 표시(체크 · 라디오) · 단축키 · 하위 메뉴가 없다.
+- **데스크톱 줄의 동작은 줄 끝 ⋮ 하나 + Menu** — 이름 "{줄 이름} 더보기". 줄을 누르면 상세 · 수정. 수정 · 삭제 아이콘을 줄마다 늘 늘어놓지 않는다.
+- **폰 스와이프는 지름길** — 같은 동작을 줄 끝 ⋮ → Menu Sheet 로도 연다(키보드 · 스크린리더의 길).
+- **비모달 Menu** — 뒤 화면을 숨기지 않는다. `Tab` · 바깥 누르기로 나가면 닫히고, 고르면 실행하고 닫혀 초점은 트리거로.
+- **툴팁은 마우스(200 / 100ms) · 키보드(바로)의 보조** — 이름은 `aria-label`, 막힌 이유는 가까운 글, 네이티브 `title` 은 쓰지 않는다. 폰에서도 읽어야 하는 설명은 Help Bubble.
+- **글** — 메뉴 줄은 동사로 짧게(2 ~ 6자), 툴팁 · 말풍선은 해요체 · 문장이면 마침표.
+
+#### 접근성
+
+- Menu: 트리거 `aria-haspopup="menu"` · `aria-expanded`, `role="menu"` · `menuitem` · `group`. 키보드 위치는 링으로(바탕색만으로 알리지 않는다).
+- Menu Sheet: `role="dialog"` + `aria-modal`, 줄은 `<button>`. 보이지 않는 "닫기" 는 키보드 초점이 오면 보인다.
+- Help Bubble: `role="dialog"`(비모달) + 제목 `aria-labelledby`. Tooltip: `role="tooltip"` + 트리거 `aria-describedby`, WCAG 1.4.13(말풍선 위로 옮겨도 남는다 · `Esc`).
+
+### Tabs · Segmented Control
+
+수치 · 규칙의 원본은 `specs/components/tabs.md` · `tabs.yaml` · `chip-tabs.yaml` 과 `segmented-control.md` · `segmented-control.yaml` 이다 — 2026-10-02 SEED Tabs · Segmented Control 구조로 새로 정했다(옛 variant 넷 · 수동 활성화를 걷었다). 이 절은 토큰과 닿는 자리만 모은다.
+
+#### 나누기
+
+| 자리 | 컴포넌트 |
+|---|---|
+| 다른 구역 · 페이지로 옮긴다(1차, 화면 · 구역 맨 위) | Tabs — Line |
+| 1차 탭 안에서 다시 나눈다(2차) | Tabs — Chip Tabs(필터 바가 같은 화면에 있으면 Line) |
+| 같은 내용 2 ~ 4가지 거르기 · 정렬 · 보기(그 내용 바로 위, 한 화면 하나) | Segmented Control |
+| 2 ~ 4개 짧은 폼 값 · 목록 조건 | Chip(하나 고르기 · 필터 바) |
+
+#### Line
+
+| 요소 | 값 |
+|---|---|
+| 크기 | `small` 40 · 글 `t4` 14(기본) · `medium` 44 · 글 `t5` 16. 탭 위아래 · 좌우 10, 글은 아래로 붙인다. 글은 고르든 안 고르든 700 |
+| 색 | 안 고름 `fg-neutral-subtle`, 고름 `fg-neutral` + 아래 2px `fg-neutral` 막대(`motion-duration-d4` · `motion-ease-easing` 로 미끄러진다). 브랜드 색 · 굵기 변화 없음 — Desk · HR 이 같다 |
+| 목록 | `bg-layer-default` + 바닥 안쪽 1px `stroke-neutral-subtle` |
+| 폭 | Fill — 5개 이하 · 짧은 글, 칸을 나누고 막대를 좌우 16 들인다. Hug — 6개 이상 · 긴 글 · 넓은 데스크톱 자리, 목록 좌우 16 · 넘치면 가로 스크롤(고른 탭으로 16 여유를 두고 스크롤) |
+| 누름 · 포커스 · 비활성 | 탭 2px 거리 축소만(색 · 호버 모양 없음) · 탭 안쪽 링 2px · 글 `fg-disabled` |
+| 알림 점 | Notification Badge small — 6 · 브랜드 글자색(브랜드 파일의 fg-brand, 다크에서 밝은 짝), 글 끝 2 · 줄 상자 위 — 새 소식이 있는 탭 하나에만 |
+
+#### Chip Tabs
+
+칩 하나는 Chip(`chip.yaml`)의 Solid · Outline Strong 그대로다 — medium 36(기본) · large 40, 고르면 `bg-neutral-inverted` · `fg-neutral-inverted`. 목록은 좌우 `spacing-global-gutter` · 위아래 8 · 칩 사이 `spacing-between-chips`, 한 줄 가로 스크롤. 화면 전체 내용을 바꾸면 Solid, 일부면 Outline.
+
+#### Segmented Control
+
+| 요소 | 값 |
+|---|---|
+| 크기 | 트랙 안쪽 4 + 칸 34 = 42, 글 `t5` 16 · 700, 칸 좌우 12 — 칸이 트랙 폭을 똑같이 나눈다(최소 폭 없음 — 폰에서도 4개) |
+| 색 | 트랙 `bg-neutral-weak`, 안 고른 글 `fg-neutral-subtle`, 고른 칸은 흰 알약 `bg-layer-default` + 안쪽 짙은 1px `stroke-neutral-contrast` 위 `fg-neutral`(`motion-duration-d4` 로 미끄러진다 — SEED 의 옅은 1px 은 트랙과 1.14:1 이라 바꿨다) |
+| 누름 · 호버 | 안 고름 `bg-neutral-weak-pressed` + 1px `stroke-neutral-weak`(글 `fg-neutral-muted`) · 고름 `bg-layer-default-pressed` + 짙은 1px 그대로, 칸 안의 글만 2px 거리 축소 |
+| 비활성 | 글 `fg-disabled`, 고른 채 막히면 칸에 `bg-disabled` + 1px `stroke-neutral-solid`(흐림 없음 — v106) |
+
+#### 쓰는 규칙
+
+- 화살표로 옮기면 바로 고른다(자동) — 바로 저장되거나 되돌리기 어려운 값은 탭 · Segmented 에 두지 않는다(폼 값은 Chip · Select).
+- 탭 내용은 바로 바꾸고 탭마다 상태(스크롤 · 입력)를 남긴다. 폰의 1차 탭만 밀어 넘기고, 웹은 1차 탭을 주소에 남긴다.
+- 탭 · Segmented 글에 개수를 붙이지 않는다 — 새 소식은 한 탭에 알림 점.
+
+#### Accessibility 체크리스트
+- [ ] Tabs — `tablist`(보이는 제목 또는 `aria-label`) · `tab`(`aria-selected` · `aria-controls`) · `tabpanel`(`aria-labelledby`), 고른 탭만 `tabindex="0"`, `←` `→` · `Home` · `End` 로 옮기며 고른다(끝에서 처음으로, 막힌 탭은 건너뛴다)
+- [ ] Segmented Control — `radiogroup`(`aria-label`) + 라디오, 화살표로 옮기며 고른다
+- [ ] 알림 점은 보조 기술에 "새 소식" 을 덧붙인다
+- [ ] 키보드 포커스 링 — Line 은 탭 안쪽, Chip Tabs · Segmented 는 바깥
+- [ ] 누르는 높이 — Line small 40 · Segmented 34 는 AAA(44)에 못 미친다(AA ✓)
 
 ### Switch / Checkbox / Radio (control 묶음)
 
-HR — 직원 정보 form(필수/선택 옵션), 권한 토글 switch, 평가 항목 다중 선택 checkbox 등 form 화면 광범위 사용. 오늘 HR 화면에 Radio · Switch 는 없다 — 켜고 끄기를 "예 · 아니오" 선택 목록으로 한다(공지 상단 고정 · 공휴일 매년 반복 · 휴가 정책 · 음력 여부). 앱 적용 단계에서 Switch · Checkbox 로 옮긴다(2026-09-30 조사).
+binary on/off 상태 또는 group 선택을 표현하는 form control 3종. 공통 a11y 베이스 + 시맨틱 차이.
 
-#### 공통 spec (신규 토큰 없음)
-- 세 컨트롤 모두 2026-09-30 SEED 구조로 바뀌었다(`specs/components/switch.md` · `checkbox.md` · `radio-group.md`) — 색 규칙은 셋이 같다(사용자 결정)
-- 선택 · 켜짐: `bg-neutral-inverted`(짙은 회색) 채움 + `fg-neutral-inverted` 표시(체크 · 점 · 엄지)가 기본. `tone="brand"` 면 HR 초록(`bg-brand-solid`) + `static-white` — 서비스 핵심 흐름에서만
-- 선택 안 됨 · 꺼짐: `stroke-neutral-solid` — Checkbox · Radio 는 1px 테두리, Switch 는 트랙 채움
-- disabled: 전용 색(v106 — State 절) + cursor:not-allowed. 선택 · 켜진 채 막히면 모양 그대로 회색
-- focus: 키보드 포커스에만 `stroke-focus-ring` 2px · 띄움 2px
+#### 의미 차이
+| Component | 의미 | 변경 시점 |
+|---|---|---|
+| **Switch** | 즉시 적용되는 토글 (on/off) | 누르는 순간 적용 (e.g. 알림 켜기/끄기) |
+| **Checkbox** | 다중 선택 또는 단일 confirm | form submit 시점 또는 즉시 적용 |
+| **Radio** | 그룹 내 단일 선택 | form submit 또는 즉시 |
 
-#### Variant
-- Switch: 트랙 38 × 24(`24`, 기본) · 26 × 16(`16`) · 52 × 32(`32`), 끄면 엄지가 0.8 로 작아진다 — 누르는 순간 적용되는 설정에만(권한 on/off 등), 저장해야 적용되는 값은 Checkbox
-- Checkbox: 칸 20(`medium`, 기본) · 24(`large`), 일부 선택(indeterminate) 지원 — 직원 다중 선택 표 머리
-- Radio: 동그라미 20(`medium`, 기본) · 24(`large`), 선택은 채운 원 + 가운데 점, 묶음은 세로 — 오늘 HR 화면에는 쓰는 곳이 없다
+선택 기준: **즉시 적용 + on/off** → Switch, **다중 선택 + form** → Checkbox, **단일 선택 + group** → Radio. UI 혼동 회피를 위해 의미별 명확히 분기. Switch 는 누르는 순간 적용될 때만 쓴다 — 저장 · 실행을 눌러야 적용되는 켜고 끄기는 Checkbox 다(2026-09-30 사용자 결정 — SEED 와 같다). 누르면 화면이 바로 바뀌는 것(일정의 "종일")은 값이 저장 때 들어가더라도 Switch.
+
+#### Spec 공통 (신규 토큰 없음)
+세 컨트롤 모두 2026-09-30 SEED 구조로 바뀌었다(아래 Switch · Checkbox · Radio, `specs/components/switch.md` · `checkbox.md` · `radio-group.md`). 색 규칙은 셋이 같다(사용자 결정).
+
+| 요소 | 값 |
+|---|---|
+| 선택 · 켜짐 채움 | `bg-neutral-inverted`(짙은 회색)가 기본. 브랜드 채움은 `tone="brand"` 일 때만 — 서비스 핵심 흐름 |
+| 선택 · 켜짐 표시(체크 · 점 · 엄지) | `fg-neutral-inverted`. `tone="brand"` 면 `static-white` |
+| 선택 안 됨 · 꺼짐 | `stroke-neutral-solid`(표면과 3:1 이상, v109) — Checkbox · Radio 는 1px 테두리, Switch 는 트랙 채움 |
+| disabled | 전용 색(v106 — State 절), 불투명도로 흐리게 하지 않는다. 선택 · 켜진 채 막히면 모양 그대로 회색 — Checkbox · Radio 는 `bg-disabled` 채움 + `fg-disabled` 표시, Switch 는 `fg-disabled` 트랙 + `bg-disabled` 엄지. cursor:not-allowed |
+| hover | Checkbox · Radio 는 누름 색. Switch 는 색이 바뀌지 않는다 — 켜짐 색이 상태를 뜻해서(v104) |
+| pressed | 칸 · 동그라미 · 스위치만 세로 2px 거리 축소(v104) |
+| focus | 키보드 포커스에만 링 2px · 띄움 2px(v106) |
+
+#### Switch
+> 상세 spec(Anatomy / Sizes / States / Motion / Accessibility / Do-Don't)은 [`specs/components/switch.md`](specs/components/switch.md)가 단일 SoT. 코드(`recipes/shadcn/components/ui/switch.tsx`) · 예제(`recipes/shadcn/examples/switch-examples.mjs`) · preview 4 source 동기.
+
+- 구조: 스위치(Switchmark — 트랙 + 엄지) · 스위치 + 라벨(Switch) — SEED Switch(2026-09-30).
+- 크기(이름은 트랙 높이): `16` 트랙 26 × 16 · 엄지 12 · 라벨 13 / `24` 38 × 24 · 20 · 14(기본) / `32` 52 × 32 · 26 · 16. 트랙 · 엄지 모서리 `radius-full`.
+- 끄면 엄지가 0.8 로 작아진다 — 색 말고도 자리 · 크기로 켬 · 끔이 갈린다. 엄지에 그림자는 없다.
+- 톤: `neutral`(짙은 회색, 기본) · `brand`.
+- 모션: 엄지의 이동 · 크기 `motion-duration-d3` (150ms), 색은 20ms 뒤에 `motion-duration-d1` (50ms) — 둘 다 `motion-ease-easing`. 누르면 스위치만 세로 2px 거리 축소(색은 그대로).
+- 누르는 순간 적용되는 설정에만 쓴다 — 저장해야 적용되는 값은 Checkbox.
+- "라벨 왼쪽 · 스위치 오른쪽" 설정 줄(제목 · 설명 · 아이콘)은 List 의 스위치 줄(`ListSwitchItem` — 아래 List)이다. 그 줄에는 스위치 32 만(Switchmark) 끼우고 줄 전체가 누르는 영역이다 — 줄을 누르면 콘텐츠가 함께 줄고 스위치는 따로 줄지 않는다.
+- 터치 타겟은 스위치 단독으론 작음(높이 16 · 24 · 32). **반드시 라벨까지 묶어 44** 확보(WCAG 2.5.5 AAA) — 설정 줄에 스위치만 넣으면 줄 전체.
+
+#### Checkbox
+> 상세 spec(Anatomy / Sizes / States / Motion / Accessibility / Do-Don't)은 [`specs/components/checkbox.md`](specs/components/checkbox.md)가 단일 SoT. 코드(`recipes/shadcn/components/ui/checkbox.tsx`) · 예제(`recipes/shadcn/examples/checkbox-examples.mjs`) · preview 4 source 동기.
+
+- 구조: 칸(Checkmark) · 칸 + 라벨(Checkbox) · 묶음(Checkbox Group) — SEED Checkbox(2026-09-30).
+- 크기: `medium` 칸 20 · 라벨 14 · 줄 32(기본) / `large` 24 · 16 · 36. 모서리 `radius-r1` (4px).
+- 모양: `square`(칸 + 체크, 기본) · `ghost`(칸 없이 체크만 — 필수가 아니고 셋 이하). 톤: `neutral`(짙은 회색, 기본) · `brand`.
+- 일부 선택(indeterminate): 가로줄 — 부모 · 자식 묶음에서 자식을 일부만 골랐을 때.
+- 터치 타겟은 칸 단독으론 작음(20 · 24). **반드시 라벨까지 묶어 44** 확보(WCAG 2.5.5 AAA) — 목록 행에 칸만 넣으면 행 전체.
+- 오류는 칸을 바꾸지 않는다 — 묶음 아래 글로 알린다.
+
+#### Radio
+> 상세 spec(Anatomy / Sizes / States / Motion / Accessibility / Do-Don't)은 [`specs/components/radio-group.md`](specs/components/radio-group.md)가 단일 SoT. 코드(`recipes/shadcn/components/ui/radio-group.tsx`) · 예제(`recipes/shadcn/examples/radio-group-examples.mjs`) · preview 4 source 동기.
+
+- 구조: 동그라미(Radiomark) · 동그라미 + 라벨(Radio) · 묶음(Radio Group) — SEED Radio(2026-09-30).
+- 크기: `medium` 동그라미 20 · 점 8 · 라벨 14 · 줄 32(기본) / `large` 24 · 10 · 16 · 36. 모서리 `radius-full`.
+- 선택: 테두리 없이 채운 원 + 가운데 점. 톤: `neutral`(짙은 회색, 기본) · `brand`.
+- 묶음은 세로로만 쌓는다(줄 사이 12 — 줄마다 누르는 영역 44 를 온전히 받게, SEED 는 4) — 짧은 선택지를 한 줄에서 고르게 하려면 Segmented · Chip.
+- 설명 · 딸린 입력이 붙는 선택지는 Radio 가 아니라 Select Box(아래 Select Box).
+- 오류는 동그라미를 바꾸지 않는다 — 묶음 아래 글로 알린다.
 
 #### Layout
-- form 행: label + control + helper, 행 간 `lg` (16px)
-- group: vertical 시 항목 간 `md` (12px), horizontal `lg` (16px) — Checkbox · Radio 묶음은 스펙의 줄 사이 12 를 따르고, Radio 는 가로로 놓지 않는다(2026-09-30)
-- touch hit area 44×44 (label 포함)
+- label 위치: control 우측 (LTR) — control과 label 간 `sm` (8px) 간격
+- 그룹 spacing:
+  - vertical group: 항목 간 `md` (12px) ~ `lg` (16px) — Checkbox · Radio 묶음은 줄 최소 높이 32 · 36 에 줄 사이 12(`specs/components/checkbox.yaml` · `radio-group.yaml` — 줄마다 누르는 영역 44 를 온전히 받는다, 사용자 결정 2026-09-30. SEED 는 4)
+  - horizontal group: 항목 간 `lg` (16px) — Radio 는 가로로 놓지 않는다(2026-09-30)
+- group label (group 제목): control 위 `caption` + `xs` 간격
 
-#### A11y
-- HTML native `<input>` + `<label for>` 우선
-- focus ring `border-focus` 2px, 키보드 Space (toggle/check), Radio arrow keys
-- error 상태: Checkbox · Radio 는 칸 · 동그라미를 바꾸지 않고 묶음 아래 글로 알린다(2026-09-30). Switch 에는 오류 상태가 없다 — 저장에 실패하면 스위치를 되돌리고 무엇이 안 됐는지 알린다
-- Switch 만 쓰는 설정 줄은 줄 전체가 누르는 영역이고, 줄의 제목이 스위치의 이름이 된다(`<label>` 또는 `aria-labelledby`) — 줄의 모양은 List 의 스위치 줄(`ListSwitchItem`)
+#### Touch target (WCAG 2.5.5)
+- control 자체는 작음(Radio 동그라미 · Checkbox 칸 20 · 24, Switch 트랙 높이 16 · 24 · 32) — **반드시 label까지 포함한 hit area가 44×44px 이상** 확보 필수
+- label 클릭으로도 toggle/select 가능 (`<label for="...">` 또는 control wrap)
+
+#### Accessibility
+- [ ] **HTML**: `<input type="checkbox|radio">` + `<label for="...">` 사용 — native a11y 자동
+  - Switch는 HTML native 없음 → `<input type="checkbox" role="switch">` 또는 `role="switch"` + `aria-checked`. 스위치만 쓰는 설정 줄은 줄의 제목이 스위치의 이름이 되게 `<label>` 로 감싸거나 `aria-labelledby` 로 잇는다
+- [ ] **focus ring**: control 외곽 + label 영역 모두 focus indicator 표시 (`border-focus` 2px outline)
+- [ ] **aria 상태**:
+  - Checkbox: `aria-checked="true|false|mixed"` (mixed = indeterminate)
+  - Radio: group은 `role="radiogroup"` + `aria-labelledby="group-title"`
+  - Switch: `role="switch"` + `aria-checked` (또는 native checkbox + `role="switch"`)
+- [ ] **키보드**:
+  - Checkbox/Switch: `Space`로 toggle (Switch 는 `Enter` 도)
+  - Radio: arrow keys (`↑`/`↓` 또는 `←`/`→`)로 group 내 이동, 선택 즉시
+  - Tab으로 group 진입 → 첫 번째 또는 현재 선택값으로 focus
+- [ ] **disabled 상태**: control + label 모두 disabled 표시 + 1.4.3 incidental
+- [ ] **error 상태** (form validation 실패): Checkbox · Radio 는 칸 · 동그라미를 바꾸지 않고 묶음 아래 글로(2026-09-30). Switch 에는 오류 상태가 없다 — 누르는 순간 적용되므로 검증할 값이 없고, 저장에 실패하면 스위치를 되돌리고 무엇이 안 됐는지 알린다
 
 ### List
 
@@ -3726,13 +4408,12 @@ HR — 직원 정보 form(필수/선택 옵션), 권한 토글 switch, 평가 �
 
 - 구조: 목록(List) · 한 줄(List Item) · 목록 제목(List Header) · 줄 사이 선(ListDivider) — SEED List(2026-10-01). 설정 · 메뉴 · 선택 · 키-값 줄과 거래 · 할 일 · 알림 같은 내용 줄을 모두 List 로 그린다. RadioList 는 걷었다 — 하나 고르기는 오른쪽 라디오 줄(`ListRadioItem`).
 - 한 줄: 위아래 `spacing-x3` (12) · 좌우 `spacing-global-gutter` (24) · 제목 `t5` 16 · 400 `fg-neutral` · 설명 `t3` 13 `fg-neutral-subtle`(제목 아래 2) — 한 줄 46 · 두 줄 66.
-- 앞: 설정 · 메뉴 줄은 아이콘 22(`fg-neutral`), 색이 뜻을 가진 내용 줄은 타일 40(모서리 `radius-r3` 12 · `chart-{색}-weak` 바탕 · 아이콘 20 — 아이콘이 없으면 태그 아이콘, 이체 줄은 회색). 은행 · 카드 같은 물건 줄은 로고 타일 40(Logo Tile), 카드 혜택 줄은 카드 그림 56(Image Frame). 체크 · 라디오는 24, 스위치는 32.
+- 앞: 설정 · 메뉴 줄은 아이콘 22(`fg-neutral`), 색이 뜻을 가진 내용 줄은 타일 40(모서리 `radius-r3` 12 · `chart-{색}-weak` 바탕 · 아이콘 20). 체크 · 라디오는 24, 스위치는 32.
 - 뒤: 값 글자(`t5` · `fg-neutral-subtle`) · 오른쪽 화살표 18(화면을 옮기는 줄에만) · 컨트롤 · 작은 버튼.
 - 누름 · 호버(웹): 바탕 층이 좌우 6 들어와 모서리 10 의 `bg-layer-default-pressed` 가 되고, 콘텐츠 층만 2px 거리로 준다(v104). 끼운 컨트롤은 따로 줄지 않는다. 포커스 링은 줄 안쪽 2px.
-- 강조: 바탕만 `bg-brand-weak`(누름 · 호버 `bg-brand-weak-pressed` — 그동안 설명 · 값 글자는 `fg-neutral-muted`, 4.5:1 을 지키려고).
+- 강조: 바탕만 옅은 브랜드 색(브랜드 파일의 brand-weak 역할 색 — 누름 · 호버는 한 단계 짙은 짝, 그동안 설명 · 값 글자는 `fg-neutral-muted` 로 4.5:1 을 지킨다).
 - 줄 사이 선은 기본 없음 — 필요할 때만 `ListDivider`(1px `stroke-neutral-subtle`, 줄 폭 또는 좌우 24 들임).
 - 목록 제목: `t4` 14 · 위아래 8 · 좌우 24 — `mediumWeak`(500 · `fg-neutral-subtle`, 기본) · `boldSolid`(700 · `fg-neutral`).
-- HR — 오늘 줄 모양 24가지 · 목록 33곳, 오른쪽 화살표 0, 줄 전체를 누르는 10 중 키보드로 닿는 것 3(2026-10-01 조사). 앱 적용 단계에서 List 로 옮긴다.
 - 목록은 흰 바탕(`bg-layer-default`) · 시트(`bg-layer-floating`) 위에 둔다 — 회색 바탕(`bg-layer-basement`) 위에서는 누름 바탕이 보이지 않는다(카드에 담는다).
 
 ### Select Box
@@ -3747,310 +4428,997 @@ HR — 직원 정보 form(필수/선택 옵션), 권한 토글 switch, 평가 �
 - 누름 · 호버(웹): 상자 바탕이 `bg-layer-default-pressed` 가 되고 누르는 자리(콘텐츠 + 컨트롤)만 2px 거리로 준다(v104). 키보드 포커스 링은 상자 바깥 2px · 띄움 2px.
 - 펼침: 고른 상자 아래로 딸린 입력 · 안내가 열린다(안쪽 좌우 20 · 아래 16, 높이 400ms · 투명도 300ms). 닫히면 보이지 않고 Tab 도 닿지 않는다.
 - 누르는 순간 바뀌는 고르기(테마 같은)는 List 의 라디오 줄, 누르면 바로 무언가를 하는 자리는 버튼이다.
-- HR — 상자 4 패턴 · 5곳이 모두 손으로 짠 여럿 고르기(권한 · 역할 할당 · 플랜 정책 · 시스템 데일리 체크)다(2026-10-01 조사). 하나 고르기는 지금 모두 드롭다운이다 — 휴가 정책의 부여 방법 · 가변 부여 여부처럼 설명이 붙는 고르기는 앱 적용 단계에서 Select Box 로 옮긴다.
 
-### Tabs · Segmented Control
+### Avatar · Avatar Stack
 
-공통 정의는 `DESIGN.md` 의 Tabs · Segmented Control 절, 원본은 `specs/components/tabs.md` · `segmented-control.md`(2026-10-02 SEED). 고른 표시는 중립색이라 브랜드와 관계없이 같고, 알림 점만 브랜드 글자색(`fg-brand` — Notification Badge small)이다.
+> 2026-10-03 SEED Avatar · Avatar Stack 구조로 다시 정했다(사용자 결정 — 비교 페이지 https://claude.ai/artifact/4ySVacsdnG4fgraR1HRK3G, 5C · 6B). 수치 원본은 `specs/components/avatar.yaml` · `avatar-stack.yaml`, 쓰는 규칙은 `avatar.md` 다. 옛 Avatar v58 절(24 · 32 · 40 · 56 · 사각 변형 · 최대 3 + "+N more" · 호버 축소 · 상태 점)은 걷었다 — 옛 스펙은 `specs/components/avatar.history/v-pre-seed-display.*`. 머리말의 `avatar` 대비 쌍(`chart-blue` × 흰 글자)은 라이트 이니셜 하나를 잰다.
 
-- **구역 이동** — 휴가 내역(사용 내역 · 부여 내역) · 휴가 신청(신청 내역 · 승인 내역) · 업무 코드(업무 파트 · 업무 구분) · 권한(역할 · 사용자)은 Line. 데스크톱 카드 · 페이지는 칸이 지나치게 넓어지므로 Hug 로 둔다. 탭이 하나뿐이면 탭 줄을 두지 않는다.
-- **승인할 것이 있으면** 승인 내역 탭에 알림 점 — 개수는 탭 글이 아니라 내용에 보인다.
-- **같은 내용 조작**(캘린더 보기 전환 등 2 ~ 4개)은 Segmented Control.
-- 앱 적용 때 정할 자리 — 회사(모바일) 부서 관리 · 조직도, 캘린더 필터 팝오버의 사용자 · 유형.
+| | Avatar | Avatar Stack |
+|---|---|---|
+| 크기 | 20 · 24 · 36 · 42 · 48 · 56 · 64 · 80 · 96 · 108 — 자리마다 대표 크기(한 줄 목록 36 · 두 줄 목록 42 · 줄 안 묶음 24 · Desk 계정 머리 80 · HR 큰 사진 96 · 프로필 수정 108) | 같은 10단계 — 묶음이 정하고 안의 아바타가 모두 따른다 |
+| 모양 | 원 하나 · 1px 안쪽 `stroke-neutral-subtle`(모든 크기) | 지름 1/4 겹침(−5 ~ −27) · 놓인 바탕색 링 1 ~ 5(`bg-layer-default`, 시트 안은 `bg-layer-floating`) · 뒤가 위 |
+| 사진이 없을 때 | 이니셜 + 이름 색 — 차트 10색(v110) 바탕, 글자 `fg-neutral-inverted` 700(지름의 40%, 가장 작아도 10) | 앞 4명 + "+N" 원(같은 크기 · `bg-neutral-weak` + `fg-neutral-muted` 700) |
 
-### 메뉴 · 메뉴 시트 · 도움말 말풍선 · 툴팁
+- **이니셜** = 표시 이름의 첫 글자 하나(로마자는 대문자 — "Kim Minsu" → "K"). **이름 색** = 표시 이름의 유니코드 코드 포인트 합 % 10 → blue · green · orange · violet · pink · indigo · red · yellow · brown · gray(v110 순서) — 웹 · 앱이 같다("김민수" → blue · "이서연" → brown · "Kim Minsu" → indigo). 대비 라이트 4.55 ~ 5.50 · 다크 6.07 ~ 7.70:1 — 다크에서 흰 글자는 2.4:1 이라 쓰지 않는다.
+- **사람만 아바타다** — 자산 · 카드 로고 · 주식 · 카테고리 타일은 원 아바타가 아니다(Image Frame · List 붙이개 차례에).
+- **이름 옆 아바타는 장식**(이름을 한 번만 읽는다), 혼자면 이름을 가진다. 상태(안 낸 사람)는 흐리게 하지 않고 배지 · 글로.
 
-> 모양 · 쓰는 규칙은 DESIGN.md 의 같은 이름 절(2026-10-02 SEED). HR 의 쓰는 자리만 적는다.
+### 날짜 · 시각 고르기 — Date Picker · Time Picker · Wheel Picker
 
-- **표의 줄 동작** — 직원 · 휴가 · 업무 코드 줄 끝 ⋮ + Menu(수정 · 비밀번호 초기화 · 삭제 — 위험은 맨 아래). 줄 아이콘 묶음(업무 코드 · 부서 · 역할)도 ⋮ 로 옮긴다.
-- **규정 안내** — 휴가 신청 · 정책의 ⓘ 는 Help Bubble(긴 표가 있는 규정은 Popover).
-- **툴팁** — 접힌 사이드바 메뉴 이름 · 아이콘 버튼의 이름. 브랜드 파랑 툴팁은 걷는다.
+> 2026-10-03 SEED 구조로 새로 정했다(옛 Calendar v61 · Date Range Picker v72 · Time Picker v72 를 대신). 수치 원본은 `specs/components/date-picker.yaml` · `time-picker.yaml` · `wheel-picker.yaml`, 쓰는 규칙은 같은 이름의 `.md`. 옛 Calendar 스펙은 `specs/components/calendar.history/v-pre-seed-date.*`.
 
-### 알림 메시지 — Snackbar · Callout · Page Banner · Result Section
+날짜 · 시각은 치지 않고 고른다 — 칸은 Input Button 이고, 누르면 1280 미만은 아래 시트 · 이상은 칸 아래 팝오버가 열리며 "완료" 로 넣는다(고르는 동안 칸 값은 그대로, 닫으면 버림).
 
-> 모양 · 쓰는 규칙은 DESIGN.md 의 같은 이름 절(2026-10-02 SEED). HR 의 쓰는 자리만 적는다.
-
-- **오류** — 전역 오류 토스트(GET 까지 · 재시도마다)를 걷는다. 목록 · 상세를 불러오지 못하면 그 자리 Result Section(실패 + 다시 시도), 저장 실패는 대화상자 맨 위 Callout `critical`, 칸 오류는 칸 아래.
-- **토스트** — 결재 승인 · 반려 · 저장처럼 방금 한 일의 결과만, 아래 가운데. 테마는 앱 테마를 따른다.
-- **안내** — 휴가 신청의 자동 승인 · 결재자 안내는 Callout(번역 키가 아닌 글로), 공지는 Page Banner 를 검토한다(지금은 로그인마다 대화상자 — 앱 적용 때 정한다).
-- **빈 화면** — shadcn Empty 를 Result Section 으로, 404 는 한국어 Result Section.
-
-### 시트 · 대화상자 · 확인창 · 팝오버
-
-공통 정의는 `DESIGN.md` 의 같은 절, 원본은 `specs/components/bottom-sheet.md` · `dialog.md` · `alert-dialog.md` · `popover.md`(2026-10-02 SEED). 표면 · 고른 색은 브랜드와 관계없이 같다.
-
-- **폼 · 상세** — HR 은 데스크톱이 주라 대부분 Dialog(medium 480 · 큰 표는 large 800)이고, 1280 미만에서는 같은 내용이 Bottom Sheet 로 뜬다. 높이는 화면의 80% 까지 · 본문만 스크롤(지금 30곳 중 18곳이 상한 없이 넘친다).
-- **입력 폼은 바닥 [취소] [저장]** — 머리 닫기 버튼을 함께 두지 않고, 바깥을 눌러도 닫히지 않는다. 바뀐 값이 있으면 나가기 전에 묻는다.
-- **삭제 확인 7곳** — Alert Dialog. 확정은 `criticalSolid`, 글은 "… 삭제할까요?"(지금 "정말 … 삭제하시겠습니까?"), `Esc` 는 취소 · 바깥 누르기는 무시.
-- 앱 적용 때 정할 자리 — 규정 안내 12(Popover · Help Bubble), 전체 화면 Dialog 3(페이지 · 시트 · Side Panel).
-
-### Chart color (palette)
-
-HR — dashboard chart (직원 분포, 평가 결과, 부서별 비교, 휴가 사용률 등)에 광범위 사용. 10색 palette × 2 mode.
-
-#### 사용 시나리오
-- **bar/column chart**: 부서별/직급별 비교 — `chart-color-blue`/`indigo`/`green` 등 brand-친화 3색 우선
-- **pie/donut**: 평가 등급 분포(S/A/B/C/D) — 5색 사용, S는 `chart-color-green`, D는 `chart-color-red` (의미 매핑 가능 시)
-- **heatmap**: 부서별 출석률 — 단일 hue (예: `chart-color-blue`) + opacity 그라데이션
-- **stacked bar**: 휴가 종류별 — 10색 palette 순서대로
-
-#### Hue 의미 매핑 권장 (HR context)
-| Hue | 권장 의미 |
+| 이런 값 | 고르는 것 |
 |---|---|
-| green | 긍정 (출석, 정상, 우수) |
-| blue | 중립 default (정보) |
-| yellow | 주의 (지각, 임박 만료) |
-| red | 부정 (결근, 미달) |
-| gray | 비활성/종료 |
+| 날짜 하나 | Date Picker — 한 달, 늘 6주 |
+| 기간 | Date Picker 기간 — 칸 하나("9월 28일~10월 6일"), 시트는 이어지는 달 · 팝오버는 두 달, 위에 빠른 기간 칩 |
+| 여러 날 | Date Picker 여러 날 — 따로 그린 원 |
+| 시각 | Time Picker — 오전·오후 → 시 → 분, 분 간격 기본 5 |
+| 날짜 + 시각 | 날짜 칸 + 시각 칸 나란히 |
+| 달만(예산 · 홈 · 카드 실적) | Wheel Picker 연 · 월 + "완료" |
+| 1 ~ 31(매월 N일 · 결제일) | Select |
 
-semantic 토큰(success/error/warning/info)과 hue 일관성 유지 — `chart-color-green`은 `success`와 친화 hue.
+| | Date Picker | Time Picker · Wheel Picker |
+|---|---|---|
+| 크기 | 칸 48(폭 ÷ 7) · 원 42 · 머리 · 요일 48 · 늘 6주 · 팝오버 336 · 두 달 696 | 항목 44 × 5 = 220 · 연 · 월 휠 7칸 · small 36 |
+| 글자 | 숫자 `t5` 500 `fg-neutral-muted` · 요일 `t4` 500 `fg-neutral-subtle` · 제목 `t5` 700 | 항목 26 / 35 · 500 — 고른 것 `fg-neutral` · 둘레 `fg-disabled` |
+| 상태 | 오늘 옅은 원 `bg-neutral-weak` + 숫자 700 · 고름 `bg-neutral-inverted` · 기간 띠 `bg-neutral-weak` · 앞뒤 달 `fg-disabled`(누르지 못함) · 막힘 `fg-disabled` + 취소선 · 읽기 전용 `stroke-neutral-solid` | 띠 `bg-neutral-weak` 모서리 8 · 좌우 16 들임 · 안개 min(40%, 3칸) |
+| 키보드 | WAI-ARIA Grid — ←→ 하루 · ↑↓ 한 주 · PageUp/Down 한 달 · Shift+Page 한 해 | 칼럼마다 Tab · ↑↓ · Home · End |
+| 칸 표기 | 올해 "10월 15일 (목)" · 다른 해 "2027년 1월 3일 (일)" · 기간 물결표 | "오후 3:00" |
+
+빠른 기간은 한 벌이다 — 이번 주(일 ~ 토) · 이번 달(1일 ~ 말일) · 지난 달 · 최근 7일 · 30일 · 최근 3개월 · 6개월 · 1년(이번 달을 넣은 달들) · 올해(1월 1일 ~ 12월 31일). 화면은 이 안에서 고른다.
+
+### Field (폼 — 라벨 · 설명 · 오류)
+
+수치 · 규칙의 원본은 `specs/components/field.md` · `field.yaml` 이다 — 2026-10-01 SEED Field 구조로 정했다. 옛 Label · Form 스펙과 v62 Form layout · v75 Form validation 의 규칙을 여기로 합쳤다(옛 글은 바로 앞 백업 `DESIGN.history/v114-korean-line-break.md` 의 Form layout · Form validation 절, 옛 스펙은 `specs/components/label.history/` · `form.history/`). 이 절은 토큰과 닿는 자리만 모은다.
+
+#### 짜임
+
+Field 는 머리(라벨 · 필수 점 또는 "선택" · 보조 액션) · 입력 · 꼬리(설명 또는 오류 · 글자 수)를 8 간격으로 쌓는다. 머리 · 꼬리는 좌우로 2 들어온다. 입력은 Text Input · Textarea · Select · Input Button · Checkbox · Radio · Select Box 묶음이다.
+
+| 부위 | 값 |
+|---|---|
+| 라벨 | `t5` 16px · 500(bold 700) · `fg-neutral` — 오류여도 그대로 |
+| 필수 점 | 6px(0.375rem) `fg-critical` — 라벨 끝, 위 4 · 왼쪽 2. 화면 읽기 프로그램에는 숨기고 칸의 `aria-required` 로 알린다 |
+| "선택" | `t4` 14px · 줄 높이 22 · `fg-neutral-subtle` |
+| 설명 | `t4` 14px `fg-neutral-subtle`(앞 아이콘 16 은 선택) |
+| 오류 | `t4` 14px `fg-critical` + 아이콘 16 — 설명 자리를 대신한다 |
+| 글자 수 | `t4` 14px — 쓴 수 `fg-neutral`(비면 `fg-neutral-subtle`), 최대 `fg-neutral-subtle`, 오류면 둘 다 `fg-critical` |
+| 폼 | Field 사이 `spacing-x6` (24px) · 나란히 둔 두 칸 사이 `spacing-x4` (16px, 768 미만은 한 줄에 하나) |
+
+대비(라이트 · 다크): 라벨 16.41 · 13.42, 설명 · "선택" 5.50 · 6.09(시트 다크 5.27), 오류 5.06 · 6.08(시트 다크 5.27).
+
+#### 규칙
+
+- 필수 표시는 2/3 규칙 — 한 화면 칸의 2/3 이상이 필수면 선택 칸에만 "선택", 아니면 필수 칸에만 점. 한 폼에 섞지 않는다. 칸이 하나뿐이면 붙이지 않는다.
+- 라벨은 칸 위에 둔다 — 왼쪽 라벨 배치(옛 horizontal)는 두지 않는다. 라벨은 명사형, 마침표 없이.
+- 오류 글은 무엇을 하면 되는지 짧게(Writing — 해요체 · 마침표) — "휴대폰 번호 10~11자리로 입력해주세요.". 맞음 · 확인 중은 설명 자리에 글로 — 초록 테두리 · 돌림 표시를 두지 않는다.
+- 묶음(Checkbox · Radio · Select Box)의 칸 이름 · 오류도 Field 가 그린다 — 라벨이 묶음의 이름(`aria-labelledby`)이다.
+- 오류가 생기면 화면 밖 알림 자리(`aria-live="polite"`)가 한 번 읽는다.
+
+#### 검증과 나가기
+
+- 저장 · 신청 버튼은 켜 둔다. 누르면 비거나 틀린 칸마다 오류를 보이고 첫 오류 칸으로 포커스를 옮긴다(제출 시 검증 — 기본). 다 채울 때까지 버튼을 끄지 않는다.
+- 잘못 넣으면 위험한 칸(보안 · 금융 — 비밀번호 확인 · 계좌번호 · 송금액)만 칸을 떠날 때 바로 알린다. 입력하는 동안 글자마다 오류를 띄우지 않는다.
+- 서버 확인(아이디 중복)은 칸을 떠난 뒤 — 확인하는 동안 설명 자리에 "확인하는 중…", 결과도 설명 · 오류 자리에. 늦게 온 옛 응답이 새 응답을 덮지 않게 이전 요청을 취소한다.
+- 작성 · 수정 화면에서 값이 바뀐 채 나가려 하면(뒤로 · 닫기 · 바깥 누름 · 시트 끌어내림) "작성한 내용이 사라져요" 를 묻는다(Alert Dialog). 바뀐 값이 없거나 자동 저장이면 묻지 않는다.
+
+#### 오류 글 꼴(v75 에서 옮겨 Writing 에 맞췄다)
+
+| 규칙 | 오류 글 |
+|---|---|
+| 필수 | "{칸 이름}을(를) 입력해주세요." · 고르는 칸은 "{칸 이름}을(를) 골라주세요." |
+| 최소 · 최대 길이 | "{N}자 이상 입력해주세요." · "{N}자 이내로 입력해주세요." |
+| 숫자 범위 | "{N} 이상으로 입력해주세요." · "{N} 이하로 입력해주세요." |
+| 형식 | "{칸 이름}을(를) {형식}으로 입력해주세요."(예: "휴대폰 번호 10~11자리로 입력해주세요.") |
+| 이메일 | "이메일 주소를 확인해주세요(예: kim@porest.app)." |
+| 다시 입력 | "비밀번호가 서로 달라요." |
+| 서버 확인 | "이미 쓰고 있는 {칸 이름}이에요." |
+
+`{칸 이름}` 은 라벨과 같게 쓴다 — 오류만 보고도 어느 칸인지 안다.
+
+### 기다림 — Skeleton · Progress Circle · Progress · Content Placeholder · Scroll Fog
+
+> 2026-10-03 SEED Skeleton · Progress Circle · Pull To Refresh · Content Placeholder · Scroll Fog 와 Loading 패턴의 시간표로 새로 정했다(사용자 결정 — 비교 페이지 https://claude.ai/artifact/4ySVacsdnG4fgraR1HRK3G). 옛 Skeleton / Loading(v63) · Spinner / Progress(v67) 절을 대신한다. 수치 원본은 `specs/components/skeleton.yaml` · `progress-circle.yaml` · `pull-to-refresh.yaml` · `progress.yaml` · `content-placeholder.yaml` · `scroll-fog.yaml`, 쓰는 규칙은 같은 이름의 `.md`(당겨서 새로 고침은 `progress-circle.md`). 옛 스펙은 `skeleton.history` · `spinner.history` · `progress.history` 의 `v-pre-seed-loading.*`. 토큰은 더하지 않았다 — v104 의 `gradient-shimmer-neutral` · `gradient-fade-mask` · `motion-duration-loop` · `motion-ease-easing` 을 쓴다.
+
+#### 나누기
+
+| 이런 때 | 쓰는 것 |
+|---|---|
+| 목록 · 카드 · 상세를 처음 불러옴 | Skeleton — 틀은 그리고 데이터 자리만 |
+| 섹션 새로 고침 · 목록 끝 더 불러오기 · 구조를 그릴 수 없는 화면 | Progress Circle — 요소 안 24 · 콘텐츠 가운데 40 |
+| 저장 · 제출 | Button 의 로딩(원 14 · 14 · 16 · 18) |
+| 올리기 · 받기 | 값 있는 Progress Circle 24 |
+| 앱 목록 · 대시보드를 다시 받음 | 당겨서 새로 고침 — 원판 없는 원 24 |
+| 예산 · 목표가 얼마나 찼나 | Progress — 막대(미터) |
+| 이미지가 없거나 못 불러옴 | Content Placeholder — 불러오는 동안은 Skeleton |
+| 스크롤 영역에 더 있음 | Scroll Fog |
+
+#### 시간표 — 1초 · 5초 · 10초
+
+모든 불러오기가 따른다 — 1초 안에 오면 아무것도 보이지 않고(틀만), 1초부터 스켈레톤 · 원, 5초에 "평소보다 오래 걸리고 있어요.", 10초에 실패(Result Section + "다시 시도"). 요청 제한은 10초이고 저절로 다시 시도하는 것(읽기만)은 그 안에서만이다. 달 · 기간을 바꾸면 머리는 바로 바뀌고 바뀔 숫자 · 목록 자리만 기다린다 — 옛 달 숫자는 지운다. 같은 내용을 다시 받으면 보던 내용을 지우지 않는다(Result Section). 원본은 `specs/components/skeleton.md` 의 "기다리는 동안" 한 곳이다.
+
+#### 모양
+
+| | Skeleton | Progress Circle | Progress | Content Placeholder | Scroll Fog |
+|---|---|---|---|---|---|
+| 크기 | 내용의 크기 · 글은 그 글자의 줄 높이(14 → 19) | 24(두께 3) · 40(두께 5) · 버튼 안은 Button | 높이 8 | 틀을 채움 · 그림 = 틀 높이의 50%(16 ~ 160) | 기본 20 · 가로 좌우 20 · 세로 위 20 · 아래 80 |
+| 모양 | 모서리 글 8 · 카드 16 · 아바타 full · 화면 폭 사진 0 | 끝이 둥근 호 · 12시 시작 | 모서리 full | 제 모서리 없음 | 마스크 — 색이 없다 |
+| 색 | 면 `bg-neutral-weak` + 흰 띠 `gradient-shimmer-neutral`(다크 짝) | 원 `stroke-neutral-solid` · 트랙 `stroke-neutral-subtle`, 톤 brand · staticWhite · inherit | 트랙 `bg-neutral-weak` · 채움 브랜드 글자색(넘친 한도만 `fg-critical`) | 면 `bg-neutral-weak` · 그림 `stroke-neutral-weak` | `gradient-fade-mask` |
+| 움직임 | 반짝임 `motion-duration-loop` · `motion-ease-easing` | 1.2초 회전 + 호 · 채움 300ms | 채움 300ms | 없음 | 없음 — 늘 켜짐 |
+| 모션 줄이기 | 띠가 멈춘다 | 돌지 않는 3/4 호 | 바로 바뀐다 | — | — |
+
+#### 쓰는 규칙
+
+- 틀(머리 · 탭 · 제목 · 버튼 · 카드 면)은 처음부터 그린다 — 화면을 덮는 회색 막 "Loading" · 틀 없는 화면 가운데 원은 두지 않는다.
+- 스켈레톤은 흰 면(`bg-layer-default` · `bg-layer-floating`) 위에만 — 페이지 바탕(`bg-layer-basement`) 위에서는 같은 색이라 사라진다(1.00:1). 깜빡임(펄스)은 두지 않는다.
+- 스켈레톤과 원을 한 자리에 같이 쓰지 않는다.
+- 막대는 미터다 — 기다림 · 올리기에 쓰지 않는다. 높이 · 색은 하나이고 주의 구간 색 · 달성 색은 없다(달성은 글자 "달성").
+- 끝 흐림은 늘 켜 두고 흐린 쪽에 깊이만큼 여백을 둔다 — 시트 · 대화상자의 "넘칠 때만 아래 48"(2026-10-02)은 이것으로 바뀌었다.
+- 깨진 이미지 아이콘 · 빈 이미지 칸을 두지 않는다.
+
+#### 접근성
+
+- 기다리는 영역에 `aria-busy`, 화면에 상태 글 하나(`role="status"`) — "불러오는 중…" · "평소보다 오래 걸리고 있어요." 를 한 번씩 읽는다. 결과는 Result Section 이 알린다.
+- Progress Circle 은 `role="progressbar"` — 이름 "불러오는 중", 값 글 "40%"(영어 · 세 점을 쓰지 않는다). Progress 는 `role="meter"` — 이름 "식비 예산 400,000원 중 350,000원".
+- 스켈레톤 · 끝 흐림 · 대체 그림의 아이콘은 장식이다.
+
+### Pagination (v67 추가)
+
+긴 list / 데이터 그리드 페이지 분할. **새 토큰 추가 0** — 기존 button/text/spacing 합성.
+
+#### Variant
+| Variant | 사용 |
+|---|---|
+| **numbered** (default) | `← 1 2 3 ... 10 →` — 페이지 명시. 데이터 양 예측 가능 (HR 결재 list, 직원 검색 결과) |
+| **prev-next** | `← Previous · Next →` — 페이지 번호 없이 단방향 이동. 무한 스크롤 대안 (Desk 메모 보관함, 영수증 list) |
+| **load-more** | `더 보기` 버튼 1개 — 점진적 expand. mobile 친화 (Desk 가계부 거래 목록) |
+
+#### Anatomy (numbered)
+- 좌측: `←` prev 버튼 (touch-min 44 hit area)
+- 가운데: 페이지 번호 button group — current는 `primary` 채움 + `text-on-accent`, 다른 페이지는 transparent + `text-secondary`
+- 우측: `→` next 버튼
+- ellipsis (`...`): 5+ 페이지에서 1, 2, 3, ..., 9, 10 패턴
+
+#### Size
+| Size | button | 사용 |
+|---|---|---|
+| sm | 32×32 | inline (테이블 footer) |
+| **md** (default) | 40×40 | list footer |
+| lg | 48×48 | mobile primary 영역 |
+
+#### State
+| State | 시각 |
+|---|---|
+| default | transparent + `text-secondary` |
+| hover | `surface-input` 배경 + `text-primary` |
+| current | `primary` 채움 + `text-on-accent` (강조) |
+| disabled (prev 1페이지, next 마지막) | `text-disabled` + cursor:not-allowed (1.4.3 incidental) |
+| focus | `border-focus` 2px outline + 1px offset |
 
 #### Layout
-- chart 영역 padding `lg` (16px), legend `xs` 간격 + `caption` 12/400
-- 카드 안 chart: card padding `md` (12px)
-
-#### Motion / A11y
-- 진입 `motion-duration-slow`, hover `motion-duration-fast`
-- 1.4.1 색상 단독 금지 — legend 라벨 + 패턴 (해당 시) 보강
-- screen reader: `<table>` fallback 또는 svg `role="img"` + 데이터 요약
-
-### Avatar — HR
-
-> 모양 · 쓰는 규칙은 DESIGN.md 의 Avatar · Avatar Stack 절(2026-10-03 SEED)과 `specs/components/avatar.md`. HR 의 쓰는 자리만 적는다. 옛 HR 패턴(데이터 그리드 사각 24 · 부서별 색 · 상태 점)은 걷었다.
-
-- **사진을 쓴다** — 프로필 사진(8곳). 사진이 없거나 실패하면 이니셜 + 이름 색(지금은 크기와 관계없이 회색 16 / 400 고정).
-- **크기** — 일정 필터 사용자 · 휴가 신청 결재자 24, 표의 직원 · 사이드바 36(지금 32 — 사이드바만 모서리 8 사각, 원으로), 구성원 목록 두 줄 42, 내 정보 · 직원 정보의 큰 사진 96(지금 128), 정보 수정 108(지금 160).
-- **이름** — 이름 옆이면 장식, 혼자면 이름. 근무표 아바타는 `alt` 가 없고 사진 주소를 다른 곳과 다르게 만든다 — 맞춘다.
-- **상태 · 부서** — 재직 · 휴직 · 퇴직은 아바타 점이 아니라 Badge, 부서를 아바타 색으로 가르지 않는다(이름 색은 이름 해시뿐).
-
-### 날짜 · 시각 고르기 — HR
-
-> 2026-10-03 — 모양 · 규칙은 공유 DESIGN.md 의 "날짜 · 시각 고르기" 절과 `specs/components/date-picker.md` · `time-picker.md` · `wheel-picker.md`. 옛 Calendar(v61) HR 패턴은 걷었다.
-
-- 날짜 하나: 휴가 · 초과근무 날짜(+ 시각 칸), 입사일, 생일, 공휴일 · 음력 날짜, 최초 부여일.
-- 기간(기간 달력 + 빠른 기간): 업무 보고 · 공지 게시 · 부여 유효기간 · 일정 시작 ~ 끝.
-- 시각: 초과근무 시작 · 종료(분 간격은 자리마다), 일정 시간표(30분).
-- 연도만: 연도 Select(짧은 선택지) — 달까지 고르면 연 · 월 휠.
-
-### Field — HR
-
-공통 정의는 `DESIGN.md` 의 Field 절, 원본은 `specs/components/field.md`(2026-10-01 SEED Field). 옛 v62 Form layout · v75 Form validation 의 HR 절은 여기로 합쳤다.
-
-#### HR 쓰임
-
-- 결재 · 직원 등록 · 평가 입력처럼 칸이 많은 폼 — 필수가 2/3 이상이면 선택 칸에만 "선택". 라벨은 칸 위(왼쪽 라벨 배치는 두지 않는다).
-- 저장 · 신청 버튼은 켜 두고, 누르면 칸마다 오류 + 첫 오류 칸으로 포커스. 결재 라인 누락처럼 서버가 가르는 오류도 그 칸의 오류 글로 돌려준다.
-- 사번 · 이메일 중복 확인은 칸을 떠난 뒤 서버에 묻는다 — 확인하는 동안 설명 자리에 "확인하는 중…". 중복이면 제출을 막는다.
-- 휴가 일수처럼 두 칸을 함께 보는 규칙은 뒤 칸(종료일)의 오류 글로 알린다 — "남은 연차(3일)보다 길게 신청할 수 없어요.".
-- 글자 수 — 서버 제한(20 · 50 · 100 · 1000자)이 있는 칸은 Field 의 글자 수로 알린다.
-- 문구는 Writing(v106) — HR 도 해요체다("사번을 입력해주세요." · "이미 등록된 사번이에요.").
-- 결재 의견 · 권한 설정 같은 시트 · 대화상자도 값이 바뀐 채 닫으려 하면 "작성한 내용이 사라져요" 를 묻는다.
-
-### 기다림 — HR
-
-> 모양 · 쓰는 규칙은 DESIGN.md 의 "기다림" 절(2026-10-03 SEED). HR 의 쓰는 자리만 적는다.
-
-- **첫 진입** — 대시보드 위젯 · 결재함 · 휴가 내역은 위젯 머리 · 표 머리를 그리고 데이터 줄만 스켈레톤이다. 흰 카드 위에 둔다(지금 #f8f8f8 이 흰 바탕 위 1.06:1 로 거의 안 보인다).
-- **세션 확인 · 인증 콜백** — 화면을 덮는 회색 막 "Loading" 을 걷고 앱 틀 + 콘텐츠 가운데 원 40 으로 바꾼다.
-- **원** — 저장 · 승인은 Button 로딩, 영역 기다림은 원 24 · 40 — 이름 "불러오는 중"(지금 영어 "Loading").
-- **연도 · 필터 바꾸기** — 머리는 바로 바뀌고 표 · 숫자 자리만 기다린다.
-- **막대** — 승인률 · 오늘 근무 시간은 높이 8 · 채움 `fg-brand` 미터로, 이름과 값이 읽히게 한다(지금 래퍼가 값을 넘기지 않아 '값 모름'으로 읽힌다).
-- **이미지** — 규정 그림은 Image Frame 이 불러오는 동안 스켈레톤, 못 불러오면 대체 그림을 그린다(아래 "이미지 — HR"). 프로필 사진의 외부 기본 그림을 걷는다.
-- **끝 흐림** — 필터 칩 줄 · 결재 이력 · 권한 목록처럼 넘칠 수 있는 대화상자 본문.
-- **요청** — 재시도 3번(약 7초)을 읽기 2번 · 10초 안으로, 요청 제한 10초를 더한다.
-
-### 이미지 — HR
-
-> 2026-10-04 — 모양 · 쓰는 규칙은 DESIGN.md 의 "이미지 — Image Frame · Aspect Ratio · Logo Tile" 절과 `specs/components/image-frame.md` · `logo-tile.md`. HR 의 쓰는 자리만 적는다.
-
-- **규정 그림** — 16장을 Image Frame 1:1 로 — 늦게 받고(`lazy`, 지금은 16.3MB 를 한 번에), 마우스 1.05배 확대를 걷고, 제목 · 설명이 내용을 말하므로 장식(`alt=""` — 지금은 파일 이름 "rule_1_1"). 지금 높이 192 고정 틀이 정사각 그림을 58.5 ~ 93% 만 보인다.
-- **회사 로고** — 회사별 인원의 로고는 Logo Tile 32 · 로고 그림(흰 판 + 투명 윤곽) — 다크에서 로고의 검은 부분이 사라지지 않고, 로고가 없는 회사는 깨진 그림 대신 회사 이름의 첫 글자. 회사 이름 옆이라 장식(지금 "{회사} logo" 를 이름과 두 번 읽는다).
-- **영어 대체 글** — "Image" · "logo" · "Porest Logo" 를 걷는다 — 로그인 배경은 장식(`alt=""`), 서비스 로고는 서비스 이름.
-
-### Pagination / Drawer / Spinner / Stepper (v67 추가 batch)
-
-HR(B2B) 4 컴포넌트 사용 패턴 — DESIGN.md 공통 spec 외 brand-specific 안내.
-
-#### Pagination — HR
-- **데이터 그리드 footer**: numbered variant (1 2 3 ... 10) — 결재 list, 직원 검색, 평가 history 등 양 예측 가능 도메인.
-- **load-more 회피**: 결재·근태 데이터는 "전체 개수" 인지가 중요 (decision-making) → numbered 우선.
-- size: lg 48 데스크탑 (mouse hit 정밀), sm 32 inline (테이블 row 안 mini paging은 비권장 — 페이지 단위로).
-
-#### Drawer — HR
-아래에서 올라오는 시트는 2026-10-02 Bottom Sheet 로 바뀌었다 — 위 "시트 · 대화상자 · 확인창 · 팝오버" 절. 옆 패널은 Side Panel 차례에 정한다.
-
-#### Spinner / Progress — HR
-
-> 2026-10-03 걷었다 — 위 "기다림 — HR" 절(Progress Circle · Progress).
-
-#### Stepper — HR
-- **결재 단계 horizontal**: 신청 → 1차 결재 → 2차 결재 → 완료. sequential, 이전 단계 비완료 시 진입 차단.
-- **휴가 신청 form 3 step**: 1) 사유·기간 → 2) 결재라인 → 3) 첨부 검토. desktop horizontal, 모바일 자동 vertical 전환.
-- **평가 작성 stepper**: 5단계 — 자기평가 → 동료평가(3) → 관리자평가. step 사이 connector progress 채우기 visual.
-
-### Navigation batch (v68 추가)
-
-HR(B2B) 5 navigation 컴포넌트 — DESIGN.md 공통 spec 외 brand-specific 안내. 데이터 그리드 + 다단계 페이지 위계 깊은 application 톤.
-
-#### Breadcrumb — HR
-- 결재 큐 → 결재 항목 detail → 첨부 view 같은 4-5 depth 일반. truncation 빈번 — `Home / ... / 결재 큐 / 김지원 휴가 신청`.
-- font-size lg `body-sm` (14/400) — 데이터 밀도 톤이지만 경로 인지는 우선.
-
-#### Sidebar — HR
-- **fixed** 좌측 280px 데스크탑 default. collapsible 옵션(접힘 64px icon만).
-- nav 그룹: 결재 / 평가 / 직원 / 권한 / 설정 (5 그룹) — group title `caption` 12/600 uppercase.
-- footer: 사용자 profile + 로그아웃.
-- HR primary `#357B5F` 4px 좌측 stroke + `surface-input` 배경 active state.
-
-#### Navigation Menu — HR
-- mega menu 비활성 — application 톤이라 단순 single-level. 결재 / 평가 / 직원 / 분석 / 설정 5 link.
-- 데이터 그리드 페이지 위주라 hover preview 같은 광고성 mega 패턴 부적절.
-
-#### Menubar — HR
-
-> 2026-10-02 걷었다 — 쓰는 곳이 없다("메뉴 · 메뉴 시트 · 도움말 말풍선 · 툴팁" 절).
-
-#### Command (Cmd+K) — HR
-- 결재 빠른 처리: "김지원 휴가 승인" / "5월 평가 시작" 자연어 명령.
-- Sections: Recent approvals / Employees (search) / Reports (분석 페이지) / Help.
-- 직원 검색이 핵심 — typing으로 사번/이름 instant filter.
-
-### Input batch (v69 추가)
-
-HR(B2B) 5 input 컴포넌트 — 데이터 그리드 + form 입력 위주.
-
-#### Combobox — HR
-- **직원 검색**: 사번 또는 이름 typing → autocomplete dropdown. 결재라인 지정, 평가 대상 선택 등.
-- **부서 선택**: tree 구조 부서 list — combobox + indent. typing으로 fuzzy match.
-- multi-select: 결재 참조자 다중 추가 (chip list).
-
-#### Slider — HR
-- **평가 점수**: 1-5 또는 1-10 single slider. tick 표시 + 정수 step.
-- **연차 사용 시뮬레이터**: range slider — 시작일/종료일 day 단위.
-- 데스크탑 위주, 정밀 hit (`touch-nav-h` 32 thumb).
-
-#### Toggle — HR
-- **데이터 그리드 view 토글**: 카드 view ↔ 테이블 view 1 toggle.
-- **결재 상태 필터**: 대기/처리중/완료 toggle group (multiple).
-
-#### Toggle Group — HR
-- **결재 상태 필터** (multiple): "대기" + "처리중" 동시 표시 가능.
-- **정렬 옵션** (single): 이름순/날짜순/우선순위순 — radiogroup.
-
-#### Input OTP — HR
-- **2차 인증** (관리자 권한 변경 시): 6자리, SMS 자동 채우기.
-- **결재 승인 확인** (고액 결재): 4자리 PIN 입력으로 추가 보안.
-
-### Disclosure batch (v70 추가)
-
-HR(B2B) 5 disclosure/overlay 컴포넌트.
-
-#### Accordion — HR
-- **결재 detail 그룹**: 신청 정보 / 첨부 / 결재 history 3 섹션 — single mode (한 번에 하나만 펼침).
-- **권한 설정 그룹**: 일반 / 결재 / 평가 / 보고서 권한 — multiple mode (여러 영역 동시 검토).
-- **평가 항목 list**: 자기평가 5 카테고리 — 항목별 펼침으로 입력.
-
-#### Collapsible — HR
-- **결재 첨부 expansion**: "첨부 파일 3개" 트리거 → expand로 file list.
-- **권한 detail "더 보기"**: 기본 정보 + collapse된 추가 권한.
-
-#### Hover Card — HR
-
-> 2026-10-02 걷었다 — 쓰는 곳이 없다("메뉴 · 메뉴 시트 · 도움말 말풍선 · 툴팁" 절).
-
-#### Context Menu — HR
-
-> 2026-10-02 걷었다 — 쓰는 곳이 없다("메뉴 · 메뉴 시트 · 도움말 말풍선 · 툴팁" 절).
-
-#### Alert Dialog — HR
-2026-10-02 SEED Alert Dialog 로 다시 정했다 — 위 "시트 · 대화상자 · 확인창 · 팝오버" 절.
-
-### Data batch (v71 추가)
-
-HR(B2B) 5 data display 컴포넌트 — 데이터 그리드 핵심 application 톤.
-
-#### Table — HR
-- **결재 list compact variant**: 행 padding `xs` (4px) — 한 화면에 더 많은 결재.
-- **직원 list striped variant**: 짝수 row tinted — 긴 list 가독성.
-- **평가 history default**: 일반 가독성, 표 안 status badge.
-
-#### Data Table — HR
-- **결재 큐**: sortable(date/요청자/금액) + filterable(상태/부서) + selectable(일괄 처리) + bulk actions(승인/반려/내보내기) + 50 per page numbered pagination.
-- **직원 검색**: 13 column 표시 (사번/이름/부서/직급/이메일/입사/근속/...). column visibility toggle, column resize, export Excel.
-- **평가 history**: 분기별 column, 검색·정렬·내보내기 모두 지원.
-- toolbar 좌측 search, 가운데 active filter chips, 우측 column toggle + Export.
-
-#### Carousel — HR
-
-> 2026-10-04 걷었다 — 그림 여러 장은 공유 DESIGN.md 의 "이미지 — Image Frame · Aspect Ratio · Logo Tile" 절(끝이 보이는 가로 줄 + 장수 글). 점 · 화살표 · 자동 넘김은 두지 않는다.
-
-#### Scroll Area — HR
-- **데이터 그리드 sticky thead** + 본문 scroll: 표 머리 고정 + body-lg 영역 scrollable.
-- **결재 detail 긴 panel**: 첨부 history 100+ — scroll area 안에서 native scroll 보존.
-- always-visible scrollbar — 데스크탑 application 톤.
-
-#### Resizable — HR
-- **3-pane layout**: 좌측 sidebar(고정) + 가운데 결재 list + 우측 detail panel — 가운데↔우측 resizable.
-- **dashboard split**: 위 KPI / 아래 차트 panel — vertical resize.
-- localStorage persistence — power user 자기 layout 기억.
-
-### Extras batch (v72 추가)
-
-HR(B2B) 5 추가 컴포넌트.
-
-#### Sonner — HR
-
-> 2026-10-02 걷었다 — Snackbar("알림 메시지 — Snackbar · Callout · Page Banner · Result Section" 절).
-
-#### Aspect Ratio — HR
-- **16:9** 직원 프로필 cover image
-- **3:1** 부서 banner
-- **4:3** 결재 첨부 이미지 preview (legacy 비율)
-- 사용 빈도 낮음 — application 톤이라 image-heavy 부적합.
-
-#### Chart — HR
-- **bar / stacked bar**: 부서별 직원 수, 월별 결재 수, 평가 점수 분포
-- **line**: KPI 추이 (월별 출근율, 분기별 응답시간)
-- **pie / donut**: 결재 처리 시간 분포 (1시간 이내 / 하루 / 일주일 등)
-- chart palette HR primary와 충돌 회피 — chart-green 비활성, chart-blue 우선
-- legend interactive 적극 — 시리즈 토글로 데이터 비교
-
-#### Date Range Picker — HR
-
-> 2026-10-03 걷었다 — 기간은 Date Picker 기간("날짜 · 시각 고르기" 절).
-
-#### Time Picker — HR
-
-> 2026-10-03 걷었다 — 시각은 Time Picker("날짜 · 시각 고르기" 절, 오전·오후 12시간 휠).
-
-### Extras-2 batch (v73 추가)
-
-HR(B2B) 5 추가 shadcn 누락 컴포넌트.
-
-#### Banner — HR
-
-> 2026-10-02 걷었다 — 화면 안 안내는 Callout, 페이지 맨 위 띠는 Page Banner("알림 메시지 — Snackbar · Callout · Page Banner · Result Section" 절).
-
-#### Chip — HR
-공통 정의는 `DESIGN.md` 의 Chip 절, 원본은 `specs/components/chip.md`(2026-10-02 SEED Chip). 고른 칩은 중립색이라 브랜드와 관계없이 같다.
-- **2 ~ 4개 폼 값** — 지금 Select 인 16칸(분 0 · 30 · 공지 유형 · 유연근무시간 · 공휴일 구분 · 양력 · 음력 …)은 하나 고르는 칩으로(폼은 기본 medium 36 — small 32 는 데스크톱의 촘촘한 필터 · 표 위 줄).
-- **결재라인 · 배정된 역할** — 입력값 칩("홍길동" + × — 이름 "홍길동 지우기").
-- **캘린더 · 업무 보고 필터** — 차원마다 필터 칩(사용자 ▾ · 유형 ▾), 걸린 조건은 짙은 채움 + 값 요약, 맨 앞 지우기.
-- 예 / 아니오 하나는 Checkbox, 설명이 붙는 선택은 Select Box.
-
-#### Popover — HR
-2026-10-02 SEED Popover 로 다시 정했다 — 위 "시트 · 대화상자 · 확인창 · 팝오버" 절.
-
-#### File Upload — HR
-- **평가 첨부** — 인사평가 단일 PDF 업로드 (max 10MB), 1년 유지.
-- **결재 첨부 이미지/문서** — multi 가능 (max 5개 / total 50MB), 영수증·계약서 등.
-- **드래그-드롭** + click-to-browse 동시 지원, 파일 list with 진행률 bar.
-- 허용 type: PDF / DOC(X) / 이미지(JPG/PNG) — exe/script 차단.
-- 업로드 실패 시 error variant + 재시도 button — 결재 큐에서 빠지지 않도록.
-
-#### Treeview — HR
-- **조직도 탐색** — 회사 → 본부 → 팀 → 직원 4단계 nested tree.
-- 직원명 노드 selected 시 우측 panel에 상세 표시 (master-detail).
-- expand/collapse: 본부/팀 레벨 자식 ≥ 1 — 직원은 leaf node.
-- 검색 input 동기화 — 필터링 시 매칭 노드까지 자동 expand + highlight.
-- **권한 트리 편집** — admin이 부서별 권한 그룹 토글, checkbox 통합 variant.
+- 페이지 button 사이 gap `xs` (4px)
+- prev/next와 number group 사이 `md` (12px)
+- pagination 자체는 list 하단 `xl` (24px) margin
+
+#### Accessibility
+- [ ] `<nav aria-label="페이지 네비게이션">` wrapper
+- [ ] current 페이지 `aria-current="page"` + `<button aria-label="페이지 3, 현재">`
+- [ ] prev/next: `aria-label="이전 페이지"`, `aria-label="다음 페이지"`
+- [ ] disabled: `aria-disabled="true"` + tabindex="-1"
+- [ ] 키보드: Tab으로 진입, Enter/Space로 이동, Arrow keys는 비권장 (네이티브 button 동작 우선)
+- [ ] 검색 결과 갱신 시 `aria-live="polite"` 영역에 "총 N건 중 페이지 3" 알림
+
+#### HR / Desk 듀얼 브랜드
+spec brand-neutral. brand 파일에서 사용 패턴 차이 — HR(numbered 데이터 그리드 위주), Desk(load-more 모바일 우선).
+
+### Sheet — 옆 패널 (v67 추가)
+
+> 아래에서 올라오는 Drawer 는 2026-10-02 Bottom Sheet 로 바뀌었다(위 "시트 · 대화상자 · 확인창 · 팝오버" 절, `specs/components/bottom-sheet.md`). 이 절의 옆 패널(Sheet — 오른쪽 · 왼쪽)은 Side Panel 차례에 다시 정한다.
+
+페이지 옆에서 들어오는 패널. 너비 `min(80vw, 480px)`, 바깥쪽 모서리만 `radius-2xl`, 여백 `xl` 24 · 머리 · 바닥 `lg` 16, `surface-default` · `shadow-xl`, `overlay-dim`. 열린 동안 초점을 가두고 닫히면 트리거로 돌려준다(`role="dialog"` + `aria-modal="true"`).
+
+### Spinner / Progress (v67 추가)
+
+> 2026-10-03 걷었다 — 스피너는 Progress Circle, 막대는 미터인 Progress 다(위 "기다림" 절, `specs/components/progress-circle.md` · `progress.md`). 옛 스펙은 `spinner.history` · `progress.history` 의 `v-pre-seed-loading.*`.
+
+### Stepper (v67 추가)
+
+다단계 form / 결재 흐름 / onboarding 시각화. **새 토큰 0** — primary + semantic + spacing 합성.
+
+#### Variant
+| Variant | 방향 | 사용 |
+|---|---|---|
+| **horizontal** (default) | 좌→우 | desktop form (HR 휴가 신청 3단계, Desk 가계부 분류 설정) |
+| **vertical** | 위→아래 | mobile 또는 단계 라벨 길어 horizontal 부적절 시 |
+| **simple progress** | 점 dot 진행 | minimal (Desk onboarding 5단계 dot indicator) |
+
+#### State
+| State | 시각 (step circle) |
+|---|---|
+| **completed** | `success` 채움 + ✓ icon (`text-on-accent`) |
+| **current** | `primary` 채움 + 단계 번호 (`text-on-accent`) + outer ring `border-focus` 2px |
+| **pending** | `surface-input` 배경 + 단계 번호 (`text-tertiary`) |
+| **error** | `error` 채움 + `!` icon (단계 검증 실패) |
+| **disabled** (skip 가능 단계) | `text-disabled` + opacity 0.5 |
+
+#### Anatomy
+- step circle: 32×32 default, sm 24, lg 40 (`touch-min` 44 충족 위해 sm은 padding 보강)
+- 라벨: circle 아래 (horizontal) 또는 우측 (vertical), `caption` (12/400)
+- connector line: step 사이 1px `border-default` (pending) 또는 2px `success` (completed)
+- gap: step 사이 `lg` (16px) horizontal, `md` (12px) vertical
+
+#### Layout
+- horizontal: viewport `breakpoint-md` (768px) 이상에서만 사용. 그 이하는 vertical 자동 전환
+- vertical: 좌측 dot column + 우측 라벨/내용
+- 4단계 이상: 모바일에서 vertical 권장 (horizontal 너무 좁음)
+
+#### Sequential vs Free navigation
+- **sequential** (default): 이전 단계 완료 후 다음 단계 진입 가능. 비완료 단계 클릭 비활성
+- **free**: 모든 단계 자유 이동 (settings 메뉴 등). 단, 의존성 있는 단계는 disabled
+
+#### Motion
+- 단계 전환: completed↔current 색 트랜지션 `motion-duration-base` (200ms) `motion-ease-out`
+- connector line fill (next step 진입 시): width 0 → 100% `motion-duration-slow` (300ms) `motion-ease-out`
+- error 단계: 진동 (`shake` keyframes 200ms) — `prefers-reduced-motion: reduce` 시 색만 변화
+
+#### Accessibility
+- [ ] `<nav aria-label="결재 단계">` wrapper
+- [ ] `<ol>` + `<li>` (semantic order)
+- [ ] current step `aria-current="step"`
+- [ ] completed step `aria-label="단계 1: 신청자 정보, 완료"`, current `aria-label="단계 2: 기간 입력, 현재"`, pending `aria-label="단계 3: 사유, 미진행"`
+- [ ] 키보드: Tab으로 단계 이동 (sequential은 disabled 단계 skip)
+- [ ] sequential mode 진입 차단 시 screen reader "이전 단계 완료 후 진입 가능" 안내
+- [ ] error 단계: `aria-invalid="true"` + alert text 동반
+
+#### HR / Desk 듀얼 브랜드
+spec brand-neutral. brand 파일 — HR(결재 단계 horizontal, sequential), Desk(onboarding dot indicator simple, free 옵션).
+
+### Breadcrumb (v68 추가)
+
+페이지 위계 경로 navigation. **새 토큰 0** — Link + Divider + spacing 합성.
+
+#### Anatomy
+- 경로 segment list: `Home / 결재 / 결재 큐 / 김지원 휴가 신청`
+- separator: `/` (default), `>` 또는 `›` 변형
+- last segment: 현재 페이지 — `text-primary` + `aria-current="page"` (link 아님)
+- 이전 segment: link + `text-secondary` (hover `text-primary`)
+
+#### Layout
+- font-size: `caption` (12/400) default, `body-sm` (14/400) lg
+- separator color: `text-tertiary`, gap `xs` (4px)
+- truncation: 4+ segment 시 `Home / ... / 부모 / 현재` 패턴 (가운데 ellipsis)
+
+#### Accessibility
+- `<nav aria-label="경로">` + `<ol>` semantic
+- 마지막 segment `aria-current="page"`, link 없음 (그냥 span)
+- separator는 `aria-hidden="true"` (시각만)
+- 모바일에서 truncation 시 ellipsis 클릭으로 dropdown — 숨겨진 segment 노출
+
+### Sidebar (v68 추가)
+
+좌측 nav panel — 페이지 단위 메뉴. **새 토큰 0** — surface + button + spacing 합성. 옆 패널(Sheet — `z-modal` 딤 위 `z-modal-content`)과 다름 — sidebar는 페이지 layout 고정 영역.
+
+#### Variant
+| Variant | 사용 |
+|---|---|
+| **fixed** (default) | 데스크탑 — 좌측 240-280px 고정, 페이지 scroll과 독립 |
+| **collapsible** | desktop 토글 — 펼침 240px ↔ 접힘 64px (icon만) |
+| **floating** | mobile 옆 패널 톤 — `z-modal` 딤 위 `z-modal-content` 로 slide-in (Sidebar pattern + Sheet 합성) |
+
+#### Anatomy
+- header: 로고 + brand title (collapsible 접힘 시 logo만)
+- nav items: list — icon + label + badge(옵션, count)
+- footer: 사용자 profile + 설정 access
+- divider: 그룹 구분
+
+#### State
+- default: transparent + `text-secondary`
+- hover: `surface-input` 배경 + `text-primary`
+- active: `primary` 좌측 stroke 4px + `surface-input` 배경 + `text-primary` (또는 `primary` bold text)
+- focus: `border-focus` 2px outline (item 외곽)
+
+#### Layout
+- nav item height: `touch-min` 44 (모바일), 40 (데스크탑 dense)
+- padding: `sm` (8px) V / `md` (12px) H
+- icon: 20×20, label `body-md` (15/400)
+- group title: `caption` (12/600) `text-tertiary` uppercase
+
+#### Accessibility
+- `<aside aria-label="주 메뉴">` wrapper
+- nav items: `<a>` + `aria-current="page"` (active)
+- collapsible toggle: `aria-expanded`, button label "메뉴 펼치기" / "접기"
+- 키보드: Tab 진입, arrow keys 옵션 (네이티브 link 위주)
+
+### Navigation Menu (v68 추가)
+
+데스크탑 다단계 메뉴 — header 내 mega menu 패턴. **새 토큰 0** — Dropdown 확장.
+
+#### Variant
+| Variant | 사용 |
+|---|---|
+| **single-level** | header link 5-7개 — Dropdown(v45) 패턴 |
+| **mega menu** | header link hover/click → 큰 panel (multi-column items + 카테고리 그룹) |
+
+#### Anatomy (mega menu)
+- trigger: header link button
+- panel: viewport 너비 또는 fixed 800-1200px, multi-column grid
+- item group: column header(`label-md` 14/600) + items list
+- featured: 첫 column에 brand promo card 또는 highlight (image + heading + description)
+
+#### Layout
+- panel offset from trigger: `xs` (4px)
+- panel padding: `xl` (24px)
+- column gap: `xl` (24px)
+- item: icon + label + description (line-2)
+
+#### Motion
+- 등장: panel slide-down (10px) + fade-in `motion-duration-fast` (150ms) `motion-ease-out`
+- 사라짐: 역순
+- hover intent: 200ms delay 후 panel 등장 (실수 hover 회피)
+
+#### Accessibility
+- `<nav aria-label="주 navigation">` + `role="menubar"` + items `role="menuitem"`
+- panel: `role="menu"` + items `role="menuitem"`
+- 키보드: arrow keys로 menubar/menu 이동, Esc 닫기, Enter 활성화
+- focus visible 명시 (mouse hover ≠ keyboard focus)
+
+### Menubar (v68 추가)
+
+> 2026-10-02 걷었다 — 세 제품 모두 쓰는 곳이 없다(메뉴 · 툴팁 결정 6). 옛 스펙은 `specs/components/menubar.history/v-pre-seed-menu.*`. 줄 · 화면의 동작은 "메뉴 · 메뉴 시트 · 도움말 말풍선 · 툴팁" 절.
+
+### Command (Cmd+K menu, v68 추가)
+
+전역 search/action menu — `Cmd+K` (macOS) / `Ctrl+K` (Windows)로 호출. **새 토큰 0** — Modal + Dropdown + Input 합성.
+
+#### Anatomy
+- overlay: `overlay-dim-light` 위 modal-like
+- 카드: `surface-default` + `radius-lg` + `shadow-xl`, viewport 60-70% width, max 640px
+- header: search input (placeholder "명령 검색...")
+- body-lg: filtered list — group(title `caption` `text-tertiary` + items)
+- item: icon + label + shortcut hint 우측 (`⌘P` 등 monospace `caption`)
+
+#### Sections (예시)
+- **Suggestions**: 자주 사용한 명령
+- **Pages**: 페이지 navigation (Home, Settings, Help)
+- **Actions**: 즉시 실행 (New File, Save, Export)
+- **Help**: docs, support links
+
+#### State
+- default: list 표시, 첫 item highlighted
+- typing: filter (substring match)
+- empty result: `caption` "결과 없음" + 빠른 안내
+
+#### Motion
+- 등장: scale(0.95→1) + fade-in `motion-duration-base` (200ms) `motion-ease-out`
+- 사라짐: 역순 (`motion-duration-fast`)
+
+#### Accessibility
+- `role="dialog"` + `aria-label="명령 검색"`
+- search input `aria-controls="cmd-list"` + `aria-activedescendant="item-id"` (현재 highlighted item)
+- list `role="listbox"` + items `role="option"` + `aria-selected="true"` (highlighted)
+- 키보드:
+  - `Cmd+K` / `Ctrl+K`: 열기 (단, input focus 중에는 차단 가능)
+  - 위/아래 arrow: item 이동
+  - Enter: 활성화
+  - Esc: 닫기 + return focus
+
+#### HR / Desk 듀얼 브랜드 (v68 5종 공통)
+spec brand-neutral. brand 파일 — HR(Sidebar 좌측 fixed 데스크탑 위주, Menubar 결재/평가 application 톤), Desk(Sidebar floating 모바일 drawer, Command 메모/할일 빠른 검색 핵심).
+
+### Combobox (v69 추가)
+
+Input + Dropdown 결합 — typing autocomplete + 선택. v45 Dropdown의 combobox variant 확장. **새 토큰 0**.
+
+#### Anatomy
+- trigger: Input(v34) + 우측 caret (`▾`)
+- panel: Dropdown 패턴 — items list, current 선택 highlight
+- typing 중: panel 안 items가 substring 또는 fuzzy match로 filter
+
+#### State
+- empty: panel 닫힘, placeholder 표시
+- typing: panel 자동 열림, items filter, 첫 match highlight
+- selected: trigger에 선택 라벨 + 우측 ✕ 클리어 버튼
+- multiple (옵션): chip list로 선택 표시 (`태그 1` `태그 2` × ... + Input)
+
+#### Differences vs Select
+- **Select**: 사전 정의된 options 중 1개 선택, typing 없음
+- **Combobox**: typing으로 필터 + free text 입력 가능 (옵션) + 다중 선택 가능
+
+#### Accessibility
+- `role="combobox"` + `aria-expanded` + `aria-controls="listbox-id"` + `aria-autocomplete="list"`
+- listbox: `role="listbox"` + items `role="option"` + `aria-selected`
+- 키보드: 위/아래 arrow item 이동, Enter 선택, Esc 닫기, Tab 닫기 + 다음 필드
+
+### Slider (v69 추가)
+
+range 값 선택 (음량, 가격대, 평가 등). **신규 prose-token 후보 — 추후 검토**, 이번 추가 0 (기존 spacing/radius 합성).
+
+#### Variant
+| Variant | 사용 |
+|---|---|
+| **single** (default) | 단일 thumb, 0-100 또는 min-max |
+| **range** | 두 thumb (min-max 범위 선택) |
+
+#### Anatomy
+- track: `surface-input` 4px height + `radius-full`
+- fill: `primary` width transition (selected range)
+- thumb: 16×16 circle, `surface-default` + `primary` 2px outline + `shadow-sm`
+- label (옵션): thumb 위 또는 우측에 현재 값 (`caption` 12)
+- min/max label: track 양 끝 (`caption` `text-tertiary`)
+- ticks (옵션): 5/10 단위 마커 (1px tall on track)
+
+#### State
+- default: thumb `surface-default` + outline `primary`
+- hover: thumb scale(1.1)
+- dragging: thumb `primary` 채움 + `shadow-md` 등장 + 라벨 표시
+- focus: `border-focus` 2px outline + 1px offset
+- disabled: `text-disabled` track + thumb opacity 0.5
+
+#### Layout
+- horizontal default — 너비 100%, height 24-32 hit area (thumb 16, padding 8)
+- vertical 옵션 — 높이 100-200px (음량 등)
+- touch hit area: thumb 자체 16이지만 hit는 `touch-min` (44) — 외곽 padding으로
+
+#### Accessibility
+- `role="slider"` + `aria-valuenow` + `aria-valuemin` + `aria-valuemax` + `aria-label="음량"`
+- range slider: 두 thumb 각각 별도 slider, `aria-label="최소값"` / `aria-label="최대값"`
+- 키보드:
+  - 좌/우 arrow: ±1 step
+  - Shift + arrow: ±10 step (또는 spec step 정의)
+  - Home/End: min/max 점프
+  - Page Up/Down: ±10% 점프
+
+### Toggle (v69 추가)
+
+단일 button on/off 상태. Switch와 다름 — Toggle은 button 톤(text/icon), Switch는 형태 변환 토글. **새 토큰 0**.
+
+#### Variant
+| Variant | 사용 |
+|---|---|
+| **icon** | icon only — 데스크탑 toolbar (Bold/Italic/Underline 같은) |
+| **text** | label only — 필터 button (전체/미완료/완료) |
+| **icon-text** | icon + label — bold "B" + 라벨 |
+
+#### State
+- off (default): transparent + `text-secondary` + 1px `border-default`
+- hover: `surface-input` 배경
+- on (pressed): `surface-input` 배경 + `text-primary` + `border-strong` 또는 `primary` 1px stroke
+- focus: `border-focus` 2px outline
+- disabled: opacity 0.5 + cursor not-allowed
+
+#### Differences vs Switch
+- **Switch**: track + handle 형태, 즉시 effect (예: 알림 켜기/끄기)
+- **Toggle**: button 형태, on/off 시각이 fill/outline (예: 텍스트 굵게)
+- 의미 차이: Switch는 setting, Toggle은 formatting/filtering
+
+#### Accessibility
+- `<button aria-pressed="true|false">` (true = on)
+- `aria-label="굵게 토글"` (icon only일 때 필수)
+- 키보드: Tab focus, Space/Enter toggle
+
+### Toggle Group (v69 추가)
+
+> 2026-10-02 — 같은 내용의 보기 바꾸기 · 정렬처럼 하나를 고르는 2 ~ 4칸은 Segmented Control(`specs/components/segmented-control.md`)이다. 아래 single 쓰임은 Toggle Button 차례에 다시 정한다.
+
+Toggle 묶음 — 단일 선택 (radio-like) 또는 다중 선택 (checkbox-like). **새 토큰 0**.
+
+#### Variant
+| Variant | 동작 |
+|---|---|
+| **single** | 한 번에 하나만 on (radio 의미) — 정렬 옵션 (이름순/날짜순/크기순) |
+| **multiple** | 다수 동시 on (checkbox 의미) — 텍스트 포맷팅 (Bold + Italic 동시 가능) |
+
+#### Layout
+- group: 버튼 list 좌→우, gap 0 (인접) 또는 `xs` (4px)
+- 인접 버튼: 외곽 join — 첫 버튼 좌측 radius, 마지막 버튼 우측 radius, 중간 radius 0
+
+#### State (group 인지)
+- single mode: 활성 1개 외 모두 off
+- multiple mode: 각 button 독립 on/off
+
+#### Accessibility
+- `role="group" aria-label="정렬"` wrapper
+- single: `role="radiogroup"` + items `role="radio" aria-checked`
+- multiple: items `<button aria-pressed>` (group은 단순 wrapper)
+- 키보드:
+  - single (radiogroup): arrow keys로 group 내 이동 + 선택, Tab은 group 진입/탈출
+  - multiple: 각 button 독립 — Tab으로 이동, Space/Enter toggle
+
+### Input OTP (v69 추가)
+
+일회용 비밀번호 입력 — 6자리 (또는 4자리) 분할 input field. **새 토큰 0**.
+
+#### Anatomy
+- 6 (또는 4) 정사각 input — 각각 1자리, `40×40` 또는 `48×48`, `radius-md`
+- 가운데 separator (`-`) 옵션 (4-2 또는 3-3 grouping)
+- 자동 focus 이동: 입력 시 다음 칸으로 jump, backspace 시 이전 칸
+
+#### State
+- empty: `surface-input` 배경 + `border-default` 1px
+- focus: `border-focus` 2px outline + offset
+- filled: 텍스트 표시 (font-size 18-24px monospace)
+- error: `error` 1px border + alert text 동반 ("코드가 일치하지 않아요")
+- disabled: opacity 0.5
+
+#### Layout
+- gap `xs` (4px) 또는 `sm` (8px) (그룹 사이는 `md` 12px — `[3]-[3]` 패턴)
+- 정사각 cell — width = height
+- 가운데 정렬 (form 안에서)
+
+#### Accessibility
+- 각 input: `<input type="text" inputmode="numeric" maxlength="1" autocomplete="one-time-code" aria-label="OTP 1번째 자리">`
+- 첫 input에 `autoFocus`
+- iOS: `autocomplete="one-time-code"` — SMS 자동 채우기
+- screen reader: 6 input을 별개 field로 인지, label로 위치 알림
+- paste: 6자 일괄 paste 시 자동으로 모든 칸 채우기
+
+#### HR / Desk 듀얼 브랜드 (v69 5종 공통)
+spec brand-neutral. brand 파일 — HR(Combobox 직원 검색 / Toggle Group 결재 상태 필터 / Slider 평가 점수), Desk(Combobox 태그 자동완성 / Toggle 메모 즐겨찾기 / Input OTP 2차 인증 / Slider 가계부 예산).
+
+### Accordion (v70 추가)
+
+다중 Collapsible — 여러 섹션 접고 펼치기 (FAQ, settings 그룹). **새 토큰 0**.
+
+#### Variant
+| Variant | 동작 |
+|---|---|
+| **single** (default) | 한 번에 하나만 펼침 — 다른 펼치면 이전 자동 닫힘 |
+| **multiple** | 다수 동시 펼침 가능 |
+
+#### Anatomy
+- 각 item: trigger(header) + content(body-lg)
+- trigger: 좌측 label + 우측 caret(`▾` rotate animation), `surface-default` background, 1px `border-default`
+- content: surface-default 배경, padding `lg` (16px)
+- divider: items 사이 1px border
+
+#### State
+- collapsed: caret `▾` (down), content height 0
+- expanded: caret `▴` (up, rotate 180deg), content auto height
+- hover: trigger `surface-input` background
+- focus: `border-focus` 2px outline
+
+#### Motion
+- expand: height 0 → auto + opacity 0 → 1 `motion-duration-base` (200ms) `motion-ease-out`
+- collapse: 역순
+- caret rotate: `motion-duration-fast` (150ms)
+- `prefers-reduced-motion`: instant (transition 0)
+
+#### Accessibility
+- `<dl>` (description list) 또는 `<div role="region">` 패턴
+- trigger: `<button aria-expanded="true|false" aria-controls="content-id">`
+- content: `<div id="content-id" role="region" aria-labelledby="trigger-id">`
+- 키보드: Tab focus, Enter/Space toggle, arrow keys 옵션 (group 이동)
+
+### Collapsible (v70 추가)
+
+단일 섹션 expand/collapse — Accordion보다 가벼운 단순 toggle. **새 토큰 0**.
+
+#### Anatomy
+- trigger: button (text 또는 icon-text)
+- content: hidden/shown 영역
+
+#### Differences vs Accordion
+- **Collapsible**: 단일 섹션, 독립 toggle
+- **Accordion**: 여러 섹션 그룹, single/multiple mode
+
+#### State
+- collapsed: content `display: none` 또는 height 0
+- expanded: content 자연 height
+
+#### Use cases
+- 긴 form section 접기 (Optional fields)
+- detail expansion ("자세히" 클릭 → 추가 정보)
+- code snippet 접기 (긴 example block)
+
+#### Accessibility
+- trigger: `<button aria-expanded aria-controls>`
+- content: `<div id role="region">`
+- Enter/Space toggle, 동일
+
+### Hover Card (v70 추가)
+
+> 2026-10-02 걷었다 — 쓰는 곳이 없다(메뉴 · 툴팁 결정 6). 옛 스펙은 `specs/components/hover-card.history/v-pre-seed-menu.*`. 짧은 설명은 Tooltip · Help Bubble, 버튼이 있는 내용은 Popover.
+
+### Context Menu (v70 추가)
+
+> 2026-10-02 걷었다 — 쓰는 곳이 없다(메뉴 · 툴팁 결정 6). 옛 스펙은 `specs/components/context-menu.history/v-pre-seed-menu.*`. 우클릭 · 길게 누르기로만 열리는 메뉴는 두지 않는다 — 줄의 동작은 줄 끝 ⋮.
+
+### Alert Dialog (v70 추가)
+
+> 2026-10-02 SEED Alert Dialog 로 다시 정했다 — 위 "시트 · 대화상자 · 확인창 · 팝오버" 절과 `specs/components/alert-dialog.md` 를 따른다.
+
+### Table (v71 추가)
+
+기본 표 — 정렬·필터 없는 단순 데이터 표시. **새 토큰 0**.
+
+#### Anatomy
+- table: `surface-default` 배경, `border-default` 1px 외곽 (또는 분리 row)
+- thead: `caption` (12/600) `text-tertiary` uppercase, `surface-input` 약한 배경
+- tbody row: `body-md` (15/400) `text-primary`, hover `surface-input`
+- cell padding: `sm` (8px) V / `md` (12px) H
+- divider: row 간 1px `border-default`
+
+#### Variant
+| Variant | 사용 |
+|---|---|
+| **default** | 일반 표 (가독성 우선) |
+| **compact** | 행 padding `xs` (4px) — 데이터 밀도↑ |
+| **striped** | 짝수 row `surface-input` 배경 — 긴 표 가독성 |
+
+#### State (row)
+- default: transparent
+- hover: `surface-input` 배경 (interactive row)
+- selected: `primary` 8% tint 배경 + 좌측 stroke 2px `primary`
+
+#### Cell type
+- text: 좌측 정렬
+- number: 우측 정렬 + tabular-nums
+- date: 좌측 정렬, monospace 옵션
+- action: 우측 정렬, icon button 또는 dropdown trigger
+- status: badge 또는 chip
+
+#### Accessibility
+- `<table>` + `<thead>` + `<tbody>` semantic
+- `<th scope="col">` (header) / `<th scope="row">` (row header)
+- caption: `<caption>` 표 제목 (시각 hidden 가능, screen reader 우선)
+- 키보드: arrow keys로 cell 이동(옵션, data table에선 필수)
+
+### Data Table (v71 추가)
+
+Table + 정렬/필터/페이지네이션/선택. **새 토큰 0** — Table + Pagination + Combobox + Checkbox 합성.
+
+#### Features
+- **sortable column**: header 클릭 → asc/desc/none 3-state. 우측에 caret indicator.
+- **filterable column**: header 옆 filter icon → dropdown (text input 또는 multi-select).
+- **selectable rows**: 첫 column에 checkbox — header checkbox로 전체 선택.
+- **pagination**: footer에 numbered pagination (v67) — 10/20/50 per page selector.
+- **column resize**: header 우측 drag handle (옵션).
+- **column reorder**: header drag-drop (옵션).
+
+#### Toolbar
+- 좌측: search input (전체 column 검색)
+- 가운데: filter chips (active filter 표시 + 제거)
+- 우측: column visibility toggle, export 버튼
+
+#### Bulk actions (selected rows 있을 때)
+- 표 위에 sticky bar 등장: "12개 선택됨 · 일괄 승인 · 내보내기 · 삭제"
+- background `primary` 8% tint, 우측 ✕ (선택 해제)
+
+#### Empty state
+- 데이터 0건: 가운데 illustration + "표시할 데이터가 없어요" + (필터 적용 시) "필터 초기화" link
+- 로딩: 줄 자리만 Skeleton(실제 줄 높이 · 글줄 높이 — `specs/components/skeleton.md`), 머리(열 제목)는 그린다
+
+#### Accessibility
+- sortable: `<th aria-sort="ascending|descending|none">` + click trigger
+- selectable: row checkbox `aria-label="행 N 선택"` + header checkbox "모두 선택"
+- bulk action bar: `role="region" aria-label="선택된 항목 액션"` + screen reader live announcement
+- 키보드 navigation 필수: arrow keys, Home/End, Page Up/Down, Tab
+
+### Carousel (v71 추가)
+
+이미지/카드 슬라이더 — 좌우 화살표 + dot indicator. **새 토큰 0**.
+
+#### Anatomy
+- track: 가로 flex, items 일렬 배치
+- viewport: track 부모, overflow:hidden, scroll-snap-type
+- arrow buttons: 좌/우 (`touch-min` 44 hit), 외곽선 또는 fill, hover 강조
+- dot indicators: 하단 가운데 dot list, current dot `primary` 채움, 다른 dot `surface-input`
+- pagination text (옵션): "3 / 12" 카운터
+
+#### Variant
+| Variant | 사용 |
+|---|---|
+| **single** | viewport 1 item — hero, 광고 배너 |
+| **multi** | viewport 2-4 items 동시 표시 — 카드 list |
+| **infinite** | 끝에 도달 시 처음으로 loop — 광고 배너 |
+
+#### Motion
+- slide: `motion-duration-base` (200ms) `motion-ease-out` translateX
+- swipe: 사용자 finger 따라 transform, 30% threshold 또는 velocity
+- autoplay (옵션): 5-7초마다 자동 next, hover 시 pause, `prefers-reduced-motion`에서 비활성
+
+#### Accessibility
+- `role="region" aria-roledescription="carousel" aria-label="..."`
+- 각 slide: `role="group" aria-roledescription="slide" aria-label="3 / 12: ..."`
+- arrow buttons: `aria-label="이전 슬라이드"` / "다음 슬라이드"
+- dot indicator: button list, `aria-label="슬라이드 3로 이동"` + `aria-current="true"` (active)
+- autoplay: pause 컨트롤 필수 (2.2.2)
+- 키보드: Tab으로 carousel 진입, arrow keys로 slide 이동
+
+### Scroll Area (v71 추가)
+
+custom scrollbar 영역 — native overflow + 시각 일관 scrollbar. **새 토큰 0**.
+
+#### Anatomy
+- viewport: `overflow: auto`, content scroll 영역
+- scrollbar track (가상): viewport 우측 (vertical) 또는 하단 (horizontal)
+- scrollbar thumb: drag-able, hover/active 상태별 시각
+
+#### Variant
+| Variant | 사용 |
+|---|---|
+| **always-visible** | scrollbar 항상 표시 (데스크탑 표 등) |
+| **hover** (default) | hover 시 scrollbar 등장 (clean look) |
+| **scrolling** | scroll 중에만 표시 (mobile 톤) |
+
+#### Style
+- track: transparent 또는 `surface-input` 약한 배경
+- thumb: `border-strong` 또는 `text-tertiary` opacity 0.4
+- thumb hover: opacity 0.7
+- thumb active (drag): opacity 1
+- width: 6-8px (vertical), height 6-8px (horizontal)
+
+#### Browser fallback
+- Webkit (Safari, Chrome): `::-webkit-scrollbar` 커스터마이즈
+- Firefox: `scrollbar-color` + `scrollbar-width: thin`
+- IE/legacy: native scrollbar fallback (커스텀 무시)
+
+#### Accessibility
+- 키보드: 일반 scroll (Up/Down arrow, Page Up/Down, Home/End, Space) — native 동작 보존
+- 스크린리더: scroll 영역 진입 시 `aria-label="scrollable region"` 안내 (필요 시)
+- focus visible: scroll 영역 안 focus가 viewport 안에 있도록 자동 scroll-into-view
+
+### Resizable (v71 추가)
+
+drag-able split panel — 좌우 또는 상하 분할 layout 사용자 조정. **새 토큰 0**.
+
+#### Anatomy
+- container: 2개 이상 panel + 사이 resize handle
+- panel: 자유 콘텐츠
+- handle: 4-6px wide (vertical split) 또는 height (horizontal split), `border-default` 1px 양쪽
+- handle hover: `primary` 색 강조 + cursor: col-resize / row-resize
+
+#### Variant
+| Variant | 방향 |
+|---|---|
+| **horizontal** (split) | 좌-우 panel, vertical handle |
+| **vertical** (stacked) | 상-하 panel, horizontal handle |
+| **nested** | panel 안에 또 다른 resizable group |
+
+#### State
+- default handle: 거의 invisible (subtle line)
+- hover handle: `primary` 색 + 가운데 grip dots (∶)
+- dragging: `primary` 채움 + cursor 유지 + outline animation 옵션
+- collapsed: panel min-width/-height 0 가능 (또는 임계값까지)
+
+#### Constraints
+- min/max size: panel별 percentage 또는 px 명시
+- snap points: 25%/50%/75% 같은 권장 위치 (drag 시 가까우면 snap)
+
+#### Persistence
+- 사용자 조정값 localStorage 저장 권장 — 새로고침 후 복구
+- viewport 변경 시 percentage 기준 재계산
+
+#### Accessibility
+- handle: `role="separator" aria-orientation="vertical|horizontal"` + `aria-valuenow="50"` (현재 위치 %)
+- `aria-controls`로 양쪽 panel id 명시
+- 키보드: arrow keys로 ±1% 조정, Home/End로 min/max, Enter/Space로 collapse 토글
+
+#### HR / Desk 듀얼 브랜드 (v71 5종 공통)
+spec brand-neutral. brand 파일 — HR(Data Table 결재/직원/평가 그리드 핵심 / Resizable 좌측 nav + 우측 detail / Scroll Area 데이터 그리드 sticky thead), Desk(Carousel onboarding hero / Table 가계부 거래 list / Scroll Area 메모 본문 긴 글 / Data Table 영수증 보관함).
+
+### Sonner (v72 추가, Toast 강화)
+
+> 2026-10-02 걷었다 — Snackbar 로 바꿨다("알림 메시지 — Snackbar · Callout · Page Banner · Result Section" 절). 옛 스펙은 `specs/components/sonner.history/v-pre-seed-feedback.*`.
+
+### Aspect Ratio (v72 추가)
+
+비율 유지 wrapper — image, video, embed가 layout shift 없이 비율 보존. **새 토큰 0** — 단순 utility component.
+
+#### Common ratios
+| Ratio | 용도 |
+|---|---|
+| **16:9** (default) | video, hero image, og:image preview |
+| **4:3** | 기존 monitor, photography |
+| **1:1** | profile avatar (large), gallery thumbnail |
+| **3:2** | DSLR photo |
+| **21:9** | cinema, wide hero |
+| **9:16** | mobile portrait video |
+
+#### Implementation
+- CSS `aspect-ratio` property (modern browsers) — `aspect-ratio: 16 / 9`
+- fallback: padding-bottom hack (`padding-bottom: 56.25%` for 16:9)
+- 안에 image/video는 `object-fit: cover` (비율 유지 + crop)
+
+#### Anatomy
+- wrapper: `aspect-ratio` 명시, `position: relative`
+- 내부 element (img/video/iframe): `width: 100%; height: 100%; object-fit: cover`
+
+#### Use cases
+- listing 카드 image (16:9)
+- gallery grid (1:1 또는 3:2)
+- video embed (16:9)
+- hero banner (21:9)
+- profile cover image (3:1)
+
+#### Accessibility
+- wrapper에 시맨틱 없음 — 안에 image/video 자체의 a11y 적용
+- image: `<img alt="">` (장식이면 빈 alt) 또는 의미 alt 텍스트
+- decorative wrapper만 — `role` 부여 X
+
+### Chart (v72 추가)
+
+데이터 시각화 — 차트 palette(`chart-*` × 10) 활용. **새 토큰 0** — 차트 컬러 v21-v24 기존, 컴포넌트 spec만 추가.
+
+#### Variant
+| Variant | 사용 |
+|---|---|
+| **bar** | 카테고리 비교 (직원 수, 월별 거래) |
+| **stacked bar** | 카테고리 + 세부 분류 (월별 거래 × 카테고리) |
+| **line** | 시간 흐름 (KPI 추이, 가계부 잔액 변화) |
+| **area** | 시간 흐름 + 누계 (누적 결재 수) |
+| **pie / donut** | 비율 (카테고리별 점유율) |
+| **scatter** | 상관관계 (드물게 — HR 평가 상관) |
+
+#### Anatomy
+- container: `surface-default` 카드 또는 inline
+- title (옵션): `title-sm` 위
+- legend: 우측 또는 하단 — chart-* color box + label, hover 시 해당 데이터 강조
+- axes: x/y axis label `caption` `text-tertiary`, gridlines `border-default` 미세
+- data: chart palette 10색 categorical 분배 (1-10 series)
+- tooltip: hover 시 hover card 패턴 — 데이터 상세
+
+#### Color allocation
+- 순서(v110 — 제품이 쓰는 순서): blue → green → orange → violet → pink → indigo → red → yellow → brown → gray. 색을 고르지 않은 항목(도넛 · 순위 막대 · 주식 비중)이 이 순서로 받는다
+- 항목이 10개를 넘으면 상위 9개 + 회색 "기타" 로 묶는다 — 회색은 기타 전용이라 같은 색이 두 번 나오지 않는다(v110)
+- HR primary `#357B5F`(forest)와 chart-green hue 비슷 — HR brand color로 chart 차트 동시 표시 시 chart-green 회피
+- 다크 모드: `chart-*-dark`(v110 — 팔레트 800-dark). 옛 `chart-*-light` 는 별칭
+
+#### Empty / loading
+- empty: 가운데 illustration + "데이터가 없어요" + (필터 적용 시) "필터 초기화"
+- loading: 차트 자리의 Skeleton(모서리 16 — 제목 · 범례 틀은 그린다), 원을 따로 얹지 않는다
+
+#### Accessibility
+- 차트는 시각만으론 부족 → `<table>` (시각 hidden) 동반 권장 — 데이터 표 형식으로도 접근 가능
+- `<svg role="img" aria-label="...">` 차트 wrapper
+- legend interactive: `<button aria-pressed>` (시리즈 토글)
+- 컬러 의존 회피: pattern (점/선/사선 fill) 옵션 제공
+
+#### Library 가이드
+- DESIGN spec은 **시각·토큰만** 정의 — 구현은 Recharts / Visx / D3 / Chart.js 자유.
+- chart palette 토큰 활용해 라이브러리 색상 mapping (예: Recharts `<Cell fill="var(--color-chart-blue)">`).
+
+### Date Range Picker (v72 추가)
+
+> 2026-10-03 걷었다 — 기간은 Date Picker 기간("날짜 · 시각 고르기" 절)이다. 칸 하나 · 달력 하나, 빠른 기간은 한 벌(옛 "오늘 / 어제 / 지난 7일 …" + "취소 · 적용" 을 대신).
+
+### Time Picker (v72 추가)
+
+> 2026-10-03 걷었다 — 시각은 Time Picker("날짜 · 시각 고르기" 절 · `specs/components/time-picker.md`)다. 치는 칸 · 24시간("14:30")을 오전·오후 12시간 휠로 바꿨다.
+
+#### HR / Desk 듀얼 브랜드 (v72 5종 공통)
+spec brand-neutral. brand 파일 — HR(Sonner top-right 결재 알림 stack / Chart bar/line dashboard / Date Range Picker dual desktop / Time Picker 결재 일정 5분 step), Desk(Sonner bottom-center 모바일 / Chart pie 가계부 카테고리 / Aspect Ratio 16:9 메모 attachment / Date Range Picker single 모바일).
+
+### Banner (v73 추가)
+
+> 2026-10-02 걷었다 — 화면 안 안내는 Callout, 페이지 맨 위 띠는 Page Banner 다("알림 메시지 — Snackbar · Callout · Page Banner · Result Section" 절).
+
+### Chip
+
+수치 · 규칙의 원본은 `specs/components/chip.md` · `chip.yaml` 이다 — 2026-10-02 SEED Chip 구조로 새로 정했다(옛 v73 Tag / Chip 을 대신한다). 고르거나 넣은 값을 보이는 작은 알약이고, 누를 수 없는 표시(상태 · 분류 · 메타)는 Badge · Tag Group 이다(위 "Badge · Notification Badge · Tag Group" 절). 이 절은 토큰과 닿는 자리만 모은다.
+
+#### 쓰임
+
+| 쓰임 | 의미 | 고른 모습 |
+|---|---|---|
+| 고르기 — 하나(2 ~ 4개 짧은 폼 값 · 거르기의 한 축) | 라디오 — 다시 눌러도 풀리지 않는다, "전체" 는 맨 앞 선택지 | 있다 |
+| 고르기 — 여럿 | 체크박스 — 다시 누르면 풀린다, "전체 선택" 칩은 두지 않는다 | 있다 |
+| 제안(빠른 금액 · 빠른 기간 · 프리셋) | 버튼 — 누르면 칸에 값을 넣는다 | 없다 |
+| 필터 바(목록 위, 조건마다 칩 · 뒤 아래 화살표) | 버튼 — 그 조건만 시트 · 팝오버로 연다 | 걸린 조건은 짙은 채움 + 값 요약("식비 외 2개") |
+| 입력값 | 글 + "{글} 지우기" 버튼 | Outline Weak 고른 모습 |
+
+#### 모양과 색
+
+| 요소 | 값 |
+|---|---|
+| 크기 | `small` 32 · `medium` 36(기본) · `large` 40, 모서리 `radius-full`, 글 `t4` 14 · 500(세 크기 같다), 좌우 12 · 14 · 16, 앞 아이콘 14 · 16 · 16 과 글 사이 6 |
+| Solid | 안 고름 `bg-neutral-weak` · 고름 `bg-neutral-inverted` + `fg-neutral-inverted` — 흰 표면 위에서만(회색 바탕 `bg-layer-basement` 과 같은 색) |
+| Outline Strong | 안 고름 투명 + 안쪽 1px `stroke-neutral-weak` · 고름 `bg-neutral-inverted`(테두리 없음) |
+| Outline Weak(기본) | 안 고름 투명 + 1px `stroke-neutral-weak` · 고름 `bg-neutral-weak` + 1px `stroke-neutral-contrast`(글자 그대로) |
+| 누름 · 호버 | `bg-neutral-weak-pressed` · `bg-layer-default-pressed` · `bg-neutral-inverted-pressed`, 칩 전체 2px 거리 축소(v104) |
+| 비활성 | `bg-disabled` · `fg-disabled`(흐림 없음 — v106). 고른 채 막히면 1px `stroke-neutral-solid` 를 남긴다 |
+| 묶음 | 칩 사이 `spacing-between-chips`(8). 폼 · 시트 안은 줄바꿈(줄 사이 8), 목록 위 줄은 가로 스크롤(안쪽 여백 `spacing-global-gutter`) |
+
+고른 칩은 브랜드 색이 아니라 중립색이다 — Desk · HR 이 같고, 고른 칩이 여럿 보여도 브랜드 버튼과 다투지 않는다(사용자 결정 2026-10-02).
+
+#### 쓰는 규칙
+
+- 2 ~ 4개 짧은 폼 값은 Chip, 5개 이상은 Select, 글이 긴 2 ~ 4개는 Radio · Checkbox.
+- 3상태 칩(고름 → 빼고 → 해제)은 두지 않는다 — 빼는 조건은 "고른 것만 · 고른 것 빼고" 를 먼저 고른다.
+- 제안 칩은 고른 모습으로 남기지 않는다. 필터 바는 걸린 조건 칩의 글이 곧 조건이라 "필터 2" 같은 개수를 따로 두지 않는다.
+- 칩 모양 탭(Tabs 의 Chip Tabs)과 필터 칩을 한 화면에 같은 모양으로 두지 않는다 — 탭을 Line 으로.
+
+#### Accessibility 체크리스트
+- [ ] 하나 고르기 `radiogroup`(화살표로 옮기면 고른다) · 여럿 체크박스 · 제안 · 여는 칩은 버튼(여는 칩 `aria-haspopup="dialog"`) — `aria-pressed` 는 쓰지 않는다
+- [ ] 묶음 이름은 Field 라벨 · `aria-label`, 아이콘만 있는 칩은 `aria-label`
+- [ ] 키보드 포커스에만 링 2px · 띄움 2px, 누르는 영역은 가로 · 세로 44 까지(아이콘만 있는 칩도)
+- [ ] 입력값 지우기 이름 "{글} 지우기", 지운 뒤 포커스는 다음 칩
+
+### Popover (v73 추가)
+
+> 2026-10-02 SEED Popover 로 다시 정했다 — 위 "시트 · 대화상자 · 확인창 · 팝오버" 절과 `specs/components/popover.md` 를 따른다.
+
+### File Upload (v73 추가)
+
+drag-drop area + click 업로드 button. **새 토큰 0** — surface + border + button 합성.
+
+#### Anatomy
+- drop zone (정사각/직사각): `border-default` 2px dashed + `surface-input` 배경 + `radius-md`
+- 가운데: 아이콘 (📁 또는 ⬆) + 안내 텍스트("파일을 끌어다 놓거나 클릭하세요") + 옵션 ("최대 10MB / .jpg .png .pdf")
+- 좌측 또는 하단: 업로드된 file list — 파일명 + 사이즈 + ✕ 제거 + 값 있는 Progress Circle 24(올리는 중 — 2026-10-03)
+
+#### State
+- default: 정적 안내
+- dragover: `border-focus` 2px solid (dashed → solid 변화) + `primary` 8% tint 배경
+- drop: 등록된 file 목록에 추가, 값 있는 원 시작
+- uploading: 값 있는 Progress Circle 24(진행을 모르면 값 없는 원) — 막대(Progress)는 쓰지 않는다
+- success: ✓ icon + "업로드 완료" caption (`success` 색)
+- error: ✕ icon + 에러 메시지 ("크기 초과" / "지원 안 되는 형식") (`error` 색)
+- disabled: opacity 0.5
+
+#### File constraints
+- accept 속성: MIME type 제한 (`image/*`, `.pdf` 등)
+- max size: spec 제한 + 초과 시 즉시 reject + alert
+- multiple: 단일 또는 다중 파일 (`multiple` 속성)
+
+#### Motion
+- dragover 강조: border 색 + bg tint `motion-duration-fast` (150ms)
+- drop animation: file item 등장 fade-in `motion-duration-base`
+- progress: 원의 채움 300ms(`progress-circle.yaml`)
+
+#### Accessibility
+- `<input type="file" hidden>` + label as drop zone (native a11y)
+- aria-label: "파일 업로드 영역 — 끌어다 놓거나 Enter로 선택"
+- 키보드: Tab focus → Enter/Space로 file dialog 열기
+- screen reader 알림: drop 즉시 "파일 N개 추가됨", 업로드 완료/실패 시 alert
+
+### Treeview (v73 추가)
+
+계층 list — folder/category/조직도 depth 표현. **새 토큰 0** — list + Collapsible 합성.
+
+#### Anatomy
+- 각 노드: indent (depth × 16-20px) + caret(▾/▸) + icon (옵션 폴더/파일) + label
+- caret 클릭: 자식 노드 expand/collapse
+- selected node: `surface-input` 배경 + `border-focus` 좌측 stroke
+- guide line (옵션): 부모-자식 시각 연결 — 1px `border-default` vertical line
+
+#### State
+- collapsed: caret `▸`, 자식 hidden
+- expanded: caret `▾`, 자식 표시
+- hover: `surface-input` 약한 배경
+- selected: `surface-input` 배경 + 좌측 `primary` 2px stroke
+- focus: `border-focus` 2px outline
+
+#### Variant
+- **single-select**: 한 번에 하나 (file picker)
+- **multi-select**: checkbox 동반 (다중 선택)
+- **drag-drop reorder**: 노드 이동 (HR 조직도 변경)
+
+#### Layout
+- root level: indent 0
+- depth × 16-20px (compact) 또는 24-28px (loose)
+- icon 16-20×16-20, label `body-md` (15/400)
+
+#### Use cases
+- HR 조직도 (회사 → 본부 → 팀 → 직원)
+- Desk 카테고리 tree (가계부 카테고리 — 식비 → 카페/외식, 교통 → 대중교통/택시)
+- file/folder picker
+- 권한 tree (관리자 → 결재 → 평가 → 보고서)
+
+#### Accessibility
+- `role="tree"` (root) + 각 노드 `role="treeitem"`
+- 자식 그룹: `role="group"` 또는 nested `role="tree"`
+- `aria-expanded="true|false"` (자식 있는 노드)
+- `aria-selected="true|false"` (selected variant)
+- `aria-level="N"` + `aria-setsize="X"` + `aria-posinset="P"` (계층 위치)
+- 키보드:
+  - 위/아래 arrow: 노드 이동
+  - 좌 arrow: collapse 또는 부모로
+  - 우 arrow: expand 또는 첫 자식으로
+  - Home/End: 첫/마지막 노드
+  - Enter/Space: 선택 또는 활성
+
+#### HR / Desk 듀얼 브랜드 (v73 5종 공통)
+spec brand-neutral. brand 파일 — HR(Banner 약관 변경 / Chip 결재라인 입력값 칩 / Popover 결재 의견 입력 / File Upload 평가 첨부 / Treeview 조직도), Desk(Banner 시스템 점검 / Chip 메모 태그 입력값 칩 / Popover 카테고리 quick edit / File Upload 영수증 다중 업로드 / Treeview 가계부 카테고리 tree).
