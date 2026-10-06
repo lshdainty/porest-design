@@ -18,6 +18,7 @@
 //   PTouch      누르는 영역(min 44 …)                               double(px)
 //   PColors     색 — 역할 · 팔레트 · 차트 + overlayDim, 라이트 · 다크   ThemeExtension
 //   PShadows    그림자 s1 ~ s4, 라이트 · 다크                       ThemeExtension
+//   PGradients  그라디언트(fadeMask · shimmerNeutral), 라이트 · 다크    ThemeExtension
 //
 // 앱 쪽은 받은 파일을 그대로 두고(dart format 만) 손으로 고치지 않는다.
 
@@ -33,6 +34,7 @@ import {
   parseTypography,
   parseSimpleScale,
   parseShadows,
+  parseGradients,
   parseMotion,
   parseOverlay,
   parseTouchTargets,
@@ -99,6 +101,39 @@ function dartShadows(css, what) {
   });
 }
 
+// CSS linear-gradient → LinearGradient. 방향은 축 방향(to top · right · bottom · left, 0 · 90 · 180 · 270deg)만 —
+// 방향이 없으면 CSS 처럼 위 → 아래다(마스크 토큰은 방향 없이 적고 쓰는 자리에서 붙인다 — DESIGN.md v104).
+const GRADIENT_DIRECTION = {
+  "to top": ["Alignment.bottomCenter", "Alignment.topCenter"],
+  "0deg": ["Alignment.bottomCenter", "Alignment.topCenter"],
+  "to right": ["Alignment.centerLeft", "Alignment.centerRight"],
+  "90deg": ["Alignment.centerLeft", "Alignment.centerRight"],
+  "to bottom": ["Alignment.topCenter", "Alignment.bottomCenter"],
+  "180deg": ["Alignment.topCenter", "Alignment.bottomCenter"],
+  "to left": ["Alignment.centerRight", "Alignment.centerLeft"],
+  "270deg": ["Alignment.centerRight", "Alignment.centerLeft"],
+};
+function dartGradient(css, what) {
+  const m = /^linear-gradient\((.*)\)$/.exec(String(css).trim());
+  if (!m) throw new Error(`${what}: linear-gradient 가 아니다 — "${css}"`);
+  const parts = m[1].split(",").map((p) => p.trim());
+  let [begin, end] = GRADIENT_DIRECTION["to bottom"];
+  if (!parts[0].startsWith("#") && !parts[0].startsWith("rgb")) {
+    const dir = GRADIENT_DIRECTION[parts.shift()];
+    if (!dir) throw new Error(`${what}: 축 방향이 아니다 — "${css}"`);
+    [begin, end] = dir;
+  }
+  const colors = [];
+  const stops = [];
+  for (const part of parts) {
+    const stop = /^(#[0-9a-fA-F]{6,8})\s+(-?\d+(?:\.\d+)?)%$/.exec(part);
+    if (!stop) throw new Error(`${what}: "색 비율%" 가 아니다 — "${part}"`);
+    colors.push(dartColor(stop[1], what));
+    stops.push(num(Number(stop[2]) / 100));
+  }
+  return `LinearGradient(begin: ${begin}, end: ${end}, colors: [${colors.join(", ")}], stops: [${stops.join(", ")}])`;
+}
+
 const FONT_WEIGHT = { 100: "w100", 200: "w200", 300: "w300", 400: "w400", 500: "w500", 600: "w600", 700: "w700", 800: "w800", 900: "w900" };
 
 // ── 읽기 ──────────────────────────────────────────────────────────
@@ -108,6 +143,7 @@ const typography = parseTypography(lines);
 const rounded = parseSimpleScale(lines, "rounded");
 const spacing = parseSimpleScale(lines, "spacing");
 const shadows = parseShadows(content);
+const gradients = parseGradients(content);
 const motion = parseMotion(content);
 const overlays = parseOverlay(content);
 const touch = parseTouchTargets(content);
@@ -311,10 +347,29 @@ extension(
   ["그림자 s1 ~ s4, 라이트 · 다크(DESIGN.md v104 고도). 다크의 inset 하이라이트는 BlurStyle.inner 로 옮겼다.", "`context.shadows.s3`"],
 );
 
+const gradientFields = Object.entries(gradients)
+  .filter(([name]) => !name.endsWith("-dark"))
+  .map(([name, light]) => {
+    const dark = gradients[`${name}-dark`] ?? light;
+    return { id: camel(name.replace("gradient-", "")), doc: name, light: dartGradient(light, name), dark: dartGradient(dark, name) };
+  });
+extension(
+  "PGradients",
+  gradientFields,
+  "LinearGradient",
+  (id) => `LinearGradient.lerp(${id}, other.${id}, t)!`,
+  [
+    "그라디언트 — 가림 마스크 · 스켈레톤 반짝임, 라이트 · 다크(DESIGN.md v104).",
+    "마스크(fadeMask)는 위 → 아래로 적었다 — 쓰는 자리에서 begin · end 만 바꿔 방향을 붙인다(색 · 비율은 그대로).",
+    "`context.gradients.shimmerNeutral`",
+  ],
+);
+
 w("/// 컨텍스트에서 꺼내는 짧은 이름.");
 w("extension PDesignTokensContext on BuildContext {");
 w("  PColors get colors => Theme.of(this).extension<PColors>()!;");
 w("  PShadows get shadows => Theme.of(this).extension<PShadows>()!;");
+w("  PGradients get gradients => Theme.of(this).extension<PGradients>()!;");
 w("}");
 
 stdout.write(out);

@@ -34,9 +34,14 @@ function checkDart({ brand, source }) {
   for (const cls of ["PSpacing", "PRounded", "PTypography", "PDuration", "PEasing", "PTouch"]) {
     if (!new RegExp(`abstract final class ${cls} \\{`).test(dart)) fail(`${cls} 없음`);
   }
-  for (const cls of ["PColors", "PShadows"]) {
+  for (const cls of ["PColors", "PShadows", "PGradients"]) {
     if (!new RegExp(`class ${cls} extends ThemeExtension<${cls}>`).test(dart)) fail(`${cls} 없음`);
   }
+  // 그라디언트 — 반짝임은 모드마다(다크 흰 10%), 마스크는 위 → 아래 16단계
+  const shimmer = /shimmerNeutral: LinearGradient\(begin: Alignment\.centerLeft, end: Alignment\.centerRight, colors: \[Color\(0x00FFFFFF\), Color\(0x1AFFFFFF\)/;
+  if (!shimmer.test(dart)) fail("PGradients.shimmerNeutral(다크 흰 10%) 없음");
+  const mask = /fadeMask: LinearGradient\(begin: Alignment\.topCenter, end: Alignment\.bottomCenter, colors: \[((?:Color\(0x[0-9A-F]{8}\)(?:, )?){16})\]/;
+  if (!mask.test(dart)) fail("PGradients.fadeMask(위 → 아래 16단계) 없음");
 
   // 색 — 별칭(옛 이름) · -dark 를 뺀 이름이 모두 필드가 되고, 딤이 하나 더 있다
   const table = parseColorTable(readFileSync(resolve(ROOT, source), "utf8").split("\n"));
