@@ -50,7 +50,9 @@ npm run build    # site/out — 정적 사이트 + 검색 색인 + llms.txt
 ├── exports/              # 빌드 산출물 (npm run export:* 매 빌드 — git tracked)
 │   ├── tokens.css        # Tailwind v4 @theme (DESIGN.md) + 14 @keyframes(v74)
 │   ├── tokens.hr.css     # Tailwind v4 @theme (HR)
-│   ├── tokens.desk.css   # Tailwind v4 @theme (Desk)
+│   ├── tokens.desk.css   # Tailwind v4 @theme (Desk) + 다크 블록
+│   ├── tokens.desk.dart  # Flutter 토큰 (Desk) — 앱이 lib/app/theme 에 그대로 둔다
+│   ├── spec/desk/*.json  # 컴포넌트 스펙 값(YAML 의 토큰을 라이트 · 다크 값으로) — 제품 테스트 · 카탈로그용
 │   ├── tokens.dtcg.json  # W3C DTCG (shadow/motion 누락 — prose 직접 참조)
 │   ├── preview*.html     # 토큰 카탈로그 + 20+ 컴포넌트 시각 vignette + v73-v78 인터랙티브 데모
 │   ├── examples.html     # 컴포넌트 사용 예제 페이지 (Copy 버튼 + dark mode toggle)
@@ -133,8 +135,10 @@ Coverage:
 | `npm run export:tailwind` | DESIGN.md → exports/tokens.css (Tailwind v4 @theme + 14 keyframes) |
 | `npm run export:tailwind:hr` / `export:tailwind:desk` | HR / Desk 변형 (keyframes는 baseline에서 fallback) |
 | `npm run export:tailwind:all` | 3 파일 일괄 |
+| `npm run export:dart:desk` / `export:dart:hr` / `export:dart:all` | DESIGN.desk.md · DESIGN.hr.md → exports/tokens.<브랜드>.dart (Flutter — 새 이름만, 옛 별칭은 뺀다) |
+| `npm run export:spec` | specs/components/*.yaml → exports/spec/<브랜드>/*.json (토큰을 라이트 · 다크 값으로 푼 스펙 값) |
 | `npm run export:dtcg` | DESIGN.md → exports/tokens.dtcg.json (W3C DTCG, shadow/motion 누락) |
-| `npm run test:exports` | export 빌드 + namespace + keyframe(≥14) 검증 |
+| `npm run test:exports` | export 빌드 + namespace + keyframe(≥14) + 다크 블록 · Dart 토큰 · 스펙 값 JSON 검증 |
 | `npm run build:preview` | exports/preview*.html — 토큰 카탈로그 + v67 4종 batch + v68-v72 shadcn 25종 + v73-v78 시각 데모 |
 | `npm run build:examples` | exports/examples.html — EXAMPLES.md → 인터랙티브 페이지 (Copy 버튼) |
 | `npm run build:site` | exports/site/ — 풀 documentation site: 사이드바 + 브랜드 스위처 + Tokens 8 페이지 + **shadcn 컴포넌트 50/50 페이지** (Preview/Code 토글, Tailwind v4 browser CDN으로 라이브 렌더) |

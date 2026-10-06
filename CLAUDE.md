@@ -17,6 +17,7 @@
 - `DESIGN.desk.md` — Desk 브랜드 단독 self-contained 시스템 (primary `#0147AD`, primary-light, border-focus, brand 컴포넌트)
 - 토큰: color, typography, spacing, radius, shadow, motion
 - 컴포넌트 스펙: variant, state, accessibility 규칙
+- 제품용 내보내기(2026-10-06): `npm run export:tailwind:desk`(웹 CSS + 다크 블록) · `export:dart:desk`(앱 Flutter 토큰 — 새 이름만) · `export:spec`(컴포넌트 YAML 을 라이트 · 다크 값으로 푼 JSON — 제품 테스트 · 카탈로그용). 제품은 받은 파일을 그대로 두고 손으로 고치지 않는다 — 값을 바꾸려면 여기 원본을 고친다.
 
 ### 파일 분리 규칙 (v17부터)
 - **공유**: typography, spacing, rounded, neutral colors(bg-page, surface-*, text-*, border-*, semantic) — DESIGN.md 정의 후 brand 파일에 **복제**(spec이 cross-file reference 미지원)

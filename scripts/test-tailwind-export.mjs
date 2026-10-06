@@ -13,6 +13,8 @@ import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 import { exit } from "node:process";
 
+import { parseColorTable, resolveColorHex, parseShadows, parseGradients } from "./lib/design-md.mjs";
+
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 const TARGETS = [
@@ -73,6 +75,33 @@ function checkZIndex(css, target) {
   if (target.isShared) zShared = sig;
   else if (zShared !== null && sig !== zShared) { console.error(`  ❌ z-index 가 공유 파일과 다르다: ${sig}`); errors++; }
   if (errors === 0) console.log(`  ✓ z-index 층: ${[...vars].map(([n, v]) => `${n} ${v}`).join(" · ")}`);
+  return errors;
+}
+
+function checkDarkBlock(css, target) {
+  let errors = 0;
+  const m = /\[data-theme="dark"\],\n\.dark \{\n([\s\S]*?)\n\}/.exec(css);
+  if (!m) { console.error("  ❌ 다크 블록([data-theme=\"dark\"], .dark) 없음"); return 1; }
+  const decls = new Map([...m[1].matchAll(/^\s+--([a-z0-9-]+):\s*([^;]+);/gm)].map((d) => [d[1], d[2].trim()]));
+  const md = readFileSync(resolve(ROOT, target.source), "utf8");
+  const table = parseColorTable(md.split("\n"));
+  const expected = new Map();
+  for (const name of table.keys()) {
+    if (name.endsWith("-dark") || !table.has(`${name}-dark`)) continue;
+    expected.set(`color-${name}`, resolveColorHex(table, `${name}-dark`));
+  }
+  for (const t of [parseShadows(md), parseGradients(md)]) {
+    for (const [name, val] of Object.entries(t)) if (!name.endsWith("-dark") && t[`${name}-dark`]) expected.set(name, t[`${name}-dark`]);
+  }
+  for (const [name, val] of expected) {
+    if (!decls.has(name)) { console.error(`  ❌ 다크 블록에 --${name} 없음`); errors++; }
+    else if (decls.get(name).toLowerCase() !== val.toLowerCase()) { console.error(`  ❌ 다크 --${name}: ${decls.get(name)} (expected ${val})`); errors++; }
+  }
+  for (const [name, val] of decls) {
+    if (!expected.has(name)) { console.error(`  ❌ 다크 블록의 --${name} 는 다크 짝이 없는 토큰`); errors++; }
+    if (/var\(/.test(val)) { console.error(`  ❌ 다크 --${name} 이 var() 사슬이다: ${val}`); errors++; }
+  }
+  if (errors === 0) console.log(`  ✓ 다크 블록: ${decls.size} 토큰(색 · 그림자 · 그라디언트, 값 풀어 둠)`);
   return errors;
 }
 
@@ -137,6 +166,10 @@ for (const target of TARGETS) {
   } else {
     console.log(`  ✓ CSS 괄호 균형 ({ ${openBraces} = } ${closeBraces})`);
   }
+
+  // 4-1. 다크 블록(2026-10-06) — 다크 값(-dark)이 따로 있는 색 · 그림자 · 그라디언트를 빠짐없이 덮고,
+  //      값은 DESIGN 에서 풀어 둔 값이다(var() 사슬이면 반전 역할 색 fg-*-inverted 가 한 번 더 뒤집힌다).
+  totalErrors += checkDarkBlock(css, target);
 
   // 5. 정의되지 않은 placeholder 검출 (예: undefined, null, NaN)
   const placeholders = css.match(/:\s*(undefined|null|NaN);/g);
