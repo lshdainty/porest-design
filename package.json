@@ -13,6 +13,10 @@
     "export:tailwind:hr": "mkdir -p exports && node scripts/build-tailwind-v4.mjs --source DESIGN.hr.md > exports/tokens.hr.css",
     "export:tailwind:desk": "mkdir -p exports && node scripts/build-tailwind-v4.mjs --source DESIGN.desk.md > exports/tokens.desk.css",
     "export:tailwind:all": "npm run export:tailwind && npm run export:tailwind:hr && npm run export:tailwind:desk",
+    "export:dart:desk": "mkdir -p exports && node scripts/build-dart-tokens.mjs --source DESIGN.desk.md > exports/tokens.desk.dart",
+    "export:dart:hr": "mkdir -p exports && node scripts/build-dart-tokens.mjs --source DESIGN.hr.md > exports/tokens.hr.dart",
+    "export:dart:all": "npm run export:dart:desk && npm run export:dart:hr",
+    "export:spec": "node scripts/build-spec-json.mjs --source DESIGN.desk.md --out exports/spec/desk && node scripts/build-spec-json.mjs --source DESIGN.hr.md --out exports/spec/hr",
     "export:dtcg": "mkdir -p exports && npx @google/design.md export --format dtcg DESIGN.md > exports/tokens.dtcg.json",
     "snapshot": "cp DESIGN.md DESIGN.history/v$(date +%Y%m%d-%H%M%S).md",
     "sync": "node scripts/sync-shared-tokens.mjs",
@@ -22,7 +26,7 @@
     "gen:institution-colors": "node scripts/gen-institution-colors.mjs",
     "check:institution-colors": "node scripts/gen-institution-colors.mjs --check",
     "verify": "npm run sync:check && npm run check:institution-colors && npm run lint:all && npm run lint:dark:strict && npm run lint:prose:strict",
-    "test:exports": "npm run export:tailwind:all && node scripts/test-tailwind-export.mjs",
+    "test:exports": "npm run export:tailwind:all && node scripts/test-tailwind-export.mjs && npm run export:dart:all && npm run export:spec && node scripts/test-app-exports.mjs",
     "build:preview": "npm run export:tailwind:all && node scripts/build-preview-html.mjs",
     "build:examples": "npm run export:tailwind && node scripts/build-examples-html.mjs > exports/examples.html",
     "build:site": "npm run export:tailwind:all && node scripts/build-site.mjs",
@@ -31,6 +35,7 @@
     "prepare": "git config core.hooksPath .husky 2>/dev/null || true"
   },
   "devDependencies": {
-    "@google/design.md": "^0.4.0"
+    "@google/design.md": "^0.4.0",
+    "yaml": "^2.9.1"
   }
 }
