@@ -1,17 +1,21 @@
 /*
  * shadcn Notification Badge 예제 — docs site components/notification-badge.html 에서 Preview + Code 토글로 보인다.
- * 각 예제 = { title, description, jsx, render() }. 앞의 둘(상단 바 알림 — 점 · 숫자)은 차례 · 제목 · 코드가 specs/components/notification-badge.md 의
- * "코드" 절과 같고, 뒤의 둘(크기와 자리 · 글에 붙을 때)은 md 의 Properties 를 코드로 더 보인다. porest 에 처음 두는 컴포넌트다.
+ * 각 예제 = { title, description, jsx, render() }. 앞의 둘(상단 바 알림 — 점 · 숫자 — 몇 개인지 보여야 할 때)은 차례 · 제목 · 코드가
+ * specs/components/notification-badge.md 의 "코드" 절과 같고, 뒤의 둘(크기와 자리 · 글에 붙을 때)은 md 의 Properties 를 코드로 더 보인다.
+ * porest 에 처음 두는 컴포넌트다. 상단 바는 Top Navigation 의 아이콘 버튼(44 · 아이콘 24)이고 점만 둔다(2026-10-04) — 숫자는 본문의 아이콘 버튼에서 보인다.
  *
  * TARGET · NB_BASE · NB_VARIANTS · NB_COMPOUND · NB_DEFAULTS 는 recipes/shadcn/components/ui/notification-badge.tsx 의 상수 · cva(notificationBadgeVariants)와,
  * formatNotificationCount 는 그 파일의 함수와 글자 하나까지 같아야 한다 — 두 파일을 함께 고친다. 버튼 BUTTON_* 는 button.tsx 의 cva 와 같다
- * (button-examples.mjs 의 것과 같다 — 이 파일이 쓰는 ghost · medium · 아이콘만과 그에 걸리는 compound 만 옮겼다).
+ * (button-examples.mjs 의 것과 같다 — 이 파일이 쓰는 ghost · medium · 아이콘만과 그에 걸리는 compound 만 옮겼다). 상단 바 TN_* 는
+ * top-navigation.tsx 의 상수(ROOT · ROOT_LEFT · TEXT_T8 · TITLE · TITLE_TYPE · PRESS_TRANSITION · FOCUS_INSIDE · ICON_BUTTON)와 JSX 클래스(ROW · ACTIONS)와
+ * 같다(top-navigation-examples.mjs 의 것과 같은 사본 — 이 파일이 쓰는 root 만 옮겼다).
  * 규칙은 specs/components/notification-badge.md, 수치 원본은 specs/components/notification-badge.yaml.
  *
  * Preview 는 정적 HTML 이다 — 페이지의 Tailwind v4 browser CDN 이 클래스를 utility 로 만든다.
  * 짜임은 레시피가 그리는 DOM 그대로다 — 붙을 대상을 감싼 <span data-slot="notification-badge-target"> > 대상(아이콘 · 글) + 점 · 숫자
  * <span aria-hidden data-slot="notification-badge" data-size>. 점 · 숫자는 보조 기술에 숨기고 이름은 붙은 버튼의 aria-label 에 넣는다.
- * 버튼 안의 아이콘 크기는 Button(medium · 아이콘만 — 18)이 정하고, 자리는 그 아이콘 상자에서 잰다. 버튼 밖의 아이콘은 lucide 기본 24 다.
+ * 버튼 안의 아이콘 크기는 버튼이 정하고(상단 바 아이콘 버튼 24 · 본문의 Button medium 아이콘만 18), 자리는 그 아이콘 상자에서 잰다.
+ * 버튼 밖의 아이콘은 lucide 기본 24 다. 상단 바 제목 <h1> 의 style 은 사이트의 `.content h1` 을 누르는 미리보기용 덧칠이다(H1_FIX — 클래스와 같은 값).
  * 레시피의 스크립트(누르는 순간 --press-basis 재기 · 알림 목록 열기)는 정적 HTML 에 없다 — 버튼을 눌러도 점 · 숫자가 그대로다.
  * 아이콘은 lucide-react 와 같은 모양의 inline SVG 다(lucide 의 class · xmlns 는 그리지 않는다).
  */
@@ -84,6 +88,35 @@ const BUTTON_COMPOUND = [{ size: "medium", layout: "iconOnly", className: "w-10 
 
 const BUTTON_DEFAULTS = { variant: "neutralSolid", size: "medium", layout: "withText", ghostColor: "neutral" };
 
+// ── top-navigation.tsx 의 상수 · JSX 클래스와 같은 값 — 상단 바(root)와 아이콘 버튼(44 · 24) ──
+
+const TN_ROOT = [
+  "sticky top-0 z-(--z-sticky) w-full shrink-0 bg-bg-layer-default pt-[env(safe-area-inset-top)] font-sans text-fg-neutral",
+  "pr-[calc(var(--spacing-x1_5)+env(safe-area-inset-right))]",
+].join(" ");
+const TN_ROOT_LEFT = { root: "pl-[calc(var(--spacing-x1_5)+env(safe-area-inset-left))]" };
+const TN_TEXT_T8 =
+  "text-[length:clamp(var(--text-t8-static),var(--text-t8),calc(var(--text-t8-static)*1.2))] leading-[clamp(var(--text-t8-static--line-height),var(--text-t8--line-height),calc(var(--text-t8-static--line-height)*1.2))]";
+const TN_TITLE = [
+  "m-0 min-w-0 flex-1 truncate font-bold text-fg-neutral",
+  "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-stroke-focus-ring",
+].join(" ");
+const TN_TITLE_TYPE = { root: `ml-[10px] ${TN_TEXT_T8}` };
+const TN_PRESS_TRANSITION =
+  "[transition:background-color_var(--motion-duration-color-transition)_var(--motion-ease-easing),scale_var(--motion-duration-pressed-scale)_var(--motion-ease-pressed-scale)]";
+const TN_FOCUS_INSIDE = "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-stroke-focus-ring";
+// 아이콘 버튼 — 상자 44 = 누르는 영역 · 아이콘 24, 버튼끼리 붙는다
+const TN_ICON_BUTTON = [
+  "relative flex size-[44px] shrink-0 cursor-pointer items-center justify-center rounded-r2 border-0 bg-transparent p-0 text-fg-neutral",
+  "[&_svg]:size-6 [&_svg]:shrink-0",
+  TN_PRESS_TRANSITION,
+  "hover:bg-bg-layer-default-pressed active:bg-bg-layer-default-pressed active:[scale:calc(1-2/44)] motion-reduce:active:[scale:1]",
+  TN_FOCUS_INSIDE,
+  "disabled:cursor-not-allowed disabled:bg-transparent disabled:text-fg-disabled disabled:[scale:1]",
+].join(" ");
+const TN_ROW = "flex h-[56px] items-center";
+const TN_ACTIONS = "ml-auto flex shrink-0 items-center pl-x2";
+
 // ── cva 풀이 ──────────────────────────────────────────────────────────────
 
 // cva 와 같은 순서로 붙인다 — base → 축(선언 순) → 맞는 compound(선언 순). 고르지 않은 축은 기본값을 쓴다
@@ -114,13 +147,14 @@ const BELL = svg('<path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326
 const SEARCH = svg('<path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/>');
 
 // <NotificationBadge> — notification-badge.tsx 그대로. size small(visible) · large(count — 0 이하면 없음, 100 이상 "99+")
-function notificationBadge({ target, size = "small", attach = "icon", visible = true, count = 0 }) {
+// hidden 은 감싼 대상까지 보조 기술에 숨길 때(aria-hidden — Top Navigation 의 아이콘 버튼이 그렇게 부른다)
+function notificationBadge({ target, size = "small", attach = "icon", visible = true, count = 0, hidden = false }) {
   const label = size === "large" ? formatNotificationCount(count) : null;
   const shown = size === "large" ? label !== null : visible;
   const mark = shown
     ? `<span aria-hidden="true" data-slot="notification-badge" data-size="${size}" class="${notificationBadgeVariants({ size, attach })}">${label === null ? "" : esc(label)}</span>`
     : "";
-  return `<span data-slot="notification-badge-target" class="${TARGET}">${target}${mark}</span>`;
+  return `<span${hidden ? ' aria-hidden="true"' : ""} data-slot="notification-badge-target" class="${TARGET}">${target}${mark}</span>`;
 }
 
 // 알림 버튼 — Button ghost · 아이콘만(40 · 아이콘 18 · 누르는 영역 44). 이름에 알림을 넣는다(줄이지 않은 수)
@@ -129,11 +163,22 @@ function bellButton({ size = "small", visible = true, count = 0 }) {
   return `<button type="button" class="${buttonVariants({ variant: "ghost", layout: "iconOnly" })}" aria-label="${esc(name)}">${notificationBadge({ target: BELL, size, visible, count })}</button>`;
 }
 
-// 상단 바 · 흰 표면 · 줄 · 이름표 — 미리보기 틀(레시피가 아니다)
-const BAR =
-  "display:flex; align-items:center; justify-content:space-between; gap:var(--spacing-x2); max-width:360px; height:56px; padding:0 var(--spacing-x2) 0 var(--spacing-global-gutter); background:var(--color-bg-layer-default); border:1px solid var(--color-stroke-neutral-subtle); border-radius:var(--radius-r4); font-family:var(--font-sans);";
-const BAR_TITLE = "font-size:var(--text-t7); line-height:var(--text-t7--line-height); font-weight:700; color:var(--color-fg-neutral);";
-const bar = (title, buttons) => `<div style="${BAR}"><span style="${BAR_TITLE}">${esc(title)}</span><span style="display:flex; align-items:center; gap:var(--spacing-x1);">${buttons.join("")}</span></div>`;
+// <TopNavigation type="root"> + <TopNavigationIconButton notification> — top-navigation.tsx 그대로. 아이콘은 NotificationBadge(aria-hidden)로 감싼다
+const H1_FIX =
+  "margin:0 0 0 10px; letter-spacing:normal; font-size:clamp(var(--text-t8-static), var(--text-t8), calc(var(--text-t8-static) * 1.2)); line-height:clamp(var(--text-t8-static--line-height), var(--text-t8--line-height), calc(var(--text-t8-static--line-height) * 1.2));";
+const topBarIconButton = ({ icon, name, notification = false }) =>
+  `<button type="button" data-slot="top-navigation-icon-button" class="${TN_ICON_BUTTON}" aria-label="${esc(name)}">${notificationBadge({ target: icon, visible: notification, hidden: true })}</button>`;
+const topBar = (title, buttons) =>
+  `<header data-slot="top-navigation" data-type="root" class="${TN_ROOT} ${TN_ROOT_LEFT.root}"><div data-slot="top-navigation-row" class="${TN_ROW}"><h1 tabindex="-1" data-screen-title="" data-slot="top-navigation-title" class="${TN_TITLE} ${TN_TITLE_TYPE.root}" style="${H1_FIX}">${esc(title)}</h1><div data-slot="top-navigation-actions" class="${TN_ACTIONS}">${buttons.join("")}</div></div></header>`;
+// 폰 화면 · 흰 표면 · 줄 · 이름표 — 미리보기 틀(레시피가 아니다)
+const PHONE =
+  "position:relative; isolation:isolate; overflow:hidden; width:100%; max-width:360px; border:1px solid var(--color-stroke-neutral-subtle); border-radius:var(--radius-r4); background:var(--color-bg-layer-default); font-family:var(--font-sans);";
+const phone = (bar) => `<div style="${PHONE}">${bar}</div>`;
+// 본문의 줄 — 이름 + 끝의 아이콘 버튼(Button ghost · 아이콘만 40 · 18)
+const LINE =
+  "display:flex; align-items:center; justify-content:space-between; gap:var(--spacing-x2); width:100%; max-width:360px; padding:var(--spacing-x2) var(--spacing-x2) var(--spacing-x2) var(--spacing-x5); box-sizing:border-box; background:var(--color-bg-layer-default); border:1px solid var(--color-stroke-neutral-subtle); border-radius:var(--radius-r4); font-family:var(--font-sans);";
+const LINE_TITLE = "font-size:var(--text-t5); line-height:var(--text-t5--line-height); font-weight:700; color:var(--color-fg-neutral);";
+const line = (title, buttons) => `<div style="${LINE}"><span style="${LINE_TITLE}">${esc(title)}</span><span style="display:flex; align-items:center; gap:var(--spacing-x1);">${buttons.join("")}</span></div>`;
 const SURFACE =
   "background:var(--color-bg-layer-default); border:1px solid var(--color-stroke-neutral-subtle); border-radius:var(--radius-r4); padding:var(--spacing-x5) var(--spacing-x6); color:var(--color-fg-neutral); font-family:var(--font-sans);";
 const surface = (html) => `<div style="${SURFACE}">${html}</div>`;
@@ -153,37 +198,39 @@ export const notificationBadgeExamples = [
   {
     title: "상단 바 알림 — 점",
     description:
-      "안 읽은 알림이 있다는 신호다 — 대부분은 점(size=\"small\" · 기본)이면 된다. 점은 6 · 브랜드 글자색(fg-brand — 다크에서 밝은 짝)이고, 아이콘 상자의 오른쪽 위 안쪽 1 에 놓인다 — 자리는 버튼(40)이 아니라 아이콘 상자(Button medium 의 18)에서 잰다(18 아이콘이면 x 11 ~ 17 · y 1 ~ 7). 점은 자리를 차지하지 않아 아이콘 · 버튼 크기가 그대로다. 점은 보조 기술에 숨기고(aria-hidden) 붙은 버튼의 이름에 넣는다 — \"알림, 새 알림 있음\". 사용자가 알림 목록을 열면 바로 지운다(visible={false}). 알림은 오류가 아니라 빨강을 쓰지 않는다.",
+      "안 읽은 알림이 있다는 신호다 — 상단 바(Top Navigation)에는 점(size=\"small\")만 둔다. TopNavigationIconButton 의 notification 이 이 점을 붙인다. 점은 6 · 브랜드 글자색(fg-brand — 다크에서 밝은 짝)이고, 아이콘 상자의 오른쪽 위 안쪽 1 에 놓인다 — 자리는 버튼 상자(44)가 아니라 아이콘 상자(24)에서 잰다(x 17 ~ 23 · y 1 ~ 7). 점은 자리를 차지하지 않아 아이콘 · 버튼 크기가 그대로다. 점은 보조 기술에 숨기고(aria-hidden) 붙은 버튼의 이름에 넣는다 — \"알림, 새 알림 있음\". 사용자가 알림 목록을 열면 바로 지운다(notification={false}). 숫자 알약은 상단 바에 두지 않는다 — 아이콘 오른쪽으로 자라 맨 오른쪽 버튼에서 \"99+\" 가 화면 밖으로 나간다. 알림은 오류가 아니라 빨강을 쓰지 않는다.",
     jsx: `import { Bell } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { NotificationBadge } from "@/components/ui/notification-badge"
+import { TopNavigationIconButton } from "@/components/ui/top-navigation"
 
-<Button variant="ghost" layout="iconOnly" aria-label={hasUnread ? "알림, 새 알림 있음" : "알림"} onClick={openNotifications}>
-  <NotificationBadge visible={hasUnread}>
-    <Bell />
-  </NotificationBadge>
-</Button>`,
+{/* 상단 바는 Top Navigation 의 아이콘 버튼(44 · 24) — notification 이 이 점(small)을 붙인다 */}
+<TopNavigationIconButton notification={hasUnread} aria-label={hasUnread ? "알림, 새 알림 있음" : "알림"} onClick={openNotifications}>
+  <Bell />
+</TopNavigationIconButton>`,
     render: () =>
       stack([
-        labeled(bar("가계부", [bellButton({ size: "small" })]), "hasUnread — 이름 \"알림, 새 알림 있음\""),
-        labeled(bar("가계부", [bellButton({ size: "small", visible: false })]), "목록을 열어 봤다 — 점이 사라지고 이름 \"알림\""),
+        labeled(phone(topBar("홈", [topBarIconButton({ icon: SEARCH, name: "검색" }), topBarIconButton({ icon: BELL, name: "알림, 새 알림 있음", notification: true })])), "hasUnread — 이름 \"알림, 새 알림 있음\""),
+        labeled(phone(topBar("홈", [topBarIconButton({ icon: SEARCH, name: "검색" }), topBarIconButton({ icon: BELL, name: "알림" })])), "목록을 열어 봤다 — 점이 사라지고 이름 \"알림\""),
       ]),
   },
 
   {
     title: "숫자 — 몇 개인지 보여야 할 때",
     description:
-      "몇 개인지가 판단에 필요할 때만 숫자(size=\"large\")를 쓴다 — 알약 18 · 최소 폭 18 · 좌우 4, 브랜드 채움(bg-brand-solid) + 흰 숫자 11/15 · 700 · 숫자 폭 같게(tabular-nums). 숫자는 글자 크기 설정을 따르지 않는다(text-t1-static — 커지면 아이콘을 덮는다). 알약의 왼쪽 아래 꼭짓점이 (아이콘 폭 − 8, 14) 라 위로 4, 오른쪽으로 튀어나오고 숫자가 길수록 오른쪽으로 자란다 — 한 자리는 아이콘 버튼 안, 두 자리 · \"99+\" 는 버튼 오른쪽 밖으로 나간다. 0 이면 배지가 없고 100 이상은 \"99+\" 지만, 버튼 이름에는 줄이지 않은 수를 넣는다(\"알림, 새 알림 128개\"). 수가 바뀌어도 소리로 알리지 않는다 — 버튼에 초점이 오면 새 이름을 읽는다.",
-    jsx: `<Button variant="ghost" layout="iconOnly" aria-label={unread > 0 ? \`알림, 새 알림 \${unread}개\` : "알림"} onClick={openNotifications}>
+      "몇 개인지가 판단에 필요할 때만 숫자(size=\"large\")를 쓴다 — 상단 바가 아닌 자리(본문의 아이콘 버튼 · 하단 탭 바의 칸, 2칸까지)에서만이다. 알약 18 · 최소 폭 18 · 좌우 4, 브랜드 채움(bg-brand-solid) + 흰 숫자 11/15 · 700 · 숫자 폭 같게(tabular-nums). 숫자는 글자 크기 설정을 따르지 않는다(text-t1-static — 커지면 아이콘을 덮는다). 알약의 왼쪽 아래 꼭짓점이 (아이콘 폭 − 8, 14) 라 위로 4, 오른쪽으로 튀어나오고 숫자가 길수록 오른쪽으로 자란다 — 본문의 아이콘 버튼(Button ghost · 아이콘만 40 · 아이콘 18)이면 (10, 14)이고, 한 자리는 버튼 안, 두 자리 · \"99+\" 는 버튼 오른쪽 밖으로 나간다. 0 이면 배지가 없고 100 이상은 \"99+\" 지만, 버튼 이름에는 줄이지 않은 수를 넣는다(\"알림, 새 알림 128개\"). 수가 바뀌어도 소리로 알리지 않는다 — 버튼에 초점이 오면 새 이름을 읽는다.",
+    jsx: `import { Bell } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { NotificationBadge } from "@/components/ui/notification-badge"
+
+<Button variant="ghost" layout="iconOnly" aria-label={unread > 0 ? \`알림, 새 알림 \${unread}개\` : "알림"} onClick={openNotifications}>
   <NotificationBadge size="large" count={unread}>
     <Bell />
   </NotificationBadge>
 </Button>`,
     render: () =>
       stack([
-        labeled(bar("porest", [`<button type="button" class="${buttonVariants({ variant: "ghost", layout: "iconOnly" })}" aria-label="검색">${SEARCH}</button>`, bellButton({ size: "large", count: 3 })]), "unread = 3 — 이름 \"알림, 새 알림 3개\""),
-        labeled(bar("porest", [bellButton({ size: "large", count: 128 })]), "unread = 128 — 알약은 \"99+\", 이름은 \"알림, 새 알림 128개\""),
-        labeled(bar("porest", [bellButton({ size: "large", count: 0 })]), "unread = 0 — 배지 없음 · 이름 \"알림\""),
+        labeled(line("받은 결재", [bellButton({ size: "large", count: 3 })]), "unread = 3 — 이름 \"알림, 새 알림 3개\""),
+        labeled(line("받은 결재", [bellButton({ size: "large", count: 128 })]), "unread = 128 — 알약은 \"99+\", 이름은 \"알림, 새 알림 128개\""),
+        labeled(line("받은 결재", [bellButton({ size: "large", count: 0 })]), "unread = 0 — 배지 없음 · 이름 \"알림\""),
       ]),
   },
 

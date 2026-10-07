@@ -33,7 +33,7 @@
 
 ### Size
 
-`large`(트리거 52 · 선택지 46)는 폰 · 앱에서, `medium`(트리거 40 · 선택지 39)은 1280 이상 데스크톱 웹(마우스)에서만 쓴다. 웹의 기본은 `responsive` 다 — 1280 미만은 large, 이상은 medium(SEED `lg`). 앱은 늘 large 다. 트리거와 목록은 같은 크기를 쓰고, 한 폼 안에서 크기를 섞지 않는다.
+`large`(트리거 52 · 선택지 46)는 폰 · 앱에서, `medium`(트리거 40 · 선택지 39)은 1280 이상 데스크톱 웹(마우스)에서만 쓴다. 웹의 기본은 `responsive` 다 — 1280 미만은 large, 이상은 medium(SEED `lg`). 앱은 늘 large 다. 예외 하나 — [Table Pagination](table-pagination.md) 의 두 고르기는 줄 한 높이를 지키려고 폭과 상관없이 medium 40 이다(사용자 결정 2026-10-08). 트리거와 목록은 같은 크기를 쓰고, 한 폼 안에서 크기를 섞지 않는다.
 
 [그림: 크기 — large · medium 의 트리거와 목록](../../site/components/specs/select.tsx#size)
 
@@ -107,7 +107,7 @@
 
 ### Content
 
-목록은 트리거 폭 그대로, 트리거 아래 8 에 붙는다. 아래가 모자라면 위로 뒤집고, 화면 가장자리와는 8 을 둔다(안전 영역이 있으면 그 값). 높이는 480 과 트리거 둘레에 남은 화면 중 작은 값이고(남은 화면이 200 보다 좁아도 200 은 둔다), 넘치면 목록 안에서 스크롤한다. 열면 고른 선택지가 보이게 스크롤된 채로 열린다 — 선택지가 많은 Select 는 목록 안에서 스크롤되는 모습을 가정하고 짠다.
+목록은 트리거 폭 그대로, 트리거 아래 8 에 붙는다. 아래가 모자라면 위로 뒤집고, 화면 가장자리와는 8 을 둔다(안전 영역이 있으면 그 값). 높이는 480 과 트리거 둘레에 남은 화면 중 작은 값이고(남은 화면이 200 보다 좁아도 200 은 둔다), 넘치면 목록 안에서 스크롤한다. 480 은 `listMaxHeight` 로 줄일 수 있다 — [Table Pagination](table-pagination.md) 의 범위 목록만 240(SEED)을 쓴다. 열면 고른 선택지가 보이게 스크롤된 채로 열린다 — 선택지가 많은 Select 는 목록 안에서 스크롤되는 모습을 가정하고 짠다.
 
 선택지 글은 목록 안에서는 줄바꿈되고(자르지 않는다), 트리거에서는 한 줄로 말줄임된다.
 
@@ -324,7 +324,7 @@ import { Select, SelectGroup, SelectItem } from "@/components/ui/select"
 | **WCAG 1.4.11** Non-text contrast(≥ 3:1) | 트리거 키보드 포커스 링 `stroke-focus-ring` Desk 8.38 · 6.10 · HR 5.06 · 6.23, 오류 테두리 5.06 · 6.08, 고른 표시 체크 16.41 · 11.62 ✓. 누름 · 호버 · 키보드 위치 알약은 목록 바탕과 1.06 · 1.13 ⚠ — SEED 그대로 둔다(2026-10-01 사용자 결정, 키보드 위치에 링을 더하는 안은 고르지 않았다). 짚은 선택지는 화면 읽기 프로그램에 `aria-activedescendant` 로 알린다. 기본 1px 테두리(1.23 · 1.56)는 라벨 · 셰브론이 칸을 함께 알린다(SEED 와 같다) |
 | **WCAG 2.4.7** Focus visible | 트리거는 키보드 포커스에 링. 목록 안 키보드 위치는 알약(SEED — 위 1.4.11 의 ⚠) |
 | **WCAG 2.5.8** Target Size — Minimum(AA ≥ 24×24) | 트리거 · 선택지 모든 크기 ✓(가장 작은 선택지 medium 39) |
-| **WCAG 2.5.5** Target Size — Enhanced(AAA ≥ 44×44) | 트리거 large 52 ✓ · 선택지 large 46 ✓. medium 40 · 39 ⚠ — 1280 이상 데스크톱 웹(마우스)에서만 |
+| **WCAG 2.5.5** Target Size — Enhanced(AAA ≥ 44×44) | 트리거 large 52 ✓ · 선택지 large 46 ✓. medium 40 · 39 ⚠ — 1280 이상 데스크톱 웹(마우스)에서만(예외 — Table Pagination 의 고르기) |
 | **ARIA** | 트리거 `<button role="combobox" aria-haspopup="listbox" aria-expanded aria-controls>` — 이름은 Field 의 라벨(`<label for>`), 라벨이 없으면 `aria-label`. 오류 `aria-invalid`, 필수 `aria-required`, 읽기 전용 `aria-readonly`. 목록 `role="listbox"`(여럿이면 `aria-multiselectable`) · 짚은 선택지는 `aria-activedescendant`, 선택지 `role="option" aria-selected`(막히면 `aria-disabled`), 묶음 `role="group"` + 제목 `aria-labelledby` |
 
 ## Do / Don't

@@ -4,6 +4,7 @@
 import { axisValues, loadComponentSpec, num, resolveState, stateNames, tokenValue, type TypeValue } from '@/lib/component-spec';
 import { color, design, pressScale, proseValue, type Brand } from '@/lib/design-tokens';
 import { buttonLook } from './button-look';
+import { navKit } from './nav-look';
 import {
   BANNER_VARIANTS,
   FB_ICONS,
@@ -127,8 +128,10 @@ const screenCache = new Map<Brand, FbScreen>();
 function screen(brand: Brand): FbScreen {
   const hit = screenCache.get(brand);
   if (hit) return hit;
-  const s = Object.fromEntries(FB_SCREEN_TONES.map((n) => [n, named(n, brand)])) as FbScreen;
+  const s = Object.fromEntries(FB_SCREEN_TONES.map((n) => [n, named(n, brand)])) as unknown as FbScreen;
   s.dim = { light: proseValue('overlay-dim-light'), dark: proseValue('overlay-dim-dark') };
+  const nk = navKit(brand === 'hr' ? 'hr' : 'desk');
+  s.nav = { top: nk.top, tab: nk.tab };
   screenCache.set(brand, s);
   return s;
 }

@@ -28,7 +28,7 @@
 
 ### Size
 
-`small`(점 6) *(기본)* 은 새 것이 있는지만 중요할 때 — 탭 · Segmented · 상단 바. `large`(숫자 18)는 몇 개인지가 중요할 때만 쓴다 — 상단 바의 알림처럼. 숫자는 11 / 15 · 700 이고 글자 크기 설정을 따르지 않는다(커지면 아이콘을 덮는다 — SEED 와 같다).
+`small`(점 6) *(기본)* 은 새 것이 있는지만 중요할 때 — 탭 · Segmented · 상단 바. `large`(숫자 18)는 몇 개인지가 판단에 필요할 때만 쓴다 — 하단 탭 바의 칸처럼(2칸까지). 상단 바([Top Navigation](top-navigation.md))에는 점만 둔다 — 숫자 알약은 아이콘 오른쪽으로 자라 맨 오른쪽 버튼에서 "99+" 가 화면 밖으로 8.5 나간다(2026-10-04). 숫자는 11 / 15 · 700 이고 글자 크기 설정을 따르지 않는다(커지면 아이콘을 덮는다 — SEED 와 같다).
 
 점은 브랜드 글자색(`fg-brand` — 다크에서 밝은 짝)이고, 숫자 알약은 브랜드 채움(`bg-brand-solid`) + 흰 숫자다. Desk 는 파랑, HR 은 초록이다. 알림은 오류가 아니다 — 빨강은 오류 · 위험에 남긴다.
 
@@ -43,7 +43,8 @@
 자리는 붙는 대상의 상자에서 잰다 — 아이콘이면 아이콘 상자(버튼 상자가 아니다), 글이면 글 상자다. 위치 · 크기는 고정이다 — 화면마다 옮기지 않는다(SEED).
 
 - **아이콘 · 점** — 아이콘 상자 오른쪽 위 안쪽 1. 24 아이콘이면 x 17 ~ 23 · y 1 ~ 7(아이콘 크기가 달라도 같은 식 — 18 아이콘이면 x 11 ~ 17).
-- **아이콘 · 숫자** — 알약의 왼쪽 아래 꼭짓점이 (아이콘 폭 − 8, 14). 24 아이콘이면 (16, 14) — 위로 4, 오른쪽으로 튀어나오고 숫자가 길수록 오른쪽으로 자란다. 지금 porest 아이콘 버튼(Button `iconOnly` medium 40 · 아이콘 18)이면 (10, 14)다 — 상단 바의 아이콘 크기는 Top Navigation 차례에 정한다. 두 자리 · "99+" 는 버튼 오른쪽 밖으로 나갈 수 있다.
+- **아이콘 · 숫자** — 알약의 왼쪽 아래 꼭짓점이 (아이콘 폭 − 8, 14). 24 아이콘이면 (16, 14) — 위로 4, 오른쪽으로 튀어나오고 숫자가 길수록 오른쪽으로 자란다. 본문의 아이콘 버튼(Button `iconOnly` medium 40 · 아이콘 18)이면 (10, 14)다. 두 자리 · "99+" 는 버튼 오른쪽 밖으로 나갈 수 있다.
+- **상단 바** — [Top Navigation](top-navigation.md) 의 아이콘 버튼은 상자 44 · 아이콘 24 다(2026-10-04) — 점은 x 17 ~ 23 · y 1 ~ 7. 상단 바에는 점만 둔다.
 - **글** — 마지막 글자 뒤 2, 위는 글 줄 상자의 위 끝. 탭 · 칸 폭과 줄 높이를 바꾸지 않는다. Chip Tabs 만 칩 안 글 뒤 6 · 세로 가운데에 흐름으로 놓는다(SEED Chip Tabs — 값은 [Tabs](tabs.md)).
 
 [그림: 붙는 자리 — 24 아이콘의 점 · 숫자 좌표와 글 끝 2](../../site/components/specs/notification-badge.tsx#placement)
@@ -111,7 +112,8 @@
 
 | 자리 | 크기 · 붙는 곳 |
 |---|---|
-| Desk 상단 바 알림(웹 · 앱) | `small` · 아이콘 — 몇 개인지 보여야 하면 `large` |
+| Desk 상단 바 알림(웹 · 앱) | `small` · 아이콘(24) — 상단 바는 점만([Top Navigation](top-navigation.md)) |
+| 하단 탭 바의 칸 | `small` · `large` · 아이콘(24) — 2칸까지([Bottom Navigation](bottom-navigation.md)). 지금 다는 칸은 없다 |
 | 탭 · Chip Tabs · Segmented Control 의 새 소식 | `small` · 글(값은 [Tabs](tabs.md) · [Segmented Control](segmented-control.md) 스펙) |
 | HR | 알림 기능이 아직 없다 — 생기면 같은 규칙 |
 
@@ -127,21 +129,25 @@
 
 ```tsx
 import { Bell } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { NotificationBadge } from "@/components/ui/notification-badge"
+import { TopNavigationIconButton } from "@/components/ui/top-navigation"
 
-<Button variant="ghost" layout="iconOnly" aria-label={hasUnread ? "알림, 새 알림 있음" : "알림"} onClick={openNotifications}>
-  <NotificationBadge visible={hasUnread}>
-    <Bell />
-  </NotificationBadge>
-</Button>
+{/* 상단 바는 Top Navigation 의 아이콘 버튼(44 · 24) — notification 이 이 점(small)을 붙인다 */}
+<TopNavigationIconButton notification={hasUnread} aria-label={hasUnread ? "알림, 새 알림 있음" : "알림"} onClick={openNotifications}>
+  <Bell />
+</TopNavigationIconButton>
 ```
 
 ### 숫자 — 몇 개인지 보여야 할 때
 
+상단 바가 아닌 자리(본문의 아이콘 버튼 · 하단 탭 바의 칸)에서만 — 상단 바는 점만 둔다.
+
 [그림: 알림 3 · 99+](../../site/components/specs/notification-badge.tsx#ex-count)
 
 ```tsx
+import { Bell } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { NotificationBadge } from "@/components/ui/notification-badge"
+
 <Button variant="ghost" layout="iconOnly" aria-label={unread > 0 ? `알림, 새 알림 ${unread}개` : "알림"} onClick={openNotifications}>
   <NotificationBadge size="large" count={unread}>
     <Bell />
@@ -203,6 +209,10 @@ import { NotificationBadge } from "@/components/ui/notification-badge"
 - 크기 · 자리 · 숫자 글자(글자 크기 설정을 따르지 않음) · 모션 없음은 SEED 와 같다.
 
 ## Migration notes
+
+### 2026-10-04 — 상단 바는 점만, 아이콘 24
+
+[Top Navigation](top-navigation.md) 을 정하며 상단 바의 아이콘 버튼이 상자 44 · 아이콘 24 가 됐다(화면 틀 · 이동 결정 1A) — 점 자리는 위 식 그대로 x 17 ~ 23 · y 1 ~ 7 이다. 상단 바에는 점만 둔다(따라오는 것 — 숫자 "99+" 는 맨 오른쪽 버튼에서 화면 밖으로 나간다). 숫자는 하단 탭 바의 칸처럼 몇 개인지가 판단에 필요한 자리에 남긴다.
 
 ### 2026-10-03 — 새로 둔다(SEED Notification Badge)
 

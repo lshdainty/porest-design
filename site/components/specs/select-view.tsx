@@ -573,6 +573,8 @@ export type SelectViewProps = {
   describedBy?: string;
   ariaLabel?: string;
   width?: number | string;
+  // 열린 목록의 최대 높이 — 기본(content.maxHeight 480)보다 낮게 둘 때만(Table Pagination 의 범위 목록 240 — 레시피의 listMaxHeight)
+  listMaxHeight?: number;
 };
 
 type Pos = { left: number; width: number; top?: number; bottom?: number; maxHeight?: number; side: 'below' | 'above' };
@@ -599,6 +601,7 @@ export function SelectView({
   describedBy,
   ariaLabel,
   width,
+  listMaxHeight: maxHeightProp,
 }: SelectViewProps) {
   const auto = useId().replace(/[^a-zA-Z0-9_-]/g, '');
   const id = idProp ?? `sel${auto}`;
@@ -647,13 +650,14 @@ export function SelectView({
       if (natural === undefined) return { left, width: r.width, side: 'below', top: r.bottom + c.gutter };
       const below = vh - r.bottom - c.gutter - c.edge;
       const above = r.top - c.gutter - c.edge;
-      const want = Math.min(natural, c.maxHeight);
+      const cap = maxHeightProp === undefined ? c.maxHeight : Math.min(c.maxHeight, maxHeightProp);
+      const want = Math.min(natural, cap);
       const side: Pos['side'] = below >= want || below >= above ? 'below' : 'above';
       const room = side === 'below' ? below : above;
-      const maxHeight = Math.max(c.minHeight, Math.min(c.maxHeight, room));
+      const maxHeight = Math.max(Math.min(c.minHeight, cap), Math.min(cap, room));
       return { left, width: r.width, side, maxHeight, top: side === 'below' ? r.bottom + c.gutter : undefined, bottom: side === 'above' ? vh - r.top + c.gutter : undefined };
     },
-    [c],
+    [c, maxHeightProp],
   );
 
   const firstFocus = () => picked.find((i) => !i.disabled)?.value ?? enabledItems[0]?.value;

@@ -89,10 +89,3 @@ export const TOOLBAR = [
   { value: 'reset', label: '필터 초기화' },
 ] as const;
 export const LONG_TIP = '고른 기간 · 카테고리 · 결제 수단을 모두 지우고 처음 목록으로 돌아가요.';
-// 접힌 사이드바(Desk 웹)
-export const SIDE_NAV = [
-  { value: 'home', label: '홈' },
-  { value: 'ledger', label: '가계부' },
-  { value: 'calendar', label: '캘린더' },
-  { value: 'memo', label: '메모' },
-] as const;

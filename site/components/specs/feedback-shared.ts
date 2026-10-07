@@ -2,6 +2,7 @@
 // 플레이그라운드)가 함께 쓰는 상수 · 타입. 파일 읽기(서버 전용)를 들이지 않는다.
 // 넷은 서로의 그림에 자주 같이 나온다(나누기 · 오류 자리 · 자리 그림) — 그래서 한 묶음으로 둔다.
 import type { ButtonLook } from './button-look';
+import type { TabBarLook, TopNavLook } from './nav-shared';
 
 export type ViewMode = 'light' | 'dark' | 'auto';
 
@@ -91,7 +92,8 @@ export const FB_SCREEN_TONES = [
   'chart-red-contrast',
 ] as const;
 export type FbScreenTone = (typeof FB_SCREEN_TONES)[number];
-export type FbScreen = Record<FbScreenTone, FbColor> & { dim: { light: string; dark: string } };
+// 화면 틀 — 머리는 Top Navigation, 아래 탭 바는 Bottom Navigation(top-navigation · bottom-navigation.yaml 을 nav-look 이 푼 값)
+export type FbScreen = Record<FbScreenTone, FbColor> & { dim: { light: string; dark: string }; nav: { top: TopNavLook; tab: TabBarLook } };
 
 // ── Snackbar ─────────────────────────────────────────────
 export type SnackbarLook = {

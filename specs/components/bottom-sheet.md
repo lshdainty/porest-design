@@ -211,7 +211,7 @@ import { BottomSheet, BottomSheetBody, BottomSheetContent, BottomSheetFooter } f
 
 ### 2026-10-02 — SEED Bottom Sheet 로 새로 둔다(옛 Drawer 를 대신)
 
-사용자가 [비교 페이지](https://claude.ai/artifact/2KE4tDQT6p5GPyhx7Y29vt)에서 정했다 — 일로 나누기(폼 · 상세는 시트 ↔ 대화상자, 확인은 Alert Dialog, 동작 목록은 Menu Sheet · Menu, 90% 를 넘으면 페이지) · 경계 1280(Input Button 과 같게) · SEED 모양(위 24 · 제목 22 · 닫기 원 · 손잡이는 스냅일 때만) · 입력 폼은 바깥 · 끌기로 닫지 않음 · 닫기 버튼과 취소는 하나만. 옛 Drawer(아래 · 오른쪽 두 방향, 손잡이 늘, 위 20)는 걷었다 — 옛 스펙은 `drawer.history/v-pre-seed-overlay.*`. 오른쪽에서 나오는 패널은 Side Panel 차례에 정한다.
+사용자가 [비교 페이지](https://claude.ai/artifact/2KE4tDQT6p5GPyhx7Y29vt)에서 정했다 — 일로 나누기(폼 · 상세는 시트 ↔ 대화상자, 확인은 Alert Dialog, 동작 목록은 Menu Sheet · Menu, 90% 를 넘으면 페이지) · 경계 1280(Input Button 과 같게) · SEED 모양(위 24 · 제목 22 · 닫기 원 · 손잡이는 스냅일 때만) · 입력 폼은 바깥 · 끌기로 닫지 않음 · 닫기 버튼과 취소는 하나만. 옛 Drawer(아래 · 오른쪽 두 방향, 손잡이 늘, 위 20)는 걷었다 — 옛 스펙은 `drawer.history/v-pre-seed-overlay.*`. 오른쪽에서 나오는 패널은 [Side Panel](side-panel.md) 이다(2026-10-04 — 왼쪽 · 오른쪽만, 1280 미만의 오른쪽 패널은 이 시트로).
 
 제품은 앱 적용 단계에서 옮긴다(2026-10-02 조사 — Desk 웹 · HR 은 크로미움에 띄워 쟀고, Desk 앱은 위젯 테스트로 쟀다).
 

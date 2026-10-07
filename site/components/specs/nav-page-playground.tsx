@@ -1,0 +1,211 @@
+'use client';
+// 쪽 넘김 · 표 넘김의 플레이그라운드 — 속성을 고르면 스펙대로 그린 줄과 그 코드가 바뀐다(실제로 넘긴다).
+// 값은 nav-look 이 YAML 에서 푼 것만 쓴다. 코드는 pagination.md · table-pagination.md 의 "코드" 절과 같은 레시피 API 다.
+import { useMemo, useState } from 'react';
+import { BENEFITS, HR_USERS } from './nav-data';
+import { comma, FONT, ncv, tablePages, tableRange, type NColor, type NavTone, type PaginationLook, type TablePaginationLook, type ViewMode } from './nav-shared';
+import { NavPlayFrame } from './nav-playground';
+import { PaginationView, TablePaginationView } from './nav-page-view';
+import { MODES, Seg } from './select-playground';
+
+type Tones = Record<NavTone, NColor>;
+const tc = (t: Tones, n: NavTone, mode: ViewMode) => ncv(t[n], mode);
+const surfaceOf = (t: Tones, mode: ViewMode) => (mode === 'auto' ? `var(--p-${t['bg-layer-basement'].name})` : t['bg-layer-basement'][mode]);
+
+// 보조 기술이 읽는 글(그림 — 숨은 상태 글을 보이게)
+function Said({ text }: { text: string }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-md border border-fd-border bg-fd-card px-2 py-1 text-[12px] leading-4 text-fd-foreground">
+      <span className="text-[10px] font-semibold text-fd-muted-foreground">읽는 글</span>
+      {text || '—'}
+    </span>
+  );
+}
+
+// ══ Pagination ═════════════════════════════════════════════
+const TOTALS = [1, 5, 8, 12, 30, 120] as const;
+export function PaginationPlayground({ look, tones }: { look: PaginationLook; tones: Tones }) {
+  const [total, setTotal] = useState<(typeof TOTALS)[number]>(12);
+  const [page, setPage] = useState(5);
+  const [width, setWidth] = useState<'regular' | 'narrow'>('regular');
+  const [links, setLinks] = useState<'links' | 'buttons'>('links');
+  const [mode, setMode] = useState<ViewMode>('auto');
+  const [said, setSaid] = useState('');
+  const slots = look.slots[width];
+  const p = Math.min(page, total);
+  const rows = BENEFITS.slice(((p - 1) * 3) % BENEFITS.length, ((p - 1) * 3) % BENEFITS.length + 3);
+  const code = useMemo(
+    () =>
+      links === 'links'
+        ? [
+            'import { useSearchParams } from "react-router-dom"',
+            'import { Pagination } from "@/components/ui/pagination"',
+            '',
+            'const [params] = useSearchParams()',
+            'const page = Number(params.get("page") ?? 1)',
+            '',
+            '<section ref={listRef} aria-labelledby="card-list-title">…</section>',
+            '{/* 칸은 링크 — 쪽마다 방문 기록이 쌓여 뒤로 가기가 앞 쪽으로 온다 */}',
+            `<Pagination totalPages={${total}} page={page} getHref={(p) => \`?page=\${p}\`} scrollTarget={listRef} aria-label="카드 혜택 페이지 탐색" />`,
+          ].join('\n')
+        : [
+            'import { Pagination } from "@/components/ui/pagination"',
+            '',
+            '{/* 주소가 없는 자리(대화상자 · 시트 안 목록) — 칸은 버튼 */}',
+            `<Pagination totalPages={${total}} page={page} onPageChange={(p) => setPage(p)} scrollTarget={listRef} aria-label="카드 혜택 페이지 탐색" />`,
+          ].join('\n'),
+    [links, total],
+  );
+  return (
+    <NavPlayFrame
+      surface={surfaceOf(tones, mode)}
+      wide={width === 'regular'}
+      stage={
+        <div className="flex flex-col items-center gap-4">
+          <div style={{ width: '100%', maxWidth: width === 'regular' ? 520 : 360, borderRadius: 16, background: tc(tones, 'bg-layer-default', mode), paddingTop: 8, paddingBottom: 8, paddingLeft: 20, paddingRight: 20, fontFamily: FONT }}>
+            {rows.map(([n, b]) => (
+              <div key={n} style={{ display: 'flex', alignItems: 'center', columnGap: 12, minHeight: 56, boxShadow: `inset 0 -1px 0 ${tc(tones, 'stroke-neutral-subtle', mode)}` }}>
+                <span aria-hidden style={{ width: 52, height: 33, borderRadius: 4, background: tc(tones, 'bg-neutral-weak', mode), flexShrink: 0 }} />
+                <span style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span style={{ fontSize: 15, fontWeight: 500, color: tc(tones, 'fg-neutral', mode) }}>{n}</span>
+                  <span style={{ fontSize: 13, color: tc(tones, 'fg-neutral-subtle', mode) }}>{b}</span>
+                </span>
+              </div>
+            ))}
+          </div>
+          {total <= 1 ? (
+            <span className="text-[12px] text-fd-muted-foreground">1쪽 이하면 넘김 줄을 그리지 않는다</span>
+          ) : (
+            <PaginationView look={look} mode={mode} page={p} total={total} slots={slots} live links={links === 'links'} ariaLabel="카드 혜택 페이지 탐색" onChange={(n) => { setPage(n); setSaid(`${n}페이지, 전체 ${total}페이지`); }} />
+          )}
+          <Said text={said} />
+        </div>
+      }
+      note={`칸 자리는 그대로이고 생략(…)만 옮겨 간다 — ${slots}칸(화살표 포함). 첫 · 마지막 쪽에서는 화살표 자리가 빈 칸이고, 키보드로 끝 쪽에 닿으면 초점이 지금 쪽 번호로 옮겨 간다.`}
+      controls={
+        <>
+          <Seg label="전체 쪽 수" value={String(total)} options={TOTALS.map((t) => [String(t), `${t}쪽`] as const)} onChange={(v) => setTotal(Number(v) as (typeof TOTALS)[number])} />
+          <Seg label="화면 폭" value={width} options={[['regular', `${look.slots.breakpoint} 이상 — ${look.slots.regular}칸`], ['narrow', `${look.slots.breakpoint} 미만 — ${look.slots.narrow}칸`]]} onChange={setWidth} />
+          <Seg label="지금 쪽" value={String(p)} options={[['1', '첫 쪽'], ['4', '4'], ['5', '5'], [String(Math.max(1, total - 2)), `${Math.max(1, total - 2)}`], [String(total), '마지막']].filter((o, i, a) => a.findIndex((x) => x[0] === o[0]) === i) as [string, string][]} onChange={(v) => setPage(Number(v))} />
+          <Seg label="칸" value={links} options={[['links', '링크 — 쪽이 주소에'], ['buttons', '버튼 — 주소가 없는 자리']]} onChange={setLinks} />
+          <Seg label="모드" value={mode} options={MODES} onChange={setMode} />
+        </>
+      }
+      code={code}
+    />
+  );
+}
+
+// ══ Table Pagination ═══════════════════════════════════════
+type TotalKind = 'known' | 'unknown' | 'empty';
+export function TablePaginationPlayground({ look, tones }: { look: TablePaginationLook; tones: Tones }) {
+  const [kind, setKind] = useState<TotalKind>('known');
+  const [pageSize, setPageSize] = useState(look.options[0]);
+  const [page, setPage] = useState(2);
+  const [mode, setMode] = useState<ViewMode>('auto');
+  const [said, setSaid] = useState('');
+  const total = kind === 'known' ? 237 : kind === 'empty' ? 0 : undefined;
+  const pages = total === undefined ? 30 : tablePages(total, pageSize);
+  const p = total === 0 ? 1 : Math.min(page, pages);
+  const { from, to } = tableRange(p, pageSize, total);
+  const shown = total === 0 ? [] : Array.from({ length: Math.min(4, to - from + 1) }, (_, i) => from + i);
+  const code = useMemo(
+    () =>
+      total === undefined
+        ? [
+            'import { TablePagination } from "@/components/ui/table-pagination"',
+            '',
+            '{/* 전체 수를 모른다 — 범위는 글로만, 다음이 있는지만 안다 */}',
+            '<div className="overflow-x-auto">',
+            '  <Table ref={tableRef}>…</Table>',
+            '  <TablePagination',
+            '    hasPreviousPage={page > 1}',
+            '    hasNextPage={hasNextPage}',
+            '    currentPageItemCount={rows.length}',
+            `    value={{ page, pageSize }}`,
+            '    onValueChange={(v) => { setPage(v.page); setPageSize(v.pageSize) }}',
+            '    scrollTarget={tableRef}',
+            '  />',
+            '</div>',
+          ].join('\n')
+        : [
+            'import { TablePagination } from "@/components/ui/table-pagination"',
+            '',
+            '<div className="overflow-x-auto">',
+            '  <Table ref={tableRef}>…</Table>',
+            '  <TablePagination',
+            `    totalItems={users.length}`,
+            '    value={{ page, pageSize }}',
+            '    onValueChange={(v) => { setPage(v.page); setPageSize(v.pageSize) }}',
+            '    scrollTarget={tableRef}',
+            '  />',
+            '</div>',
+          ].join('\n'),
+    [total],
+  );
+  return (
+    <NavPlayFrame
+      surface={surfaceOf(tones, mode)}
+      wide
+      stage={
+        <div className="flex flex-col gap-3" style={{ fontFamily: FONT }}>
+          <div style={{ overflow: 'hidden', borderRadius: 16, background: tc(tones, 'bg-layer-default', mode) }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '64px 1fr 1fr 1fr', fontSize: 13, fontWeight: 600, color: tc(tones, 'fg-neutral-subtle', mode), boxShadow: `inset 0 -1px 0 ${tc(tones, 'stroke-neutral-subtle', mode)}` }}>
+              {['번호', '이름', '부서', '상태'].map((h) => (
+                <span key={h} style={{ display: 'flex', alignItems: 'center', height: 40, paddingLeft: 16 }}>
+                  {h}
+                </span>
+              ))}
+            </div>
+            {shown.length === 0 ? (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 96, fontSize: 14, color: tc(tones, 'fg-neutral-subtle', mode) }}>사용자가 없어요</div>
+            ) : (
+              shown.map((n) => {
+                const u = HR_USERS[(n - 1) % HR_USERS.length];
+                return (
+                  <div key={n} style={{ display: 'grid', gridTemplateColumns: '64px 1fr 1fr 1fr', fontSize: 14, color: tc(tones, 'fg-neutral', mode), boxShadow: `inset 0 -1px 0 ${tc(tones, 'stroke-neutral-subtle', mode)}` }}>
+                    <span style={{ display: 'flex', alignItems: 'center', height: 44, paddingLeft: 16, fontVariantNumeric: 'tabular-nums', color: tc(tones, 'fg-neutral-subtle', mode) }}>{n}</span>
+                    <span style={{ display: 'flex', alignItems: 'center', paddingLeft: 16 }}>{u[0]}</span>
+                    <span style={{ display: 'flex', alignItems: 'center', paddingLeft: 16, color: tc(tones, 'fg-neutral-muted', mode) }}>{u[1]}</span>
+                    <span style={{ display: 'flex', alignItems: 'center', paddingLeft: 16, color: tc(tones, 'fg-neutral-muted', mode) }}>{u[3]}</span>
+                  </div>
+                );
+              })
+            )}
+            {shown.length > 0 && to - from + 1 > shown.length && <div style={{ height: 28, paddingLeft: 16, fontSize: 12, lineHeight: '28px', color: tc(tones, 'fg-neutral-subtle', mode) }}>… {to - from + 1 - shown.length}줄 더(그림에서 줄였다)</div>}
+          </div>
+          <div style={{ overflowX: 'auto' }}>
+            <TablePaginationView
+              look={look}
+              mode={mode}
+              total={total}
+              hasNext={p < pages}
+              page={p}
+              pageSize={pageSize}
+              live
+              onChange={(v, reason) => {
+                setPageSize(v.pageSize);
+                setPage(v.page);
+                const r = tableRange(v.page, v.pageSize, total);
+                setSaid(`${r.from}-${r.to}${total !== undefined ? `, 총 ${comma(total)}개` : ''}${reason === 'page-size' ? ' — 첫 범위로' : ''}`);
+              }}
+            />
+          </div>
+          <div className="flex justify-center">
+            <Said text={said} />
+          </div>
+        </div>
+      }
+      note={`줄 수를 바꾸면 첫 범위로 돌아가고, 마지막 범위에서는 다음이 막힌다(막혀도 초점은 남는다). 범위 목록은 최대 ${look.range.maxH} 로 열린다.`}
+      controls={
+        <>
+          <Seg label="전체 수" value={kind} options={[['known', '앎 — 237개'], ['unknown', '모름 — 글만'], ['empty', '0개 — 빈 표']]} onChange={(v) => { setKind(v); setPage(1); }} />
+          <Seg label="줄 수" value={String(pageSize)} options={look.options.map((n) => [String(n), `${n}개`] as const)} onChange={(v) => { setPageSize(Number(v)); setPage(1); }} />
+          <Seg label="지금 범위" value={String(p)} options={[['1', '첫 범위'], ['2', '둘째'], [String(pages), '마지막']].filter((o, i, a) => a.findIndex((x) => x[0] === o[0]) === i) as [string, string][]} onChange={(v) => setPage(Number(v))} />
+          <Seg label="모드" value={mode} options={MODES} onChange={setMode} />
+        </>
+      }
+      code={code}
+    />
+  );
+}

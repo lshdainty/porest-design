@@ -151,7 +151,7 @@ export function PageOverPageFigure() {
           </Sheet>
           {list}
         </Phone>
-        <ol className="flex flex-col gap-2 text-[12px] leading-5 text-[#1A1F2E]">
+        <ol className="flex flex-col gap-2 text-[12px] leading-5 text-fd-foreground">
           <li><b>페이지</b> — Global 1</li>
           <li><b>시트</b> — Global 2 · 새 쌓임 맥락</li>
           <li><b>시트 안의 목록(Select)</b> — 시트를 바닥으로 한 Local</li>
@@ -170,7 +170,7 @@ export function LocalLevelsFigure() {
     </div>
   );
   const fab = (style?: CSSProperties) => (
-    <span className="absolute bottom-4 right-3 flex h-9 w-9 items-center justify-center rounded-full text-[16px]" style={{ background: rc('bg-brand-solid'), color: rc('static-white'), boxShadow: shadow(2), ...style }}>＋</span>
+    <span className="absolute bottom-4 right-3 flex h-9 w-9 items-center justify-center rounded-full text-[16px]" style={{ background: rc('bg-brand-solid'), color: rc('static-white'), boxShadow: shadow(3), ...style }}>＋</span>
   );
   // 스낵바 — 그림자 없이 면 색으로 뜬다(snackbar.yaml root.shadow none · 아래 "고도를 드러내는 세 가지" 의 표면 색)
   const toast = (style?: CSSProperties) => (
@@ -198,20 +198,37 @@ export function LocalLevelsFigure() {
   );
 }
 
+// 같은 층 안 — 상단 바는 표시 없음(SEED Top Navigation), 한 표면 안에서 머리 · 본문이 따로 스크롤되는 옆 패널 · 대화상자 · 사이드바는 머리 아래 1px
 export function SameLevelFigure() {
-  const scrolled = (nav: CSSProperties) => (
+  const scrolledBar = (
     <Phone>
       <Cards top={14} />
-      <div className="absolute inset-x-0 top-0 flex h-7 items-center px-2.5" style={{ background: rc('bg-layer-default'), ...nav }}>
+      <div className="absolute inset-x-0 top-0 flex h-7 items-center px-2.5" style={{ background: rc('bg-layer-default') }}>
         <span className="block h-1.5 w-10 rounded" style={{ background: rc('fg-neutral') }} />
       </div>
     </Phone>
   );
+  // 왼쪽 옆 패널(주 메뉴) — 본문을 올리면 머리 아래 1px stroke-neutral-subtle
+  const drawer = (
+    <Phone>
+      <Nav />
+      <Cards />
+      <Dim />
+      <div className="absolute inset-y-0 left-0 overflow-hidden" style={{ width: '80%', background: rc('bg-layer-floating') }}>
+        <div className="absolute inset-x-0 top-0 flex h-9 items-center px-2.5" style={{ background: rc('bg-layer-floating'), boxShadow: `inset 0 -1px 0 ${rc('stroke-neutral-subtle')}`, zIndex: 1 }}>
+          <span className="block h-2 w-12 rounded" style={{ background: rc('fg-neutral') }} />
+        </div>
+        {[0, 1, 2, 3, 4, 5].map((i) => (
+          <span key={i} className="absolute left-2.5 block h-1.5 rounded" style={{ top: 28 + i * 20, width: 52 - (i % 3) * 8, background: rc(i === 2 ? 'fg-neutral' : 'fg-neutral-muted') }} />
+        ))}
+      </div>
+    </Phone>
+  );
   return (
-    <Figure caption="목록이 상단 내비게이션 아래로 스크롤될 때 — 층은 그대로 두고 그림자(왼쪽)나 선(오른쪽)으로 구분한다">
+    <Figure caption="목록이 상단 내비게이션 아래로 스크롤될 때 — 층을 올리지 않고 선 · 그림자도 긋지 않는다. 한 표면 안에서 머리와 본문이 따로 스크롤되는 옆 패널 · 대화상자 · 사이드바는 머리 아래에 선">
       <div className="flex gap-8">
-        <div className="flex flex-col items-center gap-2">{scrolled({ boxShadow: shadow(1) })}<Cap>그림자 <code>shadow-s1</code></Cap></div>
-        <div className="flex flex-col items-center gap-2">{scrolled({ borderBottom: `1px solid ${rc('stroke-neutral-weak')}` })}<Cap>선 <code>stroke-neutral-weak</code></Cap></div>
+        <div className="flex flex-col items-center gap-2">{scrolledBar}<Cap>상단 바 — 표시 없음</Cap></div>
+        <div className="flex flex-col items-center gap-2">{drawer}<Cap>옆 패널 머리 — 선 <code>stroke-neutral-subtle</code></Cap></div>
       </div>
     </Figure>
   );
@@ -231,23 +248,24 @@ export function ThreeWaysFigure() {
             </div>
           </div>
           <b className="text-[13px] text-[#1A1F2E]">표면 색</b>
-          <Cap>배경의 밝기 · 색을 바꾼다 — 토스트</Cap>
+          <Cap>배경의 밝기 · 색을 바꾼다 — 스낵바</Cap>
         </div>
         <div className={card}>
           <div className={stage} style={{ background: rc('bg-layer-basement') }}>
-            <span className="absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-full text-[18px]" style={{ background: rc('bg-layer-floating'), color: rc('fg-neutral'), boxShadow: shadow(2) }}>＋</span>
+            <span className="absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-full text-[18px] font-semibold" style={{ background: rc('bg-brand-solid'), color: rc('static-white'), boxShadow: shadow(3) }}>＋</span>
           </div>
           <b className="text-[13px] text-[#1A1F2E]">그림자</b>
-          <Cap>떠 있는 높이를 그림자로 — 플로팅 버튼</Cap>
+          <Cap>떠 있는 높이를 그림자로 — 떠 있는 버튼 · 탭 바 · 메뉴</Cap>
         </div>
         <div className={card}>
           <div className={stage} style={{ background: rc('bg-layer-basement') }}>
-            <div className="absolute inset-x-0 bottom-0 flex h-9 items-center justify-around" style={{ background: rc('bg-layer-default'), borderTop: `1px solid ${rc('stroke-neutral-weak')}` }}>
-              {[0, 1, 2, 3].map((i) => <span key={i} className="block h-3 w-3 rounded" style={{ background: i ? rc('stroke-neutral-weak') : rc('fg-neutral') }} />)}
+            <div className="absolute inset-y-0 left-0 w-7" style={{ background: rc('bg-layer-default'), boxShadow: `inset -1px 0 0 ${rc('stroke-neutral-subtle')}` }} />
+            <div className="absolute bottom-2 left-9 right-2 flex h-7 items-center justify-around rounded-full" style={{ background: rc('bg-layer-floating'), boxShadow: `${shadow(3)}, inset 0 0 0 1px ${rc('stroke-neutral-subtle')}` }}>
+              {[0, 1, 2, 3].map((i) => <span key={i} className="block h-2.5 w-2.5 rounded" style={{ background: i ? rc('stroke-neutral-weak') : rc('fg-neutral') }} />)}
             </div>
           </div>
           <b className="text-[13px] text-[#1A1F2E]">선</b>
-          <Cap>가장자리에 테두리를 둔다 — 하단 탭바</Cap>
+          <Cap>가장자리에 테두리를 둔다 — 사이드바의 오른쪽 선 · 떠 있는 탭 바의 안쪽 테두리</Cap>
         </div>
       </div>
     </Figure>

@@ -4,6 +4,7 @@
  *
  * REGION · ROOT · ICON · TONE_COLOR · CONTENT · MESSAGE · ACTION · CLOSE 는 recipes/shadcn/components/ui/snackbar.tsx 의
  * 상수(REGION · ROOT · ICON · TONE_ICON 의 color · CONTENT · MESSAGE · ACTION · CLOSE)와 글자 하나까지 같아야 한다 — 두 파일을 함께 고친다.
+ * 피할 자리의 탭 바 BN_* 는 bottom-navigation.tsx(bottom-navigation-examples.mjs)의 것과 같다 — 떠 있는 알약(펼침 66 · 화면 끝 14).
  * 규칙은 specs/components/snackbar.md, 수치 원본은 specs/components/snackbar.yaml.
  *
  * Preview 는 정적 HTML 이다 — 페이지의 Tailwind v4 browser CDN 이 클래스를 utility 로 만든다.
@@ -12,8 +13,8 @@
  * (positive · critical 에만) · 글과 액션 <div data-slot="snackbar-content"> > 글 <span data-slot="snackbar-message"> · 액션
  * <button data-slot="snackbar-action">, 끝에 보조 기술용 닫기 <button data-slot="snackbar-close" aria-label="닫기">.
  * 자리는 레시피에서 화면(viewport) 아래에 붙는 fixed 다 — 미리보기는 틀 안에 그리려고 style 로 position:absolute 를 덧칠한다(레시피에는 없는
- * 미리보기용 덧칠). --snackbar-avoid 는 레시피가 SnackbarAvoidOverlap 으로 감싼 요소를 재서 자리의 style 에 넣는 값이다 — 미리보기는 탭 바
- * 높이(56)를 그대로 적었다. 띠의 data-state="open" 애니메이션(tw-animate-css)은 미리보기에 없다.
+ * 미리보기용 덧칠 — 탭 바도 같다). --snackbar-avoid 는 레시피가 SnackbarAvoidOverlap 으로 감싼 요소를 재서 자리의 style 에 넣는 값이다 —
+ * 미리보기는 탭 바의 위 끝 80(아래 14 + 높이 66)을 그대로 적었다. 띠의 data-state="open" 애니메이션(tw-animate-css)은 미리보기에 없다.
  * 레시피의 스크립트(4초 · 6초 · 머무는 동안 멈춤 · 바꾸기 · 누르는 순간 --press-basis 재기 · 닫기)는 정적 HTML 에 없다 — 띠는 그대로 남고,
  * 액션 · 닫기를 눌러도 닫히지 않는다. 닫기는 Tab 으로 초점을 옮기면 띠 오른쪽 끝에 보인다.
  * 아이콘은 lucide-react 와 같은 모양의 inline SVG 다(lucide 의 class · xmlns 는 그리지 않는다).
@@ -68,6 +69,41 @@ const CLOSE = [
   "focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-fg-neutral-inverted",
 ].join(" ");
 
+// ── bottom-navigation.tsx 의 상수 · JSX 클래스와 같은 값 — 피할 자리의 탭 바(펼침) ──
+
+const BN_ROOT = [
+  "fixed z-(--z-sticky) mx-auto grid max-w-[480px] grid-cols-5 gap-[2px] rounded-full bg-bg-layer-floating font-sans",
+  "shadow-[var(--shadow-s3),inset_0_0_0_1px_var(--color-stroke-neutral-subtle)]",
+  "[transition:height_var(--motion-duration-d4)_var(--motion-ease-easing),left_var(--motion-duration-d4)_var(--motion-ease-easing),right_var(--motion-duration-d4)_var(--motion-ease-easing),bottom_var(--motion-duration-d4)_var(--motion-ease-easing),padding_var(--motion-duration-d4)_var(--motion-ease-easing)]",
+  "motion-reduce:transition-none",
+].join(" ");
+const BN_ROOT_REGULAR = [
+  "h-[66px] px-x2_5 py-x1_5",
+  "left-[calc(var(--spacing-x3_5)+env(safe-area-inset-left))] right-[calc(var(--spacing-x3_5)+env(safe-area-inset-right))]",
+  "bottom-[max(14px,calc(env(safe-area-inset-bottom)-6px))]",
+].join(" ");
+const BN_ITEM = [
+  "relative flex h-full min-w-0 cursor-pointer flex-col items-center justify-center gap-[2px] rounded-r3 no-underline",
+  "[&_svg]:size-6 [&_svg]:shrink-0",
+  "[transition:scale_var(--motion-duration-pressed-scale)_var(--motion-ease-pressed-scale)]",
+  "active:[scale:calc(1-2/var(--press-basis,54))] motion-reduce:active:[scale:1]",
+  "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-stroke-focus-ring",
+].join(" ");
+const BN_ITEM_CURRENT = "text-fg-neutral [&_svg]:[stroke-width:2.5]";
+const BN_ITEM_OTHER = "text-fg-neutral-subtle [&_svg]:[stroke-width:2]";
+const BN_LABEL = "block max-w-full truncate whitespace-nowrap text-t1-static font-medium";
+const BN_ADD = "group/bottom-navigation-add relative flex h-full min-w-0 cursor-pointer items-center justify-center border-0 bg-transparent p-0 outline-none";
+const BN_ADD_CIRCLE = [
+  "flex shrink-0 items-center justify-center rounded-full bg-bg-brand-solid text-static-white [&_svg]:shrink-0 [&_svg]:[stroke-width:2.5]",
+  "[transition:background-color_var(--motion-duration-pressed-scale)_var(--motion-ease-pressed-scale),scale_var(--motion-duration-pressed-scale)_var(--motion-ease-pressed-scale),width_var(--motion-duration-d4)_var(--motion-ease-easing),height_var(--motion-duration-d4)_var(--motion-ease-easing)]",
+  "motion-reduce:[transition:background-color_var(--motion-duration-pressed-scale)_var(--motion-ease-pressed-scale)]",
+  "group-active/bottom-navigation-add:bg-bg-brand-solid-pressed group-active/bottom-navigation-add:[scale:calc(1-2/var(--add-basis))] motion-reduce:group-active/bottom-navigation-add:[scale:1]",
+  "group-focus-visible/bottom-navigation-add:outline-2 group-focus-visible/bottom-navigation-add:outline-offset-2 group-focus-visible/bottom-navigation-add:outline-stroke-focus-ring",
+].join(" ");
+const BN_ADD_CIRCLE_SIZE = { regular: "size-11 [--add-basis:44] [&_svg]:size-6" };
+// 칸의 아이콘을 감싼 대상 — notification-badge.tsx 의 TARGET
+const NB_TARGET = "relative inline-flex";
+
 // ── 미리보기 조각 ─────────────────────────────────────────────────────────
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -81,9 +117,10 @@ const PATHS = {
   circleAlert: '<circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/>',
   x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
   house: '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
-  receiptText: '<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M14 8H8"/><path d="M16 12H8"/><path d="M13 16H8"/>',
-  wallet: '<path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>',
-  chartPie: '<path d="M21 12c.552 0 1.005-.449.95-.998a10 10 0 0 0-8.953-8.951c-.55-.055-.998.398-.998.95v8a1 1 0 0 0 1 1z"/><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/>',
+  clipboardList: '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/>',
+  calendarDays: '<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/>',
+  menu: '<line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/>',
+  plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
 };
 
 // <SnackbarItem> — snackbar.tsx 그대로(떠 있는 띠 — data-state="open" · tabindex 0). 아이콘은 cn(ICON, color) — 지워지는 클래스가 없다.
@@ -101,7 +138,7 @@ const region = (children, avoid = 0) =>
 
 // 폰 화면처럼 — 폭 360 · 흰 표면, 자리가 이 안에 붙도록 position:relative · 쌓임 맥락(isolation)을 둔다
 const SCREEN =
-  "position:relative; isolation:isolate; overflow:hidden; max-width:360px; height:248px; background:var(--color-bg-layer-default); border:1px solid var(--color-stroke-neutral-subtle); border-radius:var(--radius-r4); font-family:var(--font-sans);";
+  "position:relative; isolation:isolate; overflow:hidden; max-width:360px; background:var(--color-bg-layer-default); border:1px solid var(--color-stroke-neutral-subtle); border-radius:var(--radius-r4); font-family:var(--font-sans);";
 const HEAD =
   "padding:var(--spacing-x5) var(--spacing-global-gutter) var(--spacing-x2); font-size:var(--text-t7); line-height:var(--text-t7--line-height); font-weight:700; color:var(--color-fg-neutral);";
 const ROW =
@@ -114,15 +151,17 @@ const LEDGER = [
 ];
 const ledger = () =>
   `<div style="${HEAD}">가계부</div>${LEDGER.map(([title, detail, amount]) => `<div style="${ROW}"><span>${title}<br><span style="${ROW_DETAIL}">${detail}</span></span><span style="font-weight:700;">${amount}</span></div>`).join("")}`;
-const screen = (inner) => `<div style="${SCREEN}">${inner}</div>`;
-// 탭 바(56) — 미리보기 틀이다. 레시피에서는 이 요소를 SnackbarAvoidOverlap 으로 감싼다
-const TABBAR =
-  "position:absolute; right:0; bottom:0; left:0; display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); height:56px; background:var(--color-bg-layer-default); box-shadow:inset 0 1px 0 var(--color-stroke-neutral-subtle);";
-const TAB = "display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; font-size:var(--text-t1); line-height:var(--text-t1--line-height); color:var(--color-fg-neutral-subtle);";
+const screen = (inner, height = 248) => `<div style="${SCREEN} height:${height}px;">${inner}</div>`;
+// 탭 바 — Bottom Navigation 의 떠 있는 알약(펼침 · 지금 탭 가계부). 레시피에서는 이 바를 SnackbarAvoidOverlap 으로 감싼다.
+// fixed 를 틀 안의 absolute 로 바꾸는 것만 미리보기용 덧칠이고, 링크 주소는 # 이다(눌러도 문서를 떠나지 않게)
+const TABS = [["house", "홈"], ["clipboardList", "가계부"], null, ["calendarDays", "캘린더"], ["menu", "전체"]];
 const tabbar = () =>
-  `<div style="${TABBAR}">${[["house", "홈"], ["receiptText", "가계부"], ["wallet", "자산"], ["chartPie", "통계"]]
-    .map(([icon, label], i) => `<span style="${TAB}${i === 1 ? " color:var(--color-fg-neutral);" : ""}">${svg(PATHS[icon], ' style="width:22px; height:22px;"')}<span>${label}</span></span>`)
-    .join("")}</div>`;
+  `<nav aria-label="주 메뉴" data-slot="bottom-navigation" class="${BN_ROOT} ${BN_ROOT_REGULAR}" style="position:absolute;">${TABS.map((t) => {
+    if (!t) return `<button type="button" data-slot="bottom-navigation-add" class="${BN_ADD}" aria-label="거래 추가"><span aria-hidden="true" data-slot="bottom-navigation-add-circle" class="${BN_ADD_CIRCLE} ${BN_ADD_CIRCLE_SIZE.regular}">${svg(PATHS.plus)}</span></button>`;
+    const [icon, label] = t;
+    const current = label === "가계부";
+    return `<a href="#"${current ? ' aria-current="page"' : ""} data-slot="bottom-navigation-item"${current ? ' data-current="true"' : ""} class="${BN_ITEM} ${current ? BN_ITEM_CURRENT : BN_ITEM_OTHER}"><span aria-hidden="true" data-slot="notification-badge-target" class="${NB_TARGET}">${svg(PATHS[icon])}</span><span data-slot="bottom-navigation-label" class="${BN_LABEL}">${label}</span></a>`;
+  }).join("")}</nav>`;
 // 나란히 — 칸 사이 16 · 줄 사이 24, 좁으면 한 줄에 하나
 const grid = (items) =>
   `<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:var(--spacing-x6) var(--spacing-x4); align-items:start;">${items.join("")}</div>`;
@@ -166,7 +205,7 @@ snackbar.show({ tone: "critical", message: "관심 종목에 넣지 못했어요
   {
     title: "피할 자리 — 탭 바 · 바닥 버튼",
     description:
-      "탭 바 · 바닥 버튼 · 플로팅 버튼처럼 화면 아래에 붙은 것은 SnackbarAvoidOverlap 으로 감싼다 — 감싼 요소들 중 가장 위 요소의 윗변 + 8 에 띠가 선다(바닥 안전 영역보다 높을 때). 레시피가 감싼 요소를 재서 자리의 --snackbar-avoid 로 넘기고, 붙고 · 떨어지고 · 크기가 바뀌고 · 창 크기가 바뀌고 · 새 띠가 뜰 때 다시 잰다(옮겨 갈 때 200ms). 미리보기는 탭 바 높이 56 을 적었다. 자리는 body 끝 · z L6(400)이라 시트 · 대화상자 위에 뜨고, 띠 누름이 열린 시트의 바깥 누름으로 잡히지 않는다 — 다만 시트 · 대화상자 안에서 한 일의 결과는 그 안 Callout 으로 알리고 스낵바는 닫힌 뒤에 띄운다.",
+      "탭 바(Bottom Navigation) · 바닥 버튼 · 떠 있는 버튼(Floating Action Button)처럼 화면 아래에 붙은 것은 SnackbarAvoidOverlap 으로 감싼다 — 감싼 요소들 중 가장 위 요소의 윗변 + 8 에 띠가 선다(바닥 안전 영역보다 높을 때). 레시피가 감싼 요소를 재서 자리의 --snackbar-avoid 로 넘기고, 붙고 · 떨어지고 · 크기가 바뀌고 · 창 크기가 바뀌고 · 새 띠가 뜰 때 다시 잰다(옮겨 갈 때 200ms). 미리보기는 떠 있는 탭 바의 위 끝 80(아래 14 + 높이 66)을 적었다 — 바가 줄어들면(48) 띠도 따라 내려간다. 자리는 body 끝 · z L6(400)이라 시트 · 대화상자 위에 뜨고, 띠 누름이 열린 시트의 바깥 누름으로 잡히지 않는다 — 다만 시트 · 대화상자 안에서 한 일의 결과는 그 안 Callout 으로 알리고 스낵바는 닫힌 뒤에 띄운다.",
     jsx: `import { SnackbarAvoidOverlap, SnackbarProvider } from "@/components/ui/snackbar"
 
 <SnackbarProvider>
@@ -175,6 +214,6 @@ snackbar.show({ tone: "critical", message: "관심 종목에 넣지 못했어요
     <TabBar />
   </SnackbarAvoidOverlap>
 </SnackbarProvider>`,
-    render: () => screen(`${ledger()}${region(snackbar({ message: "거래를 저장했어요." }), 56)}${tabbar()}`),
+    render: () => screen(`${ledger()}${region(snackbar({ message: "거래를 저장했어요." }), 80)}${tabbar()}`, 300),
   },
 ];

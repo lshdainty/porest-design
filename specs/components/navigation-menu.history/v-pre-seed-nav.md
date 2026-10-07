@@ -57,21 +57,21 @@ header bar:
 
 Navigation Menu는 **size variant 없음** — Trigger height 고정 `h-10` (40px). 큰 화면 권장(데스크탑 친화), 모바일은 [`Sheet`](sheet.md) `side="left"` 햄버거 nav로 fallback.
 
-[표: 공통](navigation-menu.yaml#base)
+[표: 공통](v-pre-seed-nav.yaml#base)
 
-[표: Trigger 패턴별](navigation-menu.yaml#pattern)
+[표: Trigger 패턴별](v-pre-seed-nav.yaml#pattern)
 
-[표: 전환](navigation-menu.yaml#motion)
+[표: 전환](v-pre-seed-nav.yaml#motion)
 
 ## States
 
 ### Trigger / Link
 
-[표: Trigger / Link 상태](navigation-menu.yaml#matrix.part.trigger)
+[표: Trigger / Link 상태](v-pre-seed-nav.yaml#matrix.part.trigger)
 
 ### Card link (Viewport 내)
 
-[표: 상태별로 바뀌는 값 — Trigger / Link · Card link](navigation-menu.yaml#states.part)
+[표: 상태별로 바뀌는 값 — Trigger / Link · Card link](v-pre-seed-nav.yaml#states.part)
 
 ## Layout (한국 도메인 패턴)
 

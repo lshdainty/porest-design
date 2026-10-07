@@ -54,15 +54,15 @@ right side example:
 
 Sheet은 **size variant 없음** — 단일 spec. 사용처 className으로 폭(`sm:max-w-md`/`sm:max-w-lg` 등) 조정.
 
-[표: 크기와 모양](sheet.yaml#base.closed)
+[표: 크기와 모양](v-pre-seed-nav.yaml#base.closed)
 
-[표: right/left 패널 너비](sheet.yaml#viewport)
+[표: right/left 패널 너비](v-pre-seed-nav.yaml#viewport)
 
-[표: 여닫는 시간](sheet.yaml#motion)
+[표: 여닫는 시간](v-pre-seed-nav.yaml#motion)
 
 ## States
 
-[표: 상태](sheet.yaml#matrix)
+[표: 상태](v-pre-seed-nav.yaml#matrix)
 
 motion: `transition ease-in-out` + Radix `data-state` driven.
 

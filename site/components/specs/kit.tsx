@@ -1,9 +1,13 @@
 // 컴포넌트 페이지의 화면 예시 조각 — Desk · HR 화면을 실제 크기로 그린다(SEED 가이드의 앱 화면 그림 자리).
 // 색은 역할 색(DESIGN*.md)에서, 글자 크기는 화면 예시라 그림 안에서 정한다(컴포넌트 자체의 값은 YAML 에서 온다).
 import { Fragment, type CSSProperties, type ReactNode } from 'react';
-import { ChevronLeft, ChevronRight, House, Wallet, CalendarDays, NotebookPen, Menu, Signal, Wifi, BatteryFull } from 'lucide-react';
+import { ChevronRight, Signal, Wifi, BatteryFull } from 'lucide-react';
 import { color, design, type Brand } from '@/lib/design-tokens';
 import { buttonLook } from './button-look';
+import { DESK_TABS, addLabelFor, tabForTitle } from './nav-data';
+import { navKit } from './nav-look';
+import { tabBottom, type TabSize } from './nav-shared';
+import { TabBar as NavTabBar, TopNavBar } from './nav-view';
 import { overlayLook } from './overlay-look';
 import { AlertSurface, DialogSurface, DimView, SheetSurface } from './overlay-view';
 import { textFieldLook } from './text-field-look';
@@ -27,13 +31,16 @@ export const PHONE_W = 360;
 // 기기 틀 두께 — 틀은 화면 안쪽으로 그린다(screenW 를 주면 바깥으로 — 화면 폭이 그 값이 된다)
 const FRAME = 8;
 
-// 휴대폰 화면 — 상태 막대 · 앱 막대 · 본문 · 아래 고정 영역. scale 로 줄여 그린다(나란히 둘 때).
+// 휴대폰 화면 — 상태 막대 · 상단 바(Top Navigation) · 본문 · 아래 고정 영역 · 하단 탭 바(Bottom Navigation). scale 로 줄여 그린다(나란히 둘 때).
 // screenW 를 주면 틀 안 화면이 정확히 그 폭이다(스펙의 "360 폰" 수치를 그대로 재야 하는 그림)
+// title 을 주면 상단 바다 — back 이면 ← + 제목(standard), 아니면 탭 첫 화면의 큰 제목(root). bar 를 주면 그것을 그대로 그린다.
+// tabs 면 떠 있는 탭 바(홈 · 가계부 · + · 캘린더 · 전체) — 본문은 바 위 끝에서 끝난다(그림은 바 아래를 비운다). 지금 탭은 tab, 없으면 제목으로 고른다
 export function Phone({
   children,
   title,
   back = true,
   right,
+  bar,
   bottom,
   overlay,
   mode = 'auto',
@@ -41,12 +48,17 @@ export function Phone({
   scale = 1,
   bg = 'bg-layer-basement',
   tabs = false,
+  tab,
+  tabSize = 'regular',
+  safe = 0,
   screenW,
+  brand = 'desk',
 }: {
   children?: ReactNode;
   title?: string;
   back?: boolean;
   right?: ReactNode;
+  bar?: ReactNode;
   bottom?: ReactNode;
   overlay?: ReactNode;
   mode?: Mode;
@@ -54,8 +66,14 @@ export function Phone({
   scale?: number;
   bg?: string;
   tabs?: boolean;
+  tab?: string;
+  tabSize?: TabSize;
+  // 아래 안전 영역(홈 표시줄) — 탭 바의 아래 자리
+  safe?: number;
   screenW?: number;
+  brand?: Brand;
 }) {
+  const nk = navKit(brand === 'hr' ? 'hr' : 'desk');
   const fg = rc('fg-neutral', mode);
   const w = screenW ? screenW + FRAME * 2 : PHONE_W;
   return (
@@ -82,42 +100,27 @@ export function Phone({
             <BatteryFull size={16} />
           </span>
         </div>
-        {title !== undefined && (
-          <div className="flex h-12 shrink-0 items-center gap-1 px-3" style={{ background: rc('bg-layer-default', mode) }}>
-            {back ? <ChevronLeft size={24} strokeWidth={2} /> : <span className="w-2" />}
-            <span className="flex-1 truncate text-[17px] font-bold">{title}</span>
-            {right}
-          </div>
-        )}
+        {bar ?? (title !== undefined && <TopNavBar look={nk.top} mode={mode} type={back ? 'standard' : 'root'} title={title} trailing={right} />)}
         <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">{children}</div>
         {bottom && (
           <div className="shrink-0 px-6 pb-7 pt-3" style={{ background: rc('bg-layer-default', mode) }}>
             {bottom}
           </div>
         )}
-        {tabs && <TabBar mode={mode} />}
+        {tabs && <TabZone mode={mode} tab={tab ?? tabForTitle(title)} size={tabSize} safe={safe} brand={brand === 'hr' ? 'hr' : 'desk'} />}
         {overlay}
       </div>
     </div>
   );
 }
 
-function TabBar({ mode }: { mode: Mode }) {
-  const items: [typeof House, string][] = [
-    [House, '홈'],
-    [Wallet, '가계부'],
-    [CalendarDays, '캘린더'],
-    [NotebookPen, '메모'],
-    [Menu, '전체'],
-  ];
+// 떠 있는 탭 바 자리 — 본문은 바 위 끝에서 끝나고(본문 아래 여백 — 끝까지 내린 목록), 바는 그 아래 떠 있다(Bottom Navigation)
+export function TabZone({ mode = 'auto', tab = 'home', size = 'regular', safe = 0, brand = 'desk' }: { mode?: Mode; tab?: string; size?: TabSize; safe?: number; brand?: 'desk' | 'hr' }) {
+  const look = navKit(brand).tab;
+  const zoneH = tabBottom(look, 'regular', safe) + look.sizes.regular.h;
   return (
-    <div className="flex shrink-0 justify-around border-t px-2 pb-6 pt-2" style={{ background: rc('bg-layer-default', mode), borderColor: rc('stroke-neutral-weak', mode) }}>
-      {items.map(([I, t], i) => (
-        <span key={t} className="flex flex-col items-center gap-0.5 text-[10px] font-medium" style={{ color: rc(i === 0 ? 'fg-neutral' : 'fg-neutral-subtle', mode) }}>
-          <I size={22} strokeWidth={2} />
-          {t}
-        </span>
-      ))}
+    <div className="relative shrink-0" style={{ height: zoneH, isolation: 'isolate' }}>
+      <NavTabBar look={look} mode={mode} items={DESK_TABS} current={tab} addLabel={addLabelFor(tab)} size={size} safe={safe} />
     </div>
   );
 }
@@ -254,9 +257,10 @@ export function WebWindow({ children, mode = 'auto', w = 640, h = 380, url = 'de
     <div className="shrink-0 overflow-hidden rounded-xl border border-black/10 shadow-sm" style={{ width: w, height: h, background: rc('bg-layer-basement', mode) }}>
       <div className="flex h-8 items-center gap-1.5 px-3" style={{ background: deco(mode, 'chrome') }}>
         {['#FF5F57', '#FEBC2E', '#28C840'].map((c) => (
-          <span key={c} className="block h-2.5 w-2.5 rounded-full" style={{ background: c }} />
+          <span key={c} className="block h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: c }} />
         ))}
-        <span className="ml-3 rounded px-3 text-[11px] leading-5" style={{ background: deco(mode, 'chrome-url'), color: '#8A91A0' }}>
+        {/* 좁은 창에서는 점이 아니라 주소가 줄어든다 */}
+        <span className="ml-3 min-w-0 truncate rounded px-3 text-[11px] leading-5" style={{ background: deco(mode, 'chrome-url'), color: '#8A91A0' }}>
           {url}
         </span>
       </div>

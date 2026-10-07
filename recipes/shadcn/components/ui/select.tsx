@@ -27,7 +27,8 @@ import { inputButtonSurfaceVariants, inputButtonVariants } from "@/components/ui
  * 트리거 앞 아이콘: 하나를 골랐고 그 선택지에 아이콘이 있으면 그 아이콘, 아니면 Select 의 prefixIcon.
  *
  * 목록은 트리거 폭 그대로 아래 8(모자라면 위)에 붙고 화면 가장자리와 8 을 둔다. 높이는 min(480, 남은 화면) — 남은 화면이
- * 200 보다 좁아도 200 은 둔다. 열면 DOM 포커스가 목록으로 가고 짚은 선택지는 aria-activedescendant 로 알린다.
+ * 200 보다 좁아도 200 은 둔다. listMaxHeight 를 주면 480 대신 그 값이다(Table Pagination 의 범위 목록 240 — SEED).
+ * 열면 DOM 포커스가 목록으로 가고 짚은 선택지는 aria-activedescendant 로 알린다.
  * 포인터로 열면 짚지 않고 고른 선택지가 보이게 스크롤만, 키(↓ ↑ Enter Space)로 열면 고른 선택지(없으면 첫 선택지)를 짚는다.
  * 짚은 선택지 · 누르는 선택지는 좌우 8 들인 알약(SEED 그대로 — 키보드 위치도 같은 알약), 누르는 동안만 콘텐츠가 준다.
  * 마우스는 호버로 짚고, 터치는 짚지 않는다(손가락 아래 미리 칠한 알약은 눌린 채 멈춘 것처럼 보인다 — SEED).
@@ -90,9 +91,9 @@ const CONTENT = [
   "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:duration-[var(--motion-duration-d2)] data-[state=closed]:ease-[var(--motion-ease-exit)] motion-safe:data-[state=closed]:zoom-out-95",
 ].join(" ");
 
-// 스크롤 자리 — 위아래 8 · 묶음 사이 8. 높이는 min(480, max(200, 남은 화면)) — 자리를 재기 전에는 480
+// 스크롤 자리 — 위아래 8 · 묶음 사이 8. 높이는 min(480, max(200, 남은 화면)) — 자리를 재기 전에는 480. 480 은 listMaxHeight 가 바꾼다
 const SCROLL =
-  "relative flex max-h-[min(480px,max(200px,var(--radix-popover-content-available-height,480px)))] flex-col gap-x2 overflow-y-auto py-x2";
+  "relative flex max-h-[min(var(--select-list-max-height,480px),max(200px,var(--radix-popover-content-available-height,480px)))] flex-col gap-x2 overflow-y-auto py-x2";
 
 // 묶음 — 둘째 묶음부터 위에 1px 선(좌우 16 들임 · 아래 8). 위쪽 8 은 스크롤 자리의 gap — 묶음 사이 8 + 1 + 8 = 17
 const GROUP =
@@ -241,6 +242,8 @@ type SelectBaseProps = {
   disabled?: boolean;
   /** 읽기 전용 — 포커스는 되고 열리지 않는다 */
   readOnly?: boolean;
+  /** 열린 목록의 최대 높이 px — 기본 480. Table Pagination 의 범위 목록만 240(SEED)을 준다 */
+  listMaxHeight?: number;
   /** 트리거(button)의 className */
   className?: string;
   children: React.ReactNode;
@@ -272,7 +275,7 @@ export type SelectProps = SelectSingleProps | SelectMultipleProps;
 type Highlight = { value: string; keyboard: boolean } | null;
 
 const Select = React.forwardRef<HTMLButtonElement, SelectProps>((props, ref) => {
-  const { placeholder, prefixIcon, size = "responsive", open: openProp, defaultOpen = false, onOpenChange, formatValue, name, className, children } = props;
+  const { placeholder, prefixIcon, size = "responsive", open: openProp, defaultOpen = false, onOpenChange, formatValue, name, className, listMaxHeight, children } = props;
   const multiple = props.multiple === true;
   const sizes = SIZES[size];
   const field = useField();
@@ -574,6 +577,7 @@ const Select = React.forwardRef<HTMLButtonElement, SelectProps>((props, ref) => 
           sideOffset={8}
           collisionPadding={8}
           className={CONTENT}
+          style={listMaxHeight != null ? ({ "--select-list-max-height": `${listMaxHeight}px` } as React.CSSProperties) : undefined}
           onOpenAutoFocus={(e) => {
             // 목록에 포커스 — 짚은 선택지(키로 열었을 때)나 고른 선택지가 보이게 한 프레임 뒤 스크롤한다(자리를 잰 뒤)
             e.preventDefault();

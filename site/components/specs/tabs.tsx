@@ -16,6 +16,7 @@ import { APPROVAL, BROKER_TABS, CATEGORY_TABS, LEAVE_TABS, MINE, MONTHS, SCREEN_
 import { HideAmountsDemo, LeaveDemo, StatsDemo, StocksDemo, TabsDemoFrame } from './tabs-demos';
 import { chipTabsLook, tabsLook, TABS_STATES, type TabItem, type TabsLook, type TabsState } from './tabs-look';
 import { TabsPlayground } from './tabs-playground';
+import { LedgerScreen as MoneyScreen } from './nav-screens';
 import { ChipTabLabel, ChipTabsView, LineTabsView, type ChipTabsViewProps, type LineTabsViewProps } from './tabs-view';
 
 type Fig = (p: { caption?: string }) => ReactNode;
@@ -647,6 +648,20 @@ const RoleGuide: Fig = ({ caption }) => (
   </Panel>
 );
 
+// 폰 가계부 — 탭 바보다 더 나눌 때는 화면 위 1차 Line(Fill · medium). 탭 바(Bottom Navigation)는 어느 화면에서나 그대로
+const MoneyGuide: Fig = ({ caption }) => (
+  <Panel caption={caption}>
+    <Pair>
+      <Verdict ok note="가계부 — 상단 바 바로 아래 Line 넷(가계부 · 자산 · 통계 · 예산), 탭 바는 홈 · 가계부 · + · 캘린더 · 전체 그대로">
+        <MoneyScreen scale={0.46} h={600} value="ledger" />
+      </Verdict>
+      <Verdict ok note="자산을 골라도 탭 바는 바뀌지 않는다 — 지금 탭은 가계부, 캘린더 · 전체로 한 번에 간다">
+        <MoneyScreen scale={0.46} h={600} value="assets" />
+      </Verdict>
+    </Pair>
+  </Panel>
+);
+
 // 두 단 — 1차 Line · 2차 Chip Tabs, 필터 바(거르는 칩)가 있으면 2차도 Line
 function FilterChips({ mode = 'auto' }: { mode?: Mode }) {
   const chip = chipLook();
@@ -872,6 +887,7 @@ export const tabsFigures: Record<string, Fig> = {
   states: States,
   'chip-tabs': ChipTabsFig,
   'role-guide': RoleGuide,
+  'money-guide': MoneyGuide,
   'two-tier-guide': TwoTierGuide,
   'fill-hug-guide': FillHugGuide,
   'label-guide': LabelGuide,

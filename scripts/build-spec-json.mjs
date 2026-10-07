@@ -36,6 +36,7 @@ import {
   parseMotion,
   parseOverlay,
   parseGradients,
+  parseLayout,
 } from "./lib/design-md.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -61,6 +62,7 @@ const shadows = parseShadows(content);
 const motion = parseMotion(content);
 const overlays = parseOverlay(content);
 const gradients = parseGradients(content);
+const layouts = parseLayout(content);
 
 // 다크 값 — 짝(-dark)이 있으면 그 값, 짝이 없는 옛 이름은 가리키는 이름의 다크 값(CSS 다크 블록과 같은 규칙).
 function colorFor(name, mode, where) {
@@ -85,7 +87,7 @@ function token(raw, mode, where) {
     const hex = hexUpper(colorFor(color[1], mode, where));
     return color[2] ? hex + alphaHex(Number(color[2])) : hex;
   }
-  const m = /^\$(spacing|radius|text|font|motion|shadow|overlay|gradient)-(.+)$/.exec(v);
+  const m = /^\$(spacing|radius|text|font|motion|shadow|overlay|gradient|layout)-(.+)$/.exec(v);
   if (!m) throw new Error(`${where}: 풀 수 없는 토큰 ${v}`);
   const [, group, key] = m;
   const paired = (table, name) => (mode === "dark" && table[`${name}-dark`] !== undefined ? table[`${name}-dark`] : table[name]);
@@ -119,6 +121,10 @@ function token(raw, mode, where) {
     case "gradient":
       if (gradients[`gradient-${key}`] === undefined) break;
       return paired(gradients, `gradient-${key}`);
+    case "layout":
+      // v101 레이아웃 prose 토큰(사이드바 폭 · 본문 여백 …) — Side Navigation · Top Navigation 이 쓴다
+      if (layouts[`layout-${key}`] === undefined) break;
+      return pxNumber(layouts[`layout-${key}`]) ?? layouts[`layout-${key}`];
   }
   throw new Error(`${where}: 토큰 ${v} 이 ${design.file} 에 없다`);
 }

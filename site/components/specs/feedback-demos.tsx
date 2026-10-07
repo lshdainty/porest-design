@@ -3,13 +3,16 @@
 // 띠 · 상자 · 결과는 YAML 대로(feedback-view), 칸 · Field 는 field · input.yaml(text-field-view), 버튼은 button.yaml(button-view) 그대로다.
 // 화면 틀(폰 폭 360 · 머리 · 탭 바)은 그림 장식이라 역할 색으로 간단히 그린다. 미리보기 밖의 조작 버튼은 사이트 모양이다(제품 화면이 아니다).
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
-import { CalendarDays, ChevronLeft, House, Menu, NotebookPen, Trash2, Wallet } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import type { ButtonLook } from './button-look';
 import { ButtonView } from './button-view';
 import { FONT, fcv, ms, type CalloutLook, type FbScreen, type FbScreenTone, type PageBannerLook, type ResultSectionLook, type SnackbarLook, type ViewMode } from './feedback-shared';
 import { CalloutView, PageBannerView, ResultSectionView, SnackbarRegion, useSnackbarHost, type SnackbarHost } from './feedback-view';
 import type { TfFieldLook, TfInputLook } from './text-field-shared';
 import { TfFieldView, TfInputView } from './text-field-view';
+import { DESK_TABS, addLabelFor } from './nav-data';
+import { tabBottom } from './nav-shared';
+import { TabBar, TopNavBar } from './nav-view';
 
 const c = (s: FbScreen, name: FbScreenTone, mode: ViewMode) => fcv(s[name], mode);
 
@@ -60,16 +63,8 @@ export function ScreenFrame({
     >
       {/* 화면 테두리 — 머리 · 아래 바탕이 덮지 않게 맨 위 층에 */}
       <span aria-hidden style={{ position: 'absolute', inset: 0, zIndex: 1000, borderRadius: 20, boxShadow: `inset 0 0 0 1px ${c(screen, 'stroke-neutral-subtle', mode)}`, pointerEvents: 'none' }} />
-      {title !== undefined && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0, height: 52, padding: onBack ? '0 12px 0 4px' : '0 24px', background: c(screen, 'bg-layer-default', mode) }}>
-          {onBack && (
-            <button type="button" aria-label="뒤로" onClick={onBack} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 44, height: 44, padding: 0, border: 0, background: 'transparent', color: 'inherit', cursor: 'pointer' }}>
-              <ChevronLeft aria-hidden size={24} strokeWidth={2} />
-            </button>
-          )}
-          <span style={{ fontSize: 17, lineHeight: '24px', fontWeight: 700 }}>{title}</span>
-        </div>
-      )}
+      {/* 머리 — Top Navigation(탭 첫 화면은 큰 제목, ← 가 있으면 그 아래 화면) */}
+      {title !== undefined && <TopNavBar look={screen.nav.top} mode={mode} type={onBack ? 'standard' : 'root'} title={title} live={!!onBack} onLeading={onBack} />}
       <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', flex: '1 1 auto', minHeight: 0, overflow: 'hidden' }}>{children}</div>
       {bottom}
       {overlay}
@@ -77,23 +72,13 @@ export function ScreenFrame({
   );
 }
 
-// 탭 바 — 장식(누르지 않는다)
-export function DemoTabBar({ screen, mode = 'auto' }: { screen: FbScreen; mode?: ViewMode }) {
-  const items: [typeof House, string][] = [
-    [House, '홈'],
-    [Wallet, '가계부'],
-    [CalendarDays, '캘린더'],
-    [NotebookPen, '메모'],
-    [Menu, '전체'],
-  ];
+// 탭 바 — Bottom Navigation 의 떠 있는 알약(홈 · 가계부 · + · 캘린더 · 전체). 장식(누르지 않는다).
+// 본문은 바 위 끝에서 끝난다 — 띠(스낵바)는 그 위 8 에 선다
+export function DemoTabBar({ screen, mode = 'auto', tab = 'ledger' }: { screen: FbScreen; mode?: ViewMode; tab?: string }) {
+  const look = screen.nav.tab;
   return (
-    <div aria-hidden style={{ display: 'flex', justifyContent: 'space-around', flexShrink: 0, padding: '8px 8px 20px', background: c(screen, 'bg-layer-default', mode), boxShadow: `inset 0 1px 0 ${c(screen, 'stroke-neutral-weak', mode)}` }}>
-      {items.map(([I, t], i) => (
-        <span key={t} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, fontSize: 10, lineHeight: '14px', fontWeight: 500, color: c(screen, i === 1 ? 'fg-neutral' : 'fg-neutral-subtle', mode) }}>
-          <I size={22} strokeWidth={2} />
-          {t}
-        </span>
-      ))}
+    <div style={{ position: 'relative', flexShrink: 0, height: tabBottom(look, 'regular', 0) + look.sizes.regular.h, isolation: 'isolate' }}>
+      <TabBar look={look} mode={mode} items={DESK_TABS} current={tab} addLabel={addLabelFor(tab)} />
     </div>
   );
 }
@@ -420,7 +405,7 @@ export function BannerDisplayDemo({ look, snack }: { look: PageBannerLook; snack
   const [connected, setConnected] = useState(false);
   return (
     <DemoStage controls={connected ? <DemoButton onClick={() => setConnected(false)}>연결 끊김 다시 보기</DemoButton> : undefined} note="띠는 페이지 머리 바로 아래 화면 폭 전체다. 다시 연결하면 띠를 걷고 결과는 스낵바로 알린다.">
-      <ScreenFrame screen={s} title="증권" height={440} bottom={<DemoTabBar screen={s} />}>
+      <ScreenFrame screen={s} title="증권" height={440} bottom={<DemoTabBar screen={s} tab="home" />}>
         {!connected && <PageBannerView look={look} tone="critical" title="연결 끊김" description="토스증권 키가 만료돼 시세를 받지 못해요." button={{ label: '다시 연결', onClick: () => (setConnected(true), host.show({ message: '토스증권을 다시 연결했어요.' })) }} />}
         <ul style={{ margin: 0, padding: '0 24px' }}>
           <DayLine screen={s} label={connected ? '방금 받은 시세' : '10월 1일 (목) 오후 3:30 시세'} />
@@ -559,7 +544,7 @@ export function ResultFailureDemo({ look }: { look: ResultSectionLook }) {
   };
   return (
     <DemoStage controls={phase === 'done' ? <DemoButton onClick={() => setPhase('failed')}>실패 다시 보기</DemoButton> : undefined} note="다시 시도를 누르면 버튼에 로딩이 걸리고, 불러오면 내용이 투명도로 바뀐다. 이미 보이던 내용이 있으면 지우지 않는다.">
-      <ScreenFrame screen={s} title="홈" height={440} bg="bg-layer-basement" bottom={<DemoTabBar screen={s} />}>
+      <ScreenFrame screen={s} title="홈" height={440} bg="bg-layer-basement" bottom={<DemoTabBar screen={s} tab="home" />}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '4px 16px 16px' }}>
           <section aria-label="최근 거래" style={{ display: 'flex', flexDirection: 'column', minHeight: 300, borderRadius: 16, background: c(s, 'bg-layer-default', 'auto'), padding: '16px 20px' }}>
             <span style={{ fontSize: 17, lineHeight: '24px', fontWeight: 700 }}>최근 거래</span>

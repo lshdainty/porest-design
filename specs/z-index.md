@@ -9,9 +9,9 @@ Porest 는 Bootstrap 식 **명시적 z-index 계층 분기** 정책을 채택. s
 | Layer | 토큰 | z-index | 컴포넌트 | 의미 |
 |---|---|---|---|---|
 | **L0 — base** | `z-base` | `auto` | 일반 콘텐츠 | document 기본 flow — 쌓임 맥락을 만들지 않는다 |
-| **L1 — page sticky/fixed** | `z-sticky` | `50` | sticky header, 하단 탭바, FAB(`speed-dial`) | 페이지 위 고정 UI |
-| **L2 — modal** | `z-modal` · `z-modal-content` | `100` · `101` | `dialog` / `bottom-sheet` / `menu-sheet` / `sheet` | modal layer — overlay + content 분리 |
-| **L3 — modal-aware floating** | `z-floating` | `200` | `popover` / `select` / `menu` / `color-picker` (popover 패턴) | page 와 modal 안 어디서든 사용. modal(L2) 위에 떠야 하므로 200. page 에서도 동일 값 — sticky/FAB(L1=50) 위 자연스러움 |
+| **L1 — page sticky/fixed** | `z-sticky` | `50` | `top-navigation`(상단 바 · 데스크톱 머리), `bottom-navigation`(하단 탭 바), `floating-action-button`, 스피드 다이얼 | 페이지 위 고정 UI |
+| **L2 — modal** | `z-modal` · `z-modal-content` | `100` · `101` | `dialog` / `bottom-sheet` / `menu-sheet` / `side-panel` | modal layer — overlay + content 분리 |
+| **L3 — modal-aware floating** | `z-floating` | `200` | `popover` / `select` / `menu` / `color-picker` (popover 패턴) / `side-navigation` 의 펼침 메뉴 | page 와 modal 안 어디서든 사용. modal(L2) 위에 떠야 하므로 200. page 에서도 동일 값 — sticky/FAB(L1=50) 위 자연스러움 |
 | **L4 — modal-aware tooltip** | `z-tooltip` | `210` | `help-bubble` · `tooltip` | popover 위에 살짝 떠야 함 (hover 잠깐 뜨고 사라지는 참고 정보) |
 | **L5 — alert-dialog** | `z-alert` · `z-alert-content` | `300` · `301` | `alert-dialog` | overlay + content 분리. 비가역 결정 강제. dialog(L2) 위로 명시 — dialog 안에서 삭제 확인 같은 alert 띄우는 케이스 보존 |
 | **L6 — snackbar** | `z-snackbar` | `400` | `snackbar` | 모든 시트 · 대화상자 · 확인창 위의 잠깐 알림(2026-10-02 — 옛 sonner 라이브러리 기본 99999+ 를 명시 값으로) |
@@ -21,6 +21,7 @@ Porest 는 Bootstrap 식 **명시적 z-index 계층 분기** 정책을 채택. s
 - 웹은 토큰 변수로 부른다 — CSS `z-index: var(--z-floating)`, Tailwind v4 `z-(--z-floating)`. 숫자 클래스(`z-[200]` · `z-50`)로 층을 적지 않는다.
 - 앱(Flutter)은 숫자 없이 같은 순서를 따른다 — 라우트 · 오버레이가 연 순서로 쌓이므로 위 차례가 되게 띄운다.
 - 한 컴포넌트 안에서 겹침을 정리하는 작은 값(`z-[1]` · `z-10`)은 층이 아니다 — 이 표 밖이다.
+- `side-navigation`(사이드바)은 층이 아니다 — 화면 틀의 한 칸이라 L0 이다. 접혔을 때 뜨는 펼침 메뉴 · 이름 말풍선만 L3 · L4 다.
 
 ## 의도된 stacking 시나리오
 
@@ -82,3 +83,4 @@ zIndex: { value: 200, note: "z-floating — specs/z-index.md L3" }
 
 - **v1: 최초 명시 (2026-05-15)** — 그동안 각 컴포넌트 spec 에 z-index 가 분산 명시되거나 누락된 상태였음. desk-front 가 모두 다른 값으로 분기(50/100/101/200/9999) 두고 있었는데 정합 기준이 없었음. Bootstrap 식 명시 계층 채택. shadcn 표준(모두 z-50 + portal order) 은 디버깅 어렵다고 판단 — 우리는 명시 분기.
 - **v2: 토큰이 원본 (2026-10-03, DESIGN.md v116)** — 층마다 토큰을 두고 이름을 층으로 붙였다(`z-sticky` · `z-modal` · `z-modal-content` · `z-floating` · `z-tooltip` · `z-alert` · `z-alert-content` · `z-snackbar` · `z-dev`, L0 은 `z-base` `auto`). 값은 이 표 그대로다. 그동안 DESIGN.md 의 v65 토큰(z-dropdown 1000 · z-drawer 1200 · z-toast 1400 …)은 이 표와 값이 달랐다(레시피는 이 표의 숫자를 따로 적었다) — 걷었다. 레시피의 `z-[100]` 같은 숫자 클래스는 `z-(--z-modal)` 로 바꿨다. 사용자 결정(2026-10-03 — 이 층 표를 정본으로, 새 토큰은 층 이름으로).
+- **v3: 화면 틀 · 이동 (2026-10-04)** — 옛 `sheet` 자리를 `side-panel`(Side Panel — 왼쪽 주 메뉴 · 오른쪽 패널)이 잇는다. L1 의 고정 UI 를 컴포넌트 이름으로 적었다 — `top-navigation` · `bottom-navigation` · `floating-action-button`(지금 제품의 웹 탭 바 40 · Fab 20 · 하위 머리 10 · 설정 하위 100 · HR SpeedDial 50 은 앱 적용 때 `z-sticky` 로). 값 · 토큰은 그대로다.

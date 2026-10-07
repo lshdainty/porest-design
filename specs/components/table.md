@@ -43,6 +43,7 @@ Porest Table은 **단일 spec × data table 패턴 가이드** 매트릭스로 �
 - status badge는 [`Badge`](badge.md) soft semantic 인용 — solid는 시각 무게 과잉. 같은 카테고리는 한 style 통일.
 - 모바일에선 column 일부 hide(`hidden md:table-cell`) 또는 카드 형식으로 fallback(table → list).
 - sticky header — `<thead className="sticky top-0 bg-surface-default z-10">` + 스크롤 wrapper 필요.
+- **표 아래 쪽 넘김은 [Table Pagination](table-pagination.md)**(2026-10-04) — 줄 수(10 · 25 · 50) · 범위 고르기 · 이전 · 다음 한 줄, 표 아래 12 에만. 좁은 화면에서는 표와 같은 가로 스크롤 상자 안에 둔다. 표가 아닌 목록의 넘김은 [Pagination](pagination.md) 이다.
 
 ## Variants
 

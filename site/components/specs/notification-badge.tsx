@@ -14,6 +14,8 @@ import { Cap } from './select-screens';
 import { tabsLook } from './tabs-look';
 import { LineTabsView } from './tabs-view';
 import { Verdict, rc, type Mode } from './kit';
+import { navKit } from './nav-look';
+import { TopIconButton } from './nav-view';
 
 type Fig = (p: { caption?: string }) => ReactNode;
 const nl = (brand: Brand = 'desk') => dk(brand).notif;
@@ -489,10 +491,11 @@ function CodeButton({ size, count, visible = true, label }: { size?: 'large'; co
     />
   );
 }
+// 상단 바의 알림 — Top Navigation 의 아이콘 버튼(상자 44 · 아이콘 24, top-navigation.yaml)이 점(small)을 붙인다 — md 코드의 TopNavigationIconButton
 const ExDot: Fig = ({ caption }) => (
   <Preview caption={caption} w={320}>
     <div className="flex justify-center">
-      <CodeButton label="알림, 새 알림 있음" />
+      <TopIconButton look={navKit().top} icon="bell" label="알림, 새 알림 있음" notification live />
     </div>
   </Preview>
 );

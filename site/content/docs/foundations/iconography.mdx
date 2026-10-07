@@ -5,7 +5,7 @@ source: DESIGN.md
 ---
 
 import { IconButtonFigure, IconGridFigure, IconSetFigure, IconSizeFigure, IconStateFigure, IconTextFigure } from '@/components/foundations/iconography';
-import { Note, SourceTable } from '@/components/foundations/ui';
+import { Note, SourceList, SourceTable } from '@/components/foundations/ui';
 
 아이콘은 복잡한 정보나 기능을 빠르게 알아보게 돕는 요소다. 뜻이 분명한 모양을 짧게, 어디서나 같은 굵기로 쓴다.
 
@@ -60,7 +60,8 @@ SEED 는 켜짐 · 선택을 채움 아이콘으로, 꺼짐을 선 + 사선으�
 
 - 한 줄에 둘 때는 높이 가운데로 맞추고, 사이는 간격 토큰으로 둔다.
 - 아이콘만으로 뜻이 모호하면 글자를 함께 쓴다.
-- 상단 내비게이션은 선 아이콘으로 두고, 하단 탭은 선택된 탭을 굵기 · 색으로 강조한다.
+
+<SourceList heading="글자와 함께" match="상단 내비게이션" />
 
 ---
 

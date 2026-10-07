@@ -35,7 +35,7 @@ Porest Breadcrumb은 **단일 size × 2 separator variants(chevron/slash) × ell
 
 ## Variants (separator)
 
-[표: separator](breadcrumb.yaml#separator)
+[표: separator](v-pre-seed-nav.yaml#separator)
 
 separator 자체는 디자인 취향 차이 — 두 variant 모두 spec 정합. 사용처(페이지/사이드바)에서 선택.
 
@@ -43,25 +43,25 @@ separator 자체는 디자인 취향 차이 — 두 variant 모두 spec 정합. 
 
 Breadcrumb은 **size variant 없음** — 단일 spec. dense 레이아웃에선 className으로 `text-caption` (12) override 가능(예: preview brand vignette).
 
-[표: 크기와 색](breadcrumb.yaml#base.enabled)
+[표: 크기와 색](v-pre-seed-nav.yaml#base.enabled)
 
-[표: 전환](breadcrumb.yaml#motion)
+[표: 전환](v-pre-seed-nav.yaml#motion)
 
 ## States
 
 ### Link
 
-[표: Link 상태](breadcrumb.yaml#matrix)
+[표: Link 상태](v-pre-seed-nav.yaml#matrix)
 
 ### Page (current, non-clickable)
 
-[표: Page](breadcrumb.yaml#base.enabled@page)
+[표: Page](v-pre-seed-nav.yaml#base.enabled@page)
 
 ### Separator / Ellipsis
 
-[표: Separator](breadcrumb.yaml#base.enabled@separator)
+[표: Separator](v-pre-seed-nav.yaml#base.enabled@separator)
 
-[표: Ellipsis](breadcrumb.yaml#base.enabled@ellipsis)
+[표: Ellipsis](v-pre-seed-nav.yaml#base.enabled@ellipsis)
 
 Ellipsis가 dropdown trigger일 땐 Link와 동일 hover/focus state 적용.
 

@@ -95,6 +95,14 @@
 
 [그림: 쓰임 — 구역 이동은 탭 · 같은 내용 조작은 Segmented · 폼 값을 탭으로](../../site/components/specs/tabs.tsx#role-guide)
 
+### 탭 바보다 더 나눌 때 — 화면 위 Line
+
+폰의 [Bottom Navigation](bottom-navigation.md) 은 다섯 칸이 어느 화면에서나 같다 — 더 나눌 구분은 탭 바 칸을 바꾸지 않고 그 탭 화면의 맨 위 1차 Line 으로 둔다(SEED Bottom Navigation — "더 많은 구분이 필요하다면 화면 상단에 Tabs 를 사용"). Desk 의 가계부 탭은 화면 위 Line 넷(가계부 · 자산 · 통계 · 예산 — Fill · `medium` 44)이다. 목록은 [Top Navigation](top-navigation.md) 바로 아래에 붙어 함께 고정되고(SEED Tabs `stickyList`), 웹은 고른 탭을 주소에 둔다(넷은 각자의 주소 — 바꿀 때 지금 주소를 고쳐 쓴다). 데스크톱(768 이상)에서는 넷이 [Side Navigation](side-navigation.md) 의 항목이라 이 탭 줄이 없다.
+
+그 안에서 다시 나누는 탭(통계의 카테고리 · 추이 · 비교)은 폰에서 2차가 되어 아래 "두 단" 규칙(2026-10-02)을 따른다 — 2차는 Chip Tabs 이고, 통계 화면에 필터 칩이 함께 있으면 Line 이다. 데스크톱에서는 1차 Line 그대로다. 앱 적용 때 통계 화면을 이 규칙에 맞춘다.
+
+[그림: 폰 가계부 — 상단 바 아래 Line 넷 · 탭 바는 그대로](../../site/components/specs/tabs.tsx#money-guide)
+
 ### 두 단 — 1차 Line · 2차 Chip Tabs
 
 탭 안에서 다시 나누면 1차는 Line, 2차는 Chip Tabs 로 둔다 — 두 단이 같은 모양이면 어느 줄이 큰 갈래인지 보이지 않는다. 화면에 필터 바(거르는 칩)가 함께 있으면 2차도 Line 으로 둔다 — Chip Tabs 와 필터 칩이 같은 모양이면 무엇이 탭인지 알 수 없다.
@@ -280,6 +288,10 @@ const tab = params.get("tab") ?? "category"
 - **웹은 1차 탭을 주소에 남긴다** — SEED 에 없는 규칙이다(사용자 결정 2026-10-02). 내용은 SEED 기본처럼 바로 바꾸고 상태를 남긴다.
 
 ## Migration notes
+
+### 2026-10-04 — 가계부 묶음은 화면 위 Line
+
+[화면 틀 · 이동 비교 페이지](https://claude.ai/artifact/B6tsgbw356Kf2Zumvm2v6a) 7A — 하단 탭 바는 어느 화면에서나 홈 · 가계부 · + · 캘린더 · 전체 그대로이고, 가계부 · 자산 · 통계 · 예산은 가계부 화면 위 1차 Line 이다(웹은 주소에). 지금 웹 · 앱이 탭 바 칸을 ← · 가계부 · 자산 · 통계 · 예산으로 바꾸던 것(7B)은 걷는다 — [Bottom Navigation](bottom-navigation.md) 의 Migration notes. 그 아래 통계의 카테고리 · 추이 · 비교는 폰에서 2차라 "두 단" 규칙대로다(2026-10-08 — 새 결정 없이 규칙으로 풀었다).
 
 ### 2026-10-02 — SEED Tabs 로 다시 정한다
 

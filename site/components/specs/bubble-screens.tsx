@@ -1,14 +1,15 @@
 // Help Bubble · Tooltip 페이지가 같이 쓰는 그림 조각(서버) — 트리거에 붙인 말풍선, HR 휴가 · Desk 자산 화면, 접힌 사이드바.
 // 말풍선은 help-bubble.yaml 을 푼 값(menuKit().bubble — menu-view 의 BubbleView)으로, 버튼은 button.yaml 로 그린다.
 import type { CSSProperties, ReactNode } from 'react';
-import { CalendarDays, House, Info, NotebookPen, Wallet } from 'lucide-react';
+import { Info } from 'lucide-react';
 import { ButtonView, type IconName } from './button-view';
-import { HIDE_TIP, LEAVE_RULE, SIDE_NAV, TOOLBAR } from './menu-data';
+import { HIDE_TIP, LEAVE_RULE, TOOLBAR } from './menu-data';
 import type { BubbleSide } from './menu-look';
 import { iconBtn, mk, type Brand } from './menu-screens';
 import { BubbleView, type BubbleViewProps } from './menu-view';
 import { GestureMark } from './overlay-view';
 import { Phone, WebWindow, rc, type Mode } from './kit';
+import { Side } from './nav-screens';
 
 export const bl = (brand: Brand = 'desk') => mk(brand).bubble;
 export const TOOL_ICON: Record<(typeof TOOLBAR)[number]['value'], IconName> = { search: 'search', hide: 'eye-off', reset: 'rotate-ccw' };
@@ -106,25 +107,13 @@ export function AssetsPhone({ mode = 'auto', scale = 0.62, h = 560, bubble = tru
   );
 }
 
-// Desk 웹 — 접힌 사이드바(아이콘) + 머리 툴바. tip 은 툴팁이 뜬 자리
-const NAV_ICONS = { home: House, ledger: Wallet, calendar: CalendarDays, memo: NotebookPen };
+// Desk 웹 — 접힌 사이드바(Side Navigation 56 — side-navigation.yaml) + 본문 툴바. tip 은 툴팁이 뜬 자리
 export function DeskToolWindow({ mode = 'auto', tip, w = 460, h = 300 }: { mode?: Mode; tip: 'toolbar' | 'sidebar'; w?: number; h?: number }) {
   const b = bl();
   return (
     <WebWindow mode={mode} w={w} h={h}>
       <div style={{ display: 'flex', height: '100%' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, width: 64, flexShrink: 0, padding: '16px 0', boxSizing: 'border-box', background: rc('bg-layer-default', mode), borderRight: `1px solid ${rc('stroke-neutral-weak', mode)}` }}>
-          {SIDE_NAV.map((n) => {
-            const I = NAV_ICONS[n.value];
-            const on = n.value === 'ledger';
-            const icon = (
-              <span aria-label={n.label} role="img" style={{ display: 'grid', placeItems: 'center', width: 40, height: 40, borderRadius: 10, background: on ? rc('bg-layer-default-pressed', mode) : 'transparent', color: rc(on ? 'fg-neutral' : 'fg-neutral-subtle', mode) }}>
-                <I size={20} strokeWidth={2} />
-              </span>
-            );
-            return tip === 'sidebar' && on ? <BubbleAt key={n.value} side="right" trigger={icon} bubble={(p) => <Bubble mode={mode} title={n.label} {...p} />} /> : <span key={n.value}>{icon}</span>;
-          })}
-        </div>
+        <Side mode={mode} collapsed current="ledger" height="100%" tip={tip === 'sidebar' ? 'assets' : undefined} states={tip === 'sidebar' ? { assets: 'hovered' } : undefined} />
         <div style={{ flex: '1 1 0%', minWidth: 0, padding: '16px 24px', background: rc('bg-layer-basement', mode) }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
             <span style={{ fontSize: 20, lineHeight: '28px', fontWeight: 700, color: rc('fg-neutral', mode) }}>가계부</span>

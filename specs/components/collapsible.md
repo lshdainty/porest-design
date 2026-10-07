@@ -72,7 +72,7 @@ Collapsible은 **size variant 없음** — 사용처 시각이 결정.
 
 **Nav side panel**
 
-- 사이드 메뉴 안 카테고리 — 카테고리 이름 trigger + 펼치면 sub-item list. [`NavigationMenu`](./)와 별도, 단순한 케이스.
+- 사이드 메뉴의 하위 항목은 [Side Navigation](side-navigation.md) 의 부모 항목이 펼친다(2026-10-04) — Collapsible 로 따로 만들지 않는다. Navigation Menu 는 걷었다.
 
 **Settings detail**
 
