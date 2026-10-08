@@ -1,6 +1,8 @@
-// Layout 페이지 — 치수는 DESIGN.md 의 layout-* · breakpoint-* 표에서만 온다
+// Layout 페이지 — 치수는 DESIGN.md 의 layout-* · breakpoint-* 표에서만 온다. 머리 높이는 top-navigation.yaml(Top Navigation)
 import type { ReactNode } from 'react';
 import { color, proseTokens, px } from '@/lib/design-tokens';
+import { navKit } from '../specs/nav-look';
+import { DeskDesktop, HomeScreen, HrLeavePhone } from '../specs/nav-screens';
 import { Figure } from './ui';
 
 function lt(name: string) {
@@ -31,16 +33,19 @@ export function DensityFigure() {
   const side = lt('layout-sidebar'), margin = lt('layout-margin');
   const low = lt('layout-max-low'), med = lt('layout-max-medium');
   const avail = VIEW - side - margin * 2;
-  const brand = color('bg-brand-weak'), line = color('stroke-brand-solid'), rail = color('bg-neutral-weak');
+  const brand = color('bg-brand-weak'), line = color('stroke-brand-solid');
+  // 화면 틀 — 흰 사이드바 + 오른쪽 선, 사이드바 오른쪽의 흰 머리(선 없음), 회색 본문(Top Navigation · Side Navigation)
+  const head = navKit().top.height;
   const col = (w: number) => (
-    <div className="absolute" style={{ left: (side + margin) * s, right: margin * s, top: 64 * s, bottom: 40 * s, display: 'flex', justifyContent: 'center' }}>
+    <div className="absolute" style={{ left: (side + margin) * s, right: margin * s, top: (head + 24) * s, bottom: 40 * s, display: 'flex', justifyContent: 'center' }}>
       <div className="h-full rounded-sm" style={{ width: Math.min(w, avail) * s, background: brand, border: `1px solid ${line}` }} />
     </div>
   );
   const frame = (w: number) => (
     <>
-      <div className="absolute inset-y-0 left-0" style={{ width: side * s, background: rail }} />
-      <div className="absolute right-0 top-0 border-b border-black/10" style={{ left: side * s, height: 40 * s }} />
+      <div className="absolute inset-0" style={{ background: color('bg-layer-basement') }} />
+      <div className="absolute inset-y-0 left-0" style={{ width: side * s, background: color('bg-layer-default'), boxShadow: `inset -1px 0 0 ${color('stroke-neutral-subtle')}` }} />
+      <div className="absolute right-0 top-0" style={{ left: side * s, height: head * s, background: color('bg-layer-default') }} />
       {col(w)}
     </>
   );
@@ -234,16 +239,50 @@ export function ResponsiveFigure() {
 
 export function RegionsFigure() {
   const side = lt('layout-sidebar'), collapsed = lt('layout-sidebar-collapsed');
+  const head = navKit().top.height;
   const s = 0.36, W = 1440 * s, H = 520;
-  const rail = color('bg-neutral-weak'), fg = color('fg-neutral-muted');
+  const fg = color('fg-neutral-muted');
   const cell = 'absolute flex items-center justify-center px-1 text-center text-[12px] font-semibold leading-tight';
   return (
-    <Figure caption={`영역 넷 — 사이드 내비게이션 ${side}px(접으면 ${collapsed}px), 상단 바 높이는 앱마다 다르다`}>
-      <div className="relative overflow-hidden rounded-lg border border-black/10 bg-white" style={{ width: W, height: H * s + 60, color: fg }}>
-        <div className={cell} style={{ left: 0, right: 0, top: 0, height: 36, borderBottom: '1px solid rgba(0,0,0,.08)' }}>Header (GNB)</div>
-        <div className={cell} style={{ left: 0, top: 36, bottom: 0, width: side * s, background: rail }}>Side Navigation</div>
-        <div className={cell} style={{ left: side * s, right: 150, top: 36, bottom: 0 }}>Main Content</div>
-        <div className={cell} style={{ right: 0, width: 150, top: 36, bottom: 0, borderLeft: '1px dashed rgba(0,0,0,.25)', background: 'rgba(0,0,0,.02)' }}>Aside</div>
+    <Figure caption={`영역 넷 — 사이드 내비게이션 ${side}px(접으면 ${collapsed}px) 오른쪽에 머리 ${head}px · 본문 · 보조 영역. 머리 아래 선은 없다`}>
+      <div className="relative overflow-hidden rounded-lg border border-black/10" style={{ width: W, height: H * s + 60, color: fg, background: color('bg-layer-basement') }}>
+        <div className={cell} style={{ left: 0, top: 0, bottom: 0, width: side * s, background: color('bg-layer-default'), boxShadow: `inset -1px 0 0 ${color('stroke-neutral-subtle')}` }}>Side Navigation</div>
+        <div className={cell} style={{ left: side * s, right: 0, top: 0, height: head * s + 8, background: color('bg-layer-default') }}>Header (GNB)</div>
+        <div className={cell} style={{ left: side * s, right: 150, top: head * s + 8, bottom: 0 }}>Main Content</div>
+        <div className={cell} style={{ right: 0, width: 150, top: head * s + 8, bottom: 0, borderLeft: '1px dashed rgba(0,0,0,.25)', background: 'rgba(0,0,0,.02)' }}>Aside</div>
+      </div>
+    </Figure>
+  );
+}
+
+// 화면 틀 — 문턱 768 · 1280 에서 바뀌는 머리 · 주 메뉴(Top Navigation · Bottom Navigation · Side Navigation 그대로 줄여 그린다)
+export function FrameFigure() {
+  const md = proseTokens('breakpoint-').find((b) => b.name === 'breakpoint-md');
+  const lg = proseTokens('breakpoint-').find((b) => b.name === 'breakpoint-lg');
+  if (!md || !lg) throw new Error('breakpoint-md · breakpoint-lg 가 DESIGN.md 에 없다');
+  const m = px(md.value), l = px(lg.value);
+  const side = lt('layout-sidebar'), collapsed = lt('layout-sidebar-collapsed');
+  // 문서 칸(1280 창에서 안쪽 600 남짓)에 셋이 한 줄로 들어가게 — 설명 글은 그림 폭을 넘지 않는다
+  const shot = (node: ReactNode, label: string, sub: string) => (
+    <div className="flex flex-col items-center gap-2">
+      {node}
+      <b className="text-[13px] text-fd-foreground">{label}</b>
+      <span className="max-w-[180px] whitespace-pre-line text-center text-[12px] leading-4 text-fd-muted-foreground">{sub}</span>
+    </div>
+  );
+  return (
+    <Figure caption={`화면 틀이 바뀌는 문턱 둘 — ${m}(모바일 틀 ↔ 사이드바 틀) · ${l}(사이드바 접힘 ↔ 펼침)`}>
+      <div className="flex items-start gap-3">
+        {shot(
+          <div className="flex gap-1.5">
+            <HomeScreen scale={0.24} h={600} />
+            <HrLeavePhone scale={0.24} h={600} />
+          </div>,
+          `0 – ${m - 1}`,
+          '상단 바 56 — Desk 하단 탭 바\nHR 은 ☰ 로 여는 왼쪽 주 메뉴',
+        )}
+        {shot(<DeskDesktop w={1024} h={700} s={0.16} collapsed />, `${m} – ${l - 1}`, `사이드바 접힘 ${collapsed}(손으로 펼침)\n+ 머리`)}
+        {shot(<DeskDesktop w={1280} h={700} s={0.16} />, `${l} 이상`, `사이드바 펼침 ${side}(손으로 접음 · 기억)\n+ 머리`)}
       </div>
     </Figure>
   );

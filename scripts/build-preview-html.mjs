@@ -3808,8 +3808,6 @@ const FB_ICON = {
   searchX: listSvg('<path d="m13.5 8.5-5 5"/><path d="m8.5 8.5 5 5"/><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>'),
   inbox: listSvg('<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>'),
   listChecks: listSvg('<path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/>'),
-  house: PICK_ICON.house,
-  wallet: LIST_ICON.wallet,
   chartPie: listSvg('<path d="M21 12c.552 0 1.005-.449.95-.998a10 10 0 0 0-8.953-8.951c-.55-.055-.998.398-.998.95v8a1 1 0 0 0 1 1z"/><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/>'),
 };
 // 톤마다 앞 아이콘(Callout · Page Banner) — neutral · informative 는 info, positive 는 체크, warning 은 세모 느낌표, critical 은 원 느낌표
@@ -3921,8 +3919,8 @@ export function renderFeedbackGallery(brand) {
   // 틀 — 띠 견본 칸(폰 폭 · 자리 여백 8) · 폰 화면 · 데스크톱 웹 화면 · 머리와 그 아래 배너만 그린 화면 윗부분. 모두 갤러리 것이다
   const strip = (html) => `<div class="pfb-strip">${html}</div>`;
   const head = (title, cls = "pfb-phone-head") => `<div class="${cls}"><div class="ptf-screen-title">${escape(title)}</div></div>`;
-  const tabbar = `<div class="pfb-tabbar" aria-hidden="true">${[["house", "홈"], ["receiptText", "가계부"], ["wallet", "자산"], ["chartPie", "통계"]].map(([icon, label], i) =>
-    `<span class="pfb-tab${i === 1 ? " pfb-tab--on" : ""}">${FB_ICON[icon]}<span>${label}</span></span>`).join("")}</div>`;
+  // 탭 바 — 03r 의 떠 있는 알약(홈 · 가계부 · + · 캘린더 · 전체, 지금 탭 가계부). 그림이라 보조 기술에 숨긴다. 이 폰은 홈 표시줄이 없어 아래 14 다
+  const tabbar = tabBar({ current: "ledger", decorative: true });
   const tile = (color, icon) => `<span class="plst-tile plst-tile--${color}">${LIST_ICON[icon]}</span>`;
   const won = (v) => `<span class="plst-amount">${escape(v)}</span>`;
   const ledgerRows = () => listOf([
@@ -3949,7 +3947,7 @@ export function renderFeedbackGallery(brand) {
     ]),
   );
 
-  // 2. Snackbar — 자리. 폰은 탭 바(56 — 갤러리 틀) 위 8, 데스크톱은 아래 가운데 8 · 최대 464
+  // 2. Snackbar — 자리. 폰은 탭 바(03r 의 떠 있는 알약 — 위 끝이 화면 아래에서 14 + 66) 위 8, 데스크톱은 아래 가운데 8 · 최대 464
   const placementPanel = panel(
     "Snackbar — 자리: 폰은 탭 바 위 8 · 데스크톱은 아래 가운데 최대 464",
     "어느 폭이든 화면 아래 가운데다 — 자리는 좌우 · 아래 8 을 두고(안전 영역이 있으면 그만큼 더), 탭 바 · 플로팅 버튼 · 바닥 버튼이 있으면 그 위 8 에 선다(SnackbarAvoidOverlap). 띠는 자리 폭을 채우다 464 에서 멈추고 넓은 화면에서는 가운데에 선다. 시트 · 대화상자가 열려 있어도 그 위에 그린다(z L6 400) — 다만 시트 안에서 한 일의 결과는 그 안 Callout 으로 알리고 스낵바는 시트가 닫힌 뒤에 띄운다. 한 번에 하나만 보이고 쌓지 않는다.",
@@ -6498,6 +6496,719 @@ export function renderImageGallery(brand, tokens) {
   </section>`;
 }
 
+// 화면 틀 · 이동 — spec: specs/components/top-navigation.md · bottom-navigation.md · side-navigation.md · side-panel.md · pagination.md · table-pagination.md ·
+// floating-action-button.md · 수치 top-navigation.yaml · bottom-navigation.yaml · side-navigation.yaml · side-panel.yaml · pagination.yaml · infinite-list.yaml ·
+// table-pagination.yaml · floating-action-button.yaml · 화면 틀은 DESIGN.md Layout 의 "화면 틀" · "Safe Area". 구조는 SEED Top Navigation · Side Navigation ·
+// Side Panel · Pagination · Table Pagination · Floating Action Button 이고, 하단 탭 바는 porest 의 떠 있는 알약을 고쳐 쓴다(2026-10-04 · 10-08 사용자 결정).
+// 상단 바 .ptnav(--root · --standard · --desktop) > 왼쪽 버튼 · 제목 .ptnav-title · 오른쪽 자리 .ptnav-actions > 아이콘 버튼 .ptnav-icon(상자 44 · 아이콘 24) · 글 버튼 .ptnav-text ·
+//   데스크톱 주 버튼 .ptnav-primary(Button brandSolid small). 알림 점은 03o 의 .pnb(small — 24 아이콘의 x 17 ~ 23 · y 1 ~ 7)다.
+// 하단 탭 바 .ptbar(--compact) > 칸 .ptbar-item(아이콘 24 · 라벨 .ptbar-label) · 가운데 + .ptbar-add > 원 .ptbar-add-circle.
+// 사이드바 .psnav(--collapsed) > 머리 .psnav-header(로고 .psnav-logo · 접기 버튼 .psnav-trigger) · 내용 .psnav-content(묶음 .psnav-group > 이름 .psnav-group-label ·
+//   목록 .psnav-list > 항목 .psnav-item · 하위 .psnav-sub) · 바닥. 접혔을 때 펼침 메뉴 .psnav-flyout · 이름 말풍선은 03m 의 .pbub--tooltip(오른쪽 — .psnav-tip).
+// 옆 패널 .pspanel(--left · --right · --small · --medium · --large) > 머리 .pspanel-header · 닫기(03k 의 .pov-close--box) · 본문 .pspanel-body · 바닥 .pspanel-footer.
+// 쪽 넘김 .ppgn(--narrow) > 칸 .ppgn-cell(.ppgn-page · .ppgn-arrow · .ppgn-ellipsis · .ppgn-empty). 표 넘김 .ptpg(고르기는 03h 의 Select medium .psel-trigger).
+// 목록 끝 자리 .pinf(--loading · --error · --end). 떠 있는 버튼 .pfab.
+// 화면 틀 .pnav-phone(폰 — 360 까지, 아래 홈 표시줄 안전 영역 34 · 위 상태 표시줄은 고를 때만) · .pnav-desk(데스크톱 웹 창)은 갤러리 것이다 — 라이트 · 다크 나란히(03o 의
+// .pdsp-pair)에 넣어도 그 테마로 그려지게 이 블록의 부품만 담는다(03k 의 .pov-frame 은 페이지 테마만 따른다). 링크는 미리보기라 옮기지 않는다(data-pnav-link — 페이지 끝 스크립트).
+// 제목은 레시피에서 화면의 h1 이지만, 미리보기 페이지의 제목 차례를 흐리지 않게 div 로 그린다.
+
+// 아이콘 — lucide 그림(선 2). 크기 · 선 굵기는 놓인 자리가 정한다(상단 바 24 · 탭 바 24 · 사이드바 20 · 꺾쇠 16 · 쪽 넘김 16)
+const NAV_ICON = {
+  chevronLeft: PICK_ICON.chevronLeft,
+  chevronRight: PICK_ICON.chevronRight,
+  chevronDown: PICK_ICON.chevronDown,
+  x: OVERLAY_ICON.x,
+  menu: DISPLAY_ICON.menu,
+  search: MENU_ICON.search,
+  bell: LIST_ICON.bell,
+  eyeOff: MENU_ICON.eyeOff,
+  settings: listSvg('<path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/>'),
+  plus: listSvg('<path d="M5 12h14"/><path d="M12 5v14"/>'),
+  ellipsis: LIST_ICON.more,
+  house: PICK_ICON.house,
+  clipboardList: listSvg('<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/>'),
+  calendarDays: PICK_ICON.calendarDays,
+  layoutGrid: listSvg('<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>'),
+  wallet: LIST_ICON.wallet,
+  trendingUp: listSvg('<path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/>'),
+  chartPie: FB_ICON.chartPie,
+  target: listSvg('<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>'),
+  listTodo: listSvg('<rect x="3" y="5" width="6" height="6" rx="1"/><path d="m3 17 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/>'),
+  users: listSvg('<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>'),
+  creditCard: PICK_ICON.creditCard,
+  plane: listSvg('<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>'),
+  briefcase: listSvg('<path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/>'),
+  megaphone: listSvg('<path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>'),
+  heart: listSvg('<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>'),
+  shield: LIST_ICON.shield,
+  panelLeft: listSvg('<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/>'),
+  share: listSvg('<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/>'),
+};
+let pnavSeq = 0;
+const nextPnavId = (prefix = "pnav") => `${prefix}-${(pnavSeq += 1)}`;
+// 그 순간을 멈춘 상태(갤러리 전용) — 상단 바 버튼 hover · pressed · focus, 탭 칸 · 사이드바 항목 · 쪽 칸 pressed · hover · focus
+const PNAV_INTERACTIONS = ["hover", "pressed", "focus"];
+const pnavState = (base, interaction) => (PNAV_INTERACTIONS.includes(interaction) ? ` ${base}--${interaction}` : "");
+
+// ── Top Navigation ────────────────────────────────────────────────────────
+// 아이콘 버튼 — 상자 44 = 누르는 영역 · 아이콘 24 · 버튼끼리 붙는다. 이름은 aria-label. dot 은 벨의 알림 점(03o 의 Notification Badge small — 이름에도 넣는다)
+function topNavIcon({ icon, name, dot = false, disabled = false, interaction = "", attrs = "" }) {
+  const glyph = dot ? notificationBadge({ target: NAV_ICON[icon], size: "small" }) : NAV_ICON[icon];
+  return `<button ${attrsOf([`class="ptnav-icon${pnavState("ptnav-icon", interaction)}"`, 'type="button"', `aria-label="${escape(name)}"`, disabled && "disabled", attrs])}>${glyph}</button>`;
+}
+// 글 버튼 — 높이 44 · 좌우 10 · t5 500. 오른쪽 자리에 하나만, 아이콘 버튼과 섞지 않는다
+const topNavText = ({ label, disabled = false, interaction = "" }) =>
+  `<button ${attrsOf([`class="ptnav-text${pnavState("ptnav-text", interaction)}"`, 'type="button"', disabled && "disabled"])}>${escape(label)}</button>`;
+// 왼쪽 버튼 — ← 뒤로 · ✕ 닫기 · ☰ 주 메뉴(HR 폰 — 왼쪽 Side Panel 을 연다)
+const TOP_NAV_LEADING = { back: ["chevronLeft", "뒤로"], close: ["x", "닫기"], menu: ["menu", "주 메뉴"] };
+// 상단 바 — type root(탭 첫 화면 · 큰 제목 22) · standard(← + 18) · desktop(데스크톱 머리 — 제목 없음, 주 버튼 + 아이콘 버튼).
+//   actions  [{ icon, name, dot, disabled, interaction }] — 2개 권장 · 3개까지 · text  { label, disabled } 글 버튼 하나(아이콘 버튼과 함께 두지 않는다)
+//   primary  desktop 의 주 버튼 글(Button brandSolid small + 앞 +) · menu  ☰ 의 aria-expanded · aria-controls(직접 여는 서랍)
+//   safeTop  위 안전 영역(상태 표시줄) — 바가 그만큼 높아지고 내용은 그 아래 56 에 놓인다
+function topNav({ type = "standard", leading = "back", title = "", actions = [], text = null, primary = "", menu = null, safeTop = 0, attrs = "" } = {}) {
+  const lead = type === "standard" ? (() => {
+    const [icon, name] = TOP_NAV_LEADING[leading];
+    const extra = leading === "menu" ? attrsOf(['aria-haspopup="dialog"', `aria-expanded="${menu && menu.open ? "true" : "false"}"`, menu && menu.controls && `aria-controls="${menu.controls}"`, menu && menu.live && "data-pspanel-open"]) : "";
+    return topNavIcon({ icon, name, attrs: extra });
+  })() : "";
+  const head = type === "desktop" ? "" : `<div class="ptnav-title">${escape(title)}</div>`;
+  const prim = primary ? `<span class="ptnav-primary"><button class="btn btn-brand-solid btn-size-small" type="button">${NAV_ICON.plus}<span>${escape(primary)}</span></button></span>` : "";
+  const right = text ? topNavText(text) : actions.map(topNavIcon).join("");
+  const tail = prim || right ? `<div class="ptnav-actions">${prim}${right}</div>` : "";
+  return `<header ${attrsOf([`class="ptnav ptnav--${type}"`, safeTop && `style="--pnav-safe-top: ${safeTop}px;"`, attrs])}>${lead}${head}${tail}</header>`;
+}
+
+// ── Bottom Navigation ─────────────────────────────────────────────────────
+// 다섯 칸 — 홈 · 가계부 · + · 캘린더 · 전체. 어느 화면에서나 같다(가계부 · 자산 · 통계 · 예산은 가계부 화면 위 Line Tabs)
+const PNAV_TABS = [
+  { key: "home", label: "홈", icon: "house" },
+  { key: "ledger", label: "가계부", icon: "clipboardList" },
+  { key: "add" },
+  { key: "calendar", label: "캘린더", icon: "calendarDays" },
+  { key: "more", label: "전체", icon: "menu" },
+];
+// + 의 이름은 화면마다 — 캘린더는 일정 추가, 그 밖은 거래 추가
+const tabAddLabel = (current) => (current === "calendar" ? "일정 추가" : "거래 추가");
+// 하단 탭 바 — current(지금 탭 key) · compact(줄어듦 48 — 라벨은 보이지 않게만, 이름은 남는다) · state { at: key, interaction } 그 순간을 멈춘 칸 ·
+// decorative 보조 기술에 숨긴 그림(다른 갤러리의 뒤 화면) · live 페이지 끝 스크립트가 줄이고 펴는 바
+function tabBar({ current = "home", compact = false, state = null, decorative = false, live = false, addInteraction = "" } = {}) {
+  const cells = PNAV_TABS.map((t) => {
+    if (t.key === "add") {
+      const cls = `ptbar-add${pnavState("ptbar-add", addInteraction)}`;
+      return `<button ${attrsOf([`class="${cls}"`, 'type="button"', `aria-label="${tabAddLabel(current)}"`, decorative && 'tabindex="-1"'])}><span class="ptbar-add-circle">${NAV_ICON.plus}</span></button>`;
+    }
+    const on = t.key === current;
+    const cls = `ptbar-item${state && state.at === t.key ? pnavState("ptbar-item", state.interaction) : ""}`;
+    return `<a ${attrsOf([`class="${cls}"`, 'href="#"', "data-pnav-link", `data-ptbar-key="${t.key}"`, on && 'aria-current="page"', decorative && 'tabindex="-1"'])}>${NAV_ICON[t.icon]}<span class="ptbar-label">${escape(t.label)}</span></a>`;
+  }).join("");
+  return `<nav ${attrsOf([`class="ptbar${compact ? " ptbar--compact" : ""}"`, decorative ? 'aria-hidden="true"' : 'aria-label="주 메뉴"', live && "data-ptbar-live"])}>${cells}</nav>`;
+}
+
+// ── Side Navigation ───────────────────────────────────────────────────────
+// 묶음 · 항목 — Desk(side-navigation.md 의 코드) · HR(휴가 현황). 하위가 있는 항목(sub)은 펼치기만 한다. 이름은 화면 제목과 같게 짧게
+const PNAV_DESK_NAV = [
+  { label: "워크스페이스", items: [
+    { label: "홈", icon: "layoutGrid" },
+    { label: "자산", icon: "wallet" },
+    { label: "증권", icon: "trendingUp", sub: ["나무증권", "토스증권"] },
+    { label: "가계부", icon: "clipboardList" },
+    { label: "통계", icon: "chartPie" },
+    { label: "예산", icon: "target" },
+  ] },
+  { label: "기록", items: [
+    { label: "캘린더", icon: "calendarDays" },
+    { label: "할 일", icon: "listTodo" },
+    { label: "더치페이", icon: "users" },
+    { label: "카드 혜택", icon: "creditCard" },
+  ] },
+];
+const PNAV_HR_NAV = [
+  { label: "근무", items: [
+    { label: "홈", icon: "layoutGrid" },
+    { label: "캘린더", icon: "calendarDays" },
+    { label: "공지사항", icon: "megaphone" },
+    { label: "휴가", icon: "plane", sub: ["휴가 현황", "휴가 신청"] },
+    { label: "업무", icon: "briefcase" },
+    { label: "조직문화", icon: "heart" },
+  ] },
+  { label: "관리", items: [
+    { label: "사용자", icon: "users" },
+    { label: "권한", icon: "shield" },
+  ] },
+];
+// 항목 한 줄 — 링크(하위 없음) 또는 부모 버튼(하위 있음 — aria-expanded · 꺾쇠). current 는 aria-current="page", interaction 은 그 순간을 멈춘 항목
+function sideNavItem({ label, icon = "", sub = false, open = false, current = false, disabled = false, interaction = "", controls = "", id = "", subItem = false }) {
+  const cls = `psnav-item${subItem ? " psnav-item--sub" : ""}${current ? " psnav-item--current" : ""}${pnavState("psnav-item", interaction)}`;
+  const glyph = icon ? `<span class="psnav-icon" aria-hidden="true">${NAV_ICON[icon]}</span>` : "";
+  const chev = sub ? `<span class="psnav-chevron" aria-hidden="true">${NAV_ICON.chevronDown}</span>` : "";
+  const body = `<span class="psnav-item-content">${glyph}<span class="psnav-label">${escape(label)}</span>${chev}</span>`;
+  if (sub) return `<button ${attrsOf([`class="${cls}"`, 'type="button"', id && `id="${id}"`, `aria-expanded="${open ? "true" : "false"}"`, controls && `aria-controls="${controls}"`, "data-psnav-parent", disabled && "disabled"])}>${body}</button>`;
+  return `<a ${attrsOf([`class="${cls}"`, !disabled && 'href="#"', "data-pnav-link", current && 'aria-current="page"', disabled && 'aria-disabled="true"', disabled && 'role="link"'])}>${body}</a>`;
+}
+// 사이드바 — groups 묶음 · current 지금 화면(하위면 부모가 저절로 펼쳐진다 — 접혔을 때는 부모가 지금 항목) · open 손으로 펼친 부모 ·
+// collapsed 접힘 56 · hover 마우스를 올린 항목(그 순간을 멈춤) · logo 서비스 이름 · scrolled 내용이 스크롤된 모습(머리 아래 선) · live 직접 접고 펼치는 사이드바 ·
+// drawer 768 미만의 주 메뉴 서랍에 넣는 내용만(SideNavigationContent — 펼친 모양, 머리 · 바닥 없음)
+function sideNav({ groups, current = "", open = [], collapsed = false, hover = "", logo = "Porest Desk", scrolled = false, live = false, drawer = false, height = 0 } = {}) {
+  const uid = nextPnavId("psnav");
+  const parentOf = (name) => groups.flatMap((g) => g.items).find((it) => it.sub && it.sub.includes(name));
+  const curParent = parentOf(current);
+  const list = groups.map((g, gi) => {
+    const labelId = `${uid}-g${gi}`;
+    const items = g.items.map((it, ii) => {
+      if (!it.sub) return `<li>${sideNavItem({ label: it.label, icon: it.icon, current: it.label === current, interaction: it.label === hover ? "hover" : "" })}</li>`;
+      const subId = `${uid}-s${gi}-${ii}`;
+      const isOpen = !collapsed && (open.includes(it.label) || curParent === it);
+      const subs = it.sub.map((s) => `<li>${sideNavItem({ label: s, subItem: true, current: s === current, interaction: s === hover ? "hover" : "" })}</li>`).join("");
+      return `<li>${sideNavItem({ label: it.label, icon: it.icon, sub: true, open: isOpen, current: collapsed && curParent === it, interaction: it.label === hover ? "hover" : "", controls: subId, id: `${subId}-parent` })}<ul class="psnav-sub" id="${subId}"${isOpen ? "" : " hidden"}>${subs}</ul></li>`;
+    }).join("");
+    const divider = gi > 0 ? '<div class="psnav-group-divider" aria-hidden="true"></div>' : "";
+    return `${divider}<div class="psnav-group"><div class="psnav-group-label" id="${labelId}">${escape(g.label)}</div><ul class="psnav-list" aria-labelledby="${labelId}">${items}</ul></div>`;
+  }).join("");
+  const contentId = `${uid}-content`;
+  const content = `<div ${attrsOf(['class="psnav-content"', `id="${contentId}"`, scrolled && 'data-pnav-scrolltop="64"', "data-pnav-scroll"])}>${list}</div>`;
+  if (drawer) return `<nav class="psnav psnav--drawer" aria-label="주 메뉴">${content}</nav>`;
+  const header = `<div class="psnav-header"><span class="psnav-logo"><span class="psnav-mark" aria-hidden="true"></span><span class="psnav-name">${escape(logo)}</span></span><button ${attrsOf([
+    'class="psnav-trigger"', 'type="button"', 'aria-label="사이드바"', `aria-expanded="${collapsed ? "false" : "true"}"`, `aria-controls="${contentId}"`, live && "data-psnav-toggle",
+  ])}>${NAV_ICON.panelLeft}</button></div>`;
+  return `<nav ${attrsOf([`class="psnav${collapsed ? " psnav--collapsed" : ""}"`, 'aria-label="주 메뉴"', live && "data-psnav-live", height && `style="height: ${height}px;"`])}>${header}${content}</nav>`;
+}
+// 펼침 메뉴 — 접힌 사이드바의 부모 옆 8(위 끝 맞춤). Menu 표면 · 폭 200 · 맨 위 부모 이름 · 줄 44 · 지금 화면 줄은 옅은 회색. role="menu" 가 아닌 디스클로저다
+function sideNavFlyout({ parent, items, current = "", hover = "", top = 0, labelledby = "", id = nextPnavId("psnav-fly"), hidden = false }) {
+  const rows = items.map((s) => `<li><a ${attrsOf([`class="psnav-flyout-item${s === hover ? " psnav-flyout-item--hover" : ""}"`, 'href="#"', "data-pnav-link", s === current && 'aria-current="page"'])}>${escape(s)}</a></li>`).join("");
+  return `<div ${attrsOf(['class="psnav-flyout"', `id="${id}"`, labelledby && `aria-labelledby="${labelledby}"`, top && `style="top: ${top}px;"`, hidden && "hidden"])}><div class="psnav-flyout-label" aria-hidden="true">${escape(parent)}</div><ul class="psnav-flyout-list">${rows}</ul></div>`;
+}
+// 접힌 항목의 이름 말풍선 — 03m 의 Help Bubble 툴팁(.pbub--tooltip)을 항목 오른쪽 12(화살표 8 + 4)에, 세로 가운데로 둔다
+const sideNavTip = ({ text, top = 0, id = nextPnavId("psnav-tip"), hidden = false }) =>
+  `<div ${attrsOf(['class="pbub pbub--tooltip psnav-tip"', `id="${id}"`, 'role="tooltip"', 'data-side="right"', `style="top: ${top}px;"`, hidden && "hidden"])}><div class="pbub-title">${escape(text)}</div><svg class="pbub-arrow" viewBox="0 0 12 8" aria-hidden="true"><path d="M0,0 H12 L8,6 Q6,8 4,6 Z"/></svg></div>`;
+
+// ── Side Panel ────────────────────────────────────────────────────────────
+// 옆 패널 — side left(768 미만 주 메뉴 서랍 · 화면 폭의 80%) · right(1280 이상 — size small 480 · medium 720 · large 960). 제목은 늘, 설명은 있을 때만.
+// close 머리 닫기(52 상자 · 아이콘 22 — 03k 의 .pov-close--box) — 입력 폼(form)이면 두지 않는다. scrollFog 넘칠 수 있는 본문(위 20 · 아래 80).
+// 표면은 role=group 이다 — 레시피는 role="dialog" + aria-modal 이지만 미리보기 페이지까지 막지 않게 했다(03k 와 같다)
+function sidePanel({ side = "right", size = "medium", title = "", description = "", body = "", footer = [], close = true, scrollFog = false, id = nextPnavId("pspanel"), hidden = false, live = false } = {}) {
+  const titleId = `${id}-title`;
+  const descId = description ? `${id}-desc` : "";
+  const head = `<div class="pspanel-header${close ? " pspanel-header--close" : ""}"><div class="pspanel-title" id="${titleId}">${escape(title)}</div>${description ? `<p class="pspanel-desc" id="${descId}">${escape(description)}</p>` : ""}</div>`;
+  const cls = ["pspanel", `pspanel--${side}`, side === "right" && `pspanel--${size}`].filter(Boolean).join(" ");
+  return `<div ${attrsOf([`class="${cls}"`, `id="${id}"`, 'role="group"', `aria-labelledby="${titleId}"`, descId && `aria-describedby="${descId}"`, 'tabindex="-1"', hidden && "hidden", live && "data-pspanel"])}>${head}${close ? overlayClose({ kind: "box" }) : ""}<div ${attrsOf([`class="pspanel-body${scrollFog ? " pspanel-body--fog pfog--overlay-body" : ""}${footer.length ? " pspanel-body--footer" : ""}"`, "data-pnav-scroll"])}>${body}</div>${footer.length ? `<div class="pspanel-footer">${footer.join("")}</div>` : ""}</div>`;
+}
+
+// ── Pagination ────────────────────────────────────────────────────────────
+// 칸 배열 — pagination.tsx 의 paginationItems 와 같은 규칙. 칸 수(slots)는 9(480 이상) · 7(480 미만)이고 화살표 둘을 포함한다.
+// 9칸: 앞쪽 ‹ 1 2 3 4 5 … N › · 가운데 ‹ 1 … p−1 p p+1 … N › · 뒤쪽 ‹ 1 … N−4 … N ›, 7칸: 앞쪽 ‹ 1 2 3 4 … › · 가운데 ‹ … p−1 p p+1 … › · 뒤쪽 ‹ … N−3 … N ›.
+// 전체가 번호 자리보다 적으면 모든 번호, 첫 · 마지막 쪽의 화살표 자리는 빈 칸(empty)이다.
+// 빌드(그림)와 페이지 끝 스크립트(직접 넘기기)가 같은 코드를 쓴다 — 페이지에는 toString 으로 옮기므로 바깥 이름을 부르지 않고 ES5 로 쓴다
+function paginationItems(page, totalPages, slots) {
+  var total = Number.isFinite(totalPages) ? Math.floor(totalPages) : 0;
+  if (total <= 1) return [];
+  var p = Math.min(Math.max(Number.isFinite(page) ? Math.floor(page) : 1, 1), total);
+  var inner = (slots === 7 ? 7 : 9) - 2;
+  var mid = [];
+  var dots = { type: "ellipsis" };
+  function nums(from, to) { for (var n = from; n <= to; n++) mid.push({ type: "page", page: n }); }
+  if (total <= inner) nums(1, total);
+  else if (inner === 7) {
+    if (p <= 4) { nums(1, 5); mid.push(dots, { type: "page", page: total }); }
+    else if (p >= total - 3) { mid.push({ type: "page", page: 1 }, dots); nums(total - 4, total); }
+    else { mid.push({ type: "page", page: 1 }, dots); nums(p - 1, p + 1); mid.push(dots, { type: "page", page: total }); }
+  } else {
+    if (p <= 3) { nums(1, 4); mid.push(dots); }
+    else if (p >= total - 2) { mid.push(dots); nums(total - 3, total); }
+    else { mid.push(dots); nums(p - 1, p + 1); mid.push(dots); }
+  }
+  return [p > 1 ? { type: "previous", page: p - 1 } : { type: "empty" }].concat(mid, [p < total ? { type: "next", page: p + 1 } : { type: "empty" }]);
+}
+// 칸 HTML — 링크(쪽이 주소에 있을 때 — href="?page=N"). 이름은 "N페이지" · "이전 페이지" · "다음 페이지", 생략 · 빈 칸은 보조 기술에 숨긴다.
+// disabled 는 목록을 다시 받는 동안(aria-disabled), state { at: 번호 · "previous" · "next", interaction } 은 그 순간을 멈춘 칸(갤러리 전용). 빌드와 페이지 끝 스크립트가 같이 쓴다(ES5)
+function pagerCellsHtml(items, page, icons, opts) {
+  var out = "";
+  for (var i = 0; i < items.length; i++) {
+    var it = items[i];
+    if (it.type === "empty") { out += '<span class="ppgn-cell ppgn-empty" aria-hidden="true"></span>'; continue; }
+    if (it.type === "ellipsis") { out += '<span class="ppgn-cell ppgn-ellipsis" aria-hidden="true">' + icons.ellipsis + "</span>"; continue; }
+    var arrow = it.type === "previous" || it.type === "next";
+    var cur = !arrow && it.page === page;
+    var num = it.page.toLocaleString("ko-KR");
+    var st = opts.state && opts.state.interaction && (opts.state.at === it.page || opts.state.at === it.type) ? " ppgn-cell--" + opts.state.interaction : "";
+    var label = arrow ? (it.type === "previous" ? "이전 페이지" : "다음 페이지") : num + "페이지";
+    out += '<a class="ppgn-cell ' + (arrow ? "ppgn-arrow" : "ppgn-page" + (cur ? " ppgn-page--current" : "")) + st + '"'
+      + (opts.disabled ? ' role="link" aria-disabled="true"' : ' href="?page=' + it.page + '"') + ' data-pnav-link data-ppgn-to="' + it.page + '" aria-label="' + label + '"'
+      + (cur ? ' aria-current="page"' : "") + ">" + (arrow ? (it.type === "previous" ? icons.prev : icons.next) : num) + "</a>";
+  }
+  return out;
+}
+const PPGN_ICONS = { prev: NAV_ICON.chevronLeft, next: NAV_ICON.chevronRight, ellipsis: NAV_ICON.ellipsis };
+// 쪽 넘김 한 줄 — page · total · slots(9 · 7) · disabled · state(그 순간을 멈춘 칸) · hit 누르는 영역(40 × 44)을 점선으로 보인다 · live 페이지 끝 스크립트가 넘긴다.
+// 1쪽 이하면 그리지 않는다
+function pager({ page = 1, total = 12, slots = 9, disabled = false, state = null, hit = false, live = false, label = "페이지 탐색" } = {}) {
+  if (total <= 1) return "";
+  const cells = pagerCellsHtml(paginationItems(page, total, slots), page, PPGN_ICONS, { disabled, state: state && PNAV_INTERACTIONS.includes(state.interaction) ? state : null });
+  return `<nav ${attrsOf([`class="ppgn${slots < 9 ? " ppgn--narrow" : ""}${hit ? " ppgn--hit" : ""}"`, `aria-label="${escape(label)}"`, live && `data-ppgn-live="${total}"`, live && `data-ppgn-page="${page}"`, live && `data-ppgn-slots="${slots}"`])}>${cells}</nav>`;
+}
+
+// ── Table Pagination ──────────────────────────────────────────────────────
+// 표 아래 한 줄 — 줄 수 고르기(Select medium "10개" + "씩 보기") · 범위 고르기("11-20" + "/ 총 237개" — 범위가 하나뿐이면 막는다) · 이전 · 다음(Pagination 의
+// 화살표 칸 — 끝에서는 막힌다, aria-disabled 라 초점이 남는다). total 이 null 이면 전체 수를 모른다 — 범위는 글로만. 고르기는 화면 폭과 상관없이 medium 40(Select 1280 규칙의 예외)
+const pnavNumber = (n) => Number(n).toLocaleString("ko-KR");
+function tablePager({ page = 1, pageSize = 10, total = 237, hasNext = null, interaction = null, live = false } = {}) {
+  const known = typeof total === "number";
+  const first = (page - 1) * pageSize + 1;
+  const last = known ? Math.min(page * pageSize, total) : page * pageSize;
+  const range = known && total === 0 ? "0-0" : `${first}-${last}`;
+  const prevOff = page <= 1;
+  const nextOff = known ? page * pageSize >= total : !hasNext;
+  const arrow = (dir) => {
+    const prev = dir === "previous";
+    const off = prev ? prevOff : nextOff;
+    const st = interaction && interaction.at === dir ? pnavState("ppgn-cell", interaction.interaction) : "";
+    return `<button ${attrsOf([`class="ppgn-cell ppgn-arrow${st}"`, 'type="button"', `aria-label="${prev ? "이전 페이지" : "다음 페이지"}"`, off && 'aria-disabled="true"', live && `data-ptpg-step="${prev ? -1 : 1}"`])}>${prev ? NAV_ICON.chevronLeft : NAV_ICON.chevronRight}</button>`;
+  };
+  const size = `<div class="ptpg-group">${selectTrigger({ size: "medium", value: `${pageSize}개`, label: "페이지당 표시 개수" })}<span class="ptpg-text">씩 보기</span></div>`;
+  const rangeBox = known
+    ? `${selectTrigger({ size: "medium", value: range, label: "표시 범위", disabled: Math.ceil(total / pageSize) <= 1 })}<span class="ptpg-text">/ 총 ${pnavNumber(total)}개</span>`
+    : `<span class="ptpg-text ptpg-range-text">${escape(range)}</span>`;
+  return `<div ${attrsOf(['class="ptpg"', 'role="group"', 'aria-label="표 페이지 탐색"', live && `data-ptpg-live="${total}"`, live && `data-ptpg-page="${page}"`, live && `data-ptpg-size="${pageSize}"`])}>${size}<div class="ptpg-group ptpg-group--range">${rangeBox}<span class="ptpg-arrows">${arrow("previous")}${arrow("next")}</span></div></div>`;
+}
+
+// ── 끝없이 불러오기(목록 끝 자리) · Floating Action Button ─────────────────
+// 목록 끝 자리 — status loading(원 24 — 1초가 지나야 보인다) · error("더 불러오지 못했어요." + 다시 시도) · end("모두 봤어요." — 목록마다 바꿀 수 있다)
+function infiniteEnd({ status = "loading", endText = "모두 봤어요.", live = false } = {}) {
+  const inner = status === "loading"
+    ? progressCircle({ size: "24", label: "더 불러오는 중" })
+    : status === "error"
+      ? `<p class="pinf-text">더 불러오지 못했어요.</p><button class="btn btn-neutral-weak btn-size-small pinf-retry" type="button"${live ? " data-pinf-retry" : ""}><span>다시 시도</span></button>`
+      : `<p class="pinf-text">${escape(endText)}</p>`;
+  return `<div class="pinf pinf--${status}"${live ? " data-pinf-end" : ""}>${inner}</div>`;
+}
+// 떠 있는 버튼 — 원 56 · 아이콘 24 · 브랜드 채움. 이름(aria-label)이 곧 글이다. offset 아래 고정 요소의 높이(그 위 20 에 선다)
+const fab = ({ name, icon = "plus", interaction = "", offset = 0 } = {}) =>
+  `<button ${attrsOf([`class="pfab${pnavState("pfab", interaction)}"`, 'type="button"', `aria-label="${escape(name)}"`, offset && `style="--pfab-offset: ${offset}px;"`])}>${NAV_ICON[icon]}</button>`;
+
+// ── 화면 틀(갤러리 것) ────────────────────────────────────────────────────
+// 폰 — 360 까지, home 이면 아래 홈 표시줄 안전 영역 34(표시줄 막대를 그린다) · status 면 위 상태 표시줄(위 안전 영역)을 그린다. bg 는 화면 바탕(default · basement)
+const pnavPhone = ({ height = 560, home = true, status = 0, bg = "default", inner = "", cls = "", attrs = "" } = {}) =>
+  `<div ${attrsOf([`class="pnav-phone pnav-phone--${bg}${cls ? ` ${cls}` : ""}"`, `style="--pnav-h: ${height}px; --pnav-safe-bottom: ${home ? 34 : 0}px; --pnav-safe-top: ${status}px;"`, attrs])}>${status ? '<div class="pnav-status" aria-hidden="true"><span>9:41</span></div>' : ""}${inner}${home ? '<div class="pnav-home" aria-hidden="true"></div>' : ""}</div>`;
+// 데스크톱 웹 창 — 창 막대(점 셋) + 화면(사이드바 · 머리 · 본문). width 는 잘라 본 창의 폭(px) — 없으면 견본 칸을 채우고 minWidth 아래로는 줄지 않는다
+// (가로로 밀리는 칸 안에 둔다). overlay 는 화면 위에 뜬 층(딤 · 패널 · 펼침 메뉴 · 말풍선)
+const pnavDesk = ({ width = 0, minWidth = 760, height = 520, side = "", header = "", main = "", overlay = "", attrs = "" } = {}) =>
+  `<div class="pnav-wide"><div ${attrsOf(['class="pnav-desk"', `style="${width ? `width: ${width}px;` : `min-width: ${minWidth}px;`} --pnav-h: ${height}px;"`, attrs])}><div class="pnav-desk-bar" aria-hidden="true"><span></span><span></span><span></span></div><div class="pnav-desk-view">${side}<div class="pnav-desk-main">${header}<div class="pnav-desk-scroll" data-pnav-scroll>${main}</div></div>${overlay}</div></div></div>`;
+// 본문 맨 위 제목(ScreenTitle — 데스크톱 h1 · text-screen-title 26/35 · 머리 아래 20) · 흰 카드 · 줄(제목 · 설명 · 금액)
+const pnavScreenTitle = (t) => `<div class="pnav-screen-title">${escape(t)}</div>`;
+const pnavCard = (body, cls = "") => `<div class="pnav-card${cls ? ` ${cls}` : ""}">${body}</div>`;
+const pnavRow = ([title, detail, value]) => `<div class="pnav-row"><span class="pnav-row-body"><span class="pnav-row-title">${escape(title)}</span>${detail ? `<span class="pnav-row-detail">${escape(detail)}</span>` : ""}</span>${value ? `<span class="pnav-row-value">${escape(value)}</span>` : ""}</div>`;
+const PNAV_LEDGER = [
+  ["김밥천국", "식비 · 현대카드 M", "8,000원"], ["버스", "교통 · 현대카드 M", "1,500원"], ["다이소", "쇼핑 · 현대카드 M", "12,300원"], ["월급", "수입 · 국민 주계좌", "3,200,000원"],
+  ["스타벅스", "식비 · 국민 주계좌", "6,800원"], ["GS25", "식비 · 현대카드 M", "3,200원"], ["교보문고", "문화 · 현대카드 M", "15,000원"], ["올리브영", "쇼핑 · 국민 주계좌", "21,900원"],
+  ["택시", "교통 · 현대카드 M", "9,800원"], ["넷플릭스", "구독 · 현대카드 M", "13,500원"], ["쿠팡", "쇼핑 · 국민 주계좌", "32,000원"], ["관리비", "주거 · 국민 주계좌", "184,000원"],
+];
+const PNAV_LEAVE = [["연차", "10월 12일 (월) ~ 14일 (수)", "승인 대기"], ["반차(오전)", "9월 30일 (수)", "승인"], ["병가", "9월 8일 (화)", "승인"], ["연차", "8월 18일 (화)", "승인"], ["경조 휴가", "7월 3일 (금)", "승인"]];
+const pnavRows = (rows, n = rows.length) => Array.from({ length: n }, (_, i) => pnavRow(rows[i % rows.length])).join("");
+
+// 화면 틀 · 이동 갤러리 — 상단 바 넷 · 하단 탭 바 셋 · 사이드바 셋 · 옆 패널 둘 · 쪽 넘김 · 표 넘김 · 목록 끝 · 떠 있는 버튼, 열여섯 판을 흰 표면(.vignette-card) 위에 그린다.
+// 견본 틀(.ptf-samples · .ptf-cap)과 상태 표(.cb-matrix)는 Text Field 갤러리 것, 라이트 · 다크 나란히 틀(.pdsp-pair · .pdsp-theme)은 03o 것이다 — 나란히 틀에는 이 블록의
+// 부품과 03o 의 알림 점만 담는다. Line Tabs 는 03j, Select 는 03h, 말풍선은 03m, 딤 · 닫기는 03k, 원은 03p, 버튼은 Button 갤러리 것이다.
+// 글은 Desk(홈 · 알림 · 가계부 · 카드 혜택 · 할 일)와 HR(휴가 현황 · 사용자 표)에서 빌렸다 — 각 스펙 md 의 코드 예와 같은 자리다.
+// 멈춘 그림은 그 순간을 고정한 것이고, "직접" 이 붙은 견본은 페이지 끝 스크립트가 스크롤 · 누름 · 마우스에 따라 바꾼다.
+export function renderNavGallery(brand) {
+  const panel = (title, sub, body) => `
+    <div class="vignette-card cb-panel pnav-panel">
+      <div class="vignette-head">
+        <div class="vignette-title">${escape(title)}</div>
+        <div class="vignette-sub">${escape(sub)}</div>
+      </div>${body}
+    </div>`;
+  const samples = (items, cls = "ptf-samples") => `
+      <div class="${cls}">${items.join("")}
+      </div>`;
+  const sample = (cap, en, body) => `
+        <div class="ptf-sample">
+          <div class="ptf-cap">${escape(cap)}<span>${escape(en)}</span></div>
+          ${body}
+        </div>`;
+  // 상태 표 — 줄(머리 글 · 영문) × 칸. 칸마다 부품을 실제 크기로 그린다. 칸이 좁아지면 판(.cb-panel)이 가로로 밀린다
+  const matrix = (cls, first, cols, rows, cell) => `
+      <div class="cb-matrix ${cls}" style="--cb-cols: ${cols.length};">
+        <div class="cb-matrix-row cb-matrix-row--head"><div class="cb-matrix-head">${escape(first)}</div>${
+          cols.map((c) => `<div class="cb-matrix-head">${escape(c.ko)}<span>${escape(c.en)}</span></div>`).join("")
+        }</div>${rows.map((r) => `
+        <div class="cb-matrix-row"><div class="cb-matrix-label">${escape(r.ko)}<span>${escape(r.en)}</span></div>${
+          cols.map((c) => `<div class="cb-matrix-cell pnav-cell">${cell(r, c)}</div>`).join("")
+        }</div>`).join("")}
+      </div>`;
+  // 라이트 · 다크 나란히 — 페이지 테마와 관계없이 그 테마로 그린다(03o 의 틀). 이 블록의 부품만 담는다
+  const pair = (body) => `<div class="pdsp-pair">${["light", "dark"].map((t) => `<div class="pdsp-theme pdsp-theme--${t}"><div class="pdsp-theme-cap">${t === "light" ? "라이트" : "다크"}</div>${typeof body === "function" ? body(t) : body}</div>`).join("")}</div>`;
+  const cap = (text, sub = "") => `<div class="pnav-cap">${escape(text)}${sub ? `<span>${escape(sub)}</span>` : ""}</div>`;
+  const stack = (items) => `<div class="pnav-stack">${items.join("")}</div>`;
+  const DESKTOP = "ptf-samples pnav-samples--wide";
+  const NEXT = "ptf-samples pov-samples--next";
+  // 폰 화면의 몸 — 스크롤되는 목록(탭 바가 있으면 아래 여백 = 바의 아래 자리 + 66 + 24)
+  const phoneBody = (rows, { tabbar = false, cls = "", attrs = "" } = {}) => `<div ${attrsOf([`class="pnav-body${tabbar ? " pnav-body--tabbar" : ""}${cls ? ` ${cls}` : ""}"`, "data-pnav-scroll", attrs])}>${rows}</div>`;
+  const ledgerTitle = (t) => `<div class="pnav-list-title">${escape(t)}</div>`;
+
+  // 1. Top Navigation — 타입: Root · Standard(← · ✕ · ☰). 바만 떼어 360 폭 띠로, 아래는 부위를 점선으로 잰 그림
+  const bars = (t) => stack([
+    pnavPhone({ height: 56, home: false, inner: topNav({ type: "root", title: "홈", actions: [{ icon: "search", name: "검색" }, { icon: "bell", name: "알림, 새 알림 있음", dot: true }] }), cls: "pnav-phone--bar" }),
+    cap("Root — 탭 첫 화면", "큰 제목 22/30 · 왼쪽 16 · 뒤로 없음"),
+    pnavPhone({ height: 56, home: false, inner: topNav({ title: "알림", text: { label: "모두 읽음" } }), cls: "pnav-phone--bar" }),
+    cap("Standard — ← · 제목 · 글 버튼", "제목 18/24 · 왼쪽 56 · 글 버튼 44 · 좌우 10"),
+    pnavPhone({ height: 56, home: false, inner: topNav({ title: "거래 가져오기", leading: "close" }), cls: "pnav-phone--bar" }),
+    cap("Standard — ✕ (독립 흐름)", "가져오기 · 처음 쓰기 — 닫으면 처음 자리로"),
+    pnavPhone({ height: 56, home: false, inner: topNav({ title: "휴가 현황", leading: "menu" }), cls: "pnav-phone--bar" }),
+    cap("Standard — ☰ (HR 폰)", "주 메뉴(왼쪽 Side Panel)를 연다"),
+  ]);
+  const guide = pnavPhone({ height: 56, home: false, cls: "pnav-phone--bar pnav-guide", inner: topNav({ title: "알림", actions: [{ icon: "search", name: "검색" }, { icon: "settings", name: "알림 설정" }] }) });
+  const guideRoot = pnavPhone({ height: 56, home: false, cls: "pnav-phone--bar pnav-guide", inner: topNav({ type: "root", title: "가계부", actions: [{ icon: "search", name: "검색" }] }) });
+  const typePanel = panel(
+    "Top Navigation — 타입: Root · Standard(← · ✕ · ☰)",
+    "화면 맨 위의 바다 — 높이 56 은 폰 · 데스크톱 모든 화면이 같고, 바탕은 불투명한 bg-layer-default 다. 탭 첫 화면(홈 · 가계부 · 캘린더 · 전체)은 Root — 뒤로 버튼 없이 왼쪽 큰 제목(text-t8 22/30 · 700, 화면 끝에서 16)이고, 그 아래 화면은 Standard — 왼쪽 버튼(← 뒤로 · ✕ 닫기 · ☰ 주 메뉴) 다음 제목(text-t6 18/24 · 700, 화면 끝에서 56 = 6 + 44 + 6)이다. 제목은 늘 왼쪽이다(가운데 제목은 두지 않는다). 오른쪽 자리는 아이콘 버튼 2개 권장 · 3개까지, 또는 글 버튼 하나(\"모두 읽음\" — 높이 44 · 좌우 10 · 16/22 · 500)다. 아이콘 버튼은 상자 44 가 곧 누르는 영역이고 아이콘은 24 다 — 맨 끝 상자가 화면 끝에서 6(아이콘은 16), 버튼끼리는 붙는다(아이콘 중심 간격 44). 본문의 아이콘 버튼(Button medium iconOnly 40 · 18)과 다른 부품이다. 제목은 한 줄이고 오른쪽 자리 앞 8 을 늘 비운다. ✕ 는 모달 · 독립 흐름(가져오기 · 처음 쓰기)을 닫을 때만, ☰ 는 HR 폰에서만 쓴다. 아래 점선 그림은 부위를 잰 것이다 — 버튼 상자 44(점선) · 화면 끝 6 · 제목 자리(옅은 점선) · 오른쪽 자리 앞 8.",
+    `${pair(bars)}${samples([
+      sample("부위 — Standard", "상자 44 · 화면 끝 6 · 제목 왼쪽 56 · 오른쪽 자리 앞 8", guide),
+      sample("부위 — Root", "제목 왼쪽 16 · 22/30 · 아이콘 버튼 하나", guideRoot),
+    ], NEXT)}`,
+  );
+
+  // 2. Top Navigation — 아이콘 버튼 · 글 버튼 상태, 알림 점 자리, 긴 제목, 오른쪽이 넘칠 때
+  const states = [
+    { ko: "기본", en: "enabled", i: "" },
+    { ko: "호버", en: "hovered — 웹", i: "hover" },
+    { ko: "누름", en: "pressed", i: "pressed" },
+    { ko: "포커스", en: "focused — 키보드", i: "focus" },
+    { ko: "막힘", en: "disabled", i: "disabled" },
+  ];
+  const stateMatrix = matrix("pnav-matrix", "버튼", states, [
+    { ko: "아이콘 버튼", en: "44 · 아이콘 24", kind: "icon" },
+    { ko: "글 버튼", en: "44 · 좌우 10 · t5 500", kind: "text" },
+  ], (r, c) => `<span class="pnav-surface">${r.kind === "icon"
+    ? topNavIcon({ icon: "search", name: "검색", interaction: c.i, disabled: c.i === "disabled" })
+    : topNavText({ label: "모두 읽음", interaction: c.i, disabled: c.i === "disabled" })}</span>`);
+  const dotZoom = `<span class="pnav-zoom" aria-hidden="true"><span class="pnav-zoom-in">${topNavIcon({ icon: "bell", name: "알림, 새 알림 있음", dot: true })}</span></span>`;
+  const longTitle = pnavPhone({ height: 56, home: false, cls: "pnav-phone--bar", inner: topNav({ title: "현대카드 M Edition3 카드 혜택 자세히 보기", actions: [{ icon: "share", name: "공유" }, { icon: "ellipsis", name: "카드 혜택 더보기" }] }) });
+  const threeIcons = pnavPhone({ height: 56, home: false, cls: "pnav-phone--bar", inner: topNav({ type: "root", title: "가계부", actions: [{ icon: "search", name: "검색" }, { icon: "eyeOff", name: "금액 가리기" }, { icon: "ellipsis", name: "가계부 더보기" }] }) });
+  const buttonPanel = panel(
+    "Top Navigation — 버튼 상태 · 알림 점 · 긴 제목 · 넘치면 ⋯",
+    "버튼의 바탕은 누를 때 · 마우스를 올릴 때만 보인다 — 누름은 bg-layer-default-pressed + 2px 거리 축소(배율 (44 − 2) ÷ 44, 150ms pressed-scale — 모션 줄이기면 색만), 호버는 같은 바탕이고 축소가 없다(웹). 모서리는 8(r2)이다. 키보드 포커스에만 상자 안쪽 2px 링(stroke-focus-ring) — 버튼끼리 붙어 바깥 링이 이웃에 걸리기 때문이다. 막힌 버튼은 아이콘 · 글이 fg-disabled 이고 흐리게 하지 않는다. 알림 점은 벨에 Notification Badge small(점 6 · fg-brand)을 붙인다 — 24 아이콘 상자의 x 17 ~ 23 · y 1 ~ 7 이고(오른쪽 그림은 3배), 상단 바에는 점만 둔다(숫자는 두지 않는다). 새 알림이 있는지는 버튼 이름에 넣는다(\"알림, 새 알림 있음\"). 제목은 한 줄 — 길면 말줄임(…)하고 오른쪽 자리 앞 8 을 비운다. 오른쪽 아이콘이 셋을 넘으면 자주 쓰는 것만 남기고 나머지는 ⋯ 하나에 모은다(이름 \"{화면 이름} 더보기\" — 1280 이상 Menu, 미만 Menu Sheet). 표는 그 순간을 멈춰 그렸다.",
+    `${stateMatrix}${samples([
+      sample("알림 점 — 24 아이콘 상자 × 3", "Notification Badge small · x 17 ~ 23 · y 1 ~ 7 · fg-brand", `<div class="pnav-surface pnav-surface--zoom">${dotZoom}</div>`),
+      sample("긴 제목 — 말줄임 · 오른쪽 자리 앞 8", "한 줄 · 글자 크기 설정은 1.2배까지 — 바 높이 56 그대로", longTitle),
+      sample("셋까지 — 넘치면 ⋯", "검색 · 금액 가리기 · ⋯(가계부 더보기)", threeIcons),
+    ], NEXT)}`,
+  );
+
+  // 3. Top Navigation — 위 안전 영역 · 스크롤해도 선 없음. 오른쪽 폰은 실제로 스크롤된다
+  const notch = pnavPhone({ height: 420, status: 47, inner: `${topNav({ type: "root", title: "홈", safeTop: 47, actions: [{ icon: "search", name: "검색" }, { icon: "bell", name: "알림, 새 알림 있음", dot: true }] })}${phoneBody(`${ledgerTitle("이번 달 거래")}${pnavRows(PNAV_LEDGER, 8)}`)}` });
+  const scrolled = pnavPhone({ height: 420, inner: `${topNav({ title: "알림", text: { label: "모두 읽음" } })}${phoneBody(pnavRows([["카드 결제 예정", "현대카드 M · 10월 15일", "184,000원"], ["예산 80% 사용", "식비 · 10월", ""], ["자동 이체 완료", "관리비 · 국민 주계좌", "184,000원"], ["카드 실적 달성", "현대카드 M · 30만원", ""], ["더치페이 요청", "김민수 · 저녁", "21,000원"]], 12), { attrs: 'data-pnav-scrolltop="180" tabindex="0" role="region" aria-label="알림 목록"' })}` });
+  const barPanel = panel(
+    "Top Navigation — 바: 위 안전 영역 · 스크롤해도 선 · 그림자 없음",
+    "위 안전 영역(상태 표시줄 · 노치)만큼 바가 높아지고 버튼 · 제목은 그 아래 56 에 놓인다 — 바탕은 화면 끝까지, 누르고 읽는 것은 안전 영역 안이다(Layout 의 Safe Area — 왼쪽 폰은 위 47). 좌우 안전 영역도 바의 여백 6 에 더한다. 바는 맨 위에 붙어(sticky · z-sticky 50) 스크롤해도 그 자리에 있고, 목록이 그 밑으로 지나가도 선 · 그림자를 긋지 않는다(SEED Top Navigation — \"고정된 영역과 스크롤되는 영역을 구분하기 위해 별도의 시각적인 장치를 표시하지 않습니다\"). 스크롤 방향에 따라 숨지도 않고, 투명 바는 두지 않는다. 한 표면 안에서 머리와 본문이 따로 스크롤되는 대화상자 · 옆 패널 · 사이드바만 그 부품의 규칙대로 머리 아래 1px 선을 긋는다. 오른쪽 폰은 이미 조금 내려 둔 목록이고 실제로 스크롤된다.",
+    samples([
+      sample("위 안전 영역 47 — 바가 그만큼 높아진다", "safe-area-inset-top · 내용은 그 아래 56", notch),
+      sample("스크롤한 목록 — 선 · 그림자 없음", "직접 스크롤 — 바는 그 자리 · 숨지 않는다", scrolled),
+    ]),
+  );
+
+  // 4. Top Navigation — 데스크톱 머리(Desk) · HR 은 머리 없음. 창 1024 — 가로로 밀린다
+  const deskHeader = topNav({ type: "desktop", primary: "내역 추가", actions: [{ icon: "eyeOff", name: "금액 가리기" }, { icon: "bell", name: "알림, 새 알림 있음", dot: true }, { icon: "settings", name: "설정" }] });
+  const deskMain = `${pnavScreenTitle("가계부")}<div class="pnav-desk-cards">${pnavCard(`<div class="pnav-card-cap">이번 달 지출</div><div class="pnav-card-num">1,240,000원</div>`)}${pnavCard(`<div class="pnav-card-cap">수입</div><div class="pnav-card-num">3,200,000원</div>`)}${pnavCard(`<div class="pnav-card-cap">남은 예산</div><div class="pnav-card-num">360,000원</div>`)}</div>${pnavCard(pnavRows(PNAV_LEDGER, 6), "pnav-card--list")}`;
+  const deskFrame = pnavDesk({ height: 480, side: sideNav({ groups: PNAV_DESK_NAV, current: "가계부", collapsed: true }), header: deskHeader, main: deskMain });
+  const hrMain = `<div class="pnav-desk-top">${pnavScreenTitle("휴가 현황")}</div>${pnavCard(pnavRows(PNAV_LEAVE), "pnav-card--list")}`;
+  const hrFrame = pnavDesk({ height: 420, side: sideNav({ groups: PNAV_HR_NAV, current: "휴가 현황", collapsed: true, logo: "Porest HR" }), main: hrMain });
+  const deskPanel = panel(
+    "Top Navigation — 데스크톱 머리(Desk) · HR 은 머리 없음",
+    "768 이상의 Desk 웹은 사이드바 오른쪽 · 본문 위에 머리(desktop)를 둔다 — 높이 56 · 선 없음 · 바탕 bg-layer-default 이고, 오른쪽에 주 버튼 하나(Button brandSolid small 36 — \"내역 추가\")와 아이콘 버튼 3개까지(금액 가리기 · 알림 · 설정)를 둔다. 주 버튼과 첫 아이콘 버튼 상자는 8 떨어지고, 맨 끝 아이콘 버튼의 상자는 화면 끝에서 6 — 폰과 같은 규칙이다. 왼쪽 자리는 본문 여백 32 에서 시작한다(검색 입구 — 앱 적용 때 정한다). 화면 제목은 머리가 아니라 본문 맨 위 h1 이다(text-screen-title 26/35 · 700, 머리 아래 spacing-nav-to-title 20). 접기 버튼은 사이드바 머리에, 테마는 설정에 있다. HR 은 데스크톱 머리를 두지 않는다 — 위치는 사이드바의 지금 항목(휴가 › 휴가 현황 — 접힌 사이드바에서는 부모 휴가)과 본문 제목이 알린다. 두 창 모두 768 ~ 1279(사이드바 접힘 56)이고, 좁은 화면에서는 가로로 밀린다.",
+    `${samples([sample("Desk — 768 ~ 1279 · 머리 56 · 주 버튼 + 아이콘 셋 · 본문 h1", "<TopNavigation type=\"desktop\"> · <ScreenTitle>가계부</ScreenTitle>", deskFrame)], DESKTOP)}${samples([
+      sample("HR — 머리 없음 · 사이드바 + 본문 h1", "접기 버튼은 사이드바 머리 · 위치는 사이드바의 지금 항목", hrFrame),
+    ], `${DESKTOP} pov-samples--next`)}`,
+  );
+
+  // 5. Bottom Navigation — 펼침 66 · 줄어듦 48 · 홈 표시줄 있음(28 · 26) · 없음(14 · 12)
+  const tabPhone = ({ current = "home", compact = false, home = true, title = "홈", type = "root" } = {}) => pnavPhone({ height: 260, home, inner: `${topNav({ type, title, actions: type === "root" ? [{ icon: "search", name: "검색" }, { icon: "bell", name: "알림" }] : [] })}${phoneBody(pnavRows(PNAV_LEDGER, 6), { tabbar: true })}${tabBar({ current, compact })}` });
+  const barSizes = (t) => stack([
+    tabPhone({}),
+    cap("펼침 66 — 좌우 14 · 아래 28", "홈 표시줄 34 − 6 · 칸 약 61 × 54 · + 44"),
+    tabPhone({ compact: true }),
+    cap("줄어듦 48 — 좌우 36 · 아래 26", "라벨은 보이지 않게(이름은 남는다) · 칸 약 53 × 40 · + 36"),
+    tabPhone({ home: false }),
+    cap("홈 표시줄 없음 — 아래 14", "줄어들면 12"),
+  ]);
+  const wide = `<div class="pnav-wide">${pnavPhone({ height: 230, inner: `${phoneBody(pnavRows(PNAV_LEDGER, 4), { tabbar: true })}${tabBar({ current: "ledger" })}`, cls: "pnav-phone--tablet" })}</div>`;
+  const sizePanel = panel(
+    "Bottom Navigation — 떠 있는 알약: 펼침 66 · 줄어듦 48",
+    "Desk 앱 · Desk 웹 768 미만의 주 메뉴다 — 화면 아래에 떠 있는 알약(모서리 full)이고 칸은 다섯(홈 · 가계부 · + · 캘린더 · 전체)이다. 바탕은 불투명한 떠 있는 표면 bg-layer-floating 이고 흐림을 두지 않는다 — 뒤로 짙은 카드가 지나가도 라벨 대비가 그대로다. 그림자 shadow-s3(다크 s3-dark) + 안쪽 1px stroke-neutral-subtle 로 흰 화면 위에서도 가장자리가 잡힌다. 펼친 바는 높이 66 · 화면 끝에서 좌우 14 · 아래 max(14, 아래 안전 영역 − 6) — 홈 표시줄(34)이 있으면 28 로 바의 아래 여백 6 만 안전 영역에 걸치고 누르는 칸은 그 위에서 끝난다. 아래로 스크롤하면 줄어든다 — 높이 48 · 좌우 36 · 아래 max(12, 안전 영역 − 8) · 안쪽 4 · 8 · + 원 36(아이콘 20), 라벨은 보이지 않게만 숨겨 칸마다 이름이 남는다. 칸은 바 폭을 똑같이 나누고(사이 2) 넓은 화면에서는 480 으로 가운데에 선다(아래 그림 — 화면 600). 본문 스크롤의 맨 아래에는 바의 아래 자리 + 66 + 24 를 비워(바가 줄어도 그대로) 마지막 줄이 바 위 24 에서 끝난다. z-sticky 50.",
+    `${pair(barSizes)}${samples([sample("넓은 화면 — 최대 480 · 가운데", "화면 600(768 미만) — 바는 480 으로 선다", wide)], `${NEXT} pnav-samples--wide`)}`,
+  );
+
+  // 6. Bottom Navigation — 지금 탭 · 가운데 + · 상태(누름 · 포커스). 바만 떼어 360 폭 아래 띠로
+  const strip = (args) => pnavPhone({ height: 110, inner: tabBar(args), cls: "pnav-phone--strip" });
+  const selected = (t) => stack([
+    strip({ current: "home" }), cap("홈 — + 의 이름 \"거래 추가\"", "지금 탭 fg-neutral · 선 2.5 / 다른 탭 fg-neutral-subtle · 선 2"),
+    strip({ current: "calendar" }), cap("캘린더 — + 의 이름 \"일정 추가\"", "+ 는 탭이 아니라 그 화면의 추가 — 브랜드 원 44 · 흰 + 24"),
+    strip({ current: "more", compact: true }), cap("줄어듦 — 지금 탭 전체", "라벨은 보이지 않게만 — 이름 \"전체\" 는 남는다"),
+  ]);
+  const tabStates = [
+    { ko: "누름 — 칸", en: "pressed — 2px 거리 축소만, 색 그대로", args: { current: "home", state: { at: "ledger", interaction: "pressed" } } },
+    { ko: "포커스 — 칸", en: "focused — 칸 안쪽 2px · 모서리 12", args: { current: "home", state: { at: "ledger", interaction: "focus" } } },
+    { ko: "누름 — +", en: "pressed — bg-brand-solid-pressed + 축소", args: { current: "home", addInteraction: "pressed" } },
+    { ko: "포커스 — +", en: "focused — 원 바깥 2px", args: { current: "home", addInteraction: "focus" } },
+  ];
+  const statePhones = samples(tabStates.map((s) => sample(s.ko, s.en, strip(s.args))), `${NEXT} pnav-samples--strips`);
+  const selectPanel = panel(
+    "Bottom Navigation — 지금 탭 · 가운데 + · 누름 · 포커스",
+    "칸은 아이콘(lucide 선 24) 위 · 라벨(text-t1 11/15 · 500 — 글자 크기 설정을 따르지 않는다) 아래, 사이 2 다. 지금 탭은 아이콘 · 라벨이 짙은 글자색 fg-neutral 이고 아이콘 선이 2.5, 다른 탭은 fg-neutral-subtle · 선 2 다 — 브랜드 색으로 칠하지 않고 굵기 · 크기도 바꾸지 않는다(Tabs · Chip 의 \"고름 = 짙은 색\" 과 같다). 보조 기술에는 aria-current=\"page\" 다. 가운데 칸은 탭이 아니라 그 화면의 추가 동작이다 — 브랜드 원 44(bg-brand-solid) + 흰 + 24(선 2.5), 라벨은 없고 이름이 화면마다 다르다(홈 · 가계부 · 전체는 \"거래 추가\", 캘린더는 \"일정 추가\"). 탭 바에서 브랜드 색은 + 하나뿐이다. 누르면 칸은 2px 거리로 줄기만 하고 색은 그대로다(손을 떼기 전에 고른 것처럼 보이지 않게) — + 는 bg-brand-solid-pressed + 축소. 마우스 호버 모양은 없다. 키보드 포커스에만 링 — 칸은 안쪽 2px(모서리 12), + 는 원 바깥 2px. 아래 넷은 그 순간을 멈춰 그렸다.",
+    `${pair(selected)}${statePhones}`,
+  );
+
+  // 7. Bottom Navigation — 직접: 줄어들기 · 펴지기 · 지금 탭 다시 누르기 · 탭마다 스크롤 기억 + 가계부 묶음(화면 위 Line Tabs)
+  const tabScreens = [
+    { key: "home", title: "홈", rows: PNAV_LEDGER },
+    { key: "ledger", title: "가계부", rows: [...PNAV_LEDGER].reverse() },
+    { key: "calendar", title: "캘린더", rows: [["팀 회의", "10월 8일 (목) 10:00", ""], ["치과", "10월 9일 (금) 14:30", ""], ["관리비 이체", "10월 10일 (토)", "184,000원"], ["엄마 생신", "10월 12일 (월)", ""], ["카드 결제일", "10월 15일 (목)", "184,000원"]] },
+    { key: "more", title: "전체", rows: [["설정", "", ""], ["카드 혜택", "", ""], ["할 일", "", ""], ["더치페이", "", ""], ["설명서", "", ""], ["문의", "", ""]] },
+  ];
+  const liveTabs = pnavPhone({
+    height: 560,
+    cls: "pnav-phone--live",
+    attrs: "data-ptbar-phone",
+    inner: `${topNav({ type: "root", title: "홈", actions: [{ icon: "search", name: "검색" }, { icon: "bell", name: "알림" }], attrs: "data-ptbar-head" })}${tabScreens.map((s, i) => phoneBody(pnavRows(s.rows, 16), { tabbar: true, attrs: `data-ptbar-screen="${s.key}" data-ptbar-title="${escape(s.title)}" tabindex="0" role="region" aria-label="${escape(s.title)}"${i ? " hidden" : ""}` })).join("")}${tabBar({ current: "home", live: true })}`,
+  });
+  const liveStatus = '<p class="pnav-live-status" aria-hidden="true" data-ptbar-status="">아래로 스크롤해 보세요 — 20 을 넘게 내리면 바가 48 로 준다.</p>';
+  const moneyPhone = (sel) => pnavPhone({
+    height: 460,
+    inner: `${topNav({ type: "root", title: "가계부", actions: [{ icon: "search", name: "검색" }] })}<div class="pnav-tabs">${lineTabs({ size: "medium", label: "가계부", tabs: ["가계부", "자산", "통계", "예산"].map((l) => lineTab({ label: l, selected: l === sel })) })}</div>${phoneBody(sel === "자산"
+      ? pnavRows([["신한 주거래", "신한 · 입출금", "1,284,000원"], ["KB 청년 적금", "KB국민 · 적금", "3,600,000원"], ["키움 주식 계좌", "키움증권 · 증권", "7,412,500원"], ["업비트", "업비트 · 코인", "523,180원"], ["비상금", "현금", "300,000원"]], 7)
+      : pnavRows(PNAV_LEDGER, 7), { tabbar: true })}${tabBar({ current: "ledger" })}`,
+  });
+  const livePanel = panel(
+    "Bottom Navigation — 직접: 줄어들기 · 다시 누르기 · 가계부 묶음은 화면 위 Tabs",
+    "아래로 20 이상 스크롤하면 바가 48 로 줄어들고, 위로 28 이상 스크롤하거나 맨 위 40 안으로 오면 펴진다(스크롤 방향이 바뀌면 다시 센다 · 200ms d4). 줄어든 바를 누르면 펴진다 — 칸을 눌렀으면 그 탭으로도 간다. 탭마다 마지막 스크롤 위치를 기억해 다른 탭을 다녀와도 그 자리이고, 지금 탭을 다시 누르면 그 탭의 첫 화면 · 맨 위로 간다(같은 주소를 쌓지 않는다). + 의 이름은 화면마다 바뀐다(캘린더 — \"일정 추가\"). 왼쪽 폰은 실제로 스크롤 · 누를 수 있다(모션 줄이기면 바로 바뀐다). 가계부 · 자산 · 통계 · 예산은 탭 바 칸이 아니라 가계부 화면 위 1차 Line Tabs(Fill · medium 44)다 — 상단 바 바로 아래에 붙어 함께 고정되고, 탭 바는 어느 화면에서나 홈 · 가계부 · + · 캘린더 · 전체 그대로다(가운데 · 오른쪽 폰 — 자산을 골라도 탭 바의 지금 탭은 가계부). 웹은 고른 탭을 주소에 둔다.",
+    samples([
+      sample("직접 — 스크롤 · 칸 · 다시 누르기", "20 아래로 → 48 · 28 위로 · 맨 위 40 → 66 · 줄어든 바 누르면 펴짐", `${liveTabs}${liveStatus}`),
+      sample("가계부 묶음 — 가계부", "화면 위 Line Tabs 넷(Fill · medium 44) · 탭 바 그대로", moneyPhone("가계부")),
+      sample("가계부 묶음 — 자산", "자산을 골라도 탭 바의 지금 탭은 가계부", moneyPhone("자산")),
+    ]),
+  );
+
+  // 8. Side Navigation — 펼침 240(1280 이상) · 접힘 56(768 ~ 1279). 창 1280 · 1024
+  const deskWide = pnavDesk({ minWidth: 900, height: 520, side: sideNav({ groups: PNAV_DESK_NAV, current: "가계부", hover: "자산" }), header: deskHeader, main: deskMain });
+  const hrWide = pnavDesk({ minWidth: 900, height: 520, side: sideNav({ groups: PNAV_HR_NAV, current: "휴가 현황", logo: "Porest HR" }), main: hrMain });
+  const widthPanel = panel(
+    "Side Navigation — 1280 이상 펼침 240 · 768 ~ 1279 접힘 56",
+    "데스크톱(768 이상)의 주 메뉴다 — 화면 왼쪽 높이 전체의 흰 면(bg-layer-default — 회색 본문 bg-layer-basement 와 면으로 갈린다) + 오른쪽 안쪽 1px stroke-neutral-subtle 이고, 본문과 따로 스크롤된다. 1280 이상은 펼침 240(layout-sidebar), 768 ~ 1279 는 아이콘만 56(layout-sidebar-collapsed)으로 저절로 접혀 본문을 넓게 둔다 — 처음 열 때도 창 폭을 본다. 머리의 접기 버튼으로 어느 폭에서나 손으로 접고 펼 수 있고 손으로 접은 상태는 브라우저에 기억한다(localStorage). 768 미만에서는 없다 — Desk 는 하단 탭 바, HR 은 ☰ 로 여는 왼쪽 옆 패널이다. 위 Desk 창(1280 이상)은 가계부가 지금 항목, 자산에 마우스를 올린 순간이다. 아래 HR 창은 하위 휴가 현황이 지금 화면이라 부모 휴가가 저절로 펼쳐져 있다 — 빵부스러기 없이 사이드바의 지금 항목과 본문 제목이 위치를 알린다. 위 판의 768 ~ 1279 창이 접힌 모습이다. 좁은 화면에서는 창이 가로로 밀린다.",
+    `${samples([sample("Desk — 1280 이상 · 펼침 240", "지금 항목 가계부 · 호버 자산 · 머리 56", deskWide)], DESKTOP)}${samples([
+      sample("HR — 1280 이상 · 하위가 지금이면 부모가 펼쳐진 채", "휴가 › 휴가 현황 · 머리 없음", hrWide),
+    ], `${DESKTOP} pov-samples--next`)}`,
+  );
+
+  // 9. Side Navigation — 머리 · 묶음 · 항목 · 지금 항목 · 하위 · 스크롤(머리 아래 선 · 끝 흐림) — 사이드바만, 라이트 · 다크
+  const navAlone = (t) => `<div class="pnav-navs">${sideNav({ groups: PNAV_HR_NAV, current: "휴가 현황", hover: "캘린더", logo: "Porest HR", height: 620 })}${sideNav({ groups: PNAV_DESK_NAV, current: "나무증권", collapsed: true, height: 620 })}</div>`;
+  const scrolledNav = `<div class="pnav-navs">${sideNav({ groups: PNAV_DESK_NAV, current: "가계부", height: 340, scrolled: true })}</div>`;
+  const LONG_NAV = [{ label: "근무", items: [{ label: "홈", icon: "layoutGrid" }, { label: "연말정산 · 의료비 서류 제출 확인", icon: "briefcase" }, { label: "캘린더", icon: "calendarDays" }] }];
+  const longNav = `<div class="pnav-navs">${sideNav({ groups: LONG_NAV, current: "홈", logo: "Porest HR", height: 300 })}</div>`;
+  const itemStates = [
+    { ko: "기본", en: "enabled", i: "" },
+    { ko: "호버", en: "hovered — 웹", i: "hover" },
+    { ko: "누름", en: "pressed — 아이콘 · 이름만 축소", i: "pressed" },
+    { ko: "포커스", en: "focused — 안쪽 2px", i: "focus" },
+    { ko: "막힘", en: "disabled", i: "disabled" },
+  ];
+  const itemMatrix = matrix("pnav-matrix pnav-matrix--snav", "항목", itemStates, [
+    { ko: "다른 항목", en: "current none" },
+    { ko: "지금 항목", en: "current — bg-neutral-weak-pressed" },
+  ], (r, c) => {
+    const current = r.en.startsWith("current —");
+    if (current && c.i === "disabled") return '<span class="psel-na">없음</span>';
+    return `<span class="pnav-surface pnav-surface--snav">${sideNavItem({ label: current ? "가계부" : "자산", icon: current ? "clipboardList" : "wallet", current, interaction: c.i, disabled: c.i === "disabled" })}</span>`;
+  });
+  const navPanel = panel(
+    "Side Navigation — 머리 · 묶음 · 항목 · 지금 항목 · 하위 · 스크롤",
+    "머리는 높이 64 · 안쪽 8 이고 왼쪽에 서비스 마크 24 + 이름(16/22 · 700), 오른쪽 위 12 에 접기 버튼(상자 40 · 아이콘 18 fg-neutral-subtle · 모서리 8 · 누르는 영역 44 · 이름 \"사이드바\" + aria-expanded)이다. 로고는 누르지 않는다. 묶음 이름은 14/19 · 700 · fg-neutral-muted(글은 화면 끝에서 14), 묶음 사이는 8 이다. 항목은 최소 44 · 좌우 8 · 모서리 10, 아이콘 20(fg-neutral-subtle) · 사이 12 · 이름 14/19 · 500(fg-neutral-muted)이고, 이름이 길면 말줄임하지 않고 줄을 바꾼다. 지금 화면의 항목은 한 단계 짙은 옅은 회색 bg-neutral-weak-pressed + 짙은 아이콘 · 이름 fg-neutral 이고 굵기는 500 그대로다 — 다크에서도 호버 바탕(bg-layer-default-pressed)과 갈린다. 지금 항목은 마우스를 올리거나 눌러도 바탕이 그대로이고 누르면 아이콘 · 이름만 2px 거리로 준다. 하위가 있는 항목(부모)은 펼치기만 하고(꺾쇠 16 — 펼치면 위로 200ms) 어떤 화면으로도 가지 않는다 — 하위 항목은 아이콘 없이 이름만 부모 이름과 같은 자리(40)에서 시작한다. 머리 · 바닥은 고정이고 내용만 스크롤된다 — 위 끝에서 떨어지면 머리 아래 1px 선(stroke-neutral-subtle)이 생기고, 내용 아래 끝 24 는 늘 흐리다(gradient-fade-mask · 아래 여백 24). 접히면 이름 · 묶음 이름 · 꺾쇠 · 하위는 보이지 않게만 남고 묶음 사이에 1px 선(폭 24)이 생긴다 — 하위가 지금인 부모(증권)가 지금 항목이다. 아래 왼쪽 사이드바는 조금 내려 둔 내용이고 실제로 스크롤된다. 표는 그 순간을 멈춰 그렸다.",
+    `${pair(navAlone)}${itemMatrix}${samples([
+      sample("스크롤 — 머리 아래 선 · 아래 끝 흐림 24", "내용만 스크롤 · 위 끝에서 떨어지면 선(150ms)", scrolledNav),
+      sample("긴 이름 — 줄을 바꾼다", "말줄임하지 않는다 · 항목이 그만큼 늘어난다", longNav),
+    ], NEXT)}`,
+  );
+
+  // 10. Side Navigation — 접혔을 때: 이름 말풍선 · 옆 펼침 메뉴(1280 미만이어도) + 직접(접기 · 펼치기 · 마우스 · 키보드)
+  // 항목 자리 — 머리 64 + 내용 위 8 + 항목 44 × 차례. 둘째 묶음부터는 묶음 사이 선(8 + 1 + 8)이 더해진다
+  const itemTop = (index) => 64 + 8 + 44 * index;
+  const tipCrop = pnavDesk({ width: 420, height: 330, side: sideNav({ groups: PNAV_DESK_NAV, current: "가계부", collapsed: true, hover: "자산" }), main: `${pnavScreenTitle("가계부")}${pnavCard(pnavRows(PNAV_LEDGER, 3), "pnav-card--list")}`, overlay: sideNavTip({ text: "자산", top: itemTop(1) + 22 }) });
+  const flyCrop = pnavDesk({ width: 420, height: 330, side: sideNav({ groups: PNAV_DESK_NAV, current: "나무증권", collapsed: true }), main: `${pnavScreenTitle("나무증권")}${pnavCard(pnavRows([["삼성전자", "보통주 · 12주", "852,000원"], ["카카오", "보통주 · 30주", "1,236,000원"], ["KODEX 200", "ETF · 8주", "296,400원"]]), "pnav-card--list")}`, overlay: sideNavFlyout({ parent: "증권", items: ["나무증권", "토스증권"], current: "나무증권", hover: "토스증권", top: itemTop(2) }) });
+  const liveDesk = pnavDesk({ height: 520, side: sideNav({ groups: PNAV_HR_NAV, current: "휴가 현황", collapsed: true, logo: "Porest HR", live: true }), main: hrMain, attrs: "data-psnav-frame" });
+  const flyPanel = panel(
+    "Side Navigation — 접혔을 때: 이름 말풍선 · 옆 펼침 메뉴 · 직접",
+    "접힌 사이드바(56)에서 하위가 없는 항목에 마우스를 올리면 200ms 뒤 · 키보드 초점이면 바로 오른쪽에 이름 말풍선(Help Bubble 툴팁 — 짙은 바탕 · 모서리 12 · 13/18 · 700, 항목 오른쪽 12)이 뜨고 떠나면 100ms 뒤 닫힌다. 하위가 있는 항목은 누른 아이콘 옆 8(위 끝 맞춤)에 펼침 메뉴가 열린다 — Menu 와 같은 표면(bg-layer-floating · 모서리 20 · shadow-s3 · 위아래 8 · 폭 200 · L3 z-floating 200), 맨 위에 부모 이름(13/18 · fg-neutral-subtle · 위아래 8 · 좌우 16), 줄은 높이 44 · 좌우 16 · 14/19 · fg-neutral 이고 바탕은 좌우 8 들인 알약(모서리 12 — 호버 bg-layer-floating-pressed)이다. 지금 화면의 줄은 지금 항목과 같은 bg-neutral-weak-pressed 다. 이 폭(768 ~ 1279)은 Menu 가 Menu Sheet 로 바뀌는 1280 미만이지만 사이드바의 하위 목록은 시트로 바꾸지 않는다 — Menu 경계의 예외다(줄 44 — 이 폭에 터치 태블릿이 섞인다). 마우스는 200ms 뒤 열고 메뉴로 옮겨 가는 동안 닫히지 않으며 떠나면 100ms 뒤 닫는다 · 다른 펼침 메뉴가 열려 있으면 바로 연다. 누르거나 Enter · Space 로도 열고(키보드로 열면 첫 줄로 초점), Esc · 바깥 누르기 · Tab 으로 나가면 닫는다(Esc 면 초점은 부모로). 아래 창(768 ~ 1279 · HR)은 직접 해 볼 수 있다 — 접기 버튼으로 펼침 240 ↔ 접힘 56(200ms), 펼친 사이드바의 휴가는 눌러 펼치고 접는다.",
+    `${samples([
+      sample("이름 말풍선 — 자산", "하위 없는 항목 · 마우스 200ms 뒤 · 키보드면 바로", tipCrop),
+      sample("옆 펼침 메뉴 — 증권", "폭 200 · 줄 44 · 지금 화면 줄 · 1280 미만이어도", flyCrop),
+    ], "ptf-samples pnav-samples--crops")}${samples([
+      sample("직접 — HR 768 ~ 1279 · 접힘 56", "접기 버튼 · 마우스 · 누르기 · Enter · Esc", `${liveDesk}<p class="pnav-live-status" aria-hidden="true" data-psnav-status="">아이콘에 마우스를 올리거나 휴가를 눌러 보세요.</p>`),
+    ], `${DESKTOP} pov-samples--next`)}`,
+  );
+
+  // 11. Side Panel — HR 폰 주 메뉴 서랍(왼쪽 80%). 왼쪽은 열린 순간을 멈춘 그림, 오른쪽은 ☰ 로 직접 연다
+  const drawerNav = sideNav({ groups: PNAV_HR_NAV, current: "휴가 현황", drawer: true });
+  const drawerBack = `${topNav({ title: "휴가 현황", leading: "menu", menu: { open: true } })}${phoneBody(pnavRows(PNAV_LEAVE))}`;
+  const drawerOpen = pnavPhone({ height: 560, cls: "pnav-phone--modal", inner: `<div class="pnav-back" inert>${drawerBack}</div><div class="pov-scrim" aria-hidden="true"></div>${sidePanel({ side: "left", title: "Porest HR", body: drawerNav, scrollFog: true })}` });
+  const drawerLiveId = nextPnavId("pspanel-live");
+  const drawerLive = pnavPhone({
+    height: 560,
+    cls: "pnav-phone--modal",
+    attrs: "data-pspanel-phone",
+    inner: `<div class="pnav-back" data-pspanel-back>${topNav({ title: "휴가 현황", leading: "menu", menu: { open: false, controls: drawerLiveId, live: true } })}${phoneBody(pnavRows(PNAV_LEAVE))}</div><div class="pov-scrim" aria-hidden="true" data-pspanel-scrim hidden></div>${sidePanel({ side: "left", title: "Porest HR", body: sideNav({ groups: PNAV_HR_NAV, current: "휴가 현황", drawer: true }), scrollFog: true, id: drawerLiveId, hidden: true, live: true })}`,
+  });
+  const drawerPanel = panel(
+    "Side Panel — HR 폰 주 메뉴 서랍(왼쪽 · 화면 폭의 80%)",
+    "화면 옆에서 미끄러져 나오는 모달 패널이다 — 지금 쓰는 곳은 HR 웹 768 미만의 주 메뉴 서랍 하나다. 상단 바의 ☰(이름 \"주 메뉴\" · aria-haspopup=\"dialog\" · aria-expanded)를 누르면 왼쪽에서 300ms(d6 · enter-expressive)로 들어온다. 폭은 화면의 80% 라 딤(overlay-dim 0.50 · 다크 0.65 · L2 z-modal 100)이 오른쪽 20% 에 남는다. 패널은 높이 전체에 붙고 모서리 · 그림자 · 선 없이 딤과 떠 있는 표면 bg-layer-floating 으로 뜬다(L2 z-modal-content 101). 머리는 위 24 · 좌우 24 · 아래 16 · 최소 70, 제목은 서비스 이름(\"Porest HR\" — text-t8 22/30 · 700), 닫기는 투명 상자 52 · 아이콘 22(fg-neutral-subtle — 위 28 · 오른쪽 24)다. 본문은 사이드바의 묶음 · 항목을 펼친 모양 그대로 담는다 — 본문 좌우 16 에 항목(좌우 8)이 들어와 아이콘이 제목과 같은 24 에 선다. 넘칠 수 있어 끝을 늘 흐린다(Scroll Fog overlayBody — 위 20 · 아래 80 + 본문 안 여백). 지금 화면의 묶음(휴가)은 펼쳐진 채 열리고, 항목을 누르면 이동하고 닫힌다. 딤 누르기 · 닫기 · Esc · 왼쪽으로 끌기로 닫히고, 닫히면 초점이 ☰ 로 돌아온다. 오른쪽 폰은 직접 열고 닫을 수 있다(모션 줄이기면 150ms 서서히).",
+    samples([
+      sample("열린 순간 — 휴가 묶음이 펼쳐진 채", "<SidePanelContent side=\"left\" title=\"Porest HR\"> · <SideNavigationContent>", drawerOpen),
+      sample("직접 — ☰ 로 열기", "딤 · 닫기 · Esc · 항목을 누르면 닫힌다 — 초점은 ☰ 로", `${drawerLive}<p class="pnav-live-status" aria-hidden="true" data-pspanel-status="">☰ 를 눌러 보세요.</p>`),
+    ]),
+  );
+
+  // 12. Side Panel — 오른쪽 패널(1280 이상의 보조 작업 — 쓰는 곳은 아직 없다) · 크기 480 · 720 · 960
+  const fieldRow = (label, value) => `<div class="pnav-field"><span class="pnav-field-label">${escape(label)}</span><span class="pnav-field-value">${escape(value)}</span></div>`;
+  const formBody = `${fieldRow("카드 결제 예정", "결제일 3일 전")}${fieldRow("예산 사용", "80% · 100%")}${fieldRow("자동 이체", "이체한 날")}${fieldRow("더치페이 요청", "바로")}`;
+  const rightPanel = pnavDesk({
+    minWidth: 960,
+    height: 520,
+    side: sideNav({ groups: PNAV_DESK_NAV, current: "가계부" }),
+    header: deskHeader,
+    main: deskMain,
+    overlay: `<div class="pov-scrim" aria-hidden="true"></div>${sidePanel({ side: "right", size: "medium", title: "알림 설정", description: "받을 알림과 때를 고르세요.", body: formBody, close: false, footer: [overlayButton("취소", { variant: "neutral-weak" }), overlayButton("저장")] })}`,
+    attrs: "data-pnav-modal",
+  });
+  const sizeBars = `<div class="pnav-sizes">${[["small", 480, "단순한 상세 조회"], ["medium", 720, "기본 — 두 줄 폼 · 목록과 상세 나란히"], ["large", 960, "복잡한 설정 · 편집 도구"]].map(([k, w, t]) => `<div class="pnav-size"><span class="pnav-size-track"><span class="pnav-size-bar" style="width: ${(w / 1280) * 100}%;"></span><span class="pnav-size-cap"></span></span><span class="pnav-size-text">${k} ${w} — ${escape(t)}</span></div>`).join("")}<div class="pnav-size-note">1280 화면 — 오른쪽 끝에서 잰 폭 · 점선은 80%(딤이 늘 20% 남는다)</div></div>`;
+  const rightPanelCard = panel(
+    "Side Panel — 오른쪽 패널(1280 이상) · 480 · 720 · 960",
+    "오른쪽 패널은 1280 이상에서 본문을 보면서 함께 다루는 보조 작업(목록을 보며 한 줄의 상세 · 설정)이다 — 지금 쓰는 곳은 없다. 1280 미만에서는 같은 내용을 Bottom Sheet 로 띄우고, 옆에 둘 까닭이 없으면 Dialog 다. 크기는 small 480 · medium 720(기본) · large 960 이고 어느 크기든 화면의 80% 를 넘지 않아 딤이 늘 20% 남는다. 높이는 화면 전체 · 모서리 · 그림자 · 선 없음이다. 입력 폼이면 Dialog 와 같다 — 바깥(딤)을 눌러도 · 끌어도 닫히지 않고 바닥 [취소] · Esc 로 닫으며(머리 닫기는 두지 않는다 — 닫기와 취소는 하나만), 바뀐 값이 있으면 닫기 전에 \"작성한 내용이 사라져요\" 를 묻는다. 바닥은 위 16 · 좌우 24 · 아래 24 에 Button small 36 을 오른쪽으로 모은다(사이 8). 설명은 16/22 · fg-neutral-muted · 제목과 6. 위에서 내려오는 패널 · 패널 위의 패널은 두지 않는다. 좁은 화면에서는 창이 가로로 밀린다(창이 900 보다 좁으면 패널은 80% 에서 멈춘다).",
+    `${samples([sample("1280 이상 — medium 720 · 입력 폼(바닥 취소 · 저장)", "<SidePanel form> · <SidePanelContent side=\"right\" size=\"medium\">", rightPanel)], DESKTOP)}${samples([
+      sample("크기 — 1280 화면에서", "small 480 · medium 720(기본) · large 960 · 최대 80%", sizeBars),
+    ], `${DESKTOP} pov-samples--next`)}`,
+  );
+
+  // 13. Pagination — 9칸 · 7칸 · 끝 쪽은 빈 칸 · 상태 · 누르는 영역 · 직접
+  const rows = (t, list) => stack(list.flatMap(([html, a, b]) => [`<div class="pnav-pager-row">${html}</div>`, cap(a, b)]));
+  const nine = (t) => rows(t, [
+    [pager({ page: 1, total: 12 }), "9칸 — 첫 쪽", "‹ 자리는 40 빈 칸 · 1 2 3 4 5 … 12"],
+    [pager({ page: 5, total: 12 }), "9칸 — 가운데 5 / 12", "‹ 1 … 4 5 6 … 12 › · 폭 360"],
+    [pager({ page: 12, total: 12 }), "9칸 — 마지막 쪽", "› 자리는 빈 칸 · 1 … 8 9 10 11 12"],
+    [pager({ page: 3, total: 5 }), "전체 5쪽 — 번호를 모두", "칸 수보다 적으면 모든 번호 · 1쪽 이하면 그리지 않는다"],
+  ]);
+  const seven = (t) => rows(t, [
+    [pager({ page: 2, total: 12, slots: 7 }), "7칸 — 앞쪽", "‹ 1 2 3 4 … › · 폭 280"],
+    [pager({ page: 6, total: 12, slots: 7 }), "7칸 — 가운데", "‹ … 5 6 7 … › — 첫 · 마지막 번호가 없다"],
+    [pager({ page: 11, total: 12, slots: 7 }), "7칸 — 뒤쪽", "‹ … 9 10 11 12 ›"],
+  ]);
+  const pgStates = [
+    { ko: "기본", en: "enabled", i: "" },
+    { ko: "호버", en: "hovered — 웹", i: "hover" },
+    { ko: "누름", en: "pressed — 0.95", i: "pressed" },
+    { ko: "포커스", en: "focused — 바깥 2px", i: "focus" },
+    { ko: "막힘", en: "disabled — 받는 동안", i: "disabled" },
+  ];
+  const pgCell = (current, i) => {
+    const off = i === "disabled";
+    const cls = `ppgn-cell ppgn-page${current ? " ppgn-page--current" : ""}${pnavState("ppgn-cell", i)}`;
+    return `<span class="pnav-surface"><span class="ppgn ppgn--one"><a ${attrsOf([`class="${cls}"`, !off && 'href="?page=5"', "data-pnav-link", `aria-label="${current ? 5 : 6}페이지"`, current && 'aria-current="page"', off && 'aria-disabled="true"', off && 'role="link"'])}>${current ? 5 : 6}</a></span></span>`;
+  };
+  const pgMatrix = matrix("pnav-matrix", "칸", pgStates, [
+    { ko: "다른 쪽", en: "current other", c: false },
+    { ko: "지금 쪽", en: "current — bg-neutral-inverted", c: true },
+  ], (r, c) => pgCell(r.c, c.i));
+  const hit = `<div class="pnav-pager-row pnav-pager-row--hit">${pager({ page: 5, total: 12, hit: true })}</div>`;
+  const livePager = `<div class="pnav-pager-live" data-ppgn-wrap><div class="pnav-pager-row">${pager({ page: 1, total: 12, live: true })}</div><p class="pnav-live-status" aria-hidden="true" data-ppgn-status="">1페이지, 전체 12페이지</p><p class="pnav-sr-only" role="status" aria-live="polite" data-ppgn-live-region=""></p></div>`;
+  const pagerPanel = panel(
+    "Pagination — 9칸 · 7칸 · 끝 쪽은 빈 칸 · 상태 · 누르는 영역 · 직접",
+    "데스크톱(768 이상) 긴 목록 아래 가운데(목록 끝에서 24)의 쪽 넘김 줄이다. 번호 · 화살표 · 생략 칸은 모두 40 × 40 이고 사이 없이 붙는다 — 번호는 14/19 · 700 · fg-neutral · 숫자 폭을 같게, 화살표 · 생략은 아이콘만 16, 모서리 8 이다. 지금 쪽은 짙은 채움 bg-neutral-inverted + 반전 글자 fg-neutral-inverted(다크는 밝은 칸 · 짙은 글자)이고 브랜드 색으로 칠하지 않는다(aria-current=\"page\"). 칸 수는 화면 폭으로 고정이다 — 480 이상 9칸(폭 360), 미만 7칸(280 — 가운데 구간에서는 첫 · 마지막 번호가 없다). 쪽이 바뀌어도 칸 자리는 그대로이고 생략(…)만 옮겨 간다. 첫 쪽의 이전 · 마지막 쪽의 다음 자리는 막힌 화살표가 아니라 40 빈 칸이다. 바탕은 누를 때 · 마우스를 올릴 때만 bg-layer-default-pressed(지금 쪽은 bg-neutral-inverted-pressed)이고 누르면 2px 거리 축소(40 → 0.95), 키보드 포커스에만 칸 바깥 2px 링, 목록을 다시 받는 동안은 막힌다(번호 · 화살표 fg-disabled · 지금 쪽 bg-disabled). 누르는 영역은 위아래만 44(점선 — 보이지 않는 여백 2 씩)이고 옆은 칸 폭 40 이다 — 칸이 붙어 있어서다(v106 \"누르는 영역 44\" 의 예외 — AA ✓ · AAA ⚠). 칸은 링크다(쪽은 주소에 — ?page=N). 아래 줄은 직접 넘겨 볼 수 있다 — 끝 쪽에 닿아 누르던 화살표가 빈 칸이 되면 초점이 지금 쪽 번호로 옮겨 가고, \"N페이지, 전체 12페이지\" 를 한 번 알린다.",
+    `${pair(nine)}${pair(seven)}${pgMatrix}${samples([
+      sample("누르는 영역 — 40 × 44(점선)", "위아래만 2 씩 · 옆은 칸 폭 그대로(이웃과 겹치지 않게)", hit),
+      sample("직접 — 12쪽", "누르면 칸 자리는 그대로 · 끝 쪽에서 초점은 지금 쪽으로", livePager),
+    ], NEXT)}`,
+  );
+
+  // 14. Table Pagination — 표 아래 한 줄. 고르기 둘은 Select medium(폭과 상관없이 40)
+  const userTable = (rows) => `<div class="pnav-table" role="table" aria-label="사용자"><div class="pnav-tr pnav-tr--head" role="row"><span role="columnheader">이름</span><span role="columnheader">부서</span><span role="columnheader">입사일</span></div>${rows.map(([n, d, j]) => `<div class="pnav-tr" role="row"><span role="cell">${escape(n)}</span><span role="cell">${escape(d)}</span><span role="cell">${escape(j)}</span></div>`).join("")}</div>`;
+  const USERS = [["김지원", "디자인 본부", "2024-03-12"], ["박서연", "프로덕트 본부", "2023-11-02"], ["이도현", "운영 본부", "2025-01-06"]];
+  const tableBlock = (args, rowsList = USERS) => `<div class="pnav-table-box">${userTable(rowsList)}${tablePager(args)}</div>`;
+  const narrow = `<div class="pnav-table-narrow" tabindex="0" role="region" aria-label="좁은 화면의 표"><div class="pnav-table-box pnav-table-box--narrow">${userTable(USERS)}${tablePager({ page: 2, total: 21 })}</div></div>`;
+  const tablePanel = panel(
+    "Table Pagination — 표 아래 한 줄: 줄 수 · 범위 · 이전 · 다음",
+    "데이터 표 아래 12(spacing-component-default)에 두는 한 줄이다 — 높이 40 · 양 끝 정렬 · 줄바꿈하지 않는다. 왼쪽은 줄 수 고르기(\"10개\" · \"25개\" · \"50개\" + \"씩 보기\"), 오른쪽은 범위 고르기(\"11-20\" + \"/ 총 21개\")와 이전 · 다음이다. 왼쪽 묶음 ↔ 오른쪽 묶음 · 범위 묶음 ↔ 화살표는 16, 고르기 ↔ 글은 8, 글은 14/19 · 400 · fg-neutral(수는 숫자 폭을 같게 · 세 자리마다 쉼표)이다. 두 고르기는 Select medium(40 · 최소 폭 96 · 모서리 8)을 화면 폭과 상관없이 쓴다 — 줄이 한 높이 40 을 지키도록 Select 의 \"1280 미만 large 52\" 규칙에서 뺐다. 범위 목록은 최대 높이 240 이다. 이전 · 다음은 Pagination 의 화살표 칸(40 × 40 · 아이콘 16 · 누르는 영역은 위아래만 44)이 붙은 것이고, 끝에서는 숨기지 않고 막는다(fg-disabled · aria-disabled — 초점이 그 자리에 남는다). 전체 수를 모르면 범위는 글로만(\"11-20\"), 표가 비면 범위는 \"0-0\"(막힘) · 둘 다 막히고 줄 수는 그대로 바꿀 수 있다. 좁은 화면에서는 표와 줄을 같은 가로 스크롤 상자 안에 둔다(오른쪽 아래). 맨 위 줄은 이전 · 다음을 직접 눌러 볼 수 있다.",
+    `${samples([
+      sample("HR 사용자 21명 — 11-20 · 직접", "totalItems={21} · 10개 씩 — 끝에서는 막힌다", tableBlock({ page: 2, total: 21, live: true })),
+      sample("첫 범위 — 이전 막힘", "aria-disabled — 초점이 남는다", tableBlock({ page: 1, total: 237 })),
+    ], "ptf-samples pnav-samples--tables")}${samples([
+      sample("전체 수를 모름 — 글로만", "hasNextPage · \"11-20\"", tableBlock({ page: 2, total: null, hasNext: true })),
+      sample("빈 표 — \"0-0 / 총 0개\"", "둘 다 막힘 · 줄 수는 바꿀 수 있다", tableBlock({ page: 1, total: 0 }, [])),
+      sample("좁은 화면 — 표와 함께 가로로", "같은 가로 스크롤 상자 · 줄을 접지 않는다", narrow),
+    ], `${NEXT} pnav-samples--tables`)}`,
+  );
+
+  // 15. 끝없이 불러오기 — 폰의 긴 목록은 쪽을 나누지 않는다. 목록 끝 자리: 받는 중 · 못 불러옴 · 끝
+  const endPhone = (status, n = 5) => pnavPhone({ height: 330, inner: `${topNav({ title: "카드 혜택" })}${phoneBody(`${pnavRows([["현대카드 M", "신용 · 현대카드", "포인트 3%"], ["신한 SOL트래블", "체크 · 신한카드", "해외 수수료 면제"], ["KB국민 노리2", "체크 · KB국민카드", "교통 10%"], ["삼성 taptap O", "신용 · 삼성카드", "카페 50%"], ["롯데 LOCA 365", "신용 · 롯데카드", "생활 5%"], ["NH 올원 Pay", "체크 · NH농협카드", "간편결제 5%"]], n)}${infiniteEnd({ status, endText: "카드를 모두 봤어요." })}`, { attrs: `data-pnav-scrolltop="999" tabindex="0" role="region" aria-label="카드 혜택 목록"${status === "loading" ? ' aria-busy="true"' : ""}` })}` });
+  const liveInfinite = pnavPhone({ height: 460, attrs: "data-pinf-phone", inner: `${topNav({ title: "카드 혜택" })}${phoneBody(`<div data-pinf-list="">${pnavRows([["현대카드 M", "신용 · 현대카드", "포인트 3%"], ["신한 SOL트래블", "체크 · 신한카드", "해외 수수료 면제"], ["KB국민 노리2", "체크 · KB국민카드", "교통 10%"], ["삼성 taptap O", "신용 · 삼성카드", "카페 50%"], ["롯데 LOCA 365", "신용 · 롯데카드", "생활 5%"], ["NH 올원 Pay", "체크 · NH농협카드", "간편결제 5%"]], 10)}</div>${infiniteEnd({ status: "loading", endText: "카드를 모두 봤어요.", live: true })}`, { attrs: 'tabindex="0" role="region" aria-label="카드 혜택 목록" data-pinf-scroll=""' })}` });
+  const infinitePanel = panel(
+    "끝없이 불러오기 — 폰 목록의 끝 자리: 받는 중 · 못 불러옴 · 끝",
+    "768 미만의 긴 목록은 쪽을 나누지 않는다 — 목록 끝이 화면 아래에서 300 안으로 오면 다음 쪽을 받아 아래에 잇는다. 목록 맨 아래 한 자리(위아래 24 · 가운데)가 지금 상태를 보인다. 받는 중은 Progress Circle 24(neutral)이고 1초가 지나야 보인다(그 전에 오면 깜빡이지 않는다) — 받는 동안 목록에 aria-busy. 못 불러오면 \"더 불러오지 못했어요.\"(14/19 · fg-neutral-muted) + Button neutralWeak small \"다시 시도\"(위 12)이고 이미 받은 줄은 그대로다. 끝은 \"모두 봤어요.\"(14/19 · fg-neutral-subtle — 목록마다 \"카드를 모두 봤어요.\" 처럼)이고 한 쪽으로 끝나는 짧은 목록에는 두지 않는다. \"더 보기\" 버튼은 두지 않는다 — 폰은 끝없이, 데스크톱은 Pagination 이다. 첫 쪽을 못 불러오면 목록 자리가 Result Section 의 실패다. 기다리는 시간표(1 · 5 · 10초)는 Skeleton 의 \"기다리는 동안\" 이다. 오른쪽 폰은 직접 내려 볼 수 있다 — 두 번 받고 셋째는 한 번 실패한다(다시 시도), 다 받으면 끝 글이다.",
+    samples([
+      sample("받는 중 — 원 24", "status=\"loading\" · 1초가 지나야 보인다", endPhone("loading")),
+      sample("못 불러옴 — 다시 시도", "status=\"error\" · 받은 줄은 그대로", endPhone("error")),
+      sample("끝 — \"카드를 모두 봤어요.\"", "status=\"end\" · endText", endPhone("end", 6)),
+      sample("직접 — 끝까지 내려 보기", "끝 300 안 → 받기 · 실패 한 번 · 끝 글", `${liveInfinite}<p class="pnav-live-status" aria-hidden="true" data-pinf-status="">아래로 스크롤해 보세요.</p>`),
+    ]),
+  );
+
+  // 16. Floating Action Button — 탭 바 없는 폰 화면(할 일 · 더치페이)의 주 동작 하나. 오른쪽 아래 화면 끝 · 아래에서 20 + 안전 영역
+  const todoRows = pnavRows([["장보기", "오늘", ""], ["관리비 내기", "10월 10일", ""], ["책 반납", "10월 11일", ""], ["운동 30분", "매일", ""], ["세탁소 맡기기", "10월 12일", ""], ["보험 갱신 확인", "10월 20일", ""], ["부모님 선물", "10월 24일", ""], ["이메일 정리", "", ""]], 10);
+  const fabPhone = ({ home = true, snack = false, bottomButton = false } = {}) => pnavPhone({
+    height: 440,
+    home,
+    inner: `${topNav({ title: "할 일", actions: [{ icon: "search", name: "검색" }] })}${phoneBody(todoRows, { cls: "pnav-body--fab" })}${bottomButton ? '<div class="pnav-bottom-bar"><button class="btn btn-neutral-solid btn-size-large pnav-bottom-button" type="button"><span>모두 정산하기</span></button></div>' : ""}${fab({ name: "할 일 추가", offset: bottomButton ? 76 : 0 })}${snack ? `<div class="psnack-region pnav-fab-snack" role="region" aria-label="알림 — 그림">${snackbar({ message: "할 일을 추가했어요." })}</div>` : ""}`,
+  });
+  const fabStates = matrix("pnav-matrix", "버튼", [
+    { ko: "기본", en: "enabled", i: "" },
+    { ko: "호버", en: "hovered — 웹", i: "hover" },
+    { ko: "누름", en: "pressed — 0.964", i: "pressed" },
+    { ko: "포커스", en: "focused — 원 바깥 2px", i: "focus" },
+  ], [{ ko: "할 일 추가", en: "56 · + 24" }], (r, c) => `<span class="pnav-surface pnav-surface--fab">${fab({ name: "할 일 추가", interaction: c.i })}</span>`);
+  const fabPanel = panel(
+    "Floating Action Button — 오른쪽 아래 56 · 화면에 하나",
+    "화면 위에 떠 있는 그 화면의 주 동작 하나다 — 원 56 · 브랜드 채움 bg-brand-solid(Desk 파랑 · HR 초록 — 색을 바꾸지 않는다) · 흰 아이콘 24(static-white · 선 2.5) · 그림자 shadow-s3. 글을 붙이지 않는다 — 무엇을 하는 버튼인지는 아이콘과 이름(aria-label \"할 일 추가\")이 말한다. 자리는 오른쪽 아래 — 화면 끝에서 20, 아래 끝(또는 바닥 고정 버튼의 위 끝)에서 20 이고 안전 영역이 있으면 그만큼 더 띄운다(홈 표시줄 34 → 아래 54). 스크롤해도 그 자리에 있고 숨거나 접히지 않는다(z-sticky 50). 탭 바가 없는 폰 화면(할 일 · 더치페이)에만 둔다 — 탭 바가 있는 화면의 추가는 탭 바 가운데 + 이고, 데스크톱(768 이상)의 주 동작은 머리의 버튼이다. 스낵바는 버튼 위 8 에 뜬다(SnackbarAvoidOverlap). 목록 아래에는 버튼 높이만큼 여백(56 + 20 + 20 + 안전 영역)을 둬 마지막 줄이 가리지 않는다. 호버 · 누름은 bg-brand-solid-pressed(누름은 + 2px 거리 축소 — 56 → 0.964), 키보드 포커스에만 원 바깥 2px 링이다. 표는 그 순간을 멈춰 그렸다.",
+    `${samples([
+      sample("할 일 — 홈 표시줄 있음", "오른쪽 20 · 아래 20 + 34", fabPhone()),
+      sample("스낵바 — 버튼 위 8", "SnackbarAvoidOverlap", fabPhone({ snack: true })),
+      sample("바닥 고정 버튼 위 20", "offsetBottom — 바닥 버튼의 높이", fabPhone({ bottomButton: true })),
+    ])}${fabStates}`,
+  );
+
+  const lede = "SEED Top Navigation · Side Navigation · Side Panel · Pagination · Table Pagination · Floating Action Button 구조와 porest 의 떠 있는 하단 탭 바 — 화면을 감싸는 틀과 이동이다. 문턱은 둘이다 — 768(모바일 틀 ↔ 사이드바 틀)과 1280(사이드바 접힘 ↔ 펼침). 화면 맨 위의 바(Top Navigation)는 폰 · 데스크톱 모두 56 · 선 · 그림자 없음 · 아이콘 버튼 상자 44(아이콘 24 · 화면 끝 6 · 버튼끼리 붙음)이고, 탭 첫 화면은 왼쪽 큰 제목 22, 그 아래 화면은 ← + 18 이다. 폰의 주 메뉴는 Desk 는 떠 있는 알약(66 · 줄면 48 · 불투명 bg-layer-floating · 다섯 칸 · 지금 탭은 짙은 색 + 선 2.5 · 가운데 + 는 브랜드 원 44), HR 은 ☰ 로 여는 왼쪽 옆 패널(화면 폭의 80%)이다. 데스크톱은 사이드바(Side Navigation — 240 · 768 ~ 1279 는 아이콘만 56 · 항목 44 · 지금 항목은 bg-neutral-weak-pressed · 접혔을 때 하위는 옆 펼침 메뉴)이고 Desk 만 머리(주 버튼 + 아이콘 셋)를 둔다. 긴 목록은 데스크톱 Pagination(칸 40 · 사이 0 · 지금 쪽 짙은 채움 · 9칸 / 7칸 · 끝은 빈 칸), 폰은 끝없이 불러오기(받는 중 · 다시 시도 · 끝 글), 데이터 표는 Table Pagination(한 줄 40)이다. 탭 바 없는 폰 화면의 주 동작은 떠 있는 버튼(원 56)이다. 옛 Sidebar · Sheet(옆 패널) · Pagination 은 다시 그렸고, Breadcrumb · Navigation Menu 는 걷었다 — 데스크톱의 위치는 사이드바의 지금 항목이 알린다."
+    + (brand.key === "shared" ? " 공유 토큰에는 브랜드 역할 색이 없어 + · 떠 있는 버튼 · 알림 점 · 주 버튼 · 포커스 링이 여기서는 중립으로 보인다 — HR · Desk 미리보기에서 브랜드 색이다." : "");
+
+  return `
+  <section class="section">
+    <header class="section-head">
+      <div class="section-eyebrow">03r — 화면 틀 · 이동: Top Navigation · Bottom Navigation · Side Navigation · Side Panel · Pagination · Table Pagination · FAB</div>
+      <h2 class="section-title">화면 틀 · 이동 — 상단 바 · 하단 탭 바 · 사이드바 · 옆 패널 · 쪽 넘김 · 떠 있는 버튼</h2>
+      <p class="section-lede">${escape(lede)}</p>
+    </header>
+    ${typePanel}
+    ${buttonPanel}
+    ${barPanel}
+    ${deskPanel}
+    ${sizePanel}
+    ${selectPanel}
+    ${livePanel}
+    ${widthPanel}
+    ${navPanel}
+    ${flyPanel}
+    ${drawerPanel}
+    ${rightPanelCard}
+    ${pagerPanel}
+    ${tablePanel}
+    ${infinitePanel}
+    ${fabPanel}
+  </section>`;
+}
+
 export function renderVignettes(brand) {
   // 배지 — 옛 .badge(알약 · 대문자)는 걷고 03o 의 Badge 로 그린다. HR 결재 상태는 대기 neutral · 진행 informative · 승인 positive · 반려 critical(badge.md Migration notes).
   // 탭 — 옛 underline · pills 그림(브랜드 색 밑줄 · 채움)은 걷었다(tabs.md 2026-10-02). 다른 구역으로 옮기는 자리(HR 직원 상세 · 공유 문서)는 Line 탭,
@@ -6957,36 +7668,16 @@ export function renderBatchV67(brand) {
   const isHr = brand.key === "hr";
   const isDesk = brand.key === "desk";
 
-  // Pagination
-  const pgNumbered = [1, 2, 3, "...", 9, 10];
-  const pgCurrent = 2;
-  const pgItems = pgNumbered.map(n => {
-    if (n === "...") return `<span class="pg-ellipsis">...</span>`;
-    const cur = n === pgCurrent;
-    return `<button class="pg-btn${cur ? " pg-btn--current" : ""}" type="button"${cur ? ` aria-current="page"` : ""}>${n}</button>`;
-  }).join("");
+  // 쪽 넘김 — 옛 숫자 · 더 보기 변형(.pg-* — 지금 쪽 브랜드 채움 · 칸 사이 4 · 글자 화살표)은 걷었다(2026-10-04). 모양은 03r —
+  // 데스크톱 목록은 넘김 줄(칸 40 · 사이 0 · 지금 쪽 짙은 채움 · 9칸), HR 의 데이터 표는 Table Pagination, 폰의 긴 목록은 끝없이 불러오기("더 보기" 버튼은 두지 않는다)
+  const pagination = isHr
+    ? `<div class="pnav-batch">${tablePager({ page: 2, total: 21 })}</div>`
+    : `<div class="pnav-batch"><div class="pnav-pager-row">${pager({ page: 5, total: 12, label: isDesk ? "카드 혜택 페이지 탐색" : "페이지 탐색" })}</div></div>`;
 
-  const pagination = isDesk
-    ? `<div class="pg-block">
-        <div class="pg-label">Load-more variant (Desk 모바일 우선)</div>
-        <button class="btn btn-outline pg-loadmore" type="button">더 보기 (12 / 58)</button>
-       </div>`
-    : `<div class="pg-block">
-        <div class="pg-label">Numbered variant (${isHr ? "HR 데이터 그리드 footer" : "shared baseline"})</div>
-        <nav class="pg-nav" aria-label="페이지 네비게이션">
-          <button class="pg-arrow" type="button" aria-label="이전 페이지">←</button>
-          <div class="pg-numbers">${pgItems}</div>
-          <button class="pg-arrow" type="button" aria-label="다음 페이지">→</button>
-        </nav>
-       </div>`;
-
-  // Drawer (정적 표시 — 실제 슬라이드 안 함). Desk 의 아래 Drawer(손잡이 늘 · 위 닫기 + 키 · 값 줄)는 걷고 03k 의 Bottom Sheet 로 그린다(bottom-sheet.md, 2026-10-02) —
-  // 입력 폼이라 위 닫기 + 바닥 저장(large 48)이고 손잡이가 없다. 옆 패널(HR · 공유 — 오른쪽)은 Side Panel 차례에 다시 정한다 — 아직 옛 모양이다
-  const drawerLabel = isHr
-    ? "Side drawer (HR 직원 detail panel)"
-    : isDesk
-      ? "Bottom Sheet (Desk 거래 추가) — 모양은 03k"
-      : "Drawer pattern (side / bottom 양쪽)";
+  // 서랍 — Desk 의 아래 Drawer(손잡이 늘 · 위 닫기 + 키 · 값 줄)는 걷고 03k 의 Bottom Sheet 로 그린다(bottom-sheet.md, 2026-10-02) — 입력 폼이라 위 닫기 +
+  // 바닥 저장(large 48)이고 손잡이가 없다. 옛 오른쪽 서랍(.drw-side — 모서리 · shadow-xl · 키 · 값 줄)은 걷었다(2026-10-04) — 옆 패널은 03r 의 Side Panel 이고
+  // 지금 쓰는 곳은 HR 폰의 주 메뉴 서랍(왼쪽 80% · 평평 · 지금 묶음을 펼친 채) 하나다
+  const drawerLabel = isDesk ? "Bottom Sheet (Desk 거래 추가) — 모양은 03k" : "Side Panel (HR 주 메뉴 서랍) — 모양은 03r";
   const drawer = isDesk
     ? overlayFrame({
         device: "phone",
@@ -6994,24 +7685,11 @@ export function renderBatchV67(brand) {
         page: overlayPage(),
         layers: [overlayScrim(), overlayLayer("sheet", bottomSheet({ title: "거래 추가", body: overlayTxForm("large", ["amount", "category"]), footer: [overlayButton("저장", { size: "large" })] }))],
       })
-    : `<div class="drw-frame">
-        <div class="drw-side">
-          <div class="drw-header">
-            <div class="drw-title">${isHr ? "직원 상세 — 김지원" : "Detail panel"}</div>
-            <button class="drw-close" type="button" aria-label="닫기">✕</button>
-          </div>
-          <div class="drw-body">
-            <div class="drw-row"><span class="drw-key">사번</span><span class="drw-val">PR-2024-0312</span></div>
-            <div class="drw-row"><span class="drw-key">부서</span><span class="drw-val">디자인 본부</span></div>
-            <div class="drw-row"><span class="drw-key">직급</span><span class="drw-val">시니어</span></div>
-            <div class="drw-row"><span class="drw-key">근속</span><span class="drw-val">2년차</span></div>
-          </div>
-          <div class="drw-actions">
-            <button class="btn btn-neutral-solid" type="button">${isHr ? "권한 수정" : "수정"}</button>
-            <button class="btn btn-neutral-weak" type="button">취소</button>
-          </div>
-        </div>
-       </div>`;
+    : pnavPhone({
+        height: 460,
+        cls: "pnav-phone--modal",
+        inner: `<div class="pnav-back" inert>${topNav({ title: "휴가 현황", leading: "menu", menu: { open: true } })}${pnavRows(PNAV_LEAVE)}</div><div class="pov-scrim" aria-hidden="true"></div>${sidePanel({ side: "left", title: "Porest HR", body: sideNav({ groups: PNAV_HR_NAV, current: "휴가 현황", drawer: true }), scrollFog: true })}`,
+      });
 
   // Progress Circle · Progress — 옛 Spinner(16 · 24 · 32 · 브랜드 4분의 1 호 · 라벨 앞 원) · 진행 막대(4 · 흐르는 막대)는 걷었다(2026-10-03 — 03p).
   // 섹션 새로 고침은 제목 옆 원 24, 화면 가운데는 원 40, 올리기는 값 있는 원 24, 막대는 "얼마나 찼나" 의 미터다(진행에는 쓰지 않는다)
@@ -7073,12 +7751,12 @@ export function renderBatchV67(brand) {
   <section class="section">
     <header class="section-head">
       <div class="section-eyebrow">14 — Components batch (v67)</div>
-      <h2 class="section-title">Pagination · ${isDesk ? "Bottom Sheet" : "Drawer"} · Progress Circle · Stepper</h2>
-      <p class="section-lede">시스템 빈틈 4 컴포넌트 — 모두 prose-only spec, 새 토큰 0 (기존 합성).</p>
+      <h2 class="section-title">${isHr ? "Table Pagination" : "Pagination"} · ${isDesk ? "Bottom Sheet" : "Side Panel"} · Progress Circle · Stepper</h2>
+      <p class="section-lede">v67 묶음 — 넘김 · 서랍 · 기다림 · 단계. 넘김(Pagination · Table Pagination)과 옆 패널(Side Panel)은 03r, Bottom Sheet 는 03k, 원 · 막대는 03p 의 모양이다. 옛 숫자 · 더 보기 넘김과 오른쪽 서랍은 걷었다.</p>
     </header>
     <div class="batch-grid">
       <div class="batch-card">
-        <div class="batch-card-head">${escape("Pagination")}</div>
+        <div class="batch-card-head">${isHr ? "Table Pagination (HR 사용자 표) — 모양은 03r" : "Pagination — 모양은 03r"}</div>
         ${pagination}
       </div>
       <div class="batch-card">
@@ -7100,42 +7778,21 @@ export function renderBatchV67(brand) {
 // === v68-v72 shadcn batch showcase ===
 
 export function renderShadcnNav(brand) {
-  // v68 Navigation 5
+  // v68 Navigation — 옛 Breadcrumb(.bc — 경로 글 + /) · Navigation Menu(.nm — 데스크톱 머리 메뉴) · Menubar 는 걷었다(2026-10-04 — SEED 에 없다).
+  // 데스크톱의 위치는 사이드바의 지금 항목(하위가 지금이면 부모가 저절로 펼침)과 본문 제목이 알린다. 옛 Sidebar(.sb — 회색 상자 · 왼쪽 막대 · 대문자 묶음 이름)는
+  // 03r 의 Side Navigation(흰 면 + 오른쪽 선 · 항목 44 · 지금 항목 bg-neutral-weak-pressed)으로 그린다
+  const isHr = brand.key === "hr";
   return `
   <section class="section">
     <header class="section-head">
       <div class="section-eyebrow">15 — Navigation (v68)</div>
-      <h2 class="section-title">Breadcrumb · Sidebar · Nav Menu · Command</h2>
-      <p class="section-lede">4 navigation 컴포넌트 — 페이지 위계, 좌측 nav, 데스크탑 menu, 전역 command. 옛 Menubar 는 걷었다 — 동작 목록은 03m 의 Menu 다.</p>
+      <h2 class="section-title">Side Navigation · Command</h2>
+      <p class="section-lede">데스크톱 주 메뉴와 전역 command. 사이드바의 모양은 03r 이다. 옛 Breadcrumb · Navigation Menu · Menubar 는 걷었다 — 위치는 사이드바의 지금 항목과 본문 제목이 알리고, 동작 목록은 03m 의 Menu 다.</p>
     </header>
     <div class="sc-grid">
       <div class="sc-card">
-        <div class="sc-head">Breadcrumb</div>
-        <nav class="bc" aria-label="경로">
-          <a class="bc-link">Home</a><span class="bc-sep">/</span>
-          <a class="bc-link">${brand.key === "hr" ? "결재" : brand.key === "desk" ? "메모" : "Tokens"}</a><span class="bc-sep">/</span>
-          <a class="bc-link">${brand.key === "hr" ? "결재 큐" : brand.key === "desk" ? "보관함" : "Colors"}</a><span class="bc-sep">/</span>
-          <span class="bc-current" aria-current="page">${brand.key === "hr" ? "김지원 휴가" : brand.key === "desk" ? "Porest 톤" : "Surface"}</span>
-        </nav>
-      </div>
-      <div class="sc-card">
-        <div class="sc-head">Sidebar (mini)</div>
-        <aside class="sb">
-          <div class="sb-group">${brand.key === "hr" ? "결재" : brand.key === "desk" ? "내 데이터" : "Tokens"}</div>
-          <div class="sb-item sb-item--active">${brand.key === "hr" ? "결재 큐" : brand.key === "desk" ? "메모" : "Colors"}</div>
-          <div class="sb-item">${brand.key === "hr" ? "직원" : brand.key === "desk" ? "할일" : "Typography"}</div>
-          <div class="sb-item">${brand.key === "hr" ? "평가" : brand.key === "desk" ? "가계부" : "Spacing"}</div>
-          <div class="sb-item">${brand.key === "hr" ? "분석" : brand.key === "desk" ? "캘린더" : "Components"}</div>
-        </aside>
-      </div>
-      <div class="sc-card">
-        <div class="sc-head">Navigation Menu</div>
-        <nav class="nm">
-          <button class="nm-item nm-item--active">Home</button>
-          <button class="nm-item">${brand.key === "hr" ? "결재" : brand.key === "desk" ? "메모" : "Products"}</button>
-          <button class="nm-item">${brand.key === "hr" ? "직원" : brand.key === "desk" ? "할일" : "Pricing"}</button>
-          <button class="nm-item">${brand.key === "hr" ? "분석" : brand.key === "desk" ? "가계부" : "Docs"}</button>
-        </nav>
+        <div class="sc-head">Side Navigation — 모양은 03r</div>
+        <div class="pnav-navs">${sideNav({ groups: isHr ? PNAV_HR_NAV : PNAV_DESK_NAV, current: isHr ? "휴가 현황" : "가계부", logo: isHr ? "Porest HR" : "Porest Desk", height: 420 })}</div>
       </div>
       <div class="sc-card">
         <div class="sc-head">Command (⌘K) — 전역 search/action</div>
@@ -11066,7 +11723,7 @@ export function pageCss() {
 
     /* 알림 메시지 갤러리 — 띠 · 상자 · 결과는 흰 표면(.vignette-card) 위에 둔다(옅은 회색 톤 bg-neutral-weak 가 페이지 바탕 bg-layer-basement 와 같은 gray-200 이다).
        견본 틀(.ptf-samples · .ptf-cap)과 상태 표(.cb-matrix)는 Text Field 갤러리 것이다. .pfb-strip 은 폰 폭(안쪽 360)에 자리 여백 8 을 둔 띠 견본 칸,
-       .pfb-phone 은 폰 화면(안쪽 360 — 머리 · 목록 · 탭 바 56), .pfb-desk 는 데스크톱 웹 화면, .pfb-top 은 머리와 그 바로 아래 페이지 배너만 그린 화면 윗부분,
+       .pfb-phone 은 폰 화면(안쪽 360 — 머리 · 목록 · 떠 있는 탭 바는 03r 의 .ptbar), .pfb-desk 는 데스크톱 웹 화면, .pfb-top 은 머리와 그 바로 아래 페이지 배너만 그린 화면 윗부분,
        .pfb-band 는 띠 하나를 떼어 놓은 칸, .pfb-stage 는 결과 하나를 가운데에 둔 흰 판이다. 모두 갤러리 것이고 알림 메시지의 일부가 아니다 */
     .pfb-strip {
       position: relative;
@@ -11092,7 +11749,9 @@ export function pageCss() {
     }
     .pfb-phone { box-sizing: content-box; max-width: 360px; }
     .pfb-phone--screen { height: 560px; }
-    .pfb-phone--tabbar > .psnack-region { bottom: 56px; }
+    /* 탭 바(03r 의 .ptbar — 홈 표시줄이 없어 아래 14)가 있는 폰 — 스낵바는 바 위 8, 목록 아래 여백은 바의 아래 자리 + 66 + 24(마지막 줄이 바 위 24 에서 끝난다) */
+    .pfb-phone--tabbar > .psnack-region { bottom: calc(max(14px, var(--pnav-safe-bottom, 0px) - 6px) + 66px); }
+    .pfb-phone--tabbar > .pfb-phone-body { padding-bottom: calc(max(14px, var(--pnav-safe-bottom, 0px) - 6px) + 66px + var(--spacing-x6)); }
     .pfb-phone--basement { background: var(--color-bg-layer-basement); }
     .pfb-desk { box-sizing: border-box; width: 100%; max-width: 760px; }
     .pfb-desk--tall { height: 360px; }
@@ -11104,19 +11763,6 @@ export function pageCss() {
     .pfb-phone-body,
     .pfb-desk-body { flex: 1 1 auto; min-height: 0; overflow: hidden; }
     .pfb-phone-body--center { display: flex; flex-direction: column; }
-    .pfb-tabbar {
-      position: relative;
-      z-index: 1;
-      display: grid;
-      flex-shrink: 0;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      height: 56px;
-      background: var(--color-bg-layer-default);
-      box-shadow: inset 0 1px 0 var(--color-stroke-neutral-subtle);
-    }
-    .pfb-tab { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--spacing-x0_5); color: var(--color-fg-neutral-subtle); font-size: var(--text-t1); line-height: var(--text-t1--line-height); font-weight: 500; }
-    .pfb-tab > svg { width: 22px; height: 22px; }
-    .pfb-tab--on { color: var(--color-fg-neutral); }
     .pfb-card-title { padding: 0 var(--spacing-global-gutter) var(--spacing-x2); color: var(--color-fg-neutral); font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 700; }
     .pfb-card { display: flex; flex-direction: column; min-height: 200px; margin: 0 var(--spacing-x4) var(--spacing-x6); overflow: hidden; border-radius: var(--radius-r4); background: var(--color-bg-layer-default); }
     .pfb-card:focus { outline: none; }
@@ -12743,6 +13389,680 @@ export function pageCss() {
     .pdsp-theme--dark .psk { --psk-band: var(--gradient-shimmer-neutral-dark); }
     [data-theme="dark"] .pdsp-theme--light :is(.psk, .pcph) { --color-bg-neutral-weak: inherit; --color-stroke-neutral-weak: inherit; --psk-band: var(--gradient-shimmer-neutral); }
 
+    /* === 화면 틀 · 이동 — Top Navigation · Bottom Navigation · Side Navigation · Side Panel · Pagination · Table Pagination · Floating Action Button ===
+       specs/components/top-navigation.md · bottom-navigation.md · side-navigation.md · side-panel.md · pagination.md · table-pagination.md · floating-action-button.md
+       (수치 원본은 같은 이름의 .yaml 과 infinite-list.yaml) · 화면 틀은 DESIGN.md Layout 의 "화면 틀" · "Safe Area" · 쌓임은 specs/z-index.md.
+       구조는 SEED Top Navigation · Side Navigation · Side Panel · Pagination · Table Pagination · Floating Action Button 이고 하단 탭 바는 porest 의 떠 있는 알약이다(2026-10-04 · 10-08).
+       누름은 바탕 + 2px 거리 축소(배율 (기준 − 2) ÷ 기준 — 기준은 상자 크기, 상단 바 44 · 사이드바 항목 56(폭 224 ÷ 4) · 쪽 칸 40 · + 44 · 떠 있는 버튼 56),
+       호버는 같은 바탕이고 축소가 없다(마우스 있는 기기에서만). 포커스는 키보드에만 링 2px stroke-focus-ring — 붙은 칸(상단 바 버튼 · 탭 칸 · 사이드바 항목)은 안쪽,
+       떨어진 칸(쪽 칸 · + · 떠 있는 버튼)은 바깥 2. 모션 줄이기면 축소 · 미끄러짐을 뺀다. 화면 틀(.pnav-phone · .pnav-desk)은 갤러리 것이고 틀의 --pnav-safe-top ·
+       --pnav-safe-bottom 이 레시피의 env(safe-area-inset-*) 자리다. --hover · --pressed · --focus 는 갤러리에서 그 순간을 고정해 보여 주는 클래스다.
+       다크 짝은 이 블록 끝에서 바꾼다 — 03o 의 라이트 · 다크 나란히 틀(.pdsp-theme--light · --dark)은 페이지 테마와 관계없이 그 테마로 그린다. */
+    :is(.pnav-phone, .pnav-desk, .pnav-surface, .pnav-navs, .ptnav, .ptbar, .psnav, .psnav-flyout, .pspanel, .ppgn, .ptpg, .pinf, .pfab) {
+      /* 포커스 링 · 브랜드 채움 — 공유 토큰(DESIGN.md)에는 브랜드 역할 색이 없어 중립으로 떨어진다(.pnb · .btn 과 같은 대체 사슬).
+         채움 위 흰 아이콘도 브랜드 채움이 있을 때만 흰색이고, 없으면 짙은 채움 위 반전 글자색이다 */
+      --pnav-ring: var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral)));
+      --pnav-brand: var(--color-bg-brand-solid, var(--color-bg-neutral-inverted));
+      --pnav-brand-pressed: var(--color-bg-brand-solid-pressed, var(--color-bg-neutral-inverted-pressed));
+      --pnav-brand-white: color-mix(in srgb, var(--color-bg-brand-solid) 0%, var(--color-static-white));
+      --pnav-on-brand: var(--pnav-brand-white, var(--color-fg-neutral-inverted));
+    }
+
+    /* 화면 틀 — 폰(360 까지 · 높이 --pnav-h · 아래 홈 표시줄 34 · 위 상태 표시줄은 고를 때만). 쌓임 맥락을 가둬 z-index 는 토큰 그대로 쓴다 */
+    .pnav-phone {
+      --pnav-safe-top: 0px;
+      --pnav-safe-bottom: 34px;
+      position: relative;
+      isolation: isolate;
+      display: flex;
+      flex-direction: column;
+      box-sizing: content-box;
+      width: 100%;
+      max-width: 360px;
+      height: var(--pnav-h, 560px);
+      overflow: hidden;
+      border: 1px solid var(--color-stroke-neutral-subtle);
+      border-radius: var(--radius-r4);
+      background: var(--color-bg-layer-default);
+      color: var(--color-fg-neutral);
+      font-family: var(--font-sans);
+    }
+    .pnav-phone--basement { background: var(--color-bg-layer-basement); }
+    /* 바만 떼어 본 띠(상단 바) · 아래 띠(탭 바) · 넓은 화면(600 — 768 미만의 큰 폰 · 작은 태블릿) */
+    .pnav-phone--bar { border-radius: var(--radius-r2); }
+    .pnav-phone--strip { background: var(--color-bg-layer-basement); }
+    .pnav-phone--tablet { max-width: none; width: 600px; }
+    .pnav-status { position: absolute; top: 0; left: 0; right: 0; z-index: calc(var(--z-sticky) + 1); display: flex; align-items: center; height: var(--pnav-safe-top); padding: 0 var(--spacing-x6); box-sizing: border-box; font-size: var(--text-t2); line-height: var(--text-t2--line-height); font-weight: 700; color: var(--color-fg-neutral); pointer-events: none; }
+    .pnav-home { position: absolute; left: 50%; bottom: 8px; z-index: var(--z-dev); width: 134px; max-width: 40%; height: 5px; translate: -50% 0; border-radius: var(--radius-full); background: var(--color-fg-neutral); pointer-events: none; }
+    /* 폰 화면의 몸 — 바 아래에서 스크롤된다. 탭 바가 있으면 아래 여백 = 바의 아래 자리 + 66 + 24(바가 줄어도 그대로 — BOTTOM_NAVIGATION_INSET) */
+    .pnav-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding-bottom: calc(var(--pnav-safe-bottom) + var(--spacing-x6)); scrollbar-width: thin; }
+    .pnav-body[hidden] { display: none; }
+    .pnav-body--tabbar { padding-bottom: calc(max(14px, var(--pnav-safe-bottom) - 6px) + 66px + var(--spacing-x6)); }
+    /* 떠 있는 버튼이 있으면 아래 여백 = 56 + 20 + 20 + 안전 영역(마지막 줄이 버튼에 가리지 않게) */
+    .pnav-body--fab { padding-bottom: calc(56px + 2 * var(--spacing-x5) + var(--pnav-safe-bottom)); }
+    .pnav-body:focus-visible { outline: 2px solid var(--pnav-ring); outline-offset: -2px; }
+    .pnav-back { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; }
+    .pnav-list-title { padding: var(--spacing-x4) var(--spacing-global-gutter) var(--spacing-x2); font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 700; color: var(--color-fg-neutral); }
+    .pnav-row { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-x3); padding: var(--spacing-x3) var(--spacing-global-gutter); }
+    .pnav-row-body { display: flex; flex-direction: column; gap: var(--spacing-x0_5); min-width: 0; }
+    .pnav-row-title { font-size: var(--text-t5); line-height: var(--text-t5--line-height); color: var(--color-fg-neutral); }
+    .pnav-row-detail { font-size: var(--text-t3); line-height: var(--text-t3--line-height); color: var(--color-fg-neutral-subtle); }
+    .pnav-row-value { flex-shrink: 0; font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 700; color: var(--color-fg-neutral); font-variant-numeric: tabular-nums; }
+    /* 데스크톱 웹 창 — 창 막대 28 + 화면(사이드바 · 머리 · 본문). 창은 실제 폭이라 좁은 화면에서는 가로로 밀린다(.pnav-wide) */
+    .pnav-wide { max-width: 100%; overflow-x: auto; scrollbar-width: thin; }
+    .pnav-desk { box-sizing: border-box; overflow: hidden; border: 1px solid var(--color-stroke-neutral-subtle); border-radius: var(--radius-r4); background: var(--color-bg-layer-basement); color: var(--color-fg-neutral); font-family: var(--font-sans); }
+    .pnav-desk-bar { display: flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; background: var(--color-bg-neutral-weak); }
+    .pnav-desk-bar > span { width: 8px; height: 8px; border-radius: var(--radius-full); background: var(--color-stroke-neutral-weak); }
+    .pnav-desk-view { position: relative; isolation: isolate; display: flex; height: var(--pnav-h, 520px); overflow: hidden; }
+    .pnav-desk-main { display: flex; flex: 1 1 auto; flex-direction: column; min-width: 0; }
+    .pnav-desk-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 0 var(--layout-margin) var(--spacing-x8); scrollbar-width: thin; }
+    .pnav-desk-top { padding-top: var(--spacing-x3); }
+    /* 본문 맨 위 제목(ScreenTitle) — 26/35 · 700, 머리 아래 20(spacing-nav-to-title) */
+    .pnav-screen-title { margin: var(--spacing-nav-to-title) 0 var(--spacing-x4); font-size: var(--text-screen-title); line-height: var(--text-screen-title--line-height); font-weight: 700; color: var(--color-fg-neutral); }
+    .pnav-desk-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--layout-gutter); margin-bottom: var(--layout-gutter); }
+    .pnav-card { padding: var(--spacing-x4) var(--spacing-x5); border-radius: var(--radius-r4); background: var(--color-bg-layer-default); }
+    .pnav-card--list { padding: var(--spacing-x2) 0; }
+    .pnav-card-cap { font-size: var(--text-t4); line-height: var(--text-t4--line-height); color: var(--color-fg-neutral-muted); }
+    .pnav-card-num { margin-top: var(--spacing-x1); font-size: var(--text-t7); line-height: var(--text-t7--line-height); font-weight: 700; color: var(--color-fg-neutral); font-variant-numeric: tabular-nums; }
+    /* 갤러리 — 견본 틀(.ptf-samples)이 창 · 폰을 담는다. 넓은 창 · 표는 한 줄에 하나, 잘라 본 창은 둘 */
+    .pnav-samples--wide { grid-template-columns: minmax(0, 1fr); }
+    .pnav-samples--crops { grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); }
+    .pnav-samples--tables { grid-template-columns: repeat(auto-fill, minmax(min(100%, 480px), 1fr)); }
+    .pnav-samples--strips { grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+    .pnav-stack { display: flex; flex-direction: column; gap: var(--spacing-x2); }
+    /* 판 안 덩어리 사이 — 나란히 틀 · 상태 표가 이어지면 띄운다 */
+    .pnav-panel > :not(.vignette-head) + :is(.pdsp-pair, .cb-matrix) { margin-top: var(--spacing-xl); }
+    .pnav-stack > .pnav-cap { margin-bottom: var(--spacing-x3); }
+    .pnav-cap { font-size: var(--text-t2); line-height: var(--text-t2--line-height); font-weight: 700; color: var(--color-fg-neutral); }
+    .pnav-cap > span { display: block; font-weight: 400; color: var(--color-fg-neutral-subtle); }
+    .pnav-cell { justify-content: center; }
+    .pnav-surface { display: inline-flex; align-items: center; justify-content: center; padding: var(--spacing-x2); border-radius: var(--radius-r2); background: var(--color-bg-layer-default); }
+    .pnav-surface--snav { width: 168px; max-width: 100%; box-sizing: border-box; padding: var(--spacing-x2); box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-subtle); }
+    .pnav-surface--snav > .psnav-item { width: 100%; }
+    .pnav-surface--fab { padding: var(--spacing-x4); }
+    .pnav-surface--zoom { padding: var(--spacing-x4); box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-subtle); }
+    .pnav-zoom { display: block; width: 132px; height: 132px; overflow: hidden; }
+    .pnav-zoom-in { display: block; width: 44px; height: 44px; transform: scale(3); transform-origin: 0 0; }
+    .pnav-zoom-in .pnb { outline: 1px dashed var(--color-fg-neutral-subtle); outline-offset: 0; }
+    .pnav-matrix .cb-matrix-row { grid-template-columns: 168px repeat(var(--cb-cols), minmax(112px, 1fr)); }
+    .pnav-matrix--snav .cb-matrix-row { grid-template-columns: 136px repeat(var(--cb-cols), minmax(176px, 1fr)); }
+    .pnav-live-status { margin: var(--spacing-x2) 0 0; font-size: var(--text-t3); line-height: var(--text-t3--line-height); color: var(--color-fg-neutral-subtle); font-variant-numeric: tabular-nums; }
+    .pnav-sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+    /* 부위를 잰 그림 — 버튼 상자 44 · 제목 자리를 점선으로. 화면 끝 6 · 오른쪽 자리 앞 8 은 그 사이의 빈자리다 */
+    .pnav-guide .ptnav-icon,
+    .pnav-guide .ptnav-text { outline: 1px dashed var(--color-fg-neutral-subtle); outline-offset: -1px; }
+    .pnav-guide .ptnav-title { outline: 1px dashed var(--color-fg-disabled); outline-offset: -1px; }
+
+    /* Top Navigation — 바 56(위 안전 영역은 더한다) · 바탕 bg-layer-default(불투명) · 선 · 그림자 없음 · 화면 끝 6(좌우 안전 영역을 더한다) · z-sticky.
+       맨 위에 붙어 스크롤해도 그 자리다(sticky — 갤러리 폰은 바 아래 몸만 스크롤된다). 제목은 한 줄 · 700 · 오른쪽 자리 앞 8 을 비운다 */
+    .ptnav {
+      position: sticky;
+      top: 0;
+      z-index: var(--z-sticky);
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      box-sizing: border-box;
+      height: calc(56px + var(--pnav-safe-top, 0px));
+      padding: var(--pnav-safe-top, 0px) var(--spacing-x1_5) 0;
+      background: var(--color-bg-layer-default);
+      color: var(--color-fg-neutral);
+      font-family: var(--font-sans);
+    }
+    .ptnav-title { flex: 1 1 auto; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: 700; color: var(--color-fg-neutral); }
+    /* Root — 큰 제목 22/30, 화면 끝에서 16(바의 6 을 포함한 거리 — 왼쪽 버튼이 없다). 글자 크기 설정은 1.2배까지(clamp(고정 값, 설정을 따르는 값, 고정 값 × 1.2)) */
+    .ptnav--root .ptnav-title { margin-left: calc(16px - var(--spacing-x1_5)); font-size: clamp(var(--text-t8-static), var(--text-t8), calc(var(--text-t8-static) * 1.2)); line-height: clamp(var(--text-t8-static--line-height), var(--text-t8--line-height), calc(var(--text-t8-static--line-height) * 1.2)); }
+    /* Standard — 18/24, 화면 끝에서 56 = 6 + 왼쪽 버튼 44 + 6 */
+    .ptnav--standard .ptnav-title { margin-left: var(--spacing-x1_5); font-size: clamp(var(--text-t6-static), var(--text-t6), calc(var(--text-t6-static) * 1.2)); line-height: clamp(var(--text-t6-static--line-height), var(--text-t6--line-height), calc(var(--text-t6-static--line-height) * 1.2)); }
+    /* 오른쪽 자리 — 제목 끝 ↔ 첫 버튼 상자 8(SEED titleMinGap), 버튼끼리 붙는다(아이콘 중심 간격 44) */
+    .ptnav-actions { display: flex; flex-shrink: 0; align-items: center; gap: 0; margin-left: auto; padding-left: var(--spacing-x2); }
+    /* 데스크톱 머리(Desk) — 제목 없음(본문 h1), 왼쪽 자리는 본문 여백 32 에서, 오른쪽 끝은 아이콘 버튼 상자가 화면 끝에서 6. 주 버튼 ↔ 첫 아이콘 버튼 8 */
+    .ptnav--desktop { padding-left: var(--layout-margin); }
+    .ptnav-primary { display: inline-flex; margin-right: var(--spacing-x2); }
+    /* 아이콘 버튼 — 상자 44 = 누르는 영역 · 아이콘 24 · 모서리 8 · fg-neutral. 바탕은 누를 때 · 마우스를 올릴 때만 */
+    .ptnav-icon,
+    .ptnav-text {
+      --press-basis: 44;
+      position: relative;
+      display: inline-grid;
+      flex-shrink: 0;
+      place-items: center;
+      box-sizing: border-box;
+      height: 44px;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: var(--radius-r2);
+      background: transparent;
+      color: var(--color-fg-neutral);
+      font-family: inherit;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition:
+        background-color var(--motion-duration-color-transition) var(--motion-ease-easing),
+        scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    .ptnav-icon { width: 44px; }
+    .ptnav-icon svg { display: block; width: 24px; height: 24px; }
+    /* 글 버튼 — 높이 44 · 좌우 10 · 16/22 · 500(글자 크기 설정은 1.2배까지) */
+    .ptnav-text { padding: 0 var(--spacing-x2_5); font-size: clamp(var(--text-t5-static), var(--text-t5), calc(var(--text-t5-static) * 1.2)); line-height: clamp(var(--text-t5-static--line-height), var(--text-t5--line-height), calc(var(--text-t5-static--line-height) * 1.2)); font-weight: 500; white-space: nowrap; }
+    @media (hover: hover) {
+      :is(.ptnav-icon, .ptnav-text):hover:not(:disabled) { background: var(--color-bg-layer-default-pressed); }
+    }
+    :is(.ptnav-icon, .ptnav-text).ptnav-icon--hover,
+    .ptnav-text--hover { background: var(--color-bg-layer-default-pressed); }
+    :is(.ptnav-icon, .ptnav-text):active:not(:disabled),
+    .ptnav-icon--pressed,
+    .ptnav-text--pressed { background: var(--color-bg-layer-default-pressed); scale: calc(1 - 2 / var(--press-basis)); }
+    :is(.ptnav-icon, .ptnav-text):focus { outline: none; }
+    :is(.ptnav-icon, .ptnav-text):focus-visible,
+    .ptnav-icon--focus,
+    .ptnav-text--focus { outline: 2px solid var(--pnav-ring); outline-offset: -2px; }
+    :is(.ptnav-icon, .ptnav-text):disabled { color: var(--color-fg-disabled); cursor: not-allowed; }
+    @media (prefers-reduced-motion: reduce) {
+      :is(.ptnav-icon, .ptnav-text):active:not(:disabled),
+      .ptnav-icon--pressed,
+      .ptnav-text--pressed { scale: 1; }
+    }
+
+    /* Bottom Navigation — 떠 있는 알약. 칸 다섯을 똑같이 나눈다(사이 2) · 최대 480(넓으면 가운데) · 모서리 full · bg-layer-floating(불투명 — 흐림 없음) ·
+       shadow-s3 + 안쪽 1px stroke-neutral-subtle · z-sticky. 펼침 66 · 좌우 14 · 아래 max(14, 안전 영역 − 6) · 안쪽 6 · 10,
+       줄어듦 48 · 좌우 36 · 아래 max(12, 안전 영역 − 8) · 안쪽 4 · 8 · 라벨은 보이지 않게만(이름은 남는다). 펼침 ↔ 줄어듦 200ms(d4 · easing) */
+    .ptbar {
+      position: absolute;
+      left: var(--spacing-x3_5);
+      right: var(--spacing-x3_5);
+      bottom: max(14px, var(--pnav-safe-bottom, 0px) - 6px);
+      z-index: var(--z-sticky);
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 2px;
+      box-sizing: border-box;
+      max-width: 480px;
+      height: 66px;
+      margin: 0 auto;
+      padding: var(--spacing-x1_5) var(--spacing-x2_5);
+      border-radius: var(--radius-full);
+      background: var(--color-bg-layer-floating);
+      box-shadow: var(--shadow-s3), inset 0 0 0 1px var(--color-stroke-neutral-subtle);
+      font-family: var(--font-sans);
+      transition-property: height, left, right, bottom, padding;
+      transition-duration: var(--motion-duration-d4);
+      transition-timing-function: var(--motion-ease-easing);
+    }
+    .ptbar--compact { left: var(--spacing-x9); right: var(--spacing-x9); bottom: max(12px, var(--pnav-safe-bottom, 0px) - 8px); height: 48px; padding: 0 var(--spacing-x2); cursor: pointer; }
+    /* 칸 — 아이콘 24 위 · 라벨 아래(사이 2) · 칸 전체가 누르는 영역. 다른 탭 fg-neutral-subtle · 선 2, 지금 탭 fg-neutral · 선 2.5(굵기 · 크기는 그대로) */
+    .ptbar-item {
+      --press-basis: 54;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      min-width: 0;
+      border-radius: var(--radius-r3);
+      color: var(--color-fg-neutral-subtle);
+      text-decoration: none;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    .ptbar--compact .ptbar-item { --press-basis: 40; }
+    .ptbar-item > svg { display: block; flex-shrink: 0; width: 24px; height: 24px; stroke-width: 2; }
+    .ptbar-item[aria-current="page"] { color: var(--color-fg-neutral); }
+    .ptbar-item[aria-current="page"] > svg { stroke-width: 2.5; }
+    /* 라벨 — 11/15 · 500 · 글자 크기 설정을 따르지 않는다(text-t1-static) · 한 줄 */
+    .ptbar-label { max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: var(--text-t1-static); line-height: var(--text-t1-static--line-height); font-weight: 500; }
+    .ptbar--compact .ptbar-label,
+    .ptbar[data-labels="hidden"] .ptbar-label { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); }
+    /* 누름 — 칸 2px 거리 축소만(색은 그대로 — 손을 떼기 전에 고른 것처럼 보이지 않게). 호버 모양은 없다 */
+    .ptbar-item:active,
+    .ptbar-item--pressed { scale: calc(1 - 2 / var(--press-basis)); }
+    .ptbar-item:focus { outline: none; }
+    .ptbar-item:focus-visible,
+    .ptbar-item--focus { outline: 2px solid var(--pnav-ring); outline-offset: -2px; }
+    /* 가운데 + — 칸 전체가 누르는 영역, 보이는 것은 브랜드 원 44(줄면 36) + 흰 + 24(줄면 20) · 선 2.5 */
+    .ptbar-add { display: grid; place-items: center; min-width: 0; margin: 0; padding: 0; border: 0; background: transparent; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .ptbar-add-circle {
+      --press-basis: 44;
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-full);
+      background: var(--pnav-brand);
+      color: var(--pnav-on-brand);
+      transition:
+        background-color var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale),
+        scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale),
+        width var(--motion-duration-d4) var(--motion-ease-easing),
+        height var(--motion-duration-d4) var(--motion-ease-easing);
+    }
+    .ptbar-add-circle > svg { display: block; width: 24px; height: 24px; stroke-width: 2.5; }
+    .ptbar--compact .ptbar-add-circle { --press-basis: 36; width: 36px; height: 36px; }
+    .ptbar--compact .ptbar-add-circle > svg { width: 20px; height: 20px; }
+    .ptbar-add:active > .ptbar-add-circle,
+    .ptbar-add--pressed > .ptbar-add-circle { background: var(--pnav-brand-pressed); scale: calc(1 - 2 / var(--press-basis)); }
+    .ptbar-add:focus { outline: none; }
+    .ptbar-add:focus-visible > .ptbar-add-circle,
+    .ptbar-add--focus > .ptbar-add-circle { outline: 2px solid var(--pnav-ring); outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) {
+      .ptbar, .ptbar-add-circle { transition: none; }
+      .ptbar-item:active, .ptbar-item--pressed,
+      .ptbar-add:active > .ptbar-add-circle, .ptbar-add--pressed > .ptbar-add-circle { scale: 1; }
+    }
+
+    /* Side Navigation — 화면 왼쪽 높이 전체 · 흰 면 bg-layer-default + 오른쪽 안쪽 1px stroke-neutral-subtle. 펼침 240 · 접힘 56(200ms d4 · easing).
+       머리 64(로고 · 접기 버튼) · 내용(묶음 · 항목 — 이 안에서만 스크롤, 위 끝에서 떨어지면 머리 아래 1px 선 · 아래 끝 24 는 늘 흐림) · 바닥 */
+    .psnav {
+      position: relative;
+      display: flex;
+      flex: 0 0 auto;
+      flex-direction: column;
+      box-sizing: border-box;
+      width: var(--layout-sidebar);
+      height: 100%;
+      overflow: hidden;
+      background: var(--color-bg-layer-default);
+      box-shadow: inset -1px 0 0 var(--color-stroke-neutral-subtle);
+      color: var(--color-fg-neutral);
+      font-family: var(--font-sans);
+      transition: width var(--motion-duration-d4) var(--motion-ease-easing);
+    }
+    .psnav--collapsed { width: var(--layout-sidebar-collapsed); }
+    /* 머리 — 최소 64 · 안쪽 8. 로고 = 마크 24 + 이름 16/22 · 700(화면 끝 → 마크 16) — 누르지 않는다. 내용이 스크롤되면 아래 1px 선(150ms) */
+    .psnav-header { position: relative; display: flex; flex-shrink: 0; align-items: center; box-sizing: border-box; min-height: 64px; padding: var(--spacing-x2); transition: box-shadow var(--motion-duration-color-transition) var(--motion-ease-easing); }
+    .psnav:has(> .psnav-content[data-scrolled]) > .psnav-header { box-shadow: inset 0 -1px 0 var(--color-stroke-neutral-subtle); }
+    .psnav-logo { display: flex; align-items: center; gap: var(--spacing-x2); min-width: 0; margin-left: var(--spacing-x2); font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 700; color: var(--color-fg-neutral); white-space: nowrap; }
+    .psnav-mark { flex-shrink: 0; width: 24px; height: 24px; border-radius: 7px; background: var(--pnav-brand); }
+    .psnav--collapsed .psnav-logo { display: none; }
+    /* 접기 버튼 — 상자 40 · 아이콘 18 · 모서리 8 · fg-neutral-subtle · 위 12 · 오른쪽 12(접히면 8 — 56 의 가운데) · 누르는 영역 44(사방 2) */
+    .psnav-trigger {
+      --press-basis: 40;
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: grid;
+      place-items: center;
+      box-sizing: border-box;
+      width: 40px;
+      height: 40px;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: var(--radius-r2);
+      background: transparent;
+      color: var(--color-fg-neutral-subtle);
+      cursor: pointer;
+      transition:
+        background-color var(--motion-duration-color-transition) var(--motion-ease-easing),
+        scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale),
+        right var(--motion-duration-d4) var(--motion-ease-easing);
+    }
+    .psnav-trigger::before { content: ""; position: absolute; inset: -2px; }
+    .psnav-trigger > svg { display: block; width: 18px; height: 18px; }
+    .psnav--collapsed .psnav-trigger { right: 8px; }
+    @media (hover: hover) { .psnav-trigger:hover { background: var(--color-bg-layer-default-pressed); } }
+    .psnav-trigger:active { background: var(--color-bg-layer-default-pressed); scale: calc(1 - 2 / var(--press-basis)); }
+    .psnav-trigger:focus { outline: none; }
+    .psnav-trigger:focus-visible { outline: 2px solid var(--pnav-ring); outline-offset: -2px; }
+    /* 내용 — 위 8 · 좌우 8 · 아래 24(끝 흐림 깊이) · 묶음 사이 8(접히면 선). 아래 끝 24 는 늘 흐리다(gradient-fade-mask — 사이드바의 제 안개) */
+    .psnav-content {
+      display: flex;
+      flex: 1 1 auto;
+      flex-direction: column;
+      gap: var(--spacing-x2);
+      min-height: 0;
+      overflow-y: auto;
+      padding: var(--spacing-x2) var(--spacing-x2) 24px;
+      scroll-padding: var(--spacing-x2) 0 24px;
+      scrollbar-width: thin;
+      -webkit-mask-image: linear-gradient(#000, #000), linear-gradient(to top, var(--pfog-stops));
+      mask-image: linear-gradient(#000, #000), linear-gradient(to top, var(--pfog-stops));
+      -webkit-mask-size: 100% calc(100% - 24px), 100% 24px;
+      mask-size: 100% calc(100% - 24px), 100% 24px;
+      -webkit-mask-position: 0 0, 0 100%;
+      mask-position: 0 0, 0 100%;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+    }
+    .psnav--collapsed .psnav-content { gap: 0; }
+    .psnav-list, .psnav-sub, .psnav-flyout-list { margin: 0; padding: 0; list-style: none; }
+    .psnav-sub[hidden] { display: none; }
+    /* 묶음 이름 — 14/19 · 700 · fg-neutral-muted · 안쪽 6(글은 화면 끝에서 14) · 길면 줄을 바꾼다. 접히면 보이지 않게만 남기고 묶음 사이에 1px 선(폭 24) */
+    .psnav-group-label { padding: var(--spacing-x1_5); font-size: var(--text-t4); line-height: var(--text-t4--line-height); font-weight: 700; color: var(--color-fg-neutral-muted); }
+    .psnav--collapsed .psnav-group-label,
+    .psnav--collapsed .psnav-label { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .psnav-group-divider { display: none; }
+    .psnav--collapsed .psnav-group-divider { display: block; flex-shrink: 0; height: 1px; margin: var(--spacing-x2); background: var(--color-stroke-neutral-subtle); }
+    /* 항목 — 최소 44 · 좌우 8 · 모서리 10 · 아이콘 20 ↔ 이름 12 · 이름 14/19 · 500 · fg-neutral-muted(위아래 6 — 줄을 바꾸면 늘어난다) */
+    .psnav-item {
+      --press-basis: 56;
+      position: relative;
+      display: flex;
+      align-items: center;
+      box-sizing: border-box;
+      width: 100%;
+      min-height: 44px;
+      margin: 0;
+      padding: 0 var(--spacing-x2);
+      border: 0;
+      border-radius: var(--radius-r2_5);
+      background: transparent;
+      color: var(--color-fg-neutral-muted);
+      font: inherit;
+      text-align: left;
+      text-decoration: none;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background-color var(--motion-duration-color-transition) var(--motion-ease-easing);
+    }
+    .psnav-item-content { display: flex; flex: 1 1 auto; align-items: center; gap: var(--spacing-x3); min-width: 0; transition: scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale); }
+    .psnav-icon { display: grid; flex-shrink: 0; place-items: center; width: 20px; height: 20px; color: var(--color-fg-neutral-subtle); }
+    .psnav-icon > svg { display: block; width: 20px; height: 20px; }
+    .psnav-label { flex: 1 1 auto; min-width: 0; padding: var(--spacing-x1_5) 0; font-size: var(--text-t4); line-height: var(--text-t4--line-height); font-weight: 500; overflow-wrap: break-word; word-break: keep-all; }
+    /* 꺾쇠 — 16 · fg-neutral-subtle, 펼치면 위로(200ms) */
+    .psnav-chevron { display: grid; flex-shrink: 0; place-items: center; width: 16px; height: 16px; color: var(--color-fg-neutral-subtle); transition: rotate var(--motion-duration-d4) var(--motion-ease-easing); }
+    .psnav-chevron > svg { display: block; width: 16px; height: 16px; }
+    .psnav-item[aria-expanded="true"] .psnav-chevron { rotate: 180deg; }
+    .psnav--collapsed .psnav-chevron { display: none; }
+    /* 하위 항목 — 아이콘 없이 이름만 · 부모 이름과 같은 자리(40) */
+    .psnav-item--sub { padding-left: 40px; }
+    .psnav--collapsed .psnav-sub { display: none; }
+    /* 접힘 — 항목 40(56 − 좌우 8) · 좌우 10(아이콘이 56 의 가운데) */
+    .psnav--collapsed .psnav-item { --press-basis: 44; width: 40px; padding: 0 var(--spacing-x2_5); }
+    /* 호버 = 누름 바탕 · 누름 = 같은 바탕 + 아이콘 · 이름만 2px 거리 축소. 지금 항목은 한 단계 짙은 bg-neutral-weak-pressed + fg-neutral(굵기 500 그대로) —
+       마우스를 올리거나 눌러도 바탕은 그대로다 */
+    @media (hover: hover) {
+      .psnav-item:not(.psnav-item--current, [aria-disabled="true"], :disabled):hover { background: var(--color-bg-layer-default-pressed); }
+    }
+    .psnav-item--hover:not(.psnav-item--current) { background: var(--color-bg-layer-default-pressed); }
+    .psnav-item:not(.psnav-item--current, [aria-disabled="true"], :disabled):active,
+    .psnav-item--pressed:not(.psnav-item--current) { background: var(--color-bg-layer-default-pressed); }
+    .psnav-item:not([aria-disabled="true"], :disabled):active > .psnav-item-content,
+    .psnav-item--pressed > .psnav-item-content { scale: calc(1 - 2 / var(--press-basis)); }
+    .psnav-item--current { background: var(--color-bg-neutral-weak-pressed); color: var(--color-fg-neutral); }
+    .psnav-item--current .psnav-icon { color: var(--color-fg-neutral); }
+    .psnav-item:focus { outline: none; }
+    .psnav-item:focus-visible,
+    .psnav-item--focus { outline: 2px solid var(--pnav-ring); outline-offset: -2px; }
+    .psnav-item[aria-disabled="true"],
+    .psnav-item:disabled { color: var(--color-fg-disabled); cursor: not-allowed; }
+    .psnav-item[aria-disabled="true"] .psnav-icon,
+    .psnav-item:disabled .psnav-icon { color: var(--color-fg-disabled); }
+    @media (prefers-reduced-motion: reduce) {
+      .psnav, .psnav-trigger, .psnav-chevron { transition: none; }
+      .psnav-item:active > .psnav-item-content, .psnav-item--pressed > .psnav-item-content, .psnav-trigger:active { scale: 1; }
+    }
+    /* 768 미만의 주 메뉴 서랍 — 내용만(펼친 모양). 스크롤 · 흐림은 Side Panel 본문이 맡는다 */
+    .psnav--drawer { width: auto; height: auto; overflow: visible; background: transparent; box-shadow: none; }
+    .psnav--drawer > .psnav-content { overflow: visible; padding: 0; -webkit-mask-image: none; mask-image: none; }
+    /* 펼침 메뉴 — 접힌 부모 옆 8 · 위 끝 맞춤. Menu 표면(bg-layer-floating · 모서리 20 · shadow-s3 · 위아래 8 · 폭 200) · L3 z-floating.
+       맨 위 부모 이름(13/18 · fg-neutral-subtle · 위아래 8 · 좌우 16) · 줄 44 · 좌우 16 · 14/19 · fg-neutral · 바탕은 좌우 8 들인 알약(모서리 12) */
+    .psnav-flyout {
+      position: absolute;
+      left: calc(var(--spacing-x2) + 40px + var(--spacing-x2));
+      top: 0;
+      z-index: var(--z-floating);
+      box-sizing: border-box;
+      width: 200px;
+      padding: var(--spacing-x2) 0;
+      border-radius: var(--radius-r5);
+      background: var(--color-bg-layer-floating);
+      box-shadow: var(--shadow-s3);
+      color: var(--color-fg-neutral);
+      font-family: var(--font-sans);
+    }
+    .psnav-flyout[hidden] { display: none; }
+    .psnav-flyout[data-motion="in"] { transform-origin: 0 0; animation: psnav-fly-in var(--motion-duration-d3) var(--motion-ease-enter); }
+    @keyframes psnav-fly-in { from { opacity: 0; scale: 0.95; } }
+    @media (prefers-reduced-motion: reduce) { .psnav-flyout[data-motion="in"] { animation: none; } }
+    .psnav-flyout-label { padding: var(--spacing-x2) var(--spacing-x4); font-size: var(--text-t3); line-height: var(--text-t3--line-height); font-weight: 400; color: var(--color-fg-neutral-subtle); }
+    .psnav-flyout-item {
+      --press-basis: 50;
+      position: relative;
+      isolation: isolate;
+      display: flex;
+      align-items: center;
+      box-sizing: border-box;
+      min-height: 44px;
+      padding: 0 var(--spacing-x4);
+      font-size: var(--text-t4);
+      line-height: var(--text-t4--line-height);
+      font-weight: 400;
+      color: var(--color-fg-neutral);
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .psnav-flyout-item::before { content: ""; position: absolute; inset: 0 var(--spacing-x2); z-index: -1; border-radius: var(--radius-r3); background: transparent; transition: background-color var(--motion-duration-color-transition) var(--motion-ease-easing); }
+    @media (hover: hover) { .psnav-flyout-item:hover::before { background: var(--color-bg-layer-floating-pressed); } }
+    .psnav-flyout-item--hover::before,
+    .psnav-flyout-item:active::before { background: var(--color-bg-layer-floating-pressed); }
+    .psnav-flyout-item[aria-current="page"]::before { background: var(--color-bg-neutral-weak-pressed); }
+    .psnav-flyout-item:focus { outline: none; }
+    .psnav-flyout-item:focus-visible::after { content: ""; position: absolute; inset: 0 var(--spacing-x2); border-radius: var(--radius-r3); box-shadow: inset 0 0 0 2px var(--pnav-ring); }
+    /* 이름 말풍선 — 03m 의 툴팁(.pbub--tooltip)을 항목 오른쪽 12(화살표 8 + 4) · 세로 가운데로. 화살표는 왼쪽을 가리킨다 */
+    .psnav-tip.pbub { left: calc(var(--spacing-x2) + 40px + 12px); translate: 0 -50%; }
+    .psnav-tip.pbub > .pbub-arrow { top: 50%; left: -10px; translate: 0 -50%; rotate: 90deg; }
+
+    /* Side Panel — 화면 옆에서 미끄러져 나오는 모달 패널. 높이 전체 · 모서리 · 그림자 · 선 없음 · bg-layer-floating · 화면의 80% 까지(딤이 늘 20% 남는다) · L2 z-modal-content.
+       왼쪽(768 미만 주 메뉴 — 80%) · 오른쪽(1280 이상 — 480 · 720 · 960). 머리 위 24 · 좌우 24 · 아래 16 · 최소 70(닫기가 있으면 오른쪽 52), 제목 t8 22/30 · 700 ·
+       설명 t5 · fg-neutral-muted(사이 6), 닫기는 03k 의 투명 52 상자(아이콘 22 · 위 28 · 오른쪽 24). 본문 좌우 24(주 메뉴 16) · 넘치면 본문만 스크롤 — 위로 스크롤되면 머리 아래 1px 선.
+       바닥 위 16 · 좌우 24 · 아래 24 · Button small 36 오른쪽 정렬(사이 8). 패널 내용의 맨 아래에 아래 안전 영역을 더한다 */
+    .pspanel {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      z-index: var(--z-modal-content);
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+      max-width: 80%;
+      padding-bottom: var(--pnav-safe-bottom, 0px);
+      background: var(--color-bg-layer-floating);
+      color: var(--color-fg-neutral);
+      font-family: var(--font-sans);
+      text-align: left;
+    }
+    .pspanel[hidden] { display: none; }
+    .pspanel:focus { outline: none; }
+    .pspanel--left { left: 0; width: 80%; }
+    .pspanel--right { right: 0; }
+    .pspanel--small { width: 480px; }
+    .pspanel--medium { width: 720px; }
+    .pspanel--large { width: 960px; }
+    .pspanel[data-motion="in"].pspanel--left { animation: pspanel-in-left var(--motion-duration-d6) var(--motion-ease-enter-expressive); }
+    .pspanel[data-motion="out"].pspanel--left { animation: pspanel-out-left var(--motion-duration-d6) var(--motion-ease-exit-expressive) forwards; }
+    @keyframes pspanel-in-left { from { translate: -100% 0; } }
+    @keyframes pspanel-out-left { to { translate: -100% 0; } }
+    .pnav-phone [data-pspanel-scrim][data-motion="in"] { animation: fade-in var(--motion-duration-d6) var(--motion-ease-enter); }
+    @media (prefers-reduced-motion: reduce) {
+      .pspanel[data-motion="in"].pspanel--left { animation: fade-in var(--motion-duration-d3) var(--motion-ease-enter); }
+      .pspanel[data-motion="out"].pspanel--left { animation: none; }
+    }
+    .pspanel-header { display: flex; flex-shrink: 0; flex-direction: column; gap: var(--spacing-x1_5); box-sizing: border-box; min-height: 70px; padding: calc(var(--spacing-x6) + var(--pnav-safe-top, 0px)) var(--spacing-x6) var(--spacing-x4); transition: box-shadow var(--motion-duration-color-transition) var(--motion-ease-easing); }
+    .pspanel-header--close { padding-right: var(--spacing-x13); }
+    .pspanel:has(> .pspanel-body[data-scrolled]) > .pspanel-header { box-shadow: inset 0 -1px 0 var(--color-stroke-neutral-subtle); }
+    .pspanel-title { margin: 0; font-size: var(--text-t8); line-height: var(--text-t8--line-height); font-weight: 700; color: var(--color-fg-neutral); }
+    .pspanel-desc { margin: 0; font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 400; color: var(--color-fg-neutral-muted); }
+    .pspanel > .pov-close--box { top: calc(28px - 15px + var(--pnav-safe-top, 0px)); }
+    .pspanel-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 0 var(--spacing-x6) var(--spacing-x6); scrollbar-width: thin; }
+    .pspanel-body--footer { padding-bottom: 0; }
+    .pspanel--left > .pspanel-body { padding-inline: var(--spacing-x4); }
+    /* 끝 흐림(scrollFog) — Scroll Fog overlayBody 의 마스크(기다림 블록 .pfog--overlay-body), 머리 아래 16 은 그대로 두고 본문 안 위 20 · 아래 80 */
+    .pspanel-body.pspanel-body--fog { padding-top: 20px; padding-bottom: 80px; scroll-padding: 20px 0 80px; }
+    .pspanel-footer { display: flex; flex-shrink: 0; justify-content: flex-end; gap: var(--spacing-x2); padding: var(--spacing-x4) var(--spacing-x6) var(--spacing-x6); }
+    /* 갤러리 — 오른쪽 패널의 입력 폼(값 줄) · 크기 막대 */
+    .pnav-field { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-x3); padding: var(--spacing-x3) 0; box-shadow: inset 0 -1px 0 var(--color-stroke-neutral-subtle); }
+    .pnav-field-label { font-size: var(--text-t5); line-height: var(--text-t5--line-height); color: var(--color-fg-neutral); }
+    .pnav-field-value { font-size: var(--text-t5); line-height: var(--text-t5--line-height); color: var(--color-fg-neutral-subtle); }
+    .pnav-sizes { display: flex; flex-direction: column; gap: var(--spacing-x3); max-width: 640px; }
+    .pnav-size { display: flex; flex-direction: column; gap: var(--spacing-x1); }
+    .pnav-size-track { position: relative; display: block; height: 28px; overflow: hidden; border-radius: var(--radius-r2); background: var(--color-bg-layer-basement); box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-subtle); }
+    .pnav-size-bar { position: absolute; top: 0; right: 0; bottom: 0; background: var(--color-bg-layer-floating); box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-weak); }
+    .pnav-size-cap { position: absolute; top: 0; bottom: 0; left: 20%; width: 0; border-left: 1px dashed var(--color-fg-neutral-subtle); }
+    .pnav-size-text, .pnav-size-note { font-size: var(--text-t3); line-height: var(--text-t3--line-height); color: var(--color-fg-neutral-muted); }
+    .pnav-size-note { color: var(--color-fg-neutral-subtle); }
+
+    /* Pagination — 칸 40 × 40 을 사이 없이 · 가운데 · 목록 끝에서 24. 번호 14/19 · 700 · fg-neutral · 숫자 폭 같게, 화살표 · 생략은 아이콘 16, 모서리 8.
+       지금 쪽 bg-neutral-inverted + fg-neutral-inverted. 누르는 영역은 위아래만 44(::before — 옆은 칸 폭 40, 이웃과 겹치지 않게). 9칸 360 · 7칸 280 */
+    .ppgn { display: flex; justify-content: center; gap: 0; font-family: var(--font-sans); }
+    .ppgn--one { display: inline-flex; }
+    /* 넘김 줄 견본 — 가운데(좁으면 앞에서부터 가로로 밀린다 — 넘친 앞쪽이 잘리지 않게 auto 여백으로 가운데를 잡는다) */
+    .pnav-pager-row { display: flex; padding: var(--spacing-x1) 0; overflow-x: auto; }
+    .pnav-pager-row > .ppgn { margin: 0 auto; }
+    .ppgn-cell {
+      --press-basis: 40;
+      position: relative;
+      display: inline-grid;
+      flex-shrink: 0;
+      place-items: center;
+      box-sizing: border-box;
+      width: 40px;
+      height: 40px;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: var(--radius-r2);
+      background: transparent;
+      color: var(--color-fg-neutral);
+      font-family: inherit;
+      font-size: var(--text-t4);
+      line-height: var(--text-t4--line-height);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      text-decoration: none;
+      white-space: nowrap;
+      -webkit-tap-highlight-color: transparent;
+      transition:
+        background-color var(--motion-duration-color-transition) var(--motion-ease-easing),
+        scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    .ppgn-cell > svg { display: block; width: 16px; height: 16px; }
+    :is(.ppgn-page, .ppgn-arrow) { cursor: pointer; }
+    :is(.ppgn-page, .ppgn-arrow)::before { content: ""; position: absolute; inset: -2px 0; }
+    .ppgn--hit :is(.ppgn-page, .ppgn-arrow)::before { outline: 1px dashed var(--color-fg-neutral-subtle); outline-offset: -1px; }
+    .ppgn-page--current { background: var(--color-bg-neutral-inverted); color: var(--color-fg-neutral-inverted); }
+    @media (hover: hover) {
+      :is(.ppgn-page, .ppgn-arrow):not([aria-disabled="true"]):hover { background: var(--color-bg-layer-default-pressed); }
+      .ppgn-page--current:not([aria-disabled="true"]):hover { background: var(--color-bg-neutral-inverted-pressed); }
+    }
+    .ppgn-cell--hover { background: var(--color-bg-layer-default-pressed); }
+    .ppgn-page--current.ppgn-cell--hover { background: var(--color-bg-neutral-inverted-pressed); }
+    :is(.ppgn-page, .ppgn-arrow):not([aria-disabled="true"]):active,
+    .ppgn-cell--pressed { background: var(--color-bg-layer-default-pressed); scale: calc(1 - 2 / var(--press-basis)); }
+    .ppgn-page--current:not([aria-disabled="true"]):active,
+    .ppgn-page--current.ppgn-cell--pressed { background: var(--color-bg-neutral-inverted-pressed); }
+    .ppgn-cell:focus { outline: none; }
+    .ppgn-cell:focus-visible,
+    .ppgn-cell--focus { outline: 2px solid var(--pnav-ring); outline-offset: 2px; }
+    /* 막힘 — 목록을 다시 받는 동안 · 표의 끝 쪽 화살표: fg-disabled(지금 쪽은 bg-disabled) · 흐리게 하지 않는다 */
+    .ppgn-cell[aria-disabled="true"] { color: var(--color-fg-disabled); cursor: not-allowed; }
+    .ppgn-page--current[aria-disabled="true"] { background: var(--color-bg-disabled); color: var(--color-fg-disabled); }
+    @media (prefers-reduced-motion: reduce) {
+      :is(.ppgn-page, .ppgn-arrow):active, .ppgn-cell--pressed { scale: 1; }
+    }
+
+    /* Table Pagination — 표 아래 12 · 한 줄 40 · 양 끝 정렬 · 줄바꿈 없음. 묶음 사이 16 · 고르기 ↔ 글 8 · 글 14/19 · 400 · fg-neutral.
+       고르기는 03h 의 Select medium(40 · 최소 96 — 화면 폭과 상관없이), 이전 · 다음은 쪽 칸(40 — 끝에서는 막힘, aria-disabled) */
+    .ptpg { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-x4); height: 40px; margin-top: var(--spacing-component-default); font-family: var(--font-sans); white-space: nowrap; }
+    .ptpg-group { display: flex; flex-shrink: 0; align-items: center; gap: var(--spacing-x2); }
+    .ptpg-group--range { gap: var(--spacing-x2); }
+    .ptpg-group .psel-trigger { width: auto; min-width: 96px; }
+    .ptpg-group .psel-trigger-content { gap: var(--spacing-x2); }
+    .ptpg-text { font-size: var(--text-t4); line-height: var(--text-t4--line-height); font-weight: 400; color: var(--color-fg-neutral); font-variant-numeric: tabular-nums; }
+    .ptpg-arrows { display: flex; margin-left: calc(var(--spacing-x4) - var(--spacing-x2)); }
+    .pnav-table-box { padding: var(--spacing-x4); border-radius: var(--radius-r4); background: var(--color-bg-layer-basement); }
+    .pnav-table { overflow: hidden; border-radius: var(--radius-r3); background: var(--color-bg-layer-default); font-family: var(--font-sans); }
+    .pnav-tr { display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: var(--spacing-x3); align-items: center; min-height: 40px; padding: 0 var(--spacing-x4); box-shadow: inset 0 -1px 0 var(--color-stroke-neutral-subtle); font-size: var(--text-t4); line-height: var(--text-t4--line-height); color: var(--color-fg-neutral); }
+    .pnav-tr--head { font-weight: 700; color: var(--color-fg-neutral-muted); }
+    .pnav-table-narrow { max-width: 340px; overflow-x: auto; border-radius: var(--radius-r4); scrollbar-width: thin; }
+    .pnav-table-narrow:focus-visible { outline: 2px solid var(--pnav-ring); outline-offset: 2px; }
+    .pnav-table-box--narrow { width: 560px; }
+
+    /* 목록 끝 자리(끝없이 불러오기) — 위아래 24 · 가운데. 받는 중 원 24 · 못 불러옴 글 14/19 fg-neutral-muted + 다시 시도(위 12) · 끝 글 fg-neutral-subtle */
+    .pinf { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: var(--spacing-x6) var(--spacing-global-gutter); font-family: var(--font-sans); }
+    .pinf-text { margin: 0; font-size: var(--text-t4); line-height: var(--text-t4--line-height); font-weight: 400; text-align: center; }
+    .pinf--error .pinf-text { color: var(--color-fg-neutral-muted); }
+    .pinf--end .pinf-text { color: var(--color-fg-neutral-subtle); }
+    .pinf-retry { margin-top: var(--spacing-x3); }
+    .pinf--loading[data-wait] > svg { visibility: hidden; }
+
+    /* Floating Action Button — 원 56 · bg-brand-solid · 흰 아이콘 24(선 2.5) · shadow-s3 · 오른쪽 아래(화면 끝 · 아래 고정 요소에서 20 + 안전 영역) · z-sticky.
+       호버 · 누름 bg-brand-solid-pressed(누름은 + 2px 거리 축소 — 56 → 0.964), 포커스는 원 바깥 2px */
+    .pfab {
+      --press-basis: 56;
+      position: absolute;
+      right: calc(var(--spacing-x5) + var(--pnav-safe-right, 0px));
+      bottom: calc(var(--spacing-x5) + var(--pfab-offset, 0px) + var(--pnav-safe-bottom, 0px));
+      z-index: var(--z-sticky);
+      display: grid;
+      place-items: center;
+      width: 56px;
+      height: 56px;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: var(--radius-full);
+      background: var(--pnav-brand);
+      box-shadow: var(--shadow-s3);
+      color: var(--pnav-on-brand);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition:
+        background-color var(--motion-duration-color-transition) var(--motion-ease-easing),
+        scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    .pfab > svg { display: block; width: 24px; height: 24px; stroke-width: 2.5; }
+    @media (hover: hover) { .pfab:hover { background: var(--pnav-brand-pressed); } }
+    .pfab--hover { background: var(--pnav-brand-pressed); }
+    .pfab:active,
+    .pfab--pressed { background: var(--pnav-brand-pressed); scale: calc(1 - 2 / var(--press-basis)); }
+    .pfab:focus { outline: none; }
+    .pfab:focus-visible,
+    .pfab--focus { outline: 2px solid var(--pnav-ring); outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) { .pfab:active, .pfab--pressed { scale: 1; } }
+    .pnav-surface--fab > .pfab { position: relative; right: auto; bottom: auto; }
+    /* 스낵바는 떠 있는 버튼 위 8(자리의 아래 = 버튼 위 끝) · 바닥 고정 버튼 — 갤러리 그림(위 12 · 아래 16 + 안전 영역 · Button large 48) */
+    .pnav-fab-snack { bottom: calc(var(--spacing-x5) + 56px + var(--pnav-safe-bottom, 0px)); }
+    .pnav-bottom-bar { position: absolute; left: 0; right: 0; bottom: 0; z-index: var(--z-sticky); padding: var(--spacing-x3) var(--spacing-global-gutter) calc(var(--spacing-x4) + var(--pnav-safe-bottom, 0px)); background: var(--color-bg-layer-default); }
+    .pnav-bottom-button { width: 100%; }
+
+    /* 화면 틀 · 이동 — 가계부 묶음의 Line Tabs 는 상단 바 바로 아래에 붙어 함께 고정된다(03j 의 .ptab-list) */
+    .pnav-tabs { flex-shrink: 0; background: var(--color-bg-layer-default); }
+    .pnav-navs { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--spacing-x4); }
+    .pnav-navs > .psnav { border-radius: var(--radius-r3); box-shadow: inset -1px 0 0 var(--color-stroke-neutral-subtle), 0 0 0 1px var(--color-stroke-neutral-subtle); }
+
+    /* 다크 — 역할 색을 화면 틀 · 이동 부품 · 갤러리 틀 안에서만 다크 짝으로 바꾼다(.pif · .pnb 와 같다 — 전역 다크 블록은 옛 이름만 바꾼다).
+       라이트 틀(.pdsp-theme--light)과 그 안은 빼고, 다크 틀(.pdsp-theme--dark)은 페이지가 라이트여도 바꾼다. 끼운 .btn · .psel-trigger · .ptab-list · .ppc · .pbub · .pov-* 는
+       저마다의 다크 블록이 다시 바꾼다(그래서 라이트 · 다크 나란히 틀에는 넣지 않았다). 공유 토큰(DESIGN.md)에 없는 브랜드 짝은 비어서 대체값(중립)으로 떨어진다 */
+    [data-theme="dark"] :is(.pnav-phone, .pnav-desk, .pnav-surface, .pnav-navs, .pnav-zoom, .pnav-sizes, .pnav-table-box, .pnav-cap, .ptnav, .ptbar, .psnav, .psnav-flyout, .pspanel, .ppgn, .ptpg, .pinf, .pfab, .pnav-live-status):not(.pdsp-theme--light, .pdsp-theme--light *),
+    .pdsp-theme--dark {
+      --color-bg-layer-default: var(--color-bg-layer-default-dark);
+      --color-bg-layer-default-pressed: var(--color-bg-layer-default-pressed-dark);
+      --color-bg-layer-floating: var(--color-bg-layer-floating-dark);
+      --color-bg-layer-floating-pressed: var(--color-bg-layer-floating-pressed-dark);
+      --color-bg-layer-basement: var(--color-bg-layer-basement-dark);
+      --color-bg-neutral-weak: var(--color-bg-neutral-weak-dark);
+      --color-bg-neutral-weak-pressed: var(--color-bg-neutral-weak-pressed-dark);
+      --color-bg-neutral-inverted: var(--color-bg-neutral-inverted-dark);
+      --color-bg-neutral-inverted-pressed: var(--color-bg-neutral-inverted-pressed-dark);
+      --color-bg-disabled: var(--color-bg-disabled-dark);
+      --color-bg-brand-solid: var(--color-bg-brand-solid-dark);
+      --color-bg-brand-solid-pressed: var(--color-bg-brand-solid-pressed-dark);
+      --color-fg-neutral: var(--color-fg-neutral-dark);
+      --color-fg-neutral-muted: var(--color-fg-neutral-muted-dark);
+      --color-fg-neutral-subtle: var(--color-fg-neutral-subtle-dark);
+      --color-fg-neutral-inverted: var(--color-fg-neutral-inverted-dark);
+      --color-fg-disabled: var(--color-fg-disabled-dark);
+      --color-fg-brand: var(--color-fg-brand-dark);
+      --color-stroke-neutral-subtle: var(--color-stroke-neutral-subtle-dark);
+      --color-stroke-neutral-weak: var(--color-stroke-neutral-weak-dark);
+      --color-stroke-focus-ring: var(--color-stroke-focus-ring-dark);
+      --shadow-s3: var(--shadow-s3-dark);
+    }
+
     /* todo-card */
     .todo-list { display: flex; flex-direction: column; gap: 2px; }
     .todo-row {
@@ -13063,71 +14383,11 @@ export function pageCss() {
       letter-spacing: 0.04em;
     }
 
-    /* Pagination */
-    .pg-block { display: flex; flex-direction: column; gap: var(--spacing-sm); }
-    .pg-label { font-size: var(--text-caption); color: var(--color-text-secondary); }
-    .pg-nav { display: flex; gap: var(--spacing-md); align-items: center; flex-wrap: wrap; }
-    .pg-numbers { display: flex; gap: var(--spacing-xs); }
-    .pg-arrow,
-    .pg-btn {
-      width: 40px; height: 40px;
-      border-radius: var(--radius-md);
-      border: none;
-      background: transparent;
-      color: var(--color-text-secondary);
-      font-size: var(--text-body-md);
-      font-family: inherit;
-      cursor: pointer;
-      transition: background var(--motion-duration-fast, 150ms) var(--motion-ease-out, ease-out);
-    }
-    .pg-arrow:hover,
-    .pg-btn:hover { background: var(--color-surface-input); color: var(--color-text-primary); }
-    .pg-btn--current {
-      background: var(--color-primary, var(--color-text-primary));
-      color: var(--color-text-on-accent, #fff);
-      font-weight: 700;
-    }
-    .pg-btn--current:hover { background: var(--color-primary, var(--color-text-primary)); color: var(--color-text-on-accent, #fff); }
-    .pg-ellipsis { display: flex; align-items: center; padding: 0 var(--spacing-xs); color: var(--color-text-tertiary); }
-    .pg-loadmore { align-self: flex-start; min-width: 200px; }
-
-    /* Drawer (정적 표시) — 옆 패널(.drw-side, HR · 공유)만 남았다. Side Panel 차례에 다시 정한다. 아래 Drawer 는 03k 의 Bottom Sheet(.pov-sheet)다 */
-    .drw-frame {
-      background: var(--color-bg-page);
-      border-radius: var(--radius-md);
-      padding: var(--spacing-md);
-      min-height: 280px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: flex-end;
-      position: relative;
-    }
-    .drw-side {
-      background: var(--color-surface-default);
-      border-radius: var(--radius-xl) 0 0 var(--radius-xl);
-      box-shadow: var(--shadow-xl);
-      width: 280px;
-      padding: var(--spacing-lg);
-      display: flex; flex-direction: column; gap: var(--spacing-md);
-      align-self: stretch;
-    }
-    .drw-header { display: flex; justify-content: space-between; align-items: center; }
-    .drw-title { font-weight: 600; font-size: var(--text-title-sm); }
-    .drw-close {
-      width: 28px; height: 28px;
-      border: none; background: transparent;
-      color: var(--color-text-tertiary);
-      cursor: pointer; font-size: 16px;
-      border-radius: var(--radius-full);
-    }
-    .drw-close:hover { background: var(--color-surface-input); }
-    .drw-body { display: flex; flex-direction: column; gap: var(--spacing-xs); }
-    .drw-row { display: flex; justify-content: space-between; padding: var(--spacing-xs) 0; border-bottom: 1px solid var(--color-border-default); font-size: var(--text-caption); }
-    .drw-row:last-child { border-bottom: none; }
-    .drw-key { color: var(--color-text-tertiary); }
-    .drw-val { font-weight: 600; }
-    .drw-actions { display: flex; gap: var(--spacing-sm); padding-top: var(--spacing-sm); border-top: 1px solid var(--color-border-default); }
-    .drw-actions .btn { flex: 1; }
+    /* 넘김 · 옆 패널 — 옛 Pagination(.pg-* — 지금 쪽 브랜드 채움 · 칸 사이 4 · 글자 화살표 · 더 보기)과 오른쪽 서랍(.drw-* — 모서리 · shadow-xl)은 걷었다(2026-10-04).
+       모양은 화면 틀 · 이동 블록의 .ppgn · .ptpg · .pspanel 이다(03r). 아래 Drawer 는 03k 의 Bottom Sheet(.pov-sheet)다 */
+    /* 줄(9칸 360 · 표 넘김 줄)이 카드보다 넓으면 카드를 밀지 않고 이 안에서 가로로 민다 — 안쪽 폭이 카드의 최소 폭에 들지 않게(contain) */
+    .pnav-batch { display: flex; flex-direction: column; gap: var(--spacing-sm); min-width: 0; overflow-x: auto; contain: inline-size; }
+    .pnav-batch > .ptpg { margin-top: 0; }
 
     /* Progress Circle · Progress — 모양은 03p 의 기다림 블록(.ppc · .pmeter)이다. 옛 Spinner / Progress(.sp-* — 브랜드 4분의 1 호 · 4px 막대 · 흐르는 막대)는 걷었다 */
     .pld-batch { display: flex; flex-direction: column; gap: var(--spacing-md); }
@@ -13290,28 +14550,8 @@ export function pageCss() {
     .rtl-icon { transition: transform var(--motion-duration-base) var(--motion-ease-out); }
     [dir="rtl"] .rtl-icon { transform: scaleX(-1); }
 
-    /* Breadcrumb — breadcrumb.md SoT. brand vignette dense layout이라 caption(12)
-       유지하되 gap/weight는 spec과 동기 (gap-sm 통일, current weight 500). */
-    .bc { display: flex; align-items: center; gap: var(--spacing-sm); font-size: var(--text-caption); flex-wrap: wrap; }
-    .bc-link { color: var(--color-text-secondary); cursor: pointer; transition: color var(--motion-duration-fast) var(--motion-ease-out); }
-    .bc-link:hover { color: var(--color-text-primary); }
-    .bc-sep { color: var(--color-text-tertiary); user-select: none; }
-    .bc-current { color: var(--color-text-primary); font-weight: 500; }
-
-    /* Sidebar */
-    .sb { display: flex; flex-direction: column; gap: var(--spacing-xs); padding: var(--spacing-sm); background: var(--color-bg-page); border-radius: var(--radius-md); }
-    .sb-group { font-size: var(--text-caption); color: var(--color-text-tertiary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; padding: var(--spacing-xs) var(--spacing-sm); }
-    .sb-item { padding: var(--spacing-sm) var(--spacing-md); border-radius: var(--radius-sm); color: var(--color-text-secondary); font-size: var(--text-body-md); cursor: pointer; }
-    .sb-item:hover { background: var(--color-surface-input); color: var(--color-text-primary); }
-    .sb-item--active { background: var(--color-surface-input); color: var(--color-text-primary); font-weight: 600; border-left: 3px solid var(--color-primary, var(--color-text-primary)); padding-left: calc(var(--spacing-md) - 3px); }
-
-    /* Navigation Menu */
-    .nm { display: flex; gap: var(--spacing-xs); flex-wrap: wrap; }
-    .nm-item { padding: var(--spacing-sm) var(--spacing-md); border: none; background: transparent; border-radius: var(--radius-md); color: var(--color-text-secondary); cursor: pointer; font-size: var(--text-body-md); font-family: inherit; }
-    .nm-item:hover { background: var(--color-surface-input); color: var(--color-text-primary); }
-    .nm-item--active { color: var(--color-text-primary); font-weight: 600; }
-
-    /* 옛 Menubar(.mb-* — 단축키 표기 막대)는 걷었다. 동작 목록은 Menu 블록의 .pmenu 다(03m) */
+    /* 옛 Breadcrumb(.bc — 경로 글 + /) · Sidebar(.sb — 회색 상자 · 왼쪽 막대) · Navigation Menu(.nm) · Menubar(.mb-*)는 걷었다.
+       사이드바는 화면 틀 · 이동 블록의 .psnav(03r), 동작 목록은 Menu 블록의 .pmenu 다(03m) — 위치는 사이드바의 지금 항목이 알린다 */
 
     /* Command (⌘K) */
     .cmd { background: var(--color-bg-page); border-radius: var(--radius-md); padding: var(--spacing-md); }
@@ -13491,7 +14731,6 @@ export function pageCss() {
     [data-theme="dark"] .ld-highlights,
     [data-theme="dark"] .ld-host,
     [data-theme="dark"] .batch-card,
-    [data-theme="dark"] .drw-side,
     [data-theme="dark"] .sc-card,
     [data-theme="dark"] .sl,
     [data-theme="dark"] .ipk-trigger,
@@ -13504,7 +14743,6 @@ export function pageCss() {
     [data-theme="dark"] .sl-title { color: var(--color-text-primary-dark); }
     [data-theme="dark"] .sl-row:hover,
     [data-theme="dark"] .ipk-cell:hover { background: var(--color-surface-input-dark); }
-    [data-theme="dark"] .sb,
     [data-theme="dark"] .cmd,
     [data-theme="dark"] .sa,
     [data-theme="dark"] .chart-mini,
@@ -13520,25 +14758,16 @@ export function pageCss() {
     [data-theme="dark"] .acc-item { border-color: var(--color-border-default-dark); }
     [data-theme="dark"] .dt-table td { border-bottom-color: var(--color-border-default-dark); }
     [data-theme="dark"] .acc-trigger:hover { color: var(--color-text-secondary-dark); }
-    [data-theme="dark"] .sb-item--active,
     [data-theme="dark"] .tg--on,
     [data-theme="dark"] .tgg-item--active,
     [data-theme="dark"] .tg:hover,
     [data-theme="dark"] .tgg-item:hover,
     [data-theme="dark"] .col-trigger:hover,
-    [data-theme="dark"] .nm-item:hover,
-    [data-theme="dark"] .cmd-item:hover,
-    [data-theme="dark"] .sb-item:hover { background: var(--color-surface-input-dark); }
+    [data-theme="dark"] .cmd-item:hover { background: var(--color-surface-input-dark); }
     /* solid segmented active 는 다크에서도 primary 유지(subtle dark override 보다 specificity 우선). */
     [data-theme="dark"] .tgg--solid .tgg-item--active { background: var(--color-primary); color: var(--color-text-on-accent, #fff); }
     [data-theme="dark"] .cmd-input { background: var(--color-surface-default-dark); border-color: var(--color-border-default-dark); color: var(--color-text-primary-dark); }
-    [data-theme="dark"] .drw-frame { background: var(--color-bg-page-dark); }
-    [data-theme="dark"] .drw-row { border-color: var(--color-border-default-dark); }
-    [data-theme="dark"] .drw-actions { border-color: var(--color-border-default-dark); }
-    [data-theme="dark"] .drw-close:hover { background: var(--color-surface-input-dark); }
     [data-theme="dark"] .stp-connector { background: var(--color-border-default-dark); }
-    [data-theme="dark"] .pg-btn:hover,
-    [data-theme="dark"] .pg-arrow:hover { background: var(--color-surface-input-dark); }
     [data-theme="dark"] .stp-item--current .stp-circle {
       background: var(--color-primary-light, var(--color-primary, var(--color-text-primary-dark)));
       color: var(--color-bg-page-dark, #0b0d12);
@@ -13682,7 +14911,6 @@ export function pageCss() {
       }
       .ld-gallery-cell--hero { grid-row: 1 / 2; grid-column: 1 / -1; }
       .batch-grid { grid-template-columns: 1fr; }
-      .drw-side { width: 100%; }
       .sc-grid { grid-template-columns: 1fr; }
       .dt-table { font-size: 11px; }
     }
@@ -13741,6 +14969,7 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     ${renderDisplayGallery(brand)}
     ${renderLoadingGallery(brand)}
     ${renderImageGallery(brand, tokens)}
+    ${renderNavGallery(brand)}
     ${renderVignettes(brand)}
     ${renderListingDetail(brand)}
     ${renderCalendar(brand)}
@@ -15530,6 +16759,417 @@ function renderHtml(brandName, css, tokens, sourceFile) {
             tile.insertAdjacentHTML("beforeend", tpl.innerHTML);
             clock.textContent = "0.8초에 옴 — 판 · 그림이 전환 없이 바로 덮는다";
           }, 800);
+        });
+      });
+    })();
+    // 화면 틀 · 이동 (2026-10-08) — top-navigation.tsx · bottom-navigation.tsx · side-navigation.tsx · side-panel.tsx · pagination.tsx · table-pagination.tsx 가 하는 일 가운데
+    // 그림에 필요한 것을 흉내 낸다(03r 의 "직접" 견본). 미리보기 링크(data-pnav-link)는 옮기지 않는다. 스크롤 상자(data-pnav-scroll)는 위 끝에서 떨어지면 data-scrolled
+    // (사이드바 · 옆 패널 머리 아래 1px 선)이고, data-pnav-scrolltop 은 그릴 때 그만큼 내려 둔다.
+    // 하단 탭 바 — 아래로 20 이상 스크롤하면 48 로 줄고(라벨은 보이지 않게만), 위로 28 이상 · 맨 위 40 안이면 펴진다(방향이 바뀌면 다시 센다). 줄어든 바를 누르면 펴지고,
+    // 칸을 눌렀으면 그 탭으로도 간다. 탭마다 스크롤 위치를 기억하고, 지금 탭을 다시 누르면 맨 위로. + 의 이름은 캘린더에서 "일정 추가".
+    // 사이드바 — 접기 버튼은 펼침 ↔ 접힘(하위가 지금인 부모는 접히면 지금 항목). 펼친 부모는 눌러 펼치고 접는다. 접혔을 때 하위 없는 항목은 마우스 200ms 뒤 · 키보드 초점이면 바로
+    // 이름 말풍선, 부모는 마우스 200ms 뒤(다른 펼침 메뉴가 열려 있으면 바로) 펼침 메뉴 — 메뉴로 옮겨 가는 동안 닫히지 않고 떠나면 100ms 뒤 닫는다. 누르기 · Enter · Space 로도
+    // 열고(키보드면 첫 줄로 초점), Esc(초점은 부모로) · 바깥 누르기 · Tab 으로 나가면 닫는다.
+    // 옆 패널 — ☰ 가 연다(300ms · 처음 초점은 패널). 닫기 · 딤 · Esc · 항목 누르기로 닫히고 초점은 ☰ 로 돌아온다. 열린 동안 뒤 화면은 inert, Tab 은 패널 안을 돈다.
+    // 쪽 넘김 — 빌드와 같은 코드(paginationItems · pagerCellsHtml)로 칸을 다시 그린다(창 폭 480 이상 9칸 · 미만 7칸). 끝 쪽에 닿아 누르던 화살표가 빈 칸이 되면 초점을
+    // 지금 쪽 번호로 옮기고 "N페이지, 전체 M페이지" 를 알린다.
+    // 표 넘김 — 이전 · 다음이 범위를 옮기고 끝에서 막힌다(aria-disabled — 초점은 그 자리). 목록 끝 자리 — 끝이 300 안으로 오면 받는다(원은 1초가 지나야 보인다), 셋째는 한 번 실패한다.
+    (function () {
+      var ITEMS = ${paginationItems.toString()};
+      var CELLS = ${pagerCellsHtml.toString()};
+      var ICONS = ${JSON.stringify(PPGN_ICONS)};
+      var reduce = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+      function closest(e, sel) { return e.target && e.target.closest ? e.target.closest(sel) : null; }
+      function statusOf(el, attr) { var s = el.closest(".ptf-sample"); return s ? s.querySelector("[" + attr + "]") : null; }
+
+      // 미리보기 링크 — 옮기지 않는다
+      document.addEventListener("click", function (e) { if (closest(e, "a[data-pnav-link]")) e.preventDefault(); });
+
+      // 스크롤된 상자 — 머리 아래 선
+      function markScroll(box) { if (box.scrollTop > 0) box.setAttribute("data-scrolled", ""); else box.removeAttribute("data-scrolled"); }
+      function placeScroll() {
+        document.querySelectorAll("[data-pnav-scrolltop]").forEach(function (box) { box.scrollTop = Number(box.getAttribute("data-pnav-scrolltop")); markScroll(box); });
+      }
+      document.querySelectorAll("[data-pnav-scroll]").forEach(function (box) {
+        markScroll(box);
+        box.addEventListener("scroll", function () { markScroll(box); }, { passive: true });
+      });
+      placeScroll();
+      window.addEventListener("load", placeScroll);
+
+      // 하단 탭 바 — 줄어들기 · 펴지기 · 탭마다 스크롤 기억 · 다시 누르기
+      document.querySelectorAll("[data-ptbar-phone]").forEach(function (phone) {
+        var bar = phone.querySelector("[data-ptbar-live]");
+        var title = phone.querySelector("[data-ptbar-head] .ptnav-title");
+        var add = bar && bar.querySelector(".ptbar-add");
+        var status = statusOf(phone, "data-ptbar-status");
+        if (!bar || !add) return;
+        var current = "home", saved = {}, compact = false, last = 0, acc = 0, dir = 0, timer = 0;
+        function say(t) { if (status) status.textContent = t; }
+        function screen() { return phone.querySelector('[data-ptbar-screen="' + current + '"]'); }
+        function setCompact(on) {
+          if (on === compact) return;
+          compact = on;
+          clearTimeout(timer);
+          bar.classList.toggle("ptbar--compact", on);
+          if (on) bar.removeAttribute("data-labels");
+          else if (!reduce) {
+            // 라벨은 다 펴진 뒤 나타난다(200ms)
+            bar.setAttribute("data-labels", "hidden");
+            timer = setTimeout(function () { bar.removeAttribute("data-labels"); }, 200);
+          }
+          say(on ? "48 로 줄었다 — 라벨은 보이지 않게만, 칸마다 이름은 남는다" : "66 으로 펴졌다");
+        }
+        phone.querySelectorAll("[data-ptbar-screen]").forEach(function (box) {
+          box.addEventListener("scroll", function () {
+            if (box.hidden) return;
+            var y = box.scrollTop, d = y - last;
+            last = y;
+            if (y < 40) { acc = 0; dir = 0; setCompact(false); return; }
+            var nd = d > 0 ? 1 : d < 0 ? -1 : 0;
+            if (!nd) return;
+            if (nd !== dir) { dir = nd; acc = 0; }
+            acc += Math.abs(d);
+            if (dir > 0 && acc >= 20) setCompact(true);
+            else if (dir < 0 && acc >= 28) setCompact(false);
+          }, { passive: true });
+        });
+        bar.addEventListener("click", function (e) {
+          var item = closest(e, ".ptbar-item");
+          var plus = closest(e, ".ptbar-add");
+          var wasCompact = compact;
+          if (compact) setCompact(false);
+          if (plus) { say(plus.getAttribute("aria-label") + " — 그 화면의 추가(시트)를 연다"); return; }
+          if (!item) { if (wasCompact) say("줄어든 바를 눌렀다 — 펴졌다"); return; }
+          var key = item.getAttribute("data-ptbar-key");
+          var box = screen();
+          if (key === current) {
+            box.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+            say("지금 탭을 다시 눌렀다 — 그 탭의 첫 화면 · 맨 위로(주소를 고쳐 쓴다)");
+            return;
+          }
+          saved[current] = box.scrollTop;
+          box.hidden = true;
+          bar.querySelectorAll(".ptbar-item").forEach(function (a) { if (a === item) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+          current = key;
+          var next = screen();
+          next.hidden = false;
+          next.scrollTop = saved[key] || 0;
+          last = next.scrollTop; acc = 0; dir = 0;
+          if (last < 40) setCompact(false);
+          if (title) title.textContent = next.getAttribute("data-ptbar-title");
+          add.setAttribute("aria-label", key === "calendar" ? "일정 추가" : "거래 추가");
+          say(next.getAttribute("data-ptbar-title") + " — 그 탭의 마지막 스크롤 위치 " + Math.round(next.scrollTop) + " · + 의 이름은 " + add.getAttribute("aria-label"));
+        });
+      });
+
+      // 사이드바 — 펼친 부모는 눌러 펼치고 접는다(어느 사이드바든). 접힌 사이드바(직접)는 펼침 메뉴
+      function subOf(parent) { return document.getElementById(parent.getAttribute("aria-controls")); }
+      document.addEventListener("click", function (e) {
+        var parent = closest(e, "[data-psnav-parent]");
+        if (!parent) return;
+        var nav = parent.closest(".psnav");
+        if (nav && nav.classList.contains("psnav--collapsed")) return;
+        var sub = subOf(parent);
+        if (!sub) return;
+        var open = parent.getAttribute("aria-expanded") !== "true";
+        parent.setAttribute("aria-expanded", open ? "true" : "false");
+        sub.hidden = !open;
+      });
+      document.querySelectorAll("[data-psnav-live]").forEach(function (nav) {
+        var view = nav.closest(".pnav-desk-view");
+        var toggle = nav.querySelector("[data-psnav-toggle]");
+        var status = statusOf(nav, "data-psnav-status");
+        if (!view || !toggle) return;
+        var tip = null, fly = null, flyParent = null, openTimer = 0, closeTimer = 0;
+        function say(t) { if (status) status.textContent = t; }
+        function collapsed() { return nav.classList.contains("psnav--collapsed"); }
+        function rel(el) { var a = el.getBoundingClientRect(), b = view.getBoundingClientRect(); return { top: a.top - b.top, bottom: a.bottom - b.top, right: a.right - b.left, height: a.height }; }
+        function labelOf(item) { var l = item.querySelector(".psnav-label"); return l ? l.textContent : ""; }
+        function closeTip() { if (tip) { tip.remove(); tip = null; } }
+        // 상태를 먼저 비우고 초점을 부모로 옮긴 뒤 지운다 — 초점이 든 메뉴를 지우면 focusout 이 곧바로 다시 닫으러 온다
+        function closeFly(focusParent) {
+          if (!fly) return;
+          var f = fly, p = flyParent;
+          fly = null;
+          flyParent = null;
+          if (p) { p.setAttribute("aria-expanded", "false"); if (focusParent) p.focus(); }
+          f.remove();
+        }
+        function closeFloats() { clearTimeout(openTimer); clearTimeout(closeTimer); closeTip(); closeFly(false); }
+        function showTip(item) {
+          closeTip();
+          var r = rel(item);
+          tip = document.createElement("div");
+          tip.className = "pbub pbub--tooltip psnav-tip";
+          tip.setAttribute("role", "tooltip");
+          tip.setAttribute("data-side", "right");
+          tip.innerHTML = '<div class="pbub-title"></div><svg class="pbub-arrow" viewBox="0 0 12 8" aria-hidden="true"><path d="M0,0 H12 L8,6 Q6,8 4,6 Z"/></svg>';
+          tip.firstChild.textContent = labelOf(item);
+          tip.style.top = (r.top + r.height / 2) + "px";
+          view.appendChild(tip);
+          say("이름 말풍선 — " + labelOf(item));
+        }
+        function showFly(parent, byKeyboard) {
+          closeTip();
+          if (fly && flyParent === parent) return;
+          closeFly(false);
+          var sub = subOf(parent);
+          if (!sub) return;
+          var r = rel(parent);
+          fly = document.createElement("div");
+          fly.className = "psnav-flyout";
+          fly.id = parent.getAttribute("aria-controls") + "-fly";
+          fly.setAttribute("aria-labelledby", parent.id);
+          var html = '<div class="psnav-flyout-label" aria-hidden="true"></div><ul class="psnav-flyout-list">';
+          sub.querySelectorAll(".psnav-item").forEach(function (s) {
+            html += '<li><a class="psnav-flyout-item" href="#" data-pnav-link' + (s.getAttribute("aria-current") === "page" ? ' aria-current="page"' : "") + "></a></li>";
+          });
+          fly.innerHTML = html + "</ul>";
+          fly.firstChild.textContent = labelOf(parent);
+          var rows = fly.querySelectorAll(".psnav-flyout-item");
+          sub.querySelectorAll(".psnav-item").forEach(function (s, i) { rows[i].textContent = labelOf(s); });
+          view.appendChild(fly);
+          // 위 끝 맞춤 — 화면 끝과 8 을 남기고 모자라면 위로 민다
+          var top = Math.min(r.top, view.clientHeight - fly.offsetHeight - 8);
+          fly.style.top = Math.max(8, top) + "px";
+          if (!reduce) fly.setAttribute("data-motion", "in");
+          flyParent = parent;
+          parent.setAttribute("aria-expanded", "true");
+          if (byKeyboard && rows[0]) rows[0].focus();
+          say("펼침 메뉴 — " + labelOf(parent) + "(폭 200 · 줄 44)");
+        }
+        toggle.addEventListener("click", function () {
+          closeFloats();
+          var c = !collapsed();
+          nav.classList.toggle("psnav--collapsed", c);
+          toggle.setAttribute("aria-expanded", c ? "false" : "true");
+          nav.querySelectorAll("[data-psnav-parent]").forEach(function (p) {
+            var sub = subOf(p);
+            var hasCur = !!(sub && sub.querySelector('[aria-current="page"]'));
+            p.classList.toggle("psnav-item--current", c && hasCur);
+            if (!c && hasCur) { p.setAttribute("aria-expanded", "true"); sub.hidden = false; }
+            if (c) p.setAttribute("aria-expanded", "false");
+          });
+          say(c ? "접힘 56 — 아이콘만(이름은 보이지 않게만 남는다)" : "펼침 240 — 손으로 펼쳤다(브라우저에 기억한다)");
+        });
+        nav.addEventListener("mouseover", function (e) {
+          if (!collapsed()) return;
+          var item = closest(e, ".psnav-item");
+          if (!item) return;
+          clearTimeout(closeTimer);
+          clearTimeout(openTimer);
+          var parent = item.hasAttribute("data-psnav-parent");
+          if (parent && fly && flyParent !== item) { showFly(item, false); return; }
+          if (parent && flyParent === item) return;
+          openTimer = setTimeout(function () { if (parent) showFly(item, false); else { closeFly(false); showTip(item); } }, 200);
+        });
+        function leaveSoon() {
+          clearTimeout(openTimer);
+          clearTimeout(closeTimer);
+          closeTimer = setTimeout(function () { closeTip(); closeFly(false); }, 100);
+        }
+        nav.addEventListener("mouseleave", leaveSoon);
+        view.addEventListener("mouseover", function (e) {
+          if (fly && fly.contains(e.target)) clearTimeout(closeTimer);
+        });
+        view.addEventListener("mouseout", function (e) {
+          if (fly && fly.contains(e.target) && !(e.relatedTarget && (fly.contains(e.relatedTarget) || nav.contains(e.relatedTarget)))) leaveSoon();
+        });
+        nav.addEventListener("focusin", function (e) {
+          if (!collapsed()) return;
+          var item = e.target.closest && e.target.closest(".psnav-item");
+          if (item && !item.hasAttribute("data-psnav-parent") && item.matches(":focus-visible")) { closeFly(false); showTip(item); }
+        });
+        nav.addEventListener("focusout", function () { closeTip(); });
+        nav.addEventListener("click", function (e) {
+          var parent = closest(e, "[data-psnav-parent]");
+          if (!parent || !collapsed()) return;
+          clearTimeout(openTimer);
+          if (fly && flyParent === parent) closeFly(false);
+          else showFly(parent, e.detail === 0);
+        });
+        view.addEventListener("keydown", function (e) {
+          if (e.key !== "Escape") return;
+          if (fly) { closeFly(true); say("Esc — 닫고 초점은 부모로"); }
+          closeTip();
+        });
+        view.addEventListener("focusout", function (e) {
+          if (fly && !(e.relatedTarget && (fly.contains(e.relatedTarget) || e.relatedTarget === flyParent))) closeFly(false);
+        });
+        document.addEventListener("pointerdown", function (e) {
+          if (fly && !fly.contains(e.target) && !(flyParent && flyParent.contains(e.target))) closeFly(false);
+        });
+      });
+
+      // 옆 패널 — HR 폰 주 메뉴 서랍
+      document.querySelectorAll("[data-pspanel-phone]").forEach(function (phone) {
+        var openBtn = phone.querySelector("[data-pspanel-open]");
+        var panel = phone.querySelector("[data-pspanel]");
+        var scrim = phone.querySelector("[data-pspanel-scrim]");
+        var back = phone.querySelector("[data-pspanel-back]");
+        var status = statusOf(phone, "data-pspanel-status");
+        if (!openBtn || !panel || !scrim || !back) return;
+        var timer = 0;
+        function say(t) { if (status) status.textContent = t; }
+        function open() {
+          clearTimeout(timer);
+          scrim.hidden = false;
+          panel.hidden = false;
+          back.inert = true;
+          openBtn.setAttribute("aria-expanded", "true");
+          if (!reduce) { panel.setAttribute("data-motion", "in"); scrim.setAttribute("data-motion", "in"); }
+          panel.focus();
+          say("열렸다 — 지금 화면의 묶음(휴가)이 펼쳐진 채");
+        }
+        function shut(why) {
+          if (panel.hidden) return;
+          back.inert = false;
+          openBtn.setAttribute("aria-expanded", "false");
+          scrim.hidden = true;
+          scrim.removeAttribute("data-motion");
+          if (reduce) panel.hidden = true;
+          else {
+            panel.setAttribute("data-motion", "out");
+            timer = setTimeout(function () { panel.hidden = true; panel.removeAttribute("data-motion"); }, 300);
+          }
+          openBtn.focus();
+          say(why + " — 닫히고 초점은 ☰ 로");
+        }
+        openBtn.addEventListener("click", open);
+        scrim.addEventListener("click", function () { shut("딤을 눌렀다"); });
+        panel.addEventListener("click", function (e) {
+          if (closest(e, ".pov-close")) { shut("닫기"); return; }
+          var link = closest(e, "a.psnav-item");
+          if (!link) return;
+          panel.querySelectorAll(".psnav-item").forEach(function (a) { a.classList.remove("psnav-item--current"); a.removeAttribute("aria-current"); });
+          link.classList.add("psnav-item--current");
+          link.setAttribute("aria-current", "page");
+          shut(link.textContent + " 로 이동했다");
+        });
+        panel.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") { e.stopPropagation(); shut("Esc"); return; }
+          if (e.key !== "Tab") return;
+          var f = Array.prototype.filter.call(panel.querySelectorAll("a[href], button:not([disabled])"), function (el) { return el.offsetParent !== null; });
+          if (!f.length) return;
+          var first = f[0], lastEl = f[f.length - 1];
+          if (e.shiftKey && (document.activeElement === first || document.activeElement === panel)) { e.preventDefault(); lastEl.focus(); }
+          else if (!e.shiftKey && document.activeElement === lastEl) { e.preventDefault(); first.focus(); }
+        });
+      });
+
+      // 쪽 넘김 — 직접
+      document.querySelectorAll("[data-ppgn-wrap]").forEach(function (wrap) {
+        var nav = wrap.querySelector("[data-ppgn-live]");
+        var status = wrap.querySelector("[data-ppgn-status]");
+        var region = wrap.querySelector("[data-ppgn-live-region]");
+        if (!nav) return;
+        var total = Number(nav.getAttribute("data-ppgn-live"));
+        var slots = Number(nav.getAttribute("data-ppgn-slots"));
+        var page = Number(nav.getAttribute("data-ppgn-page"));
+        // 칸 수는 창 폭으로 — 480 이상 9칸 · 미만 7칸(pagination.tsx 의 usePaginationSlots). 폭이 넘나들면 다시 그린다
+        var wide = window.matchMedia ? window.matchMedia("(min-width: 480px)") : null;
+        function fitSlots() {
+          var next = !wide || wide.matches ? 9 : 7;
+          if (next === slots) return;
+          slots = next;
+          nav.setAttribute("data-ppgn-slots", String(slots));
+          nav.classList.toggle("ppgn--narrow", slots < 9);
+          nav.innerHTML = CELLS(ITEMS(page, total, slots), page, ICONS, {});
+        }
+        fitSlots();
+        if (wide && wide.addEventListener) wide.addEventListener("change", fitSlots);
+        nav.addEventListener("click", function (e) {
+          var a = closest(e, "[data-ppgn-to]");
+          if (!a || a.getAttribute("aria-disabled") === "true") return;
+          var kind = a.classList.contains("ppgn-arrow") ? (a.getAttribute("aria-label") === "이전 페이지" ? "previous" : "next") : "page";
+          var keyboard = a.matches(":focus-visible");
+          page = Number(a.getAttribute("data-ppgn-to"));
+          nav.innerHTML = CELLS(ITEMS(page, total, slots), page, ICONS, {});
+          // 초점은 누른 칸에 남는다 — 끝 쪽에 닿아 그 칸이 빈 칸이 되면 지금 쪽 번호로
+          var target = kind === "page" ? nav.querySelector('[aria-current="page"]') : nav.querySelector('.ppgn-arrow[aria-label="' + (kind === "previous" ? "이전 페이지" : "다음 페이지") + '"]');
+          var moved = false;
+          if (!target) { target = nav.querySelector('[aria-current="page"]'); moved = true; }
+          if (target && (keyboard || document.activeElement === document.body || !nav.contains(document.activeElement))) target.focus();
+          var text = page + "페이지, 전체 " + total + "페이지";
+          if (region) region.textContent = text;
+          if (status) status.textContent = text + (moved ? " — 화살표 자리가 빈 칸이 되어 초점을 지금 쪽 번호로 옮겼다" : "");
+        });
+      });
+
+      // 표 넘김 — 이전 · 다음(끝에서 막힘)
+      document.querySelectorAll("[data-ptpg-live]").forEach(function (row) {
+        var total = Number(row.getAttribute("data-ptpg-live"));
+        var size = Number(row.getAttribute("data-ptpg-size"));
+        var page = Number(row.getAttribute("data-ptpg-page"));
+        var range = row.querySelector(".ptpg-group--range .psel-value");
+        var prev = row.querySelector('[data-ptpg-step="-1"]');
+        var next = row.querySelector('[data-ptpg-step="1"]');
+        var pages = Math.max(1, Math.ceil(total / size));
+        function paint() {
+          if (range) range.textContent = ((page - 1) * size + 1) + "-" + Math.min(page * size, total);
+          if (page <= 1) prev.setAttribute("aria-disabled", "true"); else prev.removeAttribute("aria-disabled");
+          if (page >= pages) next.setAttribute("aria-disabled", "true"); else next.removeAttribute("aria-disabled");
+        }
+        row.addEventListener("click", function (e) {
+          var b = closest(e, "[data-ptpg-step]");
+          if (!b || b.getAttribute("aria-disabled") === "true") return;
+          page = Math.min(pages, Math.max(1, page + Number(b.getAttribute("data-ptpg-step"))));
+          paint();
+        });
+      });
+
+      // 목록 끝 자리 — 끝없이 불러오기
+      document.querySelectorAll("[data-pinf-phone]").forEach(function (phone) {
+        var box = phone.querySelector("[data-pinf-scroll]");
+        var list = phone.querySelector("[data-pinf-list]");
+        var end = phone.querySelector("[data-pinf-end]");
+        var status = statusOf(phone, "data-pinf-status");
+        if (!box || !list || !end) return;
+        var spinner = end.innerHTML;
+        var loaded = 1, busy = false, failed = false, timers = [];
+        var CARDS = [["우리 카드의정석", "신용 · 우리카드", "생활 7%"], ["하나 트래블로그", "체크 · 하나카드", "환전 수수료 면제"], ["IBK 일상의기쁨", "체크 · IBK기업은행", "커피 20%"], ["BC 바로", "신용 · BC카드", "주유 60원"], ["카카오뱅크 체크", "체크 · 카카오뱅크", "캐시백 0.2%"]];
+        function say(t) { if (status) status.textContent = t; }
+        function setEnd(kind) {
+          end.className = "pinf pinf--" + kind;
+          if (kind === "loading") { end.innerHTML = spinner; end.setAttribute("data-wait", ""); }
+          else if (kind === "error") end.innerHTML = '<p class="pinf-text">더 불러오지 못했어요.</p><button class="btn btn-neutral-weak btn-size-small pinf-retry" type="button"><span>다시 시도</span></button>';
+          else end.innerHTML = '<p class="pinf-text">카드를 모두 봤어요.</p>';
+        }
+        function load() {
+          if (busy || loaded >= 4 || end.classList.contains("pinf--error")) return;
+          busy = true;
+          box.setAttribute("aria-busy", "true");
+          setEnd("loading");
+          say("받는 중 — 원은 1초가 지나야 보인다");
+          timers.push(setTimeout(function () { end.removeAttribute("data-wait"); }, 1000));
+          timers.push(setTimeout(function () {
+            busy = false;
+            box.removeAttribute("aria-busy");
+            if (loaded === 2 && !failed) { failed = true; setEnd("error"); say("못 불러옴 — 받은 줄은 그대로 · 다시 시도"); return; }
+            loaded += 1;
+            var html = "";
+            CARDS.forEach(function (c) { html += '<div class="pnav-row"><span class="pnav-row-body"><span class="pnav-row-title"></span><span class="pnav-row-detail"></span></span><span class="pnav-row-value"></span></div>'; });
+            var tmp = document.createElement("div");
+            tmp.innerHTML = html;
+            Array.prototype.forEach.call(tmp.children, function (row, i) {
+              row.querySelector(".pnav-row-title").textContent = CARDS[i][0] + " " + loaded;
+              row.querySelector(".pnav-row-detail").textContent = CARDS[i][1];
+              row.querySelector(".pnav-row-value").textContent = CARDS[i][2];
+              list.appendChild(row);
+            });
+            if (loaded >= 4) { setEnd("end"); say("끝 — 카드를 모두 봤어요."); }
+            else { setEnd("loading"); end.setAttribute("data-wait", ""); say(loaded + "쪽까지 받았다 — 더 내려 보세요"); check(); }
+          }, 1600));
+        }
+        function check() { if (box.scrollHeight - box.scrollTop - box.clientHeight <= 300) load(); }
+        end.setAttribute("data-wait", "");
+        box.addEventListener("scroll", check, { passive: true });
+        end.addEventListener("click", function (e) {
+          if (!closest(e, ".pinf-retry")) return;
+          setEnd("loading");
+          end.removeAttribute("data-wait");
+          load();
         });
       });
     })();

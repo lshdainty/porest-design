@@ -2740,9 +2740,104 @@ SEED 가 자리에 이름을 붙인 간격이다(SEED 이름은 `spacing-x.*` �
 | `layout-sidebar-collapsed` | `56px` | 접은 사이드 내비게이션(아이콘만) |
 
 - 화면은 머리(GNB) · 사이드 내비게이션 · 본문 · 오른쪽 보조 영역(Aside) 넷으로 나눈다.
-- 사이드 내비게이션은 `breakpoint-md`(768px) 이상에서 보인다. 그 아래에서는 머리의 메뉴로 들어간다 — Desk 웹은 앱과 같은 하단 탭바.
-- 머리(상단 바) 높이는 SEED 문서에 없어 정하지 않았다 — 지금 Desk 웹 56 · HR 웹 48.
-- 사이드 내비게이션 안쪽 치수(머리 · 항목 여백 · 높이)는 컴포넌트 단계에서 SEED side navigation 과 비교해 정한다.
+- 사이드 내비게이션은 `breakpoint-md`(768px) 이상에서 보인다. 그 아래에서는 Desk 웹은 앱과 같은 하단 탭 바(Bottom Navigation), HR 은 상단 바의 ☰ 로 여는 왼쪽 주 메뉴(Side Panel)다 — 아래 "화면 틀".
+- 머리(상단 바) 높이는 56 이다 — 폰 · 데스크톱 모든 화면(2026-10-04, `specs/components/top-navigation.md`). SEED 는 2026-10-01 에 iOS · Android 를 56 으로 통일했다.
+- 사이드 내비게이션 안쪽 치수(머리 64 · 항목 44 · 아이콘 20 · 14 / 19 · 500 · 모서리 10)는 `specs/components/side-navigation.md` · `.yaml` 에 있다(2026-10-04 — SEED). 768 ~ 1279 는 아이콘만 56 으로 저절로 접힌다 — 아래 "화면 틀".
+
+### 화면 틀 — 머리 · 하단 탭 바 · 사이드바 (2026-10-04)
+
+화면을 감싸는 틀 — 머리(상단 바) · 주 메뉴(하단 탭 바 · 사이드바) · 본문 — 을 정한다. 사용자가 2026-10-04 화면 틀 · 이동 비교 페이지에서 골랐다. 부품의 값은 각 스펙에 있다 — `specs/components/top-navigation.md` · `bottom-navigation.md` · `side-navigation.md` · `side-panel.md` · `pagination.md` · `floating-action-button.md`.
+
+**아직 두 웹 · 앱에는 들어가지 않았다.** 앱 적용 단계에서 옮긴다(각 스펙의 Migration notes).
+
+#### 문턱 — 768 · 1280
+
+화면 틀이 바뀌는 폭은 둘이다 — 768(`breakpoint-md` — 모바일 틀 ↔ 사이드바 틀)과 1280(`breakpoint-lg` — 사이드바 접힘 ↔ 펼침, 시트 ↔ 대화상자). Desk 웹 안의 1100 문턱('tablet')은 걷는다.
+
+| 자리 | 0 – 767 | 768 – 1279 | 1280 이상 |
+|---|---|---|---|
+| 머리 | 상단 바 56 — 탭 첫 화면은 큰 제목, 그 아래는 ← + 제목 | Desk 데스크톱 머리 56 · HR 은 머리 없음 | 같다 |
+| 주 메뉴 | Desk 하단 탭 바 · HR ☰ → 왼쪽 옆 패널 | 사이드바 접힘 56(손으로 펼침) | 사이드바 펼침 240(손으로 접음 · 기억) |
+| 화면 제목 | 상단 바의 제목 | 본문 맨 위 `h1` | 같다 |
+| 폼 · 상세 · 고르기 | Bottom Sheet | Bottom Sheet | Dialog · Popover |
+| 줄의 동작 | Menu Sheet | Menu Sheet | Menu |
+| 접힌 사이드바의 하위 | — | 옆 펼침 메뉴(줄 44 — Menu Sheet 로 바꾸지 않는다, 2026-10-08) | 같다(손으로 접었을 때) |
+| 긴 목록 | 끝없이 불러오기 | Pagination | Pagination |
+| 데이터 표 | Table Pagination(표와 함께 가로 스크롤) | Table Pagination | Table Pagination |
+| 화면의 주 동작 | 탭 바 가운데 + · 탭 바 없는 화면은 떠 있는 버튼 | 머리의 버튼 | 같다 |
+| 본문 폭 | 화면 폭 | 밀도 표(720) | 밀도 표(720 · 1040) |
+
+- Pagination 의 칸 수는 480(`breakpoint-sm`)에서 9 ↔ 7 이다.
+- 768 – 1279 는 사이드바 틀인데 겹치는 표면은 시트다 — 터치 태블릿과 작은 노트북이 섞인 폭이라 손가락에 맞는 쪽을 둔다(시트 · 대화상자 2026-10-02 결정의 1280).
+
+#### 머리 · 화면 제목
+
+- 머리(상단 바)는 높이 56 — 폰 · 데스크톱 모든 화면이 같다. 스크롤해도 선 · 그림자를 긋지 않는다(Elevation).
+- 폰은 상단 바의 제목이 화면 제목(`h1`)이다 — 탭 첫 화면은 22 / 30(`text-t8`), 그 아래 화면은 18 / 24(`text-t6`), 둘 다 700 · 왼쪽.
+- 데스크톱은 머리에 제목을 두지 않는다 — 본문 맨 위 `h1` 이 화면 제목이다. `text-screen-title`(26 / 35 · 700), 머리 아래 `spacing-nav-to-title`(20).
+- HR 은 데스크톱 머리를 두지 않는다 — 접기 버튼은 사이드바 머리로, 테마는 설정으로 갔고, 위치는 사이드바의 지금 항목이 알린다(빵부스러기는 걷었다).
+
+#### 화면을 옮길 때
+
+| 일 | 스크롤 | 초점 |
+|---|---|---|
+| 다른 화면으로(링크 · 사이드바 항목) | 맨 위 | 새 화면의 제목(`h1`) |
+| 뒤로 가기 · ← | 그 화면에 있던 자리 | 그 화면의 제목 |
+| 하단 탭 옮기기 | 그 탭에 있던 자리(탭마다 기억) | 그 탭 화면의 제목 |
+| 지금 탭을 다시 누름 | 맨 위 · 그 탭의 첫 화면 | 그대로 |
+| 쪽 넘기기(Pagination) | 목록 맨 위 | 누른 칸 — "N페이지" 를 알린다 |
+
+- 문서 제목은 화면마다 "{화면 제목} - Porest Desk" · "{화면 제목} - Porest HR" 이다.
+- ← 는 들어온 화면으로(History), 앞 화면이 없으면 상위 화면으로 — 주소를 고쳐 쓴다. ✕ 는 모달 · 독립 흐름을 닫을 때만.
+
+#### 랜드마크
+
+- 머리는 `header` — `main` 밖에 둔다.
+- 주 메뉴는 이름 있는 `nav` — 하단 탭 바 · 사이드바 · 옆 패널의 주 메뉴 모두 "주 메뉴".
+- 본문은 `main` 하나.
+- 화면 맨 앞에 "본문 바로가기" 링크 — 키보드 초점이 오면 보이고, 누르면 `main` 으로 간다.
+
+### Safe Area — 안전 영역 (2026-10-04)
+
+화면 가장자리는 상태 표시줄 · 홈 표시줄 · 카메라 자리(노치) · 둥근 모서리에 가릴 수 있다. 무엇을 안전 영역 안에 두고 무엇을 화면 끝까지 채울지 정한다 — 당근 SEED 의 Safe Area 패턴을 들인다(사용자 결정 2026-10-04, 화면 틀 · 이동 비교 페이지 "따라오는 것"). 출처: seed-design.io Patterns › Safe Area(Apache-2.0).
+
+> 요소가 가려지거나 잘렸을 때 정보나 기능을 잃는지에 따라 배치 범위를 정합니다. — SEED
+
+#### 안과 끝
+
+| 무엇 | 어디까지 | 예 |
+|---|---|---|
+| 누르는 것 · 읽는 것(버튼 · 링크 · 입력칸 · 탭 · 글 · 아이콘 · 배지 · 뜻이 있는 그림) | 안전 영역 안 | 상단 바의 버튼 · 제목, 탭 바의 칸, 떠 있는 버튼, 바닥 버튼 |
+| 배경 · 장식 | 화면 끝까지 | 상단 바 · 바닥 바의 바탕, Page Banner 의 바탕, 화면 폭 Divider, 장식 그림 |
+| 스크롤 영역 | 화면 끝까지 — 스크롤하면 가려진 것을 안으로 가져올 수 있다 | 목록(아래 끝까지), 가로 칩 줄 · Tabs(좌우 끝까지) |
+| 고정된 바 · 버튼 | 안전 영역 안 — 스크롤로 가져올 수 없다 | 탭 바 · 바닥 버튼 · 떠 있는 버튼 |
+
+- 네 변의 안전 영역은 따로다 — 한 방향이 늘 0 이라고 가정하지 않고 늘 지금 값을 쓴다(웹 `env(safe-area-inset-*)` · 앱 `MediaQuery.viewPadding`).
+- 한 요소에 바탕과 내용이 함께 있으면 부분마다 따로 — 바탕은 끝까지, 내용은 안.
+
+#### 여백은 안전 영역 경계부터
+
+- 좌우 여백(본문 `spacing-global-gutter` 24 · 상단 바의 6)은 화면 끝이 아니라 안전 영역 경계에서 잰다 — 안전 영역 + 여백.
+- 바닥에 고정한 바의 버튼은 아래 안전 영역 경계에서 바의 안쪽 여백만큼 띄운다.
+- 가운데 정렬은 안전 영역을 기준으로 한다 — 왼쪽 · 오른쪽 안전 영역이 다르면 화면 가운데가 아니다.
+- 끝까지 스크롤하면 마지막 항목 전체가 안전 영역 안에 보이게, 스크롤 내용의 끝에 안전 영역 + 기본 여백을 둔다.
+- 떠 있는 탭 바는 바의 아래 여백 6 만 홈 표시줄 영역에 걸치고 누르는 칸은 그 위에서 끝난다(Bottom Navigation).
+
+#### 부품이 스스로 반영하는 방향
+
+| 부품 | 반영하는 방향 |
+|---|---|
+| Top Navigation | 위(바가 그만큼 높아진다) · 좌우 |
+| Bottom Navigation | 아래 · 좌우 |
+| Bottom Sheet · Menu Sheet | 아래 |
+| Side Panel | 위(머리) · 아래(패널 내용 끝) · 붙은 쪽(폭에 더한다) |
+| Snackbar | 좌우 · 아래 |
+| Floating Action Button | 오른쪽 · 아래 |
+| 화면 본문 | 좌우 · 아래(스크롤 내용 끝) |
+
+#### 웹 — viewport-fit=cover
+
+안전 영역 값을 받으려면 문서의 `viewport` 메타에 `viewport-fit=cover` 를 둔다 — 없으면 iOS 사파리가 `env(safe-area-inset-*)` 를 0 으로 계산한다(SEED). 지금 두 웹 모두 없다 — 앱 적용 때 넣는다.
 
 ### v98 — SEED 간격 스케일 (2026-09-29)
 
@@ -2844,7 +2939,7 @@ HR은 데이터 그리드 inline action(승인/반려 row 액션, 결재 메뉴,
 |---|---|---|
 | `z-base` | `auto` | L0 페이지 — 데이터 그리드 · 결재 목록 |
 | `z-sticky` | `50` | L1 고정 헤더 · 결재 큐 sticky 패널 · sticky CTA |
-| `z-modal` | `100` | L2 딤 — Sheet(직원 detail · 권한 설정 옆 패널) · Dialog(휴가 신청 확인 · 결재 의견) |
+| `z-modal` | `100` | L2 딤 — Side Panel(폰 주 메뉴) · Dialog(휴가 신청 확인 · 결재 의견) |
 | `z-modal-content` | `101` | L2 표면 — 위 패널 · 대화상자 |
 | `z-floating` | `200` | L3 Popover · Select 목록 · Menu(결재 행 동작) — 패널 · 대화상자 안에서도 같은 값 |
 | `z-tooltip` | `210` | L4 Help Bubble · Tooltip(규정 설명) |
@@ -2869,7 +2964,7 @@ DESIGN.md baseline 정의 참고 — CSS logical property 기반 LTR ↔ RTL 자
 - **현 시점 active 사용 0** — Porest HR 1차 시장 한국어(LTR). RTL active 사용은 향후 글로벌 확장 시점에 평가.
 - **신규 컴포넌트 spec 작성 시 logical 우선** — `padding-inline-start`/`end`, `margin-inline-*`, `border-start-start-radius`, `inset-inline-*`, `text-align: start/end`. 추가 비용 0.
 - **결재 큐 sticky panel**: 우측 sticky → RTL 시 좌측. `inset-inline-end: 0` 선언 시 자동.
-- **직원 detail drawer**: 우측 슬라이드 → RTL 시 좌측에서 등장. keyframe `slide-in-left` ↔ `slide-in-right` `:dir(rtl)` 분기 필요.
+- **Side Panel**(2026-10-04): 주 메뉴 서랍은 왼쪽 · 보조 작업 패널은 오른쪽에서 나온다 → RTL 시 반대쪽에서 등장. keyframe `slide-in-left` ↔ `slide-in-right` `:dir(rtl)` 분기 필요. 옛 직원 detail drawer 는 쓰는 곳이 없다.
 - **결재 row chevron icon**: forward `>` → RTL 시 mirror `<` (transform: scaleX(-1)).
 - **사번 / 결재번호** (HR-2026-0001 같은 LTR 식별자): RTL 환경에서도 LTR 강제 (`<bdi>` 또는 `direction: ltr`).
 
@@ -2899,13 +2994,14 @@ DESIGN.md baseline 정의 참고 — CSS logical property 기반 LTR ↔ RTL 자
 | 3 | 잠깐 뜨는 알림 — 스낵바 | `z-snackbar` |
 
 - Global 2 · 3 의 토큰은 딤 자리다 — 표면은 그 바로 위 `z-modal-content` · `z-alert-content` 다. z-index 값과 이유는 Layout 의 Z-index 절(v116)에 있다.
-- 같은 층 안에서 겹칠 때(스크롤되는 목록이 상단 내비게이션 아래로)는 층을 올리지 않는다 — 그림자나 선으로 구분만 준다.
+- 같은 층 안에서 겹칠 때(스크롤되는 목록이 상단 내비게이션 아래로)는 층을 올리지 않는다. 상단 내비게이션은 선 · 그림자도 긋지 않는다 — SEED Top Navigation 의 "고정된 영역과 스크롤되는 영역을 구분하기 위해 별도의 시각적인 장치를 표시하지 않습니다" 를 따른다(2026-10-04 사용자 결정 — SEED Elevation 문서의 "그림자나 라인(스타일)을 추가하여 '구분감'을 줍니다" 와 SEED 안에서 갈리는 자리다). 데스크톱 머리 아래의 선도 긋지 않는다.
+- 한 표면 안에서 머리와 본문이 따로 스크롤되는 대화상자 · 옆 패널(Side Panel) · 사이드바(Side Navigation)는 그 부품의 규칙대로 본문이 위로 스크롤되면 머리 아래 1px `stroke-neutral-subtle` 을 긋는다.
 
 #### 고도를 드러내는 세 가지
 
 - **표면 색** — 배경의 밝기 · 채도를 바꾼다(스낵바 · 플로팅 버튼). 다크 모드는 높을수록 밝아진다(`bg-layer-floating`).
-- **그림자** — 떠 있는 높이를 그림자의 크기 · 퍼짐 · 투명도로. 다크 모드에서 잘 안 보이므로 **화면에서 주목도가 높은 몇 안 되는 요소에만** 쓴다.
-- **선** — 가장자리에 테두리를 둬 영역을 나눈다(하단 탭바).
+- **그림자** — 떠 있는 높이를 그림자의 크기 · 퍼짐 · 투명도로. 다크 모드에서 잘 안 보이므로 **화면에서 주목도가 높은 몇 안 되는 요소에만** 쓴다(떠 있는 탭 바 · 떠 있는 버튼 · 메뉴 · 팝오버 — `shadow-s3`).
+- **선** — 가장자리에 테두리를 둬 영역을 나눈다(사이드바의 오른쪽 선 · 떠 있는 탭 바의 안쪽 테두리 — 2026-10-04).
 
 #### 그림자
 
@@ -3133,14 +3229,14 @@ DESIGN.md baseline 정의 참고 — 14 keyframes (단발 10 + loop 4): fade-in/
 - **결재 row 등장** — `fade-in` + `motion-duration-base` (200ms): 새 결재 도착 시 row 위에서 스무스 등장. dramatic motion 회피, 절제 톤.
 - **Toast 알림** — `slide-in-down` + `motion-duration-base` (200ms): top-right 위치라 위에서 내려옴.
 - **Modal/Dialog** — `scale-in` + `motion-duration-base` (200ms): 결재 confirm dialog, 직원 detail.
-- **Drawer (직원 detail)** — `slide-in-left` + `motion-duration-slow` (300ms): 우측에서 등장.
+- **Side Panel** — 폰 주 메뉴 서랍이 왼쪽에서 들어온다(2026-10-04). 길이 · 곡선은 `specs/components/side-panel.yaml` 의 motion 이다. 옛 직원 detail drawer(우측 등장)는 쓰는 곳이 없다.
 - **Skeleton (결재 큐 로딩)** — `shimmer` + `motion-duration-loop` (1500ms) linear: 결재 row placeholder.
 - **Spinner (저장 중)** — `spin` + `motion-duration-loop` (1500ms) linear.
 - **Form validation error** — `shake` + `motion-duration-slow` (300ms): 결재 의견 미입력 등 금지 시.
 - **bounce-in 제한 사용** — 결재 완료 후 success indicator 정도. 일상 UI엔 과도.
 
 #### HR 회피 패턴
-- `slide-in-right` (drawer 좌측 등장) — sidebar 좌측 고정 layout이므로 우측에서 등장이 자연.
+- 보조 작업 패널을 왼쪽에서 띄우지 않는다 — 왼쪽은 주 메뉴 서랍(Side Panel left)의 자리다(2026-10-04). 옛 "`slide-in-right`(drawer 좌측 등장) 회피" 는 걷었다.
 - `ping` — alert·notification 위치만, 일반 row엔 distraction.
 
 ## State
@@ -3242,7 +3338,7 @@ DESIGN.md baseline 정의 참고 — 14 keyframes (단발 10 + loop 4): fade-in/
 
 - 한 줄에 둘 때는 높이 가운데로 맞추고, 사이는 간격 토큰으로 둔다(2026-09-30 제품은 대부분 8px).
 - 아이콘만으로 뜻이 모호하면 글자를 함께 쓴다.
-- 상단 내비게이션은 선 아이콘으로 두고, 하단 탭은 선택된 탭을 굵기 · 색으로 강조한다.
+- 상단 내비게이션은 선 아이콘 24 로 둔다(상자 44 — Top Navigation, 2026-10-04). 하단 탭은 고른 탭을 짙은 글자색(`fg-neutral`) + 선 2.5 로, 다른 탭은 `fg-neutral-subtle` + 선 2 로 둔다 — 브랜드 색으로 칠하지 않는다(Bottom Navigation, 2026-10-04).
 
 ## Inclusive Design
 
@@ -3554,7 +3650,7 @@ HR은 `xl` padding은 hero 사용 사례 등장 시. 일반적으로 `sm`/`md` �
 
 ### Page text
 
-HR(B2B) — `bg-page` 위 본문은 dashboard layout, sidebar nav 텍스트 등. data-dense 화면에서 본문 가독성 우선.
+HR(B2B) — `bg-page` 위 본문은 dashboard layout 등(사이드바는 2026-10-04 부터 흰 면 위다). data-dense 화면에서 본문 가독성 우선.
 
 #### Mode pair / contrast
 - `page-text-light`: `bg-page #F5F6FA` × `text-primary #1A1F2E` = **15.04:1** ✅ AAA
@@ -3867,17 +3963,27 @@ semantic 토큰(success/error/warning/info)과 hue 일관성 유지 — `chart-c
 - **회사 로고** — 회사별 인원의 로고는 Logo Tile 32 · 로고 그림(흰 판 + 투명 윤곽) — 다크에서 로고의 검은 부분이 사라지지 않고, 로고가 없는 회사는 깨진 그림 대신 회사 이름의 첫 글자. 회사 이름 옆이라 장식(지금 "{회사} logo" 를 이름과 두 번 읽는다).
 - **영어 대체 글** — "Image" · "logo" · "Porest Logo" 를 걷는다 — 로그인 배경은 장식(`alt=""`), 서비스 로고는 서비스 이름.
 
+### 화면 틀 · 이동 — HR
+
+> 2026-10-04 — 모양 · 쓰는 규칙은 DESIGN.md 의 "화면 틀 · 이동" 절, Layout 의 "화면 틀" · "Safe Area" 절과 각 스펙(`specs/components/top-navigation.md` · `bottom-navigation.md` · `side-navigation.md` · `side-panel.md` · `pagination.md` · `table-pagination.md` · `floating-action-button.md`). HR 의 쓰는 자리만 적는다.
+
+- **데스크톱(768 이상)** — 머리를 두지 않는다(빵부스러기를 걷었다 — 접기 버튼은 사이드바 머리로, 테마는 설정으로). 사이드바는 inset 상자(모서리 12 · 그림자)를 걷고 흰 면 + 오른쪽 선, 1280 이상 240 · 768 ~ 1279 접힘 56. 휴가 · 업무처럼 하위가 있는 항목은 펼치기만 하고 하위가 지금이면 저절로 펼친다. 잎 항목도 링크라 키보드로 닿는다. 묶음 이름은 회사 이름("SKC")이 아니라 묶음의 성격으로 — 이름은 앱 적용 때 정한다. 화면 제목은 본문 맨 위 h1(text-screen-title — 지금 30).
+- **폰(768 미만)** — 하단 탭 바가 없다. 상단 바는 ☰ + 화면 제목이고, ☰ 는 왼쪽 Side Panel(주 메뉴 — 제목 "Porest HR")을 연다 — 지금 묶음을 펼친 채, 항목을 누르면 이동하고 닫힌다.
+- **표** — 회비 · 휴가 현황 · 사용자 표 아래는 Table Pagination(줄 수 10 · 25 · 50 · 한글 · 줄이 줄면 마지막 범위로).
+- **떠 있는 버튼** — 대시보드 SpeedDial 은 앱 적용 때 정한다.
+- **알림** — 알림 기능이 없어 상단 바 알림 점은 아직 없다. 생기면 같은 규칙(초록 점).
+
 ### Pagination / Drawer / Spinner / Stepper (v67 추가 batch)
 
 HR(B2B) 4 컴포넌트 사용 패턴 — DESIGN.md 공통 spec 외 brand-specific 안내.
 
 #### Pagination — HR
-- **데이터 그리드 footer**: numbered variant (1 2 3 ... 10) — 결재 list, 직원 검색, 평가 history 등 양 예측 가능 도메인.
-- **load-more 회피**: 결재·근태 데이터는 "전체 개수" 인지가 중요 (decision-making) → numbered 우선.
-- size: lg 48 데스크탑 (mouse hit 정밀), sm 32 inline (테이블 row 안 mini paging은 비권장 — 페이지 단위로).
+
+> 2026-10-04 다시 정했다 — 표 아래는 Table Pagination, 위 "화면 틀 · 이동 — HR".
 
 #### Drawer — HR
-아래에서 올라오는 시트는 2026-10-02 Bottom Sheet 로 바뀌었다 — 위 "시트 · 대화상자 · 확인창 · 팝오버" 절. 옆 패널은 Side Panel 차례에 정한다.
+
+아래에서 올라오는 시트는 2026-10-02 Bottom Sheet 로 바뀌었다 — 위 "시트 · 대화상자 · 확인창 · 팝오버" 절. 옆 패널은 Side Panel(2026-10-04) — HR 폰의 주 메뉴 서랍(왼쪽)이 쓴다.
 
 #### Spinner / Progress — HR
 
@@ -3893,18 +3999,16 @@ HR(B2B) 4 컴포넌트 사용 패턴 — DESIGN.md 공통 spec 외 brand-specifi
 HR(B2B) 5 navigation 컴포넌트 — DESIGN.md 공통 spec 외 brand-specific 안내. 데이터 그리드 + 다단계 페이지 위계 깊은 application 톤.
 
 #### Breadcrumb — HR
-- 결재 큐 → 결재 항목 detail → 첨부 view 같은 4-5 depth 일반. truncation 빈번 — `Home / ... / 결재 큐 / 김지원 휴가 신청`.
-- font-size lg `body-sm` (14/400) — 데이터 밀도 톤이지만 경로 인지는 우선.
+
+> 2026-10-04 걷었다 — SEED 에 없고, 경로 19개가 모두 사이드바 항목이라 같은 정보를 두 번 보였다. 위치는 사이드바의 지금 항목(부모 자동 펼침)과 본문 제목이 알린다.
 
 #### Sidebar — HR
-- **fixed** 좌측 280px 데스크탑 default. collapsible 옵션(접힘 64px icon만).
-- nav 그룹: 결재 / 평가 / 직원 / 권한 / 설정 (5 그룹) — group title `caption` 12/600 uppercase.
-- footer: 사용자 profile + 로그아웃.
-- HR primary `#357B5F` 4px 좌측 stroke + `surface-input` 배경 active state.
+
+> 2026-10-04 다시 정했다 — Side Navigation, 위 "화면 틀 · 이동 — HR".
 
 #### Navigation Menu — HR
-- mega menu 비활성 — application 톤이라 단순 single-level. 결재 / 평가 / 직원 / 분석 / 설정 5 link.
-- 데이터 그리드 페이지 위주라 hover preview 같은 광고성 mega 패턴 부적절.
+
+> 2026-10-04 걷었다 — 쓰는 곳이 없다.
 
 #### Menubar — HR
 
@@ -3975,7 +4079,7 @@ HR(B2B) 5 data display 컴포넌트 — 데이터 그리드 핵심 application �
 - **평가 history default**: 일반 가독성, 표 안 status badge.
 
 #### Data Table — HR
-- **결재 큐**: sortable(date/요청자/금액) + filterable(상태/부서) + selectable(일괄 처리) + bulk actions(승인/반려/내보내기) + 50 per page numbered pagination.
+- **결재 큐**: sortable(date/요청자/금액) + filterable(상태/부서) + selectable(일괄 처리) + bulk actions(승인/반려/내보내기) + 표 아래 Table Pagination(줄 수 10 · 25 · 50 — 2026-10-04).
 - **직원 검색**: 13 column 표시 (사번/이름/부서/직급/이메일/입사/근속/...). column visibility toggle, column resize, export Excel.
 - **평가 history**: 분기별 column, 검색·정렬·내보내기 모두 지원.
 - toolbar 좌측 search, 가운데 active filter chips, 우측 column toggle + Export.

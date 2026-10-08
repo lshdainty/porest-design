@@ -24,7 +24,7 @@
 15. [Skeleton / Progress Circle / Progress](#skeleton--progress-circle--progress)
 16. [Pagination / Stepper](#pagination--stepper)
 17. [Avatar](#avatar)
-18. [Breadcrumb / Sidebar](#breadcrumb--sidebar)
+18. [Side Navigation](#side-navigation)
 19. [Form layout + validation](#form-layout--validation)
 20. [Calendar / Date Range Picker](#calendar--date-range-picker)
 21. [Treeview](#treeview)
@@ -388,7 +388,7 @@ A11y: focus trap (Tab/Shift+Tab 내부 순환), Escape 닫기, 닫힌 후 trigge
 
 ## Drawer / Sheet
 
-> 2026-10-02 — 아래에서 올라오는 시트는 Bottom Sheet(`specs/components/bottom-sheet.md`), 대화상자 · 확인창 · 팝오버는 `dialog.md` · `alert-dialog.md` · `popover.md` 가 원본이다(SEED). 아래 마크업은 옛 Drawer 모양이고, 오른쪽 패널(Sheet)은 Side Panel 차례에 다시 정한다.
+> 2026-10-02 — 아래에서 올라오는 시트는 Bottom Sheet(`specs/components/bottom-sheet.md`), 대화상자 · 확인창 · 팝오버는 `dialog.md` · `alert-dialog.md` · `popover.md` 가 원본이다(SEED). 옆 패널은 Side Panel(`side-panel.md`, 2026-10-04 — 왼쪽은 768 미만 주 메뉴, 오른쪽은 1280 이상 · 높이 전체 · 모서리 · 그림자 · 선 없음)이다. 아래 마크업은 옛 Drawer · Sheet 모양이다.
 
 ```html
 <div class="relative bg-overlay-dim p-0 rounded-md min-h-80 overflow-hidden flex justify-end">
@@ -601,6 +601,8 @@ Hover Card — non-interactive preview. delay 700ms hover, link/avatar에 mentio
 
 ## Pagination / Stepper
 
+> 2026-10-04 — 목록 넘김은 `specs/components/pagination.md`(SEED Pagination — 칸 40 × 40 · 사이 0 · 지금 쪽 짙은 채움 · 이전 · 다음 아이콘만 · 9 · 7칸), 데이터 표는 `table-pagination.md`, 폰의 긴 목록은 끝없이 불러오기가 원본이다. 아래 Pagination 마크업은 옛 모양이다.
+
 ```html
 <!-- Pagination -->
 <nav role="navigation" aria-label="페이지" class="inline-flex items-center gap-1">
@@ -655,33 +657,34 @@ Hover Card — non-interactive preview. delay 700ms hover, link/avatar에 mentio
 
 ---
 
-## Breadcrumb / Sidebar
+## Side Navigation
+
+> 2026-10-04 — 데스크톱 사이드바는 `specs/components/side-navigation.md`(SEED Side Navigation — 240 · 접힘 56 · 머리 64 · 항목 44 · 아이콘 20), 화면 맨 위의 바는 `top-navigation.md`, 폰 하단 탭 바는 `bottom-navigation.md` 가 원본이다. Breadcrumb 는 걷었다 — 위치는 사이드바의 지금 항목이 알린다. 아래는 모양만 옮긴 HTML 이다(레시피는 `side-navigation.tsx`).
 
 ```html
-<!-- Breadcrumb -->
-<nav aria-label="경로" class="text-caption">
-  <ol class="flex items-center gap-1">
-    <li><a href="/" class="text-secondary hover:text-text-primary">홈</a></li>
-    <li aria-hidden="true" class="text-tertiary">/</li>
-    <li><a href="/hr" class="text-secondary hover:text-text-primary">HR</a></li>
-    <li aria-hidden="true" class="text-tertiary">/</li>
-    <li aria-current="page" class="text-text-primary">결재 대기</li>
-  </ol>
+<!-- 흰 면 + 오른쪽 1px 선. 이름 있는 nav, 지금 항목은 옅은 회색 + 짙은 글자 + aria-current -->
+<nav aria-label="주 메뉴" class="w-[240px] h-screen bg-bg-layer-default shadow-[inset_-1px_0_0_var(--color-stroke-neutral-subtle)] flex flex-col">
+  <div class="min-h-[64px] p-x2 flex items-center justify-between">
+    <span class="ml-x2 flex items-center gap-x2 text-t5 font-bold">Porest HR</span>
+    <button type="button" aria-label="사이드바" aria-expanded="true" aria-controls="main-nav" class="size-[40px] rounded-r2 grid place-items-center text-fg-neutral-subtle">▤</button>
+  </div>
+  <div id="main-nav" class="flex-1 overflow-y-auto pt-x2 px-x2 pb-[24px] flex flex-col gap-x2">
+    <div>
+      <p id="g-work" class="p-x1_5 text-t4 font-bold text-fg-neutral-muted">근무</p>
+      <ul aria-labelledby="g-work" class="flex flex-col">
+        <li><a href="/calendar" class="min-h-[44px] px-x2 rounded-r2_5 flex items-center gap-x3 text-t4 font-medium text-fg-neutral-muted">캘린더</a></li>
+        <li>
+          <!-- 하위가 있는 항목은 펼치기만 — 하위가 지금이면 저절로 펼침 -->
+          <button type="button" aria-expanded="true" aria-controls="sub-vacation" class="w-full min-h-[44px] px-x2 rounded-r2_5 flex items-center gap-x3 text-t4 font-medium text-fg-neutral-muted">휴가</button>
+          <ul id="sub-vacation">
+            <li><a href="/vacation/history" aria-current="page" class="min-h-[44px] pl-[40px] rounded-r2_5 flex items-center bg-bg-neutral-weak-pressed text-t4 font-medium text-fg-neutral">휴가 현황</a></li>
+            <li><a href="/vacation/application" class="min-h-[44px] pl-[40px] rounded-r2_5 flex items-center text-t4 font-medium text-fg-neutral-muted">휴가 신청</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
 </nav>
-
-<!-- Sidebar -->
-<aside class="w-60 h-screen bg-surface-default border-r border-default flex flex-col">
-  <header class="p-4 border-b border-default">
-    <h1 class="text-title-sm text-primary">Porest HR</h1>
-  </header>
-  <nav class="flex-1 p-2 overflow-y-auto">
-    <ul class="flex flex-col gap-0.5">
-      <li><a href="..." aria-current="page" class="flex items-center gap-2 px-3 py-2 rounded-md bg-primary/10 text-primary text-body-lg">결재</a></li>
-      <li><a href="..." class="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-surface-default-hover text-body-lg">직원</a></li>
-      <li><a href="..." class="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-surface-default-hover text-body-lg">평가</a></li>
-    </ul>
-  </nav>
-</aside>
 ```
 
 ---

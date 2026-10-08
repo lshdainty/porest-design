@@ -36,6 +36,7 @@ const FOUNDATION_SECTIONS = [
 const FOUNDATION_SUBSECTIONS = [
   { parent: 'Layout', startsWith: 'Touch targets', slug: 'touch-targets', title: '터치 영역', description: '누를 수 있는 요소의 최소 크기' },
   { parent: 'Layout', startsWith: 'RTL support', slug: 'rtl', title: 'RTL', description: '오른쪽에서 왼쪽으로 쓰는 언어 대응' },
+  { parent: 'Layout', startsWith: 'Safe Area', slug: 'safe-area', title: 'Safe Area', description: '안전 영역 — 상태 표시줄 · 홈 표시줄 · 노치에 가릴 수 있는 화면 가장자리' },
 ];
 
 // 스펙 폴더 밖에 있는 기초 스펙. 컴포넌트 스펙이 `../z-index.md` 로 링크한다.

@@ -79,6 +79,8 @@
 | 입력 폼 · 상세 · 고르기 | [Bottom Sheet](bottom-sheet.md) | [Dialog](dialog.md) · [Popover](popover.md) |
 | 되돌릴 수 없는 확인 | [Alert Dialog](alert-dialog.md) | [Alert Dialog](alert-dialog.md) |
 
+예외 — 접힌 사이드바(768 ~ 1279)의 하위 목록은 이 시트가 아니라 누른 아이콘 옆 펼침 메뉴다([Side Navigation](side-navigation.md) — 사용자 결정 2026-10-08).
+
 [그림: 1280 에서 — 메뉴 시트 ↔ 메뉴](../../site/components/specs/menu-sheet.tsx#responsive-guide)
 
 ### 스와이프의 대신 길

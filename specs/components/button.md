@@ -67,6 +67,7 @@
 - **앞 · 뒤 아이콘을 함께 쓰지 않는다.** 앞은 동작의 뜻을 돕고(추가의 `+`), 뒤는 동작을 돕는다(다음의 chevron).
 - 아이콘은 꼭 필요할 때만 쓴다 — 라벨을 읽기 어려워진다.
 - **아이콘만**은 아이콘만으로 뜻을 전해 접근성이 떨어진다. 꼭 필요할 때만 쓰고, 이름(`aria-label` 또는 옆 Tooltip)을 반드시 단다. 정사각이고, 아이콘 버튼의 보이는 크기 기본은 `medium`(40 — v106).
+- **상단 바의 아이콘 버튼은 이 Button 이 아니다** — [Top Navigation](top-navigation.md) 의 아이콘 버튼(상자 44 = 누르는 영역 · 아이콘 24 · 버튼끼리 붙음)이다(2026-10-04). 본문 안의 아이콘 버튼은 그대로 `medium` · `iconOnly`(40 · 18)다.
 
 ### Variant
 
@@ -432,8 +433,8 @@ const [saving, setSaving] = useState(false)
 | `default`(36) | `small` |
 | `md`(40) | `medium` |
 | `lg`(48) | `large` |
-| `icon`(40) | `medium` · `iconOnly` |
-| `iconLg`(36 원형, 모바일 헤더) | `medium` · `iconOnly`(보이는 크기 40 — v106) |
+| `icon`(40 — Desk 웹은 36, `button-variants.ts:60`) | `medium` · `iconOnly`. 상단 바는 Top Navigation 의 아이콘 버튼 |
+| `iconLg`(36 원형, 모바일 헤더) | 상단 바는 [Top Navigation](top-navigation.md) 의 아이콘 버튼(44 · 24 — 2026-10-04), 그 밖은 `medium` · `iconOnly`(보이는 크기 40 — v106) |
 
 그 밖에 바뀐 것 — 누름은 밝기 95% · 0.98 배 → 누름 색 + 2px 거리 축소(v104), 비활성은 50% 불투명 → 전용 색(v106), 글자 굵기 500 → 700, 모서리 4 → 8(`large` 12, `xsmall` 알약), 아이콘–글자 간격 8 고정 → 크기마다(4 · 4 · 6 · 8), 로딩 스피너는 라벨 앞 → 라벨 자리.
 

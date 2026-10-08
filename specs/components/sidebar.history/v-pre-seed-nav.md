@@ -78,21 +78,21 @@ Porest Sidebar는 **2 sides × 3 variants × 3 collapsible modes × menu item �
 
 Sidebar는 자체 size 없음 — width는 CSS variable.
 
-[표: 크기와 모양](sidebar.yaml#base.default)
+[표: 크기와 모양](v-pre-seed-nav.yaml#base.default)
 
-[표: 메뉴 버튼 크기](sidebar.yaml#size)
+[표: 메뉴 버튼 크기](v-pre-seed-nav.yaml#size)
 
-[표: 전환](sidebar.yaml#motion)
+[표: 전환](v-pre-seed-nav.yaml#motion)
 
 ## States
 
 ### SidebarMenuButton
 
-[표: 메뉴 버튼 상태](sidebar.yaml#matrix.part.menuButton)
+[표: 메뉴 버튼 상태](v-pre-seed-nav.yaml#matrix.part.menuButton)
 
 ### Sidebar (collapsed/expanded)
 
-[표: 펼침 · 접힘 · 모바일](sidebar.yaml#sidebar)
+[표: 펼침 · 접힘 · 모바일](v-pre-seed-nav.yaml#sidebar)
 
 ## Layout (한국 도메인 패턴)
 

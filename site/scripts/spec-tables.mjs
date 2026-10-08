@@ -625,8 +625,11 @@ function axisTable(spec, tokens, axis, pick) {
   });
   const cols = orderKeys(spec, unionKeys(rows)).filter(inSlot(pick));
   const root = Object.keys(spec.slots)[0];
-  // 터치 칸 — 높이가 수(px)인 줄이 하나도 없으면(전부 "—") 칸을 싣지 않는다(Date Picker 의 보이는 범위처럼 높이가 식인 축)
-  const touches = cols.includes(`${root}.height`) ? rows.map((row) => touch(tokens, row, root, hitArea(spec, root))) : [];
+  // 터치 칸 — 높이가 수(px)인 줄이 하나도 없으면(전부 "—") 칸을 싣지 않는다(Date Picker 의 보이는 범위처럼 높이가 식인 축).
+  // 뿌리가 누르는 자리가 아니고 다른 부위가 터치 영역을 적었으면(Bottom Navigation 의 바 · 칸) 뿌리 높이로 셈하지 않는다
+  const otherTarget = spec.rules.some((r) => Object.entries(r[baseState(spec)] ?? {}).some(([slot, props]) => slot !== root && isObj(props) && 'touchTarget' in props));
+  const rootIsTarget = !otherTarget || hitArea(spec, root) > 0;
+  const touches = rootIsTarget && cols.includes(`${root}.height`) ? rows.map((row) => touch(tokens, row, root, hitArea(spec, root))) : [];
   const withTouch = touches.some((t) => t !== '—');
   const withDesc = values.some((v) => descOf(spec.variants[axis], v));
   return table(

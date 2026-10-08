@@ -2578,9 +2578,104 @@ SEED 가 자리에 이름을 붙인 간격이다(SEED 이름은 `spacing-x.*` �
 | `layout-sidebar-collapsed` | `56px` | 접은 사이드 내비게이션(아이콘만) |
 
 - 화면은 머리(GNB) · 사이드 내비게이션 · 본문 · 오른쪽 보조 영역(Aside) 넷으로 나눈다.
-- 사이드 내비게이션은 `breakpoint-md`(768px) 이상에서 보인다. 그 아래에서는 머리의 메뉴로 들어간다 — Desk 웹은 앱과 같은 하단 탭바.
-- 머리(상단 바) 높이는 SEED 문서에 없어 정하지 않았다 — 지금 Desk 웹 56 · HR 웹 48.
-- 사이드 내비게이션 안쪽 치수(머리 · 항목 여백 · 높이)는 컴포넌트 단계에서 SEED side navigation 과 비교해 정한다.
+- 사이드 내비게이션은 `breakpoint-md`(768px) 이상에서 보인다. 그 아래에서는 Desk 웹은 앱과 같은 하단 탭 바(Bottom Navigation), HR 은 상단 바의 ☰ 로 여는 왼쪽 주 메뉴(Side Panel)다 — 아래 "화면 틀".
+- 머리(상단 바) 높이는 56 이다 — 폰 · 데스크톱 모든 화면(2026-10-04, `specs/components/top-navigation.md`). SEED 는 2026-10-01 에 iOS · Android 를 56 으로 통일했다.
+- 사이드 내비게이션 안쪽 치수(머리 64 · 항목 44 · 아이콘 20 · 14 / 19 · 500 · 모서리 10)는 `specs/components/side-navigation.md` · `.yaml` 에 있다(2026-10-04 — SEED). 768 ~ 1279 는 아이콘만 56 으로 저절로 접힌다 — 아래 "화면 틀".
+
+### 화면 틀 — 머리 · 하단 탭 바 · 사이드바 (2026-10-04)
+
+화면을 감싸는 틀 — 머리(상단 바) · 주 메뉴(하단 탭 바 · 사이드바) · 본문 — 을 정한다. 사용자가 2026-10-04 화면 틀 · 이동 비교 페이지에서 골랐다. 부품의 값은 각 스펙에 있다 — `specs/components/top-navigation.md` · `bottom-navigation.md` · `side-navigation.md` · `side-panel.md` · `pagination.md` · `floating-action-button.md`.
+
+**아직 두 웹 · 앱에는 들어가지 않았다.** 앱 적용 단계에서 옮긴다(각 스펙의 Migration notes).
+
+#### 문턱 — 768 · 1280
+
+화면 틀이 바뀌는 폭은 둘이다 — 768(`breakpoint-md` — 모바일 틀 ↔ 사이드바 틀)과 1280(`breakpoint-lg` — 사이드바 접힘 ↔ 펼침, 시트 ↔ 대화상자). Desk 웹 안의 1100 문턱('tablet')은 걷는다.
+
+| 자리 | 0 – 767 | 768 – 1279 | 1280 이상 |
+|---|---|---|---|
+| 머리 | 상단 바 56 — 탭 첫 화면은 큰 제목, 그 아래는 ← + 제목 | Desk 데스크톱 머리 56 · HR 은 머리 없음 | 같다 |
+| 주 메뉴 | Desk 하단 탭 바 · HR ☰ → 왼쪽 옆 패널 | 사이드바 접힘 56(손으로 펼침) | 사이드바 펼침 240(손으로 접음 · 기억) |
+| 화면 제목 | 상단 바의 제목 | 본문 맨 위 `h1` | 같다 |
+| 폼 · 상세 · 고르기 | Bottom Sheet | Bottom Sheet | Dialog · Popover |
+| 줄의 동작 | Menu Sheet | Menu Sheet | Menu |
+| 접힌 사이드바의 하위 | — | 옆 펼침 메뉴(줄 44 — Menu Sheet 로 바꾸지 않는다, 2026-10-08) | 같다(손으로 접었을 때) |
+| 긴 목록 | 끝없이 불러오기 | Pagination | Pagination |
+| 데이터 표 | Table Pagination(표와 함께 가로 스크롤) | Table Pagination | Table Pagination |
+| 화면의 주 동작 | 탭 바 가운데 + · 탭 바 없는 화면은 떠 있는 버튼 | 머리의 버튼 | 같다 |
+| 본문 폭 | 화면 폭 | 밀도 표(720) | 밀도 표(720 · 1040) |
+
+- Pagination 의 칸 수는 480(`breakpoint-sm`)에서 9 ↔ 7 이다.
+- 768 – 1279 는 사이드바 틀인데 겹치는 표면은 시트다 — 터치 태블릿과 작은 노트북이 섞인 폭이라 손가락에 맞는 쪽을 둔다(시트 · 대화상자 2026-10-02 결정의 1280).
+
+#### 머리 · 화면 제목
+
+- 머리(상단 바)는 높이 56 — 폰 · 데스크톱 모든 화면이 같다. 스크롤해도 선 · 그림자를 긋지 않는다(Elevation).
+- 폰은 상단 바의 제목이 화면 제목(`h1`)이다 — 탭 첫 화면은 22 / 30(`text-t8`), 그 아래 화면은 18 / 24(`text-t6`), 둘 다 700 · 왼쪽.
+- 데스크톱은 머리에 제목을 두지 않는다 — 본문 맨 위 `h1` 이 화면 제목이다. `text-screen-title`(26 / 35 · 700), 머리 아래 `spacing-nav-to-title`(20).
+- HR 은 데스크톱 머리를 두지 않는다 — 접기 버튼은 사이드바 머리로, 테마는 설정으로 갔고, 위치는 사이드바의 지금 항목이 알린다(빵부스러기는 걷었다).
+
+#### 화면을 옮길 때
+
+| 일 | 스크롤 | 초점 |
+|---|---|---|
+| 다른 화면으로(링크 · 사이드바 항목) | 맨 위 | 새 화면의 제목(`h1`) |
+| 뒤로 가기 · ← | 그 화면에 있던 자리 | 그 화면의 제목 |
+| 하단 탭 옮기기 | 그 탭에 있던 자리(탭마다 기억) | 그 탭 화면의 제목 |
+| 지금 탭을 다시 누름 | 맨 위 · 그 탭의 첫 화면 | 그대로 |
+| 쪽 넘기기(Pagination) | 목록 맨 위 | 누른 칸 — "N페이지" 를 알린다 |
+
+- 문서 제목은 화면마다 "{화면 제목} - Porest Desk" · "{화면 제목} - Porest HR" 이다.
+- ← 는 들어온 화면으로(History), 앞 화면이 없으면 상위 화면으로 — 주소를 고쳐 쓴다. ✕ 는 모달 · 독립 흐름을 닫을 때만.
+
+#### 랜드마크
+
+- 머리는 `header` — `main` 밖에 둔다.
+- 주 메뉴는 이름 있는 `nav` — 하단 탭 바 · 사이드바 · 옆 패널의 주 메뉴 모두 "주 메뉴".
+- 본문은 `main` 하나.
+- 화면 맨 앞에 "본문 바로가기" 링크 — 키보드 초점이 오면 보이고, 누르면 `main` 으로 간다.
+
+### Safe Area — 안전 영역 (2026-10-04)
+
+화면 가장자리는 상태 표시줄 · 홈 표시줄 · 카메라 자리(노치) · 둥근 모서리에 가릴 수 있다. 무엇을 안전 영역 안에 두고 무엇을 화면 끝까지 채울지 정한다 — 당근 SEED 의 Safe Area 패턴을 들인다(사용자 결정 2026-10-04, 화면 틀 · 이동 비교 페이지 "따라오는 것"). 출처: seed-design.io Patterns › Safe Area(Apache-2.0).
+
+> 요소가 가려지거나 잘렸을 때 정보나 기능을 잃는지에 따라 배치 범위를 정합니다. — SEED
+
+#### 안과 끝
+
+| 무엇 | 어디까지 | 예 |
+|---|---|---|
+| 누르는 것 · 읽는 것(버튼 · 링크 · 입력칸 · 탭 · 글 · 아이콘 · 배지 · 뜻이 있는 그림) | 안전 영역 안 | 상단 바의 버튼 · 제목, 탭 바의 칸, 떠 있는 버튼, 바닥 버튼 |
+| 배경 · 장식 | 화면 끝까지 | 상단 바 · 바닥 바의 바탕, Page Banner 의 바탕, 화면 폭 Divider, 장식 그림 |
+| 스크롤 영역 | 화면 끝까지 — 스크롤하면 가려진 것을 안으로 가져올 수 있다 | 목록(아래 끝까지), 가로 칩 줄 · Tabs(좌우 끝까지) |
+| 고정된 바 · 버튼 | 안전 영역 안 — 스크롤로 가져올 수 없다 | 탭 바 · 바닥 버튼 · 떠 있는 버튼 |
+
+- 네 변의 안전 영역은 따로다 — 한 방향이 늘 0 이라고 가정하지 않고 늘 지금 값을 쓴다(웹 `env(safe-area-inset-*)` · 앱 `MediaQuery.viewPadding`).
+- 한 요소에 바탕과 내용이 함께 있으면 부분마다 따로 — 바탕은 끝까지, 내용은 안.
+
+#### 여백은 안전 영역 경계부터
+
+- 좌우 여백(본문 `spacing-global-gutter` 24 · 상단 바의 6)은 화면 끝이 아니라 안전 영역 경계에서 잰다 — 안전 영역 + 여백.
+- 바닥에 고정한 바의 버튼은 아래 안전 영역 경계에서 바의 안쪽 여백만큼 띄운다.
+- 가운데 정렬은 안전 영역을 기준으로 한다 — 왼쪽 · 오른쪽 안전 영역이 다르면 화면 가운데가 아니다.
+- 끝까지 스크롤하면 마지막 항목 전체가 안전 영역 안에 보이게, 스크롤 내용의 끝에 안전 영역 + 기본 여백을 둔다.
+- 떠 있는 탭 바는 바의 아래 여백 6 만 홈 표시줄 영역에 걸치고 누르는 칸은 그 위에서 끝난다(Bottom Navigation).
+
+#### 부품이 스스로 반영하는 방향
+
+| 부품 | 반영하는 방향 |
+|---|---|
+| Top Navigation | 위(바가 그만큼 높아진다) · 좌우 |
+| Bottom Navigation | 아래 · 좌우 |
+| Bottom Sheet · Menu Sheet | 아래 |
+| Side Panel | 위(머리) · 아래(패널 내용 끝) · 붙은 쪽(폭에 더한다) |
+| Snackbar | 좌우 · 아래 |
+| Floating Action Button | 오른쪽 · 아래 |
+| 화면 본문 | 좌우 · 아래(스크롤 내용 끝) |
+
+#### 웹 — viewport-fit=cover
+
+안전 영역 값을 받으려면 문서의 `viewport` 메타에 `viewport-fit=cover` 를 둔다 — 없으면 iOS 사파리가 `env(safe-area-inset-*)` 를 0 으로 계산한다(SEED). 지금 두 웹 모두 없다 — 앱 적용 때 넣는다.
 
 ### v98 — SEED 간격 스케일 (2026-09-29)
 
@@ -2733,8 +2828,8 @@ v116(2026-10-03) — 층 이름으로 다시 정했다. 값은 `specs/z-index.md
 | 토큰 | 값 | 층 · 쓰는 곳 |
 |---|---|---|
 | `z-base` | `auto` | L0 페이지 — 쌓임 맥락을 만들지 않는다 |
-| `z-sticky` | `50` | L1 페이지에 붙은 것 — 고정 헤더 · 하단 탭바 · 플로팅 버튼 · 스피드 다이얼 |
-| `z-modal` | `100` | L2 딤 — Dialog · Bottom Sheet · Menu Sheet · Sheet(옆 패널) |
+| `z-sticky` | `50` | L1 페이지에 붙은 것 — 상단 바(Top Navigation) · 하단 탭 바(Bottom Navigation) · 떠 있는 버튼(Floating Action Button) · 스피드 다이얼 |
+| `z-modal` | `100` | L2 딤 — Dialog · Bottom Sheet · Menu Sheet · Side Panel(옆 패널) |
 | `z-modal-content` | `101` | L2 표면 — 자기 딤 바로 위 |
 | `z-floating` | `200` | L3 트리거에 붙어 뜨는 것 — Popover · Select 목록 · Menu. 페이지에서도 모달 안에서도 같은 값 |
 | `z-tooltip` | `210` | L4 말풍선 — Help Bubble · Tooltip |
@@ -2817,7 +2912,7 @@ CSS logical property 사용 시 자동 mirror — 추가 CSS 작성 불필요. J
 |---|---|
 | **drawer left/right** | LTR `slide-in-left` (왼쪽에서) → RTL 자동 `slide-in-right` (오른쪽에서). keyframe `translateX` 부호 반대로 — `:dir(rtl) .drawer { animation-name: slide-in-right; }` |
 | **chevron / arrow icon** | `>` (forward), `<` (back) — RTL 시 `transform: scaleX(-1)` 또는 별도 RTL icon set |
-| **breadcrumb separator** | `/` 그대로 (방향성 없음) — `>` 사용 시 mirror 필요 |
+| **breadcrumb separator** | (2026-10-04 Breadcrumb 를 걷었다 — 기록) `/` 그대로 (방향성 없음) — `>` 사용 시 mirror 필요 |
 | **progress bar fill** | `width: 50%` + `inset-inline-start: 0` — 자동 mirror |
 | **숫자 / 통화** | RTL 환경에서도 LTR로 표시 (`<bdi>` 또는 `unicode-bidi: embed`) — 1,234.56 같은 숫자는 항상 LTR |
 | **이메일 / URL** | LTR 강제 — `direction: ltr` + `unicode-bidi: bidi-override` |
@@ -2831,7 +2926,7 @@ CSS logical property 사용 시 자동 mirror — 추가 CSS 작성 불필요. J
 | Dropdown (chevron) | chevron transform mirror 또는 `dir="ltr"` 영역 강제 |
 | Tabs | text-align start, indent inline-start |
 | Drawer right (LTR 우측 등장) | RTL 시 좌측에서 등장 (`slide-in-left` keyframe → `:dir(rtl) ... slide-in-right`) |
-| Breadcrumb | separator 자체가 방향성 없는 `/` 권장. `>` 사용 시 RTL은 `<` 또는 mirror |
+| Breadcrumb | (2026-10-04 걷었다 — 기록) separator 자체가 방향성 없는 `/` 권장. `>` 사용 시 RTL은 `<` 또는 mirror |
 | Toast bottom-right | RTL 시 bottom-left (`inset-inline-end: 16px` → `inset-inline-end` 그대로 두면 자동) |
 | Banner stripe | `border-inline-start: 4px solid info` — auto mirror |
 | Calendar | weekday 헤더 / day cell layout direction 자동 |
@@ -2885,13 +2980,14 @@ Tailwind v4는 `me-*`/`ms-*` (margin-end/start), `pe-*`/`ps-*`, `text-start`/`te
 | 3 | 잠깐 뜨는 알림 — 스낵바 | `z-snackbar` |
 
 - Global 2 · 3 의 토큰은 딤 자리다 — 표면은 그 바로 위 `z-modal-content` · `z-alert-content` 다. z-index 값과 이유는 Layout 의 Z-index 절(v116)에 있다.
-- 같은 층 안에서 겹칠 때(스크롤되는 목록이 상단 내비게이션 아래로)는 층을 올리지 않는다 — 그림자나 선으로 구분만 준다.
+- 같은 층 안에서 겹칠 때(스크롤되는 목록이 상단 내비게이션 아래로)는 층을 올리지 않는다. 상단 내비게이션은 선 · 그림자도 긋지 않는다 — SEED Top Navigation 의 "고정된 영역과 스크롤되는 영역을 구분하기 위해 별도의 시각적인 장치를 표시하지 않습니다" 를 따른다(2026-10-04 사용자 결정 — SEED Elevation 문서의 "그림자나 라인(스타일)을 추가하여 '구분감'을 줍니다" 와 SEED 안에서 갈리는 자리다). 데스크톱 머리 아래의 선도 긋지 않는다.
+- 한 표면 안에서 머리와 본문이 따로 스크롤되는 대화상자 · 옆 패널(Side Panel) · 사이드바(Side Navigation)는 그 부품의 규칙대로 본문이 위로 스크롤되면 머리 아래 1px `stroke-neutral-subtle` 을 긋는다.
 
 #### 고도를 드러내는 세 가지
 
 - **표면 색** — 배경의 밝기 · 채도를 바꾼다(스낵바 · 플로팅 버튼). 다크 모드는 높을수록 밝아진다(`bg-layer-floating`).
-- **그림자** — 떠 있는 높이를 그림자의 크기 · 퍼짐 · 투명도로. 다크 모드에서 잘 안 보이므로 **화면에서 주목도가 높은 몇 안 되는 요소에만** 쓴다.
-- **선** — 가장자리에 테두리를 둬 영역을 나눈다(하단 탭바).
+- **그림자** — 떠 있는 높이를 그림자의 크기 · 퍼짐 · 투명도로. 다크 모드에서 잘 안 보이므로 **화면에서 주목도가 높은 몇 안 되는 요소에만** 쓴다(떠 있는 탭 바 · 떠 있는 버튼 · 메뉴 · 팝오버 — `shadow-s3`).
+- **선** — 가장자리에 테두리를 둬 영역을 나눈다(사이드바의 오른쪽 선 · 떠 있는 탭 바의 안쪽 테두리 — 2026-10-04).
 
 #### 그림자
 
@@ -3133,8 +3229,8 @@ v32 duration·ease 토큰만으론 컴포넌트별 transition 작성 시 keyfram
 | `fade-out` | `motion-duration-d3` (150ms) | `motion-ease-exit` | dropdown/popover/toast 사라짐 (등장보다 빠르게) |
 | `slide-in-up` | `motion-duration-d6` (300ms) | `motion-ease-enter` | drawer bottom / bottom sheet / Toast bottom |
 | `slide-in-down` | `motion-duration-d4` (200ms) | `motion-ease-enter` | dropdown / banner 등장 |
-| `slide-in-left` | `motion-duration-d6` (300ms) | `motion-ease-enter` | drawer right / sidebar 등장 |
-| `slide-in-right` | `motion-duration-d6` (300ms) | `motion-ease-enter` | drawer left / sidebar dismiss |
+| `slide-in-left` | `motion-duration-d6` (300ms) | `motion-ease-enter` | drawer right 등장 — Side Panel 은 스펙의 motion(2026-10-04) |
+| `slide-in-right` | `motion-duration-d6` (300ms) | `motion-ease-enter` | drawer left — Side Panel 은 스펙의 motion(2026-10-04) |
 | `scale-in` | `motion-duration-d4` (200ms) | `motion-ease-enter` | modal / dialog / popover (`scale(0.96 → 1)` + `opacity 0 → 1`) |
 | `scale-out` | `motion-duration-d3` (150ms) | `motion-ease-exit` | modal / dialog / popover dismiss |
 | `bounce-in` | `motion-duration-d6` (300ms) | `cubic-bezier(0.34, 1.56, 0.64, 1)` | empty state celebrate, success indicator (over-shoot) |
@@ -3295,7 +3391,7 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 
 - 한 줄에 둘 때는 높이 가운데로 맞추고, 사이는 간격 토큰으로 둔다(2026-09-30 제품은 대부분 8px).
 - 아이콘만으로 뜻이 모호하면 글자를 함께 쓴다.
-- 상단 내비게이션은 선 아이콘으로 두고, 하단 탭은 선택된 탭을 굵기 · 색으로 강조한다.
+- 상단 내비게이션은 선 아이콘 24 로 둔다(상자 44 — Top Navigation, 2026-10-04). 하단 탭은 고른 탭을 짙은 글자색(`fg-neutral`) + 선 2.5 로, 다른 탭은 `fg-neutral-subtle` + 선 2 로 둔다 — 브랜드 색으로 칠하지 않는다(Bottom Navigation, 2026-10-04).
 
 ## Inclusive Design
 
@@ -3537,6 +3633,7 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 |---|---|---|---|
 | **Form / Action** | | | |
 | `button` | `r2` · `r3` · `full` | 8px · 12px · 9999px | small · medium 8, large 12, xsmall 알약 — 2026-09-30 SEED Action Button 구조(v112, `specs/components/button.yaml`) |
+| `floating-action-button` | `full` | 9999px | 원 56 — 2026-10-04 SEED Floating Action Button(`floating-action-button.yaml`) |
 | `input` / `textarea` | `r3` · `r2` | 12px · 8px | large · medium — 2026-10-01 SEED Text Input · Textarea(`specs/components/input.yaml` · `textarea.yaml`) |
 | `select` 트리거 · Input Button | `r3` · `r2` | 12px · 8px | Input 과 같다 — 2026-10-01 SEED Select · Input Button(`select.yaml` · `input-button.yaml`) |
 | `select` 목록 | `r5` | 20px | 칸 아래 뜨는 목록 |
@@ -3570,7 +3667,7 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 | `dialog` / `alert-dialog` | `r5` | 20px | 2026-10-02 SEED Dialog · Alert Dialog(`dialog.yaml` · `alert-dialog.yaml`) |
 | `bottom-sheet` (위 모서리) | `r6` | 24px | 위 두 모서리만 — 2026-10-02 SEED Bottom Sheet(`bottom-sheet.yaml`) |
 | `menu-sheet` (위 모서리 · 묶음) | `r5` · `r4` | 20px · 16px | 2026-10-02 SEED Menu Sheet(`menu-sheet.yaml`) |
-| `sheet` | `sm` | 4px | 사이드 패널 |
+| `side-panel` | — | 0 | 평평 — 높이 전체 · 모서리 없음. 2026-10-04 SEED Side Panel(`side-panel.yaml`), 옛 `sheet` 를 대신 |
 | `popover` · `menu` | `r5` | 20px | 떠 있는 표면 — 2026-10-02 SEED Popover · Menu(`popover.yaml` · `menu.yaml`). 메뉴 줄의 알약은 `r3` 12px |
 | `help-bubble` · `tooltip` | `r3` | 12px | 말풍선 — 2026-10-02 SEED Help Bubble(`help-bubble.yaml`) |
 | `snackbar` | `r2` | 8px | 2026-10-02 SEED Snackbar(`snackbar.yaml`) |
@@ -3579,8 +3676,10 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 | `segmented-control` (트랙 · 알약) | `full` | 9999px | 2026-10-02 SEED Segmented Control(`segmented-control.yaml`) |
 | `menu` 줄 바탕(알약) | `r3` | 12px | 좌우 8 들인 알약 — 표면은 위 Overlay 의 `menu` |
 | `command` palette | `sm` | 4px | |
-| `pagination` button | `sm` | 4px | |
-| `breadcrumb` / `navigation-menu` / `sidebar` | — | — | 인라인, radius 무관 |
+| `pagination` 칸 · `table-pagination` 화살표 | `r2` | 8px | 칸 40 — 지금 쪽 채움 · 누를 때 바탕. 2026-10-04 SEED Pagination(`pagination.yaml` · `table-pagination.yaml`) |
+| `top-navigation` 아이콘 · 글 버튼 | `r2` | 8px | 누를 때만 보이는 바탕 — 바 자체는 모서리 없음. 2026-10-04 SEED Top Navigation(`top-navigation.yaml`) |
+| `bottom-navigation` 바 · 가운데 + | `full` | 9999px | 떠 있는 알약 · 원 44 — 2026-10-04(`bottom-navigation.yaml`) |
+| `side-navigation` 항목 · 펼침 메뉴 | `r2_5` · `r5` | 10px · 20px | 항목 바탕 10 · 펼침 메뉴는 Menu 와 같은 20(줄 알약 12) — 2026-10-04 SEED Side Navigation(`side-navigation.yaml`). breadcrumb · navigation-menu 는 걷었다 |
 | **Disclosure** | | | |
 | `accordion` / `collapsible` | — | — | 인라인 |
 | **Data** | | | |
@@ -3819,7 +3918,7 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 
 ### Page text
 
-`bg-page` 위에 직접 놓이는 본문 텍스트 — 카드 외곽 영역(layout 본문, 빈 영역, sidebar 텍스트 등).
+`bg-page` 위에 직접 놓이는 본문 텍스트 — 카드 외곽 영역(layout 본문, 빈 영역 등). 사이드바는 2026-10-04 부터 흰 면(`bg-layer-default`) 위다.
 
 #### Mode pair
 - **page-text-light** (`page-text-light`): `bg-page` (`#F5F6FA`) + `text-primary` (`#1A1F2E`)
@@ -4175,6 +4274,7 @@ red → orange → yellow → green → blue → indigo → violet → pink → 
 | 되돌릴 수 없는 확인 · 꼭 알릴 일 | Alert Dialog | Alert Dialog |
 | 줄의 동작 목록 | Menu Sheet(그 차례에) | Menu(그 차례에) |
 | 화면 높이 90% 를 넘는 내용 | 페이지 | 페이지 |
+| 옆에서 나오는 패널 | 주 메뉴만 — Side Panel 왼쪽(768 미만, HR 폰) | 보조 작업 — Side Panel 오른쪽(쓰는 곳 없음 — 1280 미만은 Bottom Sheet) |
 
 #### 모양
 
@@ -4629,60 +4729,55 @@ Field 는 머리(라벨 · 필수 점 또는 "선택" · 보조 액션) · 입�
 - Indicator 는 보이는 글("+9") 대신 무엇의 수인지 읽는 글("사진 9장 더 있음")을 읽는다.
 - 파일 이름 · "Image" · "logo" 를 이름으로 두지 않는다. 마우스에 그림을 키우지 않는다.
 
+### 화면 틀 · 이동 — Top Navigation · Bottom Navigation · Side Navigation · Side Panel · Pagination · Floating Action Button
+
+> 2026-10-04 SEED Top Navigation · Bottom Navigation · Side Navigation · Side Panel · Pagination · Table Pagination · Floating Action Button 구조로 정했다(사용자 결정 — 비교 페이지 https://claude.ai/artifact/B6tsgbw356Kf2Zumvm2v6a, 열하나 + 따라오는 것). 수치 원본은 `specs/components/top-navigation.yaml` · `bottom-navigation.yaml` · `side-navigation.yaml` · `side-panel.yaml` · `pagination.yaml`(+ `infinite-list.yaml`) · `table-pagination.yaml` · `floating-action-button.yaml`, 쓰는 규칙은 각 스펙 md 다. 화면 틀(문턱 · 머리 · 화면을 옮길 때 · 랜드마크)과 안전 영역은 Layout 의 "화면 틀" · "Safe Area" 절. 옛 Sidebar · Sheet(옆 패널) · Pagination 절은 다시 정했고, Breadcrumb · Navigation Menu 는 걷었다(SEED 에 없다 — 데스크톱의 위치는 사이드바의 지금 항목이 알린다).
+
+#### 나누기
+
+| 자리 | 0 – 767 | 768 – 1279 | 1280 이상 |
+|---|---|---|---|
+| 화면 맨 위 | Top Navigation 56 | Top Navigation(Desk 데스크톱 머리 — HR 은 없음) | 같다 |
+| 주 메뉴 | Desk Bottom Navigation · HR ☰ → Side Panel(왼쪽) | Side Navigation 접힘 56 | Side Navigation 펼침 240 |
+| 긴 목록 | 끝없이 불러오기 | Pagination | Pagination |
+| 데이터 표 | Table Pagination | Table Pagination | Table Pagination |
+| 화면의 주 동작 | 탭 바 가운데 + · 탭 바 없는 화면은 Floating Action Button | 머리의 버튼 | 같다 |
+
+#### 모양
+
+| | 값 |
+|---|---|
+| Top Navigation | 높이 56(위 안전 영역 더함) · `bg-layer-default` · 선 · 그림자 없음 · 아이콘 버튼 상자 44(= 누르는 영역) · 아이콘 24 · 화면 끝 6 · 버튼끼리 붙음 · 제목 왼쪽 — 탭 첫 화면 `text-t8` 22 / 30, 그 아래 `text-t6` 18 / 24, 700 · 글 버튼 44 · 좌우 10 · `text-t5` 500 · 누름 `bg-layer-default-pressed` + 2px 축소 · 알림은 점만 · `z-sticky` |
+| Bottom Navigation | 떠 있는 알약 66(줄면 48) · 좌우 14(36) · 아래 max(14, 안전 영역 − 6) · 최대 480 · `bg-layer-floating`(불투명) · `shadow-s3` · 안쪽 1px `stroke-neutral-subtle` · 5칸 · 아이콘 24 · 라벨 `text-t1` 11 / 15 고정 크기 · 500 · 지금 탭 `fg-neutral` + 선 2.5 · 다른 탭 `fg-neutral-subtle` + 선 2 · 가운데 + 원 44 브랜드 채움 · `z-sticky` |
+| Side Navigation | 240 · 접힘 56(`layout-sidebar` · `layout-sidebar-collapsed`) · 흰 면 `bg-layer-default` + 오른쪽 1px `stroke-neutral-subtle` · 머리 64 · 접기 버튼 40 · 18 · 항목 44 · 아이콘 20 · `text-t4` 500 · 모서리 10(`radius-r2_5`) · 묶음 이름 `text-t4` 700 · 지금 항목 `bg-neutral-weak-pressed` + `fg-neutral`(굵기 500 그대로 — 2026-10-08) · 접힌 사이드바의 펼침 메뉴는 Menu 표면 · 폭 200 · 줄 44, 1280 미만에서도(Menu Sheet 규칙의 예외 — 2026-10-08) |
+| Side Panel | 왼쪽(768 미만 주 메뉴 — 화면 폭의 80%) · 오른쪽(1280 이상 — 480 · 720 · 960) · 높이 전체 · 모서리 · 그림자 · 선 없음 · `bg-layer-floating` · 딤 `overlay-dim-light` · `overlay-dim-dark` · 머리 24 / 24 / 16 · 제목 `text-t8` · 닫기 상자 52 · 아이콘 22 · 넘칠 수 있는 본문은 Scroll Fog 위 20 · 아래 80 · `z-modal` |
+| Pagination | 칸 40 × 40 · 사이 0 · `text-t4` 700 · 모서리 8 · 지금 쪽 `bg-neutral-inverted` + `fg-neutral-inverted` · 이전 · 다음 아이콘만 16 · 9칸(480 이상) · 7칸 · 끝 쪽은 40 빈 칸 · 누르는 영역은 위아래만 44 |
+| Table Pagination | 한 줄 40 · Select medium(최소 96 · 폭과 상관없이 — Select 1280 규칙의 예외, 2026-10-08) "{n}개" + "씩 보기" · 범위 "11-20" + "/ 총 N개"(목록 최대 240) · 이전 · 다음 40 — 끝에서 막힘 · 표 아래 12 |
+| Floating Action Button | 원 56 · 아이콘 24 · 브랜드 채움 · 흰 아이콘 · `shadow-s3` · 오른쪽 아래 화면 끝 · 아래 고정 요소에서 20 + 안전 영역 · 화면에 하나 · `z-sticky` |
+
+#### 쓰는 규칙
+
+- **상단 바** — 높이 56 은 모든 화면이 같다. 스크롤해도 선 · 그림자를 긋지 않는다. 오른쪽 아이콘은 2개 권장 · 3개까지(넘치면 ⋯ + Menu · Menu Sheet), 글 버튼은 하나. ← 는 들어온 화면으로(앞 화면이 없으면 상위 화면), ✕ 는 모달 · 독립 흐름만. 투명 바는 두지 않는다.
+- **하단 탭 바** — 다섯 칸이 어느 화면에서나 같다(더 나누면 화면 위 Tabs). 가운데 + 는 그 화면의 추가 — 이름은 화면마다("거래 추가" · "일정 추가"). 아래로 스크롤하면 48 로 줄되 이름은 남고, 누르면 펴진다. 탭마다 스크롤을 기억하고, 지금 탭을 다시 누르면 맨 위 · 첫 화면.
+- **사이드바** — 1280 이상 펼침 · 768 ~ 1279 접힘, 손으로 접은 것은 기억. 하위가 있는 항목은 펼치기만, 하위가 지금이면 저절로 펼침. 접혔을 때 하위는 아이콘 옆 펼침 메뉴(1280 미만이어도 Menu Sheet 로 바꾸지 않는다 — 2026-10-08), 단독은 이름 말풍선. 긴 이름은 줄을 바꾼다.
+- **옆 패널** — 왼쪽은 768 미만의 주 메뉴(HR 폰 — 이동하면 닫고, 지금 묶음을 펼친 채 연다), 오른쪽은 1280 이상의 보조 작업(1280 미만은 Bottom Sheet). 아래 · 위 패널은 두지 않는다.
+- **목록 넘김** — 데스크톱 목록은 Pagination(쪽은 주소에 — 칸은 링크), 폰의 긴 목록은 끝없이 불러오기(받는 중 · 다시 시도 · 끝 글), 데이터 표는 Table Pagination. 칸 40 은 누르는 영역 44(v106)의 예외다(위아래만 44 — 사용자 결정 2026-10-04).
+- **떠 있는 버튼** — 탭 바 없는 폰 화면의 주 동작 하나. 글을 붙이거나 스크롤에 접지 않는다.
+
+#### 접근성
+
+- 머리는 `header`(`main` 밖), 주 메뉴는 이름 있는 `nav`("주 메뉴"), 본문 바로가기 링크. 화면을 옮기면 맨 위 + 초점을 제목(`h1`)으로, 문서 제목은 "{화면 제목} - Porest Desk".
+- 탭 · 사이드바 항목은 링크 + 지금 화면 `aria-current="page"`(앱은 selected). 사이드바의 부모 · 접기 버튼은 `aria-expanded`. 사이드바의 지금 항목은 한 단계 짙은 바탕 · 짙은 글자로만 보인다 — 굵기는 그대로(1.4.1 ⚠, 사용자 결정 2026-10-08).
+- 아이콘만 있는 버튼(상단 바 · + · 떠 있는 버튼)은 이름 필수 — 알림 점은 이름에 넣는다("알림, 새 알림 있음").
+- Pagination — `nav` "페이지 탐색" · 칸 "N페이지" · 끝 쪽에서 초점을 지금 쪽으로 · 쪽이 바뀌면 알린다. 칸 40 은 AA(2.5.8) ✓ · AAA(2.5.5) ⚠.
+
 ### Pagination (v67 추가)
 
-긴 list / 데이터 그리드 페이지 분할. **새 토큰 추가 0** — 기존 button/text/spacing 합성.
-
-#### Variant
-| Variant | 사용 |
-|---|---|
-| **numbered** (default) | `← 1 2 3 ... 10 →` — 페이지 명시. 데이터 양 예측 가능 (HR 결재 list, 직원 검색 결과) |
-| **prev-next** | `← Previous · Next →` — 페이지 번호 없이 단방향 이동. 무한 스크롤 대안 (Desk 메모 보관함, 영수증 list) |
-| **load-more** | `더 보기` 버튼 1개 — 점진적 expand. mobile 친화 (Desk 가계부 거래 목록) |
-
-#### Anatomy (numbered)
-- 좌측: `←` prev 버튼 (touch-min 44 hit area)
-- 가운데: 페이지 번호 button group — current는 `primary` 채움 + `text-on-accent`, 다른 페이지는 transparent + `text-secondary`
-- 우측: `→` next 버튼
-- ellipsis (`...`): 5+ 페이지에서 1, 2, 3, ..., 9, 10 패턴
-
-#### Size
-| Size | button | 사용 |
-|---|---|---|
-| sm | 32×32 | inline (테이블 footer) |
-| **md** (default) | 40×40 | list footer |
-| lg | 48×48 | mobile primary 영역 |
-
-#### State
-| State | 시각 |
-|---|---|
-| default | transparent + `text-secondary` |
-| hover | `surface-input` 배경 + `text-primary` |
-| current | `primary` 채움 + `text-on-accent` (강조) |
-| disabled (prev 1페이지, next 마지막) | `text-disabled` + cursor:not-allowed (1.4.3 incidental) |
-| focus | `border-focus` 2px outline + 1px offset |
-
-#### Layout
-- 페이지 button 사이 gap `xs` (4px)
-- prev/next와 number group 사이 `md` (12px)
-- pagination 자체는 list 하단 `xl` (24px) margin
-
-#### Accessibility
-- [ ] `<nav aria-label="페이지 네비게이션">` wrapper
-- [ ] current 페이지 `aria-current="page"` + `<button aria-label="페이지 3, 현재">`
-- [ ] prev/next: `aria-label="이전 페이지"`, `aria-label="다음 페이지"`
-- [ ] disabled: `aria-disabled="true"` + tabindex="-1"
-- [ ] 키보드: Tab으로 진입, Enter/Space로 이동, Arrow keys는 비권장 (네이티브 button 동작 우선)
-- [ ] 검색 결과 갱신 시 `aria-live="polite"` 영역에 "총 N건 중 페이지 3" 알림
-
-#### HR / Desk 듀얼 브랜드
-spec brand-neutral. brand 파일에서 사용 패턴 차이 — HR(numbered 데이터 그리드 위주), Desk(load-more 모바일 우선).
+> 2026-10-04 다시 정했다 — 위 "화면 틀 · 이동" 절과 `specs/components/pagination.md` · `table-pagination.md`(SEED Pagination · Table Pagination). 옛 numbered · prev-next · load-more 변형, 지금 쪽 primary 채움, sm 32 · md 40 · lg 48 은 걷었다 — 폰의 긴 목록은 끝없이 불러오기이고 "더 보기" 버튼은 두지 않는다. 옛 스펙은 `specs/components/pagination.history/v-pre-seed-nav.*`.
 
 ### Sheet — 옆 패널 (v67 추가)
 
-> 아래에서 올라오는 Drawer 는 2026-10-02 Bottom Sheet 로 바뀌었다(위 "시트 · 대화상자 · 확인창 · 팝오버" 절, `specs/components/bottom-sheet.md`). 이 절의 옆 패널(Sheet — 오른쪽 · 왼쪽)은 Side Panel 차례에 다시 정한다.
-
-페이지 옆에서 들어오는 패널. 너비 `min(80vw, 480px)`, 바깥쪽 모서리만 `radius-2xl`, 여백 `xl` 24 · 머리 · 바닥 `lg` 16, `surface-default` · `shadow-xl`, `overlay-dim`. 열린 동안 초점을 가두고 닫히면 트리거로 돌려준다(`role="dialog"` + `aria-modal="true"`).
+> 2026-10-04 다시 정했다 — 옆 패널은 Side Panel(`specs/components/side-panel.md` — 왼쪽 · 오른쪽만, 평평). 위 "화면 틀 · 이동" 절. 아래에서 올라오는 것은 Bottom Sheet, 위에서 내려오는 패널은 걷었다. 옛 스펙은 `specs/components/sheet.history/v-pre-seed-nav.*`.
 
 ### Spinner / Progress (v67 추가)
 
@@ -4742,92 +4837,15 @@ spec brand-neutral. brand 파일 — HR(결재 단계 horizontal, sequential), D
 
 ### Breadcrumb (v68 추가)
 
-페이지 위계 경로 navigation. **새 토큰 0** — Link + Divider + spacing 합성.
-
-#### Anatomy
-- 경로 segment list: `Home / 결재 / 결재 큐 / 김지원 휴가 신청`
-- separator: `/` (default), `>` 또는 `›` 변형
-- last segment: 현재 페이지 — `text-primary` + `aria-current="page"` (link 아님)
-- 이전 segment: link + `text-secondary` (hover `text-primary`)
-
-#### Layout
-- font-size: `caption` (12/400) default, `body-sm` (14/400) lg
-- separator color: `text-tertiary`, gap `xs` (4px)
-- truncation: 4+ segment 시 `Home / ... / 부모 / 현재` 패턴 (가운데 ellipsis)
-
-#### Accessibility
-- `<nav aria-label="경로">` + `<ol>` semantic
-- 마지막 segment `aria-current="page"`, link 없음 (그냥 span)
-- separator는 `aria-hidden="true"` (시각만)
-- 모바일에서 truncation 시 ellipsis 클릭으로 dropdown — 숨겨진 segment 노출
+> 2026-10-04 걷었다 — SEED 에 없고, 데스크톱의 위치는 사이드바의 지금 항목(부모 자동 펼침)과 본문 제목이 알린다(화면 틀 · 이동 결정 9). 옛 스펙은 `specs/components/breadcrumb.history/v-pre-seed-nav.*`.
 
 ### Sidebar (v68 추가)
 
-좌측 nav panel — 페이지 단위 메뉴. **새 토큰 0** — surface + button + spacing 합성. 옆 패널(Sheet — `z-modal` 딤 위 `z-modal-content`)과 다름 — sidebar는 페이지 layout 고정 영역.
-
-#### Variant
-| Variant | 사용 |
-|---|---|
-| **fixed** (default) | 데스크탑 — 좌측 240-280px 고정, 페이지 scroll과 독립 |
-| **collapsible** | desktop 토글 — 펼침 240px ↔ 접힘 64px (icon만) |
-| **floating** | mobile 옆 패널 톤 — `z-modal` 딤 위 `z-modal-content` 로 slide-in (Sidebar pattern + Sheet 합성) |
-
-#### Anatomy
-- header: 로고 + brand title (collapsible 접힘 시 logo만)
-- nav items: list — icon + label + badge(옵션, count)
-- footer: 사용자 profile + 설정 access
-- divider: 그룹 구분
-
-#### State
-- default: transparent + `text-secondary`
-- hover: `surface-input` 배경 + `text-primary`
-- active: `primary` 좌측 stroke 4px + `surface-input` 배경 + `text-primary` (또는 `primary` bold text)
-- focus: `border-focus` 2px outline (item 외곽)
-
-#### Layout
-- nav item height: `touch-min` 44 (모바일), 40 (데스크탑 dense)
-- padding: `sm` (8px) V / `md` (12px) H
-- icon: 20×20, label `body-md` (15/400)
-- group title: `caption` (12/600) `text-tertiary` uppercase
-
-#### Accessibility
-- `<aside aria-label="주 메뉴">` wrapper
-- nav items: `<a>` + `aria-current="page"` (active)
-- collapsible toggle: `aria-expanded`, button label "메뉴 펼치기" / "접기"
-- 키보드: Tab 진입, arrow keys 옵션 (네이티브 link 위주)
+> 2026-10-04 다시 정했다 — Side Navigation(`specs/components/side-navigation.md` — 240 · 접힘 56 · 머리 64 · 항목 44). 위 "화면 틀 · 이동" 절. 옛 스펙은 `specs/components/sidebar.history/v-pre-seed-nav.*`.
 
 ### Navigation Menu (v68 추가)
 
-데스크탑 다단계 메뉴 — header 내 mega menu 패턴. **새 토큰 0** — Dropdown 확장.
-
-#### Variant
-| Variant | 사용 |
-|---|---|
-| **single-level** | header link 5-7개 — Dropdown(v45) 패턴 |
-| **mega menu** | header link hover/click → 큰 panel (multi-column items + 카테고리 그룹) |
-
-#### Anatomy (mega menu)
-- trigger: header link button
-- panel: viewport 너비 또는 fixed 800-1200px, multi-column grid
-- item group: column header(`label-md` 14/600) + items list
-- featured: 첫 column에 brand promo card 또는 highlight (image + heading + description)
-
-#### Layout
-- panel offset from trigger: `xs` (4px)
-- panel padding: `xl` (24px)
-- column gap: `xl` (24px)
-- item: icon + label + description (line-2)
-
-#### Motion
-- 등장: panel slide-down (10px) + fade-in `motion-duration-fast` (150ms) `motion-ease-out`
-- 사라짐: 역순
-- hover intent: 200ms delay 후 panel 등장 (실수 hover 회피)
-
-#### Accessibility
-- `<nav aria-label="주 navigation">` + `role="menubar"` + items `role="menuitem"`
-- panel: `role="menu"` + items `role="menuitem"`
-- 키보드: arrow keys로 menubar/menu 이동, Esc 닫기, Enter 활성화
-- focus visible 명시 (mouse hover ≠ keyboard focus)
+> 2026-10-04 걷었다 — 데스크톱 머리의 메가 메뉴는 두 제품 모두 쓰는 곳이 없다(화면 틀 · 이동 추가 결정). 접힌 사이드바의 하위 펼침 메뉴는 Side Navigation 안에서 Menu 모양으로 정한다. 옛 스펙은 `specs/components/navigation-menu.history/v-pre-seed-nav.*`.
 
 ### Menubar (v68 추가)
 
@@ -4870,7 +4888,7 @@ spec brand-neutral. brand 파일 — HR(결재 단계 horizontal, sequential), D
   - Esc: 닫기 + return focus
 
 #### HR / Desk 듀얼 브랜드 (v68 5종 공통)
-spec brand-neutral. brand 파일 — HR(Sidebar 좌측 fixed 데스크탑 위주, Menubar 결재/평가 application 톤), Desk(Sidebar floating 모바일 drawer, Command 메모/할일 빠른 검색 핵심).
+spec brand-neutral. brand 파일 — HR(결재/평가 application 톤), Desk(Command 메모/할일 빠른 검색 핵심). 사이드바 · 머리 메뉴는 2026-10-04 "화면 틀 · 이동" 절로 옮겼다(Menubar 는 2026-10-02 걷었다).
 
 ### Combobox (v69 추가)
 
@@ -5138,7 +5156,7 @@ Table + 정렬/필터/페이지네이션/선택. **새 토큰 0** — Table + Pa
 - **sortable column**: header 클릭 → asc/desc/none 3-state. 우측에 caret indicator.
 - **filterable column**: header 옆 filter icon → dropdown (text input 또는 multi-select).
 - **selectable rows**: 첫 column에 checkbox — header checkbox로 전체 선택.
-- **pagination**: footer에 numbered pagination (v67) — 10/20/50 per page selector.
+- **pagination**: 표 아래 Table Pagination(2026-10-04 — 줄 수 10 · 25 · 50 · 범위 고르기 · 이전 · 다음 한 줄, `specs/components/table-pagination.md`).
 - **column resize**: header 우측 drag handle (옵션).
 - **column reorder**: header drag-drop (옵션).
 

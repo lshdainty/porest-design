@@ -79,9 +79,9 @@ const CONTENT = [
   "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:duration-[var(--motion-duration-d2)] data-[state=closed]:ease-[var(--motion-ease-exit)] motion-safe:data-[state=closed]:zoom-out-95",
 ].join(" ");
 
-// 스크롤 자리 — 위아래 8 · 묶음 사이 8. 높이는 min(480, max(200, 남은 화면)) — 자리를 재기 전에는 480
+// 스크롤 자리 — 위아래 8 · 묶음 사이 8. 높이는 min(480, max(200, 남은 화면)) — 자리를 재기 전에는 480. 480 은 listMaxHeight 가 바꾼다
 const SCROLL =
-  "relative flex max-h-[min(480px,max(200px,var(--radix-popover-content-available-height,480px)))] flex-col gap-x2 overflow-y-auto py-x2";
+  "relative flex max-h-[min(var(--select-list-max-height,480px),max(200px,var(--radix-popover-content-available-height,480px)))] flex-col gap-x2 overflow-y-auto py-x2";
 
 // 묶음 — 둘째 묶음부터 위에 1px 선(좌우 16 들임 · 아래 8). 위쪽 8 은 스크롤 자리의 gap — 묶음 사이 8 + 1 + 8 = 17
 const GROUP =

@@ -6,6 +6,7 @@ import { MARK, MARK_LINE } from '../foundations/ui';
 import { displayKit, type AvatarSize, type BadgeSize, type BadgeTone, type BadgeVariant, type DisplayIcon, type DisplayKit, type DisplayTone, type NotifSize, type Person, type TagItem, type TagSize } from './display-look';
 import { AvatarStackView, AvatarView, BadgeGroupView, BadgeView, DIcon, DividerView, NotificationBadgeView, TagGroupView } from './display-view';
 import { listLook } from './list-look';
+import { navKit } from './nav-look';
 import type { ListIcon, RowSpec } from './list-shared';
 import { ListHeaderView, ListView } from './list-view';
 import { Phone, rc, type Mode } from './kit';
@@ -40,7 +41,7 @@ export function S({ people, size, mode = 'auto', brand = 'desk', surface, max, a
 export function D({ mode = 'auto', brand = 'desk', orientation, inset, style }: { mode?: Mode; brand?: Brand; orientation?: 'horizontal' | 'vertical'; inset?: boolean; style?: CSSProperties }) {
   return <DividerView look={dk(brand).divider} mode={mode} orientation={orientation} inset={inset} style={style} />;
 }
-// 알림이 붙은 아이콘 — 상단 바의 24 아이콘(누르는 자리는 감싼 40 버튼 · 44 영역)
+// 알림이 붙은 아이콘 — 상단 바의 24 아이콘(누르는 자리는 감싼 상자 44 — Top Navigation)
 export function NotifIcon({ icon = 'bell', size = 24, notif, count, visible = true, mode = 'auto', brand = 'desk', color }: { icon?: DisplayIcon; size?: number; notif?: NotifSize; count?: number; visible?: boolean; mode?: Mode; brand?: Brand; color?: string }) {
   return (
     <NotificationBadgeView look={dk(brand).notif} mode={mode} size={notif} attach="icon" visible={visible} count={count}>
@@ -48,9 +49,10 @@ export function NotifIcon({ icon = 'bell', size = 24, notif, count, visible = tr
     </NotificationBadgeView>
   );
 }
-// 상단 바 아이콘 버튼 자리(40) — 그림이라 누르지 않는다
+// 상단 바 아이콘 버튼 자리 — Top Navigation 의 상자(44, top-navigation.yaml). 그림이라 누르지 않는다
 export function BarButton({ children }: { children: ReactNode }) {
-  return <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40, flexShrink: 0 }}>{children}</span>;
+  const s = navKit().top.icon.size;
+  return <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: s, height: s, flexShrink: 0 }}>{children}</span>;
 }
 
 // ── 목록 줄 ───────────────────────────────────────────────

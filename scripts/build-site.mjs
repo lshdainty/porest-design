@@ -28,6 +28,7 @@ import { radioGroupExamples } from "../recipes/shadcn/examples/radio-group-examp
 import { selectBoxExamples } from "../recipes/shadcn/examples/select-box-examples.mjs";
 import { switchExamples } from "../recipes/shadcn/examples/switch-examples.mjs";
 import { chipExamples } from "../recipes/shadcn/examples/chip-examples.mjs";
+import { floatingActionButtonExamples } from "../recipes/shadcn/examples/floating-action-button-examples.mjs";
 import { badgeExamples } from "../recipes/shadcn/examples/badge-examples.mjs";
 import { notificationBadgeExamples } from "../recipes/shadcn/examples/notification-badge-examples.mjs";
 import { tagGroupExamples } from "../recipes/shadcn/examples/tag-group-examples.mjs";
@@ -54,7 +55,7 @@ import { helpBubbleExamples } from "../recipes/shadcn/examples/help-bubble-examp
 import { dialogExamples } from "../recipes/shadcn/examples/dialog-examples.mjs";
 import { alertDialogExamples } from "../recipes/shadcn/examples/alert-dialog-examples.mjs";
 import { popoverExamples } from "../recipes/shadcn/examples/popover-examples.mjs";
-import { sheetExamples } from "../recipes/shadcn/examples/sheet-examples.mjs";
+import { sidePanelExamples } from "../recipes/shadcn/examples/side-panel-examples.mjs";
 import { bottomSheetExamples } from "../recipes/shadcn/examples/bottom-sheet-examples.mjs";
 import { snackbarExamples } from "../recipes/shadcn/examples/snackbar-examples.mjs";
 import { menuSheetExamples } from "../recipes/shadcn/examples/menu-sheet-examples.mjs";
@@ -62,12 +63,13 @@ import { swipeActionsExamples } from "../recipes/shadcn/examples/swipe-actions-e
 // Phase 4 Navigation
 import { tabsExamples } from "../recipes/shadcn/examples/tabs-examples.mjs";
 import { segmentedControlExamples } from "../recipes/shadcn/examples/segmented-control-examples.mjs";
-import { breadcrumbExamples } from "../recipes/shadcn/examples/breadcrumb-examples.mjs";
 import { paginationExamples } from "../recipes/shadcn/examples/pagination-examples.mjs";
+import { tablePaginationExamples } from "../recipes/shadcn/examples/table-pagination-examples.mjs";
 import { menuExamples } from "../recipes/shadcn/examples/menu-examples.mjs";
-import { navigationMenuExamples } from "../recipes/shadcn/examples/navigation-menu-examples.mjs";
 import { commandExamples } from "../recipes/shadcn/examples/command-examples.mjs";
-import { sidebarExamples } from "../recipes/shadcn/examples/sidebar-examples.mjs";
+import { topNavigationExamples } from "../recipes/shadcn/examples/top-navigation-examples.mjs";
+import { bottomNavigationExamples } from "../recipes/shadcn/examples/bottom-navigation-examples.mjs";
+import { sideNavigationExamples } from "../recipes/shadcn/examples/side-navigation-examples.mjs";
 // Phase 5 Disclosure
 import { accordionExamples } from "../recipes/shadcn/examples/accordion-examples.mjs";
 import { collapsibleExamples } from "../recipes/shadcn/examples/collapsible-examples.mjs";
@@ -122,6 +124,7 @@ const SHADCN_EXAMPLES = {
   "select-box": selectBoxExamples,
   switch: switchExamples,
   chip: chipExamples,
+  "floating-action-button": floatingActionButtonExamples,
   // Display (Phase 2)
   badge: badgeExamples,
   "notification-badge": notificationBadgeExamples,
@@ -150,7 +153,7 @@ const SHADCN_EXAMPLES = {
   dialog: dialogExamples,
   "alert-dialog": alertDialogExamples,
   popover: popoverExamples,
-  sheet: sheetExamples,
+  "side-panel": sidePanelExamples,
   "bottom-sheet": bottomSheetExamples,
   snackbar: snackbarExamples,
   "menu-sheet": menuSheetExamples,
@@ -158,12 +161,13 @@ const SHADCN_EXAMPLES = {
   // Phase 4 Navigation
   tabs: tabsExamples,
   "segmented-control": segmentedControlExamples,
-  breadcrumb: breadcrumbExamples,
   pagination: paginationExamples,
+  "table-pagination": tablePaginationExamples,
   menu: menuExamples,
-  "navigation-menu": navigationMenuExamples,
   command: commandExamples,
-  sidebar: sidebarExamples,
+  "top-navigation": topNavigationExamples,
+  "bottom-navigation": bottomNavigationExamples,
+  "side-navigation": sideNavigationExamples,
   // Phase 5 Disclosure
   accordion: accordionExamples,
   collapsible: collapsibleExamples,
@@ -1965,12 +1969,13 @@ function parseExamplesMd() {
 // 각 항목: slug, name, category, description.
 // 페이지 1대1 매핑: 묶지 않음 (input-textarea 같은 묶음 폐기).
 const SHADCN_CATALOG = [
-  // Form (19)
+  // Form (20)
   { slug: "button", name: "Button", category: "Form", description: "액션을 실행하는 버튼. 변형 7 × 크기 4 × 배치 2(SEED Action Button 구조)." },
   { slug: "checkbox", name: "Checkbox", category: "Form", description: "여러 선택 가능한 박스." },
   { slug: "chip", name: "Chip", category: "Form", description: "2 ~ 4개 짧은 폼 값 고르기 · 누르면 값을 채우는 제안 · 목록 위 필터 바 · 지우기로 빼는 넣은 값을 맡는 작은 알약 (SEED Chip 구조)." },
   { slug: "combobox", name: "Combobox", category: "Form", description: "검색·필터 가능한 select." },
   { slug: "date-picker", name: "Date Picker", category: "Form", description: "날짜 · 기간 · 여러 날을 고르는 달력 — 날짜 칸(Input Button)을 누르면 1280 미만 시트 · 이상 팝오버로 열리고 \"완료\" 로 넣는다. 머리 · 요일 줄 · 날짜 칸 48 · 기간 띠, 한 달 · 두 달 · 이어지는 달 (SEED Date Picker 구조)." },
+  { slug: "floating-action-button", name: "Floating Action Button", category: "Form", description: "화면 위에 떠 있는 그 화면의 주 동작 하나 — 오른쪽 아래(화면 끝 · 아래 끝에서 20)의 브랜드 원 56 에 흰 아이콘 24 이고, 폰의 탭 바가 없는 화면(할 일 · 더치페이)에만 둔다 (SEED Floating Action Button 구조)." },
   { slug: "field", name: "Field", category: "Form", description: "칸 이름 · 필수 표시 · 설명 · 오류 · 글자 수를 입력 하나에 붙이는 둘레 (SEED Field 구조)." },
   { slug: "input", name: "Input", category: "Form", description: "한 줄 글 · 숫자를 직접 치는 입력칸. 상자 · 밑줄 × large · medium · 반응형, 앞 · 뒤 붙이개 · 지우기 (SEED Text Input 구조)." },
   { slug: "input-button", name: "Input Button", category: "Form", description: "입력칸 모양의 버튼. 누르면 달력 · 시각 · 아이콘 격자 · 긴 목록을 1280 미만 시트 · 이상 팝오버로 열고 고른 값이 칸에 들어간다 (SEED Input Button 구조)." },
@@ -2016,20 +2021,21 @@ const SHADCN_CATALOG = [
   { slug: "help-bubble", name: "Help Bubble", category: "Overlay", description: "트리거를 누르면 옆에 뜨는 짙은 도움말 말풍선 — 화면에 늘 두기에는 길고 몰라도 일은 할 수 있는 설명(규정 · 계산 방법 · 기능 안내)을 손가락으로도 연다 (SEED Help Bubble 구조)." },
   { slug: "menu-sheet", name: "Menu Sheet", category: "Overlay", description: "1280 미만에서 Menu 대신 같은 줄 · 같은 순서로 화면 아래에서 올라오는 동작 목록 (SEED Swipeable Menu Sheet 구조)." },
   { slug: "popover", name: "Popover", category: "Overlay", description: "1280 이상에서 트리거에 붙어 부가 정보 · 고르는 패널을 띄우는 비모달 표면 (SEED Popover 구조)." },
-  { slug: "sheet", name: "Sheet", category: "Overlay", description: "사이드 슬라이드 패널." },
+  { slug: "side-panel", name: "Side Panel", category: "Overlay", description: "화면 옆에서 미끄러져 나오는 모달 패널 — 높이 전체 · 모서리 · 그림자 없이 딤과 면 색으로 뜨고, 왼쪽은 HR 폰의 주 메뉴 서랍(화면 폭의 80%) · 오른쪽은 1280 이상의 보조 작업(480 · 720 · 960)이다 (SEED Side Panel 구조)." },
   { slug: "snackbar", name: "Snackbar", category: "Overlay", description: "화면 아래에 잠깐 떴다 사라지는 띠(토스트) — 방금 한 일의 결과 · 뒤에서 끝난 일 · 다시 하면 되는 가벼운 실패를 한 번에 하나 알린다 (SEED Snackbar 구조)." },
   { slug: "swipe-actions", name: "Swipe Actions", category: "Data Display", description: "리스트 행을 밀어 편집·삭제에 바로 닿는 모바일 패턴." },
   { slug: "tooltip", name: "Tooltip", category: "Overlay", description: "마우스를 올리거나 키보드 초점이 오면 트리거 옆에 뜨는 짧은 설명 — 아이콘 버튼 · 줄인 글이 무엇인지 보여 주는 Help Bubble 모양의 보조 (SEED Help Bubble Tooltip 구조)." },
 
-  // Navigation (8)
-  { slug: "breadcrumb", name: "Breadcrumb", category: "Navigation", description: "현재 위치 경로 표시." },
+  // Navigation (9)
+  { slug: "bottom-navigation", name: "Bottom Navigation", category: "Navigation", description: "폰 화면 아래에 떠 있는 탭 바 — 홈 · 가계부 · + · 캘린더 · 전체 다섯 칸이 어느 화면에서나 같은 알약(펼침 66 · 줄어듦 48)이고, 가운데 + 는 탭이 아니라 그 화면의 추가다 (SEED Bottom Navigation 구조 — 떠 있는 알약은 porest)." },
   { slug: "command", name: "Command", category: "Navigation", description: "Cmd+K 검색 팔레트 — cmdk 베이스." },
   { slug: "menu", name: "Menu", category: "Navigation", description: "트리거에 붙어 열리는 동작 목록 — 줄을 누르면 바로 실행하고 닫히며, 1280 미만에서는 같은 목록이 Menu Sheet 로 뜬다 (SEED Menu 구조)." },
-  { slug: "navigation-menu", name: "Navigation Menu", category: "Navigation", description: "메가 메뉴 / 글로벌 nav." },
-  { slug: "pagination", name: "Pagination", category: "Navigation", description: "페이지 분할 네비." },
+  { slug: "pagination", name: "Pagination", category: "Navigation", description: "데스크톱 긴 목록 아래 가운데의 쪽 넘김 줄 — 칸 40 을 사이 없이 잇고(480 이상 9칸 · 미만 7칸) 지금 쪽은 짙게 채우며, 폰의 긴 목록은 쪽을 나누지 않고 끝없이 불러온다 (SEED Pagination 구조)." },
   { slug: "segmented-control", name: "Segmented Control", category: "Navigation", description: "같은 내용을 2 ~ 4가지로 바로 거르거나 · 정렬하거나 · 다르게 보는 컨트롤 — 그 내용 바로 위에 하나 두고, 칸이 트랙 폭을 똑같이 나눈다 (SEED Segmented Control 구조)." },
-  { slug: "sidebar", name: "Sidebar", category: "Navigation", description: "사이드 네비게이션 (그룹/접기 지원)." },
+  { slug: "side-navigation", name: "Side Navigation", category: "Navigation", description: "데스크톱(768 이상)의 주 메뉴 — 화면 왼쪽 사이드바에 최상위 화면을 묶어 두고, 1280 이상은 펼침 240 · 768 ~ 1279 는 아이콘만 56 으로 저절로 접히며 접히면 이름 말풍선 · 옆 펼침 메뉴를 띄운다 (SEED Side Navigation 구조)." },
+  { slug: "table-pagination", name: "Table Pagination", category: "Navigation", description: "데이터 표 아래의 쪽 넘김 한 줄 — 줄 수(\"10개 씩 보기\")와 지금 범위(\"11-20 / 총 237개\")를 Select medium 으로 고르고 이전 · 다음으로 넘긴다 (SEED Table Pagination 구조)." },
   { slug: "tabs", name: "Tabs", category: "Navigation", description: "다른 구역으로 옮기는 탭. 화면 · 구역 맨 위의 1차 탭은 Line(Fill · Hug × small · medium — 고르면 2px 막대가 미끄러진다), 그 안의 2차 탭은 Chip Tabs (SEED Tabs 구조)." },
+  { slug: "top-navigation", name: "Top Navigation", category: "Navigation", description: "화면 맨 위의 바 — 지금 화면의 이름과 이동(뒤로 · 닫기 · 주 메뉴) · 동작 두셋을 두고, 탭 첫 화면은 큰 제목(Root) · 그 아래 화면은 ← + 제목(Standard) · 768 이상 Desk 는 제목 없는 데스크톱 머리이며 높이 56 · 선 없이 맨 위에 붙는다 (SEED Top Navigation 구조)." },
 
   // Disclosure (2)
   { slug: "accordion", name: "Accordion", category: "Disclosure", description: "접고 펼치는 패널 (단일/다중)." },
