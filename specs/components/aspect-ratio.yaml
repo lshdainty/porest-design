@@ -6,6 +6,8 @@
 # 그림(사진 · 카드 그림 · 규정 그림)은 이것이 아니라 Image Frame 이다(그 안의 비율 상자가 이것). 이것은 그림이 아닌 것 — 동영상 · 지도 ·
 # 바깥 페이지(iframe) · 차트처럼 비율만 지키면 되는 자리 — 에 쓴다.
 # 비율은 Image Frame 과 같은 여덟 가지(SEED 일곱 + 카드 1.586), 기본 4:3. 옛 3:4 · 21:9 는 걷었다.
+# 비율 값은 모두 "W / H" 글로 적는다 — 브라우저가 계산값으로 쓰는 꼴(getComputedStyle 의 aspect-ratio)이라 검사기가 글 그대로 맞추고,
+# 앱은 "/" 로 나눠 W ÷ H 를 쓴다. 숫자(1 · 1.586)와 "16 / 9" 가 섞이면 한 가지 재는 법으로 다 잴 수 없다(2026-10-08).
 #
 # SEED 와 다른 자리(aspect-ratio.md 의 "SEED 와 다른 점")
 #   - 비율을 여덟 가지로 묶는다 — SEED React 는 아무 숫자나 받는다.
@@ -50,18 +52,18 @@ rules:
 
   # ── 비율 ──────────────────────────────────────────────
   - when: { ratio: "1:1" }
-    enabled: { root: { aspectRatio: 1 } }
+    enabled: { root: { aspectRatio: "1 / 1" } }
   - when: { ratio: "2:1" }
-    enabled: { root: { aspectRatio: 2 } }
+    enabled: { root: { aspectRatio: "2 / 1" } }
   - when: { ratio: "16:9" }
-    enabled: { root: { aspectRatio: { value: 16 / 9, note: "≈ 1.78" } } }
+    enabled: { root: { aspectRatio: { value: "16 / 9", note: "≈ 1.78" } } }
   - when: { ratio: "4:3" }
-    enabled: { root: { aspectRatio: { value: 4 / 3, note: "≈ 1.33 — 기본(SEED)" } } }
+    enabled: { root: { aspectRatio: { value: "4 / 3", note: "≈ 1.33 — 기본(SEED)" } } }
   - when: { ratio: "6:7" }
-    enabled: { root: { aspectRatio: { value: 6 / 7, note: "≈ 0.86" } } }
+    enabled: { root: { aspectRatio: { value: "6 / 7", note: "≈ 0.86" } } }
   - when: { ratio: "4:5" }
-    enabled: { root: { aspectRatio: { value: 4 / 5, note: "0.8" } } }
+    enabled: { root: { aspectRatio: { value: "4 / 5", note: "0.8" } } }
   - when: { ratio: "2:3" }
-    enabled: { root: { aspectRatio: { value: 2 / 3, note: "≈ 0.67" } } }
+    enabled: { root: { aspectRatio: { value: "2 / 3", note: "≈ 0.67" } } }
   - when: { ratio: card }
-    enabled: { root: { aspectRatio: { value: 1.586, note: "ISO 카드 85.6 × 53.98" } } }
+    enabled: { root: { aspectRatio: { value: "1.586 / 1", note: "ISO 카드 85.6 × 53.98" } } }

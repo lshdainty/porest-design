@@ -343,6 +343,10 @@ import { ScrollFog } from "@/components/ui/scroll-fog"
 
 ## Migration notes
 
+### 2026-10-08 — 비율 값을 "W / H" 글 하나로
+
+YAML 이 `1` · `2` · `1.586` 은 숫자로, `16 / 9` · `4 / 3` · `6 / 7` · `4 / 5` · `2 / 3` 은 글로 읽혀(YAML 은 나누기를 하지 않는다) 제품 검사기가 여덟 중 숫자 셋만 쟀다(desk-front #428). 화면은 같았고 잃은 것은 검사뿐이다. 여덟 모두 브라우저 계산값과 같은 꼴의 글(`"1 / 1"` · `"2 / 1"` · `"16 / 9"` · `"4 / 3"` · `"6 / 7"` · `"4 / 5"` · `"2 / 3"` · `"1.586 / 1"`)로 적었다 — 검사기는 글 그대로 맞춘다(제품의 재는 법도 숫자 비교에서 글 비교로 바꾼다). Image Frame · 카드 그림(`card-art.yaml`)의 비율도 같은 꼴로 고쳤다. 사용자 결정 — [비교 페이지](https://claude.ai/artifact/9qbK3fj8SL3RmTeiujoJZ6) 4.
+
 ### 2026-10-04 — SEED Image Frame 으로 새로 둔다
 
 사용자가 [이미지 비교 페이지](https://claude.ai/artifact/G351nuKcYX2xhorvA5UD6X)에서 정했다 — 틀은 SEED Image Frame + 투명 윤곽(1A — 새 토큰 `stroke-neutral-overlay`, v118 · Avatar 윤곽도 이 색), 모서리는 SEED 폭 기준(2A — 24 이하 4 · 48 이하 6 · 그 위 8 · 화면 폭 0, 스켈레톤의 썸네일도 이 값), 세로 카드 그림은 90° 돌려 가로 틀에(3A), 그림 없는 카드는 카드사 색 + 대비 고침(4B — 기관 색 표 하나), 그림 위는 배지(solid) · 장수(Indicator)만(8A). 불투명한 윤곽 · 모서리 8 하나 · 넣고 둘레 바탕 · 세로 틀 · 아는 회사도 회색 대체 그림 · 하트는 고르지 않았다. 여러 장의 Carousel 은 걷었다(7A — `carousel.history/v-pre-seed-image.*`).

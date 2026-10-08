@@ -4,10 +4,11 @@
  * specs/components/scroll-fog.md 의 "코드" 절과 같고, 뒤의 둘(자리마다 · 가로 상자)은 md 의 Properties 를 코드로 더 보인다.
  * 시트 · 대화상자 본문은 ResponsiveDialog 로 짠다 — 미리보기는 1280 이상의 모습(Dialog)이고, 1280 미만의 시트는 bottom-sheet 페이지에 있다.
  *
- * DEPTH · SOLID · ROOT · CONTENT 는 recipes/shadcn/components/ui/scroll-fog.tsx 의 상수와 글자 하나까지 같아야 한다 — 두 파일을 함께 고친다.
- * 마스크(fogMask · withDirection)는 그 파일의 useScrollFog 와 같은 셈이다 — 레시피는 그릴 때 토큰 --gradient-fade-mask(방향 없이 위 → 아래)를
- * 읽어 쪽마다 방향을 붙이고 상자의 style(mask-image · -size · -position · -repeat 와 -webkit- 짝)과 data-fog-axis 로 넣는다. 정적 HTML 은 같은
- * 일을 빌드 때 DESIGN.md 의 토큰 값으로 해 style 에 적었다.
+ * DEPTH · SOLID · COMPOSITE · ROOT · CONTENT 는 recipes/shadcn/components/ui/scroll-fog.tsx 의 상수와 글자 하나까지 같아야 한다 — 두 파일을
+ * 함께 고친다. 마스크(fogMask · withDirection)는 그 파일의 useScrollFog 와 같은 셈이다 — 레시피는 그릴 때 토큰 --gradient-fade-mask(방향 없이
+ * 위 → 아래)를 읽어 흐린 쪽마다 방향을 붙인 상자 전체 크기의 층을 만들고(단계는 그 쪽 깊이의 몫), 상자의 style(mask-image · -size · -position ·
+ * -repeat 와 -webkit- 짝, 두 층을 곱하는 mask-composite: intersect · -webkit-mask-composite: source-in)과 data-fog-axis 로 넣는다. 정적 HTML 은
+ * 같은 일을 빌드 때 DESIGN.md 의 토큰 값으로 해 style 에 적었다.
  * 둘레의 부품은 그 레시피의 값을 옮겨 썼다 — DIALOG_* 는 dialog.tsx(dialog-examples.mjs), LIST_* 는 list.tsx · RADIOMARK_* · DOT_* 는
  * radio-group.tsx(list-examples.mjs), CHIP_* · GROUP_* · SCROLL_ROW 는 chip.tsx(chip-examples.mjs)의 것과 같다 — 이 파일이 쓰는 변형 ·
  * 크기와 그에 걸리는 compound 만 옮겼다. 규칙은 specs/components/scroll-fog.md, 수치 원본은 specs/components/scroll-fog.yaml.
@@ -37,8 +38,10 @@ const DEPTH = {
   page: { start: "20px", end: "80px" },
 };
 
-// 불투명한 층 — 두 흐림 사이
+// 꽉 찬 층 — 흐리지 않는 쪽(깊이 0). 곱해도 아무것도 가리지 않는다
 const SOLID = "linear-gradient(#000, #000)";
+// 겹친 층을 곱한다 — 두 층을 모두 지나야 보인다. -webkit-mask-composite 는 옛 이름만 받는다(source-in 이 intersect 와 같은 셈)
+const COMPOSITE = { "mask-composite": "intersect", "-webkit-mask-composite": "source-in" };
 
 // 스크롤 상자 — 자리마다 넘침 · 스크롤 여유. box 는 축(data-fog-axis)을 따른다
 const ROOT = {
@@ -64,27 +67,25 @@ const FADE_MASK = /`gradient-fade-mask` \| `(linear-gradient\([^`]+\))`/.exec(re
 // 방향 없이 적힌(위 → 아래) 그라디언트 토큰에 방향을 붙인다
 const withDirection = (token, direction) => token.replace(/^linear-gradient\(/, `linear-gradient(${direction}, `);
 
-// 한 축의 마스크 — 시작 쪽 흐림(투명 → 불투명) · 가운데 불투명 · 끝 쪽 흐림(불투명 → 투명). 층은 겹치지 않는다
+// 한 축의 마스크 — 흐린 쪽마다 상자 전체 크기의 층 하나(시작 쪽은 투명 → 불투명, 끝 쪽은 반대 방향). 단계는 그 쪽 깊이의 몫이라
+// 깊이 안에서 불투명에 닿는다. 두 층은 COMPOSITE 로 곱한다
 function fogMask(token, axis, start, end) {
-  if (axis === "y") {
-    return {
-      image: `${withDirection(token, "to bottom")}, ${SOLID}, ${withDirection(token, "to top")}`,
-      size: `100% ${start}, 100% calc(100% - ${start} - ${end}), 100% ${end}`,
-      position: `0 0, 0 ${start}, 0 100%`,
-    };
-  }
-  return {
-    image: `${withDirection(token, "to right")}, ${SOLID}, ${withDirection(token, "to left")}`,
-    size: `${start} 100%, calc(100% - ${start} - ${end}) 100%, ${end} 100%`,
-    position: `0 0, ${start} 0, 100% 0`,
-  };
+  const from = axis === "y" ? "to bottom" : "to right";
+  const to = axis === "y" ? "to top" : "to left";
+  const layers = [start, end].map((depth, i) =>
+    parseFloat(depth) > 0 ? withDirection(token.replace(/(\d+(?:\.\d+)?)%/g, (_m, p) => `calc(${depth} * ${Number(p) / 100})`), i === 0 ? from : to) : SOLID,
+  );
+  return { image: layers.join(", "), size: "100% 100%, 100% 100%", position: "0 0, 0 0" };
 }
 
-// useScrollFog 가 상자의 style 에 넣는 값 — mask-* 와 -webkit-mask-* 를 같이
+// useScrollFog 가 상자의 style 에 넣는 값 — mask-* 와 -webkit-mask-* 를 같이, 그리고 COMPOSITE
 function fogStyle(use, axis) {
   const { start, end } = DEPTH[use];
   const mask = { ...fogMask(FADE_MASK, axis, start, end), repeat: "no-repeat" };
-  return ["image", "size", "position", "repeat"].map((p) => `mask-${p}:${mask[p]}; -webkit-mask-${p}:${mask[p]};`).join(" ");
+  return [
+    ...["image", "size", "position", "repeat"].map((p) => `mask-${p}:${mask[p]}; -webkit-mask-${p}:${mask[p]};`),
+    ...Object.entries(COMPOSITE).map(([p, v]) => `${p}:${v};`),
+  ].join(" ");
 }
 
 // ── dialog.tsx 의 상수 · JSX 클래스와 같은 값 ─────────────────────────────

@@ -106,7 +106,7 @@
 |---|---|
 | `enabled` | 기본 |
 | `hovered` | 웹. 누름 색과 같다(v106), 축소는 없다 |
-| `focused` | 웹. 키보드 포커스에만 링 2px · 띄움 2px(v106) |
+| `focused` | 웹 · 앱. 키보드 포커스에만 링 2px · 띄움 2px(v106). 앱은 키보드로 옮길 때만 그리고 손가락으로 누를 때는 없다(2026-10-08) |
 | `pressed` | 누름 색 + 세로 2px 거리 축소(v104 — 기초 Feedback 의 눌림 피드백) |
 | `loading` | 누름 색 위 로딩 원. 라벨 자리는 그대로(폭 유지) |
 | `disabled` | 전용 색(`bg-disabled` · `fg-disabled`, v106). 불투명도로 흐리게 하지 않는다 |
@@ -119,7 +119,7 @@
 
 - `loading` 이면 로딩 원(크기는 Size 표)을 라벨 자리 가운데 둔다. 라벨은 글자 · 아이콘 색만 투명하게 해서 버튼 폭이 그대로다 — 버튼이 자식을 따로 감싸지 않으므로 부르는 쪽의 `[&>span]` · `[&>svg]` 규칙이 그대로 먹는다.
 - 로딩 중에는 **누르기를 자동으로 막는다**(두 번 제출 방지) — 포인터 · Enter · Space 누르기를 삼키고(`onClick` 을 부르지 않는다), 누름 축소도 없다. 포커스는 그대로 두고 `aria-busy="true"` 를 단다. SEED 는 로딩이 비활성을 포함하지 않지만 porest 는 막는다 — 사용자 결정.
-- 로딩 원 색은 변형마다 다르다(Solid 는 흰 원, 나머지는 회색 트랙 위 본문색).
+- 로딩 원 색은 변형마다 다르다(Solid 는 흰 원, Brand Outline 은 옅은 브랜드 트랙 위 브랜드 선 색 `stroke-brand-solid` — Progress Circle brand 톤과 같고 다크에서는 밝은 짝, 나머지는 회색 트랙 위 본문색).
 
 [그림: 직접 눌러 보기 — 위는 누름 · 호버 · 키보드 포커스(Tab), 아래는 누르면 잠시 로딩이 된다](../../site/components/specs/button.tsx#live-states)
 
@@ -356,12 +356,17 @@ const [saving, setSaving] = useState(false)
 | 인터랙션 | 동작 |
 |---|---|
 | Click / Tap | `onClick` 발화. `disabled` · `loading` 이면 무시. |
+| 누른 동작이 끝나기 전 | 다시 눌러도 무시 — `onClick` 이 Promise 를 돌려주면 이행 · 거부될 때까지 다음 누름(포인터 · Enter · Space)을 버린다. 시간 창은 없다. 비동기 동작은 Promise 를 돌려준다(`mutateAsync`) — 돌려주지 않으면 잠그지 않는다. 앱은 `Future` 가 끝날 때까지(사용자 결정 2026-10-08) |
 | Keyboard `Enter` · `Space` | 클릭과 같다(포커스 상태에서). |
 | Keyboard `Tab` | 다음 포커스로. Shift+Tab 은 거꾸로. |
 | `asChild` | `<Slot>` 으로 요소를 바꾼다(예: `<a>`). `loading` 과 함께 쓰지 않는다(Slot 은 자식 하나만 받는다). |
 | Disabled | 누르기 · 키보드 불가, 포커스에서 빠진다. |
 
+[그림: 누른 동작이 끝날 때까지 한 번 — 빠르게 여러 번 눌러도(Enter · Space 도) 동작은 한 번만 불리고, 끝나기 전의 누름은 버린다](../../site/components/specs/button.tsx#press-lock)
+
 **Form 안** — `type="submit"` 을 적어야 제출한다. `type="button"` 은 제출하지 않는다.
+
+**앱** — 버튼(`PButton`)도 포커스를 받아 Tab 순서에 든다. 하드웨어 키보드로 옮길 때만 웹과 같은 링(2px · 띄움 2px · `stroke-focus-ring`)을 그리고 — Flutter 의 `FocusHighlightMode.traditional` — 손가락으로 누를 때는 그리지 않는다(사용자 결정 2026-10-08, DESIGN.md State › 앱의 키보드 포커스).
 
 ## Accessibility
 
@@ -369,10 +374,10 @@ const [saving, setSaving] = useState(false)
 |---|---|
 | **WCAG 1.4.3** 글자 대비(4.5:1) | 흰 글자 × `bg-brand-solid` · `bg-critical-solid`, `fg-neutral-inverted` × `bg-neutral-inverted`(누름 포함), `fg-neutral` × `bg-neutral-weak` — `npm run lint:all` 의 role 짝이 잰다 |
 | **WCAG 1.4.3** 비활성 | `fg-disabled` — 비활성 컴포넌트 글자는 대비 예외(1.4.3 incidental) |
-| **WCAG 1.4.11** UI 대비(3:1) | 포커스 링 `stroke-focus-ring` × 표면 |
+| **WCAG 1.4.11** UI 대비(3:1) | 포커스 링 `stroke-focus-ring` × 표면. Brand Outline 의 로딩 원 `stroke-brand-solid` × 표면 — 라이트 Desk 8.38 · HR 5.06, 다크 Desk 6.10 · HR 6.23 |
 | **WCAG 2.5.8** Target Size — Minimum(AA, 24×24) | 네 크기 모두 통과 |
 | **WCAG 2.5.5** Target Size — Enhanced(AAA, 44×44) | 보이는 크기는 `large` 48 만 넘지만, 누르는 영역을 44 까지 넓혀 모두 통과(v106) |
-| **WCAG 2.4.7** Focus visible | 키보드 포커스에만 링(`focus-visible`) |
+| **WCAG 2.4.7** Focus visible | 키보드 포커스에만 링(`focus-visible`) — 앱도 키보드로 옮길 때만 같은 링(2026-10-08) |
 | **ARIA** | `<button>` 기본. 아이콘만이면 `aria-label` 필수. 로딩이면 `aria-busy="true"`. `asChild` 로 `<a>` 를 쓸 때 `role="button"` 을 따로 달지 않는다 |
 | **모션 줄이기** | 축소를 하지 않는다(v104 모드) — 누름은 색으로만 |
 
@@ -405,11 +410,20 @@ const [saving, setSaving] = useState(false)
 
 - `large` 는 **48** 이다(SEED 52) — 여백 · 글자 · 아이콘은 SEED large 그대로다.
 - 테두리 · 투명 누름은 SEED 가 투명도 있는 색(`stroke.neutral-muted` · `bg.transparent-pressed`)이라, 불투명한 가장 가까운 역할(`stroke-neutral-weak` · `bg-layer-default-pressed`)을 쓴다 — design.md 검사기가 8자리 hex 를 받지 않는다.
-- 웹의 `hovered` · `focused` 상태를 더한다(v106).
+- 웹의 `hovered` · `focused` 상태를 더한다(v106). `focused` 는 앱의 키보드 포커스에도 그린다(2026-10-08).
+- 누름은 **누른 동작이 끝날 때까지 한 번**이다(`onClick` 이 돌려준 Promise) — SEED 는 정하지 않았다.
 - 로딩 중 누르기를 **자동으로 막는다**(SEED 는 막지 않는다).
 - `neutralSolid` 의 누름은 새 역할 `bg-neutral-inverted-pressed`(gray-800, v112)다.
 
 ## Migration notes
+
+### 2026-10-08 — 앱 적용이 남긴 것
+
+앱 적용(desk-front #428 ~ #430 · desk-app #407 ~ #410)이 남긴 문제를 사용자가 [비교 페이지](https://claude.ai/artifact/9qbK3fj8SL3RmTeiujoJZ6)에서 정했다.
+
+- **Brand Outline 의 로딩 원**(8) — 호가 `bg-brand-solid` 라 다크의 투명한 버튼 위에서 1.73:1(트랙과 1.34)이었다. Progress Circle brand 톤과 같은 `stroke-brand-solid`(다크는 밝은 짝 — 6.10)로 바꿨다. 트랙 `bg-brand-weak-pressed` 는 그대로다.
+- **두 번 누름**(F3) — `onClick` 이 Promise 를 돌려주면 끝날 때까지 다음 누름을 버린다. 시간 창(Desk 웹 Button 의 옛 600ms)은 두지 않는다 — 앱 옛 시트의 잠금과 같다. 로딩 중에 누름을 삼키는 것은 그대로다. 레시피의 `onClick` 은 돌려준 값을 받는 꼴(`(event) => unknown`)이 됐다.
+- **앱의 키보드 포커스**(E2) — 키보드로 옮길 때만 웹과 같은 링을 그리고, `PButton` 도 포커스를 받는다(DESIGN.md State · Inclusive Design).
 
 ### 2026-09-30 — SEED Action Button 구조로
 

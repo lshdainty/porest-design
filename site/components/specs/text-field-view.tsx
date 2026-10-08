@@ -76,6 +76,8 @@ export type TfInputViewProps = {
   width?: number | string;
   // 칸 안의 글을 짙게 · 옅게 강조하는 그림(분홍 칠)
   zone?: CSSProperties;
+  // 지우기 버튼의 누르는 영역을 칠해 보이기(그림 전용) — 칠 · 선 색
+  hitMark?: { fill: string; line: string };
 };
 
 export function TfInputView({
@@ -106,6 +108,7 @@ export function TfInputView({
   required,
   width,
   zone,
+  hitMark,
 }: TfInputViewProps) {
   const live = state === undefined;
   const invalid = invalidProp || state === 'invalid' || state === 'invalid-focused';
@@ -138,6 +141,9 @@ export function TfInputView({
     '--ptf-affix': disabled ? cv(c.disabled, mode) : cv(c.affix, mode),
     '--ptf-icon-c': disabled ? cv(c.disabled, mode) : cv(c.icon, mode),
     '--ptf-clear-c': cv(c.clear, mode),
+    '--ptf-caret-c': cv(c.caret, mode),
+    '--ptf-hit': `${look.clearHit}px`,
+    ...(hitMark ? { '--ptf-hit-fill': hitMark.fill, '--ptf-hit-line': `1px dashed ${hitMark.line}` } : {}),
     '--ptf-base': `${look.stroke.base}px`,
     '--ptf-active': `${look.stroke.active}px`,
     '--ptf-dur': look.motion.duration,
@@ -300,10 +306,16 @@ export function TfTextareaView({
     onCount?.(countGraphemes(value));
   }, [value, onCount]);
 
-  // 자동 높이 — 내용 높이에 맞추고 최대 높이에서 멈춘다(그림 폭이 바뀌어도 다시 잰다)
+  // 자동 높이 — 내용 높이에 맞추고 최대 높이에서 멈춘다(그림 폭이 바뀌어도 다시 잰다).
+  // 끄면 자랄 때 넣은 높이 · 넘침을 걷어 고정 높이(--ptt-min)로 돌아간다(textarea.md 2026-10-08)
   useIsoLayoutEffect(() => {
     const el = ref.current;
-    if (!el || !autoSize) return;
+    if (!el) return;
+    if (!autoSize) {
+      el.style.removeProperty('height');
+      el.style.removeProperty('overflow-y');
+      return;
+    }
     const fit = () => {
       el.style.height = 'auto';
       const full = el.scrollHeight;
@@ -326,6 +338,7 @@ export function TfTextareaView({
     '--ptf-bg': disabled || readOnly ? cv(c.bgDisabled, mode) : 'transparent',
     '--ptf-value': disabled ? cv(c.disabled, mode) : cv(c.value, mode),
     '--ptf-ph': disabled ? cv(c.disabled, mode) : cv(c.placeholder, mode),
+    '--ptf-caret-c': cv(c.caret, mode),
     '--ptf-base': `${input.stroke.base}px`,
     '--ptf-active': `${input.stroke.active}px`,
     '--ptf-dur': input.motion.duration,
@@ -382,7 +395,7 @@ export function TfTextareaView({
 }
 
 // ── Field — 머리 · 입력 · 꼬리 ─────────────────────────────
-export type TfFieldControl = { id: string; describedBy?: string; invalid: boolean; required: boolean; onCount: (n: number) => void };
+export type TfFieldControl = { id: string; labelId: string; describedBy?: string; invalid: boolean; required: boolean; onCount: (n: number) => void };
 
 export type TfFieldViewProps = {
   look: TfFieldLook;
@@ -400,14 +413,17 @@ export type TfFieldViewProps = {
   count?: number;
   // 입력 — 요소를 주거나, 실제 입력칸이면 id · 설명 · 글자 수를 받는 함수
   children: ReactNode | ((ctl: TfFieldControl) => ReactNode);
+  // 묶음(Checkbox · Radio) — 라벨이 <label for> 대신 <span id> 이고 묶음이 aria-labelledby 로 가리킨다(field.tsx 와 같다)
+  group?: boolean;
   width?: number | string;
   // 부위마다 분홍 칠(Anatomy)
   marks?: Partial<Record<'header' | 'input' | 'footer', CSSProperties>>;
 };
 
-export function TfFieldView({ look, mode = 'auto', label, labelWeight = 'medium', indicator, headerAction, description, descriptionIcon, errorMessage, invalid = false, max, count: countProp, children, width, marks }: TfFieldViewProps) {
+export function TfFieldView({ look, mode = 'auto', label, labelWeight = 'medium', indicator, headerAction, description, descriptionIcon, errorMessage, invalid = false, max, count: countProp, children, width, marks, group = false }: TfFieldViewProps) {
   const auto = useId();
   const id = `${auto}control`;
+  const labelId = `${auto}label`;
   const [counted, setCounted] = useState(0);
   const count = countProp ?? counted;
   const showError = invalid && !!errorMessage;
@@ -420,14 +436,16 @@ export function TfFieldView({ look, mode = 'auto', label, labelWeight = 'medium'
   const DI = descriptionIcon ? ICONS[descriptionIcon] : null;
   const type = (t: TfFieldLook['label']['text'], weight?: number | string): CSSProperties => ({ fontFamily: t.fontFamily, fontSize: t.fontSize, lineHeight: t.lineHeight, fontWeight: weight ?? t.fontWeight });
   const iconTop = (lh: string, size: number) => `calc((${lh} - ${size}px) / 2)`;
-  const control = typeof children === 'function' ? children({ id, describedBy, invalid, required: indicator === 'required', onCount: setCounted }) : children;
+  const control = typeof children === 'function' ? children({ id, labelId, describedBy, invalid, required: indicator === 'required', onCount: setCounted }) : children;
+  const LabelTag = group ? 'span' : 'label';
+  const labelLink = group ? { id: labelId } : { htmlFor: typeof children === 'function' ? id : undefined };
 
   return (
     <div className="flex min-w-0 flex-col" style={{ gap: f.gap, width: width ?? '100%' }}>
       {(label || headerAction) && (
         <div className="flex items-center justify-between" style={{ gap: f.header.gap, paddingInline: f.header.padX, ...marks?.header }}>
           {label && (
-            <label htmlFor={typeof children === 'function' ? id : undefined} className="min-w-0" style={{ ...type(f.label.text, f.label.weight[labelWeight]), color: cv(f.label.color, mode) }}>
+            <LabelTag {...labelLink} className="min-w-0" style={{ ...type(f.label.text, f.label.weight[labelWeight]), color: cv(f.label.color, mode) }}>
               {label}
               {indicator === 'required' && (
                 <span
@@ -438,7 +456,7 @@ export function TfFieldView({ look, mode = 'auto', label, labelWeight = 'medium'
               {indicator === 'optional' && (
                 <span style={{ ...type(f.optional.text), lineHeight: f.optional.lineHeight, verticalAlign: 'bottom', paddingLeft: f.optional.padLeft, color: cv(f.optional.color, mode) }}>선택</span>
               )}
-            </label>
+            </LabelTag>
           )}
           {headerAction && (
             <span className="ml-auto flex shrink-0 items-center" style={{ marginBlock: f.actionMarginY }}>

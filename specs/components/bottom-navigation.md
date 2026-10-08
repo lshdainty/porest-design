@@ -234,6 +234,10 @@ import { BOTTOM_NAVIGATION_INSET } from "@/components/ui/bottom-navigation"
 
 ## Migration notes
 
+### 2026-10-08 — 글자 값을 고정 px 토큰으로
+
+YAML 의 라벨 글자가 rem 토큰(`$text-t1`)을 가리키고 "글자 크기 설정을 따르지 않는 px" 는 비고에만 있었다 — YAML 대로 만들면 글자 크기 200% 에서 라벨이 칸 밖으로 넘친다. 레시피(`text-t1-static`) · 비고(앱 `TextScaler.noScaling`)와 같게 값 자리를 `-static` 토큰(`$text-t1-static`)으로 고쳤다 크기 · 모습은 그대로다. `-static` 은 같은 글자 토큰의 px 판이다(Typography v104 — 내보낼 때 생긴다). Notification Badge · Wheel Picker 에 대한 사용자 결정([비교 페이지](https://claude.ai/artifact/9qbK3fj8SL3RmTeiujoJZ6) 3)을 같은 꼴의 이 자리에도 따랐다.
+
 ### 2026-10-04 — 떠 있는 알약을 Bottom Navigation 으로 정한다
 
 사용자가 [화면 틀 · 이동 비교 페이지](https://claude.ai/artifact/B6tsgbw356Kf2Zumvm2v6a)에서 정했다 — 바는 떠 있는 알약을 지키고 고친다(4B — 바탕 불투명 `bg-layer-floating` · 흐림 걷음, 줄어들 때(48)도 칸마다 이름, 줄어든 바를 누르면 펴짐 — 앱도), 지금 탭은 짙은 색 + 선 2.5 · 다른 탭 `fg-neutral-subtle` + 선 2(5A), 가운데 + 는 브랜드 원 44 · 라벨 없음 · 이름은 화면마다(6B — 앱도 이름을 단다), 가계부 묶음은 탭 바 그대로 · 위 Line Tabs(7A). 그리고 "따라오는 것" — 5칸 이하 · 라벨 한글 5자 이내 · 라벨 11 / 15 고정 크기 · 최대 480 · 탭마다 스크롤 기억 · 지금 탭을 다시 누르면 맨 위 + 첫 화면 · 탭은 링크 + `aria-current`(앱 selected) · 바 이름 "주 메뉴". 붙은 바(4A) · 브랜드 색 고름(5B) · 라벨 붙은 + 칸(6A) · + 를 떠 있는 버튼으로(6C) · 탭 바 칸 바꿈(7B)은 고르지 않았다.

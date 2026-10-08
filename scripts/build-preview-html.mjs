@@ -5672,11 +5672,17 @@ function pldRegion({ phase = "waiting", fallback = "", failure = "", content = "
   ])}>${inner}</div>`;
 }
 
-// 끝 흐림의 마스크 단계 — gradient-fade-mask 토큰(방향 없이 위 → 아래, DESIGN.md v104)에서 단계만 떼어 :root 의 --pfog-stops 로 둔다.
-// 쓰는 자리(.pfog · 칩 줄 · 시트 · 대화상자 본문)가 방향을 붙인다. 토큰이 없으면 아무것도 두지 않는다 — 마스크가 풀려 흐림만 없어진다
+// 끝 흐림의 마스크 단계 — gradient-fade-mask 토큰(방향 없이 위 → 아래, DESIGN.md v104)에서 단계만 떼어 :root 의 --pfog-stops 로 둔다
+// (사이드바의 아래 흐림 .psnav-content 가 방향을 붙여 쓴다). Scroll Fog 를 거는 상자(.pfog · 칩 줄 · Chip Tabs · 시트 · 대화상자 · 팝오버 본문)는
+// 흐린 쪽마다 상자 전체 크기의 층 하나를 깔고 곱하므로(intersect — scroll-fog.tsx 의 fogMask 와 같다), 퍼센트 단계를 그 쪽 깊이의 몫으로 바꾼
+// --pfog-head(--pfog-start) · --pfog-tail(--pfog-end)을 그 상자에 둔다 — var 는 상자에서 풀려 깊이를 바꾸는 규칙(아래 80)을 그대로 따른다.
+// 토큰이 없으면 아무것도 두지 않는다 — 마스크가 풀려 흐림만 없어진다
+const PFOG_BOXES = ":is(.pfog--box, .pfog--overlay-body, .pfog--page, .pov-body--fog, .pchip-group--scroll, .ptab-chips, .pfog--row)";
 export function fadeMaskStopsCss(tokenCss) {
   const m = /--gradient-fade-mask:\s*linear-gradient\((.*)\);/.exec(tokenCss);
-  return m ? `\n    :root { --pfog-stops: ${m[1]}; }\n` : "";
+  if (!m) return "";
+  const scaled = (depth) => m[1].replace(/(\d+(?:\.\d+)?)%/g, (_s, p) => `calc(var(${depth}) * ${Number(p) / 100})`);
+  return `\n    :root { --pfog-stops: ${m[1]}; }\n    ${PFOG_BOXES} { --pfog-head: ${scaled("--pfog-start")}; --pfog-tail: ${scaled("--pfog-end")}; }\n`;
 }
 
 // 기다림 갤러리 — 스켈레톤(틀 · 데이터 자리) · 모서리와 글줄 높이 · 기다리는 동안(0 · 1 · 5 · 10초) · 원(크기 × 톤 · 값) · 원의 자리 · 당겨서 새로 고침 ·
@@ -8517,6 +8523,8 @@ export function pageCss() {
       --btn-brand-on-solid: var(--btn-brand-white, var(--color-fg-neutral-inverted));
       --btn-brand-fg: var(--color-fg-brand, var(--color-primary, var(--color-fg-neutral)));
       --btn-brand-track: var(--color-bg-brand-weak-pressed, var(--color-gray-500));
+      /* 브랜드 선 색 — Brand Outline 의 로딩 원(Progress Circle brand 톤과 같다). 공유 토큰에는 없어 본문색으로 */
+      --btn-brand-stroke: var(--color-stroke-brand-solid, var(--color-primary, var(--color-fg-neutral)));
       --btn-focus-ring: var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral)));
       /* 상태가 고르는 값 — 변형이 따로 정하지 않으면 이 기본을 쓴다 */
       --btn-fg-pressed: var(--btn-fg);
@@ -8607,7 +8615,7 @@ export function pageCss() {
     .btn-brand-outline {
       --btn-fg: var(--btn-brand-fg);
       --progress-track: var(--btn-brand-track);
-      --progress-range: var(--btn-brand-solid);
+      --progress-range: var(--btn-brand-stroke);
     }
     .btn-neutral-outline, .btn-outline, .btn--outline {
       --btn-fg: var(--color-fg-neutral);
@@ -10009,7 +10017,8 @@ export function pageCss() {
     .ptf-textarea[data-disabled] .ptf-textarea-value { color: var(--color-fg-disabled); }
     .ptf-input[data-disabled] .ptf-input-value::placeholder,
     .ptf-textarea[data-disabled] .ptf-textarea-value::placeholder { color: var(--color-fg-disabled); }
-    /* 입력 — 상자 높이를 채운다(글자는 세로 가운데). 값 fg-neutral · 400, placeholder fg-placeholder */
+    /* 입력 — 상자 높이를 채운다(글자는 세로 가운데). 값 fg-neutral · 400, placeholder fg-placeholder.
+       캐럿은 글자색(fg-neutral), 고른 글은 기기 기본 하이라이트 — ::selection 을 두지 않는다(2026-10-08) */
     .ptf-input-value {
       flex: 1;
       align-self: stretch;
@@ -10022,6 +10031,7 @@ export function pageCss() {
       outline: none;
       font: inherit;
       color: var(--color-fg-neutral);
+      caret-color: var(--color-fg-neutral);
     }
     .ptf-input-value::placeholder,
     .ptf-textarea-value::placeholder { color: var(--color-fg-placeholder); opacity: 1; }
@@ -10038,8 +10048,10 @@ export function pageCss() {
     .ptf-affix { flex-shrink: 0; color: var(--color-fg-neutral-subtle); white-space: nowrap; }
     .ptf-icon { display: flex; flex-shrink: 0; color: var(--color-fg-neutral-muted); }
     .ptf-icon > svg { width: var(--ptf-icon); height: var(--ptf-icon); }
-    /* 지우기 — lucide circle-x · fg-neutral-subtle · 둥근 버튼(크기는 모양 · 크기마다). 값이 있고 막히지 않았을 때만 있고 Tab 순서 밖이다 */
+    /* 지우기 — lucide circle-x · fg-neutral-subtle · 둥근 버튼(크기는 모양 · 크기마다). 값이 있고 막히지 않았을 때만 있고 Tab 순서 밖이다.
+       누르는 영역은 원 둘레로 44(::before) — 상자가 overflow: hidden 이라 상자 밖은 잘린다(medium 40 은 44 × 40) */
     .ptf-clear {
+      position: relative;
       display: flex;
       flex-shrink: 0;
       align-items: center;
@@ -10050,6 +10062,15 @@ export function pageCss() {
       background: transparent;
       color: var(--color-fg-neutral-subtle);
       cursor: pointer;
+    }
+    .ptf-clear::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 44px;
+      height: 44px;
+      transform: translate(-50%, -50%);
     }
     .ptf-clear > svg { width: var(--ptf-clear); height: var(--ptf-clear); }
     /* 상자형 medium — 높이 40 · 모서리 8(r2) · 좌우 14 · 사이 8 · 글자 t4 14/19 · 아이콘 16 · 지우기 18. 1280 이상 데스크톱 웹(마우스)에서만 */
@@ -10124,6 +10145,7 @@ export function pageCss() {
       overflow-y: hidden;
       font: inherit;
       color: var(--color-fg-neutral);
+      caret-color: var(--color-fg-neutral);
     }
     /* 고정 높이 — 자리마다 정한 높이(2줄 72 이상), 넘치는 글은 칸 안에서 스크롤 */
     .ptf-textarea--fixed .ptf-textarea-value { min-height: 72px; overflow-y: auto; }
@@ -12830,7 +12852,7 @@ export function pageCss() {
        specs/components/skeleton.md · progress-circle.md · progress.md · scroll-fog.md · content-placeholder.md(수치는 같은 이름의 .yaml · pull-to-refresh.yaml).
        구조는 SEED(2026-10-03) — Progress(막대)는 porest 만의 미터다. 토큰은 역할 색과 v104 의 gradient-shimmer-neutral(-dark) · gradient-fade-mask ·
        motion-duration-loop · motion-ease-easing 이고, 반짝임 · 회전 · 나타남은 토큰의 shimmer · spin · fade-in 키프레임이다.
-       끝 흐림의 마스크는 gradient-fade-mask 의 16단계에 방향을 붙여 깐다 — 그 단계(--pfog-stops)는 페이지가 토큰 값에서 읽어 :root 에 둔다
+       끝 흐림의 마스크는 gradient-fade-mask 의 16단계에 방향을 붙여 깐다 — 그 단계(--pfog-stops · 깊이에 맞춘 --pfog-head · --pfog-tail)는 페이지가 토큰 값에서 읽어 둔다
        (DESIGN.md "마스크는 방향 없이 적었다 — 쓰는 자리에서 방향을 붙인다"). 모션 줄이기면 띠 · 회전 · 채움 · 당기기 전환이 멈춘다.
        .psk--still · .ppc--still 은 갤러리에서 모션 줄이기의 모습을 고정해 보여 주는 클래스다. 다크 짝은 이 블록 끝의 [data-theme="dark"] 에서 바꾼다. */
 
@@ -12985,32 +13007,31 @@ export function pageCss() {
     .pmeter[data-state="over"] .pmeter-status { color: var(--color-fg-critical); font-weight: 700; }
     .pmeter[data-state="reached"] .pmeter-status { color: var(--color-fg-neutral); font-weight: 700; }
 
-    /* Scroll Fog — 스크롤 상자에 거는 마스크(색을 덮지 않는다). 처음 · 끝 쪽에 gradient-fade-mask 단계(--pfog-stops)를 방향을 붙여 깔고 가운데는 꽉 찬 층으로 잇는다.
+    /* Scroll Fog — 스크롤 상자에 거는 마스크(색을 덮지 않는다). 흐린 쪽마다 상자 전체 크기의 층 하나 — gradient-fade-mask 단계를 그 쪽 깊이의 몫으로 바꾼
+       --pfog-head · --pfog-tail(페이지가 토큰 값에서 만들어 이 상자들에 둔다)에 방향을 붙여 깔고, 두 층을 곱한다(mask-composite: intersect · -webkit- 는 source-in).
        --pfog-start · --pfog-end 는 그 축의 처음 · 끝 깊이 — 세로(box · overlayBody · page · 시트 · 대화상자 · 팝오버 본문)는 위 · 아래, 가로(칩 줄 · Chip Tabs · 03q 의 그림 가로 줄 .pfog--row)는 왼쪽 · 오른쪽.
        스크롤 위치 · 넘침과 상관없이 늘 켜져 있고 누르기를 막지 않는다. 흐린 쪽에는 깊이 이상의 여백과 같은 만큼의 스크롤 여유를 둔다 */
     :is(.pfog--box, .pfog--overlay-body, .pfog--page, .pov-body--fog) {
       --pfog-start: 20px;
       --pfog-end: 20px;
-      -webkit-mask-image: linear-gradient(to bottom, var(--pfog-stops)), linear-gradient(#000, #000), linear-gradient(to top, var(--pfog-stops));
-      mask-image: linear-gradient(to bottom, var(--pfog-stops)), linear-gradient(#000, #000), linear-gradient(to top, var(--pfog-stops));
-      -webkit-mask-size: 100% var(--pfog-start), 100% calc(100% - var(--pfog-start) - var(--pfog-end)), 100% var(--pfog-end);
-      mask-size: 100% var(--pfog-start), 100% calc(100% - var(--pfog-start) - var(--pfog-end)), 100% var(--pfog-end);
-      -webkit-mask-position: 0 0, 0 var(--pfog-start), 0 100%;
-      mask-position: 0 0, 0 var(--pfog-start), 0 100%;
-      -webkit-mask-repeat: no-repeat;
-      mask-repeat: no-repeat;
+      -webkit-mask-image: linear-gradient(to bottom, var(--pfog-head)), linear-gradient(to top, var(--pfog-tail));
+      mask-image: linear-gradient(to bottom, var(--pfog-head)), linear-gradient(to top, var(--pfog-tail));
     }
     :is(.pchip-group--scroll, .ptab-chips, .pfog--row) {
       --pfog-start: 20px;
       --pfog-end: 20px;
-      -webkit-mask-image: linear-gradient(to right, var(--pfog-stops)), linear-gradient(#000, #000), linear-gradient(to left, var(--pfog-stops));
-      mask-image: linear-gradient(to right, var(--pfog-stops)), linear-gradient(#000, #000), linear-gradient(to left, var(--pfog-stops));
-      -webkit-mask-size: var(--pfog-start) 100%, calc(100% - var(--pfog-start) - var(--pfog-end)) 100%, var(--pfog-end) 100%;
-      mask-size: var(--pfog-start) 100%, calc(100% - var(--pfog-start) - var(--pfog-end)) 100%, var(--pfog-end) 100%;
-      -webkit-mask-position: 0 0, var(--pfog-start) 0, 100% 0;
-      mask-position: 0 0, var(--pfog-start) 0, 100% 0;
+      -webkit-mask-image: linear-gradient(to right, var(--pfog-head)), linear-gradient(to left, var(--pfog-tail));
+      mask-image: linear-gradient(to right, var(--pfog-head)), linear-gradient(to left, var(--pfog-tail));
+    }
+    :is(.pfog--box, .pfog--overlay-body, .pfog--page, .pov-body--fog, .pchip-group--scroll, .ptab-chips, .pfog--row) {
+      -webkit-mask-size: 100% 100%;
+      mask-size: 100% 100%;
+      -webkit-mask-position: 0 0;
+      mask-position: 0 0;
       -webkit-mask-repeat: no-repeat;
       mask-repeat: no-repeat;
+      -webkit-mask-composite: source-in;
+      mask-composite: intersect;
     }
     /* box — 카드 · 상자 안의 높이를 정한 스크롤, 넘치는 방향 양 끝 20 · 여백 20. overlayBody · page — 위 20 · 아래 80 · 여백 20 · 80(page 는 바닥 버튼 위에서 끝난다) */
     .pfog--box { overflow-y: auto; padding-block: 20px; scroll-padding-block: 20px; }
@@ -14793,6 +14814,7 @@ export function pageCss() {
       --color-bg-brand-solid: var(--color-bg-brand-solid-dark);
       --color-bg-brand-solid-pressed: var(--color-bg-brand-solid-pressed-dark);
       --color-bg-brand-weak-pressed: var(--color-bg-brand-weak-pressed-dark);
+      --color-stroke-brand-solid: var(--color-stroke-brand-solid-dark);
       --color-fg-brand: var(--color-fg-brand-dark);
       --color-stroke-focus-ring: var(--color-stroke-focus-ring-dark);
       --color-bg-neutral-inverted: var(--color-bg-neutral-inverted-dark);

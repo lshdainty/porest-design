@@ -133,7 +133,7 @@ Desk 할 일 완료의 동그라미 체크는 Checkbox 의 모양이 아니다 �
 
 ### 오류
 
-칸 모양은 바꾸지 않는다. 묶음 아래에 무엇을 해야 하는지 글로 알린다(사용자 결정 — SEED 와 같다). 오늘 제품의 체크 오류는 모두 묶음 단위(하나 이상 고르기)다. 묶음을 [Field](field.md) 로 감싸면 그 꼬리가 오류 글 자리이고, 라벨은 묶음의 이름으로 이어진다(2026-10-01).
+칸 모양은 바꾸지 않는다. 묶음 아래에 무엇을 해야 하는지 글로 알린다(사용자 결정 — SEED 와 같다). 오늘 제품의 체크 오류는 모두 묶음 단위(하나 이상 고르기)다. 묶음을 [Field](field.md) 로 감싸면 그 꼬리가 오류 글 자리이고, 라벨은 묶음의 이름으로 이어진다(2026-10-01). Field 의 오류 · 막힘도 칸에 닿는다 — 오류면 칸마다 `aria-invalid`, 막히면 묶음 `aria-disabled` 와 칸마다 `disabled` 다(2026-10-08). 묶음(`role="group"`)에는 `aria-invalid` · `aria-required` 를 달지 않는다 — 그 역할은 받지 않는다(SEED 와 같다).
 
 [그림: 오류는 묶음 아래 글로](../../site/components/specs/checkbox.tsx#error)
 
@@ -231,10 +231,11 @@ import { Checkmark } from "@/components/ui/checkbox"
 | 인터랙션 | 동작 |
 |---|---|
 | Click / Tap(칸 · 라벨) | 선택 ↔ 선택 안 됨. 일부 선택이면 선택으로. `disabled` 면 무시. |
-| Keyboard `Space` | 포커스 상태에서 누르기와 같다. `Enter` 는 폼 제출에 둔다. |
+| Keyboard `Space` | 포커스 상태에서 누르기와 같다. |
+| Keyboard `Enter` | 폼을 제출한다 — 진짜 `<input type="checkbox">` 처럼 폼의 기본 버튼(첫 제출 버튼)을 누른다. 칸은 바뀌지 않는다. 기본 버튼이 없거나 막혀 있으면 아무것도 하지 않는다. Radix 는 Enter 를 막기만 해서 레시피가 연다(사용자 결정 2026-10-08 — SEED 와 같다). 칸만(`Checkmark`) 쓰는 자리 · List 의 체크 줄 · Select Box 여럿 고르기도 같다. |
 | Keyboard `Tab` | 다음 포커스로. 묶음 안의 항목도 하나씩 들어간다. |
 | 부모(일부 선택) | 누르면 자식을 모두 선택. 다 선택이면 모두 해제. |
-| Disabled | 누르기 · 키보드 불가, 포커스에서 빠진다. |
+| Disabled | 누르기 · 키보드 불가, 포커스에서 빠진다. 묶음에 `disabled` 를 주거나 막힌 Field 로 감싸면 칸이 모두 막힌다(묶음 `aria-disabled`). |
 
 **Form 안** — `<input type="checkbox">`(또는 Radix 의 숨은 input)는 폼 제출에 들어간다. 여러 개의 결과는 배열이다. 검증은 `onSubmit` 또는 묶음을 떠날 때 — 누르는 동안 오류를 띄우지 않는다.
 
@@ -247,7 +248,7 @@ import { Checkmark } from "@/components/ui/checkbox"
 | **WCAG 2.4.7** Focus visible | 키보드 포커스에만 링 2px · 띄움 2px(`stroke-focus-ring`) |
 | **WCAG 2.5.8** Target Size — Minimum(AA ≥ 24×24) | 칸 20 · 24 + 라벨까지 묶은 줄 32 · 36 ✓ |
 | **WCAG 2.5.5** Target Size — Enhanced(AAA ≥ 44×44) | 라벨까지 묶어 위아래 44 로 넓힌다 ✓. 묶음 안에서도 줄 사이 12 라 줄마다 44 · 48 을 받는다(줄 사이가 4 면 이웃과 겹쳐 36 · 40 이 된다) — 목록 행에서 칸만 쓰면 행 전체 |
-| **ARIA** | `role="checkbox"` + `aria-checked="true · false · mixed"`(mixed = 일부 선택). 라벨은 `<label>` 로 묶거나 `aria-labelledby`. 칸만 쓰면 `aria-label` 필수. 묶음은 `<fieldset>` + `<legend>`(또는 `role="group"` + `aria-labelledby`), 오류 글은 묶음에 `aria-describedby`. |
+| **ARIA** | `role="checkbox"` + `aria-checked="true · false · mixed"`(mixed = 일부 선택). 라벨은 `<label>` 로 묶거나 `aria-labelledby`. 칸만 쓰면 `aria-label` 필수. 묶음은 `<fieldset>` + `<legend>`(또는 `role="group"` + `aria-labelledby`), 오류 글은 묶음에 `aria-describedby`. 오류면 칸마다 `aria-invalid`, 막히면 묶음 `aria-disabled` + 칸마다 `disabled` — `role="group"` 은 `aria-invalid` · `aria-required` 를 받지 않아 묶음에는 달지 않는다(Field 로 감싸면 레시피가 건다). |
 | **Reduced motion** | 모션 줄이기면 누름 축소를 빼고 색만 바꾼다(기초 Motion). |
 
 ## Do / Don't
@@ -258,6 +259,7 @@ import { Checkmark } from "@/components/ui/checkbox"
 - 여러 개 고르기는 Checkbox, 하나만 고르기는 Radio, 바로 적용되는 켜기 · 끄기는 Switch.
 - 부모 · 자식 묶음에서 일부만 고르면 부모는 일부 선택으로 둔다.
 - 목록 행에 칸만 넣으면 행 전체가 눌리게 한다.
+- 약관 보기 같은 링크는 라벨 옆이나 아래에 둔다 — 라벨은 고르는 글만.
 
 ### ❌ Don't
 
@@ -265,6 +267,7 @@ import { Checkmark } from "@/components/ui/checkbox"
 - 하나만 고르는 묶음에 Checkbox — Radio 를 쓴다.
 - 선택 색을 브랜드로 깔아 두기 — 브랜드 색은 핵심 흐름에서만.
 - 오류를 칸 색만으로 알리기 — 묶음 아래 글로 알린다.
+- 라벨 안에 링크 · 버튼 — 줄의 누르는 영역(44)이 덮어 눌리지 않는다. 라벨 옆이나 아래에 따로 둔다(사용자 결정 2026-10-08).
 
 ## Specification
 
@@ -282,6 +285,14 @@ import { Checkmark } from "@/components/ui/checkbox"
 - 아이콘은 lucide(선 3) — SEED 는 채운 체크 아이콘.
 
 ## Migration notes
+
+### 2026-10-08 — Enter · 묶음 상태 · 라벨 안 링크
+
+앱 적용(desk-front #428 ~ #430 · desk-app #407 ~ #410)이 남긴 문제를 사용자가 [비교 페이지](https://claude.ai/artifact/9qbK3fj8SL3RmTeiujoJZ6)에서 정했다.
+
+- **Enter**(B1) — 스펙은 "Enter 는 폼 제출에 둔다" 인데 Radix 는 Enter 를 막기만 해 아무 일도 없었다. 레시피의 칸(`Checkmark`)이 Enter 를 받아 폼의 기본 버튼을 누른다 — 진짜 input · SEED 와 같다. 칸은 바뀌지 않고, 고르기는 Space 다. `Checkmark` 를 쓰는 List 의 체크 줄 · Select Box 여럿 고르기도 같이 바뀌었다.
+- **묶음 상태**(9) — Field 의 오류 · 막힘이 묶음에 닿지 않았다(막힌 Field 안의 칸이 눌렸다). 오류는 칸마다 `aria-invalid`, 막힘은 묶음 `aria-disabled` + 칸마다 `disabled` 로 건다. 필수는 묶음에 걸지 않는다(`role="group"` 은 받지 않는다) — 고르지 않고 내면 오류 글이 알린다. `CheckboxGroup` 에 `disabled` 를 더했다.
+- **라벨 안 링크**(C1) — 줄의 누르는 영역이 라벨 안 링크를 덮는다. 레시피는 그대로 두고 Don't 에 적었다 — 링크는 라벨 옆 · 아래에.
 
 ### 2026-09-30 — 묶음 줄 사이 12 · 모션 표
 

@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 import { Checkmark, type CheckmarkProps } from "@/components/ui/checkbox";
-import { Radiomark, type RadiomarkProps } from "@/components/ui/radio-group";
+import { Radiomark, submitOnRadioEnter, type RadiomarkProps } from "@/components/ui/radio-group";
 import { Switchmark, type SwitchmarkProps } from "@/components/ui/switch";
 
 /*
@@ -368,13 +368,19 @@ const ListCheckItem = React.forwardRef<React.ElementRef<typeof Checkmark>, ListC
 );
 ListCheckItem.displayName = "ListCheckItem";
 
-// 하나 고르기 목록 — 라디오 묶음(role=radiogroup, aria-label · aria-labelledby 필수)
+// 하나 고르기 목록 — 라디오 묶음(role=radiogroup, aria-label · aria-labelledby 필수). Enter 는 폼을 제출한다(Radio 와 같다)
 const ListRadioGroup = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Root> & ItemRadius
->(({ className, itemRadius, style, ...props }, ref) => (
+>(({ className, itemRadius, style, onKeyDown, ...props }, ref) => (
   <ListRowTag.Provider value="div">
-    <RadioGroupPrimitive.Root ref={ref} className={cn(listVariants(), className)} style={radiusStyle(itemRadius, style)} {...props} />
+    <RadioGroupPrimitive.Root
+      ref={ref}
+      className={cn(listVariants(), className)}
+      style={radiusStyle(itemRadius, style)}
+      {...props}
+      onKeyDown={submitOnRadioEnter(onKeyDown)}
+    />
   </ListRowTag.Provider>
 ));
 ListRadioGroup.displayName = "ListRadioGroup";

@@ -39,7 +39,7 @@ const VARIANT = {
   criticalSolid:
     "bg-bg-critical-solid text-static-white hover:bg-bg-critical-solid-pressed active:bg-bg-critical-solid-pressed aria-busy:bg-bg-critical-solid-pressed [--progress-track:color-mix(in_srgb,var(--color-static-white)_30%,transparent)] [--progress-range:var(--color-static-white)]",
   brandOutline:
-    "border border-stroke-neutral-weak bg-transparent text-fg-brand hover:bg-bg-layer-default-pressed active:bg-bg-layer-default-pressed aria-busy:bg-transparent disabled:bg-transparent [--progress-track:var(--color-bg-brand-weak-pressed)] [--progress-range:var(--color-bg-brand-solid)]",
+    "border border-stroke-neutral-weak bg-transparent text-fg-brand hover:bg-bg-layer-default-pressed active:bg-bg-layer-default-pressed aria-busy:bg-transparent disabled:bg-transparent [--progress-track:var(--color-bg-brand-weak-pressed)] [--progress-range:var(--color-stroke-brand-solid)]",
   neutralOutline:
     "border border-stroke-neutral-weak bg-transparent text-fg-neutral hover:bg-bg-layer-default-pressed active:bg-bg-layer-default-pressed aria-busy:bg-transparent disabled:bg-transparent [--progress-track:var(--color-gray-500)] [--progress-range:var(--color-fg-neutral)]",
   ghost:
@@ -401,13 +401,14 @@ export const buttonExamples = [
   {
     title: "상태 — 비활성 · 로딩",
     description:
-      "비활성은 전용 색(bg-disabled · fg-disabled)이다 — 불투명도로 흐리게 하지 않는다. 로딩은 누름 색 위에 로딩 원을 얹고, 라벨은 글자 · 아이콘 색만 투명하게 해 폭이 그대로다. 로딩 중에는 누르기(포인터 · Enter · Space)를 자동으로 막고 aria-busy=\"true\" 를 단다.",
+      "비활성은 전용 색(bg-disabled · fg-disabled)이다 — 불투명도로 흐리게 하지 않는다. 로딩은 누름 색 위에 로딩 원을 얹고, 라벨은 글자 · 아이콘 색만 투명하게 해 폭이 그대로다. 로딩 중에는 누르기(포인터 · Enter · Space)를 자동으로 막고 aria-busy=\"true\" 를 단다. 로딩이 아니어도 onClick 이 Promise 를 돌려주면(mutateAsync) 끝날 때까지 다음 누름을 버린다 — 시간 창은 없다.",
     jsx: `import { Download } from "lucide-react"
 
 // 비활성 — 전용 색. 흐리게 하지 않는다
 <Button disabled>변경 내용 저장</Button>
 
-// 로딩 — 라벨 자리에 로딩 원, 폭은 그대로. 누르기를 막고 aria-busy="true" 를 단다
+// 로딩 — 라벨 자리에 로딩 원, 폭은 그대로. 누르기를 막고 aria-busy="true" 를 단다.
+// save 가 Promise 를 돌려주면(mutateAsync) 끝날 때까지 다음 누름을 버린다
 <Button loading={isSaving} onClick={save}>변경 내용 저장</Button>
 <Button variant="neutralWeak" loading={isExporting} onClick={exportCsv}>
   <Download />

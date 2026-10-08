@@ -274,6 +274,7 @@ function progressLook(brand: Brand): ProgressLook {
   if (String(unbox(over['fill.width'])) !== '100%' || String(unbox(reached['fill.width'])) !== '100%') throw new Error(`${F} 넘침 · 달성의 fill.width 가 100% 가 아니다 — 그림을 고친다`);
   return {
     gap: len(v['root.gap'], `${F} root.gap`),
+    headerGap: len(v['header.gap'], `${F} header.gap`),
     label: { ...type(v['label.typography'], `${F} label`), fontWeight: Number(unbox(must(v['label.fontWeight'], `${F} label.fontWeight`))), color: col(v['label.foreground'], brand, `${F} label.foreground`) },
     status: { ...type(v['status.typography'], `${F} status`), color: col(v['status.foreground'], brand, `${F} status.foreground`) },
     track: { height: len(v['track.height'], `${F} track.height`), radius: len(v['track.radius'], `${F} track.radius`), bg: col(v['track.background'], brand, `${F} track.background`) },

@@ -6,7 +6,7 @@ import { Calendar } from 'lucide-react';
 import { Figure, Panel, MARK, MARK_LINE } from '../foundations/ui';
 import { axisDesc, axisValues, loadComponentSpec } from '@/lib/component-spec';
 import { radioGroupGap, radioLook, radioParts, RADIO_CHECKED, RADIO_STATES, type RadioChecked, type RadioCombo, type RadioState } from './radio-group-look';
-import { RadioView, RadioGroupView } from './radio-group-view';
+import { RadioView, RadioGroupView, RadioFieldView } from './radio-group-view';
 import { RadioPlayground } from './radio-group-playground';
 import { buttonLook } from './button-look';
 import { ButtonView } from './button-view';
@@ -14,6 +14,7 @@ import { Phone, Sheet, Verdict, rc, type Mode } from './kit';
 import { selectBoxLook } from './select-box-look';
 import { SelectBoxGroupView } from './select-box-view';
 import { selectLook } from './select-look';
+import { textFieldLook } from './text-field-look';
 import { formatDay } from './date-shared';
 
 type Fig = (p: { caption?: string }) => ReactNode;
@@ -486,14 +487,10 @@ const ExControlled: Fig = ({ caption }) => (
     <G items={['반복 없음', '매월', '매년']} initial={1} disabled={[0, 1, 2]} ariaLabel="반복 — 묶음 전체가 막힘" />
   </Preview>
 );
+// Field 로 감싼 묶음 — 라벨이 묶음의 이름, 오류 글이 설명이 되고 묶음에 aria-invalid(radio-group.md "코드" 의 오류 예)
 const ExError: Fig = ({ caption }) => (
   <Preview caption={caption}>
-    <div className="flex flex-col">
-      <G items={['반복 없음', '매월']} ariaLabel="반복" ariaDescribedby="ex-error-msg" />
-      <span id="ex-error-msg" className="mt-2 text-[12px]" style={{ color: rc('fg-critical') }}>
-        반복을 골라 주세요.
-      </span>
-    </div>
+    <RadioFieldView field={textFieldLook('desk').field} look={radioLook({})} gap={GAP()} label="반복" errorMessage="반복을 골라 주세요." items={['반복 없음', '매월']} width={280} />
   </Preview>
 );
 

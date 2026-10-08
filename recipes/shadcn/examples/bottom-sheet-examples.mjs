@@ -409,15 +409,23 @@ const forced = (classList, state) => merge(`${classList} ${forceState(classList,
 const FADE_MASK = /`gradient-fade-mask` \| `(linear-gradient\([^`]+\))`/.exec(readFileSync(new URL("../../../DESIGN.md", import.meta.url), "utf8"))[1];
 const SOLID = "linear-gradient(#000, #000)";
 const withDirection = (token, direction) => token.replace(/^linear-gradient\(/, `linear-gradient(${direction}, `);
-// 위 20 · 아래 80 — 시작 쪽 흐림(투명 → 불투명) · 가운데 불투명 · 끝 쪽 흐림(불투명 → 투명). 상자의 style 에 mask-* 와 -webkit-mask-* 를 같이 넣는다
+// 겹친 층을 곱한다 — scroll-fog.tsx 의 COMPOSITE 와 같은 값(-webkit- 쪽은 옛 이름 source-in)
+const COMPOSITE = { "mask-composite": "intersect", "-webkit-mask-composite": "source-in" };
+// 위 20 · 아래 80 — 흐린 쪽마다 상자 전체 크기의 층 하나(단계는 그 쪽 깊이의 몫 — 깊이 안에서 불투명에 닿는다), 두 층을 곱한다.
+// 상자의 style 에 mask-* 와 -webkit-mask-* 를 같이 넣는다
 function fogStyle(start = "20px", end = "80px") {
+  const layer = (depth, direction) =>
+    parseFloat(depth) > 0 ? withDirection(FADE_MASK.replace(/(\d+(?:\.\d+)?)%/g, (_m, p) => `calc(${depth} * ${Number(p) / 100})`), direction) : SOLID;
   const mask = {
-    image: `${withDirection(FADE_MASK, "to bottom")}, ${SOLID}, ${withDirection(FADE_MASK, "to top")}`,
-    size: `100% ${start}, 100% calc(100% - ${start} - ${end}), 100% ${end}`,
-    position: `0 0, 0 ${start}, 0 100%`,
+    image: `${layer(start, "to bottom")}, ${layer(end, "to top")}`,
+    size: "100% 100%, 100% 100%",
+    position: "0 0, 0 0",
     repeat: "no-repeat",
   };
-  return ["image", "size", "position", "repeat"].map((p) => `mask-${p}:${mask[p]}; -webkit-mask-${p}:${mask[p]};`).join(" ");
+  return [
+    ...["image", "size", "position", "repeat"].map((p) => `mask-${p}:${mask[p]}; -webkit-mask-${p}:${mask[p]};`),
+    ...Object.entries(COMPOSITE).map(([p, v]) => `${p}:${v};`),
+  ].join(" ");
 }
 
 // ── 미리보기 조각 ─────────────────────────────────────────────────────────

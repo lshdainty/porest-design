@@ -300,15 +300,16 @@ export const helpBubbleExamples = [
   {
     title: "처음부터 열어 두는 안내 — 닫기 버튼",
     description:
-      "처음 쓰는 기능의 설명처럼 닫기 전까지 남겨 둘 안내는 처음부터 열어 두고(defaultOpen) 닫기 버튼(showCloseButton)을 둔다 — 한 번 닫으면 다시 열지 않는다. 다른 버튼에 붙일 때는 HelpBubbleAnchor 로 자리만 잡는다(팝업 ARIA 를 달지 않고 누르면 그 버튼의 원래 동작이다). 닫기는 오른쪽 위 모서리에 붙은 38 투명 상자 · 아이콘 14(위 12 · 오른쪽 12 자리) · 글과 4 이고 누르는 영역은 44 다. 머리 오른쪽 끝의 버튼 아래(side=\"bottom\")라 Radix 가 말풍선을 화면 안으로 밀어 오른쪽 16 을 남겼고, 화살표는 그대로 버튼 가운데를 가리킨다.",
+      "처음 쓰는 기능의 설명처럼 닫기 전까지 남겨 둘 안내는 처음부터 열어 두고(defaultOpen) 닫기 버튼(showCloseButton)을 두고, 바깥 누르기 · 바깥으로 간 초점에 닫히지 않게 한다(closeOnInteractOutside={false}) — 한 번 닫으면 다시 열지 않는다. 다른 버튼에 붙일 때는 HelpBubbleAnchor 로 자리만 잡는다(팝업 ARIA 를 달지 않고 누르면 그 버튼의 원래 동작이다). 닫기는 오른쪽 위 모서리에 붙은 38 투명 상자 · 아이콘 14(위 12 · 오른쪽 12 자리) · 글과 4 이고 누르는 영역은 44 다. 머리 오른쪽 끝의 버튼 아래(side=\"bottom\")라 Radix 가 말풍선을 화면 안으로 밀어 오른쪽 16 을 남겼고, 화살표는 그대로 버튼 가운데를 가리킨다.",
     jsx: `import { HelpBubble, HelpBubbleAnchor, HelpBubbleContent } from "@/components/ui/help-bubble"
 
-{/* 처음 쓰는 사람에게 한 번 — 닫으면 다시 열지 않는다. Anchor 는 자리만 잡는다(누르면 원래 동작) */}
+{/* 처음 쓰는 사람에게 한 번 — 닫으면 다시 열지 않는다. Anchor 는 자리만 잡는다(누르면 원래 동작).
+    closeOnInteractOutside={false} — 바깥 누르기 · 바깥으로 간 초점(Tab)에 닫히지 않는다. 닫기 버튼 · Esc · 말풍선에서 Tab 으로 나가기로 닫는다 */}
 <HelpBubble defaultOpen={!seen} onOpenChange={(open) => !open && markSeen()}>
   <HelpBubbleAnchor asChild>
     <Button variant="ghost" layout="iconOnly" aria-label="금액 가리기"><EyeOff /></Button>
   </HelpBubbleAnchor>
-  <HelpBubbleContent title="금액을 가릴 수 있어요" description="누르면 화면의 금액이 모두 가려져요." showCloseButton side="bottom" />
+  <HelpBubbleContent title="금액을 가릴 수 있어요" description="누르면 화면의 금액이 모두 가려져요." showCloseButton closeOnInteractOutside={false} side="bottom" />
 </HelpBubble>`,
     render: () => {
       const anchor = `<button ${attrs([

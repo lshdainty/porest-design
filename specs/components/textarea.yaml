@@ -6,7 +6,8 @@
 # 부위: root 는 상자(테두리 · 바탕 · 모서리), value 는 입력(<textarea>) — 여백 · 높이는 입력이 가진다(SEED).
 #
 # 기본은 자동 높이(autoSize on) — 3줄에서 시작해 쓴 만큼 자라고, 최대 높이는 자리마다 정한다(없으면 끝없이 자란다).
-# 자동 높이를 끄면(off) 높이를 자리마다 정하고(2줄 이상) 넘치는 글은 칸 안에서 스크롤한다(SEED).
+# 자동 높이를 끄면(off) 높이를 자리마다 정하고(2줄 이상) 넘치는 글은 칸 안에서 스크롤한다(SEED). 켰다가 끄면 늘어날 때 넣은 높이를
+# 걷어 고정 높이로 돌아간다(2026-10-08).
 # 크기는 Input 과 같다 — large(폰 · 앱) · medium(1280 이상 데스크톱 웹), 웹의 기본은 responsive.
 #
 # SEED 와 다른 자리(textarea.md 의 "SEED 와 다른 점")
@@ -55,13 +56,14 @@ rules:
       value:
         foreground: $color-fg-neutral
         fontWeight: 400
+        caretColor: { value: $color-fg-neutral, note: "캐럿은 글자색 — 고른 글은 기기 기본 하이라이트(Input 과 같다, 사용자 결정 2026-10-08)" }
         resize: { value: none, note: "손잡이를 두지 않는다 — 자동 높이가 대신한다" }
       placeholder:
         foreground: $color-fg-placeholder
         fontWeight: 400
     focused:
       root:
-        borderColor: { value: $color-stroke-neutral-contrast, note: "읽기 전용이면 바뀌지 않는다" }
+        borderColor: { value: $color-stroke-neutral-contrast, note: "읽기 전용이면 바뀌지 않는다 — 읽기 전용은 포커스 표시가 없다(Input 과 같다, 사용자 결정 2026-10-08)" }
         borderWidth: { value: 2px, note: "안쪽에 덧그린다 — 글이 밀리지 않는다" }
     invalid:
       root:

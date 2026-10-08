@@ -89,6 +89,8 @@ export const PG_MEANINGS = ['limit', 'goal'] as const;
 export type PgMeaning = (typeof PG_MEANINGS)[number];
 export type ProgressLook = {
   gap: number;
+  // 이름 줄 안 — 이름 ↔ 오른쪽 글(적어도)
+  headerGap: number;
   label: LdType & { color: LdColor };
   status: LdType & { color: LdColor };
   track: { height: number; radius: number; bg: LdColor };

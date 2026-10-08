@@ -257,7 +257,10 @@ const Affix: Fig = ({ caption }) => (
   </Panel>
 );
 
-const Clear: Fig = ({ caption }) => (
+const Clear: Fig = ({ caption }) => {
+  const hit = look().input.clearHit;
+  const L = look().input.sizes.outline;
+  return (
   <Panel caption={caption}>
     <div className="grid gap-4 sm:grid-cols-3">
       <div className="flex flex-col gap-2">
@@ -268,9 +271,11 @@ const Clear: Fig = ({ caption }) => (
       </div>
       <div className="flex flex-col gap-2">
         <Surface>
-          <I prefixIcon="search" value="회의록" clearable state="focused" />
+          <I prefixIcon="search" value="회의록" clearable state="focused" hitMark={{ fill: MARK, line: MARK_LINE }} />
         </Surface>
-        <Cap strong="값이 있을 때">large 22 · medium 18</Cap>
+        <Cap strong="값이 있을 때">
+          원 large {L.large.clear} · medium {L.medium.clear} — 분홍 점선은 누르는 영역 {hit}(상자 밖은 잘린다)
+        </Cap>
       </div>
       <div className="flex flex-col gap-2">
         <Surface>
@@ -280,7 +285,8 @@ const Clear: Fig = ({ caption }) => (
       </div>
     </div>
   </Panel>
-);
+  );
+};
 
 // ── Guidelines ────────────────────────────────────────────
 const UnderlineGuide: Fig = ({ caption }) => {

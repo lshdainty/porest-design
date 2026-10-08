@@ -7,6 +7,7 @@
 # 모서리는 틀의 폭으로 고른다 — 24 이하 4 · 48 이하 6 · 그 위 8 · 화면 폭 0(SEED).
 #
 # 카드 그림(ratio card — 1.586)은 세로 그림(원래 폭 < 높이)이면 시계 방향으로 90° 돌려 가로 틀을 채운다.
+# 비율 값은 모두 "W / H" 글이다(aspect-ratio.yaml 과 같은 꼴 — 2026-10-08).
 #
 # SEED 와 다른 자리(image-frame.md 의 "SEED 와 다른 점")
 #   - 윤곽은 늘 그린다(끄는 속성이 없다) — SEED 는 CSS · React 기본이 꺼짐이고 rootage JSON 기본 · 그림은 켬이다.
@@ -101,22 +102,22 @@ rules:
 
   # ── 비율 ──────────────────────────────────────────────
   - when: { ratio: "1:1" }
-    loaded: { root: { aspectRatio: 1 } }
+    loaded: { root: { aspectRatio: "1 / 1" } }
   - when: { ratio: "2:1" }
-    loaded: { root: { aspectRatio: 2 } }
+    loaded: { root: { aspectRatio: "2 / 1" } }
   - when: { ratio: "16:9" }
-    loaded: { root: { aspectRatio: { value: 16 / 9, note: "≈ 1.78" } } }
+    loaded: { root: { aspectRatio: { value: "16 / 9", note: "≈ 1.78" } } }
   - when: { ratio: "4:3" }
-    loaded: { root: { aspectRatio: { value: 4 / 3, note: "≈ 1.33 — 기본(SEED)" } } }
+    loaded: { root: { aspectRatio: { value: "4 / 3", note: "≈ 1.33 — 기본(SEED)" } } }
   - when: { ratio: "6:7" }
-    loaded: { root: { aspectRatio: { value: 6 / 7, note: "≈ 0.86" } } }
+    loaded: { root: { aspectRatio: { value: "6 / 7", note: "≈ 0.86" } } }
   - when: { ratio: "4:5" }
-    loaded: { root: { aspectRatio: { value: 4 / 5, note: "0.8" } } }
+    loaded: { root: { aspectRatio: { value: "4 / 5", note: "0.8" } } }
   - when: { ratio: "2:3" }
-    loaded: { root: { aspectRatio: { value: 2 / 3, note: "≈ 0.67" } } }
+    loaded: { root: { aspectRatio: { value: "2 / 3", note: "≈ 0.67" } } }
   - when: { ratio: card }
     loaded:
-      root: { aspectRatio: { value: 1.586, note: "ISO 카드 85.6 × 53.98 — 목록 56(높이 35.3) · 격자 · 상세 모두 이 비율. 최대 높이로 비율을 바꾸지 않는다" } }
+      root: { aspectRatio: { value: "1.586 / 1", note: "ISO 카드 85.6 × 53.98 — 목록 56(높이 35.3) · 격자 · 상세 모두 이 비율. 최대 높이로 비율을 바꾸지 않는다" } }
       image: { rotate: { value: 90deg, note: "그림의 원래 폭 < 높이(세로 카드)면 시계 방향으로 90° — 그림 상자를 틀의 높이 × 폭으로 잡아 돌리고 cover 로 채운다. 원래 크기를 안 뒤(다 받은 뒤)에 정하고 보인다. 가로 · 정사각 그림은 그대로" } }
 
   # ── 모서리 — 폭으로 ───────────────────────────────────

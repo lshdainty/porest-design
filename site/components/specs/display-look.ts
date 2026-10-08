@@ -276,13 +276,18 @@ export const stackLook = brandCache((brand): StackLook => {
     sizes[size] = { overlap: -len(v['root.gap'], F, `${size} root.gap`), ring, plusFont: len(v['overflow.fontSize'], F, `${size} overflow.fontSize`) };
     if (sizes[size].overlap <= 0) throw new Error(`${F} size ${size} 의 root.gap 이 음수(겹침)가 아니다`);
   }
-  const ringNote = noteOf(base['item.outlineColor']);
-  if (!ringNote.includes('bg-layer-floating')) throw new Error(`${F} item.outlineColor 비고에 시트 · 대화상자 안의 링 색(bg-layer-floating)이 없다`);
+  // 링 색 = 놓인 바탕(surface 축) — "+N" 원도 같은 링이어야 한다
+  sameSet(axisValues(spec, 'surface'), ['default', 'floating'], F, 'surface');
+  const ringOf = (surface: 'default' | 'floating') => {
+    const v = resolveState(spec, { surface }, 'enabled');
+    if (String(unbox(v['item.outlineColor'])) !== String(unbox(v['overflow.outlineColor']))) throw new Error(`${F} surface ${surface} 의 "+N" 링 색이 아바타 링과 다르다`);
+    return tok(v['item.outlineColor'], brand, F, `surface ${surface} item.outlineColor`);
+  };
   return {
     defaultSize: must(spec.defaults?.size, F, 'defaults.size') as AvatarSize,
     max: Number(unbox(must(base['root.items'], F, 'root.items'))),
     sizes,
-    ring: { default: tok(base['item.outlineColor'], brand, F, 'item.outlineColor'), floating: named('bg-layer-floating', brand) },
+    ring: { default: ringOf('default'), floating: ringOf('floating') },
     plus: { bg: tok(base['overflow.background'], brand, F, 'overflow.background'), fg: tok(base['overflow.foreground'], brand, F, 'overflow.foreground'), weight: weightOf(base['overflow.fontWeight'], F, 'overflow.fontWeight') },
   };
 });

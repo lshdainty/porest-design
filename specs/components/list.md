@@ -308,7 +308,7 @@ import { List, ListButtonItem, ListItem } from "@/components/ui/list"
 | Click / Tap(컨트롤 줄) | 줄 어디를 눌러도 끼운 스위치 · 체크 · 라디오가 바뀐다. 바로 적용(스위치) · 저장 때 적용(체크)은 그 컨트롤의 규칙대로. |
 | Hover(웹) | 누르는 줄만 — 누름과 같은 바탕. |
 | Keyboard `Tab` | 누르는 줄 · 컨트롤로 간다. 보기만 하는 줄은 건너뛴다. |
-| Keyboard `Enter` · `Space` | 누르는 줄은 누르기와 같다. 컨트롤 줄은 그 컨트롤의 키(스위치 · 체크 Space, 라디오 화살표). 키를 누르고 있는 동안은 포인터로 누를 때와 같은 누름 모습(바탕 · 콘텐츠 축소)이다. |
+| Keyboard `Enter` · `Space` | 누르는 줄은 누르기와 같다. 컨트롤 줄은 그 컨트롤의 키(스위치 · 체크 Space, 라디오 화살표). 체크 · 라디오 줄의 `Enter` 는 폼을 제출한다 — 진짜 input 처럼 폼의 기본 버튼을 누른다(Checkbox · Radio 와 같다, 2026-10-08). 키를 누르고 있는 동안은 포인터로 누를 때와 같은 누름 모습(바탕 · 콘텐츠 축소)이다. |
 | Disabled | 누르기 · 키보드 불가, 포커스에서 빠진다. 값은 그대로 보인다. |
 
 ## Accessibility
@@ -361,6 +361,10 @@ import { List, ListButtonItem, ListItem } from "@/components/ui/list"
 - **포커스 링(웹)은 porest 가 정했다** — 줄 안쪽 2px. SEED 는 목록 줄의 포커스 링을 적지 않았다.
 
 ## Migration notes
+
+### 2026-10-08 — 체크 · 라디오 줄의 Enter
+
+Checkbox · Radio 의 Enter 가 폼을 제출하게 됐다(사용자 결정 — [비교 페이지](https://claude.ai/artifact/9qbK3fj8SL3RmTeiujoJZ6) B1, 진짜 input · SEED 와 같다). 체크 줄(`ListCheckItem`)은 `Checkmark` 를 써서 그대로 따라오고, 라디오 줄은 묶음(`ListRadioGroup`)이 Radio 와 같은 처리(`submitOnRadioEnter`)로 Enter 를 받는다 — Radix 의 선택지는 Enter 를 막기만 한다. 고르기는 그대로 Space · 화살표다.
 
 ### 2026-10-01 — SEED List 로
 

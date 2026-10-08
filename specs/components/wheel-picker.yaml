@@ -72,14 +72,14 @@ rules:
     enabled:
       item:
         height: 44px
-        typography: { value: $text-t10, note: "26 / 35 — 글자 크기 설정을 따르지 않는 px(SEED t10-static), 휠 칸이 넘치지 않게" }
+        typography: { value: $text-t10-static, note: "26 / 35 — 글자 크기 설정을 따르지 않는 px(웹 text-t10-static, 앱 TextScaler.noScaling — SEED t10-static), 휠 칸이 넘치지 않게" }
       indicator:
         height: 44px
   - when: { size: small }
     enabled:
       item:
         height: 36px
-        typography: { value: $text-t7, note: "20 / 27 — 글자 크기 설정을 따르지 않는 px(SEED t7-static)" }
+        typography: { value: $text-t7-static, note: "20 / 27 — 글자 크기 설정을 따르지 않는 px(웹 text-t7-static, 앱 TextScaler.noScaling — SEED t7-static)" }
       indicator:
         height: 36px
 

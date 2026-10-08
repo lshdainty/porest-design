@@ -11,6 +11,7 @@ name: Progress
 
 slots:
   root: 묶음 — 이름 줄 · 막대 · 금액 줄
+  header: 이름 줄 — 이름과 오른쪽 글을 양 끝에, 글자 바탕선 맞춤
   label: 이름 — 무엇이 얼마나 찼나(식비 예산 · 여행 자금)
   status: 오른쪽 글 — 비율 · "N원 초과" · "달성"
   track: 트랙 — 막대 바탕(값이 0 이어도 보인다)
@@ -36,6 +37,8 @@ rules:
     enabled:
       root:
         gap: { value: $spacing-x1_5, note: "이름 줄 ↔ 막대 ↔ 금액 줄 6" }
+      header:
+        gap: { value: $spacing-x2, note: "이름 ↔ 오른쪽 글 — 적어도 8. 이름이 길면 줄을 바꿔 오른쪽 글에 붙지 않는다(2026-10-08 — 전엔 레시피에만 있었다)" }
       label:
         typography: $text-t4
         fontWeight: 500

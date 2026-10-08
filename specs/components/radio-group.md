@@ -120,7 +120,7 @@
 
 ### 오류
 
-동그라미 모양은 바꾸지 않는다. 묶음 아래에 무엇을 해야 하는지 글로 알린다(Checkbox 와 같다). 묶음을 [Field](field.md) 로 감싸면 그 꼬리가 오류 글 자리이고, 라벨은 묶음의 이름으로 이어진다(2026-10-01). 처음부터 하나를 골라 두면 오류가 날 일이 없다 — 골라 둘 수 없는 선택(사용자가 꼭 스스로 골라야 하는)에만 쓴다.
+동그라미 모양은 바꾸지 않는다. 묶음 아래에 무엇을 해야 하는지 글로 알린다(Checkbox 와 같다). 묶음을 [Field](field.md) 로 감싸면 그 꼬리가 오류 글 자리이고, 라벨은 묶음의 이름으로 이어진다(2026-10-01). Field 의 오류 · 필수 · 막힘도 묶음에 닿는다 — 묶음(`role="radiogroup"`)에 `aria-invalid` · `aria-required`, 막히면 묶음 `aria-disabled` 와 선택지마다 `disabled` 다(2026-10-08, SEED 와 같다). 처음부터 하나를 골라 두면 오류가 날 일이 없다 — 골라 둘 수 없는 선택(사용자가 꼭 스스로 골라야 하는)에만 쓴다.
 
 [그림: 오류는 묶음 아래 글로](../../site/components/specs/radio-group.tsx#error)
 
@@ -207,16 +207,17 @@ const [repeat, setRepeat] = useState("monthly")
 
 ### 오류
 
-묶음에 `aria-describedby` 로 안내 글을 잇는다. 동그라미는 바꾸지 않는다.
+묶음을 [Field](field.md) 로 감싼다 — 라벨이 묶음의 이름, 오류 글이 묶음의 설명(`aria-describedby`)이 되고, 묶음에 `aria-invalid` 가 걸린다. 동그라미는 바꾸지 않는다.
 
 [그림: 오류 — 묶음 아래 글](../../site/components/specs/radio-group.tsx#ex-error)
 
 ```tsx
-<RadioGroup aria-labelledby="repeat-title" aria-describedby="repeat-error" aria-invalid>
-  <Radio value="none" label="반복 없음" />
-  <Radio value="monthly" label="매월" />
-</RadioGroup>
-<p id="repeat-error" className="text-t2 text-fg-critical">반복을 골라 주세요.</p>
+<Field label="반복" invalid errorMessage="반복을 골라 주세요.">
+  <RadioGroup>
+    <Radio value="none" label="반복 없음" />
+    <Radio value="monthly" label="매월" />
+  </RadioGroup>
+</Field>
 ```
 
 ### 동그라미만
@@ -241,8 +242,9 @@ import { Radiomark, RadioGroup } from "@/components/ui/radio-group"
 | Click / Tap(동그라미 · 라벨) | 그 선택지를 고른다. 앞에 고른 것은 풀린다. 이미 고른 것을 다시 눌러도 풀리지 않는다. `disabled` 면 무시. |
 | Keyboard `Tab` | 묶음에 들어가고 나간다 — 고른 선택지(없으면 첫 선택지)로 들어간다. 묶음 안에서는 화살표로 옮긴다. |
 | Keyboard `↑` `↓` `←` `→` | 이전 · 다음 선택지로 옮기며 고른다. 막힌 선택지는 건너뛴다. |
-| Keyboard `Space` | 포커스된 선택지를 고른다. `Enter` 는 폼 제출에 둔다. |
-| Disabled(묶음) | 모든 선택지가 막힌다. |
+| Keyboard `Space` | 포커스된 선택지를 고른다. |
+| Keyboard `Enter` | 폼을 제출한다 — 진짜 `<input type="radio">` 처럼 폼의 기본 버튼(첫 제출 버튼)을 누른다. 고르지 않는다. 기본 버튼이 없거나 막혀 있으면 아무것도 하지 않는다. Radix 의 선택지는 Enter 를 막기만 해서 묶음이 받는다(사용자 결정 2026-10-08 — SEED 와 같다). 동그라미만(`Radiomark`) 쓰는 List 의 라디오 줄 · Select Box 하나 고르기도 같다. |
+| Disabled(묶음) | 모든 선택지가 막힌다 — 묶음 `aria-disabled`. 막힌 Field 로 감싸도 같다. |
 | Disabled(선택지) | 그 선택지만 막힌다 — 골라 둔 채로 막을 수 있다(채운 원 그대로 색만). |
 
 **Form 안** — Radix 의 숨은 `<input type="radio">` 가 폼 제출에 들어간다(`name` 을 묶음에). 검증은 `onSubmit` — 누르는 동안 오류를 띄우지 않는다.
@@ -256,7 +258,7 @@ import { Radiomark, RadioGroup } from "@/components/ui/radio-group"
 | **WCAG 2.4.7** Focus visible | 키보드 포커스에만 링 2px · 띄움 2px(`stroke-focus-ring`) |
 | **WCAG 2.5.8** Target Size — Minimum(AA ≥ 24×24) | 동그라미 20 · 24 + 라벨까지 묶은 줄 32 · 36 ✓ |
 | **WCAG 2.5.5** Target Size — Enhanced(AAA ≥ 44×44) | 라벨까지 묶어 위아래 44 로 넓힌다 ✓. 묶음 안에서도 줄 사이 12 라 줄마다 44 · 48 을 받는다(줄 사이가 4 면 이웃과 겹쳐 36 · 40 이 된다) — 동그라미만 쓰면 그 줄 전체 |
-| **ARIA** | Radix 가 `role="radiogroup"`(묶음) + `role="radio"` · `aria-checked`(선택지)를 단다. 묶음 제목은 `aria-labelledby`(또는 `<fieldset>` + `<legend>`), 오류 글은 묶음에 `aria-describedby`. 동그라미만 쓰면 `<label>` 로 감싸거나 `aria-label` 필수. |
+| **ARIA** | Radix 가 `role="radiogroup"`(묶음) + `role="radio"` · `aria-checked`(선택지)를 단다. 묶음 제목은 `aria-labelledby`(또는 `<fieldset>` + `<legend>`), 오류 글은 묶음에 `aria-describedby`. 오류 · 필수는 묶음의 `aria-invalid` · `aria-required`, 막히면 묶음 `aria-disabled` + 선택지마다 `disabled` — Field 로 감싸면 레시피가 건다. 동그라미만 쓰면 `<label>` 로 감싸거나 `aria-label` 필수. |
 | **Reduced motion** | 모션 줄이기면 누름 축소를 빼고 색만 바꾼다(기초 Motion). |
 
 ## Do / Don't
@@ -267,6 +269,7 @@ import { Radiomark, RadioGroup } from "@/components/ui/radio-group"
 - 선택지는 세로로 쌓는다.
 - 골라 둘 수 있으면 처음부터 하나를 골라 둔다.
 - 하나만 고르기는 Radio, 여러 개 고르기는 Checkbox, 바로 적용되는 켜기 · 끄기는 Switch.
+- 선택지를 설명하는 링크는 라벨 옆이나 아래에 둔다 — 라벨은 고르는 글만.
 
 ### ❌ Don't
 
@@ -275,6 +278,7 @@ import { Radiomark, RadioGroup } from "@/components/ui/radio-group"
 - 선택지 여섯 개 이상 — Select 로 접는다.
 - 선택 색을 브랜드로 깔아 두기 — 브랜드 색은 핵심 흐름에서만.
 - 오류를 동그라미 색만으로 알리기 — 묶음 아래 글로 알린다.
+- 라벨 안에 링크 · 버튼 — 줄의 누르는 영역(44)이 덮어 눌리지 않는다. 라벨 옆이나 아래에 따로 둔다(사용자 결정 2026-10-08).
 
 ## Specification
 
@@ -292,6 +296,15 @@ import { Radiomark, RadioGroup } from "@/components/ui/radio-group"
 - 웹의 `hovered` · `focused` 를 더한다(v106).
 
 ## Migration notes
+
+### 2026-10-08 — Enter · 묶음 상태 · 오류 예 · 라벨 안 링크
+
+앱 적용(desk-front #428 ~ #430 · desk-app #407 ~ #410)이 남긴 문제를 사용자가 [비교 페이지](https://claude.ai/artifact/9qbK3fj8SL3RmTeiujoJZ6)에서 정했다.
+
+- **Enter**(B1) — 스펙은 "Enter 는 폼 제출에 둔다" 인데 Radix 는 Enter 를 막기만 해 아무 일도 없었다. Radix 의 선택지는 `onKeyDown` 을 덮어쓰므로 묶음이 Enter 를 받아 폼의 기본 버튼을 누른다 — 진짜 input · SEED 와 같다. 고르기는 Space · 화살표 그대로다. `Radiomark` 를 담는 List(`ListRadioGroup`) · Select Box(`RadioSelectBoxGroup`) 묶음도 같은 처리(`submitOnRadioEnter`)를 쓴다.
+- **묶음 상태**(9) — Field 의 오류 · 필수 · 막힘이 묶음에 닿지 않았다(묶음 `aria-required` 는 늘 "false"). 묶음에 `aria-invalid` · `aria-required` · `aria-disabled` 를, 막히면 선택지마다 `disabled` 를 건다. 묶음에 직접 준 값이 이긴다.
+- **오류 예**(9) — "코드" 절의 오류 예가 Field 전의 꼴(`text-t2` 글을 손으로 잇기)이었다. Field 판으로 바꿨다.
+- **라벨 안 링크**(C1) — 줄의 누르는 영역이 라벨 안 링크를 덮는다. 레시피는 그대로 두고 Don't 에 적었다 — 링크는 라벨 옆 · 아래에.
 
 ### 2026-09-30 — SEED Radio 구조로
 

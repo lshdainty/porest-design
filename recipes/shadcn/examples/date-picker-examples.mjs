@@ -639,14 +639,23 @@ const SCROLL_FIX = "scrollbar-width:none;";
 const FADE_MASK = /`gradient-fade-mask` \| `(linear-gradient\([^`]+\))`/.exec(readFileSync(new URL("../../../DESIGN.md", import.meta.url), "utf8"))[1];
 const SOLID = "linear-gradient(#000, #000)";
 const withDirection = (token, direction) => token.replace(/^linear-gradient\(/, `linear-gradient(${direction}, `);
+// 겹친 층을 곱한다 — scroll-fog.tsx 의 COMPOSITE 와 같은 값(-webkit- 쪽은 옛 이름 source-in)
+const COMPOSITE = { "mask-composite": "intersect", "-webkit-mask-composite": "source-in" };
+// 좌우 20 — 흐린 쪽마다 칸 전체 크기의 층 하나(단계는 그 쪽 깊이의 몫 — 깊이 안에서 불투명에 닿는다), 두 층을 곱한다.
+// 칸의 style 에 mask-* 와 -webkit-mask-* 를 같이 넣는다
 function fogStyle(start = "20px", end = "20px") {
+  const layer = (depth, direction) =>
+    parseFloat(depth) > 0 ? withDirection(FADE_MASK.replace(/(\d+(?:\.\d+)?)%/g, (_m, p) => `calc(${depth} * ${Number(p) / 100})`), direction) : SOLID;
   const mask = {
-    image: `${withDirection(FADE_MASK, "to right")}, ${SOLID}, ${withDirection(FADE_MASK, "to left")}`,
-    size: `${start} 100%, calc(100% - ${start} - ${end}) 100%, ${end} 100%`,
-    position: `0 0, ${start} 0, 100% 0`,
+    image: `${layer(start, "to right")}, ${layer(end, "to left")}`,
+    size: "100% 100%, 100% 100%",
+    position: "0 0, 0 0",
     repeat: "no-repeat",
   };
-  return ["image", "size", "position", "repeat"].map((p) => `mask-${p}:${mask[p]}; -webkit-mask-${p}:${mask[p]};`).join(" ");
+  return [
+    ...["image", "size", "position", "repeat"].map((p) => `mask-${p}:${mask[p]}; -webkit-mask-${p}:${mask[p]};`),
+    ...Object.entries(COMPOSITE).map(([p, v]) => `${p}:${v};`),
+  ].join(" ");
 }
 
 // 미리보기 틀 — 레시피의 딤 · 시트 · 팝오버는 화면(fixed)에 뜬다. transform 이 fixed 의 기준을 틀로 바꾸고 isolation 이 z-index 를 틀 안에 가둔다.

@@ -119,12 +119,13 @@ import { HelpBubble, HelpBubbleContent, HelpBubbleTrigger } from "@/components/u
 ```tsx
 import { HelpBubble, HelpBubbleAnchor, HelpBubbleContent } from "@/components/ui/help-bubble"
 
-{/* 처음 쓰는 사람에게 한 번 — 닫으면 다시 열지 않는다. Anchor 는 자리만 잡는다(누르면 원래 동작) */}
+{/* 처음 쓰는 사람에게 한 번 — 닫으면 다시 열지 않는다. Anchor 는 자리만 잡는다(누르면 원래 동작).
+    closeOnInteractOutside={false} — 바깥 누르기 · 바깥으로 간 초점(Tab)에 닫히지 않는다. 닫기 버튼 · Esc · 말풍선에서 Tab 으로 나가기로 닫는다 */}
 <HelpBubble defaultOpen={!seen} onOpenChange={(open) => !open && markSeen()}>
   <HelpBubbleAnchor asChild>
     <Button variant="ghost" layout="iconOnly" aria-label="금액 가리기"><EyeOff /></Button>
   </HelpBubbleAnchor>
-  <HelpBubbleContent title="금액을 가릴 수 있어요" description="누르면 화면의 금액이 모두 가려져요." showCloseButton side="bottom" />
+  <HelpBubbleContent title="금액을 가릴 수 있어요" description="누르면 화면의 금액이 모두 가려져요." showCloseButton closeOnInteractOutside={false} side="bottom" />
 </HelpBubble>
 ```
 
@@ -179,6 +180,10 @@ import { HelpBubble, HelpBubbleAnchor, HelpBubbleContent } from "@/components/ui
 - **z-index 는 specs/z-index.md 의 L4**(`z-tooltip` 210) — 팝오버 · 메뉴 안에서 열어도 그 위에 뜬다. SEED 는 포털 없이 99 로 그려 둘레 상자가 자를 수 있다.
 
 ## Migration notes
+
+### 2026-10-08 — "처음부터 열어 두는 안내" 예
+
+코드 예에 `closeOnInteractOutside={false}` 가 빠져 있었다 — 예대로 쓰면 바깥을 누르거나 Tab 으로 다른 칸에 가는 순간 처음 쓰는 사람용 안내가 사라졌다(Behavior 표와 다르다, desk-front #428). 예에 더했다. 레시피 · 사이트의 살아 있는 그림은 이미 그렇게 동작한다. SEED 의 같은 예(HelpBubbleAnchor + defaultOpen + showCloseButton)도 `closeOnInteractOutside={false}` 를 준다. 사용자 결정 — [비교 페이지](https://claude.ai/artifact/9qbK3fj8SL3RmTeiujoJZ6) 2.
 
 ### 2026-10-02 — SEED Help Bubble 로 새로 둔다
 

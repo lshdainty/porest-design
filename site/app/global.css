@@ -271,6 +271,7 @@ html > body[data-scroll-locked] {
   background: transparent;
   font: inherit;
   color: var(--ptf-value);
+  caret-color: var(--ptf-caret-c, var(--ptf-value));
   white-space: nowrap;
   overflow: hidden;
 }
@@ -309,6 +310,7 @@ html > body[data-scroll-locked] {
   height: var(--ptf-icon);
 }
 .ptf-clear {
+  position: relative;
   padding: 0;
   border: 0;
   border-radius: 9999px;
@@ -316,18 +318,32 @@ html > body[data-scroll-locked] {
   color: var(--ptf-clear-c);
   cursor: pointer;
 }
+/* 지우기의 누르는 영역 — 보이는 원 둘레로 --ptf-hit(44). 상자가 overflow: hidden 이라 상자 밖은 잘린다(medium 40 은 44 × 40).
+   그림은 --ptf-hit-fill · --ptf-hit-line 으로 칠해 보인다 */
+.ptf-clear::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--ptf-hit, 44px);
+  height: var(--ptf-hit, 44px);
+  transform: translate(-50%, -50%);
+  background: var(--ptf-hit-fill, transparent);
+  outline: var(--ptf-hit-line, none);
+  outline-offset: -1px;
+}
 .ptf-clear > svg {
   width: var(--ptf-clear);
   height: var(--ptf-clear);
 }
-/* 멈춘 그림의 캐럿 — 포커스 그림에서 지금 쓰는 칸임을 보인다 */
+/* 멈춘 그림의 캐럿 — 포커스 그림에서 지금 쓰는 칸임을 보인다. 캐럿은 글자색(input.yaml value.caretColor) */
 .ptf-caret {
   display: inline-block;
   width: 1.5px;
   height: 1.1em;
   margin-left: 1px;
   vertical-align: -0.15em;
-  background: var(--ptf-value);
+  background: var(--ptf-caret-c, var(--ptf-value));
 }
 /* 여러 줄 — 상자는 같고, 여백 · 높이는 입력(textarea)이 가진다 */
 .ptt-box {
@@ -351,6 +367,7 @@ html > body[data-scroll-locked] {
   background: transparent;
   font: inherit;
   color: var(--ptf-value);
+  caret-color: var(--ptf-caret-c, var(--ptf-value));
   white-space: pre-wrap;
 }
 .ptt-value::placeholder {

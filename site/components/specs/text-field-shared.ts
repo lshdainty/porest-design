@@ -28,6 +28,8 @@ export type TfInputSize = {
 
 export type TfInputLook = {
   sizes: Record<TfVariant, Record<TfSize, TfInputSize>>;
+  // 지우기 버튼의 누르는 영역(가로 = 세로) — 보이는 원 둘레로, 상자 밖은 상자가 자른다
+  clearHit: number;
   // 반응형 — 이 폭 미만은 large, 이상은 medium
   breakpoint: number;
   stroke: { base: number; active: number };
@@ -41,6 +43,8 @@ export type TfInputLook = {
     affix: TfColor;
     icon: TfColor;
     clear: TfColor;
+    // 캐럿 — 글자색(고른 글은 기기 기본)
+    caret: TfColor;
     disabled: TfColor;
     // 밑줄형 읽기 전용의 값 · placeholder
     underlineReadonly: TfColor;

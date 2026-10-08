@@ -244,6 +244,7 @@ const form = useForm({ defaultValues: { title: "", reason: "" } })
 | 인터랙션 | 동작 |
 |---|---|
 | 라벨 누르기 | 입력으로 포커스가 간다(`<label for>`). 묶음이면 라벨은 이름만 준다. |
+| 막힘 · 오류 · 필수(묶음) | Checkbox · Radio 묶음에도 닿는다 — 막히면 묶음 `aria-disabled` + 칸마다 `disabled`, 오류는 radiogroup 의 `aria-invalid` · 체크박스는 칸마다 `aria-invalid`, 필수는 radiogroup 의 `aria-required`(체크박스 묶음 `role="group"` 은 `aria-invalid` · `aria-required` 를 받지 않는다 — SEED 와 같다). 묶음에 직접 준 값이 이긴다. |
 | 쓰기 | 글자 수가 바뀐다. 최대에 닿으면 더 들어가지 않는다 — 한글은 조합이 끝난 뒤 자른다. |
 | 제출 | 비거나 틀린 칸마다 오류를 보이고 첫 오류 칸으로 포커스를 옮긴다. 버튼은 켜 둔다. |
 | 칸을 떠날 때 | 위험한 칸(보안 · 금융)만 바로 검증한다. |
@@ -297,6 +298,10 @@ const form = useForm({ defaultValues: { title: "", reason: "" } })
 - **Fieldset 은 컴포넌트로 두지 않는다** — 구역 제목(List Header)과 Field 로 짠다.
 
 ## Migration notes
+
+### 2026-10-08 — 막힘 · 오류 · 필수를 Checkbox · Radio 묶음에
+
+묶음(`useFieldGroup`)은 라벨 · 설명만 이어 받아, `invalid` · `required` · `disabled` 인 Field 안의 Checkbox · Radio 묶음에 `aria-invalid` · `aria-required` · 막힘이 없었다 — 막힌 Field 안의 칸이 눌렸다(desk-front #430). 사용자가 [비교 페이지](https://claude.ai/artifact/9qbK3fj8SL3RmTeiujoJZ6) 9 의 "고친 뒤" 대로 정했다. 레시피에 `useFieldGroupState` 를 두고 Checkbox · Radio 묶음이 칸에 나눠 건다(Behavior 표). Select Box · Chip 묶음은 이번에 바꾸지 않았다 — 지금도 라벨 · 설명(오류 글)만 잇는다.
 
 ### 2026-10-01 — SEED Field 로, Label · Form 을 합친다
 

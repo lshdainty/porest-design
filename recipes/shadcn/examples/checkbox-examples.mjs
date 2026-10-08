@@ -4,6 +4,7 @@
  *
  * CHECKMARK_* · ROW_* · LABEL_* 와 INDICATOR · INDICATOR_HIDDEN · CHECK_ICON · MINUS_ICON · GROUP 은
  * recipes/shadcn/components/ui/checkbox.tsx 의 cva 정의 · 클래스와 글자 하나까지 같아야 한다 — 두 파일을 함께 고친다.
+ * FIELD_* 는 field.tsx 의 클래스(field-examples.mjs 와 같다) — 오류 예가 묶음을 Field 로 감싼다.
  * 규칙은 specs/components/checkbox.md, 수치 원본은 specs/components/checkbox.yaml.
  *
  * Preview 는 정적 HTML 이다 — 페이지의 Tailwind v4 browser CDN 이 클래스를 utility 로 만든다.
@@ -220,7 +221,7 @@ const attrs = (list) => list.filter(Boolean).join(" ");
 
 // <Checkmark> 한 개 — Radix Checkbox.Root · Indicator 가 그리는 모양. state = "unchecked" · "checked" · "indeterminate".
 // Indicator 는 forceMount 라 늘 들어 있다 — Square 는 선택 안 됨에 숨기고(invisible), Ghost 는 옅은 체크로 보인다.
-function checkmark({ size, shape, tone, state = "unchecked", disabled = false, ariaLabel = "", className = "" } = {}) {
+function checkmark({ size, shape, tone, state = "unchecked", disabled = false, invalid = false, ariaLabel = "", className = "" } = {}) {
   const radix = attrs([`data-state="${state}"`, disabled && 'data-disabled=""']);
   const root = attrs([
     'type="button"',
@@ -228,6 +229,8 @@ function checkmark({ size, shape, tone, state = "unchecked", disabled = false, a
     `aria-checked="${state === "indeterminate" ? "mixed" : state === "checked"}"`,
     radix,
     disabled && "disabled",
+    // 묶음(Field)의 오류는 칸마다 — role="group" 은 aria-invalid 를 받지 않는다(checkbox.tsx 의 CheckboxGroupContext)
+    invalid && 'aria-invalid="true"',
     ariaLabel && `aria-label="${ariaLabel}"`,
     `class="${checkmarkVariants({ size, shape, tone }, className)}"`,
   ]);
@@ -236,8 +239,8 @@ function checkmark({ size, shape, tone, state = "unchecked", disabled = false, a
 }
 
 // <Checkbox> 한 줄 — <label> 이 칸과 라벨을 감싸, 라벨을 눌러도 칸이 반응한다(group/checkbox).
-function checkbox({ label, size, shape, tone, weight, state, disabled, className = "", labelClassName = "" } = {}) {
-  const box = checkmark({ size, shape, tone, state, disabled });
+function checkbox({ label, size, shape, tone, weight, state, disabled, invalid, className = "", labelClassName = "" } = {}) {
+  const box = checkmark({ size, shape, tone, state, disabled, invalid });
   const text = `<span class="${checkboxLabelVariants({ size, weight }, labelClassName)}">${label}</span>`;
   return `<label class="${checkboxVariants({ size }, className)}">${box}${text}</label>`;
 }
@@ -257,12 +260,12 @@ function group(rows, { ariaLabel = "", labelledBy = "", describedBy = "", classN
 // Desk 데이터 내보내기 — 부모(전체)는 자식을 따라 선택 · 일부 선택 · 선택 안 됨이 된다
 const EXPORT_ITEMS = ["거래 내역", "예산", "메모", "할 일"];
 
-function exportGroup({ picked = [], tone, labelledBy = "", describedBy = "" } = {}) {
+function exportGroup({ picked = [], tone, labelledBy = "", describedBy = "", invalid = false } = {}) {
   const parent = picked.length === EXPORT_ITEMS.length ? "checked" : picked.length ? "indeterminate" : "unchecked";
   return group(
     [
-      checkbox({ tone, weight: "bold", state: parent, label: "전체" }),
-      ...EXPORT_ITEMS.map((label, i) => checkbox({ tone, state: picked.includes(i) ? "checked" : "unchecked", label })),
+      checkbox({ tone, weight: "bold", state: parent, label: "전체", invalid }),
+      ...EXPORT_ITEMS.map((label, i) => checkbox({ tone, state: picked.includes(i) ? "checked" : "unchecked", label, invalid })),
     ],
     labelledBy ? { labelledBy, describedBy } : { ariaLabel: "내보낼 데이터", describedBy },
   );
@@ -280,6 +283,22 @@ const CAPTION =
   "font-size:var(--text-t2); line-height:var(--text-t2--line-height); font-weight:400; color:var(--color-fg-neutral-subtle);";
 // 크기 · 모양 · 상태 이름처럼 코드로 쓰는 이름표
 const CODE = `${CAPTION} font-family:ui-monospace, SFMono-Regular, Menlo, monospace;`;
+// ── field.tsx 의 클래스(field-examples.mjs 와 같다) — 오류 예의 Field ─────────────
+const FIELD_ROOT = "flex w-full min-w-0 flex-col gap-x2";
+const FIELD_HEADER = "flex items-center justify-between gap-x2_5 px-x0_5";
+const FIELD_LABEL = "min-w-0 font-sans text-t5 text-fg-neutral";
+const FIELD_LABEL_WEIGHT = { medium: "font-medium", bold: "font-bold" };
+const FIELD_FOOTER = "flex items-start gap-x2 px-x0_5 font-sans";
+const FIELD_ERROR = "m-0 flex min-w-0 text-t4 text-fg-critical";
+const FIELD_ERROR_ICON = "mr-x1_5 mt-[calc((var(--text-t4--line-height)_-_1rem)/2)] size-4 shrink-0";
+const FIELD_TEXT = "min-w-0";
+// 사이트의 `.content p { margin: 12px 0; color: text-primary }` 는 층 밖 규칙이라 utility 를 이긴다 — 꼬리의 <p> 에 한 번 더 적는다(field-examples.mjs 와 같다)
+const P_FIX_ERROR = "margin:0; color:var(--color-fg-critical);";
+const CIRCLE_ALERT =
+  '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="' +
+  FIELD_ERROR_ICON +
+  '" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>';
+
 // 묶음 위 제목
 const TITLE =
   "font-size:var(--text-t3); line-height:var(--text-t3--line-height); font-weight:700; color:var(--color-fg-neutral-muted);";
@@ -505,28 +524,28 @@ const parent = picked.length === ITEMS.length ? true : picked.length ? "indeterm
   {
     title: "오류는 묶음 아래 글",
     description:
-      "오류가 나도 칸 모양은 바꾸지 않는다 — 칸마다 빨간 테두리를 두르지 않고, 묶음 아래에 무엇을 해야 하는지 글(fg-critical)로 알린다. 오류 글은 묶음에 aria-describedby 로 잇는다. 검사는 제출할 때 · 묶음을 떠날 때 하고, 누르는 동안에는 띄우지 않는다. 오늘 제품의 체크 오류는 모두 묶음 단위(하나 이상 고르기)다.",
+      "묶음을 Field 로 감싼다 — Field 의 라벨이 묶음의 이름(aria-labelledby), 오류 글이 묶음의 설명(aria-describedby)이 되고, 오류는 칸마다 aria-invalid 로 걸린다(묶음 role=\"group\" 은 aria-invalid · aria-required 를 받지 않는다). 오류가 나도 칸 모양은 바꾸지 않는다 — 칸마다 빨간 테두리를 두르지 않고, 묶음 아래에 무엇을 해야 하는지 글(fg-critical · 아이콘)로 알린다. 검사는 제출할 때 · 묶음을 떠날 때 하고, 누르는 동안에는 띄우지 않는다. 오늘 제품의 체크 오류는 모두 묶음 단위(하나 이상 고르기)다.",
     jsx: `// ITEMS · picked · parent 는 위 "묶음 · 일부 선택" 과 같다. 제출할 때 검사한다 — 누르는 동안에는 띄우지 않는다
 const error = submitted && picked.length === 0
 
-<div className="flex flex-col gap-x2">
-  <span id="export-title" className="text-t3 font-bold text-fg-neutral-muted">내보낼 데이터</span>
-  <CheckboxGroup aria-labelledby="export-title" aria-describedby={error ? "export-error" : undefined}>
+<Field label="내보낼 데이터" invalid={error} errorMessage="내보낼 데이터를 하나 이상 골라 주세요.">
+  <CheckboxGroup>
     <Checkbox weight="bold" label="전체" checked={parent} onCheckedChange={toggleAll} />
     {ITEMS.map((it) => (
       <Checkbox key={it.id} label={it.label} checked={picked.includes(it.id)}
         onCheckedChange={(v) => toggle(it.id, v)} />
     ))}
   </CheckboxGroup>
-  {error && (
-    <p id="export-error" className="text-t2 text-fg-critical">내보낼 데이터를 하나 이상 골라 주세요.</p>
-  )}
-</div>`,
-    render: () =>
-      surface(`<div style="display:flex; flex-direction:column; gap:var(--spacing-x2);">
-  <span id="checkbox-ex-export-title" style="${TITLE}">내보낼 데이터</span>
-  ${exportGroup({ labelledBy: "checkbox-ex-export-title", describedBy: "checkbox-ex-export-error" })}
-  <p id="checkbox-ex-export-error" style="margin:0; font-size:var(--text-t2); line-height:var(--text-t2--line-height); color:var(--color-fg-critical);">내보낼 데이터를 하나 이상 골라 주세요.</p>
-</div>`),
+</Field>`,
+    render: () => {
+      // Field(field.tsx) — 묶음이면 라벨은 <span id> 이고 묶음이 aria-labelledby 로 가리킨다. 오류 글은 aria-hidden(화면 밖 알림 자리가 읽는다)
+      const id = "checkbox-ex-export";
+      const error = "내보낼 데이터를 하나 이상 골라 주세요.";
+      const header = `<div data-slot="field-header" class="${FIELD_HEADER}"><span id="${id}-label" class="${FIELD_LABEL} ${FIELD_LABEL_WEIGHT.medium}">내보낼 데이터</span></div>`;
+      const footer = `<div data-slot="field-footer" class="${FIELD_FOOTER}"><p id="${id}-error" aria-hidden="true" class="${FIELD_ERROR}" style="${P_FIX_ERROR}">${CIRCLE_ALERT}<span class="${FIELD_TEXT}">${error}</span></p></div>`;
+      return surface(
+        `<div data-slot="field" data-invalid="true" class="${FIELD_ROOT}">${header}${exportGroup({ labelledBy: `${id}-label`, describedBy: `${id}-error`, invalid: true })}${footer}<span class="sr-only" aria-live="polite">${error}</span></div>`,
+      );
+    },
   },
 ];

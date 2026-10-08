@@ -210,6 +210,10 @@ import { NotificationBadge } from "@/components/ui/notification-badge"
 
 ## Migration notes
 
+### 2026-10-08 — 글자 값을 고정 px 토큰으로
+
+YAML 의 숫자(large) 글자가 rem 토큰(`$text-t1`)을 가리키고 "글자 크기 설정을 따르지 않는 px" 는 비고에만 있었다 — YAML 대로 만들면 글자 크기 200% 에서 숫자가 22 / 30 으로 커져 알약이 37 × 30 이 되고 아이콘보다 커진다. 레시피 · 제품(웹 `-static` 클래스 · 앱 `TextScaler.noScaling`) · SEED rootage 와 같게 값 자리를 `-static` 토큰(`$text-t1-static`)으로 고쳤다. 크기 · 모습은 그대로다. `-static` 은 같은 글자 토큰의 px 판이다(Typography v104 — 내보낼 때 생긴다). 사용자 결정 — [비교 페이지](https://claude.ai/artifact/9qbK3fj8SL3RmTeiujoJZ6) 3.
+
 ### 2026-10-04 — 상단 바는 점만, 아이콘 24
 
 [Top Navigation](top-navigation.md) 을 정하며 상단 바의 아이콘 버튼이 상자 44 · 아이콘 24 가 됐다(화면 틀 · 이동 결정 1A) — 점 자리는 위 식 그대로 x 17 ~ 23 · y 1 ~ 7 이다. 상단 바에는 점만 둔다(따라오는 것 — 숫자 "99+" 는 맨 오른쪽 버튼에서 화면 밖으로 나간다). 숫자는 하단 탭 바의 칸처럼 몇 개인지가 판단에 필요한 자리에 남긴다.
