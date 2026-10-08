@@ -12,6 +12,10 @@ import { useField, useFieldControl } from "@/components/ui/field";
  *   useInputButtonSurface   여는 자리 — 1280 미만 "sheet"(아래 시트) · 이상 "popover"(칸 아래 팝오버). 칸 크기가 바뀌는 폭과 같다
  *   inputButtonVariants · inputButtonSurfaceVariants   상자의 크기 · 겉모습 — Select 의 트리거도 같은 상자를 쓴다
  *
+ * 긴 목록의 검색 시트 · 팝오버는 Searchable List(searchable-list.tsx)로 채운다 — 위 검색칸은 Input 의 밑줄형(SearchableListInput 이
+ * variant="underline" · 앞 돋보기 · 지우기를 스스로 건다 — 시트에 입력이 하나뿐인 목록 위 검색, 사용자 결정 2026-10-08 17A), 아래는 List 줄 +
+ * 오른쪽 라디오, 고르면 닫는다("완료" 없음). 상자형 52 검색칸을 시트 위에 두지 않는다.
+ *
  * 값은 쓰는 쪽이 가진다 — 칸은 value(비면 placeholder)를 보이고 누르면 onClick 을 부를 뿐이다. 라벨 · 설명 · 오류는
  * Field 가 둘레에서 그린다 — Field 안에 두면 id · aria 를 받는다.
  * 상자(div)는 크기 · 여백 · 모서리만 갖고, 진짜 버튼은 상자를 덮는 배경 층이다(SEED) — 테두리(안쪽 1px) · 바탕 ·

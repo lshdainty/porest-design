@@ -6,6 +6,7 @@ import { Figure, Panel, Swatch, Table, Token, Verdict } from './ui';
 import { PressDemo } from './press-demo';
 import { menuKit } from '../specs/menu-look';
 import { MenuPanel } from '../specs/menu-view';
+import { cardFace } from '../specs/card-face';
 
 type Mode = 'light' | 'dark';
 const rc = (name: string, mode: Mode = 'light', brand: Brand = 'desk') => (name === 'static-white' ? color(name, brand) : color(mode === 'dark' ? `${name}-dark` : name, brand));
@@ -465,7 +466,8 @@ export function SubActionsFigure() {
   );
   const icon = specSize('button', 'medium', 'enabled', 'iconOnly');
   const card = (
-    <div className="w-[240px] rounded-xl p-4" style={{ background: rc('bg-layer-default'), border: `1px solid ${rc('stroke-neutral-weak')}` }}>
+    // 카드 — card.yaml 의 면(1px stroke-neutral-weak · 모서리 16 · 여백 24), 회색 바닥 위
+    <div className="w-[240px]" style={{ background: rc('bg-layer-default'), border: `1px solid ${rc('stroke-neutral-weak')}`, borderRadius: cardFace().radius, padding: cardFace().pad }}>
       <div className="flex items-start justify-between">
         <span className="text-[14px] font-semibold text-[#1A1F2E]">9월 가계부 정리</span>
         <Plain w={icon.height - 12} h={icon.height - 12} style={{ color: rc('fg-neutral-subtle'), fontSize: 16 }}>✕</Plain>
@@ -481,7 +483,7 @@ export function SubActionsFigure() {
     <Figure caption="왼쪽 — 스위치가 그 줄의 설정을 바꾸므로 어디를 눌러도 줄 전체가 반응한다 / 오른쪽 — 닫기 · 저장 · 공유는 대등하므로 누른 버튼만 반응한다">
       <div className="flex gap-4">
         <div className="flex flex-col items-center gap-3 rounded-xl bg-white p-5">{row}<Cap>딸린 동작 — 줄 전체</Cap></div>
-        <div className="flex flex-col items-center gap-3 rounded-xl bg-white p-5">{card}<Cap>대등한 동작 — 누른 것만</Cap></div>
+        <div className="flex flex-col items-center gap-3 rounded-xl p-5" style={{ background: rc('bg-layer-basement') }}>{card}<Cap>대등한 동작 — 누른 것만</Cap></div>
       </div>
     </Figure>
   );

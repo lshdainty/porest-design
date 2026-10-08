@@ -57,11 +57,11 @@ function Screen({ kit, mode, desktop, height, title, setEl, children }: { kit: O
 }
 function Rows({ kit, mode, n = 4 }: { kit: OvKit; mode: ViewMode; n?: number }) {
   const rows: [string, string, string, 'orange' | 'blue' | 'green' | 'violet'][] = [
-    ['점심 식사', '식비 · 현대카드 M', '-12,000원', 'orange'],
-    ['지하철', '교통 · 국민 체크카드', '-1,450원', 'blue'],
+    ['점심 식사', '식비 · 현대카드 M', '−12,000원', 'orange'],
+    ['지하철', '교통 · 국민 체크카드', '−1,450원', 'blue'],
     ['월급', '수입 · 국민 주계좌', '+3,200,000원', 'green'],
-    ['영화', '문화 · 국민 체크카드', '-15,000원', 'violet'],
-    ['편의점', '식비 · 현금', '-4,300원', 'orange'],
+    ['영화', '문화 · 국민 체크카드', '−15,000원', 'violet'],
+    ['편의점', '식비 · 현금', '−4,300원', 'orange'],
   ];
   return (
     <div className="flex flex-col rounded-xl" style={{ background: tone(kit, 'bg-layer-default', mode) }}>
@@ -117,7 +117,7 @@ const PERIODS = [
   { value: 'q', label: '최근 3개월' },
 ];
 const DETAIL: RowSpec[] = [
-  { kind: 'view', title: '금액', suffix: { text: '-12,000원' } },
+  { kind: 'view', title: '금액', suffix: { text: '−12,000원' } },
   { kind: 'view', title: '내용', suffix: { text: '점심 식사' } },
   { kind: 'view', title: '카테고리', suffix: { text: '식비' } },
   { kind: 'view', title: '결제 수단', suffix: { text: '현대카드 M' } },

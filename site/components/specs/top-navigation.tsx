@@ -6,7 +6,7 @@ import type { CSSProperties, ReactNode } from 'react';
 import { Figure, Panel as Plate } from '../foundations/ui';
 import { buttonLook } from './button-look';
 import { ButtonView } from './button-view';
-import { Verdict, rc, type Mode } from './kit';
+import { Card, Verdict, rc, type Mode } from './kit';
 import { TopNavPlayground } from './nav-playground';
 import {
   Arrow,
@@ -554,14 +554,16 @@ function CalendarMain({ mode = 'auto', focus = false }: { mode?: Mode; focus?: b
         </span>
       </div>
       <div style={{ paddingTop: 20, paddingLeft: k.margin, paddingRight: k.margin }}>
-        <div className="grid grid-cols-7 gap-2 rounded-2xl" style={{ background: rc('bg-layer-default', mode), paddingTop: 16, paddingBottom: 16, paddingLeft: 16, paddingRight: 16 }}>
+        <Card mode={mode}>
+          <div className="grid grid-cols-7 gap-2">
           {days.map((d, i) => (
             <span key={i} className="flex flex-col gap-1 rounded-lg text-[13px]" style={{ height: 64, paddingTop: 6, paddingLeft: 8, color: rc(d < 1 || d > 31 ? 'fg-disabled' : 'fg-neutral', mode), background: rc('bg-neutral-weak', mode) }}>
               {d < 1 ? 28 + d : d > 31 ? d - 31 : d}
               {[3, 9, 14, 21, 27].includes(d) && <span className="block h-1.5 w-8 rounded-full" style={{ background: rc('bg-brand-solid', mode) }} />}
             </span>
           ))}
-        </div>
+          </div>
+        </Card>
       </div>
     </div>
   );

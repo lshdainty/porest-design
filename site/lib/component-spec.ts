@@ -99,9 +99,12 @@ export function tokenValue(raw: unknown, mode: Mode = 'light', brand: Brand = 'd
   const textKey = group === 'text' ? key.replace(/-static$/, '') : key;
   if (group === 'text' && front.typography[textKey]) {
     const t = front.typography[textKey];
-    return { fontSize: t.fontSize, lineHeight: t.lineHeight, fontWeight: t.fontWeight, fontFamily: t.fontFamily };
+    // 사이트가 싣는 Pretendard 는 가변 글꼴('Pretendard Variable' — app/layout.tsx)이다. 토큰의 글꼴 줄("Pretendard, Inter, …")만 두면
+    // Pretendard 를 깔지 않은 기기에서 그림이 다른 글꼴로 그려진다 — 같은 글꼴의 가변판을 앞에 둔다(값은 토큰 그대로)
+    const family = t.fontFamily && /^Pretendard\b/.test(t.fontFamily) ? `'Pretendard Variable', ${t.fontFamily}` : t.fontFamily;
+    return { fontSize: t.fontSize, lineHeight: t.lineHeight, fontWeight: t.fontWeight, fontFamily: family };
   }
-  if (group === 'font' && key === 'sans') return front.typography.t4?.fontFamily ?? 'Pretendard, sans-serif';
+  if (group === 'font' && key === 'sans') return `'Pretendard Variable', ${front.typography.t4?.fontFamily ?? 'Pretendard, sans-serif'}`;
   if (group === 'motion') return proseValue(`motion-${key}`);
   // 그라디언트(v104) — 표 토큰. 다크 짝은 YAML 의 dark 로 따로 적는다(gradient-shimmer-neutral-dark)
   if (group === 'gradient') return proseValue(`gradient-${key}`);

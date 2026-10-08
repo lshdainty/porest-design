@@ -95,19 +95,19 @@ export const pinStyle = (n: string, style: CSSProperties) => (
 
 // ── 뒤 화면 ───────────────────────────────────────────────
 const LEDGER: [string, string, string, string][] = [
-  ['점심 식사', '식비 · 현대카드 M', '-12,000원', 'orange'],
-  ['지하철', '교통 · 국민 체크카드', '-1,450원', 'blue'],
+  ['점심 식사', '식비 · 현대카드 M', '−12,000원', 'orange'],
+  ['지하철', '교통 · 국민 체크카드', '−1,450원', 'blue'],
   ['월급', '수입 · 국민 주계좌', '+3,200,000원', 'green'],
-  ['편의점', '식비 · 현금', '-4,300원', 'orange'],
-  ['영화', '문화 · 국민 체크카드', '-15,000원', 'violet'],
-  ['스타벅스', '카페 · 현대카드 M', '-5,600원', 'orange'],
+  ['편의점', '식비 · 현금', '−4,300원', 'orange'],
+  ['영화', '문화 · 국민 체크카드', '−15,000원', 'violet'],
+  ['스타벅스', '카페 · 현대카드 M', '−5,600원', 'orange'],
 ];
 export function LedgerRows({ mode, n = LEDGER.length }: { mode: Mode; n?: number }) {
   return (
     <div className="flex flex-col px-6 pt-2">
       <div className="flex items-center justify-between pb-1 text-[13px]" style={{ color: rc('fg-neutral-subtle', mode) }}>
         <span>10월 1일 (목)</span>
-        <span className="tabular-nums">-18,750원</span>
+        <span className="tabular-nums">−18,750원</span>
       </div>
       {LEDGER.slice(0, n).map(([title, sub, amount, hue]) => (
         <Row key={title} mode={mode} title={title} sub={sub} amount={amount} hue={hue} />
@@ -218,7 +218,7 @@ export function CategorySheet({ mode, ...rest }: Partial<SheetBits> & { mode: Mo
 }
 // 거래 상세 — 키 · 값 줄
 export const DETAIL: RowSpec[] = [
-  { kind: 'view', title: '금액', suffix: { text: '-12,000원' } },
+  { kind: 'view', title: '금액', suffix: { text: '−12,000원' } },
   { kind: 'view', title: '내용', suffix: { text: '점심 식사' } },
   { kind: 'view', title: '카테고리', suffix: { text: '식비' } },
   { kind: 'view', title: '결제 수단', suffix: { text: '현대카드 M' } },

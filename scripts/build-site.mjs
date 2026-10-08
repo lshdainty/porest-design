@@ -85,7 +85,6 @@ import { timePickerExamples } from "../recipes/shadcn/examples/time-picker-examp
 import { wheelPickerExamples } from "../recipes/shadcn/examples/wheel-picker-examples.mjs";
 // Phase 6 Data
 import { tableExamples } from "../recipes/shadcn/examples/table-examples.mjs";
-import { dataTableExamples } from "../recipes/shadcn/examples/data-table-examples.mjs";
 import { chartExamples } from "../recipes/shadcn/examples/chart-examples.mjs";
 // Porest 도메인 spec (shadcn 외) — 2026-05-15 추가
 import { colorSwatchExamples } from "../recipes/shadcn/examples/color-swatch-examples.mjs";
@@ -183,7 +182,6 @@ const SHADCN_EXAMPLES = {
   "wheel-picker": wheelPickerExamples,
   // Phase 6 Data
   table: tableExamples,
-  "data-table": dataTableExamples,
   chart: chartExamples,
   // Porest 도메인 spec (shadcn 카탈로그 외) — 2026-05-15
   "color-swatch": colorSwatchExamples,
@@ -640,10 +638,11 @@ body {
   line-height: 1.6;
 }
 .content pre code { background: transparent; padding: 0; font-size: inherit; }
-.content table { width: 100%; border-collapse: collapse; font-size: var(--text-caption); margin: 16px 0; }
-.content thead { background: var(--color-surface-input); }
-.content th, .content td { padding: 10px 12px; text-align: start; border-bottom: 1px solid var(--color-border-default); }
-.content th { font-weight: 600; color: var(--color-text-secondary); }
+/* 문서의 표만 — 예제 미리보기 안의 표(Table 레시피의 DOM)는 제 클래스로 그린다(2026-10-08 — 이 규칙이 층 없는 CSS 라 Tailwind 를 덮었다) */
+.content table:not(.example-preview *) { width: 100%; border-collapse: collapse; font-size: var(--text-caption); margin: 16px 0; }
+.content thead:not(.example-preview *) { background: var(--color-surface-input); }
+.content :is(th, td):not(.example-preview *) { padding: 10px 12px; text-align: start; border-bottom: 1px solid var(--color-border-default); }
+.content th:not(.example-preview *) { font-weight: 600; color: var(--color-text-secondary); }
 
 /* === Hero (landing) === */
 .hero {
@@ -1996,7 +1995,7 @@ const SHADCN_CATALOG = [
   { slug: "avatar", name: "Avatar", category: "Display", description: "사람 한 명을 보이는 원 — 사진이 있으면 사진, 없으면 이니셜 + 이름 색이고, 여러 사람은 지름 1/4 을 겹친 묶음(Avatar Stack — 앞 4명 + \"+N\")이다 (SEED Avatar 구조)." },
   { slug: "badge", name: "Badge", category: "Display", description: "대상의 상태 · 분류를 한두 낱말로 보이는 누르지 않는 작은 라벨(예정 · 연체 · 승인). weak · outline · solid × 톤 6 × medium 20 · large 24 (SEED Badge 구조)." },
   { slug: "callout", name: "Callout", category: "Display", description: "화면 안, 그 기능 · 내용 가까이에 늘 보이는 안내 상자 — 팁 · 제약 · 주의와 그 자리에서 난 오류(저장 실패)를 알린다 (SEED Callout 구조)." },
-  { slug: "card", name: "Card", category: "Display", description: "콘텐츠 컨테이너 (header / content / footer)." },
+  { slug: "card", name: "Card", category: "Display", description: "회색 바닥 위에 놓는 흰 면 하나로 한 가지 내용을 묶는 카드 — 1px 테두리 · 모서리 16 · 여백 24 · 그림자 없음, 목록 카드 · 지표 · 순자산 · 누르는 카드 · 증감 표기 (SEED Elevation · Feedback 기준)." },
   { slug: "content-placeholder", name: "Content Placeholder", category: "Display", description: "이미지가 없거나 불러오지 못한 자리를 옅은 면과 무엇이 없는지 말하는 선 아이콘으로 채운다 — 그림은 틀 높이의 50%(16 ~ 160), 모서리는 틀이 정한다 (SEED Content Placeholder 구조)." },
   { slug: "divider", name: "Divider", category: "Display", description: "내용 사이를 나누는 1px 선 — 같은 묶음 안은 들인 선, 묶음 사이는 끝까지 선이고, 크게 다른 내용 사이는 선이 아니라 8 간격이다 (SEED Divider 구조)." },
   { slug: "image-frame", name: "Image Frame", category: "Display", description: "그림 한 장을 보이는 틀 — 비율 상자에 그림을 꽉 채우고 안쪽 1px 투명 윤곽을 늘 그리며, 모서리는 폭으로(4 · 6 · 8) 고르고, 불러오는 동안은 Skeleton · 없거나 실패하면 Content Placeholder, 그림 위에는 배지 · 장수 글을 둘까지 얹는다 — 카드 그림은 세로 그림을 돌리고 그림이 없으면 카드사 색 면이다 (SEED Image Frame 구조)." },
@@ -2014,7 +2013,7 @@ const SHADCN_CATALOG = [
   { slug: "tag-group", name: "Tag Group", category: "Display", description: "여러 메타 정보(카테고리 이름 · 자산 · 시각 · 거리 · 개수 · 금액)를 \" · \" 로 이어 한 줄로 보이는 글줄 — 읽기만 하고, 넘치면 낱말 단위로 줄을 바꾸거나 한 줄에서 말줄임한다 (SEED Tag Group 구조)." },
   { slug: "typography", name: "Typography", category: "Display", description: "텍스트 위계 (h1~h4, p, blockquote, code)." },
 
-  // Overlay (10)
+  // Overlay (9)
   { slug: "alert-dialog", name: "Alert Dialog", category: "Overlay", description: "되돌릴 수 없는 일을 하기 전에 묻거나 꼭 알아야 할 일을 알리는 화면 정중앙의 확인창 (SEED Alert Dialog 구조)." },
   { slug: "bottom-sheet", name: "Bottom Sheet", category: "Overlay", description: "1280 미만에서 폼 · 상세 · 고르기를 띄우는 화면 아래의 모달 시트 (SEED Bottom Sheet 구조)." },
   { slug: "dialog", name: "Dialog", category: "Overlay", description: "1280 이상에서 입력 폼 · 상세를 화면 정중앙에 띄우고 1280 미만에서는 Bottom Sheet 로 바뀌는 대화상자 (SEED Dialog 구조)." },
@@ -2023,7 +2022,6 @@ const SHADCN_CATALOG = [
   { slug: "popover", name: "Popover", category: "Overlay", description: "1280 이상에서 트리거에 붙어 부가 정보 · 고르는 패널을 띄우는 비모달 표면 (SEED Popover 구조)." },
   { slug: "side-panel", name: "Side Panel", category: "Overlay", description: "화면 옆에서 미끄러져 나오는 모달 패널 — 높이 전체 · 모서리 · 그림자 없이 딤과 면 색으로 뜨고, 왼쪽은 HR 폰의 주 메뉴 서랍(화면 폭의 80%) · 오른쪽은 1280 이상의 보조 작업(480 · 720 · 960)이다 (SEED Side Panel 구조)." },
   { slug: "snackbar", name: "Snackbar", category: "Overlay", description: "화면 아래에 잠깐 떴다 사라지는 띠(토스트) — 방금 한 일의 결과 · 뒤에서 끝난 일 · 다시 하면 되는 가벼운 실패를 한 번에 하나 알린다 (SEED Snackbar 구조)." },
-  { slug: "swipe-actions", name: "Swipe Actions", category: "Data Display", description: "리스트 행을 밀어 편집·삭제에 바로 닿는 모바일 패턴." },
   { slug: "tooltip", name: "Tooltip", category: "Overlay", description: "마우스를 올리거나 키보드 초점이 오면 트리거 옆에 뜨는 짧은 설명 — 아이콘 버튼 · 줄인 글이 무엇인지 보여 주는 Help Bubble 모양의 보조 (SEED Help Bubble Tooltip 구조)." },
 
   // Navigation (9)
@@ -2041,15 +2039,15 @@ const SHADCN_CATALOG = [
   { slug: "accordion", name: "Accordion", category: "Disclosure", description: "접고 펼치는 패널 (단일/다중)." },
   { slug: "collapsible", name: "Collapsible", category: "Disclosure", description: "콘텐츠 접고 펼치기 (단일)." },
 
-  // Data (3)
-  { slug: "chart", name: "Chart", category: "Data", description: "데이터 시각화 — Recharts 베이스." },
-  { slug: "data-table", name: "Data Table", category: "Data", description: "정렬·필터·페이징 테이블 — TanStack Table 베이스." },
-  { slug: "table", name: "Table", category: "Data", description: "기본 HTML 테이블 스타일." },
+  // Data (4) — 데이터 표시(2026-10-08). 옛 Data Table 은 걷었다 — 정렬 · 고르기 · 일괄 작업은 Table 의 부품이다. Card 는 Display 에 있다
+  { slug: "chart", name: "Chart", category: "Data", description: "숫자의 흐름 · 비율 · 세기를 그리는 차트 — 이중 축 추이 · 위 지표 타일 · \"■ 라벨 값\" 툴팁 · 목록 범례 도넛 · 칸 112 이상만 원까지 쓰는 열지도, recharts 베이스 (SEED 대시보드 그림 기준)." },
+  { slug: "searchable-list", name: "Searchable List", category: "Data", description: "위 밑줄 검색칸에 치는 대로 걸러지는 긴 목록에서 하나를 고르는 묶음 — 분류 머리 · List 줄 + 오른쪽 라디오 · 콤보박스 키보드 · 0건 · 실패 · 불러오는 줄 (SEED Text Input 밑줄형 · List · Radiomark · Result Section 기준)." },
+  { slug: "swipe-actions", name: "Swipe Actions", category: "Data", description: "폰 목록 줄을 왼쪽으로 밀면 동작 칸(원형 배지 36 + 라벨)이 드러나는 지름길 — 같은 동작은 늘 줄 끝 ⋮ → Menu Sheet 로도 연다 (SEED 에는 줄 밀기가 없어 대체 방법을 두라는 SEED Inclusive Design 기준)." },
+  { slug: "table", name: "Table", category: "Data", description: "줄과 열로 된 데이터를 견주어 읽는 표 — 머리 41 · 줄 45(두 줄 칸이면 72) · 마지막 줄까지 줄 선 · 숫자 오른쪽 · 정렬 ↑↓ 늘 · 끝 ⋮ · 고른 줄은 체크로만, 768 미만은 List 줄 (SEED 문서 사이트 표 구조)." },
 
-  // Porest 도메인 spec (3) — shadcn 카탈로그 외, desk-front SoT 역방향 정합
+  // Porest 도메인 spec (2) — shadcn 카탈로그 외, desk-front SoT 역방향 정합. Searchable List 는 Data 로 옮겼다(2026-10-08 — 부품마다 SEED)
   { slug: "color-swatch", name: "Color Swatch", category: "Domain", description: "카테고리·라벨·태그 색 single-select 정사각형 grid (Porest 도메인 spec)." },
   { slug: "icon-picker", name: "Icon Picker", category: "Domain", description: "Lucide 2000+ 아이콘 popover + 8-col grid 단일 선택 (Porest 도메인 spec)." },
-  { slug: "searchable-list", name: "Searchable List", category: "Domain", description: "search input + 카드 list — 카드·은행·증권사 카탈로그 (Porest 도메인 spec)." },
 ];
 
 const COMPONENT_CATEGORIES = Object.fromEntries(

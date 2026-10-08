@@ -12,9 +12,9 @@ const attr = (cond: boolean, s: string) => (cond ? [s] : []);
 const q = (s: string) => JSON.stringify(s);
 
 const ROWS: DemoRow[] = [
-  { id: 'lunch', title: '점심 식사', sub: '식비 · 현대카드 M', amount: '-12,000원', hue: 'orange' },
-  { id: 'cafe', title: '스타벅스', sub: '카페 · 현대카드 M', amount: '-5,600원', hue: 'orange' },
-  { id: 'subway', title: '지하철', sub: '교통 · 국민 체크카드', amount: '-1,450원', hue: 'blue' },
+  { id: 'lunch', title: '점심 식사', sub: '식비 · 현대카드 M', amount: '−12,000원', hue: 'orange' },
+  { id: 'cafe', title: '스타벅스', sub: '카페 · 현대카드 M', amount: '−5,600원', hue: 'orange' },
+  { id: 'subway', title: '지하철', sub: '교통 · 국민 체크카드', amount: '−1,450원', hue: 'blue' },
 ];
 
 // ══ Snackbar ═════════════════════════════════════════════
@@ -329,13 +329,16 @@ export function ResultSectionPlayground({ looks }: { looks: Record<Brand, Result
     return `${kind === 'empty' ? 'import { ReceiptText } from "lucide-react"\n' : ''}import { ResultSection } from "@/components/ui/result-section"\n\n<ResultSection\n${a.map((x) => `  ${x}`).join('\n')}\n/>`;
   }, [kind, size, t, desc, buttons]);
   const s = look.screen;
+  // medium 은 카드 안 — 결과 자리의 좌우 0, 목록 카드라 카드의 24 를 감싼 칸이 맡는다(result-section.yaml root.paddingX 비고)
+  const inCard = size === 'medium';
   const view = (
-    <div role="status" style={{ display: 'flex', flexDirection: 'column', flex: '1 1 auto' }}>
+    <div role="status" style={{ display: 'flex', flexDirection: 'column', flex: '1 1 auto', paddingLeft: inCard ? s.card.head.x : 0, paddingRight: inCard ? s.card.head.x : 0 }}>
       <ResultSectionView
         look={look}
         mode={mode}
         kind={kind}
         size={size}
+        inCard={inCard}
         icon={kind === 'empty' ? 'receipt-text' : undefined}
         title={t.title}
         description={desc === 'yes' ? t.text : undefined}
@@ -357,9 +360,10 @@ export function ResultSectionPlayground({ looks }: { looks: Record<Brand, Result
           </ScreenFrame>
         ) : (
           <ScreenFrame screen={s} mode={mode} title="홈" height={440} bg="bg-layer-basement">
-            <div style={{ padding: '4px 16px 16px' }}>
-              <section aria-label="최근 거래" style={{ display: 'flex', flexDirection: 'column', minHeight: 300, borderRadius: 16, background: fcv(s['bg-layer-default'], mode), padding: '16px 20px' }}>
-                <span style={{ fontSize: 17, lineHeight: '24px', fontWeight: 700 }}>최근 거래</span>
+            {/* 회색 바닥 위 목록 카드 — card.yaml(흰 면 + 1px 테두리 · 머리 위 24 · 좌우 24 · 아래 4 · 카드 아래 12) */}
+            <div style={{ paddingTop: s.card.gap, paddingRight: s.card.edge, paddingBottom: s.card.edge, paddingLeft: s.card.edge }}>
+              <section aria-label="최근 거래" style={{ display: 'flex', flexDirection: 'column', minHeight: 300, boxSizing: 'border-box', borderRadius: s.card.radius, borderWidth: s.card.borderW, borderStyle: 'solid', borderColor: fcv(s['stroke-neutral-weak'], mode), background: fcv(s['bg-layer-default'], mode), paddingTop: 0, paddingRight: 0, paddingBottom: s.card.listBottom, paddingLeft: 0 }}>
+                <span style={{ paddingTop: s.card.head.top, paddingRight: s.card.head.x, paddingBottom: s.card.head.bottom, paddingLeft: s.card.head.x, fontFamily: s.card.title.fontFamily, fontSize: s.card.title.fontSize, lineHeight: s.card.title.lineHeight, fontWeight: s.card.title.fontWeight }}>최근 거래</span>
                 {view}
               </section>
             </div>

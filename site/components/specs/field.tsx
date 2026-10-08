@@ -390,8 +390,8 @@ const LeaveGuide: Fig = ({ caption }) => (
       <div className="flex flex-col items-center gap-2">
         <Phone title="가계부" mode="light" scale={0.56} h={600} back={false} bg="bg-layer-default">
           <div className="flex flex-col px-6 pt-2">
-            <Row title="점심 식사" sub="식비 · 오늘" amount="-12,000원" hue="orange" mode="light" />
-            <Row title="버스" sub="교통 · 오늘" amount="-1,500원" hue="blue" mode="light" />
+            <Row title="점심 식사" sub="식비 · 오늘" amount="−12,000원" hue="orange" mode="light" />
+            <Row title="버스" sub="교통 · 오늘" amount="−1,500원" hue="blue" mode="light" />
             <Row title="월급" sub="수입 · 10월 1일" amount="+3,200,000원" hue="green" mode="light" />
           </div>
         </Phone>

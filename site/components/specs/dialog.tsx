@@ -168,14 +168,14 @@ const SETTLE: RowSpec[] = [
   { kind: 'view', title: '기본급', suffix: { text: '3,200,000원' } },
   { kind: 'view', title: '식대', suffix: { text: '200,000원' } },
   { kind: 'view', title: '야근 수당', suffix: { text: '184,000원' } },
-  { kind: 'view', title: '국민연금', suffix: { text: '-144,000원' } },
-  { kind: 'view', title: '건강보험', suffix: { text: '-113,440원' } },
+  { kind: 'view', title: '국민연금', suffix: { text: '−144,000원' } },
+  { kind: 'view', title: '건강보험', suffix: { text: '−113,440원' } },
 ];
 const SETTLE2: RowSpec[] = [
   { kind: 'view', title: '근무일', suffix: { text: '22일' } },
   { kind: 'view', title: '연장 근무', suffix: { text: '8시간' } },
   { kind: 'view', title: '쓴 연차', suffix: { text: '1일' } },
-  { kind: 'view', title: '소득세', suffix: { text: '-98,320원' } },
+  { kind: 'view', title: '소득세', suffix: { text: '−98,320원' } },
   { kind: 'view', title: '실지급액', suffix: { text: '3,228,240원' } },
 ];
 const Size: Fig = ({ caption }) => {

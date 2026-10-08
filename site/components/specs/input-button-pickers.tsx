@@ -19,6 +19,8 @@ import { scv, type SelIcon, type SelSizeProp, type SelTone, type SelectLook, typ
 import { InputButtonView, SelIconView, labelFocusOnly } from './select-view';
 import type { TfFieldLook, TfInputLook } from './text-field-shared';
 import { TfFieldView, TfInputView } from './text-field-view';
+import { SearchableListView } from './data-search-view';
+import type { SearchLook } from './data-shared';
 
 const tone = (look: SelectLook, name: SelTone, mode: ViewMode) => scv(look.tone[name], mode);
 const FONT = "'Pretendard Variable', Pretendard, sans-serif";
@@ -153,7 +155,7 @@ export function PeopleList({ look, avatar, mode = 'auto', people, query = '', se
 // ── 실제로 여는 자리 ─────────────────────────────────────
 // 1280 미만은 아래 시트(Bottom Sheet — 고르기: 위 닫기 · 바깥 누르기 · 끌어내리기 · Esc 로 닫힌다), 이상은 칸 아래 8 의 팝오버
 // (Popover — 칸 왼쪽에 맞추고 아래가 모자라면 위로 · 바깥 · Esc · Tab 으로 빠져나가면 닫힌다). 열면 고른 날 · 고른 칸 · 검색칸으로 초점이 간다
-function IbSurface({
+export function IbSurface({
   kit,
   mode,
   open,
@@ -235,6 +237,8 @@ export type InputButtonDemoProps = {
   kit: OvKit;
   // 사람(people) 줄의 아바타 — avatar.yaml
   avatar?: AvatarLook;
+  // 사람(people) — 검색 시트의 묶음(Searchable List — 위 밑줄형 검색칸 · 아래 List 줄 + 오른쪽 라디오, 콤보박스 키보드)
+  search?: SearchLook;
   // 값이 바뀔 때(폼의 바뀐 값 확인)
   onValue?: (v: string | undefined) => void;
 };
@@ -270,6 +274,7 @@ export function InputButtonDemo({
   width,
   kit,
   avatar,
+  search,
   onValue,
 }: InputButtonDemoProps) {
   const [value, setOwnValue] = useState<string | undefined>(initial);
@@ -358,20 +363,39 @@ export function InputButtonDemo({
     popoverWidth = 360;
   } else {
     popoverWidth = 360;
-    content = (
-      <div className="flex flex-col gap-2">
-        <div style={{ padding: `0 ${kit.ov.popover.body.padX}px` }}>
-          {input && (
-            <span className="block" data-search>
-              <TfInputView look={input} mode={mode} size="large" prefixIcon="search" placeholder="이름 · 팀으로 찾기" ariaLabel={`${label} 찾기`} value={query} onValue={setQuery} clearable />
-            </span>
-          )}
+    // 긴 목록은 검색 시트 — Searchable List(밑줄형 검색칸 · 콤보박스). 고르면 닫힌다("완료" 없음)
+    content =
+      search && avatar ? (
+        <span className="block" data-search>
+          <SearchableListView
+            look={search}
+            mode={mode}
+            groups={[{ items: PEOPLE.map((p) => ({ value: p.value, title: p.name, detail: p.team, detailText: p.team })) }]}
+            prefixes={Object.fromEntries(PEOPLE.map((p) => [p.value, <AvatarView key={p.value} look={avatar} mode={mode} size={search.prefix.avatar.two} name={p.name} />]))}
+            prefixKind="avatar"
+            value={value}
+            onValueChange={(v) => commit(v)}
+            placeholder="이름 · 팀 검색"
+            ariaLabel={label}
+            live
+            onEscapeEmpty={close}
+            maxHeight={320}
+          />
+        </span>
+      ) : (
+        <div className="flex flex-col gap-2">
+          <div style={{ padding: `0 ${kit.ov.popover.body.padX}px` }}>
+            {input && (
+              <span className="block" data-search>
+                <TfInputView look={input} mode={mode} variant="underline" prefixIcon="search" placeholder="이름 · 팀 검색" ariaLabel="검색" value={query} onValue={setQuery} clearable />
+              </span>
+            )}
+          </div>
+          <div className="max-h-[300px] overflow-y-auto">
+            {avatar && <PeopleList look={look} avatar={avatar} mode={mode} people={filtered} query={query} selected={value} onPick={(v) => commit(v)} />}
+          </div>
         </div>
-        <div className="max-h-[300px] overflow-y-auto">
-          {avatar && <PeopleList look={look} avatar={avatar} mode={mode} people={filtered} query={query} selected={value} onPick={(v) => commit(v)} />}
-        </div>
-      </div>
-    );
+      );
   }
 
   return (

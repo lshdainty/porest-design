@@ -6,7 +6,10 @@ import { menuKit } from './menu-look';
 import { loadingKit } from './loading-look';
 import { tabsLook } from './tabs-look';
 import { LineTabsView } from './tabs-view';
-import { Phone, Row, WebWindow, rc, type Mode } from './kit';
+import { Phone, Row, WebWindow, cardStack, rc, type Mode } from './kit';
+import { cardLook, tableLook } from './data-look';
+import { CardHeaderView, CardSurface, StatView } from './data-card-view';
+import { TableView, type TBadge, type TCol, type TRow } from './data-table-view';
 import { ASSET_ROWS, DESK_NAV, DESK_TABS, HR_NAV, LEDGER_ROWS, MONEY_TABS, NOTICE_ROWS, addLabelFor, type NavRow } from './nav-data';
 import { navKit } from './nav-look';
 import { tabBottom, type Brand, type NavKit, type SideGroup, type TabSize, type TopAction } from './nav-shared';
@@ -152,7 +155,7 @@ export function TxRows({ mode = 'auto', n = 6, from = 0, rows = LEDGER_ROWS, pad
     </div>
   );
 }
-export function DayHead({ mode = 'auto', day = '10월 2일 (금)', total = '-19,050원', pad = 24 }: { mode?: Mode; day?: string; total?: string; pad?: number }) {
+export function DayHead({ mode = 'auto', day = '10월 2일 (금)', total = '−19,050원', pad = 24 }: { mode?: Mode; day?: string; total?: string; pad?: number }) {
   return (
     <div className="flex items-center justify-between pb-1 pt-3 text-[13px]" style={{ paddingLeft: pad, paddingRight: pad, color: rc('fg-neutral-subtle', mode) }}>
       <span>{day}</span>
@@ -160,14 +163,23 @@ export function DayHead({ mode = 'auto', day = '10월 2일 (금)', total = '-19,
     </div>
   );
 }
-// 홈의 이번 달 요약 카드
-export function SpendCard({ mode = 'auto', brand = 'desk', style }: { mode?: Mode; brand?: Brand; style?: CSSProperties }) {
+// 홈의 이번 달 요약 — 지표 카드(card.yaml — 회색 바닥 위 흰 면 + 1px 테두리 · 여백 24 · 라벨 · 큰 숫자 · 증감)
+export function SpendCard({ mode = 'auto', style }: { mode?: Mode; style?: CSSProperties }) {
+  const c = cardLook();
   return (
-    <div className="flex flex-col gap-1 rounded-2xl" style={{ background: rc('bg-neutral-weak', mode, brand), paddingTop: 16, paddingBottom: 16, paddingLeft: 20, paddingRight: 20, ...style }}>
-      <span className="text-[13px]" style={{ color: rc('fg-neutral-subtle', mode, brand) }}>10월 지출</span>
-      <span className="text-[22px] font-bold tabular-nums leading-[30px]" style={{ color: rc('fg-neutral', mode, brand) }}>1,240,000원</span>
-      <span className="text-[13px]" style={{ color: rc('fg-neutral-muted', mode, brand) }}>지난달보다 82,000원 적게 썼어요</span>
-    </div>
+    <CardSurface look={c} mode={mode} style={style}>
+      <StatView look={c} mode={mode} label="10월 지출" value="1,240,000원" delta={{ direction: 'down', value: '82,000원', text: '지난달보다' }} />
+    </CardSurface>
+  );
+}
+// 목록 카드 — 머리(제목 + 전체 보기) 아래 줄이 카드 가장자리까지(줄이 제 좌우 24 를 가진다 · 카드 아래 12)
+export function TxCard({ mode = 'auto', title = '최근 거래', action = '전체 보기', children, style }: { mode?: Mode; title?: string; action?: string; children: ReactNode; style?: CSSProperties }) {
+  const c = cardLook();
+  return (
+    <CardSurface look={c} mode={mode} body="list" style={style}>
+      <CardHeaderView look={c} mode={mode} title={title} action={action || undefined} body="list" heading="span" />
+      {children}
+    </CardSurface>
   );
 }
 // 알림 줄 — 둥근 사각 아이콘 타일 + 제목 · 설명
@@ -194,13 +206,12 @@ export const HOME_ACTIONS: TopAction[] = [
 // scrolled — 목록을 내린 화면(요약 카드가 위로 지나갔다)
 export function HomeScreen({ mode = 'auto', h = 600, scale = 0.62, tabSize = 'regular', bar, scrolled = false }: { mode?: Mode; h?: number; scale?: number; tabSize?: TabSize; bar?: ReactNode; scrolled?: boolean }) {
   return (
-    <NPhone mode={mode} h={h} scale={scale} tabs tab="home" tabSize={tabSize} bar={bar ?? <Bar mode={mode} type="root" title="홈" actions={HOME_ACTIONS} />}>
-      <div className="flex flex-col gap-4 pt-2" style={{ transform: scrolled ? 'translateY(-210px)' : undefined }}>
-        <SpendCard mode={mode} style={{ marginLeft: 24, marginRight: 24 }} />
-        <div className="flex flex-col">
-          <div className="text-[17px] font-bold" style={{ paddingLeft: 24, color: rc('fg-neutral', mode) }}>최근 거래</div>
-          <TxRows mode={mode} n={6} />
-        </div>
+    <NPhone mode={mode} h={h} scale={scale} tabs tab="home" tabSize={tabSize} bg="bg-layer-basement" bar={bar ?? <Bar mode={mode} type="root" title="홈" actions={HOME_ACTIONS} />}>
+      <div style={{ ...cardStack(), transform: scrolled ? 'translateY(-210px)' : undefined }}>
+        <SpendCard mode={mode} />
+        <TxCard mode={mode}>
+          <TxRows mode={mode} n={7} />
+        </TxCard>
       </div>
     </NPhone>
   );
@@ -281,27 +292,26 @@ export function ScreenTitle({ mode = 'auto', brand = 'desk', children, top, styl
     </div>
   );
 }
-// 데스크톱 본문 — 요약 카드 셋 + 거래 목록 카드
+// 데스크톱 본문 — 작은 지표 카드 셋(데스크톱 격자 · stat small) + 거래 목록 카드. 칸 사이는 layout-gutter(card.yaml root.gap 비고)
 export function DeskMain({ mode = 'auto', title = '가계부', rows = 6, top }: { mode?: Mode; title?: string; rows?: number; top?: number }) {
   const k = NK('desk');
-  const card = (t: string, v: string) => (
-    <div className="flex flex-col gap-1 rounded-2xl" style={{ background: rc('bg-layer-default', mode), paddingTop: 18, paddingBottom: 18, paddingLeft: 20, paddingRight: 20 }}>
-      <span className="text-[14px]" style={{ color: rc('fg-neutral-subtle', mode) }}>{t}</span>
-      <span className="text-[22px] font-bold tabular-nums" style={{ color: rc('fg-neutral', mode) }}>{v}</span>
-    </div>
+  const c = cardLook();
+  const stat = (label: string, value: string) => (
+    <CardSurface look={c} mode={mode}>
+      <StatView look={c} mode={mode} label={label} value={value} size="small" />
+    </CardSurface>
   );
   return (
     <div className="flex flex-col">
       <ScreenTitle mode={mode} top={top}>{title}</ScreenTitle>
-      <div className="flex flex-col gap-4" style={{ paddingTop: 20, paddingLeft: k.margin, paddingRight: k.margin }}>
-        <div className="grid grid-cols-3 gap-4">
-          {card('10월 지출', '1,240,000원')}
-          {card('10월 수입', '3,200,000원')}
-          {card('남은 예산', '310,000원')}
-        </div>
-        <div className="rounded-2xl" style={{ background: rc('bg-layer-default', mode), paddingTop: 8, paddingBottom: 8 }}>
-          <DayHead mode={mode} pad={20} />
-          <TxRows mode={mode} n={rows} pad={20} />
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: c.gutter, paddingTop: 20, paddingLeft: k.margin, paddingRight: k.margin }}>
+        {stat('10월 지출', '1,240,000원')}
+        {stat('10월 수입', '3,200,000원')}
+        {stat('남은 예산', '310,000원')}
+        <div style={{ gridColumn: '1 / -1' }}>
+          <TxCard mode={mode}>
+            <TxRows mode={mode} n={rows} />
+          </TxCard>
         </div>
       </div>
     </div>
@@ -323,34 +333,52 @@ export function HrLeaveMain({ mode = 'auto', title = '휴가 현황', rows = 5 }
     <div className="flex flex-col">
       <ScreenTitle mode={mode} brand="hr" top={k.margin}>{title}</ScreenTitle>
       <div style={{ paddingTop: 20, paddingLeft: k.margin, paddingRight: k.margin }}>
-        <MiniTable mode={mode} brand="hr" head={head} rows={data} />
+        <MiniTable mode={mode} brand="hr" title="휴가 내역" head={head} rows={data} />
       </div>
     </div>
   );
 }
-// 표(그림) — 머리 줄 + 줄. 스펙이 아직 없어 역할 색으로 간단히(Table)
-export function MiniTable({ mode = 'auto', brand = 'desk', head, rows, minWidth, rowH = 48 }: { mode?: Mode; brand?: Brand; head: string[]; rows: string[][]; minWidth?: number; rowH?: number }) {
-  const line = rc('stroke-neutral-subtle', mode, brand);
-  return (
-    <div className="overflow-hidden rounded-2xl" style={{ background: rc('bg-layer-default', mode, brand), minWidth }}>
-      <div className="grid text-[13px] font-semibold" style={{ gridTemplateColumns: `repeat(${head.length}, minmax(0, 1fr))`, color: rc('fg-neutral-subtle', mode, brand), boxShadow: `inset 0 -1px 0 ${line}` }}>
-        {head.map((h) => (
-          <span key={h} className="flex items-center truncate" style={{ height: 40, paddingLeft: 16, paddingRight: 8 }}>
-            {h}
-          </span>
-        ))}
+// 표(그림) — 카드(머리 제목 · 표가 가장자리까지) 안의 Table(table.yaml — 머리 41 · 줄 45 · 첫 칸 앞 24 · 머리 14 / 500 짙은 글, 바탕 없음).
+// 상태 열은 Badge(medium weak), 숫자 열(일수 · 금액)은 오른쪽 · 고정폭 숫자. above 는 표 위, children 은 표 아래(넘김 줄)
+const STATUS_TONE: Record<string, TBadge['tone']> = { 재직: 'positive', 승인: 'positive', 휴직: 'warning', 대기: 'informative', 반려: 'critical' };
+const NUMERIC = /^[+−-]?[\d,.]+(일|원|시간|개|%)$/;
+// 표 상자(table.yaml root)는 표와 넘김 줄을 함께 담아 넘치면 함께 가로로 민다. bare 면 카드 없이 표 상자만(줄인 그림 · 스크롤한 그림)
+// empty — 줄이 없을 때 본문 자리의 비었음(Result Section medium — table.yaml 상태)
+export function MiniTable({ mode = 'auto', brand = 'desk', title, head, rows, minWidth, above, children, bare = false, scrollLeft, empty }: { mode?: Mode; brand?: Brand; title: string; head: string[]; rows: string[][]; minWidth?: number; above?: ReactNode; children?: ReactNode; bare?: boolean; scrollLeft?: number; empty?: string }) {
+  const c = cardLook();
+  const cols: TCol[] = head.map((h, i) => ({ key: String(i), label: h, align: rows.length > 0 && rows.every((r) => NUMERIC.test(r[i] ?? '')) ? 'end' : 'start' }));
+  const data: TRow[] = rows.map((r, j) => ({ id: `r${j}`, name: r[0], cells: Object.fromEntries(r.map((v, i) => [String(i), head[i] === '상태' && STATUS_TONE[v] ? { badge: { label: v, tone: STATUS_TONE[v] } } : v])) }));
+  const box = (
+    <div style={{ overflowX: scrollLeft ? 'hidden' : 'auto' }}>
+      <div style={{ minWidth, marginLeft: scrollLeft ? -scrollLeft : undefined }}>
+        {above}
+        <TableView look={tableLook(brand)} mode={mode} caption={title} columns={cols} rows={data} minWidth={minWidth} status={rows.length === 0 && empty ? { kind: 'empty', title: empty } : undefined} />
+        {children}
       </div>
-      {rows.map((r, i) => (
-        <div key={i} className="grid text-[14px]" style={{ gridTemplateColumns: `repeat(${head.length}, minmax(0, 1fr))`, color: rc('fg-neutral', mode, brand), boxShadow: i < rows.length - 1 ? `inset 0 -1px 0 ${line}` : undefined }}>
-          {r.map((c, j) => (
-            <span key={j} className="flex items-center truncate tabular-nums" style={{ height: rowH, paddingLeft: 16, paddingRight: 8, color: j === 0 ? undefined : rc('fg-neutral-muted', mode, brand) }}>
-              {c}
-            </span>
-          ))}
-        </div>
-      ))}
     </div>
   );
+  if (bare) return box;
+  return (
+    <CardSurface look={c} mode={mode} body="list">
+      <CardHeaderView look={c} mode={mode} title={title} body="list" heading="span" />
+      {box}
+    </CardSurface>
+  );
+}
+// 표 카드의 높이 — 머리(위 24 + 제목 줄 + 아래 4) + 표 머리 41 + 줄 45 × n + 표 아래 넘김 줄(위 12 + 40) + 카드 아래 12 + 테두리. 줄인 그림의 자리를 잡을 때
+export function tableCardH(n: number, paging = true, brand: Brand = 'hr') {
+  const c = cardLook();
+  const t = tableLook(brand);
+  const pg = navKit(brand).table;
+  const header = c.header.list.top + parseFloat(c.title.lineHeight ?? c.title.fontSize) + c.header.list.bottom;
+  return c.surface.borderW * 2 + header + t.head.minH + t.row.minH.text * n + (paging ? pg.marginTop + pg.height : 0) + c.list.padBottom;
+}
+// 넘김 줄 자리 — 표와 같은 상자 안, 표 아래 12 · 좌우는 표의 첫 칸 앞 · 끝 칸 뒤와 같은 24(table.yaml root.paddingX)
+// above — 나쁜 예(표 위에 둔 줄)
+export function PagingSlot({ children, brand = 'hr', above = false }: { children: ReactNode; brand?: Brand; above?: boolean }) {
+  const e = tableLook(brand).edge;
+  const g = navKit(brand).table.marginTop;
+  return <div style={{ marginTop: above ? 0 : g, marginBottom: above ? g : 0, paddingLeft: e, paddingRight: e }}>{children}</div>;
 }
 
 // 1280 데스크톱 — Desk 가계부(펼친 사이드바 · 머리 · 본문 h1)
@@ -384,17 +412,18 @@ export function HrLeavePhone({ mode = 'auto', h = 600, scale = 0.62, overlay, ti
     ['연차', '2026-07-10 · 1일', '반려'],
   ];
   return (
-    <NPhone mode={mode} brand="hr" h={h} scale={scale} overlay={overlay} bar={<Bar brand="hr" mode={mode} leading="menu" leadingExpanded={expanded} title={title} />}>
-      <div className="flex flex-col gap-3 pt-2" style={{ paddingLeft: 24, paddingRight: 24 }}>
-        <div className="flex flex-col gap-1 rounded-2xl" style={{ background: rc('bg-neutral-weak', mode, 'hr'), paddingTop: 16, paddingBottom: 16, paddingLeft: 20, paddingRight: 20 }}>
-          <span className="text-[13px]" style={{ color: rc('fg-neutral-subtle', mode, 'hr') }}>남은 연차</span>
-          <span className="text-[22px] font-bold tabular-nums" style={{ color: rc('fg-neutral', mode, 'hr') }}>11.5일</span>
-        </div>
-        <div className="flex flex-col">
-          {rows.map(([t, sub, st]) => (
-            <Row key={sub} mode={mode} title={t} sub={sub} hue={st === '반려' ? 'red' : 'green'} trailing={<span className="text-[13px]" style={{ color: rc(st === '반려' ? 'fg-neutral-subtle' : 'fg-neutral-muted', mode, 'hr') }}>{st}</span>} />
-          ))}
-        </div>
+    <NPhone mode={mode} brand="hr" h={h} scale={scale} overlay={overlay} bg="bg-layer-basement" bar={<Bar brand="hr" mode={mode} leading="menu" leadingExpanded={expanded} title={title} />}>
+      <div style={cardStack()}>
+        <CardSurface look={cardLook()} mode={mode}>
+          <StatView look={cardLook()} mode={mode} label="남은 연차" value="11.5일" />
+        </CardSurface>
+        <TxCard mode={mode} title="휴가 내역" action="">
+          <div className="flex flex-col" style={{ paddingLeft: 24, paddingRight: 24 }}>
+            {rows.map(([t, sub, st]) => (
+              <Row key={sub} mode={mode} title={t} sub={sub} hue={st === '반려' ? 'red' : 'green'} trailing={<span className="text-[13px]" style={{ color: rc(st === '반려' ? 'fg-neutral-subtle' : 'fg-neutral-muted', mode, 'hr') }}>{st}</span>} />
+            ))}
+          </div>
+        </TxCard>
       </div>
     </NPhone>
   );

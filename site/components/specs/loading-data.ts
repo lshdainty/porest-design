@@ -4,12 +4,12 @@ import type { RowSpec } from './list-shared';
 
 // 가계부 거래 — 앞 타일(카테고리 색 · List 타일 40 · 모서리 12) · 제목 · 메타 · 금액. 스켈레톤의 앞 자리(radius 12)와 같은 모양이다
 export const TX: RowSpec[] = [
-  { kind: 'view', title: '점심 식사', detail: '식비 · 현대카드 M', prefix: { tile: 'orange', icon: 'utensils' }, suffix: { amount: '-12,000원' } },
-  { kind: 'view', title: '스타벅스', detail: '카페 · 현대카드 M', prefix: { tile: 'brown', icon: 'coffee' }, suffix: { amount: '-5,600원' } },
-  { kind: 'view', title: '지하철', detail: '교통 · 국민 체크카드', prefix: { tile: 'green', icon: 'bus' }, suffix: { amount: '-1,450원' } },
+  { kind: 'view', title: '점심 식사', detail: '식비 · 현대카드 M', prefix: { tile: 'orange', icon: 'utensils' }, suffix: { amount: '−12,000원' } },
+  { kind: 'view', title: '스타벅스', detail: '카페 · 현대카드 M', prefix: { tile: 'brown', icon: 'coffee' }, suffix: { amount: '−5,600원' } },
+  { kind: 'view', title: '지하철', detail: '교통 · 국민 체크카드', prefix: { tile: 'green', icon: 'bus' }, suffix: { amount: '−1,450원' } },
   { kind: 'view', title: '월급', detail: '수입 · 토스뱅크 통장', prefix: { tile: 'blue', icon: 'wallet' }, suffix: { amount: '+3,200,000원' } },
-  { kind: 'view', title: '편의점', detail: '식비 · 현금', prefix: { tile: 'orange', icon: 'utensils' }, suffix: { amount: '-4,300원' } },
-  { kind: 'view', title: '영화', detail: '문화 · 국민 체크카드', prefix: { tile: 'violet', icon: 'star' }, suffix: { amount: '-15,000원' } },
+  { kind: 'view', title: '편의점', detail: '식비 · 현금', prefix: { tile: 'orange', icon: 'utensils' }, suffix: { amount: '−4,300원' } },
+  { kind: 'view', title: '영화', detail: '문화 · 국민 체크카드', prefix: { tile: 'violet', icon: 'star' }, suffix: { amount: '−15,000원' } },
 ];
 
 // 카테고리 고르기 — 하나 고르기 줄(앞 타일 · 오른쪽 라디오). 길이가 데이터에 따라 느는 본문이라 끝 흐림(scrollFog)을 건다

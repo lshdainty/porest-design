@@ -7,7 +7,7 @@ import { Verdict, rc, type Mode } from './kit';
 import { comma } from './loading-look';
 import type { PgPart } from './loading-view';
 import { ProgressPlayground } from './loading-playground';
-import { CardBox, Circle, L, LdPhone, Meter, SCREEN, type Fig } from './loading-screens';
+import { CardBox, Circle, L, LdPhone, Meter, SCREEN, cardStack, type Fig } from './loading-screens';
 import { Legend, Note, Pin, Scaled, Shot } from './overlay-screens';
 
 const pg = (brand: 'desk' | 'hr' = 'desk') => L(brand).progress;
@@ -25,8 +25,8 @@ const BARS: { label: string; value: number; max: number; meaning: 'limit' | 'goa
 ];
 function Budget({ mode = 'auto', brand = 'desk' }: { mode?: Mode; brand?: 'desk' | 'hr' }) {
   return (
-    <div className="flex flex-col px-4 pt-1">
-      <CardBox mode={mode} style={{ padding: '20px 24px 24px' }}>
+    <div style={cardStack()}>
+      <CardBox mode={mode}>
         <div className="flex flex-col" style={{ gap: 24 }}>
           {BARS.map((b) => (
             <Meter key={b.label} brand={brand} mode={mode} {...b} />

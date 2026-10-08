@@ -1,5 +1,6 @@
 // Menu · Menu Sheet · Help Bubble · Tooltip 의 모양 — 서버(menu-look) · 브라우저(menu-view · 데모 · 플레이그라운드)가 함께 쓰는 상수 · 타입.
 // 파일 읽기(서버 전용)를 들이지 않는다.
+import type { CardFace } from './card-face';
 
 export type ViewMode = 'light' | 'dark' | 'auto';
 
@@ -257,4 +258,6 @@ export type MenuKit = {
   sheet: MenuSheetLook;
   bubble: BubbleLook;
   tone: Record<MTone, MColor>;
+  // 그림 속 카드(card.yaml — card-face)
+  card: CardFace;
 };

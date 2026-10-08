@@ -3,6 +3,7 @@
 import { Fragment, type CSSProperties, type ReactNode } from 'react';
 import { ChevronRight, Signal, Wifi, BatteryFull } from 'lucide-react';
 import { color, design, type Brand } from '@/lib/design-tokens';
+import { tokenValue } from '@/lib/component-spec';
 import { buttonLook } from './button-look';
 import { DESK_TABS, addLabelFor, tabForTitle } from './nav-data';
 import { navKit } from './nav-look';
@@ -12,6 +13,8 @@ import { overlayLook } from './overlay-look';
 import { AlertSurface, DialogSurface, DimView, SheetSurface } from './overlay-view';
 import { textFieldLook } from './text-field-look';
 import { TfFieldView, TfInputView } from './text-field-view';
+import { cardLook } from './data-look';
+import { CardHeaderView, CardSurface, StatView } from './data-card-view';
 
 // auto 면 사이트의 라이트 · 다크 전환을 따른다 — 색을 hex 대신 --p-* 변수로(tokens-style.tsx 가 깐다)
 export type Mode = 'light' | 'dark' | 'auto';
@@ -125,13 +128,27 @@ export function TabZone({ mode = 'auto', tab = 'home', size = 'regular', safe = 
   );
 }
 
-// 흰 카드 — 회색 바탕 위의 한 묶음
-export function Card({ children, mode = 'auto', style, pad = 20 }: { children: ReactNode; mode?: Mode; style?: CSSProperties; pad?: number }) {
+// 흰 카드 — 회색 바탕(bg-layer-basement) 위의 한 묶음. 면 · 테두리 · 모서리 · 여백은 card.yaml(CardSurface) — 흰 바탕 위에 두지 않는다.
+// title 을 주면 카드 머리(제목 16 / 22 · 700 + "전체 보기"). body="list" 는 줄이 가장자리까지(좌우 0 · 아래 12) —
+// 머리 없는 목록 카드는 위도 12 를 둬 첫 줄의 위 12 와 합쳐 보이는 24 로 아래와 같게 한다(card.yaml 에 자리가 없어 아래 값을 따른다)
+export function Card({ children, mode = 'auto', style, body = 'content', title, action }: { children: ReactNode; mode?: Mode; style?: CSSProperties; body?: 'content' | 'list'; title?: string; action?: string }) {
+  const c = cardLook();
   return (
-    <div className="rounded-2xl" style={{ background: rc('bg-layer-default', mode), padding: pad, ...style }}>
+    <CardSurface look={c} mode={mode} body={body} style={body === 'list' && !title ? { paddingTop: c.list.padBottom, ...style } : style}>
+      {title && <CardHeaderView look={c} mode={mode} title={title} action={action} body={body} heading="span" />}
       {children}
-    </div>
+    </CardSurface>
   );
+}
+// 폰 화면의 카드 묶음 — 화면 끝 spacing-global-gutter(24) 안에 카드를 8(card.yaml root.gap) 띄워 쌓는다. 상단 바 아래도 8
+export function cardStack(): CSSProperties {
+  const gap = cardLook().surface.gap;
+  const x = parseFloat(String(tokenValue('$spacing-global-gutter')));
+  return { display: 'flex', flexDirection: 'column', gap, paddingTop: gap, paddingLeft: x, paddingRight: x };
+}
+// 지표 — 카드 안 라벨 · 큰 숫자 · 증감(card.yaml statLabel · statValue · delta)
+export function Stat(p: Omit<Parameters<typeof StatView>[0], 'look'>) {
+  return <StatView look={cardLook()} {...p} />;
 }
 
 // 목록 줄 — 앞 타일(카테고리 색 · 첫 글자) · 제목 · 부제 · 뒤 금액. 물건 · 분류는 각진 타일이다(원은 사람 Avatar — avatar.md) — 모서리는 크기 × 0.3(list.yaml 타일)

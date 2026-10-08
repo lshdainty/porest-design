@@ -40,7 +40,7 @@ function Cards({ mode = 'light', faded = false, style, top = 36 }: { mode?: Mode
   return (
     <>
       {[0, 1, 2].map((i) => (
-        <div key={i} className="absolute left-2 right-2 rounded-lg p-2" style={{ top: top + i * 50, height: 42, background: rc('bg-layer-default', mode), opacity: faded ? 0.35 : 1, ...style }}>
+        <div key={i} className="absolute left-2 right-2 rounded-lg p-2" style={{ top: top + i * 50, height: 42, background: rc('bg-layer-default', mode), borderWidth: 1, borderStyle: 'solid', borderColor: rc('stroke-neutral-weak', mode), opacity: faded ? 0.35 : 1, ...style }}>
           <span className="block h-1.5 w-12 rounded" style={{ background: rc('fg-neutral-muted', mode) }} />
           <span className="mt-1.5 block h-1.5 w-8 rounded" style={{ background: rc('stroke-neutral-weak', mode) }} />
         </div>
@@ -73,6 +73,7 @@ function Dim({ mode = 'light' }: { mode?: Mode }) {
 }
 
 // ── 원칙 — 층이 쌓인 단면 ─────────────────────────────────
+// 1 층(기본 — 카드 · 목록)은 그림자 없이 1px stroke-neutral-weak 와 바닥으로 가른다(card.md · "고도를 드러내는 세 가지"). 그림자는 2 층부터
 export function ElevationHeroFigure() {
   const g = levels(0);
   const surf = ['bg-layer-basement', 'bg-layer-default', 'bg-layer-floating', 'bg-layer-floating'];
@@ -82,8 +83,8 @@ export function ElevationHeroFigure() {
         {g.map((l, i) => (
           <div
             key={l.level}
-            className="absolute flex h-[52px] w-[300px] items-center justify-between rounded-xl border border-black/5 px-4"
-            style={{ left: 24 + i * 52, bottom: 20 + i * 48, background: rc(surf[i]), boxShadow: i ? shadow(Math.min(i + 1, 4) as 1 | 2 | 3 | 4) : undefined }}
+            className="absolute flex h-[52px] w-[300px] items-center justify-between rounded-xl px-4"
+            style={{ left: 24 + i * 52, bottom: 20 + i * 48, background: rc(surf[i]), borderWidth: 1, borderStyle: 'solid', borderColor: i === 1 ? rc('stroke-neutral-weak') : 'rgba(0, 0, 0, 0.05)', boxShadow: i > 1 ? shadow(Math.min(i + 1, 4) as 1 | 2 | 3 | 4) : undefined }}
           >
             <b className="text-[13px] text-[#1A1F2E]">{l.level} · {head(l.what)}</b>
             <code className="text-[11px] text-[#62697A]">{l.token}</code>
@@ -260,12 +261,15 @@ export function ThreeWaysFigure() {
         <div className={card}>
           <div className={stage} style={{ background: rc('bg-layer-basement') }}>
             <div className="absolute inset-y-0 left-0 w-7" style={{ background: rc('bg-layer-default'), boxShadow: `inset -1px 0 0 ${rc('stroke-neutral-subtle')}` }} />
+            <div className="absolute left-9 right-2 top-2 flex h-8 items-center rounded-md px-2" style={{ background: rc('bg-layer-default'), borderWidth: 1, borderStyle: 'solid', borderColor: rc('stroke-neutral-weak') }}>
+              <span className="block h-1.5 w-12 rounded" style={{ background: rc('fg-neutral-muted') }} />
+            </div>
             <div className="absolute bottom-2 left-9 right-2 flex h-7 items-center justify-around rounded-full" style={{ background: rc('bg-layer-floating'), boxShadow: `${shadow(3)}, inset 0 0 0 1px ${rc('stroke-neutral-subtle')}` }}>
               {[0, 1, 2, 3].map((i) => <span key={i} className="block h-2.5 w-2.5 rounded" style={{ background: i ? rc('stroke-neutral-weak') : rc('fg-neutral') }} />)}
             </div>
           </div>
           <b className="text-[13px] text-[#1A1F2E]">선</b>
-          <Cap>가장자리에 테두리를 둔다 — 사이드바의 오른쪽 선 · 떠 있는 탭 바의 안쪽 테두리</Cap>
+          <Cap>가장자리에 테두리를 둔다 — 사이드바의 오른쪽 선 · 떠 있는 탭 바의 안쪽 테두리 · 카드의 1px 테두리</Cap>
         </div>
       </div>
     </Figure>
@@ -315,7 +319,7 @@ export function BasementVsWeakFigure() {
     <div className="flex flex-col gap-1.5">
       <div className="relative h-[92px] w-[220px] overflow-hidden rounded-xl" style={{ background: rc(which === 'basement' ? 'bg-layer-basement' : 'bg-layer-default', m), border: `1px solid ${rc('stroke-neutral-weak', m)}` }}>
         {which === 'basement' ? (
-          <div className="absolute inset-x-3 top-3 h-12 rounded-lg" style={{ background: rc('bg-layer-default', m) }} />
+          <div className="absolute inset-x-3 top-3 h-12 rounded-lg" style={{ background: rc('bg-layer-default', m), borderWidth: 1, borderStyle: 'solid', borderColor: rc('stroke-neutral-weak', m) }} />
         ) : (
           <div className="absolute inset-x-3 top-3 flex h-10 items-center rounded-lg px-3" style={{ background: rc('bg-neutral-weak', m) }}>
             <span className="block h-1.5 w-20 rounded" style={{ background: rc('fg-neutral-subtle', m) }} />

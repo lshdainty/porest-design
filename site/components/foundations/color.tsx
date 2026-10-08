@@ -2,6 +2,7 @@
 import type { CSSProperties, ReactNode } from 'react';
 import { BRAND_ROLES, CHART_ORDER, color, colorStep, contrast, design, palette, roleAliases, roleColors, type Brand } from '@/lib/design-tokens';
 import { Chip, Figure, Swatch, Table, Token } from './ui';
+import { cardFace } from '../specs/card-face';
 
 type Mode = 'light' | 'dark';
 // 역할 색 한 개 — 모드에 맞는 값(다크는 `-dark` 짝)
@@ -59,7 +60,7 @@ function Pair({ render, caption, tokens }: { render: (m: Mode) => ReactNode; cap
         <div className="flex flex-wrap justify-center gap-6">
           {(['light', 'dark'] as Mode[]).map((m) => (
             <div key={m} className="flex flex-col items-center gap-2">
-              <div className="w-[268px] rounded-2xl p-4" style={{ background: rc('bg-layer-basement', m), color: rc('fg-neutral', m) }}>
+              <div className="w-[300px] rounded-2xl p-6" style={{ background: rc('bg-layer-basement', m), color: rc('fg-neutral', m) }}>
                 {render(m)}
               </div>
               <span className="text-[12px] text-fd-muted-foreground">{m === 'light' ? '라이트' : '다크'}</span>
@@ -78,7 +79,8 @@ function Pair({ render, caption, tokens }: { render: (m: Mode) => ReactNode; cap
 
 const btn: CSSProperties = { display: 'inline-block', fontSize: 14, fontWeight: 600, lineHeight: '20px', padding: '8px 14px', borderRadius: 8 };
 const badge: CSSProperties = { display: 'inline-block', fontSize: 12, fontWeight: 600, lineHeight: '20px', padding: '0 8px', borderRadius: 4 };
-const card = (m: Mode): CSSProperties => ({ background: rc('bg-layer-default', m), border: `1px solid ${rc('stroke-neutral-weak', m)}`, borderRadius: 12, padding: 14 });
+// 카드 — card.yaml 의 면(흰 면 + 1px stroke-neutral-weak · 모서리 16 · 여백 24, 바닥 위)
+const card = (m: Mode): CSSProperties => ({ background: rc('bg-layer-default', m), border: `1px solid ${rc('stroke-neutral-weak', m)}`, borderRadius: cardFace().radius, padding: cardFace().pad });
 
 export function BrandExample({ brand = 'desk' }: { brand?: 'desk' | 'hr' }) {
   const b = (n: string, m: Mode) => rc(n, m, brand);
@@ -93,7 +95,7 @@ export function BrandExample({ brand = 'desk' }: { brand?: 'desk' | 'hr' }) {
             <span style={{ ...badge, background: b('bg-brand-weak', m), color: b('fg-brand-contrast', m) }}>{brand === 'desk' ? '이번 달' : '대기'}</span>
           </div>
           <span className="text-[14px] font-medium" style={{ color: b('fg-brand', m) }}>자세히 보기 ›</span>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <span style={{ ...btn, background: b('bg-brand-solid', m), color: '#FFFFFF' }}>{brand === 'desk' ? '결제하기' : '승인'}</span>
             <span style={{ ...btn, background: b('bg-brand-solid-pressed', m), color: '#FFFFFF' }}>눌림</span>
             <span style={{ ...btn, border: `1px solid ${b('stroke-brand-solid', m)}`, color: b('fg-brand', m), padding: '7px 13px' }}>보류</span>

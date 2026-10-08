@@ -90,7 +90,7 @@ npm run build    # site/out — 정적 사이트 + 검색 색인 + llms.txt
 | `colors` (neutral) | DESIGN.md (source) → HR/Desk 복제 | ✓ (마커 영역) | bg-page, surface-*, text-*, border-*, semantic, chart palette |
 | `colors` (brand) | DESIGN.hr.md / DESIGN.desk.md | — (보존) | primary, primary-light, border-focus, border-focus-light |
 | `typography` | DESIGN.md → 복제 | ✓ (블록) | 15종 (Airbnb 네이밍 + Pretendard 한국어 우선): display-{xl,lg,md,sm} / title-{lg,md,sm} / body-{lg,md,sm} / label-{md,sm} / caption / badge / overline |
-| `rounded` | DESIGN.md → 복제 | ✓ (블록) | 7종: xs(2px), sm(4px), md(8px), lg(12px), xl(16px), 2xl(24px), full(9999px) — **v83 Toss 톤 컴포넌트 매핑**(button/input/select/textarea→sm, card/dialog→md, drawer→lg, tooltip/checkbox→xs, badge/avatar/switch/radio/progress→full) |
+| `rounded` | DESIGN.md → 복제 | ✓ (블록) | 7종: xs(2px), sm(4px), md(8px), lg(12px), xl(16px), 2xl(24px), full(9999px) — **v83 Toss 톤 컴포넌트 매핑**(button/input/select/textarea→sm, dialog→md, drawer→lg, tooltip/checkbox→xs, badge/avatar/switch/radio/progress→full — card 는 2026-10-08 부터 r4 16, `card.yaml`) |
 | `spacing` | DESIGN.md → 복제 | ✓ (블록) | 7종: xs, sm, md, lg, xl, 2xl, 3xl (4px 베이스) |
 | `shadow` (prose-token) | 모든 파일 prose 표 | 수동 동기 | 8종: sm/md/lg/xl × {light, dark} (Material 3 / Big Sur 패턴) |
 | `motion` (prose-token) | 모든 파일 prose 표 | 수동 동기 | 7종: duration {fast/base/slow/slower/loop} + ease-{out, linear} (v32 단발 전환 + v63 반복 애니메이션) |

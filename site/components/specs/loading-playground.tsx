@@ -142,15 +142,17 @@ export function SkeletonPlayground({ kit, screen, result }: { kit: LoadingKit; s
       code={code}
       stage={
         <div className="flex flex-col gap-3">
-          <div style={{ borderRadius: 16, overflow: 'hidden', background: tone(screen, 'bg-layer-default', mode), fontFamily: FONT, minHeight: 340 }}>
-            <div style={{ padding: '16px 24px 12px', fontSize: 17, lineHeight: '24px', fontWeight: 700, color: tone(screen, 'fg-neutral', mode) }}>{ctx.title}</div>
+          {/* 카드 — card.yaml 의 면 · 머리(위 24 · 좌우 24 · 아래 4 · 제목 16 / 22 · 700). 본문이 아래 24 를 가진다 */}
+          <div style={{ boxSizing: 'border-box', borderRadius: screen.card.radius, borderWidth: screen.card.borderW, borderStyle: 'solid', borderColor: tone(screen, 'stroke-neutral-weak', mode), overflow: 'hidden', background: tone(screen, 'bg-layer-default', mode), fontFamily: FONT, minHeight: 340 }}>
+            <div style={{ paddingTop: screen.card.head.top, paddingRight: screen.card.head.x, paddingBottom: screen.card.head.bottom, paddingLeft: screen.card.head.x, fontFamily: screen.card.title.fontFamily, fontSize: screen.card.title.fontSize, lineHeight: screen.card.title.lineHeight, fontWeight: screen.card.title.fontWeight, color: tone(screen, 'fg-neutral', mode) }}>{ctx.title}</div>
             {phase === 'failed' ? (
-              <div style={{ padding: '24px 0' }}>
-                <ResultSectionView look={result} mode={mode} kind="failure" size="medium" live title={failTitle} description="잠시 후 다시 시도해주세요." primary={{ label: '다시 시도', onClick: play }} />
+              // 카드 안 결과 — 좌우는 카드의 24 만(결과 자리의 좌우 0)
+              <div style={{ paddingTop: 24, paddingRight: sk.slowText.padXList, paddingBottom: 24, paddingLeft: sk.slowText.padXList }}>
+                <ResultSectionView look={result} mode={mode} kind="failure" size="medium" inCard live title={failTitle} description="잠시 후 다시 시도해주세요." primary={{ label: '다시 시도', onClick: play }} />
               </div>
             ) : (
               <div aria-busy style={{ display: 'flex', flexDirection: 'column', gap: sk.slowText.gap, padding: photo ? '0 0 24px' : '0 24px 24px' }}>
-                {phase === 'slow' && <SlowTextView look={sk} mode={mode} style={photo ? { padding: '0 24px' } : undefined} />}
+                {phase === 'slow' && <SlowTextView look={sk} mode={mode} style={photo ? { paddingLeft: sk.slowText.padXList, paddingRight: sk.slowText.padXList } : undefined} />}
                 {bone(phase === 'quiet')}
               </div>
             )}
@@ -295,7 +297,8 @@ export function ProgressPlayground({ kits, screens }: { kits: Record<Brand, Load
       code={code}
       stage={
         <div className="flex flex-col gap-3">
-          <div style={{ borderRadius: 16, padding: 24, background: tone(screen, surface === 'floating' ? 'bg-layer-floating' : 'bg-layer-default', mode) }}>
+          {/* 기본 면은 카드(card.yaml — 1px 테두리 · 여백 24), 떠 있는 면은 테두리 없이 */}
+          <div style={{ boxSizing: 'border-box', borderRadius: screen.card.radius, paddingTop: screen.card.pad, paddingRight: screen.card.pad, paddingBottom: screen.card.pad, paddingLeft: screen.card.pad, borderWidth: surface === 'floating' ? 0 : screen.card.borderW, borderStyle: 'solid', borderColor: tone(screen, 'stroke-neutral-weak', mode), background: tone(screen, surface === 'floating' ? 'bg-layer-floating' : 'bg-layer-default', mode) }}>
             <ProgressView look={kit.progress} mode={mode} meaning={meaning} label={ctx.label} value={value} max={ctx.max} />
           </div>
           <span className="text-[12px] leading-4 text-fd-muted-foreground">

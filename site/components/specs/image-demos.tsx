@@ -66,7 +66,8 @@ export function LogoCardDemo({ look, frame, list, paint, name, title, detail, am
 
 // ── Content Placeholder — 카드 그림이 없을 때 · 못 불러올 때(Image Frame ratio card · 폭 112) ─────────
 export type CardRow = { name: string; image: 'none' | 'broken' | 'ok'; pic?: PicKind };
-export function FrameCardDemo({ look, rows, sub, mode = 'auto' }: { look: ImageFrameLook; rows: CardRow[]; sub: { title: DColor; detail: DColor; surface: DColor }; mode?: ViewMode }) {
+// card — 줄을 담은 카드의 면(card.yaml — 1px 테두리 · 모서리 16 · 머리 없는 목록 카드라 위아래 12)
+export function FrameCardDemo({ look, rows, sub, card, mode = 'auto' }: { look: ImageFrameLook; rows: CardRow[]; sub: { title: DColor; detail: DColor; surface: DColor; border: DColor }; card: { radius: number; borderW: number; listBottom: number }; mode?: ViewMode }) {
   // 그림 없음은 처음부터 대체 그림, 성공은 1.6초에 오고 실패는 2초에 대체 그림으로(Image Frame — 스켈레톤은 처음부터 깐다)
   const { t, replay } = useRun(2600);
   const state = (c: CardRow) => {
@@ -76,7 +77,7 @@ export function FrameCardDemo({ look, rows, sub, mode = 'auto' }: { look: ImageF
   };
   return (
     <div style={{ fontFamily: FONT }}>
-      <div style={{ background: dcv(sub.surface, mode), borderRadius: 20, paddingTop: 8, paddingBottom: 8 }}>
+      <div style={{ boxSizing: 'border-box', background: dcv(sub.surface, mode), borderRadius: card.radius, borderWidth: card.borderW, borderStyle: 'solid', borderColor: dcv(sub.border, mode), paddingTop: card.listBottom, paddingBottom: card.listBottom }}>
         {rows.map((c) => (
           <div key={c.name} style={{ display: 'flex', alignItems: 'center', gap: 16, paddingTop: 12, paddingBottom: 12, paddingLeft: 24, paddingRight: 24 }}>
             <ImageFrameView look={look} mode={mode} ratio="card" width={112} pic={c.image === 'none' ? null : c.pic} state={state(c)} fallbackIcon="credit-card" alt={`${c.name} 카드 그림`} reveal />

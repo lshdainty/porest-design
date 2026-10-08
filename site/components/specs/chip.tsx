@@ -116,17 +116,17 @@ function Bar({ mode = 'auto', s, bleed = true }: { mode?: Mode; s?: ChipSize; bl
 }
 // 이번 달 · 식비 · 카페 · 교통으로 거른 거래
 const LEDGER: [string, string, string, string][] = [
-  ['점심 식사', '식비 · 현대카드 M', '-12,000원', 'orange'],
-  ['스타벅스', '카페 · 현대카드 M', '-5,600원', 'brown'],
-  ['지하철', '교통 · 국민 체크카드', '-1,450원', 'blue'],
-  ['편의점', '식비 · 현금', '-4,300원', 'orange'],
+  ['점심 식사', '식비 · 현대카드 M', '−12,000원', 'orange'],
+  ['스타벅스', '카페 · 현대카드 M', '−5,600원', 'brown'],
+  ['지하철', '교통 · 국민 체크카드', '−1,450원', 'blue'],
+  ['편의점', '식비 · 현금', '−4,300원', 'orange'],
 ];
 function LedgerRows({ mode, n = LEDGER.length }: { mode: Mode; n?: number }) {
   return (
     <>
       <div className="mt-4 flex items-center justify-between text-[13px]" style={{ color: rc('fg-neutral-subtle', mode) }}>
         <span>10월 1일 (목)</span>
-        <span className="tabular-nums">-23,350원</span>
+        <span className="tabular-nums">−23,350원</span>
       </div>
       {LEDGER.slice(0, n).map(([title, sub, amount, hue]) => (
         <Row key={title} mode={mode} title={title} sub={sub} amount={amount} hue={hue} />

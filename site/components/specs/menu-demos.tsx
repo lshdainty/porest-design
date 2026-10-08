@@ -22,7 +22,8 @@ export function DemoFrame({ kit, children, w = 440, mode = 'auto', note }: { kit
   return (
     <figure className="not-prose my-6">
       <div className="rounded-2xl bg-[#E9E9EC] p-4 dark:bg-fd-muted sm:p-6">
-        <div className="mx-auto w-full rounded-xl" style={{ maxWidth: w, background: tone(kit, 'bg-layer-default', mode), padding: 20, boxSizing: 'border-box', fontFamily: FONT }}>
+        {/* 카드 — card.yaml 의 면(흰 면 + 1px 테두리 · 모서리 16 · 여백 24) */}
+        <div className="mx-auto w-full" style={{ maxWidth: w, background: tone(kit, 'bg-layer-default', mode), borderRadius: kit.card.radius, borderWidth: kit.card.borderW, borderStyle: 'solid', borderColor: tone(kit, 'stroke-neutral-weak', mode), paddingTop: kit.card.pad, paddingRight: kit.card.pad, paddingBottom: kit.card.pad, paddingLeft: kit.card.pad, boxSizing: 'border-box', fontFamily: FONT }}>
           {children}
         </div>
       </div>
@@ -115,7 +116,7 @@ export function MemoMenuDemo({ kit, ov, kebab, mode = 'auto' }: { kit: MenuKit; 
   };
   return (
     <DemoFrame kit={kit} mode={mode}>
-      <div style={{ fontSize: 17, lineHeight: '24px', fontWeight: 700, color: tone(kit, 'fg-neutral', mode), paddingBottom: 4 }}>메모</div>
+      <div style={{ fontFamily: kit.card.title.fontFamily, fontSize: kit.card.title.fontSize, lineHeight: kit.card.title.lineHeight, fontWeight: kit.card.title.fontWeight, color: tone(kit, 'fg-neutral', mode), paddingBottom: kit.card.head.contentBottom }}>메모</div>
       <div>
         {memos.map((m, i) => (
           <div key={m.id} style={rowLine(kit, mode, i === memos.length - 1)}>
@@ -164,7 +165,7 @@ export function PeopleMenuDemo({ kit, ov, kebab, mode = 'auto' }: { kit: MenuKit
   };
   return (
     <DemoFrame kit={kit} mode={mode} w={520}>
-      <div style={{ fontSize: 17, lineHeight: '24px', fontWeight: 700, color: tone(kit, 'fg-neutral', mode), paddingBottom: 4 }}>직원</div>
+      <div style={{ fontFamily: kit.card.title.fontFamily, fontSize: kit.card.title.fontSize, lineHeight: kit.card.title.lineHeight, fontWeight: kit.card.title.fontWeight, color: tone(kit, 'fg-neutral', mode), paddingBottom: kit.card.head.contentBottom }}>직원</div>
       {people.map((p, i) => (
         <div key={p.name} style={rowLine(kit, mode, i === people.length - 1)}>
           <RowText kit={kit} mode={mode} title={p.name} sub={`${p.team} · ${p.role} · ${p.joined} 입사`} />
@@ -344,12 +345,13 @@ export function MenuPlayground({ kits, ovs, kebabs }: { kits: Record<Brand, Menu
       surface={tone(kit, 'bg-layer-basement', mode)}
       stage={
         <div className="w-full max-w-[400px]" data-brand={brand}>
-          <div style={{ borderRadius: 12, padding: '4px 16px 4px 20px', background: tone(kit, 'bg-layer-default', mode), fontFamily: FONT }}>
+          {/* 카드 — card.yaml 의 면(1px 테두리 · 모서리 16 · 좌우 24, 머리 없는 목록 카드라 위아래 12) */}
+          <div style={{ boxSizing: 'border-box', borderRadius: kit.card.radius, borderWidth: kit.card.borderW, borderStyle: 'solid', borderColor: tone(kit, 'stroke-neutral-weak', mode), paddingTop: kit.card.listBottom, paddingRight: kit.card.pad, paddingBottom: kit.card.listBottom, paddingLeft: kit.card.pad, background: tone(kit, 'bg-layer-default', mode), fontFamily: FONT }}>
             <div style={rowLine(kit, mode, true)}>
               <span aria-hidden style={{ display: 'grid', placeItems: 'center', width: 36, height: 36, borderRadius: 9999, background: tone(kit, 'chart-orange-weak', mode), color: tone(kit, 'chart-orange-contrast', mode), fontSize: 14, fontWeight: 700, flexShrink: 0 }}>
                 점
               </span>
-              <RowText kit={kit} mode={mode} title="점심 식사" sub="식비 · 현대카드 M · -12,000원" />
+              <RowText kit={kit} mode={mode} title="점심 식사" sub="식비 · 현대카드 M · −12,000원" />
               <MenuControl
                 look={kit.menu}
                 mode={mode}
@@ -445,7 +447,7 @@ export function MenuSheetPlayground({ kits, ovs, kebabs }: { kits: Record<Brand,
             style={{ isolation: 'isolate', height: 520, borderRadius: 28, border: '6px solid var(--p-frame)', background: tone(kit, 'bg-layer-default', mode), fontFamily: FONT }}
           >
             <div style={{ padding: '20px 24px 0' }}>
-              <div style={{ fontSize: 17, lineHeight: '24px', fontWeight: 700, color: tone(kit, 'fg-neutral', mode), paddingBottom: 4 }}>메모</div>
+              <div style={{ fontFamily: kit.card.title.fontFamily, fontSize: kit.card.title.fontSize, lineHeight: kit.card.title.lineHeight, fontWeight: kit.card.title.fontWeight, color: tone(kit, 'fg-neutral', mode), paddingBottom: kit.card.head.contentBottom }}>메모</div>
               {MEMOS.map((m, i) => (
                 <div key={m.title} style={rowLine(kit, mode, i === MEMOS.length - 1)}>
                   <RowText kit={kit} mode={mode} title={m.title} sub={m.sub} />

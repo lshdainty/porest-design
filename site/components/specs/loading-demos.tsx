@@ -64,12 +64,19 @@ export const CtlRow = ({ children, note }: { children: ReactNode; note?: ReactNo
   </div>
 );
 // 흰 카드(화면의 묶음) — 제목은 틀이라 처음부터 그린다
-export function DemoCard({ screen, mode = 'auto', title, right, children, style }: { screen: LdScreen; mode?: ViewMode; title?: ReactNode; right?: ReactNode; children?: ReactNode; style?: CSSProperties }) {
+// 흰 카드 — card.yaml 의 면(흰 면 + 1px stroke-neutral-weak · 모서리 16 · 그림자 없음, 값은 screen.card). 제목이 있으면 목록 카드 —
+// 머리 위 24 · 좌우 24 · 아래 4, 줄이 제 좌우 24 를 가지고 카드 아래 12. 머리 없는 목록 카드는 위도 12. 글 카드(body content)는 여백 24
+export function DemoCard({ screen, mode = 'auto', title, right, children, style, body }: { screen: LdScreen; mode?: ViewMode; title?: ReactNode; right?: ReactNode; children?: ReactNode; style?: CSSProperties; body?: 'list' | 'content' }) {
+  const c = screen.card;
+  const list = (body ?? 'list') === 'list';
+  const pad: CSSProperties = list
+    ? { paddingTop: title !== undefined ? 0 : c.listBottom, paddingRight: 0, paddingBottom: c.listBottom, paddingLeft: 0 }
+    : { paddingTop: c.pad, paddingRight: c.pad, paddingBottom: c.pad, paddingLeft: c.pad };
   return (
-    <div style={{ borderRadius: 16, background: tone(screen, 'bg-layer-default', mode), paddingBottom: 8, fontFamily: FONT, ...style }}>
+    <div style={{ boxSizing: 'border-box', borderRadius: c.radius, background: tone(screen, 'bg-layer-default', mode), borderWidth: c.borderW, borderStyle: 'solid', borderColor: tone(screen, 'stroke-neutral-weak', mode), overflow: 'hidden', fontFamily: FONT, ...pad, ...style }}>
       {title !== undefined && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, minHeight: 24, padding: '16px 24px 4px' }}>
-          <span style={{ fontSize: 17, lineHeight: '24px', fontWeight: 700, color: tone(screen, 'fg-neutral', mode) }}>{title}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: c.head.gap, minHeight: 24, paddingTop: list ? c.head.top : 0, paddingRight: list ? c.head.x : 0, paddingBottom: c.head.bottom, paddingLeft: list ? c.head.x : 0 }}>
+          <span style={{ fontFamily: c.title.fontFamily, fontSize: c.title.fontSize, lineHeight: c.title.lineHeight, fontWeight: c.title.fontWeight, color: tone(screen, 'fg-neutral', mode) }}>{title}</span>
           {right}
         </div>
       )}
@@ -77,6 +84,8 @@ export function DemoCard({ screen, mode = 'auto', title, right, children, style 
     </div>
   );
 }
+// 카드를 놓는 회색 바닥 — 화면 끝 24 · 카드 사이 8(card.yaml root.gap)
+const floorStyle = (screen: LdScreen, mode: ViewMode): CSSProperties => ({ display: 'flex', flexDirection: 'column', gap: 8, background: tone(screen, 'bg-layer-basement', mode), borderRadius: 20, paddingTop: screen.card.pad, paddingRight: screen.card.pad, paddingBottom: screen.card.pad, paddingLeft: screen.card.pad });
 
 // ── 기다리는 영역의 시계 — 시작하면 0.1초마다 센다, 다 오거나(loadAt) 요청 제한(timeout)이면 멈춘다 ─────────
 export type WaitStatus = 'idle' | 'quiet' | 'waiting' | 'slow' | 'done' | 'failed';
@@ -149,14 +158,16 @@ export function SkeletonListDemo({ kit, screen, result, list, mode = 'auto' }: {
   const spacer = kit.skeleton.slowText.gap - dims.padY;
   return (
     <Board w={400}>
-      <div style={{ background: tone(screen, 'bg-layer-basement', mode), borderRadius: 20, padding: 12 }}>
+      <div style={floorStyle(screen, mode)}>
         <DemoCard screen={screen} mode={mode} title="최근 거래" style={{ minHeight: 330 }}>
           <div aria-busy={pending || undefined}>
             {failed ? (
-              <div style={{ padding: '24px 0 16px' }}>
+              // 카드 안 결과 — 좌우는 목록 카드의 24 만(결과 자리의 좌우 0)
+              <div style={{ paddingTop: 24, paddingRight: kit.skeleton.slowText.padXList, paddingBottom: 16, paddingLeft: kit.skeleton.slowText.padXList }}>
                 <ResultSectionView
                   look={result}
                   mode={mode}
+                  inCard
                   kind="failure"
                   size="medium"
                   live
@@ -175,7 +186,7 @@ export function SkeletonListDemo({ kit, screen, result, list, mode = 'auto' }: {
             ) : pending ? (
               <>
                 {st === 'slow' && (
-                  <div style={{ padding: `0 ${dims.padX}px`, marginBottom: spacer }}>
+                  <div style={{ paddingLeft: kit.skeleton.slowText.padXList, paddingRight: kit.skeleton.slowText.padXList, marginBottom: spacer }}>
                     <SlowTextView look={kit.skeleton} mode={mode} />
                   </div>
                 )}
@@ -234,16 +245,16 @@ export function SkeletonPeriodDemo({ kit, screen, mode = 'auto' }: { kit: Loadin
   const pending = st === 'quiet' || st === 'waiting' || st === 'slow';
   return (
     <Board w={400}>
-      <div style={{ background: tone(screen, 'bg-layer-basement', mode), borderRadius: 20, padding: 12 }}>
-        <DemoCard screen={screen} mode={mode} style={{ paddingBottom: 20 }}>
-          <div style={{ display: 'flex', alignItems: 'center', padding: '8px 8px 0' }}>
+      <div style={floorStyle(screen, mode)}>
+        <DemoCard screen={screen} mode={mode}>
+          <div style={{ display: 'flex', alignItems: 'center', paddingTop: 0, paddingRight: 8, paddingBottom: 0, paddingLeft: 8 }}>
             {nav(-1)}
             <span aria-live="polite" style={{ fontSize: 17, lineHeight: '24px', fontWeight: 700, color: fg }}>
               {monthName(month)}
             </span>
             {nav(1)}
           </div>
-          <div aria-busy={pending || undefined} style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '8px 24px 0' }}>
+          <div aria-busy={pending || undefined} style={{ display: 'flex', flexDirection: 'column', gap: 2, paddingTop: 8, paddingRight: 24, paddingBottom: 12, paddingLeft: 24 }}>
             <span style={{ fontSize: 13, lineHeight: '18px', color: tone(screen, 'fg-neutral-subtle', mode) }}>지출</span>
             {pending || st === 'failed' ? (
               st === 'failed' ? (
@@ -278,14 +289,15 @@ export function CircleBasicDemo({ kit, screen, list, search, mode = 'auto' }: { 
   const pending = rs === 'quiet' || rs === 'waiting' || rs === 'slow';
   return (
     <Board w={400}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, background: tone(screen, 'bg-layer-basement', mode), borderRadius: 20, padding: 12 }}>
+      <div style={floorStyle(screen, mode)}>
         <DemoCard screen={screen} mode={mode} title="최근 거래" right={isRefreshing && <ProgressCircleView look={kit.circle} mode={mode} size="24" label="최근 거래 새로 고치는 중" />}>
           <ListView look={list} rows={TX.slice(0, 2)} mode={mode} live={false} />
         </DemoCard>
         <DemoCard screen={screen} mode={mode} title="검색 결과" style={{ minHeight: 236 }}>
           <div aria-busy={pending || undefined} style={{ position: 'relative', minHeight: 172 }}>
             {pending ? (
-              <div style={{ display: 'grid', placeItems: 'center', minHeight: 172, visibility: rs === 'quiet' ? 'hidden' : undefined }}>
+              // 목록 카드 바로 아래 영역 — 원 · 오래 걸림 글은 좌우 24 안에(skeleton.yaml slowText.paddingX 비고)
+              <div style={{ display: 'grid', placeItems: 'center', minHeight: 172, paddingLeft: kit.skeleton.slowText.padXList, paddingRight: kit.skeleton.slowText.padXList, visibility: rs === 'quiet' ? 'hidden' : undefined }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: kit.skeleton.slowText.gap }}>
                   <ProgressCircleView look={kit.circle} mode={mode} size="40" />
                   {rs === 'slow' && <SlowTextView look={kit.skeleton} mode={mode} align="center" />}
@@ -349,8 +361,9 @@ export function CircleUploadDemo({ kit, screen, start, mode = 'auto' }: { kit: L
   const busy = uploaded !== null;
   return (
     <Board w={400}>
-      <DemoCard screen={screen} mode={mode} title="영수증 사진" style={{ paddingBottom: 20 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '8px 24px 0' }}>
+      <div style={floorStyle(screen, mode)}>
+      <DemoCard screen={screen} mode={mode} title="영수증 사진">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, paddingTop: 8, paddingRight: 24, paddingBottom: 12, paddingLeft: 24 }}>
           <div className="relative" style={{ width: 80, height: 80 }}>
             <ReceiptPhoto size={80} />
             {busy && (
@@ -364,6 +377,7 @@ export function CircleUploadDemo({ kit, screen, start, mode = 'auto' }: { kit: L
           </span>
         </div>
       </DemoCard>
+      </div>
       <CtlRow note={busy ? `${Math.round(((uploaded ?? 0) / FILE_SIZE) * 100)}%` : undefined}>
         <ButtonView look={start} mode={mode} label="사진 올리기" state={busy ? 'loading' : 'live'} onClick={go} />
       </CtlRow>
@@ -467,7 +481,7 @@ export function PullToRefreshDemo({ kit, screen, list, snack, mode = 'auto' }: {
             onPointerCancel={onUp}
             style={{ position: 'absolute', inset: 0, overflowY: 'auto', touchAction: 'pan-x', userSelect: 'none', cursor: refreshing ? 'progress' : 'grab' }}
           >
-            <div style={{ transform: `translateY(${pull}px)`, transition: anim ?? undefined, padding: 12 }}>
+            <div style={{ transform: `translateY(${pull}px)`, transition: anim ?? undefined, paddingTop: 8, paddingRight: screen.card.pad, paddingBottom: 12, paddingLeft: screen.card.pad }}>
               <DemoCard screen={screen} mode={mode} title="최근 거래">
                 <ListView look={list} rows={compactRows(TX.slice(0, 5))} mode={mode} live={false} />
               </DemoCard>
@@ -528,7 +542,8 @@ export function FogRowDemo({ kit, chip, screen, mode = 'auto' }: { kit: LoadingK
   const [pick, setPick] = useState(FILTER_CHIPS[0]);
   return (
     <Board w={400}>
-      <div style={{ background: tone(screen, 'bg-layer-default', mode), borderRadius: 20, padding: '20px 24px', fontFamily: FONT, display: 'flex', flexDirection: 'column', gap: 16, overflow: 'hidden' }}>
+      <div style={floorStyle(screen, mode)}>
+      <div style={{ boxSizing: 'border-box', background: tone(screen, 'bg-layer-default', mode), borderWidth: screen.card.borderW, borderStyle: 'solid', borderColor: tone(screen, 'stroke-neutral-weak', mode), borderRadius: screen.card.radius, paddingTop: screen.card.pad, paddingRight: screen.card.pad, paddingBottom: screen.card.pad, paddingLeft: screen.card.pad, fontFamily: FONT, display: 'flex', flexDirection: 'column', gap: 16, overflow: 'hidden' }}>
         <ChipGroupView look={chip} mode={mode} layout="scroll" role="radiogroup" ariaLabel="필터">
           {FILTER_CHIPS.map((t) => (
             <ChipView key={t} look={chip} mode={mode} label={t} role="radio" selected={pick === t} tabIndex={pick === t ? 0 : -1} onClick={() => setPick(t)} />
@@ -543,6 +558,7 @@ export function FogRowDemo({ kit, chip, screen, mode = 'auto' }: { kit: LoadingK
             ))}
           </ScrollFogView>
         </div>
+      </div>
       </div>
     </Board>
   );

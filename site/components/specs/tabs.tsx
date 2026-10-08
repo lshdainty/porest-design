@@ -156,10 +156,10 @@ function StatsScreen({ mode, value = 'category', scale, h = 440, rows = 4 }: { m
 }
 // 가계부 — 목록 바로 위 Segmented(전체 · 지출 · 수입)
 const LEDGER_ROWS: [string, string, string, string][] = [
-  ['점심 식사', '식비 · 현대카드 M', '-12,000원', 'orange'],
+  ['점심 식사', '식비 · 현대카드 M', '−12,000원', 'orange'],
   ['급여', '수입 · 국민은행', '+3,200,000원', 'green'],
-  ['스타벅스', '카페 · 현대카드 M', '-5,600원', 'brown'],
-  ['지하철', '교통 · 국민 체크카드', '-1,450원', 'blue'],
+  ['스타벅스', '카페 · 현대카드 M', '−5,600원', 'brown'],
+  ['지하철', '교통 · 국민 체크카드', '−1,450원', 'blue'],
 ];
 export const LEDGER_SEG: TabItem[] = [
   { value: 'all', label: '전체' },

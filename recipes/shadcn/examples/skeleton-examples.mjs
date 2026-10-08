@@ -67,8 +67,10 @@ const SHIMMER = [
   "motion-reduce:animate-none motion-reduce:opacity-0",
 ].join(" ");
 
-// 오래 걸림 글 — t4 · 400 · fg-neutral-muted, 단어 단위 줄바꿈(v114)
-const SLOW = "m-0 text-t4 font-normal text-fg-neutral-muted break-keep [overflow-wrap:break-word]";
+// 오래 걸림 글 — t4 · 400 · fg-neutral-muted, 단어 단위 줄바꿈(v114). 영역이 목록 카드(body="list")의 바로 아래 자식이면 좌우 24 —
+// 목록 카드는 줄마다 24 를 가져 카드 여백이 없다(23B). 내용 카드 안이면 카드의 24 가 맡는다
+const SLOW =
+  "m-0 text-t4 font-normal text-fg-neutral-muted break-keep [overflow-wrap:break-word] [[data-slot=card][data-body=list]>[data-slot=loading-region]>&]:px-x6";
 
 // 기다린 뒤 내용으로 — 투명도 0 → 1, motion-duration-d3 · motion-ease-enter(모션 줄이기면 바로)
 const ENTER = "animate-[fade-in_var(--motion-duration-d3)_var(--motion-ease-enter)] motion-reduce:animate-none";
@@ -165,6 +167,7 @@ const PC_KEYFRAMES = [
 
 const RESULT_BASE = [
   "flex grow flex-col items-center justify-center px-x12 py-x4 text-center font-sans transition-none",
+  "[[data-slot=card]_&]:px-0 [[data-slot=card][data-body=list]>&]:px-x6 [[data-slot=card][data-body=list]>[data-slot=loading-region]>&]:px-x6",
   "animate-in fade-in-0 duration-[var(--motion-duration-d3)] ease-[var(--motion-ease-enter)] motion-reduce:animate-none",
 ].join(" ");
 const RESULT_ASSET = "mb-x4 flex shrink-0 [&>svg]:size-10 [&>svg]:[stroke-width:1.5]";
@@ -372,12 +375,14 @@ function loadingRegion({ state = "waiting", fallback = "", failureHtml = "", con
   ])}>${body}</div>`;
 }
 
-// 화면 그림 — 흰 카드 · 카드 제목 · 달 넘기기 · 금액 · 거래 줄(미리보기 그림)
+// 화면 그림 — 카드 · 카드 제목 · 달 넘기기 · 금액 · 거래 줄(미리보기 그림). 카드는 card.md(2026-10-08)의 목록 카드 — 흰 면 + 1px stroke-neutral-weak ·
+// 모서리 16 · 그림자 없음, 머리 위 24 · 좌우 24 · 아래 4 · 제목 16 / 22 · 700, 카드 아래 12(마지막 줄의 12 와 합쳐 보이는 24)
 const CARD =
-  "display:flex; flex-direction:column; width:100%; max-width:360px; padding-bottom:var(--spacing-x2); border-radius:var(--radius-r4); background:var(--color-bg-layer-default); box-shadow:inset 0 0 0 1px var(--color-stroke-neutral-subtle); font-family:var(--font-sans);";
+  "display:flex; flex-direction:column; width:100%; max-width:360px; padding-bottom:var(--spacing-x3); border:1px solid var(--color-stroke-neutral-weak); border-radius:var(--radius-r4); background:var(--color-bg-layer-default); font-family:var(--font-sans);";
 const CARD_TITLE =
-  "margin:0; padding:var(--spacing-x5) var(--spacing-x6) var(--spacing-x2); font-size:var(--text-t6); line-height:var(--text-t6--line-height); font-weight:700; color:var(--color-fg-neutral);";
-const card = (title, body, extra = "") => `<div style="${CARD} ${extra}"><h3 style="${CARD_TITLE}">${esc(title)}</h3>${body}</div>`;
+  "margin:0; padding:var(--spacing-x6) var(--spacing-x6) var(--spacing-x1); font-size:var(--text-t5); line-height:var(--text-t5--line-height); font-weight:700; color:var(--color-fg-neutral);";
+// data-slot · data-body 는 레시피 Card 의 자리 — 안의 Result Section 이 카드 안의 좌우(23B)를 따른다
+const card = (title, body, extra = "") => `<div data-slot="card" data-variant="default" data-body="list" style="${CARD} ${extra}"><h3 style="${CARD_TITLE}">${esc(title)}</h3>${body}</div>`;
 const CAPTION =
   "font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:var(--text-t2); line-height:var(--text-t2--line-height); color:var(--color-fg-neutral-subtle);";
 const labeled = (html, caption) =>
@@ -419,8 +424,8 @@ function TransactionRowsSkeleton({ rows }: { rows: number }) {
   )
 }
 
-<Card>
-  <CardHeader><CardTitle>최근 거래</CardTitle></CardHeader>{/* 틀 — 처음부터 그린다 */}
+<Card body="list">
+  <CardHeader><CardTitle>최근 거래</CardTitle></CardHeader>{/* 틀 — 처음부터 그린다. 목록 카드는 줄이 가장자리까지(card.md) */}
   <LoadingRegion
     pending={query.isPending}
     failed={query.isError && !query.data}

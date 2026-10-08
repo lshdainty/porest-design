@@ -10,6 +10,8 @@ import { bottomSheetFigures } from './bottom-sheet';
 import { buttonFigures } from './button';
 import { buttonGuideFigures } from './button-guides';
 import { calloutFigures } from './callout';
+import { cardFigures } from './card';
+import { chartFigures } from './chart';
 import { checkboxFigures } from './checkbox';
 import { contentPlaceholderFigures } from './content-placeholder';
 import { datePickerFigures } from './date-picker';
@@ -34,6 +36,7 @@ import { pageBannerFigures } from './page-banner';
 import { paginationFigures } from './pagination';
 import { radioGroupFigures } from './radio-group';
 import { resultSectionFigures } from './result-section';
+import { searchableListFigures } from './searchable-list';
 import { selectFigures } from './select';
 import { selectBoxFigures } from './select-box';
 import { sideNavigationFigures } from './side-navigation';
@@ -42,7 +45,9 @@ import { scrollFogFigures } from './scroll-fog';
 import { skeletonFigures } from './skeleton';
 import { segmentedControlFigures } from './segmented-control';
 import { snackbarFigures } from './snackbar';
+import { swipeActionsFigures } from './swipe-actions';
 import { switchFigures } from './switch';
+import { tableFigures } from './table';
 import { tagGroupFigures } from './tag-group';
 import { tablePaginationFigures } from './table-pagination';
 import { tabsFigures } from './tabs';
@@ -62,6 +67,8 @@ const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactN
   'bottom-sheet': bottomSheetFigures,
   button: { ...buttonFigures, ...buttonGuideFigures },
   callout: calloutFigures,
+  card: cardFigures,
+  chart: chartFigures,
   checkbox: checkboxFigures,
   'content-placeholder': contentPlaceholderFigures,
   'date-picker': datePickerFigures,
@@ -86,6 +93,7 @@ const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactN
   pagination: paginationFigures,
   'radio-group': radioGroupFigures,
   'result-section': resultSectionFigures,
+  'searchable-list': searchableListFigures,
   select: selectFigures,
   'select-box': selectBoxFigures,
   'side-navigation': sideNavigationFigures,
@@ -94,7 +102,9 @@ const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactN
   skeleton: skeletonFigures,
   'segmented-control': segmentedControlFigures,
   snackbar: snackbarFigures,
+  'swipe-actions': swipeActionsFigures,
   switch: switchFigures,
+  table: tableFigures,
   'tag-group': tagGroupFigures,
   'table-pagination': tablePaginationFigures,
   tabs: tabsFigures,

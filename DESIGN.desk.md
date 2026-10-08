@@ -1826,11 +1826,26 @@ HR(B2B 조직 관리)은 별도 `DESIGN.hr.md` 파일 — `primary` = `#357B5F` 
 
 ## Colors
 
+### 증감 — 방향 색 (2026-10-08)
+
+지난 기간에 견준 변화(증감)는 방향으로 칠한다 — 오르거나 늘면 ▲ `fg-critical`(빨강), 내리거나 줄면 ▼ `fg-informative`(파랑)다. 지출 · 수입 · 순자산 · 예산 · 주식 · HR 통계 어디서나 같다 — 증권 화면의 관례(오르면 빨강)와 한 규칙이다. 사용자가 데이터 표시 비교 페이지(https://claude.ai/artifact/85zjM3PRBiEGnqjXXRrPRj) 8B 로 정했다 — 좋고 나쁨으로 칠하기(지출 ▲ 빨강 · 순자산 ▲ 초록)와 색 없이 두기는 고르지 않았다.
+
+| 방향 | 표시 | 색 | 흰 면 · 다크 카드 위 |
+|---|---|---|---|
+| 오름 · 늚 | ▲ + 값("▲ 12%") | `fg-critical` | 5.06 · 6.08 |
+| 내림 · 줆 | ▼ + 값("▼ 3%") | `fg-informative` | 5.09 · 6.12 |
+| 그대로 | "변화 없음" | `fg-neutral-subtle` | 5.50 · 6.09 |
+
+- 늘 ▲ · ▼ 와 값을 함께 쓰고 색만으로 알리지 않는다(Inclusive Design). 부호는 화살표가 말한다 — "+12%" · "−12%" 를 화살표와 겹쳐 쓰지 않는다. 값 뒤의 기준("지난달보다")은 `fg-neutral-subtle` 이다.
+- 좋고 나쁨은 글이 말한다 — "지난달보다 12% 더 썼어요". 보조 기술에는 문장으로 읽힌다(화살표는 숨긴다).
+- 브랜드로 채운 면(Desk 순자산 카드) 위에서는 흰 글자 + ▲ · ▼ + 글이다 — 빨강 · 파랑이 채움 위 1.66 · 1.65 라 읽히지 않는다. 이 규칙의 하나뿐인 예외다(사용자 결정 2026-10-08).
+- 부품은 `specs/components/card.md` 의 "증감 표기"(Delta) — 표 · 차트의 증감 칸도 같은 규칙이다. 빼기 부호는 International Design 의 U+2212 다.
+
 ### v111 — 카테고리 옅은 바탕 (2026-09-30)
 
 SEED 의 배너 색(`$color.banner.*` 10색)을 porest 에 둘지 보고, 같은 자리에서 쓰는 porest 의 옅은 바탕을 팔레트 단계로 정했다. 사용자가 비교 페이지(https://claude.ai/artifact/Re8MSU1eb6VKwg3wfySbHS)에서 넷을 정했다 — 배너 10색은 두지 않음 · 작은 면 200 · 다크 300 · 넓은 면은 한 단계 옅게 따로 · 글자 · 아이콘은 v109 규칙.
 
-**아직 두 웹 · 앱에는 들어가지 않았다.**
+**Desk 웹에는 2026-10-06 토큰 가져오기로 값이 들어갔다** — 카테고리 타일은 아직 화면에서 18% 를 섞는다. Desk 앱 · HR 은 아직이다(앱 적용 단계).
 
 - SEED 의 안내 메시지(Callout · Page Banner)는 배너 색이 아니라 역할 색(약한 배경 + 대비 글자)을 쓴다 — porest 에는 v102 · v109 로 있다. `$color.banner.*` 는 SEED 컴포넌트 104개 가운데 쓰는 것이 없는 장식 색이고, porest 에는 홍보 배너 자리가 없어 두지 않는다.
 - 대신 차트 10색을 화면마다 따로 섞던 옅은 바탕(웹 타일 18% · 캘린더 칩 17% · 메모 카드 12 ~ 16% · 앱 13 · 22%)을 토큰으로 둔다.
@@ -1838,7 +1853,7 @@ SEED 의 배너 색(`$color.banner.*` 10색)을 porest 에 둘지 보고, 같은
 | 토큰 | 라이트 | 다크 | 쓰는 곳 |
 |---|---|---|---|
 | chart-{hue}-weak | 200(회색 400) | 300(회색 400) | 작은 면 — 카테고리 타일 · 캘린더 칩 · 주식 나라 표시 · 태그 배지. 지금 제품과 같은 진하기(흰 바탕과 1.25:1 이상, 다크 표면과 1.38:1 이상) |
-| chart-{hue}-subtle | 100(회색 300) | 200(회색 300) | 넓은 면 — 메모 카드 · 배너. 한 단계 옅다(1.12:1 · 다크 1.15:1 이상) |
+| chart-{hue}-subtle | 100(회색 300) | 200(회색 300) | 넓은 면 — 메모 카드 · 배너 · 차트 위 지표 타일(켠 계열 — 2026-10-08). 한 단계 옅다(1.12:1 · 다크 1.15:1 이상) |
 | chart-{hue}-contrast | 800 | 900 | 옅은 바탕 위 글자 — 일반 차트 색보다 한 단계 바깥(v109 규칙). 두 바탕 위 모두 5.02:1 이상 |
 
 - 아이콘은 chart-{hue} 그대로다(라이트 700 · 다크 800) — 작은 면 위 3.63:1(라이트) · 4.35:1(다크) 이상으로 UI 3:1 을 넘는다.
@@ -1849,14 +1864,14 @@ SEED 의 배너 색(`$color.banner.*` 10색)을 porest 에 둘지 보고, 같은
 
 v108 에서 미뤄 둔 차트 10색을 팔레트 단계로 옮긴다. 사용자가 비교 페이지(https://claude.ai/artifact/QLVzEaAuyakobiWKAwXTUu)에서 넷을 정했다 — 팔레트 가족에서 · 다크 800-dark · 배정 순서는 제품 순서 · 10개가 넘으면 상위 9 + 기타. SEED 에는 차트 전용 색이 없다(팔레트 7가족과 배너 색 10개뿐).
 
-**아직 두 웹 · 앱에는 들어가지 않았다.**
+**Desk 웹에는 2026-10-06 토큰 가져오기로 들어갔다.** Desk 앱은 옛 v21 상수, HR 은 recharts 데모 색 그대로다 — 앱 적용 단계에서 옮긴다. 축 · 툴팁 · 범례 · 빈 · 실패는 `specs/components/chart.md`(2026-10-08)다.
 
 | 자리 | 값 |
 |---|---|
 | 가족 | 팔레트에 yellow · indigo · violet · pink · brown 을 더했다(100 ~ 1000, 라이트 · 다크). 700 이 v21 ~ v24 차트 색 그대로이고, 나머지 단계는 v108 규칙(목표 L* · SEED 채도 비율)으로 뽑았다 |
 | 라이트 | chart-{hue} = {hue}-700(회색은 gray-700). 빨강 · 주황 · 초록 · 파랑은 의미 색 가족이라 위험 · 경고 · 긍정 · 정보 채움과 같은 색이다 |
 | 다크 | chart-{hue}-dark = {hue}-800-dark — 다크 의미 색 글자와 같은 단계(L* 69, 다크 표면 위 6:1). 옛 chart-{hue}-light 는 별칭으로 남기고 제품 CSS 가 옮겨 가면 지운다 |
-| 순서 | 색을 고르지 않은 항목(도넛 · 순위 막대 · 주식 비중)은 blue → green → orange → violet → pink → indigo → red → yellow → brown → gray 순으로 받는다 — 제품이 쓰는 순서 |
+| 순서 | 색을 고르지 않은 항목(도넛 · 순위 막대 · 주식 비중)은 blue → green → orange → violet → pink → indigo → red → yellow → brown → gray 순으로 받는다 — 제품이 쓰는 순서. 저장된 색이 있는 항목과 한 차트에 있으면 그 색을 건너뛰고 아직 쓰지 않은 색부터 받는다 — 같은 색이 둘 나오지 않는다(2026-10-08) |
 | 넘칠 때 | 한 차트에 10개가 넘으면 상위 9개 + 회색 "기타" 로 묶는다. 회색은 기타 전용이다 |
 
 - 바뀌는 라이트 값은 다섯이다 — 빨강 #C73838 → #D72323(ΔE 4.8) · 주황 #B36418 → #BE490D(10.0) · 초록 #2D8060 → #167F3F(8.2) · 파랑 #2C70BF → #1D6EC9(1.2) · 회색 #6B7484 → #62697A(4.3). 노랑 · 남색 · 보라 · 분홍 · 갈색은 그대로다.
@@ -2725,9 +2740,9 @@ html {
 |---|---|---|
 | `layout-margin` | `32px` | 웹 페이지 좌우 여백 · 768 이상 |
 | `layout-gutter` | `24px` | 웹 칸 · 카드 사이 · 768 이상 |
-| `layout-gutter-narrow` | `16px` | 칸 · 카드 사이 · 768 미만(v103) |
+| `layout-gutter-narrow` | `16px` | 칸 사이 · 768 미만(v103) — 위아래로 쌓은 카드 사이는 8(2026-10-08) |
 
-- 768 미만의 화면 가장자리는 `spacing-global-gutter`(24px)다. 칸 사이(16)가 가장자리(24)보다 좁아 카드 묶음이 한 덩어리로 보인다.
+- 768 미만의 화면 가장자리는 `spacing-global-gutter`(24px)다. 카드는 위아래로 8 띄워 쌓는다(2026-10-08 — SEED "8px Gap", `specs/components/card.md`) — 카드 사이가 가장자리보다 좁아 카드 묶음이 한 덩어리로 보인다.
 - SEED 문서 안에서도 값이 둘이다 — Dashboard 격자 표는 여백 32 · 칸 사이 24, Breakpoint 표는 768 이상 여백 24 · 칸 사이 32(768 미만 여백 12 · 칸 사이 16). 두 웹 모두 관리 도구라 Dashboard 격자를 따른다.
 
 #### 역할 간격
@@ -3019,13 +3034,13 @@ DESIGN.md baseline 정의 참고 — CSS logical property 기반 LTR ↔ RTL 자
 
 - **표면 색** — 배경의 밝기 · 채도를 바꾼다(스낵바 · 플로팅 버튼). 다크 모드는 높을수록 밝아진다(`bg-layer-floating`).
 - **그림자** — 떠 있는 높이를 그림자의 크기 · 퍼짐 · 투명도로. 다크 모드에서 잘 안 보이므로 **화면에서 주목도가 높은 몇 안 되는 요소에만** 쓴다(떠 있는 탭 바 · 떠 있는 버튼 · 메뉴 · 팝오버 — `shadow-s3`).
-- **선** — 가장자리에 테두리를 둬 영역을 나눈다(사이드바의 오른쪽 선 · 떠 있는 탭 바의 안쪽 테두리 — 2026-10-04).
+- **선** — 가장자리에 테두리를 둬 영역을 나눈다(사이드바의 오른쪽 선 · 떠 있는 탭 바의 안쪽 테두리 — 2026-10-04, 카드의 1px `stroke-neutral-weak` — 2026-10-08). 카드는 그림자 없이 선과 바닥(`bg-layer-basement`)으로 가른다.
 
 #### 그림자
 
 | 토큰 | 값 | 쓰는 곳 |
 |---|---|---|
-| `shadow-s1` | `0 1px 2px 0 rgba(15, 18, 28, 0.05)` | 카드 정지 상태(옛 `shadow-sm`) |
+| `shadow-s1` | `0 1px 2px 0 rgba(15, 18, 28, 0.05)` | 작은 손잡이(슬라이더 엄지)(옛 `shadow-sm`) — 카드는 2026-10-08 부터 그림자 없이 테두리 |
 | `shadow-s2` | `0 2px 8px -1px rgba(15, 18, 28, 0.08), 0 1px 3px -1px rgba(15, 18, 28, 0.04)` | 드롭다운 · 툴팁 · 떠 있는 버튼(옛 `shadow-md`) |
 | `shadow-s3` | `0 8px 24px -4px rgba(15, 18, 28, 0.10), 0 2px 6px -2px rgba(15, 18, 28, 0.05)` | 팝오버 · 작은 모달(옛 `shadow-lg`) |
 | `shadow-s4` | `0 24px 48px -8px rgba(15, 18, 28, 0.16), 0 8px 16px -4px rgba(15, 18, 28, 0.08)` | 큰 모달 · 서랍(옛 `shadow-xl`) |
@@ -3046,8 +3061,8 @@ Porest는 **Tonal Layers**(표면 휘도 차)를 1차 elevation 수단으로, **
 
 | 토큰 | 값 (CSS box-shadow) | 주 용도 |
 |---|---|---|
-| `shadow-sm` | `0 1px 2px 0 rgba(15, 18, 28, 0.05)` | 카드 정지 상태(매우 미묘) |
-| `shadow-md` | `0 2px 8px -1px rgba(15, 18, 28, 0.08), 0 1px 3px -1px rgba(15, 18, 28, 0.04)` | 드롭다운·툴팁·hover 상태 카드 |
+| `shadow-sm` | `0 1px 2px 0 rgba(15, 18, 28, 0.05)` | 작은 손잡이(매우 미묘) — 옛 카드 정지 상태, 카드는 2026-10-08 부터 그림자 없음 |
+| `shadow-md` | `0 2px 8px -1px rgba(15, 18, 28, 0.08), 0 1px 3px -1px rgba(15, 18, 28, 0.04)` | 드롭다운·툴팁(카드의 hover 그림자는 2026-10-08 걷었다) |
 | `shadow-lg` | `0 8px 24px -4px rgba(15, 18, 28, 0.10), 0 2px 6px -2px rgba(15, 18, 28, 0.05)` | popover·작은 모달 |
 | `shadow-xl` | `0 24px 48px -8px rgba(15, 18, 28, 0.16), 0 8px 16px -4px rgba(15, 18, 28, 0.08)` | 큰 모달·drawer·hero overlay |
 
@@ -3060,8 +3075,7 @@ shadow base color `rgba(15, 18, 28, ...)`는 `bg-page-dark`(`#1A1F2E`)에 가까
 
 #### Tonal Layers (1차 elevation)
 shadow 추가 전에 surface 휘도 차로 해결 가능한지 확인 — 가능하면 그쪽 우선:
-- **카드 vs 페이지**: `surface-default`(L=1.0) on `bg-page`(L=0.92) 차이로 식별 가능 → shadow 불필요 또는 `shadow-sm`만.
-- **다크 카드 vs 다크 페이지**: `surface-default-dark`(L=0.023) on `bg-page-dark`(L=0.015) 차이가 미묘 → `shadow-sm` 또는 1px `border-default-dark` 보강 필요.
+- **카드 vs 바닥**: 흰 면 on 바닥 1.08:1 · 다크 1.13:1 로 차이가 작다 → 1px `stroke-neutral-weak` 테두리가 경계를 맡고 그림자는 두지 않는다(2026-10-08 — `specs/components/card.md`).
 - **다크 모드 shadow**: rgba 흑색 shadow는 다크 표면 위에서 거의 안 보임 — light용 `rgba(15, 18, 28, 0.05~0.16)`은 cool-neutral 흑색이라 다크 표면과 명도 차가 거의 없습니다. v25에서 다크 모드 전용 `shadow-*-dark` 변형 도입(아래 섹션 참조) — black opacity 강화 + inset top highlight 패턴. light·dark 모두 `border-default(-dark)` + 표면 휘도 차와 함께 사용하는 원칙은 유지.
 
 #### WCAG 검증
@@ -3079,8 +3093,8 @@ v12 시점에는 다크 모드 사용 사례가 적어 `shadow-*-dark` 변형 �
 
 | 토큰 | 값 (CSS box-shadow) | 주 용도 |
 |---|---|---|
-| `shadow-sm-dark` | `0 1px 2px 0 rgba(0, 0, 0, 0.30), inset 0 1px 0 0 rgba(255, 255, 255, 0.05)` | 다크 카드 정지 상태 |
-| `shadow-md-dark` | `0 2px 8px -1px rgba(0, 0, 0, 0.40), 0 1px 3px -1px rgba(0, 0, 0, 0.20), inset 0 1px 0 0 rgba(255, 255, 255, 0.06)` | 다크 드롭다운·툴팁·hover 카드 |
+| `shadow-sm-dark` | `0 1px 2px 0 rgba(0, 0, 0, 0.30), inset 0 1px 0 0 rgba(255, 255, 255, 0.05)` | 다크 — 작은 손잡이(카드는 그림자 없음) |
+| `shadow-md-dark` | `0 2px 8px -1px rgba(0, 0, 0, 0.40), 0 1px 3px -1px rgba(0, 0, 0, 0.20), inset 0 1px 0 0 rgba(255, 255, 255, 0.06)` | 다크 드롭다운·툴팁 |
 | `shadow-lg-dark` | `0 8px 24px -4px rgba(0, 0, 0, 0.50), 0 2px 6px -2px rgba(0, 0, 0, 0.25), inset 0 1px 0 0 rgba(255, 255, 255, 0.08)` | 다크 popover·작은 모달 |
 | `shadow-xl-dark` | `0 24px 48px -8px rgba(0, 0, 0, 0.60), 0 8px 16px -4px rgba(0, 0, 0, 0.30), inset 0 1px 0 0 rgba(255, 255, 255, 0.10)` | 다크 큰 모달·drawer·hero overlay |
 
@@ -3455,9 +3469,11 @@ DESIGN.md baseline 정의 참고 — 14 keyframes (단발 10 + loop 4). 모바�
 | 차트 축 · 개수 줄임 | 1.2만 · 12.3만 · 123만 · 1.2억 | 12K · 123K · 1.2M |
 | 전화번호 | 010-1234-5678 | — |
 
-- 돈은 줄이지 않고 원 단위까지 쓴다. 줄임은 차트 축과 개수에만.
+- 돈은 줄이지 않고 원 단위까지 쓴다. 줄임은 차트 축과 개수에만. 차트의 좁은 자리(열지도 칸 · 도넛 가운데)에 원까지 들어가지 않으면 줄여 쓰지 않고 글을 뺀다 — 열지도는 세기 색만 남기고, 도넛은 목록 위 합계로 옮긴다(2026-10-08, `specs/components/chart.md`).
+- 2026-10-08 Desk 웹은 돈을 일곱 자리에서 줄여 쓴다 — 축 줄임 함수 `formatChartAxis`(desk-front `f05dd4f`, 2026-09-04)를 축 밖에서 쓴다: 열지도 칸(`StatsPage.tsx:1770`) · 통계 도넛 가운데(`StatsPage.tsx:1366`) · 자산 도넛 가운데(`AssetPage.tsx:366`) · 저축 목표 금액(`AssetPage.tsx:823`) · 빠른 금액 칩(`AddTxSheet.tsx:1116`) · "지난달보다" 문장(`pages/expense/lib/insight.ts:23`) · 주식 시가총액(`features/stock/lib/format.ts:46-47`). 차트 셋(열지도 칸 · 도넛 가운데 둘)은 Chart 스펙(2026-10-08)이 정했고, 나머지 넷은 그 자리의 컴포넌트 차례에 정한다.
 - 한국어 줄임은 만 · 억 · 조에 소수 한 자리까지, `.0` 은 버린다(`1억`). 영어는 compact 표기(`Intl.NumberFormat` · `NumberFormat.compact`).
 - 빼기는 붙임표(-) 대신 빼기 기호 `−`(U+2212)를 쓴다 — 2026-09-30 Desk 웹 · 앱과 같다.
+- 증감은 ▲ · ▼ + 값으로 쓰고 부호(+ · −)를 겹치지 않는다 — Colors 의 "증감 — 방향 색"(2026-10-08).
 
 #### 구간 · 괄호
 
@@ -3634,43 +3650,27 @@ Desk 는 모바일에서 쓰는 일이 많다 — 화면 하단 CTA 는 `large` 
 
 ### Card
 
-Desk(B2C 친근감) — `default`/`interactive` variant 위주, 카드를 컨텐츠 단위(메모/할일/가계부 entry)로 적극 사용. shadow 강도 HR보다 강 (`md`/`lg` 적극).
+> 2026-10-08 — 모양 · 규칙은 공유 DESIGN.md 의 Card 절과 `specs/components/card.md`(SEED 면 · Feedback). 옛 Desk 패턴(그림자 기본 · interactive 그림자 상승 · 여백 네 단계 · 모서리 8 · 12 · 20)은 걷었다.
 
-#### Mode pair
-- `card-light` (`#FFFFFF`) / `card-dark` (`#242938`)
+#### 순자산 카드
 
-#### Variant
-| Variant | shadow | border | 사용 |
-|---|---|---|---|
-| **default** | `shadow-sm` → `shadow-md` (강조) | none | 일반 메모/할일 카드 |
-| **interactive** | `shadow-md` → hover `shadow-lg` | none | tap 가능 카드 (Desk 모바일 우선) |
-| **outline** | none | `border-default` 1px | flat layout (가계부 inline entry 등) |
-| **flat** | none | none | inline 그룹 |
+Desk 홈 · 자산 맨 위 한 자리 — 135° 그라디언트 + 흰 글자, 다크도 짙은 채움이다(사용자 결정 2026-10-08 — 다크에서 밝은 시작색 위 흰 글자 2.38 ~ 2.84 를 고친다).
 
-다크 카드는 `interactive`에 `border-default-dark` 1px 보강 + `shadow-md-dark` 시작.
+| 자리 | 토큰 | 라이트 | 다크 | 흰 글자 |
+|---|---|---|---|---|
+| 시작(왼쪽 위) | `bg-brand-solid` | `#0147AD` | `#1049A4` | 8.38 · 8.36 |
+| 끝(오른쪽 아래) | `brand-900` · `brand-300-dark` | `#002460` | `#1F3A69` | 14.78 · 11.25 |
 
-#### Padding
-| Level | 값 | 사용 |
-|---|---|---|
-| sm | `md` (12px) | 작은 entry (할일 inline) |
-| **md** (default) | `lg` (16px) | 일반 메모/할일/가계부 카드 |
-| lg | `xl` (24px) | detail view (메모 상세, 가계부 월간 요약) |
-| xl | `2xl` (32px) | hero card (onboarding, empty state) |
+- 라이트 끝은 지금 제품 값 #012B68(`bg-brand-solid` 60% + 검정)에 가장 가까운 팔레트 단계다(ΔE00 2.4).
+- 라벨 13 · 500, 금액 32 / 42(`text-t12`) · 700(지금 800), 아래 글 13 — 모두 `static-white` 이고 불투명도로 흐리지 않는다. 증감도 흰 글자 + ▲ · ▼ + 글 — 빨강 · 파랑이 채움 위 1.66 · 1.65 라 방향 색의 하나뿐인 예외다(사용자 결정).
+- 오른쪽 위 장식 빛(흰 22% → 투명)은 남긴다 — 흰 글자 대비는 빛 위에서도 4.88 이상이다. 여백 24 · 모서리 16 — 다른 카드와 같다(지금 제품의 20 을 16 으로, 사용자 결정).
 
-#### Radius
-- default `radius-md` (8px), large card `radius-lg` (12px), hero `radius-2xl` (20px)
+#### Desk 쓰임
 
-#### Layout
-- 카드 그리드 gap: `lg` (16px) — Desk는 여백 톤
-- 카드 내부 콘텐츠 간격: `md` (12px)
-
-#### Motion
-- interactive hover/tap: `motion-duration-base` × `motion-ease-out` (HR보다 한 단계 길어 친근감)
-- card entrance (list 추가): `motion-duration-base`
-
-#### A11y
-- interactive: `<button>`/`role="button"` + `tabindex="0"` + Enter/Space
-- focus: 카드 외곽 `border-focus` (`#0147AD`) 2px outline
+- 폰 홈 · 자산도 회색 바닥 위 카드다 — 흰 바탕 평면 묶음 · 흰 위 흰 그림자 카드(raised)를 걷는다. 묶음마다 목록 카드(머리 + List 줄)로.
+- 머리 동작은 "전체 보기" 하나 — 누르는 영역 44.
+- 통계 하이라이트 · 비교 지표는 지표 카드 + 증감(▲ 빨강 · ▼ 파랑 + 글) — 폰은 한 줄에 하나(지금 웹 통계 하이라이트처럼), 데스크톱 격자에 넷씩이면 숫자 20.
+- 데이터 하나가 실패해도 화면 전체를 스켈레톤으로 되돌리지 않는다 — 그 카드 안에 Result Section + 다시 시도.
 
 ### Page text
 
@@ -3916,34 +3916,17 @@ Desk — 데이터 내보내기 · 카드 혜택 필터 checkbox, 메모 즐겨�
 
 ### Chart color (palette)
 
-Desk — 가계부 카테고리/월간 비교 chart, 할일 카테고리 분류, 메모 태그 색상 등에 사용. 10색 palette × 2 mode.
+Desk — 가계부 카테고리 · 수입 · 지출 추이 · 예산 이행 · 자산 구성 · 통계 열지도. 10색 × 2 모드(v110), 쓰는 규칙은 `specs/components/chart.md`(2026-10-08).
 
-#### 사용 시나리오
-- **pie chart**: 가계부 카테고리별 지출 비율 — 5~7 카테고리 권장, hue 선택 자유 (기본 hue 순서 또는 카테고리 의미 기반)
-- **line chart**: 월간 지출 추이 — `chart-color-blue` (default) 또는 카테고리당 1색
-- **bar chart**: 할일 카테고리별 완료 수
-- **카테고리 tag**: 메모 태그 색상 — 10색에서 사용자가 직접 선택
+#### Desk 쓰임
 
-#### Hue 의미 매핑 (Desk context)
-HR과 달리 Desk는 사용자 정의 카테고리가 많으므로 **hue 의미 강제 X**. 단 권장:
-| Hue | 사용 사례 |
-|---|---|
-| green | 수입 / 완료된 할일 |
-| red | 지출 / 마감 임박 |
-| blue | 일반 default |
-| pink/violet | 개인적 카테고리 (개인 메모) |
-| brown | 기타 |
-
-#### Layout
-- chart 영역 padding `xl` (24px), legend `sm` 간격 — Desk 여백 톤
-- 카드 안 chart: card padding `lg` (16px)
-- 모바일 chart: 풀 viewport width, legend는 위/아래 1줄 + horizontal scroll
-
-#### Motion / A11y
-- 진입 `motion-duration-slow`, hover/tap `motion-duration-fast`
-- 모바일 tap 인터랙션: 데이터 포인트 tap 시 tooltip + `motion-duration-fast` fade
-- 1.4.1 색상 단독 금지, 패턴/라벨 보강
-- screen reader: `<table>` fallback 또는 svg `role="img"`
+- **수입 · 지출** — 수입 `chart-blue` · 지출 `chart-red`(추이 · 막대 · 순저축). 홈의 수입 숫자도 같은 파랑이다 — 브랜드 색과 섞지 않는다.
+- **카테고리** — 저장된 색(라이트 hex 이름표 — v110) 먼저, 색이 없는 카테고리는 그 차트에서 아직 쓰지 않은 색부터. 10개를 넘으면 상위 9 + 회색 "기타". 색에 뜻(초록 = 수입 · 갈색 = 기타)을 매기지 않는다.
+- **추이** — 수입 · 지출은 이중 축(왼쪽 수입 · 오른쪽 지출, 눈금 글자도 계열 색), 위에 지표 타일 둘(합계 · 계열 켜고 끄기). 가로축은 오늘에서 끝난다.
+- **도넛** — 가운데 합계는 원까지, 범례는 카테고리 목록(금액 "원") — 하위 카테고리가 있으면 눌러 하위로.
+- **열지도(요일 × 시간)** — 브랜드 채움 18 · 35 · 55 · 75 · 100% 다섯 단계 · 칸 폭 112 이상에서만 금액을 원까지(오늘 1280 이상), 좁으면 세기 색만 · 글자는 단계마다(라이트 75 · 100% 는 흰 글자).
+- **예산 이행 · 자산 구성** — 계열 색은 차트 10색에서 고른다 — 다크 `bg-brand-solid`(카드 대비 1.73)를 계열 색으로 쓰지 않는다.
+- 메모 태그 · 캘린더 칩 같은 카테고리 면은 v111 의 옅은 바탕이다.
 
 ### Avatar — Desk
 
@@ -4114,14 +4097,11 @@ Desk(B2C) 5 disclosure/overlay 컴포넌트.
 Desk(B2C) 5 data display 컴포넌트 — 모바일 우선 + 친근 톤.
 
 #### Table — Desk
-- **가계부 거래 list default**: 일반 가독성, 모바일에서 column 일부 숨김 (date/금액만).
-- **메모 보관함**: striped variant — 긴 list 시각 분리.
-- compact variant 회피 — 모바일에서 hit area 좁아 부적절.
 
-#### Data Table — Desk
-- **영수증 보관함**: 데스크탑에서만 — sortable(date/금액) + filterable(카테고리) + multi-select 삭제. 모바일은 simple Table + filter chip.
-- **할일 archive**: 완료된 할일 — 검색·정렬·내보내기 (PDF/CSV).
-- 모바일에서는 Data Table 기능 일부 비활성 (column visibility는 데스크탑만).
+> 2026-10-08 — 공유 DESIGN.md 의 Table 절과 `specs/components/table.md`. 줄무늬 · compact · 모바일 열 숨김은 걷었다 — 768 미만은 List 줄이다.
+
+- Desk 의 표 — 가져오기 · 내보내기 미리보기, 증권의 일별 시세 · 호가 · 체결(지금 `div` 격자 → `<table>`). 가계부 거래 · 할 일 · 메모는 표가 아니라 List 다.
+- 옛 Data Table — Desk(영수증 보관함 · 할 일 보관함)는 Table 로 합쳤다 — 제품에 그런 표는 없다.
 
 #### Carousel — Desk
 

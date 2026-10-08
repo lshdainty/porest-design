@@ -1016,10 +1016,12 @@ export type ResultSectionViewProps = {
   grow?: boolean;
   // 그림 — 묶음 안에 덧그리는 치수 표시
   overlay?: ReactNode;
+  // 카드 안 — 좌우 여백 0(카드 안 여백 24 · 표 칸의 24 가 가장자리를 맡는다, result-section.yaml root.paddingX 비고)
+  inCard?: boolean;
   style?: CSSProperties;
 };
 
-export function ResultSectionView({ look, mode = 'auto', kind = 'empty', size = 'large', icon, title, description, primary, secondary, heading, live = false, zone, pins, pinLine = 'currentColor', grow = true, overlay, style }: ResultSectionViewProps) {
+export function ResultSectionView({ look, mode = 'auto', kind = 'empty', size = 'large', icon, title, description, primary, secondary, heading, live = false, zone, pins, pinLine = 'currentColor', grow = true, overlay, inCard = false, style }: ResultSectionViewProps) {
   const sz = look.sizes[size];
   const glyph: FbIcon = kind === 'empty' ? (icon ?? 'search') : (icon ?? look.asset.glyph[kind]);
   const Title = (heading ? `h${heading}` : 'div') as 'h2' | 'div';
@@ -1048,7 +1050,10 @@ export function ResultSectionView({ look, mode = 'auto', kind = 'empty', size = 
         justifyContent: 'center',
         flexGrow: grow ? 1 : 0,
         boxSizing: 'border-box',
-        padding: `${look.root.padY}px ${look.root.padX}px`,
+        paddingTop: look.root.padY,
+        paddingBottom: look.root.padY,
+        paddingLeft: inCard ? look.root.padXInCard : look.root.padX,
+        paddingRight: inCard ? look.root.padXInCard : look.root.padX,
         textAlign: 'center',
         fontFamily: FONT,
         ...zone?.root,

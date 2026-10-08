@@ -130,9 +130,9 @@ export function brandProfile(brandName, tokens) {
           kind: "kpi-card",
           title: "이번 달 KPI",
           items: [
-            { label: "출근율", value: "87.3%", delta: "+1.2pt" },
-            { label: "신규 입사", value: "4명", delta: "전월 동일" },
-            { label: "결재 처리", value: "128건", delta: "+12건" },
+            { label: "출근율", value: "87.3%", delta: { direction: "up", value: "1.2%p", text: "지난달보다" } },
+            { label: "신규 입사", value: "4명", delta: { direction: "flat", srText: "지난달과 같아요" } },
+            { label: "결재 처리", value: "128건", delta: { direction: "up", value: "12건", text: "지난달보다" } },
           ],
         },
       ],
@@ -461,9 +461,9 @@ export function brandProfile(brandName, tokens) {
         kind: "kpi-card",
         title: "Token usage",
         items: [
-          { label: "colors", value: String(tokens.colors.length), delta: "neutral + chart" },
-          { label: "text scales", value: String(tokens.text.length), delta: "Pretendard" },
-          { label: "spacing", value: String(tokens.spacing.length), delta: "4px base" },
+          { label: "colors", value: String(tokens.colors.length) },
+          { label: "text scales", value: String(tokens.text.length) },
+          { label: "spacing", value: String(tokens.spacing.length) },
         ],
       },
     ],
@@ -7215,6 +7215,838 @@ export function renderNavGallery(brand) {
   </section>`;
 }
 
+// 데이터 표시 — spec: specs/components/table.md · card.md · chart.md · searchable-list.md · swipe-actions.md · 수치 table.yaml · card.yaml · chart.yaml ·
+// searchable-list.yaml · swipe-actions.yaml · 증감은 DESIGN.md Colors 의 "증감 — 방향 색 (2026-10-08)", 돈 표기는 International Design. SEED 에는 다섯 모두
+// 컴포넌트가 없다 — 표는 SEED 문서 사이트 표(머리 41 · 줄 45 · 줄 선 마지막 줄까지)와 디자인 그림(↑↓ · 72 · ⋮ 열), 카드는 SEED 면(바닥 위 흰 면 + 1px · 그림자 없음) ·
+// Feedback(누름 색 + 2px), 차트는 SEED 대시보드 그림(이중 축 · 지표 타일 · "■ 라벨 값"), 검색해서 고르기는 SEED 부품(밑줄 칸 · List 줄 + Radiomark · Result Section) +
+// 문서 사이트 검색 창의 콤보박스 키보드다(2026-10-08 사용자 결정 1 ~ 21 · 따라오는 것).
+// 표 .ptbl(상자 — 넘치면 가로로 민다) > <table class="ptbl-table"> > 머리 칸 .ptbl-th(정렬 버튼 .ptbl-sort + ↑↓ .ptbl-sort-icon) · 본문 줄 .ptbl-row > 칸 .ptbl-td
+//   (첫 열 <th scope="row"> · 숫자 .ptbl-td--end · 두 줄 칸 .ptbl-content · 선택 .ptbl-td--select · ⋮ .ptbl-td--more). 일괄 작업 바 .ptbl-bulk 는 표 위.
+// 카드 .pcard(--list · --hero · --whole · --peers) > 머리 .pcard-head(제목 .pcard-title · 동작 .pcard-action) · 본문 .pcard-content · 지표 .pcard-stat · 증감 .pdelta.
+// 차트 .pchart(그리는 상자 — role="img") · 지표 타일 .pchart-tiles > .pchart-tile · 툴팁 .pchart-tip · 도넛 .pchart-donut + 목록 범례 .pchart-legend · 열지도 .pheat.
+// 검색해서 고르기 .psl > 검색칸 .psl-field(03g 의 밑줄형 .ptf-input) · 결과 .psl-results(listbox) > 분류 .psl-group(03e 의 .plst-header) · 줄 .psl-option.
+// 줄 밀기 .pswipe > 줄 .pswipe-row(03e 의 .plst-row) · 트레이 .pswipe-tray > 칸 .pswipe-action > 배지 .pswipe-badge · 라벨 .pswipe-label.
+// 화면 틀은 03r 의 .pnav-phone · .pnav-desk, 목록 줄은 03e, 배지 · 아바타는 03o, 스켈레톤은 03p, 로고 타일 · 그림 틀은 03q, 결과는 03l, 시트는 03k, 메뉴는 03m 것이다.
+// 그림은 그 순간을 멈춘 것이고, "직접" 이 붙은 견본은 페이지 끝 스크립트가 누름 · 키보드 · 마우스에 따라 바꾼다. 링크는 미리보기라 옮기지 않는다(data-pdata-link).
+
+// 아이콘 — lucide 그림(선 2). 크기는 놓인 자리가 정한다(정렬 16 · ⋮ 18 · 머리 동작 16 · 줄 밀기 18 · 지우기 22)
+const DATA_ICON = {
+  ellipsisVertical: MENU_ICON.ellipsisVertical,
+  chevronRight: PICK_ICON.chevronRight,
+  x: OVERLAY_ICON.x,
+  pencil: MENU_ICON.pencil,
+  trash: MENU_ICON.trash,
+  pin: MENU_ICON.pin,
+  search: TEXT_FIELD_ICON.search,
+  coffee: PICK_ICON.coffee,
+  bus: PICK_ICON.bus,
+  bag: PICK_ICON.shoppingBag,
+  download: listSvg('<path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/>'),
+};
+let pdataSeq = 0;
+const nextPdataId = (prefix = "pdata") => `${prefix}-${(pdataSeq += 1)}`;
+// 숫자 · 돈 — 세 자리마다 쉼표, 돈은 원까지, 빼기는 U+2212(International Design). 줄임은 축 눈금에만(pdataAxisWon)
+const pdataNum = (n) => Math.abs(n).toLocaleString("ko-KR");
+const pdataWon = (n) => `${n < 0 ? "−" : ""}${pdataNum(n)}원`;
+// 축 눈금 — chart.tsx 의 formatAxisWon 과 같은 규칙(만 · 억 · 조, 소수 한 자리, .0 은 버린다, 1만 미만은 쉼표 정수, 빼기 U+2212)
+function pdataAxisWon(value) {
+  var n = Math.abs(value);
+  var sign = value < 0 ? "−" : "";
+  if (n < 10000) return sign + n.toLocaleString("ko-KR");
+  var scaled = n / 10000, unit = "만";
+  var units = ["억", "조"];
+  for (var i = 0; i < units.length && Math.round(scaled * 10) / 10 >= 10000; i++) { scaled /= 10000; unit = units[i]; }
+  var s = (Math.round(scaled * 10) / 10).toLocaleString("ko-KR", { maximumFractionDigits: 1 });
+  return sign + s + unit;
+}
+const pdataSr = (text) => `<span class="pdata-sr">${escape(text)}</span>`;
+const PDATA_INTERACTIONS = ["hover", "pressed", "focus"];
+const pdataState = (base, interaction) => (PDATA_INTERACTIONS.includes(interaction) ? ` ${base}--${interaction}` : "");
+
+// ── Table ────────────────────────────────────────────────────────────────
+// 정렬 표시 ↑↓ — lucide arrow-up-down 을 두 화살표로 갈라 따로 칠한다(왼쪽 ↑ · 오른쪽 ↓). 흐린 fg-neutral-muted 둘에서 지금 방향 하나만 fg-neutral
+const ptblSortIcon = (sort) => `<svg class="ptbl-sort-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="ptbl-arrow ptbl-arrow--up${sort === "ascending" ? " ptbl-arrow--on" : ""}"><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></g><g class="ptbl-arrow ptbl-arrow--down${sort === "descending" ? " ptbl-arrow--on" : ""}"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/></g></svg>`;
+// 머리 칸 — sort 가 없으면 글만(정렬하지 않는 열), 있으면 칸 전체가 버튼("none" · "ascending" · "descending" — aria-sort 는 정렬된 열에만).
+//   first  그 열을 처음 누를 때의 방향 — 숫자(align end) · 날짜 열은 descending, 글 열은 ascending(table.md 의 defaultSortDirection)
+//   key    직접 정렬하는 표의 열 이름(페이지 끝 스크립트가 줄의 data-ptbl-v-{key} 로 견준다) · interaction  그 순간을 멈춘 정렬 버튼(갤러리 전용)
+function ptblHead({ label = "", align = "start", sort = null, first = "", key = "", type = "text", interaction = "" } = {}) {
+  const end = align === "end";
+  if (sort == null) return `<th scope="col" class="ptbl-th${end ? " ptbl-th--end" : ""}">${escape(label)}</th>`;
+  const dir = first || (end || type === "date" ? "descending" : "ascending");
+  const button = `<button ${attrsOf([
+    `class="ptbl-sort${pdataState("ptbl-sort", interaction)}"`,
+    'type="button"',
+    key && `data-ptbl-sort="${key}"`,
+    `data-ptbl-first="${dir}"`,
+    `data-ptbl-type="${type === "text" && end ? "number" : type}"`,
+  ])}><span class="ptbl-sort-label">${escape(label)}</span>${ptblSortIcon(sort)}</button>`;
+  return `<th ${attrsOf([`scope="col"`, `class="ptbl-th ptbl-th--sort${end ? " ptbl-th--end" : ""}"`, sort !== "none" && `aria-sort="${sort}"`])}>${button}</th>`;
+}
+// 선택 칸 — Checkbox large 24(누르는 영역 44). 머리는 "모두 선택"(일부면 mixed), 줄은 "{줄 이름} 선택"
+const ptblSelectHead = (state = "unchecked", live = false) => `<th scope="col" class="ptbl-th ptbl-th--select">${cbox({ size: "large", state, name: "모두 선택" }).replace("<button ", `<button ${live ? "data-ptbl-all " : ""}`)}</th>`;
+const ptblSelectCell = (label, on = false, live = false) => `<td class="ptbl-td ptbl-td--select">${cbox({ size: "large", state: on ? "checked" : "unchecked", name: `${label} 선택` }).replace("<button ", `<button ${live ? "data-ptbl-pick " : ""}`)}</td>`;
+// ⋮ 열 — 머리는 글 없이 숨긴 "동작", 칸은 Button ghost · iconOnly · medium(40 · 누르는 44) "{줄 이름} 더보기"
+const ptblMoreHead = () => '<th scope="col" class="ptbl-th ptbl-th--more"><span class="pdata-sr">동작</span></th>';
+function ptblMoreCell(label, { interaction = "", menu = "" } = {}) {
+  const st = interaction === "hover" ? " btn-state-hover" : interaction === "pressed" ? " btn-state-pressed" : interaction === "focus" ? " btn-state-focus" : "";
+  const button = `<button class="btn btn-ghost btn-icon-only ptbl-more${st}" type="button" aria-label="${escape(label)} 더보기" aria-haspopup="menu" aria-expanded="${menu ? "true" : "false"}">${DATA_ICON.ellipsisVertical}</button>`;
+  return `<td class="ptbl-td ptbl-td--more">${menu ? `<span class="pmenu-anchor ptbl-more-anchor">${button}${menu}</span>` : button}</td>`;
+}
+// 첫 열(그 줄의 이름) — <th scope="row">. 누르는 표면 이름이 링크다(키보드로 같은 곳에 간다)
+const ptblRowHeader = (text, { link = false, focus = false } = {}) =>
+  `<th scope="row" class="ptbl-td ptbl-td--name">${link ? `<a class="ptbl-name${focus ? " ptbl-name--focus" : ""}" href="#" data-pdata-link>${escape(text)}</a>` : escape(text)}</th>`;
+// 썸네일 · 두 줄 칸 — media(Image Frame 48 · Avatar 42 · Logo Tile 40) + 윗줄 14 + 둘째 줄 13(fg-neutral-subtle). 첫 열이면 asHeader
+const ptblContent = ({ media = "", title, detail = "", asHeader = false, link = false }) => {
+  const name = link ? `<a class="ptbl-name" href="#" data-pdata-link>${escape(title)}</a>` : escape(title);
+  const body = `<span class="ptbl-content">${media ? `<span class="ptbl-media">${media}</span>` : ""}<span class="ptbl-text"><span class="ptbl-title">${name}</span>${detail ? `<span class="ptbl-detail">${escape(detail)}</span>` : ""}</span></span>`;
+  return asHeader ? `<th scope="row" class="ptbl-td ptbl-td--name">${body}</th>` : `<td class="ptbl-td">${body}</td>`;
+};
+const ptblCell = (html, { end = false } = {}) => `<td class="ptbl-td${end ? " ptbl-td--end" : ""}">${html}</td>`;
+// 줄 — press 면 누르는 줄(호버 · 누름 바탕), interaction 은 그 순간을 멈춘 줄, values 는 직접 정렬하는 표의 열 값(data-ptbl-v-{key})
+function ptblRow(cells, { press = false, interaction = "", values = null, attrs = "" } = {}) {
+  const data = values ? Object.entries(values).map(([k, v]) => `data-ptbl-v-${k}="${escape(String(v))}"`).join(" ") : "";
+  return `<tr ${attrsOf([`class="ptbl-row${press ? " ptbl-row--press" : ""}${pdataState("ptbl-row", interaction)}"`, data, attrs])}>${cells.join("")}</tr>`;
+}
+// 표 — caption(숨긴 표 이름 — 보이는 제목은 카드 머리) · rich(썸네일 · 두 줄 칸 — 모든 줄 72) · sticky(상자가 스스로 스크롤 — 머리를 붙인다, maxHeight) ·
+// live(직접 정렬 · 고르기 — 페이지 끝 스크립트) · status(줄 대신 본문 자리 한 칸)
+function ptbl({ caption = "", head = [], rows = [], rich = false, sticky = false, maxHeight = 0, live = "", status = "", minWidth = 0, visible = false, attrs = "" } = {}) {
+  const body = status ? `<tr class="ptbl-row ptbl-row--status"><td class="ptbl-td ptbl-td--status" colspan="${head.length}">${status}</td></tr>` : rows.join("");
+  const style = [maxHeight && `max-height: ${maxHeight}px;`, minWidth && `--ptbl-min: ${minWidth}px;`].filter(Boolean).join(" ");
+  return `<div ${attrsOf([`class="ptbl${sticky ? " ptbl--sticky" : ""}${visible ? " ptbl--visible" : ""}"`, style && `style="${style}"`, sticky && 'tabindex="0" role="region"', sticky && `aria-label="${escape(caption)} — 스크롤"`, live && `data-ptbl-live="${live}"`, attrs])}><table class="ptbl-table${rich ? " ptbl-table--rich" : ""}"><caption class="pdata-sr">${escape(caption)}</caption><thead><tr class="ptbl-head-row">${head.join("")}</tr></thead><tbody>${body}</tbody></table></div>`;
+}
+// 일괄 작업 바 — 고른 줄이 있을 때만 표 위. 바탕 bg-brand-weak 한 값 · 48 · 모서리 12 · 왼쪽 16 · 오른쪽 8. "{n}개 선택됨" 을 알린다(role="status").
+// 동작은 Button ghost small, 끝은 선택 해제 ✕(ghost · 아이콘만 small). live 면 페이지 끝 스크립트가 고른 수에 따라 띄우고 감춘다
+function ptblBulkBar({ count = 0, actions = [], live = false, hidden = false } = {}) {
+  const buttons = actions.map((a) => `<button class="btn btn-ghost${a.critical ? " btn-ghost-critical" : ""} btn-size-small" type="button">${escape(a.label)}</button>`).join("");
+  return `<div ${attrsOf(['class="ptbl-bulk"', 'role="region"', 'aria-label="선택한 항목"', live && "data-ptbl-bulk", hidden && "hidden"])}><span class="ptbl-bulk-count" role="status" aria-live="polite">${count}개 선택됨</span><span class="ptbl-bulk-actions">${buttons}<button class="btn btn-ghost btn-icon-only btn-size-small ptbl-bulk-clear" type="button" aria-label="선택 해제"${live ? " data-ptbl-clear" : ""}>${DATA_ICON.x}</button></span></div>`;
+}
+// 불러오는 동안의 줄 — 줄 높이 그대로 · 글 자리 t4(19). columns 는 열마다 { w, end }(폭은 칸 안의 비율)
+const ptblSkeletonRows = (n, columns) => Array.from({ length: n }, (_, r) => `<tr class="ptbl-row" aria-hidden="true">${columns.map((c, i) => `<td class="ptbl-td${c.end ? " ptbl-td--end" : ""}">${c.select ? skeleton({ radius: "4", w: 24, h: 24 }) : skeleton({ text: "t4", w: Array.isArray(c.w) ? c.w[r % c.w.length] : c.w })}</td>`).join("")}</tr>`).join("");
+
+// HR 사용자 — table.md 의 "HR 사용자 표" 와 같은 열(이름 · 부서 · 남은 휴가 · 상태 · ⋮). 입사일은 날짜 열(처음 누르면 최근 것 먼저)
+const PTBL_USERS = [
+  { id: "u1", name: "김하늘", email: "haneul.kim@porest.kr", dept: "개발팀", days: 12.5, status: "재직", tone: "positive", joined: "2021-03-02" },
+  { id: "u2", name: "이도윤", email: "doyun.lee@porest.kr", dept: "디자인팀", days: 3, status: "휴직", tone: "warning", joined: "2022-07-11" },
+  { id: "u3", name: "박서연", email: "seoyeon.park@porest.kr", dept: "인사팀", days: 0.5, status: "재직", tone: "positive", joined: "2019-11-18" },
+  { id: "u4", name: "최민준", email: "minjun.choi@porest.kr", dept: "영업팀", days: 15, status: "재직", tone: "positive", joined: "2018-01-08" },
+  { id: "u5", name: "정다은", email: "daeun.jung@porest.kr", dept: "재무팀", days: 8, status: "초대 대기", tone: "neutral", joined: "2026-10-06" },
+];
+const ptblDays = (n) => `${n.toLocaleString("ko-KR")}일`;
+// 업무 보고 — 고르기 · 일괄 작업(table.md 의 "고르기 · 일괄 작업"). 2026년 10월 1일은 목요일이다
+const PTBL_REPORTS = [
+  { id: "r1", title: "10월 1주 업무 보고", author: "김하늘", date: "10월 2일 (금)", sort: "2026-10-02", status: "승인", tone: "positive" },
+  { id: "r2", title: "표 컴포넌트 정리", author: "이도윤", date: "10월 5일 (월)", sort: "2026-10-05", status: "검토 중", tone: "informative" },
+  { id: "r3", title: "하반기 채용 일정", author: "박서연", date: "10월 6일 (화)", sort: "2026-10-06", status: "반려", tone: "critical" },
+  { id: "r4", title: "3분기 영업 실적", author: "최민준", date: "10월 7일 (수)", sort: "2026-10-07", status: "검토 중", tone: "informative" },
+];
+
+// ── Card ─────────────────────────────────────────────────────────────────
+// 증감(Delta) — ▲ fg-critical · ▼ fg-informative · 변화 없음 fg-neutral-subtle. 값 + 기준 글(fg-neutral-subtle). 화살표 · 보이는 글은 보조 기술에 숨기고 문장을 읽힌다
+// (srText 기본 "{text} {value} 늘었어요 · 줄었어요"). 순자산 카드(hero) 위에서는 흰 글자 ▲ · ▼ + 글 — 방향 색의 하나뿐인 예외
+function pdelta({ direction = "up", value = "", text = "", srText = "" } = {}) {
+  const arrow = direction === "up" ? "▲" : direction === "down" ? "▼" : "";
+  const shown = direction === "flat" ? "변화 없음" : `${arrow} ${value}`;
+  const said = srText || (direction === "flat" ? [text, "변화가 없어요"].filter(Boolean).join(" ") : `${[text, value].filter(Boolean).join(" ")} ${direction === "up" ? "늘었어요" : "줄었어요"}`);
+  // 변화 없음은 "변화 없음" 만 보인다 — 기준 글은 숨긴 문장에만(card.tsx — direction !== "flat" && text)
+  return `<span class="pdelta pdelta--${direction}"><span class="pdelta-value" aria-hidden="true">${escape(shown)}</span>${text && direction !== "flat" ? `<span class="pdelta-text" aria-hidden="true">${escape(text)}</span>` : ""}${pdataSr(said)}</span>`;
+}
+// 머리 — 제목 16 / 22 · 700 + 오른쪽 동작 하나("전체 보기" 14 · 500 · fg-neutral-subtle + chevron 16, 보이는 32 · 누르는 44). 이름 "{제목} {글}"
+function pcardHead({ title = "", action = "", interaction = "" } = {}) {
+  const act = action ? `<a ${attrsOf([`class="pcard-action${pdataState("pcard-action", interaction)}"`, 'href="#"', "data-pdata-link", `aria-label="${escape(title)} ${escape(action)}"`])}><span>${escape(action)}</span>${DATA_ICON.chevronRight}</a>` : "";
+  return `<div class="pcard-head"><div class="pcard-title">${escape(title)}</div>${act}</div>`;
+}
+// 카드 — variant default(바닥 위 흰 면 + 1px stroke-neutral-weak · 모서리 16 · 그림자 없음) · hero(순자산 — 브랜드 채움 · 흰 글자).
+//   body   content(여백 24 — 기본) · list(좌우 0 — List 줄이 가장자리까지, 머리 위 24 · 좌우 24 · 아래 4, 카드 아래 12)
+//   press  none · whole(카드 전체가 링크 — 누름 색 + 2px 축소) · peers(카드 링크 + 안의 버튼 — 색만)
+//   interaction  그 순간을 멈춘 카드(hover · pressed · focus — 갤러리 전용) · guide 여백 24 를 점선으로(갤러리 전용)
+function pcard({ variant = "default", body = "content", press = "none", head = "", content = "", list = "", link = "", interaction = "", guide = false, cls = "", attrs = "" } = {}) {
+  const c = ["pcard", variant === "hero" && "pcard--hero", body === "list" && "pcard--list", press !== "none" && `pcard--${press}`, guide && "pcard--guide", cls].filter(Boolean).join(" ") + pdataState("pcard", interaction);
+  const glow = variant === "hero" ? '<span class="pcard-glow" aria-hidden="true"></span>' : "";
+  const inner = `${glow}${head}${link}${content ? `<div class="pcard-content">${content}</div>` : ""}${list}`;
+  if (press === "whole") return `<a ${attrsOf([`class="${c}"`, 'href="#"', "data-pdata-link", attrs])}>${inner}</a>`;
+  return `<div ${attrsOf([`class="${c}"`, attrs])}>${inner}</div>`;
+}
+// peers 카드의 누르는 자리 — 카드 전체를 덮는 링크(이름은 카드 제목). 안의 버튼은 그 위에 놓인다
+const pcardLink = (title) => `<a class="pcard-link" href="#" data-pdata-link>${escape(title)}</a>`;
+// 지표 — 라벨 13 · 500 · fg-neutral-subtle, 아래 4 에 숫자 700 · 고정폭 숫자(large 24 · small 20), 아래 4 에 증감 줄
+const pcardStat = ({ label, value, size = "large", delta = null }) =>
+  `<div class="pcard-stat"><div class="pcard-stat-label">${escape(label)}</div><div class="pcard-stat-value pcard-stat-value--${size}">${escape(value)}</div>${delta ? `<div class="pcard-stat-delta">${pdelta(delta)}</div>` : ""}</div>`;
+// 순자산 — 라벨 13 · 500 · 금액 32 / 42 · 700 · 아래 글 13, 모두 흰 글자(불투명도로 흐리지 않는다). 장식 빛은 카드가 그린다(.pcard-glow)
+const pcardHero = ({ label = "순자산", amount = "42,898,100원", delta = { direction: "up", value: "1.8%", text: "지난달보다" }, interaction = "", attrs = "" } = {}) =>
+  pcard({ variant: "hero", interaction, attrs, content: `<div class="pcard-hero-label">${escape(label)}</div><div class="pcard-hero-amount">${escape(amount)}</div><div class="pcard-hero-detail">${pdelta(delta)}</div>` });
+// 오늘 쓴 돈 — card.md 의 목록 카드 줄(카테고리 타일 40 · 제목 · 설명 · 금액). 금액은 가계부 화면의 자리(16 · 700)
+const PCARD_SPEND = [
+  { color: "orange", icon: "utensils", title: "스타벅스 강남점", detail: "식비 · 국민카드", amount: -6500 },
+  { color: "blue", icon: "bus", title: "지하철", detail: "교통 · 국민카드", amount: -1450 },
+  { color: "violet", icon: "bag", title: "이마트 성수점", detail: "생활 · 신한카드", amount: -42300 },
+];
+const pcardSpendRows = (rows = PCARD_SPEND, { kind = "button", pressAt = -1 } = {}) => listOf(rows.map((r, i) => listRow({ kind, prefix: listTile(r.color, r.icon), title: r.title, detail: r.detail, suffix: `<span class="plst-amount">${escape(pdataWon(r.amount))}</span>`, interaction: i === pressAt ? "pressed" : "" })), ' aria-label="오늘 쓴 돈"');
+
+// ── Chart ────────────────────────────────────────────────────────────────
+// 계열 색 — chart-{색}(라이트 700 · 다크 800-dark, v110). 배정 순서 · 저장된 색 · 기타 회색은 pchartAssign(chart.tsx 의 assignChartColors 와 같은 규칙)
+const PCHART_ORDER = ["blue", "green", "orange", "violet", "pink", "indigo", "red", "yellow", "brown"];
+function pchartAssign(items) {
+  const used = new Set(items.map((it) => it.saved).filter(Boolean));
+  const free = PCHART_ORDER.filter((c) => !used.has(c));
+  let k = 0;
+  const sorted = [...items].sort((a, b) => b.amount - a.amount);
+  const top = sorted.length > 10 ? sorted.slice(0, 9) : sorted;
+  const rest = sorted.length > 10 ? sorted.slice(9) : [];
+  const out = top.map((it) => ({ ...it, color: it.saved || free[k++ % free.length] }));
+  if (rest.length) out.push({ name: "기타", amount: rest.reduce((s, it) => s + it.amount, 0), color: "gray", rest: rest.length });
+  return out;
+}
+// 10월 수입 · 지출 추이 — 날마다, 오늘(8일)에서 끝난다(남은 날을 0 으로 채우지 않는다 — chart.md 의 코드 · 사이트 그림과 같은 값).
+// 왼쪽 축 수입 0 ~ 400만(blue — 월급날 1일이 크다) · 오른쪽 축 지출 0 ~ 40만(red). 합계 수입 4,200,000원 · 지출 1,240,000원
+const PCHART_DOW = ["일", "월", "화", "수", "목", "금", "토"];
+const PCHART_MONTHS = Array.from({ length: 8 }, (_, i) => `${i + 1}일`);
+const PCHART_HEADS = PCHART_MONTHS.map((_, i) => `10월 ${i + 1}일 (${PCHART_DOW[new Date(Date.UTC(2026, 9, i + 1)).getUTCDay()]})`);
+const PCHART_SERIES = [
+  { key: "income", label: "수입", color: "blue", values: [3800000, 0, 0, 0, 280000, 0, 0, 120000], max: 4000000, ticks: [0, 1000000, 2000000, 3000000, 4000000], side: "left" },
+  { key: "expense", label: "지출", color: "red", values: [152300, 98400, 286000, 131500, 74200, 352000, 59200, 86400], max: 400000, ticks: [0, 100000, 200000, 300000, 400000], side: "right" },
+];
+const pchartTotal = (s) => s.values.reduce((a, v) => a + v, 0);
+// 곡선 — 점을 지나는 부드러운 선(recharts 의 monotone 과 비슷하게 — x 방향 기울기만 쓴다)
+function pchartPath(pts) {
+  if (pts.length < 2) return "";
+  let d = `M${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)}`;
+  for (let i = 1; i < pts.length; i++) {
+    const [x0, y0] = pts[i - 1];
+    const [x1, y1] = pts[i];
+    const dx = (x1 - x0) / 3;
+    d += ` C${(x0 + dx).toFixed(1)},${y0.toFixed(1)} ${(x1 - dx).toFixed(1)},${y1.toFixed(1)} ${x1.toFixed(1)},${y1.toFixed(1)}`;
+  }
+  return d;
+}
+// 추이 차트 — width · height(px — 글자 11 이 늘거나 줄지 않게 실제 크기로 그린다) · dual(이중 축 — 눈금 글자는 계열 색) · tip(그 순간을 멈춘 가리킴 — 달 번호) ·
+// live(직접 — 페이지 끝 스크립트가 가리킴 · 툴팁 · 타일을 다룬다) · hidden(숨긴 계열 key)
+function pchartTrend({ width = 560, height = 200, dual = true, tip = -1, live = false, hidden = [], label = "", legendId = "", id = nextPdataId("pchart") } = {}) {
+  const padL = 44, padR = dual ? 44 : 12, padT = 10, padB = 26;
+  const iw = width - padL - padR, ih = height - padT - padB;
+  const x = (i) => padL + (iw * i) / (PCHART_MONTHS.length - 1);
+  // 축 하나 — 보이는 첫 계열이 맡은 축(그 계열의 눈금)이고 눈금 글자는 fg-neutral-subtle
+  const series = dual ? PCHART_SERIES : (() => { const own = PCHART_SERIES.find((s) => !hidden.includes(s.key)) || PCHART_SERIES[0]; return PCHART_SERIES.map((s) => ({ ...s, max: own.max, ticks: s === own ? own.ticks : [] })); })();
+  const yOf = (s, v) => padT + ih * (1 - v / s.max);
+  const left = dual ? series[0] : series.find((s) => s.ticks.length) || series[0];
+  // 가로 격자 — 왼쪽 축의 눈금 자리에만 점선(3 · 3). 세로 격자 · 축 선은 긋지 않는다
+  const grid = left.ticks.map((t) => `<line class="pchart-grid" x1="${padL}" x2="${width - padR}" y1="${yOf(left, t).toFixed(1)}" y2="${yOf(left, t).toFixed(1)}"/>`).join("");
+  const tickL = left.ticks.map((t) => `<text class="pchart-tick${dual ? ` pchart-tick--${left.color}` : ""}" x="${padL - 8}" y="${(yOf(left, t) + 4).toFixed(1)}" text-anchor="end">${escape(pdataAxisWon(t))}</text>`).join("");
+  const tickR = dual ? series[1].ticks.map((t) => `<text class="pchart-tick pchart-tick--${series[1].color}" x="${width - padR + 8}" y="${(yOf(series[1], t) + 4).toFixed(1)}">${escape(pdataAxisWon(t))}</text>`).join("") : "";
+  const tickX = PCHART_MONTHS.map((m, i) => `<text class="pchart-tick" x="${x(i).toFixed(1)}" y="${height - 8}" text-anchor="middle">${escape(m)}</text>`).join("");
+  const gradId = (s) => `${id}-g-${s.key}`;
+  const defs = `<defs>${series.map((s) => `<linearGradient id="${gradId(s)}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="pchart-stop pchart-stop--${s.color}" stop-opacity="0.25"/><stop offset="1" class="pchart-stop pchart-stop--${s.color}" stop-opacity="0"/></linearGradient>`).join("")}</defs>`;
+  const lines = series.map((s) => {
+    const pts = s.values.map((v, i) => [x(i), yOf(s, v)]);
+    const d = pchartPath(pts);
+    const area = `${d} L${x(s.values.length - 1).toFixed(1)},${(padT + ih).toFixed(1)} L${x(0).toFixed(1)},${(padT + ih).toFixed(1)} Z`;
+    return `<g class="pchart-series pchart-series--${s.color}" data-pchart-key="${s.key}"${hidden.includes(s.key) ? " hidden" : ""}><path class="pchart-area" d="${area}" fill="url(#${gradId(s)})"/><path class="pchart-line" d="${d}"/></g>`;
+  }).join("");
+  // 가리킴 — 세로 점선(stroke-neutral-weak) + 가리킨 점(10 — 계열 색 + 카드 면 색 테두리 2). 그 순간을 멈춘 그림(tip)이나 직접 견본(live)만
+  const pointer = tip >= 0 || live
+    ? `<g class="pchart-pointer"${tip >= 0 ? "" : " hidden"}><line class="pchart-cross" x1="${x(Math.max(tip, 0)).toFixed(1)}" x2="${x(Math.max(tip, 0)).toFixed(1)}" y1="${padT}" y2="${padT + ih}"/>${series.map((s) => `<circle class="pchart-point pchart-point--${s.color}" data-pchart-key="${s.key}" r="4" cx="${x(Math.max(tip, 0)).toFixed(1)}" cy="${yOf(s, s.values[Math.max(tip, 0)]).toFixed(1)}"${hidden.includes(s.key) ? " hidden" : ""}/>`).join("")}</g>`
+    : "";
+  const svg = `<svg class="pchart-svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" aria-hidden="true" focusable="false">${defs}${grid}${lines}${tickL}${tickR}${tickX}${pointer}</svg>`;
+  const tipBox = tip >= 0 ? pchartTip({ head: PCHART_HEADS[tip], rows: series.filter((s) => !hidden.includes(s.key)).map((s) => ({ color: s.color, label: s.label, value: pdataWon(s.values[tip]) })), x: x(tip), width }) : live ? '<div class="pchart-tip" hidden></div>' : "";
+  const data = live ? ` data-pchart-trend='${JSON.stringify({ x: PCHART_MONTHS.map((_, i) => Math.round(x(i) * 10) / 10), y: Object.fromEntries(series.map((s) => [s.key, s.values.map((v) => Math.round(yOf(s, v) * 10) / 10)])), months: PCHART_HEADS, series: series.map((s) => ({ key: s.key, label: s.label, color: s.color, values: s.values.map(pdataWon) })), top: padT, bottom: padT + ih, width })}'` : "";
+  return `<div ${attrsOf([`class="pchart pchart--trend"`, `id="${id}"`, 'role="img"', `aria-label="${escape(label)}"`, legendId && `aria-describedby="${legendId}"`, live && 'tabindex="0"', `style="--pchart-w: ${width}px; --pchart-h: ${height}px;"`])}${data}>${svg}${tipBox}</div>`;
+}
+// 툴팁 — 떠 있는 표면(bg-layer-floating · shadow-s3 · 모서리 12 · 위아래 10 · 좌우 12 · 테두리 없음). 머리(12 · fg-neutral-subtle) + "■ 라벨 값" 줄
+// (네모 8 + 라벨 13 · fg-neutral-muted + 값 13 · 700 · fg-neutral — 오른쪽 · 고정폭 숫자 · 원까지). x 는 가리킨 자리 — 오른쪽으로 넘치면 왼쪽에 둔다
+function pchartTip({ head = "", rows = [], x = 0, width = 0, cls = "" } = {}) {
+  const side = width && x > width / 2 ? "left" : "right";
+  const style = width ? ` style="--pchart-tip-x: ${x.toFixed(1)}px;"` : "";
+  return `<div class="pchart-tip pchart-tip--${side}${cls ? ` ${cls}` : ""}"${style}><div class="pchart-tip-head">${escape(head)}</div>${rows.map((r) => `<div class="pchart-tip-row"><span class="pchart-swatch pchart-swatch--${r.color}"${r.swatch ? ` style="background: ${r.swatch};"` : ""}></span><span class="pchart-tip-label">${escape(r.label)}</span><span class="pchart-tip-value">${escape(r.value)}</span></div>`).join("")}</div>`;
+}
+// 지표 타일 — 선 · 막대 범례(차트 위). 점 8(계열 색) + 이름 13 · fg-neutral-muted, 아래 2 에 합계 16 / 22 · 700. 켠 계열 chart-{색}-subtle 바탕, 끈 계열 흰 면 + 안쪽 1px.
+// <button aria-pressed> — 마지막 하나는 끌 수 없다(aria-disabled). interaction 은 그 순간을 멈춘 타일
+function pchartTiles({ id = nextPdataId("pchart-legend"), items = [], hidden = [], live = false, label = "계열", interaction = null } = {}) {
+  const shown = items.filter((it) => !hidden.includes(it.key));
+  return `<div ${attrsOf(['class="pchart-tiles"', 'role="group"', `aria-label="${escape(label)}"`, `id="${id}"`, live && "data-pchart-tiles"])}>${items.map((it) => {
+    const on = !hidden.includes(it.key);
+    const last = on && shown.length === 1;
+    const st = interaction && interaction.at === it.key ? pdataState("pchart-tile", interaction.interaction) : "";
+    return `<button ${attrsOf([`class="pchart-tile pchart-tile--${it.color}${on ? "" : " pchart-tile--off"}${st}"`, 'type="button"', `aria-pressed="${on}"`, last && 'aria-disabled="true"', `data-pchart-key="${it.key}"`])}><span class="pchart-tile-name"><span class="pchart-dot" aria-hidden="true"></span>${escape(it.label)}</span><span class="pchart-tile-total">${escape(it.total)}</span></button>`;
+  }).join("")}</div>`;
+}
+// 도넛 — 지름 · 두께(160 · 22, 폰 120 · 18) · 조각 사이 0. 조각은 SVG 원의 점선 길이로 그린다(12시부터 시계 방향)
+function pchartDonut({ items = [], size = 160, thickness = 22, center = null, label = "", legendId = "" } = {}) {
+  const r = (size - thickness) / 2;
+  const circ = 2 * Math.PI * r;
+  const total = items.reduce((s, it) => s + it.amount, 0);
+  let off = 0;
+  const segs = items.map((it) => {
+    const len = (circ * it.amount) / total;
+    const seg = `<circle class="pchart-slice pchart-slice--${it.color}" cx="${size / 2}" cy="${size / 2}" r="${r.toFixed(2)}" stroke-width="${thickness}" stroke-dasharray="${len.toFixed(2)} ${(circ - len).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}" transform="rotate(-90 ${size / 2} ${size / 2})"/>`;
+    off += len;
+    return seg;
+  }).join("");
+  const mid = center ? `<div class="pchart-center"><span class="pchart-center-label">${escape(center.label)}</span><span class="pchart-center-amount">${escape(center.amount)}</span></div>` : "";
+  return `<div ${attrsOf(['class="pchart pchart-donut"', 'role="img"', `aria-label="${escape(label)}"`, legendId && `aria-describedby="${legendId}"`, `style="--pchart-donut: ${size}px;"`])}><svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true" focusable="false">${segs}</svg>${mid}</div>`;
+}
+// 도넛 범례 — 카테고리 목록 줄(44 이상): 색 네모 10 + 이름 14 + % 14 · fg-neutral-subtle + 금액 14 · 700 + "원". 하위가 있는 줄만 누르는 줄(List)
+function pchartLegend({ id = nextPdataId("pchart-cats"), items = [], label = "카테고리" } = {}) {
+  const total = items.reduce((s, it) => s + it.amount, 0);
+  return `<ul class="pchart-legend" id="${id}" aria-label="${escape(label)}">${items.map((it) => {
+    const pct = `${Math.round((it.amount * 100) / total)}%`;
+    const inner = `<span class="pchart-legend-swatch pchart-swatch--${it.color}" aria-hidden="true"></span><span class="pchart-legend-name">${escape(it.name)}${it.rest ? `<span class="pdata-sr"> — ${it.rest}개 카테고리</span>` : ""}</span><span class="pchart-legend-pct">${pct}</span><span class="pchart-legend-amount">${escape(pdataWon(it.amount))}</span>`;
+    return `<li class="pchart-legend-row${it.children ? " pchart-legend-row--press" : ""}">${it.children ? `<button class="pchart-legend-action" type="button" data-pchart-cat="${escape(it.name)}">${inner}</button>` : `<span class="pchart-legend-action">${inner}</span>`}</li>`;
+  }).join("")}</ul>`;
+}
+// 10월 카테고리별 지출 — 저장된 색(식비 blue · 교통 green · 쇼핑 orange · 경조사 red · 주거 violet · 생활 pink)이 먼저, 색 없는 구독 · 의료 · 문화는 쓰지 않은 색부터
+// (red 를 건너뛰어 indigo · yellow · brown), 11개라 상위 9 + 회색 "기타"(경조사 셋 아래 둘). 합계 1,240,000원
+const PCHART_CATS = [
+  { name: "식비", saved: "blue", amount: 384400, children: true },
+  { name: "교통", saved: "green", amount: 173600 },
+  { name: "쇼핑", saved: "orange", amount: 148800, children: true },
+  { name: "경조사", saved: "red", amount: 124000 },
+  { name: "주거", saved: "violet", amount: 111600 },
+  { name: "생활", saved: "pink", amount: 86800, children: true },
+  { name: "구독", amount: 74400 },
+  { name: "의료", amount: 62000 },
+  { name: "문화", amount: 37200 },
+  { name: "선물", amount: 24800 },
+  { name: "기부", amount: 12400 },
+];
+// 열지도 — 시간대 × 요일. 세기 다섯(브랜드 채움을 카드 면에 18 · 35 · 55 · 75 · 100% 섞음 — 가장 큰 칸 값의 8 · 22 · 45 · 75% 에서 끊는다), 값이 없는 칸 bg-neutral-weak.
+// 칸에 금액(11 / 15 · 700 · 원까지)을 적는 것은 칸 폭 112 이상일 때뿐 — 페이지 끝 스크립트가 ResizeObserver 로 칸 폭을 재서 글을 보이고 감춘다.
+// 가장 큰 칸에 고리를 두르지 않는다(2026-10-08 사용자 결정)
+const PHEAT_DAYS = ["월", "화", "수", "목", "금", "토", "일"];
+const PHEAT_DAY_NAMES = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"];
+// 10월 요일 · 시간대별 지출 — 사이트 그림과 같은 값(가장 큰 칸 토요일 저녁 240,000원 · 수요일 저녁 35,000원 — chart.md 의 툴팁 예)
+const PHEAT_ROWS = [
+  { label: "아침", sub: "06~10시", values: [4500, 0, 5200, 3800, 12000, 0, 8000] },
+  { label: "점심", sub: "10~14시", values: [9000, 21500, 8500, 11000, 64000, 23000, 0] },
+  { label: "오후", sub: "14~18시", values: [0, 6800, 15000, 0, 32000, 128000, 54000] },
+  { label: "저녁", sub: "18~22시", values: [54000, 12500, 35000, 96000, 187000, 240000, 61000] },
+];
+const pheatStep = (v, max) => {
+  if (v <= 0 || max <= 0) return 0;
+  const r = v / max;
+  return r < 0.08 ? 1 : r < 0.22 ? 2 : r < 0.45 ? 3 : r < 0.75 ? 4 : 5;
+};
+// cell 은 칸 폭(px — 그 화면 폭에서 잰 값), width 는 그 화면 폭. live 면 칸이 가리키기 · 누르기 · 화살표 키에 툴팁을 띄운다
+function pheat({ cell = 117, width = 1280, label = "10월 요일 · 시간대별 지출", live = false, tip = null, id = nextPdataId("pheat") } = {}) {
+  const max = Math.max(...PHEAT_ROWS.flatMap((r) => r.values));
+  const head = `<span class="pheat-corner" aria-hidden="true"></span>${PHEAT_DAYS.map((d) => `<span class="pheat-day" aria-hidden="true">${d}</span>`).join("")}`;
+  const body = PHEAT_ROWS.map((row, ri) => `<span class="pheat-label" aria-hidden="true"><span class="pheat-label-name">${escape(row.label)}</span><span class="pheat-label-sub">${escape(row.sub)}</span></span>${row.values.map((v, ci) => {
+    const step = pheatStep(v, max);
+    const text = v > 0 ? pdataWon(v) : "—";
+    const tipHead = `${PHEAT_DAY_NAMES[ci]} ${row.label} ${row.sub}`;
+    const on = tip && tip.row === ri && tip.col === ci;
+    return `<span ${attrsOf([`class="pheat-cell pheat-cell--${step}${cell >= 112 ? " pheat-cell--text" : ""}${on ? " pheat-cell--tip" : ""}"`, `data-pheat-row="${ri}"`, `data-pheat-col="${ci}"`, `data-pheat-head="${escape(tipHead)}"`, `data-pheat-value="${escape(v > 0 ? pdataWon(v) : "없음")}"`, 'aria-hidden="true"'])}><span class="pheat-value">${escape(text)}</span></span>`;
+  }).join("")}`).join("");
+  const tipBox = tip ? (() => {
+    const row = PHEAT_ROWS[tip.row];
+    const v = row.values[tip.col];
+    return pchartTip({ head: `${PHEAT_DAY_NAMES[tip.col]} ${row.label} ${row.sub}`, rows: [{ color: `heat-${pheatStep(v, max)}`, label: "지출", value: v > 0 ? pdataWon(v) : "없음" }], cls: "pheat-tip pheat-tip--frozen" });
+  })() : live ? '<div class="pchart-tip pheat-tip" hidden></div>' : "";
+  return `<div ${attrsOf([`class="pheat${tip ? " pheat--frozen" : ""}"`, `id="${id}"`, `style="--pheat-cell: ${cell}px;"`, 'role="img"', `aria-label="${escape(label)} — 칸 ${cell}(${width} 폭)"`, live && 'tabindex="0"', live && "data-pheat-live", tip && `data-pheat-tip="${tip.row},${tip.col}"`])}><div class="pheat-grid">${head}${body}</div>${tipBox}</div>`;
+}
+
+// ── Searchable List ─────────────────────────────────────────────────────
+// 은행 고르기 — 기관 색 표(institution-colors.yaml)의 분류 차례 그대로(시중은행 · 인터넷은행 · 지방은행 · 특수은행 · 저축기관 · 외국계 · 기타)
+const PSL_BANK_GROUPS = ["시중은행", "인터넷은행", "지방은행", "특수은행", "저축기관", "외국계", "기타"].map((g) => ({ label: g, items: INSTITUTIONS.filter((it) => it.category === g).map((it) => it.name) }));
+// 오른쪽 라디오 — 보는 표시(Radiomark large 24). 고름은 줄의 aria-selected 가 알린다(보조 기술에 숨긴다)
+const pslRadio = () => '<span class="psl-radio" aria-hidden="true"><span class="psl-radio-dot"></span></span>';
+// 결과 줄(option) — List 줄(위아래 12 · 좌우 24 · 제목 16 / 22 · 설명 13 / 18) + 앞 붙이개 + 오른쪽 라디오. 초점은 받지 않는다(초점은 검색칸).
+// highlighted 는 ↓ · ↑ · 마우스로 짚은 줄(좌우 6 들어온 bg-layer-default-pressed · 모서리 10), pressed 는 누르는 순간(콘텐츠만 2px 축소)
+function pslOption({ id = nextPdataId("psl-opt"), value, title, detail = "", prefix = "", selected = false, highlighted = false, pressed = false } = {}) {
+  return `<div ${attrsOf([`class="psl-option${highlighted ? " psl-option--hl" : ""}${pressed ? " psl-option--pressed" : ""}"`, 'role="option"', `id="${id}"`, `aria-selected="${selected}"`, `data-psl-value="${escape(value)}"`, `data-psl-text="${escape(title)}"`])}><span class="psl-option-content">${prefix ? `<span class="psl-prefix">${prefix}</span>` : ""}<span class="psl-body"><span class="psl-title">${escape(title)}</span>${detail ? `<span class="psl-detail">${detail}</span>` : ""}</span>${pslRadio()}</span></div>`;
+}
+// 분류 — List Header mediumWeak(14 · 500 · fg-neutral-subtle · 위아래 8 · 좌우 24), role="group" 의 이름
+function pslGroup({ label, options = "" } = {}) {
+  const hid = nextPdataId("psl-g");
+  return `<div class="psl-group" role="group" aria-labelledby="${hid}">${listHeader({ text: label, id: hid })}${options}</div>`;
+}
+// 검색칸 — Input 밑줄형(large 40 · 글 18 / 24 · 돋보기 24 · 지우기 22 / medium 34 · 16 / 22 · 20 · 18), 이름 "검색", placeholder "{무엇} 검색".
+// role="combobox" · aria-controls · aria-expanded · aria-autocomplete="list" · aria-activedescendant(강조한 줄). 지우기는 03g 의 스크립트가 넣고 뺀다
+function pslField({ size = "large", value = "", placeholder = "은행 이름 검색", controls = "", active = "", focus = false } = {}) {
+  const input = `<input ${attrsOf(['class="ptf-input-value"', 'type="text"', 'role="combobox"', 'aria-expanded="true"', `aria-controls="${controls}"`, 'aria-autocomplete="list"', `aria-activedescendant="${active}"`, 'aria-label="검색"', `placeholder="${escape(placeholder)}"`, value && `value="${escape(value)}"`, 'autocomplete="off"', 'data-psl-input'])}>`;
+  return `<div class="psl-field"><div class="ptf-input ptf-input--underline ptf-input--${size}${focus ? " ptf-input--focus" : ""}" data-clearable=""><span class="ptf-icon" aria-hidden="true">${DATA_ICON.search}</span>${input}${value ? TEXT_FIELD_CLEAR : ""}</div></div>`;
+}
+// 묶음 — 위 검색칸 + 아래 결과(listbox). groups [{ label, items: [{ value, title, detail, prefix }] }] · value 지금 값 · highlight 강조한 줄의 value ·
+// status empty · error · loading(결과 자리) · live 직접(페이지 끝 스크립트) · placement sheet · inline
+function psl({ size = "large", placeholder = "은행 이름 검색", label = "은행", query = "", groups = [], value = "", highlight = "", pressed = "", status = "", skeletonPrefix = "logo", live = false, placement = "sheet", focus = false } = {}) {
+  const listId = nextPdataId("psl-list");
+  let activeId = "";
+  const body = groups.map((g) => {
+    const opts = g.items.map((it) => {
+      const id = nextPdataId("psl-opt");
+      if (it.value === highlight) activeId = id;
+      return pslOption({ id, value: it.value, title: it.title, detail: it.detail || "", prefix: it.prefix || "", selected: it.value === value, highlighted: it.value === highlight, pressed: it.value === pressed });
+    }).join("");
+    return g.label ? pslGroup({ label: g.label, options: opts }) : opts;
+  }).join("");
+  const field = pslField({ size, value: query, placeholder, controls: listId, active: activeId, focus });
+  const results = status === "empty"
+    ? `<div class="psl-status">${resultSection({ kind: "empty", size: "medium", icon: "searchX", title: `'${query}'에 대한 검색 결과가 없어요`, description: "은행 이름의 일부로도 찾아보세요." })}</div>`
+    : status === "error"
+      ? `<div class="psl-status">${resultSection({ kind: "failure", size: "medium", title: "검색 결과를 불러오지 못했어요", description: "잠시 뒤 다시 시도해주세요.", primary: "다시 시도" })}</div>`
+      : status === "loading"
+        ? `<div class="psl-skeleton" aria-busy="true">${Array.from({ length: 5 }, (_, i) => `<div class="psl-option psl-option--skeleton" aria-hidden="true"><span class="psl-option-content"><span class="psl-prefix">${skeletonPrefix === "cardArt" ? skeleton({ radius: "8", w: 56, h: 35 }) : skeleton({ radius: "12", w: 40, h: 40 })}</span><span class="psl-body">${skeleton({ text: "t5", w: "40%" })}${skeleton({ text: "t3", w: "60%" })}</span></span></div>`).join("")}</div>`
+        : "";
+  const list = status ? results : `<div class="psl-results" role="listbox" id="${listId}" aria-label="${escape(label)}">${body}</div>`;
+  // 직접 견본 — 0건 자리를 숨겨 두고 페이지 끝 스크립트가 검색어로 제목을 채워 보인다. 알림은 아래 숨은 알림 자리 하나가 한 번 읽는다(Result Section 의 status 는 뗀다)
+  const emptySlot = live ? `<div class="psl-status" data-psl-empty hidden>${resultSection({ kind: "empty", size: "medium", icon: "searchX", title: "", description: "은행 이름의 일부로도 찾아보세요." }).replace(' role="status"', "")}</div>` : "";
+  return `<div ${attrsOf([`class="psl psl--${size} psl--${placement}"`, live && "data-psl-live"])}>${field}${list}${emptySlot}${live ? '<p class="pdata-sr" role="status" aria-live="polite" data-psl-status></p>' : ""}</div>`;
+}
+const pslBankItems = (names) => names.map((n) => ({ value: n, title: n, prefix: logoTile({ name: n, size: 40 }) }));
+
+// ── Swipe Actions ───────────────────────────────────────────────────────
+// 동작 칸 — 원형 배지 36(아이콘 18) + 라벨 12 / 700 / 1.3, 사이 2. 칸 폭은 앞 간격 + 36(첫 칸 20 + 36 = 56 · 다음 12 + 36 = 48), 높이는 줄(56 이상).
+// 색은 배지만 — primary fg-informative · destructive fg-critical 바탕 + fg-neutral-inverted 아이콘, neutral bg-neutral-weak + 안쪽 1px stroke-neutral-weak.
+// 라벨은 neutral · primary fg-neutral-muted, destructive fg-critical. 이름 "라벨: 줄 제목". state 는 그 순간을 멈춘 칸
+const PSWIPE_ICON = { pin: "pin", pencil: "pencil", trash: "trash" };
+function pswipeAction({ kind = "primary", label, icon, rowLabel = "", first = false, open = true, state = "" } = {}) {
+  const cls = ["pswipe-action", `pswipe-action--${kind}`, first && "pswipe-action--first", state && `pswipe-action--${state}`].filter(Boolean).join(" ");
+  return `<button ${attrsOf([`class="${cls}"`, 'type="button"', `aria-label="${escape(label)}: ${escape(rowLabel)}"`, !open && 'tabindex="-1"', state === "disabled" && "disabled"])}><span class="pswipe-badge" aria-hidden="true">${DATA_ICON[PSWIPE_ICON[icon]]}</span><span class="pswipe-label" aria-hidden="true">${escape(label)}</span></button>`;
+}
+// 줄 + 트레이 — actions 는 뜻의 차례([고정, 수정, 삭제]), 그리는 쪽이 뒤집는다(파괴적인 것이 가장 안쪽 · 화면에서 가장 왼쪽).
+// open 이면 줄이 트레이 폭(56 · 104 · 152)만큼 왼쪽으로 밀려 있다. 닫힌 트레이는 aria-hidden · 버튼 tabindex -1
+function pswipe({ row = "", actions = [], rowLabel = "", open = true, states = {} } = {}) {
+  const shown = [...actions].reverse();
+  const width = 56 + 48 * (shown.length - 1);
+  const tray = `<div class="pswipe-tray"${open ? "" : ' aria-hidden="true"'}>${shown.map((a, i) => pswipeAction({ ...a, rowLabel, first: i === 0, open, state: states[a.label] || "" })).join("")}</div>`;
+  return `<div class="pswipe${open ? " pswipe--open" : ""}" style="--pswipe-tray: ${width}px;">${tray}<div class="pswipe-row" tabindex="-1">${row}</div></div>`;
+}
+// 거래 줄 — 가계부(카테고리 타일 · 제목 · 설명 · 금액 + 줄 끝 ⋮). ⋮ 는 Button ghost · iconOnly · medium(40 · 누르는 44) "{줄 이름} 더보기"
+const pswipeRow = ({ color = "orange", icon = "utensils", title = "스타벅스 강남점", detail = "식비 · 국민카드", amount = -6500, more = true } = {}) =>
+  listOf([listRow({ kind: "button", prefix: listTile(color, icon), title, detail, suffix: `<span class="plst-amount">${escape(pdataWon(amount))}</span>${more ? `<button class="btn btn-ghost btn-icon-only pswipe-more" type="button" aria-label="${escape(title)} 더보기" aria-haspopup="menu">${DATA_ICON.ellipsisVertical}</button>` : ""}` })]);
+
+// 데이터 표시 갤러리 — 표 여섯 · 카드 다섯(순자산 카드는 Desk 만) · 차트 넷 · 검색해서 고르기 둘 · 줄 밀기 하나, 판을 흰 표면(.vignette-card) 위에 그린다.
+// 견본 틀(.ptf-samples · .ptf-cap)과 상태 표(.cb-matrix)는 Text Field 갤러리 것, 라이트 · 다크 나란히 틀(.pdsp-pair · .pdsp-theme)은 03o 것이다 — 나란히 틀에는
+// 이 블록의 부품과 03e 의 목록 줄 · 03o 의 배지 · 아바타 · 03q 의 로고 타일만 담는다(시트 · 메뉴 · 입력칸은 페이지 테마를 따른다).
+// 글은 HR(사용자 · 업무 보고)과 Desk(오늘 쓴 돈 · 지표 · 순자산 · 수입 · 지출 · 카테고리 · 은행 고르기 · 거래 줄)에서 빌렸다 — 각 스펙 md 의 코드 예와 같은 자리다.
+export function renderDataGallery(brand) {
+  const desk = brand.key === "desk";
+  const hasBrand = brand.key !== "shared";
+  const panel = (title, sub, body) => `
+    <div class="vignette-card cb-panel pdata-panel">
+      <div class="vignette-head">
+        <div class="vignette-title">${escape(title)}</div>
+        <div class="vignette-sub">${escape(sub)}</div>
+      </div>${body}
+    </div>`;
+  const samples = (items, cls = "ptf-samples") => `
+      <div class="${cls}">${items.join("")}
+      </div>`;
+  const sample = (cap, en, body) => `
+        <div class="ptf-sample">
+          <div class="ptf-cap">${escape(cap)}<span>${escape(en)}</span></div>
+          ${body}
+        </div>`;
+  const matrix = (cls, first, cols, rows, cell) => `
+      <div class="cb-matrix ${cls}" style="--cb-cols: ${cols.length};">
+        <div class="cb-matrix-row cb-matrix-row--head"><div class="cb-matrix-head">${escape(first)}</div>${
+          cols.map((c) => `<div class="cb-matrix-head">${escape(c.ko)}<span>${escape(c.en)}</span></div>`).join("")
+        }</div>${rows.map((r) => `
+        <div class="cb-matrix-row"><div class="cb-matrix-label">${escape(r.ko)}<span>${escape(r.en)}</span></div>${
+          cols.map((c) => `<div class="cb-matrix-cell pdata-cell">${cell(r, c)}</div>`).join("")
+        }</div>`).join("")}
+      </div>`;
+  const pair = (body, cls = "") => `<div class="pdsp-pair${cls ? ` ${cls}` : ""}">${["light", "dark"].map((t) => `<div class="pdsp-theme pdsp-theme--${t}"><div class="pdsp-theme-cap">${t === "light" ? "라이트" : "다크"}</div>${typeof body === "function" ? body(t) : body}</div>`).join("")}</div>`;
+  const cap = (text, sub = "") => `<div class="pnav-cap pdata-cap">${escape(text)}${sub ? `<span>${escape(sub)}</span>` : ""}</div>`;
+  const floor = (body, cls = "") => `<div class="pdata-floor${cls ? ` ${cls}` : ""}">${body}</div>`;
+  const wide = (body) => `<div class="pdata-wide">${body}</div>`;
+  const NEXT = "ptf-samples pov-samples--next";
+  const WIDE = "ptf-samples pdata-samples--wide";
+  const status = (attr, text) => `<p class="pnav-live-status pdata-live-status" aria-hidden="true" ${attr}="">${escape(text)}</p>`;
+  const STATES = [
+    { ko: "기본", en: "enabled", i: "" },
+    { ko: "호버", en: "hovered — 웹", i: "hover" },
+    { ko: "누름", en: "pressed", i: "pressed" },
+    { ko: "포커스", en: "focused — 키보드", i: "focus" },
+  ];
+
+  // ── Table ──────────────────────────────────────────────────────────────
+  const userHead = ({ sortBy = "days", dir = "descending", key = false, interaction = null } = {}) => [
+    ptblHead({ label: "이름", sort: sortBy === "name" ? dir : "none", key: key ? "name" : "", interaction: interaction && interaction.at === "name" ? interaction.i : "" }),
+    ptblHead({ label: "부서" }),
+    ptblHead({ label: "남은 휴가", align: "end", sort: sortBy === "days" ? dir : "none", key: key ? "days" : "", interaction: interaction && interaction.at === "days" ? interaction.i : "" }),
+    ptblHead({ label: "상태" }),
+    ptblMoreHead(),
+  ];
+  const sortUsers = (by = "days", dir = "descending") => [...PTBL_USERS].sort((a, b) => (by === "days" ? a.days - b.days : a.name.localeCompare(b.name, "ko")) * (dir === "ascending" ? 1 : -1));
+  const userRows = (list, { press = true, values = false, stateAt = -1, interaction = "" } = {}) => list.map((u, i) => ptblRow([
+    ptblRowHeader(u.name, { link: press, focus: i === stateAt && interaction === "focus" }),
+    ptblCell(escape(u.dept)),
+    ptblCell(escape(ptblDays(u.days)), { end: true }),
+    ptblCell(badge({ text: u.status, tone: u.tone })),
+    ptblMoreCell(u.name),
+  ], { press, values: values ? { name: u.name, days: u.days } : null, interaction: i === stateAt && interaction !== "focus" ? interaction : "" }));
+  const userTable = (opts = {}) => ptbl({ caption: "사용자", head: userHead(opts), rows: userRows(sortUsers(opts.sortBy || "days", opts.dir || "descending"), opts), minWidth: 520, ...(opts.table || {}) });
+  const tableCard = (title, table, action = "") => pcard({ body: "list", head: pcardHead({ title, action }), list: table, cls: "pcard--table" });
+
+  // 1. 표 — SEED 문서 표: 머리 41 · 줄 45 · 첫 칸 24 · 칸 16 · 줄 선 마지막 줄까지(라이트 · 다크) + 부위를 잰 그림
+  const lookPanel = panel(
+    "Table — SEED 문서 표: 머리 41 · 줄 45 · 줄 선은 마지막 줄까지",
+    "줄과 열로 된 데이터를 견주는 표다 — 카드 안에 가장자리까지 붙는다(바깥 테두리 · 모서리 · 세로 선 · 줄무늬 없음). 머리 줄은 41(위아래 10 + 글 20 + 선 1) · 머리 글자는 본문과 같은 14 / 20 · 짙은 fg-neutral 에 굵기만 500 이고 머리 바탕 · 작은 대문자 · 회색 머리를 두지 않는다. 본문 줄은 45(위아래 12 + 글 20 + 선 1) · 14 / 20 · 400 이다. 칸 좌우는 16 이고 첫 칸 앞 · 끝 칸 뒤만 카드 여백과 같은 24 라 카드 머리 제목과 첫 열 글자가 한 줄에 선다. 줄 선은 1px stroke-neutral-subtle 로 머리 아래 · 줄마다 · 마지막 줄 아래까지 긋는다 — 마지막 선이 표 끝을 마감한다. 숫자 열(남은 휴가)은 머리까지 오른쪽 · 고정폭 숫자, 상태는 Badge medium weak(톤이 뜻 — 재직 positive · 휴직 warning · 초대 대기 neutral, 글 열처럼 왼쪽), 줄의 동작은 끝 ⋮ 하나(열 머리에는 글 없이 숨긴 \"동작\")다. 정렬할 수 있는 열(이름 · 남은 휴가)에는 ↑↓ 가 늘 있다. 표는 <table> · <caption>(숨긴 표 이름 — 보이는 제목은 카드 머리) · <th scope> 다. 오른쪽 그림은 칸 상자를 점선으로 잰 것이다.",
+    `${pair(() => wide(floor(tableCard("사용자", userTable()))), "pdata-pair--stack")}${samples([
+      sample("부위 — 칸 상자(점선)", "머리 41 = 10 + 20 + 10 + 선 1 · 줄 45 = 12 + 20 + 12 + 선 1 · 첫 칸 앞 24 · 칸 16 · ⋮ 열 80 = 16 + 40 + 24", wide(floor(tableCard("사용자", userTable({ table: { attrs: 'data-ptbl-guide=""' } }).replace('class="ptbl"', 'class="ptbl ptbl--guide"'))))),
+    ], `${WIDE} pov-samples--next`)}`,
+  );
+
+  // 2. 정렬 — ↑↓ 늘 보임 · 지금 방향만 짙게 · 두 단계(숫자 · 날짜는 처음 내림) · 직접 + 정렬 버튼 상태
+  const sortStates = [["none", "정렬할 수 있음 — 둘 다 흐리게", "sort none"], ["descending", "내림 — ↓ 만 짙게", "aria-sort=\"descending\""], ["ascending", "오름 — ↑ 만 짙게", "aria-sort=\"ascending\""]];
+  const headStrip = (sort) => `<table class="ptbl-table ptbl-table--strip"><thead><tr class="ptbl-head-row">${ptblHead({ label: "남은 휴가", align: "end", sort })}</tr></thead></table>`;
+  const sortRow = `<div class="pdata-row">${sortStates.map(([s, a, b]) => `<div class="pdata-item">${floor(`<div class="pdata-strip">${headStrip(s)}</div>`, "pdata-floor--tight")}${cap(a, b)}</div>`).join("")}</div>`;
+  const liveSort = `${floor(tableCard("사용자", userTable({ key: true, values: true, table: { live: "sort", attrs: "data-ptbl-sorted=\"days:descending\"" } })))}${status("data-ptbl-status", "남은 휴가 많은 순 — 머리를 눌러 보세요.")}<p class="pdata-sr" role="status" aria-live="polite" data-ptbl-announce></p>`;
+  const sortMatrix = matrix("pdata-matrix", "정렬 버튼", STATES, [
+    { ko: "다른 열", en: "sort none", s: "none" },
+    { ko: "정렬된 열", en: "descending", s: "descending" },
+  ], (r, c) => `<span class="pdata-surface pdata-surface--strip"><table class="ptbl-table ptbl-table--strip"><thead><tr class="ptbl-head-row">${ptblHead({ label: "남은 휴가", align: "end", sort: r.s, interaction: c.i })}</tr></thead></table></span>`);
+  const sortPanel = panel(
+    "Table — 정렬: ↑↓ 늘 보임 · 지금 방향만 짙게 · 두 단계",
+    "정렬할 수 있는 열은 머리 칸 전체가 버튼이고 열 이름 오른쪽 6 에 ↑↓(16)를 늘 둔다 — 흐린 fg-neutral-muted 둘에서 지금 정렬된 방향 하나만 fg-neutral 로 짙어진다(마우스를 올려야 나타나는 화살표는 없다). 정렬된 열의 머리 칸에만 aria-sort(ascending · descending)를 달고, 버튼의 이름은 열 이름이다. 정렬은 두 단계다 — 누를 때마다 내림 ↔ 오름이 바뀌고 정렬 없음으로 돌아가지 않는다. 처음 누르면 숫자 · 날짜 열은 내림(큰 값 · 최근 것 먼저), 글 열은 오름(가나다)이고, 다른 열을 누르면 그 열의 처음 방향으로 옮긴다. 숫자 열은 글 + ↑↓ 묶음이 열 오른쪽 끝에 붙는다. 정렬 버튼은 칸 폭 × 41 이고 위아래로 44 까지 넓힌다. 호버 · 누름은 bg-layer-default-pressed(축소 없음), 키보드 포커스에만 안쪽 2px 링이다. 가운데 표는 직접 정렬된다 — 바뀌면 결과를 알린다. 표는 그 순간을 멈춰 그렸다.",
+    `${sortRow}${samples([sample("직접 — 이름 · 남은 휴가를 눌러 보기", "두 단계 · 숫자는 처음 내림 · 글은 처음 오름 · aria-sort", liveSort)], `${WIDE} pov-samples--next`)}${sortMatrix}`,
+  );
+
+  // 3. 숫자 · 상태 · ⋮ · 72 — Desk 일별 시세(▲ · ▼ · U+2212) · ⋮ 를 연 Menu(1280 이상) · 썸네일 · 두 줄 72(사람 Avatar 42 · 물건 Logo Tile 40)
+  const QUOTES = [
+    ["10월 8일 (목)", 71200, 1.2, 12345678], ["10월 7일 (수)", 70350, -0.8, 9876543], ["10월 6일 (화)", 70900, 0, 8123450], ["10월 5일 (월)", 70900, 2.1, 15234000],
+  ];
+  const quoteTable = ptbl({
+    caption: "일별 시세",
+    minWidth: 480,
+    head: [ptblHead({ label: "날짜", sort: "descending", type: "date" }), ptblHead({ label: "종가", align: "end", sort: "none" }), ptblHead({ label: "등락률", align: "end" }), ptblHead({ label: "거래량", align: "end" })],
+    rows: QUOTES.map(([d, close, rate, vol]) => ptblRow([
+      ptblRowHeader(d),
+      ptblCell(escape(pdataWon(close)), { end: true }),
+      ptblCell(pdelta({ direction: rate > 0 ? "up" : rate < 0 ? "down" : "flat", value: `${Math.abs(rate).toLocaleString("ko-KR", { minimumFractionDigits: 1 })}%`, srText: rate === 0 ? "등락 없음" : `${Math.abs(rate)}% ${rate > 0 ? "올랐어요" : "내렸어요"}` }), { end: true }),
+      ptblCell(escape(`${pdataNum(vol)}주`), { end: true }),
+    ])),
+  });
+  const moreMenu = menuContent({ label: "김하늘 더보기", groups: [{ items: [{ label: "수정", icon: "pencil" }] }, { items: [{ label: "삭제", icon: "trash", tone: "critical" }] }] });
+  const moreTable = ptbl({
+    caption: "사용자",
+    visible: true,
+    head: userHead(),
+    rows: [...userRows(sortUsers().slice(0, 1)), ptblRow([ptblRowHeader("김하늘", { link: true }), ptblCell("개발팀"), ptblCell(escape(ptblDays(12.5)), { end: true }), ptblCell(badge({ text: "재직", tone: "positive" })), ptblMoreCell("김하늘", { menu: moreMenu })], { press: true }), ...userRows(sortUsers().slice(2, 5))],
+  });
+  const richPeople = ptbl({
+    caption: "사용자",
+    rich: true,
+    minWidth: 560,
+    head: [ptblHead({ label: "이름", sort: "ascending" }), ptblHead({ label: "부서" }), ptblHead({ label: "남은 휴가", align: "end", sort: "none" }), ptblHead({ label: "상태" }), ptblMoreHead()],
+    rows: sortUsers("name", "ascending").slice(0, 3).map((u) => ptblRow([ptblContent({ media: avatar({ name: u.name, size: 42 }), title: u.name, detail: u.email, asHeader: true, link: true }), ptblCell(escape(u.dept)), ptblCell(escape(ptblDays(u.days)), { end: true }), ptblCell(badge({ text: u.status, tone: u.tone })), ptblMoreCell(u.name)], { press: true })),
+  });
+  const ASSETS = [["신한", "신한 주거래", "입출금", 1284000], ["KB국민", "KB 청년 적금", "적금", 3600000], ["키움증권", "키움 주식 계좌", "증권", 7412500]];
+  const richAssets = ptbl({
+    caption: "자산",
+    rich: true,
+    minWidth: 420,
+    head: [ptblHead({ label: "자산", sort: "none" }), ptblHead({ label: "기관" }), ptblHead({ label: "잔액", align: "end", sort: "descending" })],
+    rows: [...ASSETS].sort((a, b) => b[3] - a[3]).map(([inst, name, kind, amt]) => ptblRow([ptblContent({ media: logoTile({ name: inst, size: 40 }), title: name, detail: kind, asHeader: true }), ptblCell(escape(inst)), ptblCell(escape(pdataWon(amt)), { end: true })])),
+  });
+  const RULES = [["ruleLeave", "연차 · 휴가", "입사 1년 뒤 15일, 2년마다 1일 더한다", "10월 1일 (목)"], ["ruleAttire", "복장", "평일은 자유, 외부 미팅은 단정하게", "9월 14일 (월)"], ["ruleEducation", "교육", "직무 교육비는 연 100만원까지", "8월 3일 (월)"]];
+  const richRules = ptbl({
+    caption: "규정",
+    rich: true,
+    minWidth: 480,
+    head: [ptblHead({ label: "규정", sort: "none" }), ptblHead({ label: "고친 날", sort: "descending", type: "date" }), ptblMoreHead()],
+    rows: RULES.map(([img, t, d, day]) => ptblRow([ptblContent({ media: imageFrame({ ratio: "1:1", width: 48, src: PIMG[img], alt: "" }), title: t, detail: d, asHeader: true, link: true }), ptblCell(escape(day)), ptblMoreCell(t)], { press: true })),
+  });
+  const numbersPanel = panel(
+    "Table — 숫자 열 · 상태 · 줄 끝 ⋮ · 썸네일 · 두 줄 72",
+    "금액 · 개수 · 비율은 오른쪽 · 고정폭 숫자(tabular-nums — 고정폭 글꼴은 쓰지 않는다)이고 머리도 오른쪽이다. 돈은 줄이지 않고 원까지, 빼기는 U+2212(−) 하나다. 날짜는 왼쪽이다 — 같은 형식이라 자리가 맞는다. 오르내림을 적는 칸(등락률)은 증감 표기대로 ▲ fg-critical · ▼ fg-informative + 값 · 그대로면 \"변화 없음\" 이다(일별 시세 — div 격자가 아니라 <table>). 줄의 동작은 줄 끝 ⋮ 하나다 — Button ghost · iconOnly · medium(보이는 40 · 누르는 44), 이름 \"{줄 이름} 더보기\" · aria-haspopup, 1280 이상 Menu(그림 — 트리거 아래 8 · 오른쪽 맞춤) · 미만 Menu Sheet. 열 폭은 80(앞 16 + 40 + 끝 24). 칸 하나라도 썸네일(Image Frame 1:1 48 · 사람은 Avatar 42 · 은행 · 카드 같은 물건은 Logo Tile 40)이나 두 줄 글(윗줄 14 + 둘째 줄 13 · fg-neutral-subtle, 사이 2)을 두면 그 표의 모든 줄이 72 다(그림 ↔ 글 12) — 한 표 안에서 줄 높이를 섞지 않는다.",
+    `${samples([
+      sample("일별 시세 — 숫자 오른쪽 · ▲ · ▼ · 날짜 왼쪽", "Desk 증권 — <table>, 등락률은 Delta 와 같은 방향 색", wide(floor(tableCard("일별 시세", quoteTable)))),
+      sample("줄 끝 ⋮ — 40 · 누르는 44 · Menu", "\"김하늘 더보기\" · 1280 이상 Menu(줄 39 · 폭 200)", wide(floor(pcard({ body: "list", head: pcardHead({ title: "사용자" }), list: moreTable, cls: "pcard--table pdata-card--menu" })))),
+    ], WIDE)}${samples([
+      sample("72 — Avatar 42 + 이름 · 이메일", "TableCellContent media · title · detail", wide(floor(tableCard("사용자", richPeople)))),
+      sample("72 — Logo Tile 40 + 자산 · 종류", "잔액은 원까지 · 오른쪽", wide(floor(tableCard("자산", richAssets)))),
+      sample("72 — Image Frame 1:1 48 + 제목 · 설명", "썸네일 48 이 세로 가운데 — 칸 여백 12 보다 높이가 먼저", wide(floor(tableCard("문화 · 규정", richRules)))),
+    ], `${WIDE} pov-samples--next`)}`,
+  );
+
+  // 4. 고르기 · 일괄 작업 바 — 고른 줄은 바탕 없이 체크로만 · bg-brand-weak 는 바에만 · 직접
+  const reportHead = (state) => [ptblSelectHead(state, true), ptblHead({ label: "제목" }), ptblHead({ label: "작성자" }), ptblHead({ label: "제출일", sort: "descending", type: "date" }), ptblHead({ label: "상태" })];
+  const picked = ["r2", "r4"];
+  const reportTable = ptbl({
+    caption: "업무 보고",
+    minWidth: 560,
+    live: "select",
+    head: reportHead("indeterminate"),
+    rows: [...PTBL_REPORTS].reverse().map((r) => ptblRow([ptblSelectCell(r.title, picked.includes(r.id), true), ptblRowHeader(r.title, { link: true }), ptblCell(escape(r.author)), ptblCell(escape(r.date)), ptblCell(badge({ text: r.status, tone: r.tone }))], { press: true, attrs: `data-ptbl-id="${r.id}"` })),
+  });
+  const selectLive = `<div class="pdata-select" data-ptbl-select>${wide(floor(pcard({ body: "list", head: pcardHead({ title: "업무 보고" }), list: `<div class="pdata-bulk-slot">${ptblBulkBar({ count: picked.length, live: true, actions: [{ label: "내보내기" }, { label: "삭제", critical: true }] })}</div>${reportTable}`, cls: "pcard--table" })))}</div>`;
+  const selectPanel = panel(
+    "Table — 고르기 · 일괄 작업 바: 고른 줄은 체크로만",
+    "여럿을 골라 한 번에 다루는 표만 첫 열에 Checkbox large(24 · 누르는 44)를 둔다 — 열 폭은 24 + 앞 24 · 뒤 16. 머리 칸의 체크는 지금 쪽의 줄 전부를 고르고 풀며 일부만 골랐으면 일부(mixed)다(이름 \"모두 선택\" · 줄은 \"{줄 이름} 선택\"). 한 줄 이상 고르면 표 위(아래 8)에 일괄 작업 바가 뜬다 — 바탕 bg-brand-weak 한 값 · 높이 48 · 모서리 12 · 왼쪽 16 · 오른쪽 8, 왼쪽에 \"2개 선택됨\"(14 · 500 · fg-neutral — role=\"status\" 로 알린다), 오른쪽에 동작(Button ghost small — 삭제는 위험 글자)과 선택 해제 ✕. 고른 줄 자체에는 바탕을 칠하지 않는다 — 체크가 고른 것을 말하고(List 의 여럿 고르기와 같다), 브랜드 옅은 바탕은 일괄 작업 바에만 있다. 줄을 누르는 것(상세)과 체크는 따로다. 아래 표는 직접 고를 수 있다 — ✕ 를 누르면 모두 풀리고 초점이 머리 체크로 간다." + (hasBrand ? "" : " 공유 토큰에는 브랜드 역할 색이 없어 바가 여기서는 중립(bg-neutral-weak)으로 보인다 — HR · Desk 미리보기에서 브랜드 옅은 바탕이다."),
+    samples([sample("직접 — 업무 보고 · 두 줄 고름", "TableSelectHead · TableSelectCell · TableBulkBar(count) — 바탕 없이 체크로만", `${selectLive}${status("data-ptbl-select-status", "줄의 체크 · 머리 체크 · ✕ 를 눌러 보세요.")}`)], WIDE),
+  );
+
+  // 5. 상태 — 누르는 줄의 호버 · 누름 · 포커스 · 머리 고정(상자 안 스크롤) · 불러오는 동안 · 비었음 · 실패
+  const rowMatrix = matrix("pdata-matrix pdata-matrix--rows", "줄", STATES, [{ ko: "누르는 줄", en: "TableRow onClick" }], (r, c) => `<span class="pdata-surface pdata-surface--table">${ptbl({ caption: "사용자", head: [ptblHead({ label: "이름" }), ptblHead({ label: "남은 휴가", align: "end" })], rows: [ptblRow([ptblRowHeader("김하늘", { link: true, focus: c.i === "focus" }), ptblCell("12.5일", { end: true })], { press: true, interaction: c.i === "focus" ? "" : c.i })] })}</span>`);
+  const stickyRows = [...PTBL_USERS, ...PTBL_USERS.map((u) => ({ ...u, name: `${u.name[0]}${u.name[2]}${u.name[1]}`, days: (u.days * 3) % 17 }))];
+  const stickyTable = ptbl({ caption: "휴가 현황", sticky: true, maxHeight: 268, minWidth: 420, head: [ptblHead({ label: "이름", sort: "none" }), ptblHead({ label: "부서" }), ptblHead({ label: "남은 휴가", align: "end", sort: "descending" })], rows: stickyRows.sort((a, b) => b.days - a.days).map((u) => ptblRow([ptblRowHeader(u.name), ptblCell(escape(u.dept)), ptblCell(escape(ptblDays(u.days)), { end: true })])) });
+  const statusHead = [ptblHead({ label: "이름", sort: "none" }), ptblHead({ label: "부서" }), ptblHead({ label: "남은 휴가", align: "end", sort: "descending" })];
+  const loadingTable = ptbl({ caption: "사용자", minWidth: 360, head: statusHead, rows: [`<tr hidden></tr>${ptblSkeletonRows(4, [{ w: ["56%", "48%", "64%", "52%"] }, { w: ["44%", "52%", "40%", "48%"] }, { w: "40%", end: true }])}`] });
+  const emptyTable = ptbl({ caption: "사용자", minWidth: 360, head: statusHead, status: resultSection({ kind: "empty", size: "medium", icon: "searchX", title: "조건에 맞는 사용자가 없어요", secondary: "필터 초기화" }) });
+  const failTable = ptbl({ caption: "사용자", minWidth: 360, head: statusHead, status: resultSection({ kind: "failure", size: "medium", title: "사용자를 불러오지 못했어요", description: "잠시 뒤 다시 시도해주세요.", primary: "다시 시도" }) });
+  const statePanel = panel(
+    "Table — 줄 상태 · 머리 고정 · 불러오는 동안 · 비었음 · 실패",
+    "줄을 누르면 상세가 열리는 표만 상태가 있다(보기만 하는 줄은 바뀌지 않는다). 호버(웹) · 누름은 줄 전체가 bg-layer-default-pressed(List 의 누름 바탕과 같은 색 — v106)이고 축소는 없다 — 표의 줄 · 칸은 이웃과 붙어 있어 줄이면 흔들린다. 키보드로는 첫 열의 이름 링크로 같은 곳에 가고, 포커스는 키보드에만 안쪽 2px 링이다. 줄이 많은 표나 위젯 · 대화상자 안의 표처럼 상자에 높이를 정해 상자 안에서 스크롤하면 머리 줄을 상자 맨 위에 붙인다(sticky · 상자 안 겹침 1) — 붙은 머리는 카드 면과 같은 bg-layer-default 로 칠해 지나가는 줄을 가리고, 페이지 스크롤에는 붙이지 않는다(가운데 상자는 직접 스크롤된다). 머리 줄은 처음부터 그린다 — 불러오는 동안은 줄 자리만 Skeleton(줄 높이 그대로 · 글 자리 t4 19), 비었으면 본문 자리에 Result Section medium(거르기 때문이면 \"조건에 맞는 사용자가 없어요\" + 필터 초기화), 못 불러왔으면 failure + 다시 시도다 — 실패를 빈 표로 보이지 않는다. 시간표(1 · 5 · 10초)는 03p 의 Skeleton 이다. 표는 그 순간을 멈춰 그렸다.",
+    `${rowMatrix}${samples([
+      sample("머리 고정 — 상자 안에서 스크롤", "stickyHeader · max-h — 붙은 머리는 bg-layer-default", wide(floor(tableCard("휴가 현황", stickyTable)))),
+      sample("불러오는 동안 — 줄 스켈레톤", "TableSkeletonRows — 줄 45 · 글 자리 19", wide(floor(tableCard("사용자", loadingTable)))),
+    ], `${NEXT} pdata-samples--tables`)}${samples([
+      sample("비었음 — 거르기 때문", "TableStatusRow · ResultSection medium + 필터 초기화", wide(floor(tableCard("사용자", emptyTable)))),
+      sample("실패 — 다시 시도", "ResultSection failure — 빈 표로 보이지 않는다", wide(floor(tableCard("사용자", failTable)))),
+    ], `${NEXT} pdata-samples--tables`)}`,
+  );
+
+  // 6. 768 미만은 List 줄 — 같은 줄을 폰에서는 List 의 누르는 줄로(제목 · 설명 · 오른쪽 값, 누르면 상세)
+  const userList = listOf(sortUsers().map((u) => listRow({ kind: "button", title: u.name, detail: `${u.dept} · ${u.status}`, suffix: `<span class="pdata-list-value">${escape(ptblDays(u.days))}</span>` })), ' aria-label="사용자"');
+  const phoneList = pnavPhone({ height: 564, bg: "basement", inner: `${topNav({ title: "사용자", leading: "menu" })}<div class="pnav-body pdata-phone-body" data-pnav-scroll>${`<div class="pdata-sort-line">${selectTrigger({ size: "large", value: "남은 휴가 많은 순", label: "정렬" })}</div>`}<div class="pdata-stack pdata-stack--top0">${pcard({ body: "list", list: userList })}</div></div>` });
+  const deskTable = pnavDesk({ width: 0, minWidth: 820, height: 470, side: sideNav({ groups: PNAV_HR_NAV, current: "사용자", collapsed: true, logo: "Porest HR" }), main: `${pnavScreenTitle("사용자")}${tableCard("사용자", userTable())}` });
+  const narrowPanel = panel(
+    "Table — 768 미만은 List 줄로",
+    "768 미만에서는 표를 그리지 않고 줄마다 List 의 누르는 줄로 바꾼다 — 폰에서 옆으로 밀거나 열을 숨겨 보지 않는다. 첫 열(그 줄의 이름) → 제목(16 / 22), 다음으로 중요한 열 1 ~ 2개 → 설명(13 · fg-neutral-subtle · \" · \" 로 잇는다), 핵심 숫자 하나 또는 상태 → 오른쪽 값(숫자는 16 · 고정폭 숫자, 상태는 Badge), 나머지 열은 줄을 눌러 여는 상세다. 썸네일 · 사람 · 기관은 앞 붙이개(Image Frame · Avatar · Logo Tile), 선택 칸은 앞 체크 24(List 의 여럿 고르기), 줄 끝 ⋮ 는 Menu Sheet(폰 스와이프는 지름길), 정렬은 목록 위 Select 하나(\"남은 휴가 많은 순\"), 넘김 줄은 끝없이 불러오기다. 폰 화면은 바닥이 회색이고 목록은 카드에 담는다(Card 의 목록 카드). 위 데스크톱 창(768 ~ 1279)은 같은 데이터의 표다 — 좁은 화면에서는 창이 가로로 밀린다.",
+    `${samples([sample("768 이상 — 표", "useTableLayout() === \"table\" · 사이드바 접힘 56", deskTable)], `${WIDE} pnav-samples--wide`)}${samples([sample("768 미만 — List 줄", "useTableLayout() === \"list\" · 이름 · \"개발팀 · 재직\" · 12.5일", phoneList)], NEXT)}`,
+  );
+
+  // ── Card ───────────────────────────────────────────────────────────────
+  const spendCard = (opts = {}) => pcard({ body: "list", head: pcardHead({ title: "오늘 쓴 돈", action: "전체 보기" }), list: pcardSpendRows(PCARD_SPEND, opts), ...opts.card });
+  const budgetCard = (guide = false) => pcard({ guide, head: pcardHead({ title: "이번 달 예산", action: "관리" }), content: `<div class="pcard-stat"><div class="pcard-stat-label">남은 예산</div><div class="pcard-stat-value pcard-stat-value--large">360,000원</div><div class="pcard-stat-delta"><span class="pdata-note">예산 1,600,000원 중 1,240,000원 썼어요.</span></div></div>` });
+  const statCard = ({ label, value, size = "large", delta, guide = false }) => pcard({ guide, content: pcardStat({ label, value, size, delta }) });
+  const STAT_SPEND = { label: "이번 달 지출", value: "1,240,000원", delta: { direction: "up", value: "12%", text: "지난달보다", srText: "지난달보다 12% 더 썼어요" } };
+  const STAT_INCOME = { label: "이번 달 수입", value: "4,200,000원", delta: { direction: "down", value: "3%", text: "지난달보다" } };
+  const phoneCards = (t, { height = 740 } = {}) => pnavPhone({ height, bg: "basement", inner: `${topNav({ type: "root", title: "홈", actions: [{ icon: "search", name: "검색" }, { icon: "bell", name: "알림" }] })}<div class="pnav-body pdata-phone-body" data-pnav-scroll><div class="pdata-stack">${statCard(STAT_SPEND)}${spendCard()}${budgetCard()}</div></div>` });
+
+  // 7. 면 — 바닥 위 흰 면 + 1px · 모서리 16 · 그림자 없음 · 쌓은 사이 8 · 데스크톱 격자 24(라이트 · 다크)
+  const deskGrid = floor(`<div class="pdata-grid pdata-grid--2">${statCard({ ...STAT_SPEND, size: "large" })}${statCard({ ...STAT_INCOME, size: "large" })}${spendCard()}${budgetCard()}</div>`, "pdata-floor--desk");
+  const surfacePanel = panel(
+    "Card — 면: 바닥 위 흰 면 + 1px · 모서리 16 · 그림자 없음",
+    "카드는 바닥(bg-layer-basement) 위 흰 면(bg-layer-default)에 1px stroke-neutral-weak 테두리다 — 그림자는 없다(면과 바닥이 라이트 1.08 · 다크 1.13 이라 선이 경계를 맡는다). 데스크톱 · 폰 · 라이트 · 다크가 같은 규칙이고 폰도 바닥이 회색이다 — 흰 바탕 위 평면 묶음 · 흰 위 흰 그림자 카드를 두지 않는다. 모서리는 16 하나(카드 안 목록의 누름 바탕은 동심 10), 위아래로 쌓은 카드 사이는 8(SEED \"8px Gap\"), 데스크톱 격자의 칸 사이는 layout-gutter 24 다. 폰의 카드 묶음은 화면 가장자리 24 안에 두어 카드 안의 제목 · 숫자 · 목록 줄 글자가 모두 화면 끝에서 48 에 한 줄로 선다. 누르거나 올려도 그림자가 생기지 않는다. 카드 안에 카드를 두지 않는다 — 지표 여럿은 지표 카드를 따로 둔다.",
+    `${pair(() => phoneCards())}${samples([sample("데스크톱 — 격자 칸 사이 24", "layout-gutter · 모서리 16 · 테두리 · 그림자 없음", wide(deskGrid))], `${WIDE} pov-samples--next`)}`,
+  );
+
+  // 8. 여백 24 · 목록 카드 24 / 4 / 12 · 머리(제목 16 · 700 + 전체 보기 32 · 누르는 44)
+  const guidePhone = pnavPhone({ height: 576, bg: "basement", cls: "pdata-guide-phone", inner: `${topNav({ type: "root", title: "홈" })}<div class="pnav-body pdata-phone-body"><div class="pdata-stack pdata-stack--guide"><span class="pdata-guide-line" aria-hidden="true"></span>${statCard({ ...STAT_SPEND, guide: true })}${spendCard({ card: { guide: true } })}</div></div>` });
+  const headMatrix = matrix("pdata-matrix", "머리 동작", STATES, [{ ko: "전체 보기", en: "32 · 누르는 44 · 14 · 500" }], (r, c) => `<span class="pdata-surface pdata-surface--head">${pcardHead({ title: "오늘 쓴 돈", action: "전체 보기", interaction: c.i })}</span>`);
+  const hitHead = `<span class="pdata-surface pdata-surface--head pdata-surface--hit">${pcardHead({ title: "오늘 쓴 돈", action: "전체 보기" })}</span>`;
+  const paddingPanel = panel(
+    "Card — 여백 24 · 목록 카드 24 / 4 / 12 · 머리",
+    "카드 안 여백은 폭과 상관없이 24 다 — List 줄의 좌우 24, Bottom Sheet 의 머리 · 본문 24 와 같은 값이라 카드 · 줄 · 시트가 한 자리에 글자를 세운다(왼쪽 폰 — 카드 안 점선 상자가 여백 24 의 안쪽, 세로 점선이 화면 끝에서 48 인 글자 줄). 목록을 담은 카드는 좌우 여백을 두지 않는다 — List 줄이 제 좌우 24 · 위아래 12 를 가지므로 줄이 카드 가장자리까지 간다. 머리는 위 24 · 좌우 24 · 아래 4, 카드 아래 여백은 12 — 마지막 줄의 아래 12 와 합쳐 보이는 24 로 위와 같다. 머리는 제목 16 / 22 · 700 · fg-neutral 하나에 오른쪽 동작 하나다 — \"전체 보기\" 14 · 500 · fg-neutral-subtle + chevron-right 16(사이 2), 보이는 상자 32(왼쪽 8 · 오른쪽 4 · 누를 때 바탕 · 모서리 8)에 누르는 영역 44(오른쪽 그림의 점선)이고 이름은 \"{제목} 전체 보기\" 다. 머리 아래 본문까지 8(목록 카드는 4). 호버 · 누름은 동작 상자에 bg-layer-default-pressed, 누르면 글자 2px 거리 축소, 포커스는 바깥 2px 링이다. 작은 회색 머리 · 18 제목은 두지 않는다.",
+    `${samples([
+      sample("여백 — 글 카드 24 · 목록 카드 24 / 4 / 12", "점선 = 카드 안 24 · 세로선 = 화면 끝 48(글자가 서는 줄)", guidePhone),
+      sample("머리 — 누르는 영역 44", "보이는 32 · 위아래 6 씩 넓힌다(점선)", hitHead),
+    ])}${headMatrix}`,
+  );
+
+  // 9. 지표 카드 — 폰 한 줄에 하나(24) · 데스크톱 넷(20) · 증감 ▲ · ▼ · 변화 없음
+  const statPhone = pnavPhone({ height: 562, bg: "basement", inner: `${topNav({ title: "통계" })}<div class="pnav-body pdata-phone-body"><div class="pdata-stack">${statCard(STAT_SPEND)}${statCard(STAT_INCOME)}${statCard({ label: "남은 예산", value: "360,000원", delta: { direction: "flat", srText: "지난달보다 변화가 없어요" } })}</div></div>` });
+  const STAT4 = [
+    { label: "이번 달 지출", value: "1,240,000원", delta: STAT_SPEND.delta },
+    { label: "이번 달 수입", value: "4,200,000원", delta: STAT_INCOME.delta },
+    { label: "남은 예산", value: "360,000원", delta: { direction: "flat", srText: "지난달보다 변화가 없어요" } },
+    { label: "카드 결제 예정", value: "184,000원", delta: { direction: "down", value: "8%", text: "지난달보다" } },
+  ];
+  const statDesk = floor(`<div class="pdata-grid pdata-grid--4">${STAT4.map((s) => statCard({ ...s, size: "small" })).join("")}</div>`, "pdata-floor--desk pdata-floor--stat4");
+  const deltaRow = (t) => `<div class="pdata-deltas">${[
+    ["up", "▲ fg-critical — 오르면 빨강", { direction: "up", value: "12%", text: "지난달보다", srText: "지난달보다 12% 더 썼어요" }],
+    ["down", "▼ fg-informative — 내리면 파랑", { direction: "down", value: "3%", text: "지난달보다" }],
+    ["flat", "변화 없음 — fg-neutral-subtle", { direction: "flat", srText: "지난달보다 변화가 없어요" }],
+  ].map(([k, a, d]) => `<div class="pdata-delta-item">${pdelta(d)}${cap(a)}</div>`).join("")}</div>`;
+  const statPanel = panel(
+    "Card — 지표: 폰은 한 줄에 하나(24) · 데스크톱 넷(20) · 증감",
+    "숫자 하나를 보이는 카드다 — 라벨 13 · 500 · fg-neutral-subtle, 아래 4 에 큰 숫자 700 · 고정폭 숫자, 아래 4 에 증감 줄. 카드 하나에 숫자 하나면 24 / 32(large)다. 폰에서는 지표 카드를 한 줄에 하나 둔다 — 둘씩이면 360 폭에서 칸 안쪽이 101 인데 \"1,240,000원\" 20 / 700 은 120 이라 들어가지 않는다. 데스크톱 격자에 셋 · 넷씩 나란히 놓을 때만 20 / 27(small)이고 여백은 그대로 24 다. 돈은 줄이지 않고 원까지, 숫자가 굴러가는 애니메이션은 없다. 증감은 방향으로 칠한다 — 어디서나 오르면 ▲ fg-critical, 내리면 ▼ fg-informative(증권과 같은 관례), 늘 화살표와 값을 함께 쓰고 뒤에 기준을 옅은 글(13 · 400 · fg-neutral-subtle · 사이 4)로 둔다 — \"▲ 12% 지난달보다\". 부호(+ · −)를 화살표와 같이 쓰지 않는다. 변화가 없으면 화살표 없이 \"변화 없음\". 좋고 나쁨은 색이 아니라 글이 말한다 — 보조 기술에는 문장으로 읽힌다(\"지난달보다 12% 더 썼어요\" — 화살표는 숨긴다).",
+    `${samples([sample("폰 — 한 줄에 하나 · large 24", "쌓은 사이 8 · 여백 24", statPhone), sample("증감 — ▲ · ▼ · 변화 없음(라이트 · 다크)", "Delta direction · value · text · srText", pair(deltaRow))])}${samples([sample("데스크톱 — 넷씩 · small 20", "격자 칸 사이 24 · 여백은 그대로 24", wide(statDesk))], `${WIDE} pov-samples--next`)}`,
+  );
+
+  // 10. 순자산 카드(hero) — Desk 만. 라이트 bg-brand-solid → brand-900 · 다크 brand-500-dark → brand-300-dark, 흰 글자 · 흰 ▲ · ▼
+  const heroPanel = desk ? panel(
+    "Card — 순자산: 브랜드 채움 · 흰 글자(라이트 · 다크)",
+    "Desk 홈 · 자산 맨 위의 순자산은 브랜드 색으로 채운 카드다 — 135° 그라디언트, 라이트는 bg-brand-solid(#0147AD) → brand-900(#002460), 다크도 짙은 채움이다 — bg-brand-solid(#1049A4) → brand-300-dark(#1F3A69). 흰 글자는 두 모드 모두 그라디언트 어디서나 4.5 이상이다(라이트 8.38 ~ 14.78 · 다크 8.36 ~ 11.25, 장식 빛 위 가장 낮은 자리 4.88). 라벨 13 · 500, 금액 32 / 42 · 700(아래 6), 아래 글 13(아래 4) — 모두 흰 글자이고 불투명도로 흐리지 않는다. 증감도 흰 글자에 ▲ · ▼ + 글이다 — 빨강 · 파랑은 브랜드 채움 위 1.66 · 1.65 라 읽히지 않는다(증감 방향 색의 하나뿐인 예외). 오른쪽 위 장식 빛(지름 240 · 오른쪽 −40 · 위 −80, 흰 22% → 지름의 70% 에서 투명)은 장식이라 보조 기술에 숨긴다. 모서리 16 · 여백 24 · 테두리 없음이고 한 화면에 하나만 둔다. HR 에는 이 카드가 없다.",
+    pair(() => `<div class="pdata-hero-pair">${floor(pcardHero({}))}${cap("오름 — 흰 ▲ + 글", "Delta 가 hero 안에서 흰 글자")}${floor(pcardHero({ label: "순자산", amount: "−26,371,800원", delta: { direction: "down", value: "4.2%", text: "지난달보다" } }))}${cap("내림 — 흰 ▼ · 빼기 U+2212", "한 화면에 하나만 — 두 모습을 따로 그렸다")}</div>`),
+  ) : "";
+
+  // 11. 누름 — 카드 전체(색 + 2px) · 대등한 동작이 있는 카드(색만) · 상태 · 카드마다 기다림 · 실패
+  const budgetLink = pcard({ press: "whole", attrs: 'aria-label="식비 예산 — 남은 120,000원"', content: `<div class="pcard-stat"><div class="pcard-stat-label">식비 예산</div><div class="pcard-stat-value pcard-stat-value--large">120,000원 남음</div><div class="pcard-stat-delta"><span class="pdata-note">400,000원 중 280,000원 썼어요.</span></div></div>` });
+  // 대등한 동작 — 고정 버튼은 제목 줄 오른쪽(버튼 상자 40 이 줄 높이를 밀지 않게 위 · 오른쪽 8 을 당긴다), 본문은 그 아래(card.md 의 코드)
+  const memoPeers = (interaction = "") => pcard({ press: "peers", interaction, link: `<div class="pdata-memo">${pcardLink("회의록 — 10월 8일")}<button class="btn btn-ghost btn-icon-only pdata-pin" type="button" aria-label="회의록 — 10월 8일 고정" aria-pressed="false" data-pdata-pin>${DATA_ICON.pin}</button></div>`, content: `<div class="pdata-note">표 컴포넌트 정리 · 다음 주 화요일까지</div>` });
+  const pressCells = matrix("pdata-matrix pdata-matrix--cards", "카드", STATES, [
+    { ko: "카드 전체", en: "press whole — 색 + 2px", k: "whole" },
+    { ko: "대등한 동작", en: "press peers — 색만", k: "peers" },
+  ], (r, c) => `<span class="pdata-surface pdata-surface--card">${r.k === "whole" ? pcard({ press: "whole", interaction: c.i, content: `<div class="pcard-stat"><div class="pcard-stat-label">식비 예산</div><div class="pcard-stat-value pcard-stat-value--small">120,000원 남음</div></div>` }) : memoPeers(c.i)}</span>`);
+  const waitPhone = pnavPhone({ height: 862, bg: "basement", inner: `${topNav({ type: "root", title: "홈" })}<div class="pnav-body pdata-phone-body"><div class="pdata-stack">${pcard({ head: pcardHead({ title: "순자산" }), content: resultSection({ kind: "failure", size: "medium", title: "순자산을 불러오지 못했어요", description: "잠시 뒤 다시 시도해주세요.", primary: "다시 시도" }) })}${pcard({ content: `<div class="pcard-stat" aria-busy="true"><div class="pcard-stat-label">이번 달 지출</div><div class="pcard-stat-value pcard-stat-value--large">${skeleton({ text: "t9", w: 160 })}</div><div class="pcard-stat-delta">${skeleton({ text: "t3", w: 120 })}</div></div>` })}${spendCard()}</div></div>` });
+  const pressPanel = panel(
+    "Card — 누름: 카드 전체(색 + 2px) · 대등한 동작(색만) · 기다림 · 실패",
+    "카드 전체가 한 곳으로 가면(press whole — 예산 하나 · 자산 하나) 카드가 링크 · 버튼 하나이고, 누르는 동안 면이 bg-layer-default-pressed 로 바뀌고 카드 전체가 2px 거리만큼 준다(배율 (기준 − 2) ÷ 기준, 기준 max(높이, 폭 ÷ 4, 24) — 모션 줄이기면 색만) — 마우스는 올릴 때 같은 색이다(SEED Feedback). 테두리 · 글자색은 그대로이고 그림자 · 위로 뜨기는 없다. 카드를 누르면 열리는데 안에 대등한 동작(고정 · ⋮)이 더 있으면(press peers) 카드를 덮는 링크 위에 버튼을 놓고, 카드는 면 색만 바뀌고 줄지 않는다 — 버튼을 눌러도 카드가 열리지 않는다(\"전체가 줄어들면 무엇이 눌린 것인지 모호해집니다\"). 보기만 하는 카드는 바뀌지 않는다. 포커스는 키보드에만 카드 바깥 2px 링(띄움 2). 카드 면 · 머리 · 라벨은 처음부터 그리고, 서버에서 올 숫자 · 줄 자리만 Skeleton 이다. 카드의 데이터를 못 불러오면 그 카드 안에 Result Section medium + 다시 시도를 두고 다른 카드는 그대로 보인다(오른쪽 폰) — 화면 전체를 스켈레톤으로 되돌리지 않는다. 위 두 카드는 직접 눌러 볼 수 있다.",
+    `${samples([
+      sample("직접 — 카드 전체", "<Card href> — 누르는 동안 색 + 2px", floor(budgetLink)),
+      sample("직접 — 대등한 동작(고정)", "<Card press=\"peers\"> + CardLink + 고정 버튼", floor(memoPeers())),
+      sample("카드마다 기다림 · 실패", "순자산 실패 + 다시 시도 · 지출 기다림 · 나머지는 보임", waitPhone),
+    ])}${pressCells}`,
+  );
+
+  // ── Chart ──────────────────────────────────────────────────────────────
+  const tileItems = PCHART_SERIES.map((s) => ({ key: s.key, label: s.label, color: s.color, total: pdataWon(pchartTotal(s)) }));
+  const trendLabel = "10월 수입 · 지출 추이, 수입 4,200,000원 · 지출 1,240,000원";
+  const trendLive = (() => {
+    const legendId = nextPdataId("pchart-legend");
+    return `<div class="pchart-live" data-pchart-live>${pchartTiles({ id: legendId, items: tileItems, live: true, label: "수입 · 지출" })}${pchartTrend({ width: 600, height: 220, live: true, label: trendLabel, legendId })}</div>`;
+  })();
+  const trendCard = pcard({ cls: "pdata-chart-card", head: pcardHead({ title: "수입 · 지출 추이", action: "자세히" }), content: wide(trendLive) });
+  const frozenTip = pcard({ cls: "pdata-chart-card", head: pcardHead({ title: "수입 · 지출 추이" }), content: wide(`${pchartTiles({ items: tileItems, label: "수입 · 지출" })}${pchartTrend({ width: 600, height: 220, tip: 7, label: trendLabel })}`) });
+  const singleAxis = pcard({ cls: "pdata-chart-card", head: pcardHead({ title: "지출 추이" }), content: wide(`${pchartTiles({ items: [tileItems[1]], label: "지출" })}${pchartTrend({ width: 600, height: 200, dual: false, hidden: ["income"], label: "10월 지출 추이, 지출 1,240,000원" })}`) });
+  const tileStates = matrix("pdata-matrix", "지표 타일", STATES, [
+    { ko: "켬", en: "shown — chart-{색}-subtle", off: false },
+    { ko: "끔", en: "hidden — 흰 면 + 1px", off: true },
+  ], (r, c) => `<span class="pdata-surface pdata-surface--tile">${pchartTiles({ items: [tileItems[0]], hidden: r.off ? ["income"] : [], label: "수입", interaction: { at: "income", interaction: c.i } }).replace(' aria-disabled="true"', "")}</span>`);
+  const trendPanel = panel(
+    "Chart — 추이: 이중 축 · 지표 타일 · 툴팁",
+    "차트는 카드 본문 안에 둔다. 수입 · 지출처럼 두 계열의 크기가 열 배 넘게 다르면 왼쪽 · 오른쪽 축을 따로 두고(이중 축) 눈금 글자를 그 축이 맡은 계열의 색으로 칠한다 — 왼쪽 수입 chart-blue · 오른쪽 지출 chart-red(라이트 700 · 다크 800-dark — 글자 기준 4.5 이상). 축이 하나면 눈금 글자는 fg-neutral-subtle 이다(아래). 눈금 글자는 11 / 15 · 고정폭 숫자이고 돈 축은 \"만\" 으로 줄인다(400만 · 빼기 U+2212 — 줄임은 축만). 격자는 가로 점선(3 · 3) stroke-neutral-subtle 만 — 세로 격자 · 축 선은 없다. 선은 2 · 영역은 같은 색 25% → 0%. 범례는 차트 위의 지표 타일이다 — 점 8 + 이름 13 · fg-neutral-muted, 아래 2 에 합계 16 / 22 · 700(돈은 원까지), 켠 계열은 chart-{색}-subtle 바탕 · 끈 계열은 흰 면 + 안쪽 1px stroke-neutral-weak · 모서리 12 · 위아래 10 · 좌우 12 · 사이 8 · 높이 62. 누르면(Enter · Space) 계열을 켜고 끈다(aria-pressed) — 마지막 하나는 끌 수 없다. 차트를 짚으면(마우스 · 터치 · ← →) 그 자리에 세로 점선(stroke-neutral-weak)과 점(10 — 계열 색 + 카드 면 테두리 2)이 서고 툴팁이 뜬다 — 떠 있는 표면(bg-layer-floating · shadow-s3 · 모서리 12 · 위아래 10 · 좌우 12 · 테두리 없음), 머리 12 · fg-neutral-subtle, 줄은 \"■ 라벨 값\"(네모 8 · 라벨 13 · fg-neutral-muted · 값 13 · 700 · 오른쪽). 차트 상자는 role=\"img\" + 요약 이름이고 타일이 글로 읽히는 대체다. 위 차트는 직접 짚고 타일을 누를 수 있다(모션 줄이기면 바로).",
+    `${samples([sample("직접 — 타일 · 마우스 · ← →", "ChartLegendTiles · Chart(이중 축) · ChartTooltipContent", `${floor(trendCard)}${status("data-pchart-status", "차트를 짚거나 ← → 를 눌러 보세요.")}`)], WIDE)}${samples([
+      sample("툴팁 — 오늘(8일)을 짚은 순간", "세로 점선 · 점 10 · 떠 있는 표면 · \"■ 라벨 값\"", wide(floor(frozenTip))),
+      sample("축 하나 — 눈금 글자 회색", "계열 하나 · 단위가 같은 두 계열", wide(floor(singleAxis))),
+    ], `${WIDE} pov-samples--next`)}${tileStates}`,
+  );
+
+  // 12. 도넛 — 목록 범례 · 가운데 합계(160 · 22) · 폰 120 · 18 은 가운데 글을 빼고 목록 위 합계
+  const cats = pchartAssign(PCHART_CATS);
+  const donutDesk = (() => {
+    const lid = nextPdataId("pchart-cats");
+    return pcard({ head: pcardHead({ title: "카테고리별 지출", action: "전체 보기" }), content: `<div class="pdata-donut">${pchartDonut({ items: cats, size: 160, thickness: 22, center: { label: "10월 지출", amount: "1,240,000원" }, label: "10월 카테고리별 지출, 합계 1,240,000원", legendId: lid })}${pchartLegend({ id: lid, items: cats })}</div>` });
+  })();
+  const donutPhone = (() => {
+    const lid = nextPdataId("pchart-cats");
+    return pnavPhone({ height: 832, bg: "basement", inner: `${topNav({ title: "통계" })}<div class="pnav-body pdata-phone-body"><div class="pdata-stack">${pcard({ body: "list", head: pcardHead({ title: "카테고리별 지출" }), list: `<div class="pdata-donut pdata-donut--phone">${pchartDonut({ items: cats, size: 120, thickness: 18, label: "10월 카테고리별 지출, 합계 1,240,000원", legendId: lid })}<div class="pdata-donut-total"><span class="pchart-center-label">10월 지출</span><span class="pchart-center-amount">1,240,000원</span></div></div>${pchartLegend({ id: lid, items: cats })}` })}</div></div>` });
+  })();
+  const donutPanel = panel(
+    "Chart — 도넛: 목록 범례 · 가운데 합계",
+    "도넛의 범례는 카테고리 목록이다 — 줄마다(44 이상) 색 네모 10 + 이름 14 + % 14 · fg-neutral-subtle + 금액 14 · 700 + \"원\". 하위 카테고리가 있는 줄(식비 · 쇼핑 · 생활)만 누르는 줄이다(통계의 카테고리 → 하위로 — 호버 · 누름 바탕). 가운데는 합계 16 / 22 · 700 + 위 라벨 12 · fg-neutral-subtle — 돈은 가운데서도 줄이지 않는다(\"73.3만\" 이 아니라 원까지). 조각 사이는 0, 두께는 지름 160 에서 22 다. 폰의 120 · 18 은 가운데에 \"1,240,000원\" 이 들어가지 않아 가운데 글을 빼고 목록 위에 합계를 둔다(오른쪽). 색은 저장된 색이 먼저(식비 blue · 교통 green · 쇼핑 orange · 경조사 red · 주거 violet · 생활 pink), 색이 없는 항목은 그 차트에서 아직 쓰지 않은 색부터 배정 순서로 받는다 — 구독 indigo · 의료 yellow · 문화 brown(red 는 경조사가 써서 건너뛴다). 항목이 10개를 넘으면 상위 9 + 회색 \"기타\"(선물 · 기부)로 묶는다 — 회색은 \"기타\" 전용이다. 차트 상자는 role=\"img\" + 요약 이름(\"10월 카테고리별 지출, 합계 1,240,000원\"), 목록 범례가 글로 읽히는 대체다.",
+    `${samples([sample("데스크톱 — 160 · 22 · 가운데 합계", "ChartDonutCenter · ChartDonutLegend(9 + 기타)", wide(floor(donutDesk, "pdata-floor--donut")))], WIDE)}${samples([sample("폰 — 120 · 18 · 목록 위 합계", "가운데에 들어가지 않으면 가운데 글을 뺀다", donutPhone)], NEXT)}${status("data-pchart-cat-status", "식비 · 쇼핑 · 생활 줄을 눌러 보세요.")}`,
+  );
+
+  // 13. 열지도 — 칸 117(1280) 원까지 11 · 700 · 단계마다 글자색 · 81(1024) · 35(폰) 색만 · 툴팁 · 화살표 키. 가장 큰 칸 고리 없음
+  const inkCls = brand.key === "hr" ? "pheat--hr" : "pheat--desk";
+  const heatCard = (cell, width, live = true, tip = null) => pcard({ head: pcardHead({ title: "요일 · 시간대별 지출" }), content: wide(pheat({ cell, width, live, tip }).replace('class="pheat', `class="pheat ${inkCls}`)) });
+  const heatPanel = hasBrand ? panel(
+    "Chart — 열지도: 칸 112 이상만 원까지 · 좁으면 세기 색만",
+    "요일 × 시간처럼 두 축의 세기는 열지도다 — 왼쪽 시간대 라벨 열 56(이름 13 · 700 + 시간 11 · fg-neutral-subtle) + 요일 일곱 칸(머리 12 · fg-neutral-subtle), 칸은 정사각형 · 모서리 4 · 사이 6 이다. 세기는 다섯 단계 — 브랜드 채움을 카드 면에 18 · 35 · 55 · 75 · 100% 섞는다(가장 큰 칸 값의 8 · 22 · 45 · 75% 에서 끊는다), 값이 없는 칸은 bg-neutral-weak. 칸에 금액을 적는 것은 칸 폭이 112 이상일 때뿐이다 — 원까지 11 / 15 · 700 · 고정폭 숫자(\"123,456,789원\" 84 · 999억까지 들어간다). 1280 의 칸 117 은 글이 보이고, 1024 의 칸 81 · 폰의 칸 35 는 글 없이 세기 색만이다 — 좁다고 돈을 줄이거나(\"3.5만\") 글자를 줄여 맞추지 않는다. 칸 폭은 ResizeObserver 로 재서 112 를 넘나들면 글을 보이고 감춘다(글자 크기는 그대로). 값은 칸을 가리키거나(웹) 누르면(터치) 뜨는 툴팁(머리 \"수요일 저녁 18~22시\" · 줄 \"■ 지출 35,000원\" — 네모는 그 칸의 세기 색)과 표로 보기에서 읽는다 — 툴팁은 글이 보이는 넓은 칸에서도 뜬다(칸 이름을 알린다). 칸 글자색은 단계마다 칸 바탕 위 4.5 를 넘는 쪽으로 정해 둔다(" + (brand.key === "hr" ? "HR 라이트 18 ~ 75% fg-neutral · 100% 흰 글자, 다크는 모두 fg-neutral" : "Desk 라이트 18 ~ 55% fg-neutral · 75 · 100% 흰 글자, 다크는 모두 fg-neutral") + ", 값이 없는 칸의 \"—\" 는 fg-neutral-subtle). 차트 상자에 초점이 오면 ← → 로 요일 · ↑ ↓ 로 시간대를 옮기며 툴팁을 띄우고 Esc 로 닫는다 — 포커스 링은 상자 바깥에 보인다. 가장 큰 칸에 고리를 두르지 않는다(2026-10-08). 아래 셋은 직접 가리키고 누르고 화살표로 옮길 수 있다.",
+    `${samples([sample("1280 — 칸 117 · 원까지", "textMinCellWidth 112 · 11 / 15 · 700 · 단계마다 글자색", wide(floor(heatCard(117, 1280))))], WIDE)}${samples([
+      sample("1024 — 칸 81 · 색만", "값은 툴팁 · 표로 보기", wide(floor(heatCard(81, 1024)))),
+      sample("폰 — 칸 35 · 색만 · 누른 칸 툴팁", "터치 — 누르면 툴팁(수요일 저녁 35,000원)", wide(floor(heatCard(35, 390, false, { row: 3, col: 2 })))),
+    ], `${WIDE} pov-samples--next`)}${status("data-pheat-status", "칸을 가리키거나 누르고, 상자에 초점을 두고 화살표를 눌러 보세요.")}`,
+  ) : "";
+
+  // 14. 차트 기다림 · 비었음 · 실패 + 표로 보기
+  const chartWait = pcard({ head: pcardHead({ title: "수입 · 지출 추이" }), content: `<div aria-busy="true">${skeleton({ radius: "16", w: "100%", h: 180 })}</div>` });
+  const chartEmpty = pcard({ head: pcardHead({ title: "수입 · 지출 추이" }), content: resultSection({ kind: "empty", size: "medium", icon: "receiptText", title: "이번 달 기록이 없어요" }) });
+  const chartFail = pcard({ head: pcardHead({ title: "수입 · 지출 추이" }), content: resultSection({ kind: "failure", size: "medium", title: "추이를 불러오지 못했어요", description: "잠시 뒤 다시 시도해주세요.", primary: "다시 시도" }) });
+  const dataTable = pcard({ body: "list", head: pcardHead({ title: "표로 보기" }), list: ptbl({ caption: "10월 날짜별 수입 · 지출", minWidth: 360, head: [ptblHead({ label: "날짜" }), ptblHead({ label: "수입", align: "end" }), ptblHead({ label: "지출", align: "end" })], rows: PCHART_HEADS.map((m, i) => ptblRow([ptblRowHeader(m), ptblCell(escape(pdataWon(PCHART_SERIES[0].values[i])), { end: true }), ptblCell(escape(pdataWon(PCHART_SERIES[1].values[i])), { end: true })])) }) });
+  const chartStatusPanel = panel(
+    "Chart — 기다리는 동안 · 비었음 · 실패 · 표로 보기",
+    "카드 머리 · 지표 타일 이름 · 범례 틀은 그리고 차트 자리만 Skeleton(모서리 16)이다. 비었으면 차트 자리에 Result Section medium(\"이번 달 기록이 없어요\"), 못 불러왔으면 failure + 다시 시도 — 빈 축 · 회색 고리 · 0 으로 그린 막대로 대신하지 않는다. 날짜마다 값을 읽어야 하는 차트(추이 · 열지도)는 \"표로 보기\" 를 둔다 — 같은 값을 Table 로(숨긴 표 또는 펼친 표, 돈은 원까지). 처음 그릴 때 막대가 자라고 선이 그어지는 모션(300ms)은 한 번만이고 모션 줄이기면 바로 그린다 — 라이브러리 기본(\"auto\")을 두고 강제로 켜지 않는다.",
+    `${samples([
+      sample("기다리는 동안", "차트 자리 Skeleton 16", floor(chartWait)),
+      sample("비었음", "ResultSection medium", floor(chartEmpty)),
+      sample("실패 + 다시 시도", "ResultSection failure", floor(chartFail)),
+    ])}${samples([sample("표로 보기 — 펼친 표", "ChartDataTable visuallyHidden={false}", wide(floor(dataTable)))], `${WIDE} pov-samples--next`)}`,
+  );
+
+  // ── Searchable List ────────────────────────────────────────────────────
+  const bankGroups = (filter = null) => PSL_BANK_GROUPS.map((g) => ({ label: g.label, items: pslBankItems(filter ? g.items.filter(filter) : g.items) })).filter((g) => g.items.length);
+  const sheetFrame = (body, { height = 640, title = "은행 선택" } = {}) => overlayFrame({ device: "phone", height, page: overlayPage({ title: "계좌 추가", body: textField({ label: "은행", control: { kind: "inputButton", size: "large", value: "", placeholder: "은행 선택", suffixIcon: "chevronDown" } }) }), layers: [overlayScrim(), overlayLayer("sheet", bottomSheet({ title, body: `<div class="pov-bleed">${body}</div>` }))] });
+  const liveSheet = sheetFrame(psl({ groups: bankGroups(), value: "신한", live: true }));
+  const slPanel = panel(
+    "Searchable List — 검색 시트: 밑줄 검색칸 · 분류 머리 · 로고 타일 40 + 라디오 · 직접",
+    "스크롤만으로 찾기 어려운 긴 목록(은행 · 증권사 · 카드 상품 · 사람)에서 하나를 고르는 묶음이다 — 대개 Input Button 이 여는 검색 시트(1280 미만) · 팝오버(이상)의 내용이다. 검색칸은 Input 의 밑줄형이다(화면에 입력이 하나뿐인 목록 위 검색 — 상자형 52 는 두지 않는다) — large 40(글 18 / 24 · 앞 돋보기 24 · 지우기 22, 누르는 영역 44), 아래 1px stroke-neutral-weak 가 치는 동안 2px stroke-neutral-contrast, 모서리 · 좌우 여백 없음, 이름 \"검색\" · placeholder \"은행 이름 검색\", 좌우 24 안이라 돋보기와 줄의 로고 타일이 한 줄에 선다 · 목록이 스크롤해도 위에 붙어 있다. 아래 8 에 결과 — 분류는 List Header mediumWeak(14 · 500 · fg-neutral-subtle — 시중은행 · 인터넷은행 · 지방은행 …, 줄이 남지 않은 분류는 머리째 숨긴다), 줄은 List 의 줄(위아래 12 · 좌우 24 · 제목 16 / 22) + 앞 Logo Tile 40 + 오른쪽 라디오 24(지금 값만 켬 — 고른 줄의 바탕은 칠하지 않는다, 고름은 aria-selected). 키보드는 콤보박스다 — 초점은 늘 검색칸에 있고 ↓ · ↑ 는 결과 사이의 강조만 옮긴다(좌우 6 들어온 bg-layer-default-pressed · 모서리 10 · aria-activedescendant · 분류 머리는 건너뛴다 · 끝에서 멈춘다), Enter 는 강조한 줄을 고른다(시트는 닫힌다 — \"완료\" 를 두지 않는다), Esc 는 검색어가 있으면 지우고 비었으면 닫는다. 줄은 Tab 으로 들어가지 않는다. 결과가 없으면 Result Section medium \"'{검색어}'에 대한 검색 결과가 없어요\" 를 한 번 알린다. 왼쪽 시트는 직접 쳐서 거르고 ↓ ↑ Enter Esc 로 고를 수 있다.",
+    samples([sample("직접 — 계좌 추가의 은행 선택", "SearchableList · SearchableListInput(밑줄 large) · Group · Item(LogoTile 40)", `${liveSheet}${status("data-psl-live-status", "검색칸에 쳐서 거르고 ↓ ↑ Enter 를 눌러 보세요.")}`)], "ptf-samples pdata-samples--sheet"),
+  );
+
+  const stateBox = (body) => `<div class="pdata-sl-box">${body}</div>`;
+  const someBanks = (names) => [{ label: "시중은행", items: pslBankItems(names) }];
+  const hlBox = stateBox(psl({ groups: someBanks(["신한", "KB국민", "우리", "하나"]), value: "신한", highlight: "우리", focus: true }));
+  const pressBox = stateBox(psl({ groups: someBanks(["신한", "KB국민", "우리", "하나"]), value: "신한", pressed: "KB국민" }));
+  const emptyBox = stateBox(psl({ query: "카캬오", status: "empty", focus: true }));
+  const errorBox = stateBox(psl({ query: "토스", status: "error" }));
+  const loadBox = stateBox(psl({ query: "", status: "loading" }));
+  const CARDS = [
+    { issuer: "삼성카드", name: "iD SELECT ALL", src: PIMG.cardV, rotated: true, kind: "신용" },
+    { issuer: "현대카드", name: "M EDITION3", src: PIMG.cardH2, kind: "신용" },
+    { issuer: "신한카드", name: "SOL트래블 체크", kind: "체크" },
+    { issuer: "롯데카드", name: "LOCA 365", kind: "신용", discontinued: true },
+  ];
+  const cardItems = CARDS.map((c) => ({ value: c.name, title: c.name, detail: `${escape(c.issuer)} · ${escape(c.kind)}${c.discontinued ? badge({ text: "단종" }) : ""}`, prefix: cardArt({ issuer: c.issuer, name: c.name, src: c.src || "", rotated: !!c.rotated, width: 56 }) }));
+  const inlineStep = `<div class="pdata-step">${psl({ placeholder: "카드 이름 검색", label: "카드 상품", groups: [{ label: "", items: cardItems }], value: "M EDITION3", placement: "inline" })}<div class="pdata-step-foot"><button class="btn btn-neutral-solid btn-size-large pdata-step-next" type="button">다음</button></div></div>`;
+  const popover = overlayFrame({ device: "desktop", height: 640, page: overlayPage({ title: "투자 추가", desktop: true, body: overlayAnchor(textField({ label: "증권사", control: { kind: "inputButton", size: "medium", value: "키움증권", suffixIcon: "chevronDown", expanded: true } }), overlayPopover({ label: "증권사 선택", body: `<div class="pov-bleed">${psl({ size: "medium", placeholder: "증권사 이름 검색", label: "증권사", groups: [{ label: "증권사", items: pslBankItems(["삼성증권", "미래에셋", "NH투자", "한국투자", "키움증권", "토스증권"]) }], value: "키움증권", highlight: "NH투자", placement: "popover" })}</div>` })) }) });
+  const slStatesPanel = panel(
+    "Searchable List — 강조 · 누름 · 0건 · 실패 · 불러오는 동안 · 팝오버 · 단계 안",
+    "강조는 ↓ · ↑ 로 짚은 줄 · 마우스를 올린 줄이 같은 바탕이다(한 번에 한 줄 — 초점은 검색칸에 그대로, 화살표로 옮길 때는 전환 없이 바로). 누르면 같은 바탕에 콘텐츠만 2px 거리로 준다(List). 못 불러왔으면 0건과 다르게 failure \"검색 결과를 불러오지 못했어요\" + 다시 시도 — 실패를 \"결과가 없어요\" 로 보이지 않는다. 처음 불러오는 동안은 줄 모양 Skeleton 다섯(앞 자리 · 제목 40% · 설명 60%, 줄 높이 그대로)이다. 서버에서 찾는 목록(카드 상품 · 종목)은 마지막 입력 뒤 300ms 에 한 번 보낸다 — 받는 동안 옛 결과를 남기고 1초가 넘으면 스켈레톤이다. 1280 이상은 팝오버 안에 medium 34 검색칸(글 16 / 22 · 돋보기 20 · 지우기 18)이다. 고르는 것이 그 단계의 일(카드 추가의 카드 상품)이면 화면 · 단계 안에 둔다(inline) — 고르면 라디오만 바뀌고 단계의 버튼(\"다음\")이 반영한다. 카드 상품의 앞은 카드 그림 56(카드 비율 · 모서리 8), 단종처럼 알릴 것이 있으면 흐리지 않고 Badge(\"단종\" — weak neutral)를 단다. 그림은 그 순간을 멈춘 것이다.",
+    `${samples([
+      sample("강조 — ↓ 두 번(우리)", "aria-activedescendant · bg-layer-default-pressed · 좌우 6 · 모서리 10", hlBox),
+      sample("누름 — KB국민", "같은 바탕 + 콘텐츠 2px 축소", pressBox),
+      sample("0건 — 한 번 알린다", "SearchableListEmpty · role=\"status\"", emptyBox),
+    ])}${samples([
+      sample("실패 — 다시 시도", "SearchableListError onRetry", errorBox),
+      sample("불러오는 동안 — 줄 다섯", "SearchableListSkeleton prefix=\"logo\"", loadBox),
+    ], NEXT)}${samples([
+      sample("1280 이상 — 팝오버 · medium 34", "증권사 · 강조 NH투자 · 지금 값 키움증권", wide(popover)),
+      sample("단계 안 — 카드 상품 · 카드 그림 56 · 단종 배지", "placement=\"inline\" — 라디오만 바뀌고 \"다음\" 이 반영", stateBox(inlineStep)),
+    ], NEXT)}`,
+  );
+
+  // ── Swipe Actions ──────────────────────────────────────────────────────
+  const ACT2 = [{ kind: "primary", label: "수정", icon: "pencil" }, { kind: "destructive", label: "삭제", icon: "trash" }];
+  const ACT3 = [{ kind: "neutral", label: "고정", icon: "pin" }, ...ACT2];
+  const swipeFrame = (t) => `<div class="pdata-swipe-stack">${[
+    [pswipe({ row: pswipeRow({}), actions: ACT2, rowLabel: "스타벅스 강남점" }), "동작 둘 — 104 · 삭제가 가장 안쪽", "[수정, 삭제] → 그릴 때 뒤집는다"],
+    [pswipe({ row: pswipeRow({ color: "blue", icon: "bus", title: "지하철", detail: "교통 · 국민카드", amount: -1450 }), actions: ACT3, rowLabel: "지하철" }), "동작 셋 — 152 · 고정(neutral)", "[고정, 수정, 삭제] — 셋까지"],
+    [pswipe({ row: pswipeRow({ color: "violet", icon: "bag", title: "이마트 성수점", detail: "생활 · 신한카드", amount: -42300 }), actions: ACT2, rowLabel: "이마트 성수점", open: false }), "닫힘 — 트레이는 aria-hidden", "줄 끝 ⋮ 가 같은 동작을 연다"],
+  ].map(([html, a, b]) => `<div class="pdata-swipe-item"><div class="pdata-swipe-screen">${html}</div>${cap(a, b)}</div>`).join("")}</div>`;
+  // 폰 화면은 바닥이 회색이고 목록은 카드에 담는다 — 줄 띠(목록 카드 모양 · 모서리 16)를 바닥 위에 둔다
+  const swipeFloor = (t) => floor(swipeFrame(t), "pdata-floor--swipe");
+  const swipeSheet = overlayFrame({ device: "phone", height: 420, page: overlayPage({ rows: OVERLAY_LEDGER.slice(0, 3) }), layers: [overlayScrim(), overlayLayer("sheet", menuSheet({ title: "스타벅스 강남점", groups: [{ items: [{ label: "수정", icon: "pencil" }, { label: "삭제", icon: "trash", tone: "critical" }] }] }))] });
+  const swipeStates = matrix("pdata-matrix pdata-matrix--swipe", "동작 칸", [
+    { ko: "기본", en: "enabled", i: "" },
+    { ko: "누름", en: "pressed — 밝기 88%", i: "pressed" },
+    { ko: "포커스", en: "focused — 안쪽 2px", i: "focus" },
+    { ko: "막힘", en: "disabled", i: "disabled" },
+  ], [
+    { ko: "고정", en: "neutral", a: ACT3[0] },
+    { ko: "수정", en: "primary", a: ACT3[1] },
+    { ko: "삭제", en: "destructive", a: ACT3[2] },
+  ], (r, c) => `<span class="pdata-surface pdata-surface--swipe">${pswipeAction({ ...r.a, rowLabel: "지하철", first: true, state: c.i })}</span>`);
+  const swipePanel = panel(
+    "Swipe Actions — 밀어 연 트레이 · 같은 동작은 ⋮ 로",
+    "폰(768 미만) 목록 줄을 왼쪽으로 밀면 오른쪽에서 동작이 드러나는 지름길이다 — 기존 줄을 감싸고 뒤에 트레이를 붙인다. 동작은 1 ~ 3개를 부르는 쪽이 뜻의 차례로 넘기고 그리는 쪽이 뒤집는다 — 되돌리기 어려운 동작(삭제)은 가장 안쪽(화면에서 가장 왼쪽). 칸은 원형 배지 36(아이콘 18) + 그 아래 2 에 라벨 12 / 700 / 1.3 이고, 간격은 배지 앞에만 — 첫 칸 앞 20 · 칸 사이 12, 마지막 칸은 화면 끝에 붙는다(칸 폭 56 · 48, 트레이 56 · 104 · 152). 누르는 자리는 칸 전체(48 ~ 56 × 줄 높이 56 이상)다. 트레이 바탕은 칠하지 않고 색은 배지만 갖는다 — primary 는 fg-informative · destructive 는 fg-critical 로 채우고 아이콘은 fg-neutral-inverted(라이트는 짙은 배지 + 흰 아이콘, 다크는 밝은 배지 + 짙은 아이콘 — 두 모드 모두 줄 바탕과 3:1 이상), neutral 은 bg-neutral-weak + 안쪽 1px stroke-neutral-weak · 아이콘 fg-neutral. 라벨은 neutral · primary fg-neutral-muted, destructive 만 fg-critical. 이름은 \"라벨: 줄 제목\"(\"삭제: 스타벅스 강남점\"). 누름 · 호버는 밝기 88%(움직이지 않는다), 포커스는 칸 안쪽 2px, 막힘은 bg-disabled · fg-disabled. 미는 법을 모르는 사람 · 키보드 · 스크린리더는 줄 끝 ⋮(\"{줄 이름} 더보기\" — 40 · 누르는 44)로 같은 동작 · 같은 이름 · 같은 차례에 닿는다 — 1280 미만이라 Menu Sheet 다(오른쪽). 닫힌 트레이는 aria-hidden · 버튼 tabindex -1 이고, Esc 로 닫으면 초점은 줄로 간다. 그림은 열린 순간을 멈춘 것이다.",
+    `${pair(swipeFloor)}${samples([sample("⋮ → Menu Sheet — 같은 동작 · 같은 차례", "SwipeActionsMenu — 삭제는 tone=\"critical\"", swipeSheet)], NEXT)}${swipeStates}`,
+  );
+
+  const lede = "SEED 문서 사이트 표 · 디자인 그림 · 면 · Feedback · 대시보드 그림 · 밑줄 칸 · List 줄 + Radiomark · Result Section 과 porest 의 지표 · 순자산 카드 · 증감 · 줄 밀기 — 데이터를 보이는 자리다. SEED 에는 다섯 모두 컴포넌트가 없어 부품마다 SEED 를 따랐다(2026-10-08 사용자 결정). 표는 머리 41 · 14 / 20 · 500 · 짙은 글자(머리 바탕 · 작은 대문자 없음) · 줄 45(썸네일 · 두 줄이면 72) · 줄 선 stroke-neutral-subtle 마지막 줄까지 · 첫 칸 앞 · 끝 칸 뒤 24 · 숫자 오른쪽 · 정렬할 수 있는 열에 ↑↓ 늘(두 단계) · 줄 끝 ⋮ 하나 · 고른 줄은 체크로만(일괄 작업 바만 bg-brand-weak) · 768 미만은 List 줄이다. 카드는 회색 바닥 위 흰 면 + 1px stroke-neutral-weak · 모서리 16 · 그림자 없음 · 여백 24(목록 카드 24 / 4 / 12) · 쌓은 사이 8 · 머리 16 · 700 + \"전체 보기\"(누르는 44) · 누름은 색 + 2px(대등한 동작이 있으면 색만)이고, 지표 카드는 폰에서 한 줄에 하나다. 증감은 어디서나 ▲ 빨강 · ▼ 파랑 + 값 + 글(순자산 채움 위만 흰 글자). 차트는 차트 10색 · 눈금 11 · 가로 점선 격자 · 이중 축이면 눈금 글자가 계열 색 · 위 지표 타일 · 떠 있는 툴팁 \"■ 라벨 값\" · 도넛은 목록 범례 · 열지도 칸은 112 이상만 원까지이고, 검색해서 고르기는 밑줄 검색칸 + List 줄 + 오른쪽 라디오 + 콤보박스 키보드, 줄 밀기의 같은 동작은 줄 끝 ⋮ 로도 연다. 옛 Data Table · Chart mini · 카드 카탈로그 목록 · 옛 줄 밀기 CSS 는 걷었고, 04 의 지표 위젯(회색 채운 칸) · 05 ~ 08 의 그림자 카드 · 13 의 스켈레톤 카드는 이 카드 면으로 다시 그렸다."
+    + (desk ? "" : brand.key === "hr" ? " 순자산 카드는 Desk 에만 있어 Desk 미리보기에 그렸다." : " 공유 토큰에는 브랜드 역할 색이 없어 일괄 작업 바 · 포커스 링이 여기서는 중립으로 보이고, 브랜드 채움을 쓰는 순자산 카드 · 열지도는 HR · Desk 미리보기에 그렸다.");
+
+  return `
+  <section class="section pdata-section">
+    <header class="section-head">
+      <div class="section-eyebrow">03s — 데이터 표시: Table · Card · Chart · Searchable List · Swipe Actions</div>
+      <h2 class="section-title">데이터 표시 — 표 · 카드 · 차트 · 검색해서 고르기 · 줄 밀기</h2>
+      <p class="section-lede">${escape(lede)}</p>
+    </header>
+    ${lookPanel}
+    ${sortPanel}
+    ${numbersPanel}
+    ${selectPanel}
+    ${statePanel}
+    ${narrowPanel}
+    ${surfacePanel}
+    ${paddingPanel}
+    ${statPanel}
+    ${heroPanel}
+    ${pressPanel}
+    ${trendPanel}
+    ${donutPanel}
+    ${heatPanel}
+    ${chartStatusPanel}
+    ${slPanel}
+    ${slStatesPanel}
+    ${swipePanel}
+  </section>`;
+}
+
 export function renderVignettes(brand) {
   // 배지 — 옛 .badge(알약 · 대문자)는 걷고 03o 의 Badge 로 그린다. HR 결재 상태는 대기 neutral · 진행 informative · 승인 positive · 반려 critical(badge.md Migration notes).
   // 탭 — 옛 underline · pills 그림(브랜드 색 밑줄 · 채움)은 걷었다(tabs.md 2026-10-02). 다른 구역으로 옮기는 자리(HR 직원 상세 · 공유 문서)는 Line 탭,
@@ -7285,19 +8117,16 @@ export function renderVignettes(brand) {
         </div>`;
     }
     if (v.kind === "kpi-card") {
-      const items = v.items.map(i => `
-        <div class="kpi-cell">
-          <div class="kpi-label">${escape(i.label)}</div>
-          <div class="kpi-value">${escape(i.value)}</div>
-          <div class="kpi-delta">${escape(i.delta)}</div>
-        </div>`).join("");
+      // 지표 위젯 — 03s 의 지표 카드(바닥 위 흰 면 + 1px · 모서리 16 · 여백 24 · CardStat small 20 · 증감 Delta)다. 옛 회색 채운 칸(.kpi-cell — muted ·
+      // 여백 16 · 모서리 8 · 증감을 "+1.2pt" 글로만)은 걷었다(card.md 2026-10-08 — muted 걷음 · 증감은 방향 색 + 글)
+      const items = v.items.map(i => pcard({ content: pcardStat({ label: i.label, value: i.value, size: "small", delta: i.delta || null }) })).join("");
       return `
         <div class="vignette-card">
           <div class="vignette-head">
             <div class="vignette-title">${escape(v.title)}</div>
-            <div class="vignette-sub">KPI dashboard widget</div>
+            <div class="vignette-sub">지표 카드 — 바닥 위 흰 면 + 1px · 여백 24 · 숫자 20 / 700 · 증감 ▲ 빨강 · ▼ 파랑 + 글</div>
           </div>
-          <div class="kpi-grid">${items}</div>
+          <div class="pdata-floor"><div class="pdata-grid pdata-grid--kpi">${items}</div></div>
         </div>`;
     }
     if (v.kind === "todo-card") {
@@ -7320,19 +8149,16 @@ export function renderVignettes(brand) {
         </div>`;
     }
     if (v.kind === "memo-card") {
-      const items = v.items.map(i => `
-        <div class="memo-row">
-          <div class="memo-title">${escape(i.title)}</div>
-          <div class="memo-excerpt">${escape(i.excerpt)}</div>
-          <div class="memo-tags">${i.tags.map(t => `<span class="memo-tag">#${escape(t)}</span>`).join("")}</div>
-        </div>`).join("");
+      // 메모 카드 — 03s 의 카드(바닥 위 흰 면 + 1px · 모서리 16 · 여백 24 · 쌓은 사이 8)이고 카드 전체가 메모로 가는 링크다(press whole — 누르면 색 + 2px).
+      // 옛 회색 채운 칸(.memo-row — muted · 여백 16 · 모서리 8)은 여기서 걷었다(card.md 2026-10-08). 03j 의 Segmented 거르기 목록은 그 블록의 것이라 그대로다
+      const items = v.items.map(i => pcard({ press: "whole", content: `<div class="pdata-memo-text"><div class="pcard-title">${escape(i.title)}</div><div class="pdata-note">${escape(i.excerpt)}</div><div class="memo-tags">${i.tags.map(t => `<span class="memo-tag">#${escape(t)}</span>`).join("")}</div></div>` })).join("");
       return `
         <div class="vignette-card">
           <div class="vignette-head">
             <div class="vignette-title">${escape(v.title)}</div>
-            <div class="vignette-sub">memo grid — Desk entry</div>
+            <div class="vignette-sub">메모 카드 — 바닥 위 흰 면 + 1px · 여백 24 · 카드 전체가 링크</div>
           </div>
-          <div class="memo-grid">${items}</div>
+          <div class="pdata-floor"><div class="pdata-memo-stack">${items}</div></div>
         </div>`;
     }
     return "";
@@ -7585,7 +8411,7 @@ export function renderSkeleton(brand) {
   let body;
   if (sk.layout === "list") {
     const rows = Array.from({ length: sk.items || 5 }, (_, i) => `<li class="plst-row"><div class="plst-content"><span class="plst-prefix">${skeleton({ radius: "full", w: 40, h: 40 })}</span><span class="plst-body"><span class="plst-title">${skeleton({ text: "t5", w: [64, 56, 72, 60, 68][i % 5] })}</span><span class="plst-detail">${skeleton({ text: "t3", w: [168, 144, 184, 152, 160][i % 5] })}</span></span><span class="plst-suffix">${skeleton({ text: "t3", w: 56 })}</span></div></li>`);
-    body = `<div class="psk-card">${listHeader({ text: "결재 대기", variant: "boldSolid" })}<div class="pld-region" data-phase="waiting" aria-busy="true">${listOf(rows, ' aria-hidden="true"')}</div></div>`;
+    body = pcard({ body: "list", head: pcardHead({ title: "결재 대기" }), list: `<div class="pld-region" data-phase="waiting" aria-busy="true">${listOf(rows, ' aria-hidden="true"')}</div>` });
   } else if (sk.layout === "card") {
     const card = (i) => `<div class="psk-card psk-memo" aria-hidden="true">${skeleton({ text: "t5", w: ["72%", "56%", "64%", "80%"][i % 4] })}<div class="psk-memo-lines">${skeleton({ text: "t4", w: "100%" })}${skeleton({ text: "t4", w: ["64%", "72%", "60%", "68%"][i % 4] })}</div>${skeleton({ text: "t3", w: 88 })}</div>`;
     body = `<div class="pld-region psk-memo-grid" data-phase="waiting" aria-busy="true">${Array.from({ length: sk.items || 4 }, (_, i) => card(i)).join("")}</div>`;
@@ -7947,30 +8773,17 @@ export function renderShadcnDisclose(brand) {
 }
 
 export function renderShadcnData(brand) {
-  // v71 Data 5. 표의 상태는 03o 의 Badge(weak — 한 목록은 한 변형, 뜻은 톤으로)다 — 옛 .dt-badge(알약 · 채운 의미 색 + 흰 글자)는 걷었다.
+  // v71 Data — 옛 Data Table 칸(.dt-* — 머리 바탕 · 작은 대문자 회색 머리 · 정렬한 열에만 화살표 · 브랜드 10% 일괄 바)은 걷었다(2026-10-08 — Data Table 은
+  // 스펙 없이 Table 로 합쳤다). 표 · 정렬 ↑↓ · 고르기 · 일괄 작업 바는 03s — 데이터 표시의 Table 이다.
   // Carousel 칸(화살표 32 · 점 · 자동 넘김)은 걷었다(2026-10-04 — carousel.history) — 여러 장은 03q 의 가로 줄(Scroll Fog row · Indicator "1 / 12")이다
   return `
   <section class="section">
     <header class="section-head">
       <div class="section-eyebrow">18 — Data (v71)</div>
-      <h2 class="section-title">Table · Data Table · Scroll Area · Resizable</h2>
-      <p class="section-lede">4 data display 컴포넌트 — 표, 정렬·필터, 커스텀 scroll, 분할 panel. 옛 Carousel 은 걷었다 — 여러 장은 03q 의 끝이 보이는 가로 줄과 장수 글(\"1 / 12\")이다.</p>
+      <h2 class="section-title">Scroll Area · Resizable</h2>
+      <p class="section-lede">커스텀 scroll · 분할 panel. 옛 Table · Data Table 칸은 걷었다 — 표는 03s — 데이터 표시의 Table 이다. 옛 Carousel 은 걷었다 — 여러 장은 03q 의 끝이 보이는 가로 줄과 장수 글(\"1 / 12\")이다.</p>
     </header>
     <div class="sc-grid">
-      <div class="sc-card sc-card--full">
-        <div class="sc-head">Data Table — sortable + selectable + bulk action</div>
-        <div class="dt">
-          <div class="dt-bulk">3개 선택됨 · <button class="dt-bulk-btn">${brand.key === "hr" ? "일괄 승인" : brand.key === "desk" ? "보관" : "Export"}</button> · <button class="dt-bulk-btn">삭제</button></div>
-          <table class="dt-table">
-            <thead><tr><th>${cbox({ state: "indeterminate", name: "모두 선택" })}</th><th>${brand.key === "hr" ? "신청자" : brand.key === "desk" ? "제목" : "Token"} <span class="dt-sort">↑</span></th><th>${brand.key === "hr" ? "기간" : brand.key === "desk" ? "수정일" : "Value"}</th><th>${brand.key === "hr" ? "상태" : brand.key === "desk" ? "상태" : "Type"}</th></tr></thead>
-            <tbody>
-              <tr><td>${cbox({ state: "checked", name: "이 행 선택" })}</td><td>${brand.key === "hr" ? "김지원" : brand.key === "desk" ? "Porest 톤" : "primary"}</td><td>${brand.key === "hr" ? "5/12-14" : brand.key === "desk" ? "2시간 전" : "#357B5F"}</td><td>${badge({ text: brand.key === "hr" ? "승인" : brand.key === "desk" ? "공개" : "색", tone: brand.key === "shared" ? "neutral" : "positive" })}</td></tr>
-              <tr><td>${cbox({ state: "checked", name: "이 행 선택" })}</td><td>${brand.key === "hr" ? "이도현" : brand.key === "desk" ? "5월 회고" : "primary-light"}</td><td>${brand.key === "hr" ? "5/15-16" : brand.key === "desk" ? "어제" : "#5DAD86"}</td><td>${badge({ text: brand.key === "hr" ? "대기" : brand.key === "desk" ? "초안" : "색" })}</td></tr>
-              <tr><td>${cbox({ state: "checked", name: "이 행 선택" })}</td><td>${brand.key === "hr" ? "최가람" : brand.key === "desk" ? "참고 자료" : "border-focus"}</td><td>${brand.key === "hr" ? "5/20" : brand.key === "desk" ? "3일 전" : "#357B5F"}</td><td>${badge({ text: brand.key === "hr" ? "반려" : brand.key === "desk" ? "보관" : "색", tone: brand.key === "hr" ? "critical" : "neutral" })}</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
       <div class="sc-card">
         <div class="sc-head">Scroll Area + Resizable hint</div>
         <div class="sa">
@@ -7983,14 +8796,15 @@ export function renderShadcnData(brand) {
 }
 
 export function renderShadcnExtras(brand) {
-  // v72 Extras 5 — 옛 Sonner 칸은 Snackbar 로 바꿨다(2026-10-02). 띠는 brand.snackbars 의 액션 띠다
+  // v72 Extras — 옛 Sonner 칸은 Snackbar 로 바꿨다(2026-10-02). 띠는 brand.snackbars 의 액션 띠다
+  // 옛 Chart(bar mini — 한 색 막대 일곱 · 축 · 값 없음) 칸은 걷었다(2026-10-08) — 차트는 03s — 데이터 표시의 Chart 다
   const undo = (brand.snackbars || []).find(item => item.action) || { message: "거래를 삭제했어요.", action: "되돌리기" };
   return `
   <section class="section">
     <header class="section-head">
       <div class="section-eyebrow">19 — Extras (v72)</div>
-      <h2 class="section-title">Snackbar · Aspect Ratio · Chart · 기간 · Time Picker</h2>
-      <p class="section-lede">5 추가 컴포넌트 — 스낵바, 비율 상자, 차트, 기간/시각 선택.</p>
+      <h2 class="section-title">Snackbar · Aspect Ratio · 기간 · Time Picker</h2>
+      <p class="section-lede">추가 컴포넌트 넷 — 스낵바, 비율 상자, 기간/시각 선택. 옛 Chart 칸은 걷었다 — 차트는 03s — 데이터 표시의 Chart 다.</p>
     </header>
     <div class="sc-grid">
       <!-- Snackbar — 옛 Sonner(흰 카드 · 그림자 · 아이콘 넷 · 3장 쌓기)를 03l 의 짙은 띠 하나로 -->
@@ -8004,19 +8818,6 @@ export function renderShadcnExtras(brand) {
         <div class="sc-head">Aspect Ratio — 16:9 동영상</div>
         ${aspectRatioBox({ ratio: "16:9", child: `<video class="par-child" poster="${PIMG.video}" preload="none" aria-label="${brand.key === "hr" ? "신규 입사 안내 동영상" : "자산 연결 안내 동영상"}"></video>` })}
         <div class="sc-note">폭이 정해지면 높이가 비율로 정해지는 상자 — 모서리 · 바탕 · 윤곽이 없고 자식 하나가 채운다(동영상은 cover). 비율은 여덟(1:1 · 2:1 · 16:9 · 4:3 기본 · 6:7 · 4:5 · 2:3 · 카드 1.586). 사진 · 카드 그림은 Image Frame 이다 — 모양 · 쓰임은 03q. 옛 Aspect Ratio(바탕 · 모서리 8 · 3:4 · 21:9)는 걷었다.</div>
-      </div>
-      <div class="sc-card">
-        <div class="sc-head">Chart (bar mini)</div>
-        <div class="chart-mini">
-          <div class="chart-bar" style="height: 30%; background: var(--color-chart-blue);"></div>
-          <div class="chart-bar" style="height: 55%; background: var(--color-chart-blue);"></div>
-          <div class="chart-bar" style="height: 70%; background: var(--color-chart-blue);"></div>
-          <div class="chart-bar" style="height: 45%; background: var(--color-chart-blue);"></div>
-          <div class="chart-bar" style="height: 85%; background: var(--color-chart-blue);"></div>
-          <div class="chart-bar" style="height: 60%; background: var(--color-chart-blue);"></div>
-          <div class="chart-bar" style="height: 75%; background: var(--color-chart-blue);"></div>
-        </div>
-        <div class="sc-note">${brand.key === "hr" ? "월별 결재 수" : brand.key === "desk" ? "주간 거래 합계" : "샘플 bar"}</div>
       </div>
       <!-- 기간 — 옛 Date Range Picker(두 칸 · 화살표 · 브랜드 일수 알약)를 03n 의 기간 칸 하나로 -->
       <div class="sc-card">
@@ -8186,8 +8987,9 @@ export function renderBatchV73V78(brand) {
 }
 
 export function renderBatchSpecs5(brand) {
-  // 신규 spec (2026-05-15) — color-swatch / icon-picker / searchable-list
-  // 도메인 시나리오: 카테고리 색/아이콘, 카드 카탈로그. 기본 통화(옛 radio-list)는 List 의 라디오 줄로 옮겼다(2026-10-01 — renderListGallery).
+  // 신규 spec (2026-05-15) — color-swatch / icon-picker. 옛 SearchableList 칸(카드 카탈로그 — 테두리 상자 · 바탕 칠한 고른 줄 · 44 × 28 썸네일)은 걷었다(2026-10-08) —
+  // 검색해서 고르기는 03s — 데이터 표시의 Searchable List(밑줄 검색칸 · 분류 머리 · 오른쪽 라디오)다.
+  // 도메인 시나리오: 카테고리 색/아이콘. 기본 통화(옛 radio-list)는 List 의 라디오 줄로 옮겼다(2026-10-01 — renderListGallery).
   // 테마 선택(옛 tile)은 앞에 미리보기를 둔 List 라디오 줄로, 제목 · 설명이 붙는 미리보기 카드는 Select Box 로 옮겼다(2026-10-01 — renderSelectBoxGallery).
   const isHr = brand.key === "hr";
   const isDesk = brand.key === "desk";
@@ -8230,32 +9032,12 @@ export function renderBatchSpecs5(brand) {
     `<button type="button" class="ipk-cell${i === activeIconIdx ? " ipk-cell--active" : ""}" aria-label="icon-${i}" aria-pressed="${i === activeIconIdx}">${svg}</button>`
   ).join("");
 
-  // SearchableList (카드 카탈로그)
-  const cards = [
-    { name: "신한 SOL 트래블 카드", company: "신한카드", type: "체크", fee: 0, color: "#0046FF", discontinued: false, initial: "신" },
-    { name: "현대카드 The Red", company: "현대카드", type: "신용", fee: 500000, color: "#000000", discontinued: false, initial: "현" },
-    { name: "삼성카드 taptap O", company: "삼성카드", type: "신용", fee: 10000, color: "#0F4ABE", discontinued: false, initial: "삼" },
-    { name: "KB국민 노리체크", company: "KB국민카드", type: "체크", fee: 0, color: "#FFB81C", discontinued: false, initial: "K" },
-    { name: "롯데카드 라이킷", company: "롯데카드", type: "신용", fee: 12000, color: "#ED1C24", discontinued: true, initial: "롯" },
-  ];
-  const slRows = cards.map((c, i) => {
-    const active = i === 0;
-    // 단종은 배지(weak neutral)가 알린다 — 줄을 불투명도로 흐리지 않는다(배지까지 흐려진다 — badge.md Don't)
-    return `<button type="button" class="sl-row${active ? " sl-row--active" : ""}" aria-pressed="${active}">
-      <span class="sl-thumb" style="background:${c.color};">${c.initial}</span>
-      <span class="sl-body">
-        <span class="sl-title"><span class="sl-title-text">${c.name}</span>${c.discontinued ? badge({ text: "단종" }) : ""}</span>
-        <span class="sl-sub">${c.company} · ${c.type}${c.fee > 0 ? ` · 연회비 ${c.fee.toLocaleString("ko-KR")}원` : ""}</span>
-      </span>
-    </button>`;
-  }).join("");
-
   return `
   <section class="section">
     <header class="section-head">
       <div class="section-eyebrow">21 — Domain selectors (2026-05-15 신규 spec)</div>
-      <h2 class="section-title">ColorSwatch · IconPicker · SearchableList</h2>
-      <p class="section-lede">desk-front 도메인에서 spec으로 끌어올린 3개 단일-선택 패턴 — 카테고리 색/아이콘, 카드 카탈로그. 기본 통화(옛 RadioList)는 03e — List 의 라디오 줄로 옮겼다. 테마 선택(옛 Tile)은 앞에 미리보기를 둔 List 라디오 줄로 옮겼고, 제목 · 설명이 붙는 미리보기 카드는 03f — Select Box 다.</p>
+      <h2 class="section-title">ColorSwatch · IconPicker</h2>
+      <p class="section-lede">desk-front 도메인에서 spec으로 끌어올린 단일-선택 패턴 둘 — 카테고리 색/아이콘. 옛 SearchableList(카드 카탈로그) 칸은 걷었다 — 검색해서 고르기는 03s — 데이터 표시의 Searchable List 다. 기본 통화(옛 RadioList)는 03e — List 의 라디오 줄로 옮겼다. 테마 선택(옛 Tile)은 앞에 미리보기를 둔 List 라디오 줄로 옮겼고, 제목 · 설명이 붙는 미리보기 카드는 03f — Select Box 다.</p>
     </header>
 
     <div class="sc-grid">
@@ -8279,18 +9061,6 @@ export function renderBatchSpecs5(brand) {
           </div>
         </div>
         <div class="sc-note">2000+ Lucide 아이콘 중 매칭 상위 100건 limit. trigger 40×40 — Input medium(데스크톱 웹)과 같은 높이(icon-picker.md).</div>
-      </div>
-
-      <!-- SearchableList -->
-      <div class="sc-card">
-        <div class="sc-head">SearchableList — 카드 카탈로그 (search + thumbnail list)</div>
-        <div class="sl-head">
-          <span class="sl-head-label">카드</span>
-          <span class="sl-head-count">총 142개</span>
-        </div>
-        <div class="sl-search">${textInput({ size: "responsive", label: "검색", placeholder: "카드명 또는 발급사 검색", prefixIcon: "search", clearable: true })}</div>
-        <div class="sl" style="max-height: 240px;">${slRows}</div>
-        <div class="sc-note">대량 옵션 + 검색 필요 — 카드/은행/증권사/종목/도시. active row는 bg-brand-subtle + 주제목 primary-strong semi.</div>
       </div>
     </div>
   </section>`;
@@ -8886,12 +9656,9 @@ export function pageCss() {
 
     /* 옛 .badge(알약 · text-badge 11/600 · 대문자 · 자간 · soft 넷)는 걷었다. 배지는 03o 의 .pbadge 다(badge.md — SEED Badge, 2026-10-03) */
 
-    /* kpi-card */
-    .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-md); }
-    .kpi-cell { padding: var(--spacing-md); background: var(--color-surface-input); border-radius: var(--radius-md); }
-    .kpi-label { font-size: var(--text-caption); color: var(--color-text-tertiary); margin-bottom: var(--spacing-xs); }
-    .kpi-value { font-size: var(--text-display-sm); font-weight: 700; line-height: 1.2; }
-    .kpi-delta { font-size: 11px; color: var(--color-text-secondary); margin-top: var(--spacing-xs); }
+    /* kpi-card — 03s 의 지표 카드(.pcard · .pcard-stat)를 바닥(.pdata-floor) 위 격자에 둔다(칸 사이 layout-gutter 24). 옛 회색 채운 칸(.kpi-cell — muted ·
+       여백 16 · 모서리 8)은 걷었다(card.md 2026-10-08) */
+    .pdata-grid--kpi { grid-template-columns: repeat(auto-fit, minmax(min(100%, 120px), 1fr)); }
 
     /* === Checkbox — specs/components/checkbox.md · checkbox.yaml(수치 원본) · checkbox.tsx 와 같은 모양 ===
        구조는 SEED Checkbox(2026-09-30) — 칸 .checkbox(Checkmark) · 칸 + 라벨 .checkbox-row(Checkbox) · 묶음 .checkbox-group.
@@ -14084,6 +14851,688 @@ export function pageCss() {
       --shadow-s3: var(--shadow-s3-dark);
     }
 
+    /* === 데이터 표시 — Table · Card · Chart · Searchable List · Swipe Actions ===
+       specs/components/table.md · card.md · chart.md · searchable-list.md · swipe-actions.md(수치 원본은 같은 이름의 .yaml) · 증감은 DESIGN.md Colors 의
+       "증감 — 방향 색 (2026-10-08)". SEED 에는 다섯 모두 컴포넌트가 없어 부품마다 SEED 를 따랐다(문서 사이트 표 · 면 · Feedback · 대시보드 그림 · 밑줄 칸 · List 줄).
+       표는 border-collapse: separate 에 칸 아래 1px 선이라 머리 41(10 + 20 + 10 + 1) · 줄 45(12 + 20 + 12 + 1) · 72(썸네일 · 두 줄)가 칸 상자 그대로 잡힌다.
+       카드는 바닥(bg-layer-basement) 위 흰 면 + 1px stroke-neutral-weak · 모서리 16 · 그림자 없음 · 여백 24. 누름 배율 = (기준 − 2) ÷ 기준, 기준 = max(높이, 폭 ÷ 4, 24) —
+       카드 · 타일 · 결과 줄은 놓인 자리마다 폭이 달라 페이지 끝 스크립트가 누르는 순간 재서 --press-basis 로 넘긴다. 호버는 같은 바탕이고 축소가 없다(마우스 있는 기기에서만).
+       포커스는 키보드에만 링 2px stroke-focus-ring — 표 · 줄 · 칸 안의 것은 안쪽, 카드 · 타일 · 차트 상자는 바깥 2. 모션 줄이기면 축소 · 미끄러짐을 뺀다.
+       --hover · --pressed · --focus 는 갤러리에서 그 순간을 고정해 보여 주는 클래스다. 다크 짝은 이 블록 끝에서 바꾼다 — 03o 의 라이트 · 다크 나란히 틀(.pdsp-theme--dark)은
+       페이지가 라이트여도 다크 짝으로 바꾼다. 공유 토큰(DESIGN.md)에 없는 브랜드 짝은 비어서 대체값(중립)으로 떨어진다. */
+    :is(.ptbl, .ptbl-bulk, .pcard, .pchart, .pchart-tiles, .pchart-legend, .pheat, .psl, .pswipe, .pdata-surface) {
+      --pdata-ring: var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral)));
+    }
+    /* hidden 은 늘 숨긴다 — display 를 준 칸(0건 자리 · 툴팁)도 */
+    .pdata-section [hidden] { display: none !important; }
+    .pdata-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+
+    /* 갤러리 틀 — 회색 바닥(카드가 놓이는 자리) · 가로로 밀리는 칸 · 견본 줄 · 폰의 카드 묶음(화면 끝 24 · 쌓은 사이 8) · 데스크톱 격자(칸 사이 24) */
+    .pdata-floor { box-sizing: border-box; min-width: 0; padding: var(--spacing-x6); border-radius: var(--radius-r4); background: var(--color-bg-layer-basement); color: var(--color-fg-neutral); font-family: var(--font-sans); }
+    .pdata-floor--tight { padding: var(--spacing-x4); }
+    .pdata-wide { position: relative; max-width: 100%; min-width: 0; overflow-x: auto; scrollbar-width: thin; }
+    .pdata-samples--wide { grid-template-columns: minmax(0, 1fr); }
+    .pdata-samples--sheet { grid-template-columns: repeat(auto-fill, minmax(min(100%, 362px), 1fr)); }
+    .pdata-samples--tables { grid-template-columns: repeat(auto-fill, minmax(min(100%, 480px), 1fr)); }
+    .pdata-pair--stack { grid-template-columns: minmax(0, 1fr); }
+    .pdata-deltas { display: flex; flex-direction: column; gap: var(--spacing-x5); }
+    .pdata-delta-item { display: flex; flex-direction: column; gap: var(--spacing-x1); }
+    .pdata-floor--donut > .pcard { max-width: 640px; }
+    .pdata-hero-pair { display: flex; flex-direction: column; }
+    .pdata-hero-pair > .pdata-cap { margin-bottom: var(--spacing-x4); }
+    .pdata-cap { margin-top: var(--spacing-x2); }
+    .pdata-row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--spacing-x6); margin-bottom: var(--spacing-xl); }
+    .pdata-item { display: flex; flex-direction: column; min-width: 0; }
+    .pdata-strip { display: flex; justify-content: flex-end; min-width: 168px; background: var(--color-bg-layer-default); }
+    .pdata-stack { position: relative; display: flex; flex-direction: column; gap: var(--spacing-x2); padding: var(--spacing-x2) var(--spacing-global-gutter) var(--spacing-x6); }
+    .pdata-stack--top0 { padding-top: 0; }
+    .pdata-grid { display: grid; gap: var(--layout-gutter); align-items: start; }
+    .pdata-grid--2 { grid-template-columns: repeat(2, minmax(268px, 1fr)); min-width: 560px; }
+    .pdata-grid--4 { grid-template-columns: repeat(4, minmax(200px, 1fr)); min-width: 872px; }
+    .pdata-phone-body { padding-top: 0; }
+    .pdata-note { font-size: var(--text-t3); line-height: var(--text-t3--line-height); color: var(--color-fg-neutral-subtle); }
+    .pdata-list-value { font-size: var(--text-t5); line-height: var(--text-t5--line-height); color: var(--color-fg-neutral); font-variant-numeric: tabular-nums; }
+    .pdata-live-status { min-height: var(--text-t3--line-height); }
+    .pdata-cell { align-items: stretch; }
+    .pdata-surface { display: inline-flex; max-width: 100%; min-width: 0; box-sizing: border-box; padding: var(--spacing-x2); border-radius: var(--radius-r2); background: var(--color-bg-layer-default); color: var(--color-fg-neutral); font-family: var(--font-sans); }
+    .pdata-surface--strip { padding: 0; box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-subtle); overflow: hidden; }
+    .pdata-surface--table { display: block; width: 100%; padding: 0; box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-subtle); overflow: hidden; }
+    .pdata-surface--head { display: block; width: 100%; padding: var(--spacing-x3) var(--spacing-x6); }
+    .pdata-surface--hit .pcard-action::before { outline: 1px dashed var(--color-fg-neutral-subtle); outline-offset: -1px; }
+    .pdata-surface--card { display: block; width: 100%; padding: var(--spacing-x2); background: var(--color-bg-layer-basement); }
+    .pdata-surface--tile { padding: var(--spacing-x4); }
+    .pdata-surface--swipe { padding: 0; box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-subtle); }
+    .pdata-matrix .cb-matrix-row { grid-template-columns: 168px repeat(var(--cb-cols), minmax(180px, 1fr)); }
+    .pdata-matrix--rows .cb-matrix-row { grid-template-columns: 168px repeat(var(--cb-cols), minmax(220px, 1fr)); }
+    .pdata-matrix--cards .cb-matrix-row { grid-template-columns: 168px repeat(var(--cb-cols), minmax(208px, 1fr)); }
+    .pdata-matrix--swipe .cb-matrix-row { grid-template-columns: 168px repeat(var(--cb-cols), minmax(96px, 1fr)); }
+    .pdata-matrix { margin-top: var(--spacing-xl); }
+    @media (max-width: 900px) {
+      .pdata-matrix .cb-matrix-row { grid-template-columns: 120px repeat(var(--cb-cols), minmax(180px, 1fr)); }
+      .pdata-matrix--rows .cb-matrix-row { grid-template-columns: 120px repeat(var(--cb-cols), minmax(220px, 1fr)); }
+      .pdata-matrix--cards .cb-matrix-row { grid-template-columns: 120px repeat(var(--cb-cols), minmax(208px, 1fr)); }
+      .pdata-matrix--swipe .cb-matrix-row { grid-template-columns: 120px repeat(var(--cb-cols), minmax(96px, 1fr)); }
+    }
+
+    /* 표(Table) — 상자 .ptbl(카드 안에 가장자리까지 · 넘치면 가로로 민다 · 바깥 테두리 · 모서리 · 세로 선 · 줄무늬 없음). 글은 t4 14 에 줄 높이 20(SEED 문서 표).
+       칸 좌우 16, 첫 칸 앞 · 끝 칸 뒤만 카드 여백과 같은 24. 줄 선은 칸 아래 1px stroke-neutral-subtle — 머리 아래 · 줄마다 · 마지막 줄 아래까지 */
+    .ptbl { --ptbl-min: 0px; position: relative; max-width: 100%; overflow-x: auto; scrollbar-width: thin; color: var(--color-fg-neutral); font-family: var(--font-sans); }
+    .ptbl--sticky { overflow-y: auto; }
+    .ptbl--sticky:focus-visible { outline: 2px solid var(--pdata-ring); outline-offset: -2px; }
+    .ptbl--visible { overflow: visible; }
+    .ptbl-table { width: 100%; min-width: var(--ptbl-min); margin: 0; border-collapse: separate; border-spacing: 0; background: transparent; font-size: var(--text-t4); line-height: 20px; color: var(--color-fg-neutral); }
+    .ptbl-table--strip { width: auto; min-width: 0; }
+    .ptbl-th,
+    .ptbl-td {
+      padding: var(--spacing-x3) var(--spacing-x4);
+      border: 0;
+      border-bottom: 1px solid var(--color-stroke-neutral-subtle);
+      background: transparent;
+      font: inherit;
+      color: inherit;
+      text-align: start;
+      vertical-align: middle;
+      transition: background-color var(--motion-duration-color-transition) var(--motion-ease-easing);
+    }
+    .ptbl-th { padding-block: var(--spacing-x2_5); font-weight: 500; white-space: nowrap; }
+    .ptbl-td { font-weight: 400; }
+    /* 칸 안의 인라인 블록(배지 · 이름 링크)은 줄 위에 맞춘다 — 기준선에 맞추면 줄이 45 를 넘는다(table.tsx [&>*]:align-top) */
+    .ptbl-td > * { vertical-align: top; }
+    .ptbl-td--end > .psk { margin-left: auto; }
+    .ptbl-table tr > :first-child { padding-left: var(--spacing-x6); }
+    .ptbl-table tr > :last-child { padding-right: var(--spacing-x6); }
+    /* 숫자 열 — 오른쪽 + 고정폭 숫자(머리도 오른쪽). 고정폭 글꼴(mono)은 쓰지 않는다 */
+    .ptbl-th--end,
+    .ptbl-td--end { text-align: end; }
+    .ptbl-td--end { font-variant-numeric: tabular-nums; white-space: nowrap; }
+    /* 정렬 — 머리 칸의 여백을 버튼이 가진다(칸 어디를 눌러도 정렬). 글 ↔ ↑↓ 6 · ↑↓ 16. 버튼은 칸 폭 × 40(+ 선 1 = 41), 누르는 영역은 위아래로 44 까지 */
+    .ptbl-table tr > .ptbl-th--sort { padding: 0; }
+    .ptbl-sort {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-x1_5);
+      width: 100%;
+      box-sizing: border-box;
+      margin: 0;
+      padding: var(--spacing-x2_5) var(--spacing-x4);
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      font: inherit;
+      color: inherit;
+      text-align: inherit;
+      cursor: pointer;
+      transition: background-color var(--motion-duration-color-transition) var(--motion-ease-easing);
+    }
+    .ptbl-table tr > .ptbl-th--sort:first-child > .ptbl-sort { padding-left: var(--spacing-x6); }
+    .ptbl-table tr > .ptbl-th--sort:last-child > .ptbl-sort { padding-right: var(--spacing-x6); }
+    .ptbl-th--end > .ptbl-sort { justify-content: flex-end; }
+    .ptbl-sort::before { content: ""; position: absolute; inset: -2px 0; }
+    .ptbl-sort-icon { flex-shrink: 0; width: 16px; height: 16px; }
+    .ptbl-arrow { color: var(--color-fg-neutral-muted); }
+    .ptbl-arrow--on { color: var(--color-fg-neutral); }
+    @media (hover: hover) {
+      .ptbl-sort:hover { background: var(--color-bg-layer-default-pressed); }
+    }
+    .ptbl-sort:active,
+    .ptbl-sort.ptbl-sort--hover,
+    .ptbl-sort.ptbl-sort--pressed { background: var(--color-bg-layer-default-pressed); }
+    .ptbl-sort:focus-visible,
+    .ptbl-sort.ptbl-sort--focus { outline: 2px solid var(--pdata-ring); outline-offset: -2px; }
+    /* 선택 칸 — Checkbox large 24(누르는 영역 44 — 줄 45 안). 열 폭 24 + 앞 24(첫 칸) · 뒤 16 */
+    .ptbl-table tr > :is(.ptbl-td--select, .ptbl-th--select) { width: 24px; padding-block: 0; padding-right: var(--spacing-x4); }
+    :is(.ptbl-td--select, .ptbl-th--select) > .checkbox { display: grid; position: relative; margin: 0; }
+    :is(.ptbl-td--select, .ptbl-th--select) > .checkbox::before { content: ""; position: absolute; inset: -10px; }
+    /* ⋮ 열 — Button ghost · iconOnly · medium(보이는 40 · 누르는 44 — 줄 45 안). 열 폭 80 = 앞 16 + 40 + 끝 24 */
+    .ptbl-table tr > :is(.ptbl-td--more, .ptbl-th--more) { width: 40px; padding-block: 0; }
+    .ptbl-td--more .ptbl-more { display: flex; }
+    .ptbl-more::before { content: ""; position: absolute; inset: -2px; }
+    .ptbl-more-anchor { display: flex; }
+    .ptbl-more-anchor > .pmenu { z-index: 2; }
+    /* 첫 열(그 줄의 이름) — 누르는 표면 이름이 링크(키보드로 같은 곳에). 포커스는 칸 안쪽 2px 링 */
+    .ptbl-name { display: inline-block; margin: calc(-1 * var(--spacing-x0_5)) calc(-1 * var(--spacing-x1)); padding: var(--spacing-x0_5) var(--spacing-x1); border-radius: var(--radius-r1); color: inherit; text-decoration: none; outline: none; }
+    .ptbl-name:focus-visible,
+    .ptbl-name.ptbl-name--focus { outline: 2px solid var(--pdata-ring); outline-offset: -2px; }
+    /* 줄 종류 — 썸네일 · 두 줄 칸이 하나라도 있으면 그 표의 모든 줄이 72(칸 여백 12 보다 높이가 먼저 — 그림은 세로 가운데) */
+    .ptbl-table--rich > tbody > .ptbl-row { height: 72px; }
+    .ptbl-table--rich > tbody .ptbl-td { padding-block: 0; }
+    .ptbl-content { display: flex; align-items: center; gap: var(--spacing-x3); min-width: 0; }
+    .ptbl-media { display: flex; flex-shrink: 0; }
+    .ptbl-text { display: flex; flex-direction: column; gap: var(--spacing-x0_5); min-width: 0; }
+    .ptbl-title { font-size: var(--text-t4); line-height: 20px; color: var(--color-fg-neutral); }
+    .ptbl-detail { font-size: var(--text-t3); line-height: var(--text-t3--line-height); font-weight: 400; color: var(--color-fg-neutral-subtle); }
+    /* 누르는 줄 — 호버(웹) · 누름은 줄 전체 bg-layer-default-pressed(List 의 누름 바탕과 같은 색), 축소 없음. 체크 · ⋮ 를 누른 것은 줄 누르기가 아니다 */
+    .ptbl-row--press { cursor: pointer; }
+    @media (hover: hover) {
+      .ptbl-row--press:hover > :is(.ptbl-td) { background: var(--color-bg-layer-default-pressed); }
+    }
+    .ptbl-row--press:active:not(:has(button:active)) > .ptbl-td,
+    .ptbl-row--press.ptbl-row--hover > .ptbl-td,
+    .ptbl-row--press.ptbl-row--pressed > .ptbl-td { background: var(--color-bg-layer-default-pressed); }
+    /* 머리 고정 — 상자가 스스로 세로로 스크롤할 때만. 붙은 머리는 카드 면과 같은 bg-layer-default 로 지나가는 줄을 가린다(상자 안 겹침 1) */
+    .ptbl--sticky .ptbl-th { position: sticky; top: 0; z-index: 1; background: var(--color-bg-layer-default); }
+    /* 본문 자리 한 칸 — 비었음 · 실패(Result Section medium). 좌우 24 · 위아래 0(칸이 가장자리를 가지고, 카드 안의 Result Section 은 좌우 0 —
+       table.tsx TableStatusRow · 사용자 결정 23B) */
+    .ptbl-table tr > .ptbl-td--status { padding: 0 var(--spacing-x6); }
+    /* 카드 안의 Result Section — 제 좌우 48 을 두지 않는다(카드의 24 가 가장자리를 가진다). 목록 카드의 바로 아래면 24 이고,
+       목록 카드 바로 아래의 기다리는 영역(.pld-region)에 바로 둔 실패 · 비었음도 24 다(result-section.tsx · 23B) */
+    .pcard .presult { padding-left: 0; padding-right: 0; }
+    .pcard--list > .presult,
+    .pcard--list > .pld-region > .presult { padding-left: var(--spacing-x6); padding-right: var(--spacing-x6); }
+    /* 오래 걸림 글 — 카드 안이면 제 좌우(화면 여백 24)를 두지 않고 카드의 24 가 맡는다. 목록 카드 바로 아래 영역이면 24 —
+       목록 카드는 줄마다 24 를 가져 카드 여백이 없다(skeleton.tsx SLOW · 23B). 스켈레톤 줄은 List 의 24 를 그대로 가진다 */
+    .pcard .pld-slow { padding-left: 0; padding-right: 0; }
+    .pcard--list > .pld-region > .pld-slow { padding-left: var(--spacing-x6); padding-right: var(--spacing-x6); }
+    /* 부위를 잰 그림 — 칸 상자를 점선으로(갤러리 전용) */
+    .ptbl--guide :is(.ptbl-th, .ptbl-td) { outline: 1px dashed var(--color-fg-disabled); outline-offset: -1px; }
+    .ptbl--guide .ptbl-sort { outline: 1px dashed var(--color-fg-neutral-subtle); outline-offset: -1px; }
+    /* 표를 담은 카드 — 목록 카드처럼 좌우 0(표가 가장자리까지), 머리 위 · 좌우 24 · 아래 4, 카드 아래 12 */
+    .pcard--table { min-width: 0; }
+    .pcard--table > .ptbl { margin-top: 0; }
+    /* 머리 없는 목록 카드 — 위 12(줄의 위 12 와 합쳐 보이는 24, 아래와 같다 — card.tsx BODY.list) */
+    .pcard--list:not(:has(> .pcard-head)) { padding-top: var(--spacing-x3); }
+    .pdata-bulk-slot { padding: 0 var(--spacing-x6); }
+    /* 일괄 작업 바 — 고른 줄이 있을 때만 표 위(아래 8). 바탕 bg-brand-weak 한 값 · 48 · 모서리 12 · 왼쪽 16 · 오른쪽 8 · 사이 8, 고른 수 t4 · 500 */
+    .ptbl-bulk {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--spacing-x2);
+      min-height: 48px;
+      box-sizing: border-box;
+      margin-bottom: var(--spacing-x2);
+      padding: 0 var(--spacing-x2) 0 var(--spacing-x4);
+      border-radius: var(--radius-r3);
+      background: var(--color-bg-brand-weak, var(--color-bg-neutral-weak));
+      color: var(--color-fg-neutral);
+      font-family: var(--font-sans);
+    }
+    .ptbl-bulk[hidden] { display: none; }
+    .ptbl-bulk-count { font-size: var(--text-t4); line-height: var(--text-t4--line-height); font-weight: 500; white-space: nowrap; }
+    .ptbl-bulk-actions { display: flex; align-items: center; gap: var(--spacing-x2); }
+
+    /* 카드(Card) — 바닥(bg-layer-basement) 위 흰 면 + 1px stroke-neutral-weak · 모서리 16 · 그림자 없음 · 여백 24(폭과 상관없이 — List 줄 · 시트와 같다).
+       목록 카드(.pcard--list)는 좌우 0 — List 줄이 제 좌우 24 · 위아래 12 를 갖고, 머리 위 24 · 좌우 24 · 아래 4, 카드 아래 12(줄 12 와 합쳐 보이는 24) */
+    .pcard {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+      min-width: 0;
+      padding: var(--spacing-x6);
+      overflow: hidden;
+      border: 1px solid var(--color-stroke-neutral-weak);
+      border-radius: var(--radius-r4);
+      background: var(--color-bg-layer-default);
+      box-shadow: none;
+      color: var(--color-fg-neutral);
+      font-family: var(--font-sans);
+      text-decoration: none;
+    }
+    .pcard--list { padding: 0 0 var(--spacing-x3); }
+    .pcard-head { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-x2); padding-bottom: var(--spacing-x2); }
+    .pcard--list > .pcard-head { padding: var(--spacing-x6) var(--spacing-x6) var(--spacing-x1); }
+    .pcard-title { min-width: 0; font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 700; color: var(--color-fg-neutral); }
+    /* 머리 동작 — 글 버튼: 보이는 상자 32 · 왼쪽 8 · 오른쪽 4 · 모서리 8 · t4 500 · fg-neutral-subtle + chevron-right 16(사이 2). 누르는 영역 44(위아래 6 씩 넓힌다) */
+    .pcard-action {
+      --press-basis: 32;
+      position: relative;
+      display: inline-flex;
+      flex-shrink: 0;
+      align-items: center;
+      gap: var(--spacing-x0_5);
+      height: 32px;
+      box-sizing: border-box;
+      padding: 0 var(--spacing-x1) 0 var(--spacing-x2);
+      border-radius: var(--radius-r2);
+      font-size: var(--text-t4);
+      line-height: var(--text-t4--line-height);
+      font-weight: 500;
+      color: var(--color-fg-neutral-subtle);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background-color var(--motion-duration-color-transition) var(--motion-ease-easing), scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    .pcard-action > svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .pcard-action::before { content: ""; position: absolute; inset: -6px 0; min-width: 44px; }
+    @media (hover: hover) {
+      .pcard-action:hover { background: var(--color-bg-layer-default-pressed); }
+    }
+    .pcard-action:active,
+    .pcard-action.pcard-action--hover,
+    .pcard-action.pcard-action--pressed { background: var(--color-bg-layer-default-pressed); }
+    .pcard-action:active,
+    .pcard-action.pcard-action--pressed { scale: calc(1 - 2 / var(--press-basis)); }
+    .pcard-action:focus-visible,
+    .pcard-action.pcard-action--focus { outline: 2px solid var(--pdata-ring); outline-offset: 2px; }
+    .pcard-content { display: flex; flex-direction: column; gap: var(--spacing-x3); min-width: 0; }
+    /* 지표 — 라벨 t3 · 500 · fg-neutral-subtle, 아래 4 에 숫자 700 · 고정폭 숫자(large t9 24 / 32 · small t7 20 / 27), 아래 4 에 증감 줄 */
+    .pcard-stat { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
+    .pcard-stat-label { font-size: var(--text-t3); line-height: var(--text-t3--line-height); font-weight: 500; color: var(--color-fg-neutral-subtle); }
+    .pcard-stat-value { margin-top: var(--spacing-x1); font-weight: 700; color: var(--color-fg-neutral); font-variant-numeric: tabular-nums; }
+    .pcard-stat-value--large { font-size: var(--text-t9); line-height: var(--text-t9--line-height); }
+    .pcard-stat-value--small { font-size: var(--text-t7); line-height: var(--text-t7--line-height); }
+    .pcard-stat-delta { margin-top: var(--spacing-x1); }
+    /* 증감(Delta) — 값 t3 · 500 · 고정폭 숫자(▲ fg-critical · ▼ fg-informative · 변화 없음 fg-neutral-subtle) + 기준 글 t3 · 400 · fg-neutral-subtle(사이 4) */
+    .pdelta { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: var(--spacing-x1); font-family: var(--font-sans); font-size: var(--text-t3); line-height: var(--text-t3--line-height); }
+    .pdelta-value { font-weight: 500; font-variant-numeric: tabular-nums; }
+    .pdelta--up .pdelta-value { color: var(--color-fg-critical); }
+    .pdelta--down .pdelta-value { color: var(--color-fg-informative); }
+    .pdelta--flat .pdelta-value { color: var(--color-fg-neutral-subtle); }
+    .pdelta-text { font-weight: 400; color: var(--color-fg-neutral-subtle); }
+    /* 순자산(hero) — 135° 브랜드 채움(라이트 bg-brand-solid → brand-900 · 다크 bg-brand-solid → brand-300-dark) · 테두리 없음 · 흰 글자(불투명도 없음).
+       장식 빛 — 지름 240 · 오른쪽 −40 · 위 −80, 흰 22% → 70% 에서 투명. 글은 빛 위에 그린다(position: relative) */
+    .pcard--hero {
+      --pcard-hero-start: var(--color-bg-brand-solid, var(--color-bg-neutral-inverted));
+      --pcard-hero-end: var(--color-brand-900, var(--color-bg-neutral-inverted));
+      border-width: 0;
+      background: linear-gradient(135deg, var(--pcard-hero-start), var(--pcard-hero-end));
+      color: var(--color-static-white);
+    }
+    .pcard-glow { position: absolute; top: -80px; right: -40px; width: 240px; height: 240px; border-radius: var(--radius-full); background: radial-gradient(circle, color-mix(in srgb, var(--color-static-white) 22%, transparent), transparent 70%); pointer-events: none; }
+    .pcard-hero-label,
+    .pcard-hero-amount,
+    .pcard-hero-detail { position: relative; color: var(--color-static-white); }
+    .pcard-hero-label { font-size: var(--text-t3); line-height: var(--text-t3--line-height); font-weight: 500; }
+    .pcard-hero-amount { margin-top: var(--spacing-x1_5); font-size: var(--text-t12); line-height: var(--text-t12--line-height); font-weight: 700; font-variant-numeric: tabular-nums; }
+    .pcard-hero-detail { margin-top: var(--spacing-x1); font-size: var(--text-t3); line-height: var(--text-t3--line-height); font-weight: 400; }
+    .pcard--hero .pdelta :is(.pdelta-value, .pdelta-text) { color: var(--color-static-white); }
+    /* 누름 — whole(카드 전체가 링크 하나): 면 bg-layer-default-pressed + 2px 거리 축소. peers(카드 링크 + 안의 버튼): 면 색만. 테두리 · 글자색 · 그림자는 그대로 */
+    .pcard--whole,
+    .pcard--peers { cursor: pointer; transition: background-color var(--motion-duration-color-transition) var(--motion-ease-easing), scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale); }
+    @media (hover: hover) {
+      .pcard--whole:hover,
+      .pcard--peers:has(.pcard-link:hover) { background: var(--color-bg-layer-default-pressed); }
+    }
+    .pcard--whole:active,
+    .pcard--whole.pcard--hover,
+    .pcard--whole.pcard--pressed,
+    .pcard--peers:has(.pcard-link:active),
+    .pcard--peers.pcard--hover,
+    .pcard--peers.pcard--pressed { background: var(--color-bg-layer-default-pressed); }
+    .pcard--whole:active,
+    .pcard--whole.pcard--pressed { scale: calc(1 - 2 / var(--press-basis, 100)); }
+    .pcard--whole:focus-visible,
+    .pcard--whole.pcard--focus,
+    .pcard--peers:has(.pcard-link:focus-visible),
+    .pcard--peers.pcard--focus { outline: 2px solid var(--pdata-ring); outline-offset: 2px; }
+    .pcard-link { color: inherit; text-decoration: none; outline: none; font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 700; }
+    .pcard-link::after { content: ""; position: absolute; inset: 0; }
+    .pcard--peers .btn { position: relative; z-index: 1; }
+    /* 여백을 잰 그림 — 카드 안 24 를 점선으로(갤러리 전용) */
+    .pcard--guide::after { content: ""; position: absolute; inset: var(--spacing-x6); outline: 1px dashed var(--color-fg-neutral-subtle); pointer-events: none; }
+    .pdata-stack--guide { padding-top: var(--spacing-x6); }
+    .pdata-guide-line { position: absolute; top: 0; bottom: 0; left: calc(var(--spacing-global-gutter) + 1px + var(--spacing-x6)); z-index: 2; border-left: 1px dashed var(--color-fg-disabled); pointer-events: none; }
+    .pdata-memo { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--spacing-x2); }
+    .pdata-pin { flex-shrink: 0; margin: calc(-1 * var(--spacing-x2)) calc(-1 * var(--spacing-x2)) 0 0; }
+    .pdata-pin[aria-pressed="true"] { --btn-fg: var(--color-fg-neutral); }
+    .pdata-sort-line { padding: var(--spacing-x2) var(--spacing-global-gutter) var(--spacing-x3); }
+    .pdata-chart-card { width: max-content; max-width: 100%; }
+    @media (prefers-reduced-motion: reduce) {
+      .pcard--whole:active,
+      .pcard--whole.pcard--pressed,
+      .pcard-action:active,
+      .pcard-action.pcard-action--pressed { scale: 1; }
+    }
+
+    /* 차트(Chart) — 상자 .pchart(카드 본문 안 · role="img"). 눈금 글자 11 / 15 · fg-neutral-subtle · 고정폭 숫자(이중 축이면 계열 색), 격자는 가로 점선 3 · 3 stroke-neutral-subtle,
+       선 2 · 영역 같은 색 25% → 0%. 가리킴은 세로 점선 stroke-neutral-weak + 점 10(계열 색 + 카드 면 테두리 2). 차트는 실제 크기로 그린다(글자가 늘거나 줄지 않게) */
+    .pchart { position: relative; color: var(--color-fg-neutral); font-family: var(--font-sans); }
+    .pchart--trend { width: var(--pchart-w); }
+    .pchart--trend[tabindex] { cursor: crosshair; }
+    .pchart:focus-visible { outline: 2px solid var(--pdata-ring); outline-offset: 2px; border-radius: var(--radius-r1); }
+    .pchart-svg { display: block; overflow: visible; }
+    .pchart-svg [hidden] { display: none; }
+    .pchart-grid { stroke: var(--color-stroke-neutral-subtle); stroke-width: 1; stroke-dasharray: 3 3; }
+    .pchart-tick { font-family: var(--font-sans); font-size: var(--text-t1); fill: var(--color-fg-neutral-subtle); font-variant-numeric: tabular-nums; }
+    .pchart-tick--blue { fill: var(--color-chart-blue); }
+    .pchart-tick--red { fill: var(--color-chart-red); }
+    .pchart-line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+    .pchart-series--blue .pchart-line { stroke: var(--color-chart-blue); }
+    .pchart-series--red .pchart-line { stroke: var(--color-chart-red); }
+    .pchart-stop--blue { stop-color: var(--color-chart-blue); }
+    .pchart-stop--red { stop-color: var(--color-chart-red); }
+    .pchart-cross { stroke: var(--color-stroke-neutral-weak); stroke-width: 1; stroke-dasharray: 3 3; }
+    .pchart-point { stroke: var(--color-bg-layer-default); stroke-width: 2; }
+    .pchart-point--blue { fill: var(--color-chart-blue); }
+    .pchart-point--red { fill: var(--color-chart-red); }
+    /* 툴팁 — 떠 있는 표면 bg-layer-floating · shadow-s3 · 모서리 12 · 위아래 10 · 좌우 12 · 테두리 없음 · 최소 128. 머리 t2 · fg-neutral-subtle, 줄 t3 "■ 라벨 값"
+       (네모 8 · 모서리 2 · 네모 ↔ 라벨 6 · 라벨 fg-neutral-muted · 값 700 · fg-neutral · 오른쪽 · 라벨 ↔ 값 12). 가리킨 자리 오른쪽 12(넘치면 왼쪽). 차트 상자 안의 겹침 1 */
+    .pchart-tip {
+      position: absolute;
+      top: var(--spacing-x2);
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-x1);
+      min-width: 128px;
+      box-sizing: border-box;
+      padding: var(--spacing-x2_5) var(--spacing-x3);
+      border-radius: var(--radius-r3);
+      background: var(--color-bg-layer-floating);
+      box-shadow: var(--shadow-s3);
+      color: var(--color-fg-neutral);
+      font-family: var(--font-sans);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .pchart-tip[hidden] { display: none; }
+    .pchart-tip--right { left: calc(var(--pchart-tip-x) + var(--spacing-x3)); }
+    .pchart-tip--left { right: calc(var(--pchart-w) - var(--pchart-tip-x) + var(--spacing-x3)); }
+    .pchart-tip-head { font-size: var(--text-t2); line-height: var(--text-t2--line-height); color: var(--color-fg-neutral-subtle); }
+    .pchart-tip-row { display: flex; align-items: center; font-size: var(--text-t3); line-height: var(--text-t3--line-height); }
+    .pchart-swatch { flex-shrink: 0; width: 8px; height: 8px; border-radius: 2px; }
+    .pchart-tip-row > .pchart-swatch { margin-right: var(--spacing-x1_5); }
+    .pchart-tip-label { color: var(--color-fg-neutral-muted); }
+    .pchart-tip-value { margin-left: auto; padding-left: var(--spacing-x3); font-weight: 700; color: var(--color-fg-neutral); font-variant-numeric: tabular-nums; }
+    .pchart-swatch--blue { background: var(--color-chart-blue); }
+    .pchart-swatch--green { background: var(--color-chart-green); }
+    .pchart-swatch--orange { background: var(--color-chart-orange); }
+    .pchart-swatch--violet { background: var(--color-chart-violet); }
+    .pchart-swatch--pink { background: var(--color-chart-pink); }
+    .pchart-swatch--indigo { background: var(--color-chart-indigo); }
+    .pchart-swatch--red { background: var(--color-chart-red); }
+    .pchart-swatch--yellow { background: var(--color-chart-yellow); }
+    .pchart-swatch--brown { background: var(--color-chart-brown); }
+    .pchart-swatch--gray { background: var(--color-chart-gray); }
+    /* 지표 타일 — 선 · 막대 범례(차트 위 · 사이 8 · 아래 8). 높이 62 = 10 + 이름 18 + 2 + 합계 22 + 10 · 폭 100 이상 · 모서리 12.
+       켠 계열 chart-{색}-subtle 바탕(테두리 없음) · 끈 계열 흰 면 + 안쪽 1px stroke-neutral-weak. 호버 · 누름 바탕은 끈 타일만, 누르면 2px 거리 축소 */
+    .pchart-tiles { display: flex; flex-wrap: wrap; gap: var(--spacing-x2); margin-bottom: var(--spacing-x2); }
+    .pchart-tile {
+      --press-basis: 62;
+      position: relative;
+      display: flex;
+      flex: 1 1 0;
+      flex-direction: column;
+      align-items: flex-start;
+      min-width: 100px;
+      box-sizing: border-box;
+      margin: 0;
+      padding: var(--spacing-x2_5) var(--spacing-x3);
+      border: 0;
+      border-radius: var(--radius-r3);
+      background: var(--pchart-tile-bg);
+      color: var(--color-fg-neutral);
+      font-family: var(--font-sans);
+      text-align: left;
+      cursor: pointer;
+      transition: background-color var(--motion-duration-color-transition) var(--motion-ease-easing), scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    .pchart-tile--blue { --pchart-tile-bg: var(--color-chart-blue-subtle); --pchart-dot: var(--color-chart-blue); }
+    .pchart-tile--red { --pchart-tile-bg: var(--color-chart-red-subtle); --pchart-dot: var(--color-chart-red); }
+    .pchart-tile.pchart-tile--off { --pchart-tile-bg: var(--color-bg-layer-default); box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-weak); }
+    .pchart-tile-name { display: inline-flex; align-items: center; gap: var(--spacing-x1_5); font-size: var(--text-t3); line-height: var(--text-t3--line-height); color: var(--color-fg-neutral-muted); }
+    .pchart-dot { flex-shrink: 0; width: 8px; height: 8px; border-radius: var(--radius-full); background: var(--pchart-dot); }
+    .pchart-tile-total { margin-top: var(--spacing-x0_5); font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 700; color: var(--color-fg-neutral); font-variant-numeric: tabular-nums; white-space: nowrap; }
+    @media (hover: hover) {
+      .pchart-tile.pchart-tile--off:hover { background: var(--color-bg-layer-default-pressed); }
+    }
+    .pchart-tile.pchart-tile--off:active,
+    .pchart-tile.pchart-tile--off.pchart-tile--hover,
+    .pchart-tile.pchart-tile--off.pchart-tile--pressed { background: var(--color-bg-layer-default-pressed); }
+    .pchart-tile:active:not([aria-disabled="true"]),
+    .pchart-tile.pchart-tile--pressed { scale: calc(1 - 2 / var(--press-basis)); }
+    .pchart-tile:focus-visible,
+    .pchart-tile.pchart-tile--focus { outline: 2px solid var(--pdata-ring); outline-offset: 2px; }
+    .pchart-tile[aria-disabled="true"] { cursor: default; }
+    /* 도넛 — 조각 사이 0 · 두께 22(지름 160) · 18(120). 가운데 합계 t5 · 700 + 위 라벨 t2 · fg-neutral-subtle */
+    .pchart-donut { flex-shrink: 0; width: var(--pchart-donut); height: var(--pchart-donut); }
+    .pchart-donut > svg { display: block; }
+    .pchart-slice { fill: none; }
+    .pchart-slice--blue { stroke: var(--color-chart-blue); }
+    .pchart-slice--green { stroke: var(--color-chart-green); }
+    .pchart-slice--orange { stroke: var(--color-chart-orange); }
+    .pchart-slice--violet { stroke: var(--color-chart-violet); }
+    .pchart-slice--pink { stroke: var(--color-chart-pink); }
+    .pchart-slice--indigo { stroke: var(--color-chart-indigo); }
+    .pchart-slice--red { stroke: var(--color-chart-red); }
+    .pchart-slice--yellow { stroke: var(--color-chart-yellow); }
+    .pchart-slice--brown { stroke: var(--color-chart-brown); }
+    .pchart-slice--gray { stroke: var(--color-chart-gray); }
+    .pchart-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; pointer-events: none; }
+    .pchart-center-label { font-size: var(--text-t2); line-height: var(--text-t2--line-height); color: var(--color-fg-neutral-subtle); }
+    .pchart-center-amount { font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 700; color: var(--color-fg-neutral); font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .pdata-donut { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-x6); }
+    .pdata-donut > .pchart-legend { flex: 1 1 260px; min-width: 0; }
+    .pdata-donut--phone { flex-direction: column; align-items: center; gap: var(--spacing-x3); padding: 0 var(--spacing-x6) var(--spacing-x3); }
+    .pdata-donut-total { display: flex; flex-direction: column; align-items: center; }
+    .pcard--list .pchart-legend { padding: 0 var(--spacing-x6); }
+    /* 도넛 범례 — 카테고리 목록 줄 44 이상: 색 네모 10 + 이름 t4 + % fg-neutral-subtle + 금액 700 + "원"(사이 8). 하위가 있는 줄만 누르는 줄 —
+       List 줄처럼 카드 끝까지(본문 여백 24 를 되돌린다), 바탕 층(::before)은 좌우 6 들어온 모서리 10(카드 16 − 6) · 글자는 그대로 선다(chart.tsx LEGEND_ROW_PRESSABLE) */
+    .pchart-legend { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; font-family: var(--font-sans); }
+    .pchart-legend-row { position: relative; display: flex; }
+    .pchart-legend-action {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-x2);
+      width: 100%;
+      min-height: 44px;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      font: inherit;
+      font-size: var(--text-t4);
+      line-height: var(--text-t4--line-height);
+      color: var(--color-fg-neutral);
+      text-align: left;
+    }
+    button.pchart-legend-action {
+      position: relative;
+      isolation: isolate;
+      width: calc(100% + 2 * var(--spacing-x6));
+      margin: 0 calc(-1 * var(--spacing-x6));
+      padding: 0 var(--spacing-x6);
+      cursor: pointer;
+    }
+    button.pchart-legend-action::before {
+      content: "";
+      position: absolute;
+      inset: 0 var(--spacing-x1_5);
+      z-index: -1;
+      border-radius: var(--radius-r2_5);
+      background: transparent;
+      pointer-events: none;
+      transition: background-color var(--motion-duration-color-transition) var(--motion-ease-easing);
+    }
+    @media (hover: hover) {
+      button.pchart-legend-action:hover::before { background: var(--color-bg-layer-default-pressed); }
+    }
+    button.pchart-legend-action:active::before { background: var(--color-bg-layer-default-pressed); }
+    button.pchart-legend-action:focus-visible { outline: 2px solid var(--pdata-ring); outline-offset: -2px; }
+    .pchart-legend-swatch { flex-shrink: 0; width: 10px; height: 10px; border-radius: 2px; }
+    .pchart-legend-name { flex: 1 1 auto; min-width: 0; }
+    .pchart-legend-pct { color: var(--color-fg-neutral-subtle); font-variant-numeric: tabular-nums; }
+    .pchart-legend-amount { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    /* 열지도 — 왼쪽 라벨 열 56 + 요일 일곱 칸(정사각형 · 모서리 4 · 사이 6). 세기 다섯 = 브랜드 채움을 카드 면에 18 · 35 · 55 · 75 · 100% 섞음, 값이 없는 칸 bg-neutral-weak.
+       칸 글(11 / 15 · 700 · 고정폭 숫자 · 원까지)은 칸 폭 112 이상에서만 — 페이지 끝 스크립트가 칸 폭을 재서 .pheat-cell--text 를 넣고 뺀다(글자 크기는 그대로).
+       글자색은 단계마다 정해 둔다 — Desk 라이트 75 · 100% 흰 글자, HR 라이트 100% 만 흰 글자, 다크는 모두 fg-neutral, 빈 칸 "—" 는 fg-neutral-subtle. 가장 큰 칸에 고리를 두르지 않는다 */
+    .pheat {
+      --pheat-brand: var(--color-bg-brand-solid, var(--color-bg-neutral-inverted));
+      --pheat-surface: var(--color-bg-layer-default);
+      --pheat-ink-1: var(--color-fg-neutral);
+      --pheat-ink-2: var(--color-fg-neutral);
+      --pheat-ink-3: var(--color-fg-neutral);
+      --pheat-ink-4: var(--color-fg-neutral);
+      --pheat-ink-5: var(--color-fg-neutral);
+      position: relative;
+      width: max-content;
+      color: var(--color-fg-neutral);
+      font-family: var(--font-sans);
+    }
+    .pheat--desk { --pheat-ink-4: var(--color-static-white); --pheat-ink-5: var(--color-static-white); }
+    .pheat--hr { --pheat-ink-5: var(--color-static-white); }
+    .pheat:focus-visible { outline: 2px solid var(--pdata-ring); outline-offset: 2px; border-radius: var(--radius-r1); }
+    .pheat-grid { display: grid; grid-template-columns: 56px repeat(7, var(--pheat-cell)); gap: var(--spacing-x1_5); align-items: center; }
+    .pheat-day { text-align: center; font-size: var(--text-t2); line-height: var(--text-t2--line-height); color: var(--color-fg-neutral-subtle); }
+    .pheat-label { display: flex; flex-direction: column; min-width: 0; }
+    .pheat-label-name { font-size: var(--text-t3); line-height: var(--text-t3--line-height); font-weight: 700; color: var(--color-fg-neutral); }
+    .pheat-label-sub { font-size: var(--text-t1); line-height: var(--text-t1--line-height); color: var(--color-fg-neutral-subtle); white-space: nowrap; }
+    .pheat-cell { display: flex; align-items: center; justify-content: center; width: var(--pheat-cell); aspect-ratio: 1 / 1; overflow: hidden; border-radius: var(--radius-r1); cursor: pointer; }
+    .pheat-cell--0 { background: var(--color-bg-neutral-weak); color: var(--color-fg-neutral-subtle); }
+    .pheat-cell--1 { background: color-mix(in srgb, var(--pheat-brand) 18%, var(--pheat-surface)); color: var(--pheat-ink-1); }
+    .pheat-cell--2 { background: color-mix(in srgb, var(--pheat-brand) 35%, var(--pheat-surface)); color: var(--pheat-ink-2); }
+    .pheat-cell--3 { background: color-mix(in srgb, var(--pheat-brand) 55%, var(--pheat-surface)); color: var(--pheat-ink-3); }
+    .pheat-cell--4 { background: color-mix(in srgb, var(--pheat-brand) 75%, var(--pheat-surface)); color: var(--pheat-ink-4); }
+    .pheat-cell--5 { background: var(--pheat-brand); color: var(--pheat-ink-5); }
+    .pheat-value { display: none; font-size: var(--text-t1); line-height: var(--text-t1--line-height); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .pheat-cell--text > .pheat-value { display: block; }
+    .pheat-cell.pheat-cell--key { outline: 2px solid var(--pdata-ring); outline-offset: 2px; }
+    .pheat > .pchart-tip { top: 0; left: 0; }
+    .pchart-swatch--heat-0 { background: var(--color-bg-neutral-weak); }
+    .pchart-swatch--heat-1 { background: color-mix(in srgb, var(--pheat-brand) 18%, var(--pheat-surface)); }
+    .pchart-swatch--heat-2 { background: color-mix(in srgb, var(--pheat-brand) 35%, var(--pheat-surface)); }
+    .pchart-swatch--heat-3 { background: color-mix(in srgb, var(--pheat-brand) 55%, var(--pheat-surface)); }
+    .pchart-swatch--heat-4 { background: color-mix(in srgb, var(--pheat-brand) 75%, var(--pheat-surface)); }
+    .pchart-swatch--heat-5 { background: var(--pheat-brand); }
+
+    /* 검색해서 고르기(Searchable List) — 위 검색칸 + 아래 8 에 결과. 검색칸은 03g 의 밑줄형(large 40 · medium 34) — 좌우 24 안이라 돋보기와 줄의 앞 붙이개가 한 줄에 선다,
+       목록이 스크롤해도 위에 붙는다(놓인 표면 색). 결과 줄은 List 줄(위아래 12 · 좌우 24 · 제목 t5 400 · 설명 t3 fg-neutral-subtle) + 앞 붙이개 + 오른쪽 라디오 24.
+       강조(↓ · ↑ · 마우스 — 한 줄만)는 좌우 6 들어온 bg-layer-default-pressed · 모서리 10, 누름은 같은 바탕 + 콘텐츠만 2px 축소. 고른 줄의 바탕은 칠하지 않는다 */
+    .psl { display: flex; flex-direction: column; gap: var(--spacing-x2); color: var(--color-fg-neutral); font-family: var(--font-sans); }
+    .psl-field { position: sticky; top: 0; z-index: 1; padding: 0 var(--spacing-global-gutter); background: var(--color-bg-layer-floating); }
+    .psl--inline .psl-field { background: var(--color-bg-layer-default); }
+    .psl-results { display: flex; flex-direction: column; }
+    .psl-option { position: relative; display: flex; cursor: pointer; user-select: none; }
+    .psl-option::before { content: ""; position: absolute; inset-block: 0; inset-inline: var(--spacing-x1_5); border-radius: var(--radius-r2_5); background: transparent; pointer-events: none; }
+    .psl-option.psl-option--hl::before,
+    .psl-option.psl-option--pressed::before,
+    .psl-option:not(.psl-option--skeleton):active::before { background: var(--color-bg-layer-default-pressed); }
+    .psl-option-content { position: relative; display: flex; align-items: center; width: 100%; box-sizing: border-box; padding: var(--spacing-x3) var(--spacing-global-gutter); transition: scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale); }
+    .psl-option.psl-option--pressed > .psl-option-content,
+    .psl-option:not(.psl-option--skeleton):active > .psl-option-content { scale: calc(1 - 2 / var(--press-basis, 90)); }
+    .psl-prefix { display: flex; flex-shrink: 0; padding-right: var(--spacing-x3); }
+    .psl-body { display: flex; flex: 1; flex-direction: column; gap: var(--spacing-x0_5); min-width: 0; padding-right: var(--spacing-x2_5); }
+    .psl-title { font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 400; color: var(--color-fg-neutral); }
+    .psl-detail { display: flex; align-items: center; gap: var(--spacing-x1_5); font-size: var(--text-t3); line-height: var(--text-t3--line-height); color: var(--color-fg-neutral-subtle); }
+    .psl-detail > .pbadge { flex-shrink: 0; }
+    .psl-group[hidden],
+    .psl-option[hidden] { display: none; }
+    /* 오른쪽 라디오 — Radiomark large 24 의 보는 표시(안 고름 1px stroke-neutral-solid · 고름 bg-neutral-inverted + 점 10 fg-neutral-inverted). 보조 기술에 숨긴다 */
+    .psl-radio { display: grid; flex-shrink: 0; place-items: center; width: 24px; height: 24px; box-sizing: border-box; border: 1px solid var(--color-stroke-neutral-solid); border-radius: var(--radius-full); }
+    .psl-radio-dot { width: 10px; height: 10px; border-radius: var(--radius-full); background: transparent; }
+    .psl-option[aria-selected="true"] .psl-radio { border-width: 0; background: var(--color-bg-neutral-inverted); }
+    .psl-option[aria-selected="true"] .psl-radio-dot { background: var(--color-fg-neutral-inverted); }
+    .psl-status { display: flex; min-height: 260px; }
+    .psl-option--skeleton { cursor: default; }
+    .psl-option--skeleton .psl-body { gap: var(--spacing-x0_5); }
+    @media (prefers-reduced-motion: reduce) {
+      .psl-option.psl-option--pressed > .psl-option-content,
+      .psl-option:active > .psl-option-content { scale: 1; }
+    }
+    .pdata-sl-box { max-width: 360px; padding: var(--spacing-x4) 0; border-radius: var(--radius-r4); background: var(--color-bg-layer-floating); box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-subtle); }
+    .pdata-sl-box .psl--inline .psl-field { background: var(--color-bg-layer-floating); }
+    .pdata-step-foot { padding: var(--spacing-x4) var(--spacing-global-gutter) var(--spacing-x2); }
+    .pdata-step-next { width: 100%; }
+
+    /* 줄 밀기(Swipe Actions) — 줄 뒤 트레이(바탕을 칠하지 않는다). 칸 = 배지 36(아이콘 18) + 라벨 t2 12 / 700 / 1.3(사이 2), 간격은 배지 앞에만(첫 칸 20 · 다음 12) —
+       칸 폭 56 · 48, 높이는 줄(56 이상). 색은 배지만: primary fg-informative · destructive fg-critical 채움 + fg-neutral-inverted 아이콘, neutral bg-neutral-weak + 안쪽 1px.
+       라벨 neutral · primary fg-neutral-muted · destructive fg-critical. 누름 · 호버 밝기 88%(움직이지 않는다) · 포커스 칸 안쪽 2px · 막힘 bg-disabled · fg-disabled */
+    .pswipe { position: relative; overflow: hidden; background: var(--color-bg-layer-default); }
+    .pswipe-tray { position: absolute; inset-block: 0; inset-inline-end: 0; display: flex; width: var(--pswipe-tray); }
+    .pswipe-row { position: relative; z-index: 1; background: var(--color-bg-layer-default); outline: none; transition: translate var(--motion-duration-d3) var(--motion-ease-enter); }
+    .pswipe--open > .pswipe-row { translate: calc(-1 * var(--pswipe-tray)) 0; }
+    .pswipe-row:focus-visible { outline: 2px solid var(--pdata-ring); outline-offset: -2px; }
+    .pswipe-action {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-x0_5);
+      width: 48px;
+      min-height: 56px;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0 0 0 var(--spacing-x3);
+      border: 0;
+      background: transparent;
+      font-family: var(--font-sans);
+      cursor: pointer;
+    }
+    .pswipe-action--first { width: 56px; padding-left: var(--spacing-x5); }
+    .pswipe-badge { display: grid; place-items: center; width: 36px; height: 36px; border-radius: var(--radius-full); background: var(--pswipe-badge); color: var(--pswipe-icon); }
+    .pswipe-badge > svg { width: 18px; height: 18px; }
+    .pswipe-label { font-size: var(--text-t2); line-height: 1.3; font-weight: 700; color: var(--pswipe-label); white-space: nowrap; }
+    .pswipe-action--neutral { --pswipe-badge: var(--color-bg-neutral-weak); --pswipe-icon: var(--color-fg-neutral); --pswipe-label: var(--color-fg-neutral-muted); }
+    .pswipe-action--neutral .pswipe-badge { box-shadow: inset 0 0 0 1px var(--color-stroke-neutral-weak); }
+    .pswipe-action--primary { --pswipe-badge: var(--color-fg-informative); --pswipe-icon: var(--color-fg-neutral-inverted); --pswipe-label: var(--color-fg-neutral-muted); }
+    .pswipe-action--destructive { --pswipe-badge: var(--color-fg-critical); --pswipe-icon: var(--color-fg-neutral-inverted); --pswipe-label: var(--color-fg-critical); }
+    @media (hover: hover) {
+      .pswipe-action:not(:disabled):hover { filter: brightness(88%); }
+    }
+    .pswipe-action:not(:disabled):active,
+    .pswipe-action.pswipe-action--pressed { filter: brightness(88%); }
+    .pswipe-action:focus-visible,
+    .pswipe-action.pswipe-action--focus { outline: 2px solid var(--pdata-ring); outline-offset: -2px; }
+    .pswipe-action:disabled { cursor: not-allowed; --pswipe-badge: var(--color-bg-disabled); --pswipe-icon: var(--color-fg-disabled); --pswipe-label: var(--color-fg-disabled); }
+    .pswipe-action:disabled .pswipe-badge { box-shadow: none; }
+    .pswipe-more::before { content: ""; position: absolute; inset: -2px; }
+    @media (prefers-reduced-motion: reduce) {
+      .pswipe-row { transition: none; }
+    }
+    .pdata-swipe-stack { display: flex; flex-direction: column; gap: var(--spacing-x4); }
+    .pdata-swipe-item { display: flex; flex-direction: column; gap: var(--spacing-x2); }
+    /* 줄 띠는 폰 폭(300 ~ 360)으로 그린다 — 미리보기 칸이 좁으면 바닥 안에서 가로로 민다(줄 글자가 겹치지 않게) */
+    .pdata-floor--swipe { overflow-x: auto; scrollbar-width: thin; }
+    .pdata-floor--swipe .pdata-swipe-screen { min-width: 300px; }
+    @media (max-width: 560px) { .pdata-floor--swipe { padding: var(--spacing-x4); } }
+    .pdata-swipe-screen { box-sizing: border-box; max-width: 360px; overflow: hidden; border: 1px solid var(--color-stroke-neutral-weak); border-radius: var(--radius-r4); background: var(--color-bg-layer-default); }
+    .pdata-swipe-screen > .pswipe { border-radius: inherit; }
+
+    /* 다크 — 역할 색을 이 블록의 부품 · 갤러리 틀 안에서만 다크 짝으로 바꾼다(.pnav-* · .pif 와 같다). 라이트 틀(.pdsp-theme--light)과 그 안은 빼고,
+       다크 틀(.pdsp-theme--dark)은 페이지가 라이트여도 바꾼다 — 나란히 틀에 끼운 03e 의 목록 줄 · 03o 의 배지 · 아바타 · 03q 의 로고 타일도 이 짝을 이어받는다.
+       순자산 카드의 끝 색은 다크에서 brand-300-dark 다(brand-900 은 다크 팔레트에서 밝은 단계라 쓰지 않는다) */
+    [data-theme="dark"] :is(.ptbl, .ptbl-bulk, .pcard, .pdelta, .pchart, .pchart-tiles, .pchart-legend, .pheat, .psl, .pswipe, .pdata-floor, .pdata-surface, .pdata-sl-box, .pdata-swipe-screen, .pdata-strip, .pdata-cap, .pdata-live-status):not(.pdsp-theme--light, .pdsp-theme--light *),
+    .pdsp-theme--dark {
+      --color-bg-layer-default: var(--color-bg-layer-default-dark);
+      --color-bg-layer-default-pressed: var(--color-bg-layer-default-pressed-dark);
+      --color-bg-layer-floating: var(--color-bg-layer-floating-dark);
+      --color-bg-layer-basement: var(--color-bg-layer-basement-dark);
+      --color-bg-neutral-weak: var(--color-bg-neutral-weak-dark);
+      --color-bg-neutral-weak-pressed: var(--color-bg-neutral-weak-pressed-dark);
+      --color-bg-neutral-inverted: var(--color-bg-neutral-inverted-dark);
+      --color-bg-disabled: var(--color-bg-disabled-dark);
+      --color-bg-brand-weak: var(--color-bg-brand-weak-dark);
+      --color-bg-brand-solid: var(--color-bg-brand-solid-dark);
+      --color-fg-neutral: var(--color-fg-neutral-dark);
+      --color-fg-neutral-muted: var(--color-fg-neutral-muted-dark);
+      --color-fg-neutral-subtle: var(--color-fg-neutral-subtle-dark);
+      --color-fg-neutral-inverted: var(--color-fg-neutral-inverted-dark);
+      --color-fg-disabled: var(--color-fg-disabled-dark);
+      --color-fg-critical: var(--color-fg-critical-dark);
+      --color-fg-informative: var(--color-fg-informative-dark);
+      --color-stroke-neutral-subtle: var(--color-stroke-neutral-subtle-dark);
+      --color-stroke-neutral-weak: var(--color-stroke-neutral-weak-dark);
+      --color-stroke-neutral-solid: var(--color-stroke-neutral-solid-dark);
+      --color-stroke-focus-ring: var(--color-stroke-focus-ring-dark);
+      --color-chart-blue: var(--color-chart-blue-dark);
+      --color-chart-green: var(--color-chart-green-dark);
+      --color-chart-orange: var(--color-chart-orange-dark);
+      --color-chart-violet: var(--color-chart-violet-dark);
+      --color-chart-pink: var(--color-chart-pink-dark);
+      --color-chart-indigo: var(--color-chart-indigo-dark);
+      --color-chart-red: var(--color-chart-red-dark);
+      --color-chart-yellow: var(--color-chart-yellow-dark);
+      --color-chart-brown: var(--color-chart-brown-dark);
+      --color-chart-gray: var(--color-chart-gray-dark);
+      --color-chart-blue-subtle: var(--color-chart-blue-subtle-dark);
+      --color-chart-red-subtle: var(--color-chart-red-subtle-dark);
+      --color-chart-orange-weak: var(--color-chart-orange-weak-dark);
+      --color-chart-blue-weak: var(--color-chart-blue-weak-dark);
+      --color-chart-violet-weak: var(--color-chart-violet-weak-dark);
+      --color-chart-indigo-weak: var(--color-chart-indigo-weak-dark);
+      --color-chart-gray-weak: var(--color-chart-gray-weak-dark);
+      --shadow-s3: var(--shadow-s3-dark);
+    }
+    [data-theme="dark"] .pcard--hero,
+    .pdsp-theme--dark .pcard--hero { --pcard-hero-end: var(--color-brand-300-dark, var(--color-bg-neutral-inverted)); }
+    [data-theme="dark"] .pheat,
+    .pdsp-theme--dark .pheat { --pheat-ink-4: var(--color-fg-neutral); --pheat-ink-5: var(--color-fg-neutral); }
+
     /* todo-card */
     .todo-list { display: flex; flex-direction: column; gap: 2px; }
     .todo-row {
@@ -14109,8 +15558,8 @@ export function pageCss() {
     .todo-row--done .todo-text { color: var(--color-text-tertiary); text-decoration: line-through; }
     .todo-due { font-size: var(--text-caption); color: var(--color-text-tertiary); }
 
-    /* memo-card */
-    .memo-grid { display: flex; flex-direction: column; gap: var(--spacing-md); }
+    /* memo-card — 04 의 메모 비뇨트는 03s 의 카드(.pcard)를 바닥 위에 쌓는다(사이 8). .memo-row(회색 채운 칸)는 03j 의 Segmented 거르기 목록만 쓴다 */
+    .pdata-memo-stack { display: flex; flex-direction: column; gap: var(--spacing-x2); }
     .memo-row { padding: var(--spacing-md); background: var(--color-surface-input); border-radius: var(--radius-md); }
     .memo-title { font-weight: 600; font-size: var(--text-title-sm); margin-bottom: var(--spacing-xs); }
     .memo-excerpt { font-size: var(--text-caption); color: var(--color-text-secondary); margin-bottom: var(--spacing-sm); line-height: 1.5; }
@@ -14157,29 +15606,29 @@ export function pageCss() {
       gap: var(--spacing-lg);
       align-items: start;
     }
-    .ld-main { display: flex; flex-direction: column; gap: var(--spacing-md); }
+    .ld-main { display: flex; flex-direction: column; gap: var(--spacing-x2); }
     .ld-section {
       background: var(--color-surface-default);
-      border-radius: var(--radius-lg);
-      padding: var(--spacing-lg);
-      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--color-stroke-neutral-weak);
+      border-radius: var(--radius-r4);
+      padding: var(--spacing-x6);
     }
     .ld-section-title { font-weight: 600; font-size: var(--text-title-sm); margin-bottom: var(--spacing-xs); }
     .ld-section-body { color: var(--color-text-secondary); line-height: 1.6; }
     .ld-rating {
       background: var(--color-surface-default);
-      border-radius: var(--radius-lg);
-      padding: var(--spacing-lg);
-      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--color-stroke-neutral-weak);
+      border-radius: var(--radius-r4);
+      padding: var(--spacing-x6);
       display: flex; align-items: baseline; gap: var(--spacing-md);
     }
     .ld-rating-score { font-size: 56px; font-weight: 700; line-height: 1; letter-spacing: -0.02em; }
     .ld-rating-meta { font-size: var(--text-caption); color: var(--color-text-tertiary); }
     .ld-meta-card {
       background: var(--color-surface-default);
-      border-radius: var(--radius-lg);
-      padding: var(--spacing-md) var(--spacing-lg);
-      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--color-stroke-neutral-weak);
+      border-radius: var(--radius-r4);
+      padding: var(--spacing-x6);
       font-size: var(--text-caption);
       color: var(--color-text-tertiary);
       font-family: ui-monospace, monospace;
@@ -14187,9 +15636,9 @@ export function pageCss() {
     .ld-rail {
       position: sticky; top: var(--spacing-lg);
       background: var(--color-surface-default);
-      border-radius: var(--radius-lg);
-      padding: var(--spacing-lg);
-      box-shadow: var(--shadow-md);
+      border: 1px solid var(--color-stroke-neutral-weak);
+      border-radius: var(--radius-r4);
+      padding: var(--spacing-x6);
       display: flex; flex-direction: column;
     }
     .ld-highlights {
@@ -14197,9 +15646,9 @@ export function pageCss() {
       grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: var(--spacing-md);
       background: var(--color-surface-default);
-      border-radius: var(--radius-lg);
-      padding: var(--spacing-lg);
-      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--color-stroke-neutral-weak);
+      border-radius: var(--radius-r4);
+      padding: var(--spacing-x6);
     }
     .ld-highlight {
       display: flex; align-items: flex-start; gap: var(--spacing-sm);
@@ -14216,9 +15665,9 @@ export function pageCss() {
     .ld-highlight-note { font-size: var(--text-caption); color: var(--color-text-tertiary); }
     .ld-host {
       background: var(--color-surface-default);
-      border-radius: var(--radius-lg);
-      padding: var(--spacing-lg);
-      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--color-stroke-neutral-weak);
+      border-radius: var(--radius-r4);
+      padding: var(--spacing-x6);
       display: flex; gap: var(--spacing-md);
       align-items: flex-start;
     }
@@ -14243,12 +15692,14 @@ export function pageCss() {
     .ld-rail-secondary { width: 100%; margin-top: var(--spacing-sm); }
     .ld-rail-note { font-size: 11px; color: var(--color-text-tertiary); text-align: center; margin-top: var(--spacing-xs); }
 
+    /* 05 ~ 08 의 카드(.ld-* · .cal-card · .review-* · .amenity-grid)는 card.md(2026-10-08)의 면이다 — 바닥(bg-page = bg-layer-basement) 위 흰 면 + 1px stroke-neutral-weak ·
+       모서리 16 · 여백 24(폰도 24) · 그림자 없음 · 쌓은 사이 8. 옛 그림자 카드(shadow-sm · md · 모서리 12 · 폰 여백 16 — 옛 card.md 의 SoT 였던 .review-*)는 걷었다 */
     /* === Calendar === */
     .cal-card {
       background: var(--color-surface-default);
-      border-radius: var(--radius-lg);
-      padding: var(--spacing-lg);
-      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--color-stroke-neutral-weak);
+      border-radius: var(--radius-r4);
+      padding: var(--spacing-x6);
       display: flex; flex-direction: column; gap: var(--spacing-md);
       max-width: 420px;
     }
@@ -14307,9 +15758,9 @@ export function pageCss() {
     .review-grid { display: grid; grid-template-columns: 1fr 2fr; gap: var(--spacing-lg); align-items: start; }
     .review-summary {
       background: var(--color-surface-default);
-      border-radius: var(--radius-lg);
-      padding: var(--spacing-xl);
-      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--color-stroke-neutral-weak);
+      border-radius: var(--radius-r4);
+      padding: var(--spacing-x6);
       display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
       position: sticky; top: var(--spacing-lg);
     }
@@ -14318,12 +15769,12 @@ export function pageCss() {
       color: var(--color-primary, var(--color-text-primary));
     }
     .review-avg-note { font-size: var(--text-caption); color: var(--color-text-tertiary); margin-top: var(--spacing-sm); }
-    .review-list { display: flex; flex-direction: column; gap: var(--spacing-md); }
+    .review-list { display: flex; flex-direction: column; gap: var(--spacing-x2); }
     .review-item {
       background: var(--color-surface-default);
-      border-radius: var(--radius-lg);
-      padding: var(--spacing-lg);
-      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--color-stroke-neutral-weak);
+      border-radius: var(--radius-r4);
+      padding: var(--spacing-x6);
     }
     .review-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--spacing-sm); gap: var(--spacing-md); }
     .review-name { font-weight: 600; font-size: var(--text-body-md); }
@@ -14341,9 +15792,9 @@ export function pageCss() {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
       gap: var(--spacing-md);
       background: var(--color-surface-default);
-      border-radius: var(--radius-lg);
-      padding: var(--spacing-lg);
-      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--color-stroke-neutral-weak);
+      border-radius: var(--radius-r4);
+      padding: var(--spacing-x6);
     }
     .amenity-item { display: flex; align-items: flex-start; gap: var(--spacing-md); padding: var(--spacing-sm); }
     .amenity-dot {
@@ -14370,9 +15821,10 @@ export function pageCss() {
     /* === 13 — Skeleton(브랜드 화면) — 03p 의 Skeleton(.psk)을 브랜드 화면에 둔다. 회색 바탕(.psk-screen) 위 흰 카드(.psk-card) 안에만 둔다(skeleton.md "흰 면 위에만").
        옛 Skeleton / Loading(.sk-* — surface-input 면 · 선형 반짝임 · 모서리 4 · 글자보다 낮은 막대)은 걷었다 === */
     .psk-screen { padding: var(--spacing-x6); border-radius: var(--radius-r4); background: var(--color-bg-layer-basement); }
-    .psk-card { padding: var(--spacing-x2) 0; border-radius: var(--radius-r4); background: var(--color-bg-layer-default); }
-    .psk-memo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: var(--spacing-x4); }
-    .psk-memo { display: flex; flex-direction: column; gap: var(--spacing-x2); padding: var(--spacing-x4) var(--spacing-x5); }
+    /* 카드는 card.md(2026-10-08)의 면 — 흰 면 + 1px stroke-neutral-weak · 모서리 16 · 여백 24 · 격자 칸 사이 24. HR 의 결재 대기는 목록 카드(03s 의 .pcard--list — 머리 24 / 24 / 4 · 제목 16 / 700 · 아래 12)다 */
+    .psk-card { box-sizing: border-box; border: 1px solid var(--color-stroke-neutral-weak); border-radius: var(--radius-r4); background: var(--color-bg-layer-default); }
+    .psk-memo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: var(--layout-gutter); }
+    .psk-memo { display: flex; flex-direction: column; gap: var(--spacing-x2); padding: var(--spacing-x6); }
     .psk-memo-lines { display: flex; flex-direction: column; gap: var(--spacing-x2); }
     .psk-shapes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); gap: var(--spacing-x6); padding: var(--spacing-x6); }
     .psk-shape { display: flex; flex-direction: column; gap: var(--spacing-x2); min-width: 0; }
@@ -14491,25 +15943,7 @@ export function pageCss() {
 
     /* === v73-v78 batch === */
 
-    /* Swipe Actions — swipe-actions.md SoT 정합.
-       정적 preview 라 제스처가 없다. 열린 상태를 그려 트레이 시각만 보인다.
-       방향은 논리 속성(inset-inline-end)으로 둬 RTL 에서 저절로 뒤집힌다. */
-    .swipe { position: relative; overflow: hidden; border: 1px solid var(--color-border-default); border-radius: var(--radius-md); background: var(--color-surface-default); }
-    .swipe-tray { position: absolute; inset-block: 0; inset-inline-end: 0; display: flex; }
-    /* 트레이에 배경을 두지 않는다 — 색은 원형 배지만 갖는다. 간격은 배지 앞에만 둬
-       마지막 액션이 화면 끝에 딱 붙는다(뒤에도 두면 덜 열린 것처럼 보인다). */
-    .swipe-action { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; flex-shrink: 0; min-block-size: 56px; align-self: stretch; background: transparent; border: 0; font-size: 12px; font-weight: 600; line-height: 1.3; cursor: pointer; inline-size: 48px; padding-inline-start: 12px; }
-    .swipe-action:first-child { inline-size: 56px; padding-inline-start: 20px; }
-    .swipe-badge { display: flex; align-items: center; justify-content: center; inline-size: 36px; block-size: 36px; border-radius: 50%; }
-    .swipe-action--neutral { color: var(--color-text-secondary); }
-    .swipe-action--neutral .swipe-badge { background: var(--color-surface-input); color: var(--color-text-primary); }
-    .swipe-action--primary { color: var(--color-text-secondary); }
-    .swipe-action--primary .swipe-badge { background: var(--color-info); color: var(--color-text-on-accent); }
-    .swipe-action--destructive { color: var(--color-error); }
-    [data-theme="dark"] .swipe-action--destructive { color: var(--color-error-light); }
-    .swipe-action--destructive .swipe-badge { background: var(--color-error); color: var(--color-text-on-accent); }
-    .swipe-row { position: relative; display: flex; align-items: center; gap: var(--spacing-md); padding: var(--spacing-md); background: var(--color-surface-default); transition: transform var(--motion-duration-fast) var(--motion-ease-out); }
-    @media (prefers-reduced-motion: reduce) { .swipe-row { transition: none; } }
+    /* 옛 Swipe Actions(.swipe · .swipe-tray · .swipe-action · .swipe-badge · .swipe-row — 테두리 상자 · 옛 색 이름)는 걷었다 — 줄 밀기는 데이터 표시 블록의 .pswipe 다(03s, swipe-actions.md 2026-10-08) */
     
     /* 옛 Banner(.banner · .banner-icon · .banner-body · .banner-close — 왼쪽 4px 막대 · 8% 바탕)는 걷었다 — 페이지 배너는 알림 메시지 블록의 .pbanner, 화면 안 안내는 .pcallout 이다(page-banner.md · callout.md, 2026-10-02) */
 
@@ -14633,15 +16067,7 @@ export function pageCss() {
 
     /* 옛 Alert Dialog(.ad-* — 아이콘 원 · 오른쪽 버튼)는 걷었다. 확인창은 Overlays 블록의 .pov-alert 다(03k) */
 
-    /* Data Table */
-    .dt { display: flex; flex-direction: column; gap: var(--spacing-sm); }
-    .dt-bulk { background: color-mix(in srgb, var(--color-primary, var(--color-text-primary)) 10%, transparent); padding: var(--spacing-xs) var(--spacing-md); border-radius: var(--radius-sm); font-size: var(--text-caption); display: flex; gap: var(--spacing-md); align-items: center; }
-    .dt-bulk-btn { background: transparent; border: none; color: var(--color-primary, var(--color-text-primary)); font-weight: 600; cursor: pointer; font-family: inherit; font-size: var(--text-caption); }
-    .dt-table { width: 100%; border-collapse: collapse; font-size: var(--text-caption); }
-    .dt-table thead { background: var(--color-bg-page); }
-    .dt-table th { text-align: left; padding: var(--spacing-sm) var(--spacing-md); color: var(--color-text-tertiary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; font-size: 11px; }
-    .dt-table td { padding: var(--spacing-sm) var(--spacing-md); border-bottom: 1px solid var(--color-border-default); }
-    .dt-sort { color: var(--color-primary, var(--color-text-primary)); font-weight: 700; }
+    /* 옛 Data Table(.dt-* — 머리 바탕 · 11 대문자 회색 머리 · 브랜드 10% 일괄 바)은 걷었다 — 표는 데이터 표시 블록의 .ptbl 이다(03s, table.md 2026-10-08) */
 
     /* 옛 Carousel(.car-* — 화살표 32 · 점 · 고른 점 24 알약)은 걷었다(2026-10-04). 여러 장은 이미지 블록의 가로 줄(.pfog--row · .pimg-strip)과 장수 글(.pif-ind)이다(03q) */
 
@@ -14653,9 +16079,7 @@ export function pageCss() {
 
     /* 옛 Aspect Ratio(.ar — surface-input 바탕 · 모서리 8)는 걷었다. 19 의 칸은 이미지 블록의 비율 상자 .par 다(03q) */
 
-    /* Chart mini */
-    .chart-mini { display: flex; gap: var(--spacing-xs); align-items: flex-end; height: 100px; padding: var(--spacing-sm); background: var(--color-bg-page); border-radius: var(--radius-md); }
-    .chart-bar { flex: 1; border-radius: var(--radius-xs) var(--radius-xs) 0 0; min-height: 8px; }
+    /* 옛 Chart mini(.chart-mini · .chart-bar)는 걷었다 — 차트는 데이터 표시 블록의 .pchart · .pheat 다(03s, chart.md 2026-10-08) */
 
     /* 옛 Date Range Picker(.drp — 두 칸 · 화살표 · 브랜드 일수 알약) · Time Picker v72(.tp — 치는 칸 · 24시간)는 걷었다. 기간 · 시각은 Date Picker 블록의 .pdp · .pwheel 이다(03n) */
 
@@ -14678,25 +16102,7 @@ export function pageCss() {
     .ipk-cell--active { background: var(--color-primary, var(--color-text-primary)); color: var(--color-text-on-accent, #fff); }
     .ipk-footer { margin-top: var(--spacing-sm); padding-top: var(--spacing-sm); border-top: 1px solid var(--color-border-subtle, var(--color-border-default)); font-size: 11px; color: var(--color-text-tertiary); text-align: center; }
 
-    /* SearchableList — searchable-list.md SoT (search + thumbnail list single-select) */
-    .sl-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--spacing-sm); }
-    .sl-head-label { font-size: var(--text-caption); font-weight: 500; color: var(--color-text-secondary); }
-    .sl-head-count { font-size: 11px; color: var(--color-text-tertiary); }
-    /* 검색칸 — Input prefixIcon · clearable(.ptf-input, 웹 기본 반응형). 옛 36 칸 + 절대 위치 아이콘은 걷었다(searchable-list.md 2026-10-01) */
-    .sl-search { margin-bottom: var(--spacing-sm); }
-    .sl { border: 1px solid var(--color-border-subtle, var(--color-border-default)); background: var(--color-surface-default); border-radius: var(--radius-md); overflow-y: auto; }
-    .sl-row { width: 100%; display: flex; align-items: center; gap: var(--spacing-md); padding: 10px 12px; background: transparent; border: none; cursor: pointer; transition: background-color var(--motion-duration-fast) var(--motion-ease-out); text-align: left; font: inherit; color: inherit; }
-    .sl-row + .sl-row { border-top: 1px solid var(--color-border-subtle, var(--color-border-default)); }
-    .sl-row:hover { background: var(--color-surface-input); }
-    .sl-row--active { background: var(--color-bg-brand-subtle, color-mix(in oklch, var(--color-primary, var(--color-text-primary)) 8%, transparent)); }
-    .sl-row--active:hover { background: var(--color-bg-brand-subtle, color-mix(in oklch, var(--color-primary, var(--color-text-primary)) 12%, transparent)); }
-    .sl-thumb { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 28px; border-radius: var(--radius-sm); color: #fff; font-size: 11px; font-weight: 700; flex-shrink: 0; }
-    .sl-body { flex: 1; min-width: 0; }
-    .sl-title { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--color-text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .sl-row--active .sl-title { color: var(--color-primary-strong, var(--color-primary, var(--color-text-primary))); font-weight: 600; }
-    .sl-title-text { overflow: hidden; text-overflow: ellipsis; }
-    .sl-sub { display: block; margin-top: 2px; font-size: 11.5px; color: var(--color-text-tertiary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .sl-title > .pbadge { flex-shrink: 0; }
+    /* 옛 SearchableList(.sl · .sl-row · .sl-thumb …  — 테두리 상자 · 바탕 칠한 고른 줄)는 걷었다 — 검색해서 고르기는 데이터 표시 블록의 .psl 이다(03s, searchable-list.md 2026-10-08) */
 
     /* Token catalog (기존 — 압축 유지) */
     .catalog { margin-top: var(--spacing-3xl); padding-top: var(--spacing-2xl); border-top: 1px dashed var(--color-border-default); }
@@ -14753,21 +16159,14 @@ export function pageCss() {
     [data-theme="dark"] .ld-host,
     [data-theme="dark"] .batch-card,
     [data-theme="dark"] .sc-card,
-    [data-theme="dark"] .sl,
     [data-theme="dark"] .ipk-trigger,
     [data-theme="dark"] .swatch { background: var(--color-surface-default-dark); }
     [data-theme="dark"] .ipk-content { background: var(--color-bg-layer-floating-dark); box-shadow: var(--shadow-s3-dark); }
-    [data-theme="dark"] .sl,
     [data-theme="dark"] .ipk-trigger { border-color: var(--color-border-default-dark); }
-    [data-theme="dark"] .sl-row + .sl-row,
     [data-theme="dark"] .ipk-footer { border-color: var(--color-border-default-dark); }
-    [data-theme="dark"] .sl-title { color: var(--color-text-primary-dark); }
-    [data-theme="dark"] .sl-row:hover,
     [data-theme="dark"] .ipk-cell:hover { background: var(--color-surface-input-dark); }
     [data-theme="dark"] .cmd,
-    [data-theme="dark"] .sa,
-    [data-theme="dark"] .chart-mini,
-    [data-theme="dark"] .dt-table thead { background: var(--color-bg-page-dark); }
+    [data-theme="dark"] .sa { background: var(--color-bg-page-dark); }
     [data-theme="dark"] .cb,
     [data-theme="dark"] .otp-cell,
     [data-theme="dark"] .otp-cell--filled { background: var(--color-surface-input-dark); }
@@ -14777,7 +16176,6 @@ export function pageCss() {
     [data-theme="dark"] .tgg,
     [data-theme="dark"] .tgg-item + .tgg-item,
     [data-theme="dark"] .acc-item { border-color: var(--color-border-default-dark); }
-    [data-theme="dark"] .dt-table td { border-bottom-color: var(--color-border-default-dark); }
     [data-theme="dark"] .acc-trigger:hover { color: var(--color-text-secondary-dark); }
     [data-theme="dark"] .tg--on,
     [data-theme="dark"] .tgg-item--active,
@@ -14805,7 +16203,6 @@ export function pageCss() {
     [data-theme="dark"] .typo-scale-row,
     [data-theme="dark"] .btn-row--head { border-color: var(--color-border-default-dark); }
     [data-theme="dark"] .catalog { border-color: var(--color-border-default-dark); }
-    [data-theme="dark"] .kpi-cell,
     [data-theme="dark"] .memo-row { background: var(--color-surface-input-dark); }
     /* Button — 역할 색을 버튼 안에서만 다크 짝으로 바꾼다(button.yaml: dark 가 없으면 토큰의 -dark 짝).
        전역으로 바꾸면 토큰 카탈로그 견본까지 바뀐다. 공유 토큰(DESIGN.md)에 없는 브랜드 짝은 비어서
@@ -14925,8 +16322,6 @@ export function pageCss() {
       .btn-row--4 { grid-template-columns: 120px repeat(4, minmax(0, 1fr)); }
       .approval-row { grid-template-columns: 1fr 1fr; }
       .ld-rail, .review-summary { position: static; }
-      /* Card spec v4: mobile lg(16) padding (desktop xl(24) 은 기본). */
-      .review-summary { padding: var(--spacing-lg); }
       .ld-gallery {
         grid-template-columns: 1fr 1fr;
         grid-template-rows: 1fr 1fr 1fr;
@@ -14934,7 +16329,6 @@ export function pageCss() {
       .ld-gallery-cell--hero { grid-row: 1 / 2; grid-column: 1 / -1; }
       .batch-grid { grid-template-columns: 1fr; }
       .sc-grid { grid-template-columns: 1fr; }
-      .dt-table { font-size: 11px; }
     }
   `;
 }
@@ -14992,6 +16386,7 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     ${renderLoadingGallery(brand)}
     ${renderImageGallery(brand, tokens)}
     ${renderNavGallery(brand)}
+    ${renderDataGallery(brand)}
     ${renderVignettes(brand)}
     ${renderListingDetail(brand)}
     ${renderCalendar(brand)}
@@ -17193,6 +18588,362 @@ function renderHtml(brandName, css, tokens, sourceFile) {
           end.removeAttribute("data-wait");
           load();
         });
+      });
+    })();
+    // 데이터 표시 (2026-10-08) — table.tsx · card.tsx · chart.tsx · searchable-list.tsx 가 하는 일 가운데 그림에 필요한 것을 흉내 낸다(03s 의 "직접" 견본).
+    // 미리보기 링크(data-pdata-link)는 옮기지 않는다. 누름 배율의 기준(max(높이, 폭 ÷ 4, 24))은 누르는 순간 재서 --press-basis 로 넘긴다(그 순간을 멈춘 누름은 그릴 때).
+    // 표 — 정렬 버튼은 두 단계(같은 열은 내림 ↔ 오름, 다른 열은 그 열의 처음 방향 — 숫자 · 날짜 내림 · 글 오름)로 줄을 다시 세우고 aria-sort 를 그 열에만 단다.
+    //   체크는 줄마다 · 머리(모두 · 일부 mixed)로 고르고, 고른 수가 1 이상이면 일괄 작업 바 "{n}개 선택됨" 이 뜬다(줄 바탕은 칠하지 않는다). ✕ 는 모두 풀고 초점을 머리 체크로.
+    // 차트 — 지표 타일은 계열을 켜고 끈다(마지막 하나는 aria-disabled). 차트 상자를 가리키거나 짚으면(← → 도) 그 날짜에 세로 점선 · 점 · 툴팁, Esc 로 닫는다.
+    //   열지도는 칸 폭을 재서(ResizeObserver) 112 이상이면 칸 글을 보인다. 칸을 가리키면 · 누르면 · 상자에서 ← → ↑ ↓ 로 옮기면 툴팁(칸 이름 + "■ 지출 값"), Esc 로 닫는다.
+    // 검색해서 고르기 — 콤보박스. 치는 대로 거르고(줄이 없는 분류는 머리째 숨김, 0건은 Result Section + 한 번 알림), ↓ · ↑ 는 강조만 옮기고(aria-activedescendant ·
+    //   분류 머리는 건너뛰고 · 끝에서 멈춘다) Enter 로 고른다(강조가 없으면 아무것도 하지 않는다). Esc 는 검색어를 지우고, 비었으면 닫는다. 줄을 누르면 고르고 초점은 검색칸에 남는다.
+    (function () {
+      if (!document.querySelector(".pdata-section")) return;
+      var CHECK = ${JSON.stringify(CHECK_SVG)};
+      var MINUS = ${JSON.stringify(MINUS_SVG)};
+      function closest(e, sel) { return e.target && e.target.closest ? e.target.closest(sel) : null; }
+      function inData(el) { return !!(el && el.closest && el.closest(".pdata-section")); }
+      function statusNear(el) { var s = el.closest(".ptf-sample"); return s ? s.querySelector(".pdata-live-status") : null; }
+      function say(el, text) { var out = statusNear(el); if (out) out.textContent = text; }
+
+      // 미리보기 링크 — 옮기지 않는다
+      document.addEventListener("click", function (e) { var a = closest(e, "a[data-pdata-link]"); if (a && inData(a)) e.preventDefault(); });
+
+      // 누름 배율 — 카드 전체 · 지표 타일 · 결과 줄 · 목록 줄
+      var PRESS = ".pcard--whole, .pcard-action, .pchart-tile, .psl-option, .plst-row";
+      function measure(el) { el.style.setProperty("--press-basis", String(Math.max(el.offsetHeight, el.offsetWidth / 4, 24))); }
+      function pressOf(e) { var el = closest(e, PRESS); return el && inData(el) ? el : null; }
+      document.addEventListener("pointerdown", function (e) { var el = pressOf(e); if (el) measure(el); }, true);
+      document.addEventListener("keydown", function (e) { var el = pressOf(e); if (el) measure(el); }, true);
+      var frozen = document.querySelectorAll(".pdata-section :is(.pcard--pressed, .psl-option--pressed, .plst-row--pressed)");
+      frozen.forEach(measure);
+      if (window.ResizeObserver && frozen.length) {
+        var pressRo = new ResizeObserver(function (entries) { entries.forEach(function (entry) { measure(entry.target); }); });
+        frozen.forEach(function (el) { pressRo.observe(el); });
+      }
+
+      // 표 — 누르는 줄(체크 · ⋮ · 이름 링크가 아닌 자리)은 상세를 연다(미리보기 — 알림 줄에 적는다)
+      document.addEventListener("click", function (e) {
+        var row = closest(e, ".ptbl-row--press");
+        if (!row || !inData(row) || closest(e, "button, a")) return;
+        var name = row.querySelector(".ptbl-td--name");
+        say(row, "상세 열기 — " + (name ? name.textContent.trim() : ""));
+      });
+
+      // 표 — 정렬(두 단계)
+      document.querySelectorAll('[data-ptbl-live="sort"]').forEach(function (box) {
+        var body = box.querySelector("tbody");
+        var sorted = (box.getAttribute("data-ptbl-sorted") || ":").split(":");
+        var sample = box.closest(".ptf-sample");
+        var announce = sample ? sample.querySelector("[data-ptbl-announce]") : null;
+        function apply(key, dir) {
+          box.querySelectorAll(".ptbl-th--sort").forEach(function (th) {
+            var b = th.querySelector(".ptbl-sort");
+            var on = b.getAttribute("data-ptbl-sort") === key;
+            if (on) th.setAttribute("aria-sort", dir); else th.removeAttribute("aria-sort");
+            b.querySelector(".ptbl-arrow--up").classList.toggle("ptbl-arrow--on", on && dir === "ascending");
+            b.querySelector(".ptbl-arrow--down").classList.toggle("ptbl-arrow--on", on && dir === "descending");
+          });
+          var type = box.querySelector('[data-ptbl-sort="' + key + '"]').getAttribute("data-ptbl-type");
+          var rows = Array.prototype.slice.call(body.rows);
+          rows.sort(function (a, b) {
+            var x = a.getAttribute("data-ptbl-v-" + key) || "";
+            var y = b.getAttribute("data-ptbl-v-" + key) || "";
+            var c = type === "number" ? Number(x) - Number(y) : x.localeCompare(y, "ko");
+            return dir === "ascending" ? c : -c;
+          });
+          rows.forEach(function (r) { body.appendChild(r); });
+          sorted = [key, dir];
+          box.setAttribute("data-ptbl-sorted", key + ":" + dir);
+          var name = box.querySelector('[data-ptbl-sort="' + key + '"] .ptbl-sort-label').textContent.trim();
+          var text = name + " " + (dir === "ascending" ? "오름차순" : "내림차순") + "으로 정렬했어요.";
+          say(box, text + ' aria-sort="' + dir + '"');
+          if (announce) announce.textContent = text;
+        }
+        box.addEventListener("click", function (e) {
+          var b = closest(e, ".ptbl-sort[data-ptbl-sort]");
+          if (!b) return;
+          var key = b.getAttribute("data-ptbl-sort");
+          var dir = sorted[0] === key ? (sorted[1] === "ascending" ? "descending" : "ascending") : b.getAttribute("data-ptbl-first");
+          apply(key, dir);
+        });
+      });
+
+      // 표 — 고르기 · 일괄 작업 바
+      function setCheck(box, state) {
+        box.setAttribute("aria-checked", state);
+        box.innerHTML = state === "true" ? CHECK : state === "mixed" ? MINUS : "";
+      }
+      document.querySelectorAll("[data-ptbl-select]").forEach(function (wrap) {
+        var bar = wrap.querySelector("[data-ptbl-bulk]");
+        var count = bar.querySelector(".ptbl-bulk-count");
+        var all = wrap.querySelector("[data-ptbl-all]");
+        var picks = Array.prototype.slice.call(wrap.querySelectorAll("[data-ptbl-pick]"));
+        function picked() { return picks.filter(function (p) { return p.getAttribute("aria-checked") === "true"; }).length; }
+        function sync() {
+          var k = picked();
+          setCheck(all, k === 0 ? "false" : k === picks.length ? "true" : "mixed");
+          bar.hidden = k === 0;
+          if (k > 0) count.textContent = k + "개 선택됨";
+          say(wrap, k === 0 ? "고른 줄 없음 — 일괄 작업 바가 사라졌다" : k + "개 선택됨 — 머리 체크 " + all.getAttribute("aria-checked"));
+        }
+        wrap.addEventListener("click", function (e) {
+          var pick = closest(e, "[data-ptbl-pick]");
+          if (pick) { setCheck(pick, pick.getAttribute("aria-checked") === "true" ? "false" : "true"); sync(); return; }
+          if (closest(e, "[data-ptbl-all]")) {
+            var next = picked() === picks.length ? "false" : "true";
+            picks.forEach(function (p) { setCheck(p, next); });
+            sync();
+            return;
+          }
+          if (closest(e, "[data-ptbl-clear]")) {
+            picks.forEach(function (p) { setCheck(p, "false"); });
+            sync();
+            all.focus();
+          }
+        });
+      });
+
+      // 카드 — 대등한 동작(고정)은 카드를 열지 않고 제 상태만 바꾼다
+      document.addEventListener("click", function (e) {
+        var pin = closest(e, "[data-pdata-pin]");
+        if (!pin) return;
+        pin.setAttribute("aria-pressed", pin.getAttribute("aria-pressed") === "true" ? "false" : "true");
+      });
+
+      // 차트 — 추이: 가리킴 · 툴팁 · 지표 타일
+      document.querySelectorAll("[data-pchart-live]").forEach(function (live) {
+        var chart = live.querySelector("[data-pchart-trend]");
+        if (!chart) return;
+        var data = JSON.parse(chart.getAttribute("data-pchart-trend"));
+        var svg = chart.querySelector("svg");
+        var pointer = svg.querySelector(".pchart-pointer");
+        var cross = pointer.querySelector(".pchart-cross");
+        var points = pointer.querySelectorAll(".pchart-point");
+        var tip = chart.querySelector(".pchart-tip");
+        var tiles = Array.prototype.slice.call(live.querySelectorAll(".pchart-tile"));
+        var hidden = {};
+        var at = -1;
+        function show(i) {
+          at = i;
+          var x = data.x[i];
+          cross.setAttribute("x1", x);
+          cross.setAttribute("x2", x);
+          points.forEach(function (p) {
+            var k = p.getAttribute("data-pchart-key");
+            p.setAttribute("cx", x);
+            p.setAttribute("cy", data.y[k][i]);
+            if (hidden[k]) p.setAttribute("hidden", ""); else p.removeAttribute("hidden");
+          });
+          pointer.removeAttribute("hidden");
+          tip.textContent = "";
+          var head = document.createElement("div");
+          head.className = "pchart-tip-head";
+          head.textContent = data.months[i];
+          tip.appendChild(head);
+          var said = [data.months[i]];
+          data.series.forEach(function (s) {
+            if (hidden[s.key]) return;
+            var row = document.createElement("div");
+            row.className = "pchart-tip-row";
+            row.innerHTML = '<span class="pchart-swatch pchart-swatch--' + s.color + '"></span><span class="pchart-tip-label"></span><span class="pchart-tip-value"></span>';
+            row.querySelector(".pchart-tip-label").textContent = s.label;
+            row.querySelector(".pchart-tip-value").textContent = s.values[i];
+            tip.appendChild(row);
+            said.push(s.label + " " + s.values[i]);
+          });
+          tip.className = "pchart-tip pchart-tip--" + (x > data.width / 2 ? "left" : "right");
+          tip.style.setProperty("--pchart-tip-x", x + "px");
+          tip.hidden = false;
+          say(live, said.join(" · "));
+        }
+        function hide() { at = -1; pointer.setAttribute("hidden", ""); tip.hidden = true; }
+        function nearest(clientX) {
+          var r = svg.getBoundingClientRect();
+          var px = clientX - r.left;
+          var best = 0;
+          for (var i = 1; i < data.x.length; i++) if (Math.abs(data.x[i] - px) < Math.abs(data.x[best] - px)) best = i;
+          return best;
+        }
+        chart.addEventListener("pointermove", function (e) { if (e.pointerType === "mouse") show(nearest(e.clientX)); });
+        chart.addEventListener("pointerdown", function (e) { show(nearest(e.clientX)); });
+        chart.addEventListener("pointerleave", function (e) { if (e.pointerType === "mouse") hide(); });
+        chart.addEventListener("keydown", function (e) {
+          if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+            e.preventDefault();
+            var last = data.x.length - 1;
+            show(at < 0 ? (e.key === "ArrowRight" ? 0 : last) : Math.max(0, Math.min(last, at + (e.key === "ArrowRight" ? 1 : -1))));
+          } else if (e.key === "Escape" && at >= 0) {
+            e.preventDefault();
+            hide();
+          }
+        });
+        chart.addEventListener("blur", hide);
+        live.addEventListener("click", function (e) {
+          var t = closest(e, ".pchart-tile");
+          if (!t) return;
+          if (t.getAttribute("aria-disabled") === "true") { say(live, "마지막 계열은 끌 수 없어요 — aria-disabled"); return; }
+          var key = t.getAttribute("data-pchart-key");
+          var on = t.getAttribute("aria-pressed") === "true";
+          t.setAttribute("aria-pressed", on ? "false" : "true");
+          t.classList.toggle("pchart-tile--off", on);
+          hidden[key] = on;
+          var series = svg.querySelector('.pchart-series[data-pchart-key="' + key + '"]');
+          if (on) series.setAttribute("hidden", ""); else series.removeAttribute("hidden");
+          var shown = tiles.filter(function (x) { return x.getAttribute("aria-pressed") === "true"; });
+          tiles.forEach(function (x) { if (shown.length === 1 && shown[0] === x) x.setAttribute("aria-disabled", "true"); else x.removeAttribute("aria-disabled"); });
+          say(live, t.querySelector(".pchart-tile-name").textContent + (on ? ' 끔 — aria-pressed="false"' : ' 켬 — aria-pressed="true"'));
+          if (at >= 0) show(at);
+        });
+      });
+
+      // 차트 — 도넛 범례의 누르는 줄(하위 카테고리로)
+      document.addEventListener("click", function (e) {
+        var cat = closest(e, "[data-pchart-cat]");
+        if (!cat || !inData(cat)) return;
+        var panel = cat.closest(".pdata-panel");
+        var out = panel ? panel.querySelector("[data-pchart-cat-status]") : null;
+        if (out) out.textContent = cat.getAttribute("data-pchart-cat") + " — 하위 카테고리 도넛으로";
+      });
+
+      // 차트 — 열지도: 칸 폭 112 이상이면 칸 글 · 툴팁 · 화살표 키
+      document.querySelectorAll(".pdata-section .pheat").forEach(function (heat) {
+        var cells = Array.prototype.slice.call(heat.querySelectorAll(".pheat-cell"));
+        var tip = heat.querySelector(".pchart-tip");
+        var rows = 0, cols = 0;
+        cells.forEach(function (c) { rows = Math.max(rows, Number(c.getAttribute("data-pheat-row")) + 1); cols = Math.max(cols, Number(c.getAttribute("data-pheat-col")) + 1); });
+        function fit() { var w = cells.length ? cells[0].getBoundingClientRect().width : 0; cells.forEach(function (c) { c.classList.toggle("pheat-cell--text", w >= 112); }); }
+        fit();
+        if (window.ResizeObserver && cells.length) new ResizeObserver(fit).observe(cells[0]);
+        if (!tip) return;
+        var active = null;
+        function cellAt(r, c) { return cells.filter(function (x) { return Number(x.getAttribute("data-pheat-row")) === r && Number(x.getAttribute("data-pheat-col")) === c; })[0]; }
+        function show(cell, key) {
+          if (active) active.classList.remove("pheat-cell--key");
+          active = cell;
+          cell.classList.toggle("pheat-cell--key", !!key);
+          var step = (/pheat-cell--([0-9])/.exec(cell.className) || [0, 0])[1];
+          tip.textContent = "";
+          var head = document.createElement("div");
+          head.className = "pchart-tip-head";
+          head.textContent = cell.getAttribute("data-pheat-head");
+          var row = document.createElement("div");
+          row.className = "pchart-tip-row";
+          row.innerHTML = '<span class="pchart-swatch pchart-swatch--heat-' + step + '"></span><span class="pchart-tip-label">지출</span><span class="pchart-tip-value"></span>';
+          row.querySelector(".pchart-tip-value").textContent = cell.getAttribute("data-pheat-value");
+          tip.appendChild(head);
+          tip.appendChild(row);
+          tip.hidden = false;
+          var hb = heat.getBoundingClientRect(), cb = cell.getBoundingClientRect();
+          var w = tip.offsetWidth, h = tip.offsetHeight;
+          var left = Math.min(Math.max(cb.left - hb.left + cb.width / 2 - w / 2, 0), Math.max(hb.width - w, 0));
+          var top = cb.top - hb.top - h - 8;
+          if (top < 0) top = cb.bottom - hb.top + 8;
+          tip.style.left = left + "px";
+          tip.style.top = top + "px";
+          say(heat, cell.getAttribute("data-pheat-head") + " — 지출 " + cell.getAttribute("data-pheat-value"));
+        }
+        function hide() { if (active) active.classList.remove("pheat-cell--key"); active = null; tip.hidden = true; }
+        var frozenAt = heat.getAttribute("data-pheat-tip");
+        if (frozenAt) {
+          var rc = frozenAt.split(",");
+          var place = function () { var c = cellAt(Number(rc[0]), Number(rc[1])); if (c) show(c); };
+          place();
+          window.addEventListener("load", place);
+          if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
+          return;
+        }
+        if (!heat.hasAttribute("data-pheat-live")) return;
+        heat.addEventListener("pointerover", function (e) { if (e.pointerType !== "mouse") return; var c = closest(e, ".pheat-cell"); if (c) show(c); });
+        heat.addEventListener("pointerleave", function (e) { if (e.pointerType === "mouse" && document.activeElement !== heat) hide(); });
+        heat.addEventListener("click", function (e) { var c = closest(e, ".pheat-cell"); if (!c) return; if (active === c && e.pointerType !== "mouse") hide(); else show(c); });
+        heat.addEventListener("keydown", function (e) {
+          var dc = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+          var dr = e.key === "ArrowDown" ? 1 : e.key === "ArrowUp" ? -1 : 0;
+          if (dc || dr) {
+            e.preventDefault();
+            // 처음 누르면 첫 칸(마우스로 짚던 칸이 있으면 그 칸)부터 — 키보드로 온 칸에서만 옮긴다(chart.tsx)
+            var r = active ? Number(active.getAttribute("data-pheat-row")) : 0;
+            var c = active ? Number(active.getAttribute("data-pheat-col")) : 0;
+            if (active && active.classList.contains("pheat-cell--key")) { r = Math.max(0, Math.min(rows - 1, r + dr)); c = Math.max(0, Math.min(cols - 1, c + dc)); }
+            show(cellAt(r, c), true);
+          } else if (e.key === "Escape" && active) {
+            e.preventDefault();
+            hide();
+          }
+        });
+        heat.addEventListener("blur", hide);
+      });
+
+      // 검색해서 고르기 — 콤보박스
+      document.querySelectorAll("[data-psl-live]").forEach(function (root) {
+        var input = root.querySelector("[data-psl-input]");
+        var list = root.querySelector('[role="listbox"]');
+        var empty = root.querySelector("[data-psl-empty]");
+        var announce = root.querySelector("[data-psl-status]");
+        var hi = null;
+        function visible() {
+          return Array.prototype.slice.call(list.querySelectorAll(".psl-option")).filter(function (o) { return !o.hidden && !o.closest(".psl-group[hidden]"); });
+        }
+        function highlight(o, scroll) {
+          if (hi) hi.classList.remove("psl-option--hl");
+          hi = o || null;
+          if (hi) {
+            hi.classList.add("psl-option--hl");
+            input.setAttribute("aria-activedescendant", hi.id);
+            if (scroll) hi.scrollIntoView({ block: "nearest" });
+          } else input.setAttribute("aria-activedescendant", "");
+        }
+        function filter() {
+          var q = input.value.trim();
+          var any = 0;
+          list.querySelectorAll(".psl-group").forEach(function (g) {
+            var n = 0;
+            g.querySelectorAll(".psl-option").forEach(function (o) {
+              var hit = !q || o.getAttribute("data-psl-text").indexOf(q) >= 0;
+              o.hidden = !hit;
+              if (hit) n++;
+            });
+            g.hidden = n === 0;
+            any += n;
+          });
+          highlight(null);
+          list.hidden = any === 0;
+          if (empty) {
+            empty.hidden = any !== 0;
+            if (any === 0) empty.querySelector(".presult-title").textContent = "'" + q + "'에 대한 검색 결과가 없어요";
+          }
+          if (announce) announce.textContent = any === 0 ? "'" + q + "'에 대한 검색 결과가 없어요" : "";
+          say(root, any === 0 ? "0건 — Result Section · 한 번 알림" : q ? "'" + q + "' — " + any + "줄 · 줄이 없는 분류는 머리째 숨김" : "전체 목록");
+        }
+        function pick(o) {
+          list.querySelectorAll(".psl-option").forEach(function (x) { x.setAttribute("aria-selected", x === o ? "true" : "false"); });
+          say(root, "골랐어요 — " + o.getAttribute("data-psl-text") + " · 시트는 닫히고 칸에 들어간다(미리보기라 그대로 둔다)");
+        }
+        input.addEventListener("input", filter);
+        input.addEventListener("keydown", function (e) {
+          if (e.isComposing) return;
+          var opts = visible();
+          if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+            e.preventDefault();
+            if (!opts.length) return;
+            var i = hi ? opts.indexOf(hi) : -1;
+            var n = e.key === "ArrowDown" ? (i < 0 ? 0 : Math.min(opts.length - 1, i + 1)) : (i < 0 ? opts.length - 1 : Math.max(0, i - 1));
+            highlight(opts[n], true);
+            say(root, "강조 — " + opts[n].getAttribute("data-psl-text") + " · 초점은 검색칸");
+          } else if (e.key === "Enter") {
+            e.preventDefault();
+            if (hi) pick(hi);
+          } else if (e.key === "Escape") {
+            e.preventDefault();
+            if (input.value) { input.value = ""; input.dispatchEvent(new Event("input", { bubbles: true })); say(root, "Esc — 검색어를 지웠다"); }
+            else say(root, "Esc — 검색어가 비어 시트를 닫는다(값은 그대로)");
+          }
+        });
+        list.addEventListener("pointermove", function (e) { if (e.pointerType !== "mouse") return; var o = closest(e, ".psl-option"); if (o && o !== hi) highlight(o, false); });
+        list.addEventListener("mousedown", function (e) { if (closest(e, ".psl-option")) e.preventDefault(); });
+        list.addEventListener("click", function (e) { var o = closest(e, ".psl-option"); if (!o) return; pick(o); input.focus(); });
       });
     })();
   </script>

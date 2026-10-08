@@ -608,3 +608,13 @@ html > body[data-scroll-locked] {
     transition: none;
   }
 }
+/* 데이터 표시 묶음 그림(data-*-view) — 모드마다 다른 토큰을 쓰는 색(순자산 카드의 끝 색 — 라이트 brand-900 · 다크 brand-300-dark,
+   열지도의 짙은 칸 글자 — 라이트 흰 · 다크 fg-neutral). 라이트(-l) · 다크(-d) 값을 둘 다 싣고, 사이트가 다크면 -d 를 쓴다(data-mode=auto 일 때) */
+.pdat {
+  --pd-s: var(--pd-s-l);
+  --pd-t: var(--pd-t-l);
+}
+.dark .pdat[data-mode='auto'] {
+  --pd-s: var(--pd-s-d);
+  --pd-t: var(--pd-t-d);
+}

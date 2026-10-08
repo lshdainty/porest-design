@@ -10,6 +10,7 @@ import { BubbleView, type BubbleViewProps } from './menu-view';
 import { GestureMark } from './overlay-view';
 import { Phone, WebWindow, rc, type Mode } from './kit';
 import { Side } from './nav-screens';
+import { cardFace } from './card-face';
 
 export const bl = (brand: Brand = 'desk') => mk(brand).bubble;
 export const TOOL_ICON: Record<(typeof TOOLBAR)[number]['value'], IconName> = { search: 'search', hide: 'eye-off', reset: 'rotate-ccw' };
@@ -68,7 +69,8 @@ export function LeaveWindow({ mode = 'auto', w = 460, h = 280, overlay, gesture 
     <WebWindow mode={mode} w={w} h={h} url="hr.porest.app">
       <div style={{ height: '100%', boxSizing: 'border-box', padding: '22px 28px', background: rc('bg-layer-basement', mode, 'hr') }}>
         <div style={{ fontSize: 20, lineHeight: '28px', fontWeight: 700, color: rc('fg-neutral', mode, 'hr'), paddingBottom: 14 }}>휴가</div>
-        <div style={{ borderRadius: 12, padding: '96px 20px 18px', background: rc('bg-layer-default', mode, 'hr') }}>
+        {/* 카드 — card.yaml 의 면(1px 테두리 · 모서리 16 · 여백 24). 위는 말풍선이 열릴 자리만큼 비운다 */}
+        <div style={{ boxSizing: 'border-box', borderRadius: cardFace().radius, borderWidth: cardFace().borderW, borderStyle: 'solid', borderColor: rc('stroke-neutral-weak', mode, 'hr'), paddingTop: 96, paddingRight: cardFace().pad, paddingBottom: cardFace().pad, paddingLeft: cardFace().pad, background: rc('bg-layer-default', mode, 'hr') }}>
           <LeaveSummary mode={mode} gesture={gesture} />
         </div>
       </div>
@@ -80,7 +82,7 @@ export function LeaveWindow({ mode = 'auto', w = 460, h = 280, overlay, gesture 
 // Desk 자산(폰) — 머리 오른쪽 금액 가리기 버튼 아래에 처음부터 열린 안내(닫기 버튼)
 const ASSETS: [string, string][] = [
   ['국민 주계좌', '1,250,000원'],
-  ['현대카드 M', '-352,400원'],
+  ['현대카드 M', '−352,400원'],
   ['토스뱅크 통장', '820,000원'],
 ];
 export function AssetsPhone({ mode = 'auto', scale = 0.62, h = 560, bubble = true }: { mode?: Mode; scale?: number; h?: number; bubble?: boolean }) {

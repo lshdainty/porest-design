@@ -8,12 +8,16 @@ import { listLook } from './list-look';
 import { ListView } from './list-view';
 import { TX } from './loading-data';
 import { SK_ROW, loadingKit, loadingScreen, type RowDims } from './loading-look';
+import type { LdCard, LdScreen } from './loading-shared';
+import { cardFace } from './card-face';
 import { ContentPlaceholderView, ProgressCircleView, ProgressView, SkeletonRowsView, SkeletonView, SlowTextView, type ContentPlaceholderViewProps, type ProgressCircleViewProps, type ProgressViewProps, type SkeletonViewProps } from './loading-view';
 import { Phone, rc, type Mode } from './kit';
 
 type Brand = 'desk' | 'hr';
 export const L = (brand: Brand = 'desk') => loadingKit(brand);
-export const SCREEN = (brand: Brand = 'desk') => loadingScreen(brand);
+// 그림 속 화면의 역할 색 + 카드(card.yaml) — 브라우저 그림(loading-demos)도 이 값을 받는다
+export const ldCard = (): LdCard => cardFace();
+export const SCREEN = (brand: Brand = 'desk'): LdScreen => ({ ...loadingScreen(brand), card: ldCard() });
 export type Fig = (p: { caption?: string }) => ReactNode;
 
 // ── 부품(값은 YAML) ─────────────────────────────────────
@@ -43,13 +47,20 @@ export { SK_ROW };
 export const TxSkeletonRows = (p: Omit<Parameters<typeof SkeletonRowsView>[0], 'look' | 'dims'>) => <SkeletonRowsView look={L().skeleton} dims={rowDims()} {...p} />;
 
 // ── 화면 조각 ───────────────────────────────────────────
-// 흰 카드 — 회색 바탕 위의 묶음. 제목(틀)은 처음부터 그린다. 목록은 줄이 좌우 여백(24)을 가지므로 카드는 좌우를 비우지 않는다
-export function CardBox({ mode = 'auto', title, right, children, style, padBottom = 8 }: { mode?: Mode; title?: ReactNode; right?: ReactNode; children?: ReactNode; style?: CSSProperties; padBottom?: number }) {
+// 흰 카드 — 회색 바탕 위의 묶음(card.yaml — 흰 면 + 1px stroke-neutral-weak · 모서리 16 · 그림자 없음). 제목(틀)은 처음부터 그린다.
+// 목록 카드(body list — 제목이 있으면 기본)는 머리 위 24 · 좌우 24 · 아래 4, 줄이 제 좌우 24 를 가지고 카드 아래는 12 다.
+// 머리 없는 목록 카드는 위도 12(첫 줄의 위 12 와 합쳐 보이는 24). 글 카드(body content — 제목이 없으면 기본)는 여백 24
+export function CardBox({ mode = 'auto', title, right, children, style, body }: { mode?: Mode; title?: ReactNode; right?: ReactNode; children?: ReactNode; style?: CSSProperties; body?: 'list' | 'content' }) {
+  const c = ldCard();
+  const list = (body ?? (title !== undefined ? 'list' : 'content')) === 'list';
+  const pad: CSSProperties = list
+    ? { paddingTop: title !== undefined ? 0 : c.listBottom, paddingRight: 0, paddingBottom: c.listBottom, paddingLeft: 0 }
+    : { paddingTop: c.pad, paddingRight: c.pad, paddingBottom: c.pad, paddingLeft: c.pad };
   return (
-    <div style={{ borderRadius: 16, background: rc('bg-layer-default', mode), paddingBottom: padBottom, ...style }}>
+    <div style={{ boxSizing: 'border-box', borderRadius: c.radius, background: rc('bg-layer-default', mode), borderWidth: c.borderW, borderStyle: 'solid', borderColor: rc('stroke-neutral-weak', mode), overflow: 'hidden', ...pad, ...style }}>
       {title !== undefined && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '16px 24px 4px' }}>
-          <span style={{ fontSize: 17, lineHeight: '24px', fontWeight: 700, color: rc('fg-neutral', mode) }}>{title}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: c.head.gap, paddingTop: list ? c.head.top : 0, paddingRight: list ? c.head.x : 0, paddingBottom: c.head.bottom, paddingLeft: list ? c.head.x : 0 }}>
+          <span style={{ fontFamily: c.title.fontFamily, fontSize: c.title.fontSize, lineHeight: c.title.lineHeight, fontWeight: c.title.fontWeight, color: rc('fg-neutral', mode) }}>{title}</span>
           {right}
         </div>
       )}
@@ -57,10 +68,12 @@ export function CardBox({ mode = 'auto', title, right, children, style, padBotto
     </div>
   );
 }
+// 폰 화면의 카드 묶음 — 화면 끝 24(spacing-global-gutter) · 쌓은 카드 사이 8(card.yaml root.gap) · 상단 바 아래 8
+export { cardStack } from './kit';
 // 달 넘기기 머리 — ‹ 2026년 10월 › (틀 — 고른 달은 바로 바뀐다)
 export function MonthNav({ mode = 'auto', month, right }: { mode?: Mode; month: string; right?: ReactNode }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '8px 16px' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 4, paddingTop: 8, paddingRight: 24, paddingBottom: 8, paddingLeft: 24 }}>
       <ChevronLeft aria-hidden size={22} strokeWidth={2} style={{ color: rc('fg-neutral', mode) }} />
       <span style={{ fontSize: 17, lineHeight: '24px', fontWeight: 700, color: rc('fg-neutral', mode) }}>{month}</span>
       <ChevronRight aria-hidden size={22} strokeWidth={2} style={{ color: rc('fg-neutral', mode) }} />
@@ -72,7 +85,7 @@ export function MonthNav({ mode = 'auto', month, right }: { mode?: Mode; month: 
 export function SpendHead({ mode = 'auto', label = '10월 지출', amount, bone, hidden, still }: { mode?: Mode; label?: string; amount?: string; bone?: number; hidden?: boolean; still?: boolean }) {
   const t8 = L().skeleton.text.t8;
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '16px 24px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <span style={{ fontSize: 13, lineHeight: '18px', color: rc('fg-neutral-subtle', mode) }}>{label}</span>
       {amount ? (
         <span style={{ fontSize: t8.size, lineHeight: `${t8.lineHeight}px`, fontWeight: 700, color: rc('fg-neutral', mode), fontVariantNumeric: 'tabular-nums' }}>{amount}</span>

@@ -17,7 +17,7 @@ import {
   type FogUse,
   type LdColor,
   type LdMotion,
-  type LdScreen,
+  type LdScreenBase,
   type LdType,
   type LoadingKit,
   type PcFace,
@@ -176,7 +176,7 @@ function skeletonLook(): SkeletonLook {
     text,
     motion: { shimmer: { ...sh, from: Number(tr[1].replace('−', '-')), to: Number(tr[2].replace('−', '-')) }, reveal: motionOf('skeleton', '내용으로 바뀜') },
     region,
-    slowText: { ...type(v['slowText.typography'], `${F} slowText.typography`), fontWeight: Number(unbox(must(v['slowText.fontWeight'], `${F} slowText.fontWeight`))), color: col(v['slowText.foreground'], 'desk', `${F} slowText.foreground`), gap: len(v['slowText.gap'], `${F} slowText.gap`) },
+    slowText: { ...type(v['slowText.typography'], `${F} slowText.typography`), fontWeight: Number(unbox(must(v['slowText.fontWeight'], `${F} slowText.fontWeight`))), color: col(v['slowText.foreground'], 'desk', `${F} slowText.foreground`), gap: len(v['slowText.gap'], `${F} slowText.gap`), padX: len(v['slowText.paddingX'], `${F} slowText.paddingX`), padXList: numIn(noteOf(v['slowText.paddingX']), /목록 카드\(body list\) 바로 아래 영역이면\s*(\d+)/, `${F} slowText.paddingX 비고(목록 카드)`) },
     surfaces: { default: named('bg-layer-default'), floating: named('bg-layer-floating'), basement: named('bg-layer-basement') },
   };
 }
@@ -401,8 +401,8 @@ export function loadingKit(brand: Brand = 'desk'): LoadingKit {
   return kit;
 }
 // 그림 속 화면의 역할 색
-export function loadingScreen(brand: Brand = 'desk'): LdScreen {
-  const out = Object.fromEntries(LD_TONES.map((n) => [n, named(n, brand)])) as LdScreen;
+export function loadingScreen(brand: Brand = 'desk'): LdScreenBase {
+  const out = Object.fromEntries(LD_TONES.map((n) => [n, named(n, brand)])) as LdScreenBase;
   out.dim = { name: 'overlay-dim', light: proseValue('overlay-dim-light'), dark: proseValue('overlay-dim-dark') };
   return out;
 }

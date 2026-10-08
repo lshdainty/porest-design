@@ -137,9 +137,9 @@ export function DemoButton({ children, onClick, disabled = false }: { children: 
 }
 
 const LEDGER: DemoRow[] = [
-  { id: 'lunch', title: '점심 식사', sub: '식비 · 현대카드 M', amount: '-12,000원', hue: 'orange' },
-  { id: 'cafe', title: '스타벅스', sub: '카페 · 현대카드 M', amount: '-5,600원', hue: 'orange' },
-  { id: 'subway', title: '지하철', sub: '교통 · 국민 체크카드', amount: '-1,450원', hue: 'blue' },
+  { id: 'lunch', title: '점심 식사', sub: '식비 · 현대카드 M', amount: '−12,000원', hue: 'orange' },
+  { id: 'cafe', title: '스타벅스', sub: '카페 · 현대카드 M', amount: '−5,600원', hue: 'orange' },
+  { id: 'subway', title: '지하철', sub: '교통 · 국민 체크카드', amount: '−1,450원', hue: 'blue' },
   { id: 'salary', title: '월급', sub: '수입 · 토스뱅크 통장', amount: '+3,200,000원', hue: 'green' },
 ];
 const DayLine = ({ screen, mode = 'auto', label = '10월 2일 (금)' }: { screen: FbScreen; mode?: ViewMode; label?: string }) => (
@@ -156,7 +156,7 @@ export function SnackBasicDemo({ look, cta }: { look: SnackbarLook; cta: ButtonL
   const n = useRef(0);
   const save = () => {
     const id = `new-${++n.current}`;
-    const row: DemoRow = { id, title: '점심 식사', sub: '식비 · 현대카드 M', amount: '-12,000원', hue: 'orange' };
+    const row: DemoRow = { id, title: '점심 식사', sub: '식비 · 현대카드 M', amount: '−12,000원', hue: 'orange' };
     setRows((r) => [row, ...r].slice(0, 6));
     setFresh(id);
     host.show({ message: '거래를 저장했어요.' });
@@ -324,7 +324,7 @@ export function CalloutErrorDemo({ look, snack, field, input, cta }: { look: Cal
         <ScreenFrame screen={s} title="가계부" height={480} bottom={<DemoTabBar screen={s} />}>
           <ul style={{ margin: 0, padding: '0 24px' }}>
             <DayLine screen={s} />
-            <DemoRowView screen={s} row={{ id: 'saved', title: memo || '거래', sub: '식비 · 현대카드 M', amount: `-${amount || '0'}원`, hue: 'orange' }} />
+            <DemoRowView screen={s} row={{ id: 'saved', title: memo || '거래', sub: '식비 · 현대카드 M', amount: `−${amount || '0'}원`, hue: 'orange' }} />
             {LEDGER.slice(1, 3).map((r) => (
               <DemoRowView key={r.id} screen={s} row={r} />
             ))}
@@ -369,7 +369,7 @@ export function CalloutInteractiveDemo({ look }: { look: CalloutLook }) {
               </button>
               <button type="button" style={rowBtn}>
                 <span>카드</span>
-                <span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>-412,300원</span>
+                <span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>−412,300원</span>
               </button>
             </div>
           </div>
@@ -514,7 +514,7 @@ export function ResultEmptyDemo({ look, snack, field, input, cta }: { look: Resu
           ) : (
             <ul style={{ margin: 0, padding: '0 24px' }}>
               <DayLine screen={s} />
-              <DemoRowView screen={s} row={{ id: 'first', title: '점심 식사', sub: '식비 · 현대카드 M', amount: `-${amount || '0'}원`, hue: 'orange' }} />
+              <DemoRowView screen={s} row={{ id: 'first', title: '점심 식사', sub: '식비 · 현대카드 M', amount: `−${amount || '0'}원`, hue: 'orange' }} />
             </ul>
           )}
           <SnackbarRegion host={host} look={snack} />
@@ -545,18 +545,22 @@ export function ResultFailureDemo({ look }: { look: ResultSectionLook }) {
   return (
     <DemoStage controls={phase === 'done' ? <DemoButton onClick={() => setPhase('failed')}>실패 다시 보기</DemoButton> : undefined} note="다시 시도를 누르면 버튼에 로딩이 걸리고, 불러오면 내용이 투명도로 바뀐다. 이미 보이던 내용이 있으면 지우지 않는다.">
       <ScreenFrame screen={s} title="홈" height={440} bg="bg-layer-basement" bottom={<DemoTabBar screen={s} tab="home" />}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '4px 16px 16px' }}>
-          <section aria-label="최근 거래" style={{ display: 'flex', flexDirection: 'column', minHeight: 300, borderRadius: 16, background: c(s, 'bg-layer-default', 'auto'), padding: '16px 20px' }}>
-            <span style={{ fontSize: 17, lineHeight: '24px', fontWeight: 700 }}>최근 거래</span>
+        {/* 회색 바닥 위 목록 카드 — card.yaml(흰 면 + 1px 테두리 · 머리 위 24 · 좌우 24 · 아래 4 · 카드 아래 12) */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: s.card.gap, paddingTop: s.card.gap, paddingRight: s.card.edge, paddingBottom: s.card.edge, paddingLeft: s.card.edge }}>
+          <section aria-label="최근 거래" style={{ display: 'flex', flexDirection: 'column', minHeight: 300, boxSizing: 'border-box', borderRadius: s.card.radius, borderWidth: s.card.borderW, borderStyle: 'solid', borderColor: c(s, 'stroke-neutral-weak', 'auto'), background: c(s, 'bg-layer-default', 'auto'), paddingTop: 0, paddingRight: 0, paddingBottom: s.card.listBottom, paddingLeft: 0 }}>
+            <span style={{ paddingTop: s.card.head.top, paddingRight: s.card.head.x, paddingBottom: s.card.head.bottom, paddingLeft: s.card.head.x, fontFamily: s.card.title.fontFamily, fontSize: s.card.title.fontSize, lineHeight: s.card.title.lineHeight, fontWeight: s.card.title.fontWeight }}>최근 거래</span>
             <div role="status" style={{ display: 'flex', flexDirection: 'column', flex: '1 1 auto' }}>
               {phase === 'done' ? (
-                <ul ref={list} style={{ margin: 0, padding: 0 }}>
+                <ul ref={list} style={{ margin: 0, paddingTop: 0, paddingRight: s.card.head.x, paddingBottom: 0, paddingLeft: s.card.head.x }}>
                   {LEDGER.slice(0, 3).map((r) => (
                     <DemoRowView key={r.id} screen={s} row={r} />
                   ))}
                 </ul>
               ) : (
-                <ResultSectionView look={look} kind="failure" size="medium" title="거래를 불러오지 못했어요" description="잠시 뒤 다시 시도해 주세요." primary={{ label: '다시 시도', onClick: retry, loading: phase === 'loading' }} heading={3} live />
+                // 카드 안 — 결과 자리의 좌우 0, 목록 카드의 24 는 감싼 칸이 맡는다
+                <div style={{ display: 'flex', flexDirection: 'column', flex: '1 1 auto', paddingLeft: s.card.head.x, paddingRight: s.card.head.x }}>
+                  <ResultSectionView look={look} kind="failure" size="medium" inCard title="거래를 불러오지 못했어요" description="잠시 뒤 다시 시도해 주세요." primary={{ label: '다시 시도', onClick: retry, loading: phase === 'loading' }} heading={3} live />
+                </div>
               )}
             </div>
           </section>

@@ -1,6 +1,7 @@
 // 기다림 묶음(Skeleton · Progress Circle · 당겨서 새로 고침 · Progress · Scroll Fog · Content Placeholder)의 모양 —
 // 서버(loading-look)와 브라우저(loading-view · 플레이그라운드 · 데모)가 함께 쓰는 상수 · 타입. 파일 읽기(서버 전용)를 들이지 않는다.
 import { fogMaskStyle, type FogSides } from './overlay-shared';
+import type { CardFace } from './card-face';
 
 export type ViewMode = 'light' | 'dark' | 'auto';
 // 색 — name 은 사이트 모드를 따를 때 쓰는 CSS 변수(--p-<name>, HR 에서 값이 다른 브랜드 토큰은 hr-<토큰>), light · dark 는 풀어 둔 값.
@@ -43,7 +44,8 @@ export type SkeletonLook = {
   // 기다리는 영역의 시간표(ms) · 다시 시도
   region: { showAfter: number; slowAfter: number; timeout: number; retry: number; retryDelays: number[] };
   // 오래 걸림 글
-  slowText: LdType & { color: LdColor; gap: number };
+  // padX — 기본 0(내용 카드는 카드의 24 가 맡는다), padXList — 목록 카드(body list) 바로 아래 영역의 좌우(24 — 글 · 실패 Result Section)
+  slowText: LdType & { color: LdColor; gap: number; padX: number; padXList: number };
   // 놓이는 면 — 흰 면(카드) · 떠 있는 면(시트) · 페이지 바탕
   surfaces: { default: LdColor; floating: LdColor; basement: LdColor };
 };
@@ -173,7 +175,10 @@ export const LD_TONES = [
   'chart-indigo-contrast',
 ] as const;
 export type LdTone = (typeof LD_TONES)[number];
-export type LdScreen = Record<LdTone, LdColor> & { dim: LdColor };
+export type LdScreenBase = Record<LdTone, LdColor> & { dim: LdColor };
+// 그림 속 카드 — card.yaml 의 면 · 머리(목록 카드: 위 24 · 좌우 24 · 아래 4, 카드 아래 12 · 글 카드: 여백 24 — card-face)
+export type LdCard = CardFace;
+export type LdScreen = LdScreenBase & { card: LdCard };
 
 // 시간표의 단계 — 0 ~ showAfter 틀만 · showAfter ~ 기다림 · slowAfter ~ 오래 걸림 · timeout ~ 실패
 export type WaitPhase = 'quiet' | 'waiting' | 'slow' | 'failed';

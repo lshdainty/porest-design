@@ -9,7 +9,7 @@ import { SwitchView } from './switch-view';
 import { SwitchPlayground } from './switch-playground';
 import { buttonLook } from './button-look';
 import { ButtonView } from './button-view';
-import { Card, Phone, Sheet, Verdict, rc, type Mode } from './kit';
+import { Card, Phone, Sheet, Verdict, cardStack, rc, type Mode } from './kit';
 import { listLook, type RowSpec } from './list-look';
 import { ListView } from './list-view';
 
@@ -301,11 +301,11 @@ const Pair = ({ children }: { children: ReactNode }) => <div className="flex w-f
 function NotiPhone({ tone, masterOn = true, forceOff = false }: { tone?: string; masterOn?: boolean; forceOff?: boolean }) {
   return (
     <Phone title="알림 설정" h={500} scale={0.68}>
-      <div className="flex flex-col gap-3 p-5">
-        <Card pad={0} style={{ paddingBlock: 8 }}>
+      <div style={cardStack()}>
+        <Card body="list">
           <SettingRows rows={[{ title: '푸시 알림', desc: masterOn ? '모든 알림이 활성화되어 있어요' : '알림이 꺼져 있어요', on: masterOn }]} tone={tone} />
         </Card>
-        <Card pad={0} style={{ paddingBlock: 8 }}>
+        <Card body="list">
           <SettingRows rows={NOTI.map(([title, desc, on]) => ({ title, desc, on: forceOff ? false : on, disabled: !masterOn && !forceOff }))} tone={tone} />
         </Card>
       </div>

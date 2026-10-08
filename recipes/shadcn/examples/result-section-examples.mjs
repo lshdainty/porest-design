@@ -19,9 +19,11 @@
 
 // ── result-section.tsx 의 cva · 상수와 같은 값 ───────────────────────────
 
-// 묶음 — 가운데 · 좌우 48 · 위아래 16. 나타날 때 150ms enter 투명도(모션 줄이기면 없음)
+// 묶음 — 가운데 · 좌우 48 · 위아래 16(카드 안이면 좌우 0 — 카드의 24 가 가장자리를 가진다, 목록 카드의 바로 아래면 24 — 사용자 결정 23B.
+// 목록 카드 바로 아래의 기다리는 영역(LoadingRegion)에 바로 둔 것도 24). 나타날 때 150ms enter 투명도(모션 줄이기면 없음)
 const RESULT_BASE = [
   "flex grow flex-col items-center justify-center px-x12 py-x4 text-center font-sans transition-none",
+  "[[data-slot=card]_&]:px-0 [[data-slot=card][data-body=list]>&]:px-x6 [[data-slot=card][data-body=list]>[data-slot=loading-region]>&]:px-x6",
   "animate-in fade-in-0 duration-[var(--motion-duration-d3)] ease-[var(--motion-ease-enter)] motion-reduce:animate-none",
 ].join(" ");
 
@@ -204,10 +206,12 @@ const DESK = `${FRAME} min-height:320px; background:var(--color-bg-layer-default
 const HEAD =
   "padding:var(--spacing-x5) var(--spacing-global-gutter) var(--spacing-x3); font-size:var(--text-t7); line-height:var(--text-t7--line-height); font-weight:700; color:var(--color-fg-neutral);";
 const phone = (title, inner, extra = "") => `<div style="${PHONE}${extra}"><div style="${HEAD}">${title}</div>${inner}</div>`;
-// 카드 · 섹션 안의 결과(medium) — 회색 바탕 위 흰 카드
-const CARD = "display:flex; flex-direction:column; margin:0 var(--spacing-x4) var(--spacing-x6); border-radius:var(--radius-r4); background:var(--color-bg-layer-default);";
+// 카드 안의 결과(medium) — 회색 바탕 위 카드(card.md — 흰 면 + 1px stroke-neutral-weak · 모서리 16 · 여백 24 · 화면 끝 24 · 머리 제목 16 / 22 · 700).
+// 카드 안의 Result Section 은 제 좌우 48 을 두지 않는다 — 카드의 24 가 가장자리를 가진다(사용자 결정 23B). data-slot · data-body 는 레시피 Card 의 자리
+const CARD =
+  "display:flex; flex-direction:column; margin:0 var(--spacing-global-gutter) var(--spacing-x6); padding:var(--spacing-x6); border:1px solid var(--color-stroke-neutral-weak); border-radius:var(--radius-r4); background:var(--color-bg-layer-default);";
 const CARD_TITLE =
-  "padding:0 var(--spacing-global-gutter) var(--spacing-x2); font-size:var(--text-t5); line-height:var(--text-t5--line-height); font-weight:700; color:var(--color-fg-neutral);";
+  "padding:0 0 var(--spacing-x2); font-size:var(--text-t5); line-height:var(--text-t5--line-height); font-weight:700; color:var(--color-fg-neutral);";
 const grid = (items) =>
   `<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:var(--spacing-x6) var(--spacing-x4); align-items:start;">${items.join("")}</div>`;
 const CAPTION = "display:block; margin-top:var(--spacing-x2); font-size:var(--text-t2); line-height:var(--text-t2--line-height); color:var(--color-fg-neutral-subtle);";
@@ -254,7 +258,7 @@ export const resultSectionExamples = [
     render: () =>
       phone(
         "홈",
-        `<div style="${CARD_TITLE}">이번 달 거래</div><div style="${CARD}">${resultSection({
+        `<div data-slot="card" data-variant="default" data-body="content" data-press="none" style="${CARD}"><div style="${CARD_TITLE}">이번 달 거래</div>${resultSection({
           kind: "failure",
           size: "medium",
           title: "거래를 불러오지 못했어요",

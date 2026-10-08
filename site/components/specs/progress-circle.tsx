@@ -2,7 +2,6 @@
 // 원의 크기 · 두께 · 색 · 움직임은 progress-circle.yaml(loadingKit().circle), 당겨서 새로 고침은 pull-to-refresh.yaml(loadingKit().pull),
 // 시간표는 skeleton.yaml 의 region, 버튼 안의 원은 button.yaml 로 그린다. 화면 틀(폰 · 카드 제목)의 글자 크기는 그림 안에서 정한다.
 import type { CSSProperties, ReactNode } from 'react';
-import { Search } from 'lucide-react';
 import { axisDesc, loadComponentSpec } from '@/lib/component-spec';
 import { contrast } from '@/lib/design-tokens';
 import { Figure, Panel, MARK_LINE } from '../foundations/ui';
@@ -15,9 +14,11 @@ import { listLook } from './list-look';
 import { CircleBasicDemo, CircleUploadDemo, PullToRefreshDemo } from './loading-demos';
 import { PC_SIZES, PC_TONES, lcv, type PcTone } from './loading-look';
 import { ProgressCirclePlayground } from './loading-playground';
-import { CardBox, Circle, L, LdPhone, SCREEN, SK_ROW, SlowText, SpendHead, TxList, TxSkeletonRows, type Fig } from './loading-screens';
+import { CardBox, Circle, L, LdPhone, SCREEN, SK_ROW, SlowText, SpendHead, TxList, TxSkeletonRows, cardStack, type Fig } from './loading-screens';
 import { Band, Legend, Note, Pin, Shot } from './overlay-screens';
 import { PcArc } from './pc-arc';
+import { searchLook } from './data-look';
+import { TfInputView } from './text-field-view';
 
 const pc = (brand: 'desk' | 'hr' = 'desk') => L(brand).circle;
 const Pair = ({ children, wide = false }: { children: ReactNode; wide?: boolean }) => <div className={`flex w-full flex-col gap-4 ${wide ? 'max-w-[900px] lg:flex-row' : 'max-w-[760px] md:flex-row'}`}>{children}</div>;
@@ -52,14 +53,12 @@ function Uploading({ mode = 'auto', value, size = 80 }: { mode?: Mode; value: nu
     </span>
   );
 }
-// 검색 화면 — 머리 아래 검색 칸(틀)
+// 검색 화면 — 머리 아래 밑줄형 검색칸(틀). 목록 위 검색은 Input 의 밑줄형이다(searchable-list.yaml 검색칸 · large — 폰)
 function SearchBar({ mode = 'auto', value = '점심' }: { mode?: Mode; value?: string }) {
+  const s = searchLook();
   return (
-    <div style={{ padding: '4px 16px 12px', background: rc('bg-layer-default', mode) }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 14px', borderRadius: 12, background: rc('bg-neutral-weak', mode), color: rc('fg-neutral', mode), fontSize: 15 }}>
-        <Search aria-hidden size={18} strokeWidth={2} style={{ color: rc('fg-neutral-subtle', mode) }} />
-        {value}
-      </div>
+    <div style={{ paddingTop: 4, paddingBottom: s.gap, paddingLeft: s.field.marginX, paddingRight: s.field.marginX, background: rc('bg-layer-default', mode) }}>
+      <TfInputView look={s.field.look} variant="underline" size="large" mode={mode} state="enabled" value={value} prefixIcon="search" clearable ariaLabel="검색" />
     </div>
   );
 }
@@ -71,7 +70,7 @@ const Hero: Fig = ({ caption }) => (
       {(['light', 'dark'] as const).map((mode) => (
         <div key={mode} className="flex items-start gap-4">
           <LdPhone mode={mode} title="홈" scale={0.52}>
-            <div className="flex flex-col gap-3 px-4 pt-1">
+            <div style={cardStack()}>
               <CardBox mode={mode}>
                 <SpendHead mode={mode} amount="412,300원" />
               </CardBox>
@@ -361,7 +360,7 @@ const PlacementGuide: Fig = ({ caption }) => {
           <Verdict ok={false} note='화면을 덮는 회색 막 위 원 · "Loading" — 뒤 화면이 보이지 않고 무엇을 기다리는지 알 수 없다' bg={BASEMENT}>
             <LdPhone title="가계부" scale={0.5} h={520}>
               <div className="relative h-full">
-                <div className="px-4 pt-1">
+                <div style={cardStack()}>
                   <CardBox title="최근 거래">
                     <TxSkeletonRows n={3} widths={small} />
                   </CardBox>
@@ -392,11 +391,13 @@ function SearchCard({ mode = 'auto', phase }: { mode?: Mode; phase: 'quiet' | 'w
   return (
     <CardBox mode={mode} title="검색 결과" style={{ width: 264, minHeight: 280 }}>
       {phase === 'failed' ? (
-        <div style={{ padding: '20px 0 12px' }}>
-          <ResultSectionView look={resultSectionLook()} mode={mode} kind="failure" size="medium" title="검색 결과를 불러오지 못했어요" description="잠시 후 다시 시도해주세요." primary={{ label: '다시 시도' }} />
+        // 카드 안 결과 — 좌우는 목록 카드의 24 만(결과 자리의 좌우 0)
+        <div style={{ paddingTop: 20, paddingRight: L().skeleton.slowText.padXList, paddingBottom: 12, paddingLeft: L().skeleton.slowText.padXList }}>
+          <ResultSectionView look={resultSectionLook()} mode={mode} kind="failure" size="medium" inCard title="검색 결과를 불러오지 못했어요" description="잠시 후 다시 시도해주세요." primary={{ label: '다시 시도' }} />
         </div>
       ) : (
-        <div className="flex flex-col items-center" style={{ paddingTop: 64, gap: g, visibility: phase === 'quiet' ? 'hidden' : undefined }}>
+        // 목록 카드 바로 아래 영역 — 원 · 오래 걸림 글은 좌우 24 안에(skeleton.yaml slowText.paddingX 비고)
+        <div className="flex flex-col items-center" style={{ paddingTop: 64, paddingLeft: L().skeleton.slowText.padXList, paddingRight: L().skeleton.slowText.padXList, gap: g, visibility: phase === 'quiet' ? 'hidden' : undefined }}>
           <Circle mode={mode} size="40" decorative />
           {phase === 'slow' && <SlowText mode={mode} align="center" />}
         </div>

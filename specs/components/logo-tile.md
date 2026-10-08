@@ -221,6 +221,10 @@ import { LogoTile } from "@/components/ui/logo-tile"
 
 ## Migration notes
 
+### 2026-10-08 — 기관 고르기도 로고 타일 줄
+
+사용자가 [데이터 표시 비교 페이지](https://claude.ai/artifact/85zjM3PRBiEGnqjXXRrPRj) 13A 로 정했다 — 계좌 · 투자 추가의 은행 · 증권사 고르기는 위 검색 + 분류 머리(List Header) + 로고 타일 40 줄 + 오른쪽 라디오다([Searchable List](searchable-list.md)). 지금 Desk 웹의 분류별 칩 34개(고르면 기관 색 채움 — `widgets/asset-full/ui/AssetEditDialog.tsx:1119-1245`)를 걷는다 — 기관 색은 칩 채움이 아니라 타일이 보인다.
+
 ### 2026-10-04 — 새로 둔다(물건 로고 타일)
 
 사용자가 [이미지 비교 페이지](https://claude.ai/artifact/G351nuKcYX2xhorvA5UD6X)에서 정했다 — 브랜드 채움 + 대비 고침(5A — 기관 색 면, 흰 글자가 4.5:1 에 못 미치면 짙은 글자, 투명 윤곽, 모서리 × 0.3 · 크기는 List 타일, 첫 글자 · 이름 색은 Avatar 규칙), 그림이 늦으면 첫 글자 먼저(6B), 색 표는 하나(자산 70 + 카드사 — `institution-colors.yaml`), HR 회사 로고도 이 타일(흰 판 + 윤곽, 모르는 회사는 첫 글자). 옅은 바탕 타일 · 진짜 로고 그림 · 그림이 늦을 때의 스켈레톤은 고르지 않았다.
