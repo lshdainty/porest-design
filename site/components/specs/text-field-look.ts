@@ -33,6 +33,14 @@ function type(raw: unknown, what: string, weight?: unknown): TfType {
   return { fontSize: t.fontSize, lineHeight: must(t.lineHeight, `${what} 줄 높이`), fontWeight: (unbox(weight) as number | undefined) ?? t.fontWeight ?? 400, fontFamily: t.fontFamily ?? 'inherit' };
 }
 
+// '44 × 44' → 44(가로 · 세로가 같아야 한다)
+function square(raw: unknown, what: string) {
+  const v = String(unbox(must(raw, what))).trim();
+  const m = /^(\d+) × (\d+)$/.exec(v);
+  if (!m || m[1] !== m[2]) throw new Error(`Text Field YAML 의 ${what}(${v})이 'N × N' 이 아니다`);
+  return Number(m[1]);
+}
+
 type MotionEntry = { duration: unknown; easing: unknown };
 function motionOf(component: string, name: string): TfMotion {
   const all = (loadComponentSpec(component) as unknown as { motion?: Record<string, MotionEntry> }).motion ?? {};
@@ -69,6 +77,7 @@ function inputLook(brand: Brand): TfInputLook {
   const responsive = resolveState(spec, { size: 'responsive' }, 'enabled');
   return {
     sizes,
+    clearHit: square(base['clearButton.touchTarget'], 'input clearButton.touchTarget'),
     breakpoint: len(responsive['root.breakpoint'], 'input root.breakpoint'),
     stroke: { base: len(base['root.borderWidth'], 'input root.borderWidth'), active: len(focused['root.borderWidth'], 'input focused root.borderWidth') },
     color: {
@@ -81,6 +90,7 @@ function inputLook(brand: Brand): TfInputLook {
       affix: tok(base['prefixText.foreground'], brand, 'input prefixText.foreground'),
       icon: tok(base['prefixIcon.color'], brand, 'input prefixIcon.color'),
       clear: tok(base['clearButton.color'], brand, 'input clearButton.color'),
+      caret: tok(base['value.caretColor'], brand, 'input value.caretColor'),
       disabled: tok(disabled['value.foreground'], brand, 'input disabled value.foreground'),
       underlineReadonly: tok(ulReadonly['value.foreground'], brand, 'input underline readonly value.foreground'),
     },
@@ -105,6 +115,12 @@ function textareaLook(): TfTextareaLook {
     };
   }
   const responsive = resolveState(spec, { size: 'responsive' }, 'enabled');
+  // 캐럿 · 값 색은 Input 과 같은 줄을 쓴다(그림은 Input 의 색으로 그린다) — 다르면 멈춘다
+  const base = resolveState(spec, { size: 'large', autoSize: 'on' }, 'enabled');
+  const inputBase = resolveState(loadComponentSpec('input'), { variant: 'outline', size: 'large' }, 'enabled');
+  for (const k of ['value.caretColor', 'value.foreground']) {
+    if (String(unbox(base[k])) !== String(unbox(inputBase[k]))) throw new Error(`textarea.yaml ${k} 가 input.yaml 과 다르다 — 그림은 Input 의 색으로 그린다`);
+  }
   return { sizes, breakpoint: len(responsive['root.breakpoint'], 'textarea root.breakpoint') };
 }
 

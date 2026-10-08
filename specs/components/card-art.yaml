@@ -37,7 +37,7 @@ rules:
   - when: {}
     enabled:
       root:
-        aspectRatio: { value: 1.586, note: "Image Frame ratio card — 모서리는 폭으로(목록 56 · 격자 · 상세 8 · 카탈로그 44 는 6), 윤곽 stroke-neutral-overlay 는 면 위에도 늘" }
+        aspectRatio: { value: "1.586 / 1", note: "Image Frame ratio card — 모서리는 폭으로(목록 56 · 격자 · 상세 8 · 카탈로그 44 는 6), 윤곽 stroke-neutral-overlay 는 면 위에도 늘" }
       face:
         background: { value: 기관 색, note: "institution-colors.yaml 의 color — 모드를 따르지 않는다(라이트 · 다크 같다). 광택 띠 · 그라디언트 없이 한 색" }
         foreground: { value: 기관 글자색, note: "표의 text — white 면 static-white, dark 면 라이트 fg-neutral · 다크 fg-neutral-inverted. 78곳 모두 4.52:1 이상" }

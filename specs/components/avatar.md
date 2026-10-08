@@ -65,13 +65,15 @@
 
 ### Avatar Stack
 
-여러 사람은 겹쳐 묶는다 — 다음 아바타가 지름의 약 1/4(−5 ~ −27) 왼쪽으로 겹치고, 놓인 바탕색 링(1 ~ 5)으로 앞 아바타를 끊으며, 뒤에 오는 아바타가 위에 그려진다. 5명 이상이면 앞 4명 + 끝에 "+N" 원이다 — 같은 크기 · 같은 링 · 옅은 면(`bg-neutral-weak`) + `fg-neutral-muted` 700(N = 전체 − 4). 크기는 묶음이 정하고 안의 아바타가 모두 따른다. 링은 놓인 바탕과 같은 색 — 시트 · 대화상자 · 팝오버 안이면 `bg-layer-floating` 이다(다크에서 두 바탕이 다르다).
+여러 사람은 겹쳐 묶는다 — 다음 아바타가 지름의 약 1/4(−5 ~ −27) 왼쪽으로 겹치고, 놓인 바탕색 링(1 ~ 5)으로 앞 아바타를 끊으며, 뒤에 오는 아바타가 위에 그려진다. 5명 이상이면 앞 4명 + 끝에 "+N" 원이다 — 같은 크기 · 같은 링 · 옅은 면(`bg-neutral-weak`) + `fg-neutral-muted` 700(N = 전체 − 4). 크기는 묶음이 정하고 안의 아바타가 모두 따른다. 링은 놓인 바탕과 같은 색 — 시트 · 대화상자 · 팝오버 안이면 `bg-layer-floating` 이다(`surface` 축 — 다크에서 두 바탕이 다르다).
 
 [그림: 묶음 — 1/4 겹침 · 바탕색 링 · 뒤가 위 · 앞 4명 + "+2"](../../site/components/specs/avatar.tsx#stack)
 
 [표: 묶음 — 크기](avatar-stack.yaml#size)
 
 [표: 묶음 — 공통](avatar-stack.yaml#base.enabled)
+
+[표: 묶음 — 바탕](avatar-stack.yaml#surface)
 
 ### State
 
@@ -207,6 +209,10 @@ import { Avatar, AvatarStack } from "@/components/ui/avatar"
 - **이름 옆 아바타는 장식, 혼자면 이름** — SEED 는 `alt` 가 선택이고 예제에 없어 이름 없는 그림으로 읽힌다.
 
 ## Migration notes
+
+### 2026-10-08 — 묶음의 바탕(surface)을 YAML 축으로
+
+떠 있는 바탕(시트 · 대화상자 · 팝오버)에서 링 색이 `bg-layer-floating` 이어야 한다는 말이 비고에만 있고 축이 없었다 — YAML 대로 만들면 다크의 떠 있는 바탕(#2D3346) 위에 화면 색(#242938) 링이 짙은 테로 보인다(desk-front #428). `avatar-stack.yaml` 에 `surface`(default · floating) 축을 두고 floating 의 링 · "+N" 링을 `bg-layer-floating` 으로 적었다. 레시피는 이미 `surface` 를 받는다. 사용자 결정 — [비교 페이지](https://claude.ai/artifact/9qbK3fj8SL3RmTeiujoJZ6) 5.
 
 ### 2026-10-03 — SEED Avatar · Avatar Stack 으로
 

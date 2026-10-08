@@ -1,7 +1,7 @@
 'use client';
 // 스펙대로 그린 버튼 — ButtonLook(button.yaml 을 푼 값)만 받아 그린다.
 // state 를 주면 그 상태로 고정해 보여 주고, 'live' 면 실제로 호버 · 누름 · 키보드 포커스에 반응한다.
-import { useState, type ButtonHTMLAttributes, type CSSProperties, type ReactNode, type Ref } from 'react';
+import { useRef, useState, type ButtonHTMLAttributes, type CSSProperties, type ReactNode, type Ref } from 'react';
 import {
   ArrowRight,
   Bell,
@@ -273,5 +273,39 @@ export function LoadingDemo({ look, label, mode = 'auto', ms = 1600 }: { look: B
         setTimeout(() => setBusy(false), ms);
       }}
     />
+  );
+}
+
+// 누른 동작이 끝날 때까지 한 번(button.yaml root.press) — 누르면 잠깐 걸리는 동작(Promise)을 부르고, 그것이 끝나기 전의 누름은 버린다.
+// 잠금은 보이지 않는다(로딩 원을 걸지 않는다) — 부른 횟수 · 버린 누름을 아래 글로 센다. 레시피 button.tsx 의 handleClick 과 같은 셈
+export function PressLockDemo({ look, label, ms = 1200 }: { look: ButtonLook; label: string; ms?: number }) {
+  const inFlight = useRef(false);
+  const [calls, setCalls] = useState(0);
+  const [dropped, setDropped] = useState(0);
+  const [running, setRunning] = useState(false);
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <ButtonView
+        look={look}
+        label={label}
+        onClick={() => {
+          if (inFlight.current) {
+            setDropped((n) => n + 1);
+            return;
+          }
+          inFlight.current = true;
+          setRunning(true);
+          setCalls((n) => n + 1);
+          void new Promise((done) => setTimeout(done, ms)).finally(() => {
+            inFlight.current = false;
+            setRunning(false);
+          });
+        }}
+      />
+      <span className="text-[12px] leading-4 pk-muted" aria-live="polite">
+        부른 횟수 {calls} · 버린 누름 {dropped}
+        {running ? ' · 동작이 끝나기를 기다리는 중' : ''}
+      </span>
+    </div>
   );
 }

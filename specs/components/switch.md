@@ -225,6 +225,7 @@ import { Switchmark } from "@/components/ui/switch"
 - 모든 스위치에 이름을 둔다(보이는 라벨 또는 `aria-label`).
 - 설정 줄에서는 줄 전체가 눌리게 한다.
 - 막을 때는 라벨까지 비활성 색으로 바꾼다.
+- 자세히 보기 같은 링크는 라벨 옆이나 아래에 둔다 — 라벨은 켜고 끄는 글만.
 
 ### ❌ Don't
 
@@ -233,6 +234,7 @@ import { Switchmark } from "@/components/ui/switch"
 - 부모 스위치로 아래 스위치를 한꺼번에 켜고 끄기 — 부모 · 자식은 Checkbox 묶음.
 - 확인이 필요한 위험한 동작에 Switch — 버튼 + 확인 창을 쓴다.
 - 스위치를 줄여 그리기 — 작은 자리에는 `16` 을 쓴다.
+- 라벨 안에 링크 · 버튼 — 줄의 누르는 영역(44)이 덮어 눌리지 않는다. 라벨 옆이나 아래에 따로 둔다(사용자 결정 2026-10-08, Checkbox · Radio 와 같다).
 
 ## Specification
 
@@ -249,6 +251,10 @@ import { Switchmark } from "@/components/ui/switch"
 - 줄 안의 맞춤은 가운데다 — SEED 는 긴 라벨의 첫 줄에 스위치를 맞춘다.
 
 ## Migration notes
+
+### 2026-10-08 — 라벨 안 링크는 Don't
+
+줄(`Switch`)의 누르는 영역(`::before` 44)이 라벨을 덮어 라벨 안 링크 · 버튼은 눌리지 않는다. 사용자가 [비교 페이지](https://claude.ai/artifact/9qbK3fj8SL3RmTeiujoJZ6) C 에서 레시피는 그대로 두고 Don't 에 적기로 정했다 — 링크는 라벨 옆 · 아래에(Checkbox · Radio 와 같다).
 
 ### 2026-09-30 — SEED Switch 구조로
 

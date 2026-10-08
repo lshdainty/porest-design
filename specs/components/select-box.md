@@ -230,6 +230,7 @@ import { RadioSelectBox, RadioSelectBoxGroup } from "@/components/ui/select-box"
 | Keyboard `Tab` | 하나 고르기 묶음은 고른 상자 하나로 들어온다 · 여럿은 상자마다. |
 | Keyboard `↑` `↓` `←` `→` | 하나 고르기 묶음 안에서 옮기며 고른다(Radix). |
 | Keyboard `Space` | 고른다 · 켜고 끈다. 누르고 있는 동안은 누름 모습이다. |
+| Keyboard `Enter` | 폼을 제출한다 — 진짜 input 처럼 폼의 기본 버튼을 누른다. 고르지 않는다(Checkbox · Radio 와 같다, 2026-10-08). |
 | 반영 | 저장 · 다음 같은 버튼이 한다 — 상자를 고르는 것만으로 반영하지 않는다. |
 
 ## Accessibility
@@ -279,6 +280,10 @@ import { RadioSelectBox, RadioSelectBoxGroup } from "@/components/ui/select-box"
 - 고른 테두리 `stroke-neutral-contrast` 는 v113 에 더한 역할이다(SEED 와 같은 gray-1000).
 
 ## Migration notes
+
+### 2026-10-08 — Enter 는 폼 제출
+
+Checkbox · Radio 의 Enter 가 폼을 제출하게 됐다(사용자 결정 — [비교 페이지](https://claude.ai/artifact/9qbK3fj8SL3RmTeiujoJZ6) B1, 진짜 input · SEED 와 같다). 여럿 고르기 상자는 `Checkmark` 를 써서 그대로 따라오고, 하나 고르기 묶음(`RadioSelectBoxGroup`)은 Radio 와 같은 처리(`submitOnRadioEnter`)로 Enter 를 받는다. 고르기는 그대로 Space · 화살표다.
 
 ### 2026-10-01 — SEED Select Box 로
 

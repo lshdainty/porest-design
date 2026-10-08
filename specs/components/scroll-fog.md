@@ -28,7 +28,7 @@
 
 ### 마스크 — 색이 아니다
 
-`gradient-fade-mask`(알파 0 → 1, 16단계)를 스크롤 상자에 `mask-image` 로 건다 — 흐린 쪽마다 방향을 붙여 하나씩 겹친다. 바탕색을 덧칠하지 않으므로 흰 면 · 회색 바탕 · 다크 어디서나 같은 값이다. 내용이 흐려질 뿐 그 위에 무엇을 얹지 않아, 흐린 자리의 칩 · 줄도 그대로 눌린다.
+`gradient-fade-mask`(알파 0 → 1, 16단계)를 스크롤 상자에 `mask-image` 로 건다 — 흐린 쪽마다 상자 전체 크기의 층 하나에 방향을 붙이고(단계는 그 쪽 깊이에 맞춰 깊이 안에서 불투명에 닿는다) 겹친 층을 곱한다(`mask-composite: intersect`, SEED 와 같다). 상자가 두 깊이의 합보다 낮아도 양 끝이 함께 흐리다. 바탕색을 덧칠하지 않으므로 흰 면 · 회색 바탕 · 다크 어디서나 같은 값이다. 내용이 흐려질 뿐 그 위에 무엇을 얹지 않아, 흐린 자리의 칩 · 줄도 그대로 눌린다.
 
 [그림: 같은 흐림이 흰 면 · 회색 바탕 · 다크에서 — 색 막(바탕색 그라디언트)은 바탕이 바뀌면 띠가 보인다](../../site/components/specs/scroll-fog.tsx#mask)
 
@@ -171,6 +171,10 @@ import { ScrollFog } from "@/components/ui/scroll-fog"
 - **시트 · 대화상자 본문의 흐림도 이 규칙이다** — SEED Dialog 의 안의 흐림(넘칠 때만 아래 48)은 따르지 않는다.
 
 ## Migration notes
+
+### 2026-10-08 — 마스크를 쪽마다 한 층 + intersect 로(레시피)
+
+YAML 은 "흐린 쪽마다 하나씩 겹친다(`mask-composite: intersect`)" 인데 레시피는 처음 흐림 · 가운데 불투명 · 끝 흐림 세 층을 겹치지 않게 이어 붙였다(`mask-composite` 기본 add). 상자가 두 깊이의 합(`overlayBody` 는 100)보다 낮으면 가운데 층이 0 이 되고 두 흐림이 겹친 자리에서 더해져 덜 흐렸다. 레시피 · 예제 · 미리보기를 YAML · SEED 대로 바꿨다 — 흐린 쪽마다 상자 전체 크기의 층 하나(단계는 그 쪽 깊이의 몫), 두 층을 곱한다(`-webkit-mask-composite` 는 옛 이름 `source-in`). 그보다 큰 상자의 모습은 그대로다. 사용자 결정 — [비교 페이지](https://claude.ai/artifact/9qbK3fj8SL3RmTeiujoJZ6) 6.
 
 ### 2026-10-03 — 새로 둔다(SEED Scroll Fog)
 

@@ -4,6 +4,8 @@
 // 색은 라이트(-l) · 다크(-d) 값을 둘 다 싣고 CSS(global.css 의 .prad)가 사이트 모드에 맞춰 고른다.
 import { forwardRef, useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from 'react';
 import type { RadioChecked, RadioLook, RadioState } from './radio-group-shared';
+import type { TfFieldLook } from './text-field-shared';
+import { TfFieldView } from './text-field-view';
 
 export type RadioViewProps = {
   look: RadioLook;
@@ -143,6 +145,8 @@ export function RadioGroupView({
   ariaLabel,
   ariaLabelledby,
   ariaDescribedby,
+  ariaInvalid,
+  ariaRequired,
   state = 'live',
 }: {
   look: RadioLook;
@@ -156,6 +160,9 @@ export function RadioGroupView({
   ariaLabel?: string;
   ariaLabelledby?: string;
   ariaDescribedby?: string;
+  // 묶음의 오류 · 필수(Field 가 넘긴다 — radio-group.tsx 와 같다). 선택지가 모두 막히면 묶음 aria-disabled
+  ariaInvalid?: boolean;
+  ariaRequired?: boolean;
   // 고정 그림이면 'enabled' — 누르지 못한다
   state?: 'live' | 'enabled';
 }) {
@@ -175,7 +182,16 @@ export function RadioGroupView({
     pick(to);
   };
   return (
-    <div role="radiogroup" aria-label={ariaLabel} aria-labelledby={ariaLabelledby} aria-describedby={ariaDescribedby} style={{ display: 'flex', flexDirection: 'column', gap }}>
+    <div
+      role="radiogroup"
+      aria-label={ariaLabel}
+      aria-labelledby={ariaLabelledby}
+      aria-describedby={ariaDescribedby}
+      aria-invalid={ariaInvalid || undefined}
+      aria-required={ariaRequired || undefined}
+      aria-disabled={(items.length > 0 && open.length === 0) || undefined}
+      style={{ display: 'flex', flexDirection: 'column', gap }}
+    >
       {items.map((it, i) => (
         <RadioView
           key={it}
@@ -201,5 +217,15 @@ export function RadioGroupView({
         />
       ))}
     </div>
+  );
+}
+
+// Field 로 감싼 묶음 — Field 의 라벨이 묶음의 이름(aria-labelledby), 오류 글이 묶음의 설명(aria-describedby)이 되고 묶음에
+// aria-invalid 가 걸린다(radio-group.md "코드" 의 오류 예 · 레시피 RadioGroup 의 useFieldGroupState)
+export function RadioFieldView({ field, look, gap, label, errorMessage, items, width }: { field: TfFieldLook; look: RadioLook; gap: string; label: string; errorMessage: string; items: string[]; width?: number }) {
+  return (
+    <TfFieldView look={field} label={label} invalid errorMessage={errorMessage} group width={width}>
+      {({ labelId, describedBy, invalid }) => <RadioGroupView look={look} items={items} gap={gap} ariaLabelledby={labelId} ariaDescribedby={describedBy} ariaInvalid={invalid} />}
+    </TfFieldView>
   );
 }

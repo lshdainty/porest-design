@@ -95,8 +95,10 @@ export function tokenValue(raw: unknown, mode: Mode = 'light', brand: Brand = 'd
   const front = design().front;
   if (group === 'spacing' && front.spacing[key]) return front.spacing[key];
   if (group === 'radius') return key === 'full' ? '9999px' : front.rounded[key];
-  if (group === 'text' && front.typography[key]) {
-    const t = front.typography[key];
+  // 글자 — `$text-t1-static` 은 같은 글자 토큰의 고정 px 판(내보낼 때 생긴다 — DESIGN.md Typography v104). 값은 같다
+  const textKey = group === 'text' ? key.replace(/-static$/, '') : key;
+  if (group === 'text' && front.typography[textKey]) {
+    const t = front.typography[textKey];
     return { fontSize: t.fontSize, lineHeight: t.lineHeight, fontWeight: t.fontWeight, fontFamily: t.fontFamily };
   }
   if (group === 'font' && key === 'sans') return front.typography.t4?.fontFamily ?? 'Pretendard, sans-serif';

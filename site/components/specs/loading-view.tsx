@@ -221,7 +221,7 @@ export function ProgressView({ look, mode = 'auto', label, value, max, meaning =
   const pin = (p: PgPart) => pins?.[p] && <span aria-hidden className="pointer-events-none absolute" style={{ left: -26, top: '50%', marginTop: -10, zIndex: 3 }}>{pins[p]}</span>;
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: look.gap, width, fontFamily: FONT, ...style }}>
-      <div aria-hidden style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 }}>
+      <div aria-hidden style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: look.headerGap }}>
         <span style={{ position: 'relative', fontSize: look.label.fontSize, lineHeight: look.label.lineHeight, fontWeight: look.label.fontWeight, color: lcv(look.label.color, mode), ...zone?.label }}>
           {label}
           {pin('label')}

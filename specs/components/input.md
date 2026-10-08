@@ -56,7 +56,7 @@
 | `focused` | 안쪽에 2px `stroke-neutral-contrast` 를 덧그린다 — 마우스 · 터치로 눌러도(캐럿과 함께 지금 쓰는 칸을 알린다). 내용은 밀리지 않는다 |
 | `invalid` | 안쪽 2px `stroke-critical-solid` — 포커스해도 그대로. 오류 글은 Field 가 칸 아래에 |
 | `disabled` | 바탕 `bg-disabled` · 글자 · 아이콘 `fg-disabled`. 흐리게 하지 않는다(v106) |
-| `readonly` | 바탕 `bg-disabled` · 값은 진한 글자 그대로, 포커스 테두리 없음. 밑줄형은 바탕 대신 글자가 `fg-neutral-muted` |
+| `readonly` | 바탕 `bg-disabled` · 값은 진한 글자 그대로, 포커스 테두리 없음(포커스 표시를 두지 않는다 — 사용자 결정, 아래 Accessibility). 밑줄형은 바탕 대신 글자가 `fg-neutral-muted` |
 
 [그림: 상태 — 기본 · 포커스 · 오류 · 오류 + 포커스 · 비활성 · 읽기 전용(상자 · 밑줄)](../../site/components/specs/input.tsx#states)
 
@@ -65,6 +65,8 @@
 [표: 상태 — 밑줄](input.yaml#matrix.variant.underline)
 
 [표: 모션](input.yaml#motion)
+
+캐럿은 글자색(`fg-neutral`)이고 고른 글은 기기 기본 하이라이트다 — 색을 따로 두지 않는다(SEED 도 정하지 않았다). 앱도 캐럿을 같은 색으로 둔다(사용자 결정 2026-10-08).
 
 ### Prefix · Suffix
 
@@ -78,6 +80,8 @@
 ### Clear Button
 
 값이 있을 때 한 번에 지우는 버튼(`clearable`) — large 22 · medium 18 의 `fg-neutral-subtle` 원 X. 막혔거나 읽기 전용이면 보이지 않는다. 누르면 값을 비우고 입력에 포커스를 둔다. 검색칸 · 선택 사항인 칸에 둔다(필수 칸에는 두지 않는다 — 지울 일이 드물다).
+
+누르는 영역은 44 다 — 보이는 원 둘레로 넓혀(기초 Inclusive Design 의 "누르는 영역은 모두 44 × 44 이상") 아이콘 바로 바깥을 눌러도 지운다. 상자 밖은 상자가 자르므로 medium(40)에서는 44 × 40 이다. 넓힌 자리는 입력 글의 오른쪽 끝을 덮는다 — 그 자리를 누르면 캐럿을 옮기지 않고 지운다.
 
 [그림: 지우기 — 값이 있을 때만](../../site/components/specs/input.tsx#clear)
 
@@ -179,10 +183,10 @@ import { Search } from "lucide-react"
 | Keyboard `Tab` | 다음 칸으로. 지우기 버튼은 Tab 순서에 없다(값을 지우는 키는 있다). |
 | `<label>` 누르기 | 연결된 칸으로 포커스(Field 가 잇는다). |
 | 쓰기 | 최대 글자 수(Field `maxGraphemeCount`)에 닿으면 더 들어가지 않는다 — 한글은 조합이 끝난 뒤 자른다. |
-| 지우기 | 값을 비우고(`onChange` 로 빈 값) 입력에 포커스를 둔다. |
+| 지우기 | 값을 비우고(`onChange` 로 빈 값) 입력에 포커스를 둔다. 누르는 영역은 원 둘레 44 다. |
 | `Enter`(폼 안) | 폼 제출(브라우저 기본). Enter 를 직접 받는 곳은 한글을 조합하는 중(`isComposing`)이면 무시한다. |
 | Disabled | 포커스 · 입력 불가. 커서 not-allowed. |
-| Readonly | 포커스 · 복사는 되고 입력은 안 된다. 포커스 테두리 없음. |
+| Readonly | 포커스 · 복사는 되고 입력은 안 된다. 포커스 테두리 없음 — 포커스 표시를 두지 않는다(사용자 결정 2026-10-08). |
 | 자동 완성 | 브라우저 자동 완성의 바탕색을 지운다 — 칸 모양 그대로. |
 
 ## Accessibility
@@ -191,9 +195,9 @@ import { Search } from "lucide-react"
 |---|---|
 | **WCAG 1.4.3** Color contrast(글자 ≥ 4.5:1) | 값 `fg-neutral` 16.41 · 13.42, placeholder `fg-placeholder` · 붙이개 글자 `fg-neutral-subtle` 5.50 · 6.09(시트 다크 5.27), 읽기 전용 바탕 위 값 15.20 · 10.32 · placeholder 5.09 · 4.68 ✓. 비활성 `fg-disabled` 는 기준 밖(비활성 UI) |
 | **WCAG 1.4.11** Non-text contrast(≥ 3:1) | 포커스 테두리 `stroke-neutral-contrast` 16.41 · 13.42, 오류 `stroke-critical-solid` 5.06 · 6.08 ✓. 기본 1px `stroke-neutral-weak`(1.23 · 1.56)는 칸을 알리는 유일한 표시가 아니다 — 라벨 · placeholder 가 칸을 알린다(SEED 와 같다) |
-| **WCAG 2.4.7** Focus visible | 포커스하면 테두리가 2px 짙어진다(키보드 · 마우스 모두) |
-| **WCAG 2.5.8** Target Size — Minimum(AA ≥ 24×24) | 모든 크기 ✓(가장 작은 밑줄 medium 34) |
-| **WCAG 2.5.5** Target Size — Enhanced(AAA ≥ 44×44) | large 52 ✓ · medium 40 ⚠ — medium 은 1280 이상 데스크톱 웹(마우스)에서만. 밑줄 large 40 ⚠ — 칸 폭 전체가 누르는 영역이라 가로는 넉넉하다 |
+| **WCAG 2.4.7** Focus visible | 편집 칸 — 포커스하면 테두리가 2px 짙어진다(키보드 · 마우스 모두) ✓. 읽기 전용 — 포커스 표시가 없다 ⚠. 사용자 결정(2026-10-08 — [비교 페이지](https://claude.ai/artifact/9qbK3fj8SL3RmTeiujoJZ6) A1): SEED 처럼 편집 칸의 테두리를 주지 않는다. 읽기 전용은 값을 보이는 자리라 편집 칸과 같은 표시를 주면 쓸 수 있는 칸으로 읽힌다(짙은 테두리 안은 고르지 않았다), 다른 컨트롤과 같은 바깥 링도 두지 않는다. 크로미움은 읽기 전용 칸에 캐럿도 그리지 않아 Tab 으로 들어가도 보이는 변화가 없다는 것을 알고 정했다 — 읽기 전용 칸은 복사 · 읽기를 위해 Tab 순서에 남는다 |
+| **WCAG 2.5.8** Target Size — Minimum(AA ≥ 24×24) | 모든 크기 ✓(가장 작은 밑줄 medium 34). 지우기 버튼 44 ✓ |
+| **WCAG 2.5.5** Target Size — Enhanced(AAA ≥ 44×44) | large 52 ✓ · medium 40 ⚠ — medium 은 1280 이상 데스크톱 웹(마우스)에서만. 밑줄 large 40 ⚠ — 칸 폭 전체가 누르는 영역이라 가로는 넉넉하다. 지우기 버튼 44 ✓(medium 상자 안에서는 44 × 40 ⚠) |
 | **ARIA** | 이름은 Field 의 라벨(`<label for>`) — 라벨이 없으면 `aria-label`. 오류면 `aria-invalid`, 필수면 `aria-required`, 설명 · 오류 · 글자 수 · 붙이개 글자는 `aria-describedby`. 지우기 버튼 이름 "지우기" |
 
 ## Do / Don't
@@ -223,12 +227,20 @@ import { Search } from "lucide-react"
 
 ## SEED 와 다른 점
 
-- **지우기 버튼을 Text Input 에도 둔다** — SEED 는 Input Button 에만 둔다. 값은 SEED Input Button 의 지우기(large 22 · medium 18)를 따랐고, Tab 순서에는 넣지 않는다.
+- **지우기 버튼을 Text Input 에도 둔다** — SEED 는 Input Button 에만 둔다. 값은 SEED Input Button 의 지우기(large 22 · medium 18)를 따랐고, Tab 순서에는 넣지 않는다. 누르는 영역은 기초의 "누르는 영역 44" 대로 원 둘레로 넓힌다.
 - **아이콘은 lucide 선 아이콘**(기초 Iconography v106) — 지우기는 `circle-x`, 오류는 `circle-alert`. SEED 는 채운 아이콘이다.
 - **상자의 붙이개 · 여백을 눌러도 입력으로 포커스가 간다** — SEED 는 입력이 맨 앞 · 맨 뒤일 때만 그 여백까지 입력이다.
 - **붙이개 글자를 입력의 설명으로 잇는다** — 단위가 화면 읽기 프로그램에도 들린다.
 
 ## Migration notes
+
+### 2026-10-08 — 앱 적용이 남긴 것
+
+웹 · 앱에 옮기며 드러난 것을 사용자가 [비교 페이지](https://claude.ai/artifact/9qbK3fj8SL3RmTeiujoJZ6)에서 정했다.
+
+- **지우기 버튼의 누르는 영역 44** — 레시피는 보이는 원(22 · 18)이 곧 누르는 영역이었다(앱은 desk-app #408 에서 44 로 넓혔다). 레시피 · 예제 · 미리보기 · 사이트 그림을 맞췄다.
+- **읽기 전용의 포커스는 지금처럼 표시 없음**(A1 — SEED 와 같다). 다른 컨트롤과 같은 바깥 링(A2) · 편집 칸처럼 짙은 테두리(A3)는 고르지 않았다. 까닭과 2.4.7 은 Accessibility 에 적었다.
+- **캐럿은 글자색(`fg-neutral`) · 고른 글은 기기 기본**(D1) — 웹은 브라우저 기본 그대로(레시피에 캐럿 색을 적었다), 앱은 테마 primary(브랜드 파랑)였던 캐럿을 `fg-neutral` 로 바꾼다.
 
 ### 2026-10-01 — SEED Text Input 으로
 

@@ -5,7 +5,7 @@ import { Figure, Panel, MARK, MARK_LINE } from '../foundations/ui';
 import { axisDesc, axisValues, loadComponentSpec } from '@/lib/component-spec';
 import { buttonLook, buttonParts, BUTTON_STATES, type ButtonCombo } from './button-look';
 import { ButtonPlayground } from './button-playground';
-import { ButtonView, Icon, LoadingDemo, type IconName } from './button-view';
+import { ButtonView, Icon, LoadingDemo, PressLockDemo, type IconName } from './button-view';
 import { rc, Card, Heading, Row, Phone, Field, type Mode } from './kit';
 
 type Fig = (p: { caption?: string }) => ReactNode;
@@ -338,6 +338,16 @@ const LiveStates: Fig = ({ caption }) => (
   </Figure>
 );
 
+// ── 누른 동작이 끝날 때까지 한 번(Behavior) ─────────────────
+const PressLock: Fig = ({ caption }) => (
+  <Figure caption={caption}>
+    <div className="flex items-start justify-center gap-10 rounded-xl pk-surface px-10 py-8">
+      <PressLockDemo look={buttonLook({ variant: 'neutralSolid' })} label="저장" />
+      <PressLockDemo look={buttonLook({ variant: 'brandOutline' })} label="보내기" />
+    </div>
+  </Figure>
+);
+
 // ── Width ─────────────────────────────────────────────────
 const Width: Fig = ({ caption }) => (
   <Figure caption={caption}>
@@ -407,6 +417,7 @@ export const buttonFigures: Record<string, Fig> = {
   'ghost-colors': GhostColors,
   states: States,
   'live-states': LiveStates,
+  'press-lock': PressLock,
   width: Width,
   'hit-area': HitArea,
 };

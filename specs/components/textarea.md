@@ -29,7 +29,7 @@
 
 자동 높이가 기본이다 — 3줄(large 94 · medium 82)에서 시작해 쓴 만큼 자란다. 최대 높이는 기본으로 없고, 자리마다 정할 수 있다(정하면 그 높이부터 칸 안에서 스크롤). 손잡이(resize)는 두지 않는다.
 
-자동 높이를 끄면(`autoSize={false}`) 높이를 자리마다 정한다 — 2줄(large 72 · medium 62)보다 낮게 두지 않고, 넘치는 글은 칸 안에서 스크롤한다. 높이는 반드시 정한다(SEED).
+자동 높이를 끄면(`autoSize={false}`) 높이를 자리마다 정한다 — 2줄(large 72 · medium 62)보다 낮게 두지 않고, 넘치는 글은 칸 안에서 스크롤한다. 높이는 반드시 정한다(SEED). 켜 둔 채 자란 칸에서 끄면 자랄 때 넣은 높이를 걷어 고정 높이로 돌아가고, 넘치는 글은 스크롤된다.
 
 [그림: 자동 높이 — 3줄에서 자란다 · 최대 높이에서 멈추고 스크롤 · 고정 높이](../../site/components/specs/textarea.tsx#autosize)
 
@@ -45,7 +45,7 @@ Input 과 같다 — `large`(글자 16 · 모서리 12 · 여백 위아래 14 ·
 
 ### State
 
-Input 의 상자형과 같다 — 포커스는 안쪽 2px `stroke-neutral-contrast`(마우스 · 터치도), 오류는 안쪽 2px `stroke-critical-solid`(포커스해도 그대로), 비활성 · 읽기 전용은 `bg-disabled` 바탕(흐리게 하지 않는다), 비활성 글자는 `fg-disabled`.
+Input 의 상자형과 같다 — 포커스는 안쪽 2px `stroke-neutral-contrast`(마우스 · 터치도), 오류는 안쪽 2px `stroke-critical-solid`(포커스해도 그대로), 비활성 · 읽기 전용은 `bg-disabled` 바탕(흐리게 하지 않는다), 비활성 글자는 `fg-disabled`. 읽기 전용은 포커스 표시가 없고(사용자 결정 2026-10-08 — 까닭과 2.4.7 은 [Input](input.md)), 캐럿은 글자색 · 고른 글은 기기 기본 하이라이트다.
 
 [그림: 상태 — 기본 · 포커스 · 오류 · 비활성 · 읽기 전용](../../site/components/specs/textarea.tsx#states)
 
@@ -110,11 +110,12 @@ import { Textarea } from "@/components/ui/textarea"
 |---|---|
 | Click / Tap | 포커스 — 테두리가 2px 짙어진다. |
 | 쓰기 · 붙여넣기 | 자동 높이면 글에 맞춰 바로 자란다(움직임 없이). 최대 높이에 닿으면 멈추고 스크롤이 생긴다. |
+| 자동 높이를 끌 때 | 자랄 때 넣은 높이 · 넘침을 걷어 고정 높이(2줄 이상)로 돌아간다 — 넘치는 글은 칸 안에서 스크롤된다. |
 | 폭이 바뀔 때 | 줄이 다시 감겨 높이를 다시 맞춘다. |
 | 쓰기(최대 글자 수) | 최대에 닿으면 더 들어가지 않는다 — 한글은 조합이 끝난 뒤 자른다. |
 | `Enter` | 줄바꿈. 폼을 제출하지 않는다. |
 | Disabled | 포커스 · 입력 불가. 커서 not-allowed. |
-| Readonly | 포커스 · 복사 · 스크롤은 되고 입력은 안 된다. |
+| Readonly | 포커스 · 복사 · 스크롤은 되고 입력은 안 된다. 포커스 표시가 없다(Input 과 같다). |
 
 ## Accessibility
 
@@ -123,6 +124,7 @@ import { Textarea } from "@/components/ui/textarea"
 | **WCAG 1.4.3** Color contrast(글자 ≥ 4.5:1) | 값 `fg-neutral` 16.41 · 13.42, placeholder `fg-placeholder` 5.50 · 6.09(시트 다크 5.27), 읽기 전용 바탕 위 값 15.20 · 10.32 ✓. 비활성 `fg-disabled` 는 기준 밖(비활성 UI) |
 | **WCAG 1.4.11** Non-text contrast(≥ 3:1) | 포커스 테두리 16.41 · 13.42, 오류 5.06 · 6.08 ✓. 기본 1px 테두리(1.23 · 1.56)는 라벨 · placeholder 와 함께 칸을 알린다 |
 | **WCAG 1.4.10** Reflow | 자동 높이라 가로 스크롤 없이 글이 감긴다 |
+| **WCAG 2.4.7** Focus visible | 편집 칸은 포커스하면 테두리가 2px 짙어진다 ✓. 읽기 전용은 포커스 표시가 없다 ⚠ — 사용자 결정(2026-10-08), 까닭은 [Input](input.md) 의 같은 줄 |
 | **WCAG 2.5.5** Target Size — Enhanced(AAA ≥ 44×44) | 최소 높이 62 이상 ✓ |
 | **ARIA** | 이름은 Field 의 라벨. 오류면 `aria-invalid`, 설명 · 오류 · 글자 수는 `aria-describedby`(Field 가 잇는다) |
 
@@ -153,6 +155,13 @@ import { Textarea } from "@/components/ui/textarea"
 - **자동 높이를 끈 2줄 최소 높이를 줄 높이로 계산해 적었다**(large 72 · medium 62) — SEED 문서는 70 하나다.
 
 ## Migration notes
+
+### 2026-10-08 — 앱 적용이 남긴 것
+
+사용자가 [비교 페이지](https://claude.ai/artifact/9qbK3fj8SL3RmTeiujoJZ6)에서 정했다(Input 과 같은 결정).
+
+- **자동 높이를 끄면 자란 높이를 걷는다** — 레시피가 켜 둔 동안 넣은 인라인 높이 · `overflow-y: hidden` 을 그대로 두어, 끄고 나서도 큰 칸이 남고 더 쓴 글이 잘린 채 스크롤되지 않았다(desk-front #429). 레시피와 사이트의 칸을 고쳤다.
+- **읽기 전용의 포커스는 표시 없음 · 캐럿은 글자색 · 고른 글은 기기 기본** — [Input](input.md) 의 2026-10-08 과 같다.
 
 ### 2026-10-01 — SEED Textarea 로
 

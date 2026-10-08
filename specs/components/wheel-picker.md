@@ -135,6 +135,10 @@ import { WheelPicker, WheelPickerColumn } from "@/components/ui/wheel-picker"
 
 ## Migration notes
 
+### 2026-10-08 — 글자 값을 고정 px 토큰으로
+
+YAML 의 항목 글자가 rem 토큰(`$text-t10` · `$text-t7`)을 가리키고 "글자 크기 설정을 따르지 않는 px" 는 비고에만 있었다 — YAML 대로 만들면 글자 크기 200% 에서 휠 글자가 52 / 70 으로 커져 44 칸을 넘어 위아래 항목과 겹친다. 레시피 · 제품(웹 `-static` 클래스 · 앱 `TextScaler.noScaling`) · SEED rootage 와 같게 값 자리를 `-static` 토큰(`$text-t10-static` · `$text-t7-static`)으로 고쳤다. 크기 · 모습은 그대로다. `-static` 은 같은 글자 토큰의 px 판이다(Typography v104 — 내보낼 때 생긴다). 사용자 결정 — [비교 페이지](https://claude.ai/artifact/9qbK3fj8SL3RmTeiujoJZ6) 3.
+
 ### 2026-10-03 — SEED Wheel Picker 로 새로 둔다
 
 사용자가 [비교 페이지](https://claude.ai/artifact/9bPrBNHaYc7gRPweKRadUw)에서 정했다 — 시각은 SEED Time Picker(이 휠 위), 달력의 연 · 월은 휠, 달만 고르기도 연 · 월 휠 + "완료".

@@ -43,7 +43,7 @@ const ROOT_DEFAULTS = { size: "responsive" };
 
 // 입력(textareaValueVariants) — 여백 · 높이는 입력이 가진다. 최소 높이는 자동 높이 3줄, 고정 높이 2줄
 const VALUE_BASE =
-  "block w-full resize-none border-0 bg-transparent px-[var(--textarea-px)] py-[var(--textarea-py)] outline-none [font:inherit] disabled:cursor-not-allowed";
+  "block w-full resize-none border-0 bg-transparent px-[var(--textarea-px)] py-[var(--textarea-py)] caret-fg-neutral outline-none [font:inherit] disabled:cursor-not-allowed";
 
 const VALUE_VARIANTS = {
   size: { large: "", medium: "", responsive: "" },

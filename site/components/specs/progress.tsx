@@ -121,7 +121,7 @@ const Layout: Fig = ({ caption }) => {
             이름 {px(p.label.fontSize)} / {labelLh} · {p.label.fontWeight}
           </span>
           <span>
-            오른쪽 글 {px(p.status.fontSize)} / {px(p.status.lineHeight)} · 숫자 폭 같게
+            오른쪽 글 {px(p.status.fontSize)} / {px(p.status.lineHeight)} · 숫자 폭 같게 · 이름과 적어도 {p.headerGap}
           </span>
           <span>막대 {p.track.height} · 모서리 full</span>
           <span>

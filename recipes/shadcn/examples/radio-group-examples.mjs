@@ -4,6 +4,7 @@
  *
  * RADIOMARK_* · DOT_* · ROW_* · LABEL_* 와 GROUP 은
  * recipes/shadcn/components/ui/radio-group.tsx 의 cva 정의 · 클래스와 글자 하나까지 같아야 한다 — 두 파일을 함께 고친다.
+ * FIELD_* 는 field.tsx 의 클래스(field-examples.mjs 와 같다) — 오류 예가 묶음을 Field 로 감싼다.
  * 규칙은 specs/components/radio-group.md, 수치 원본은 specs/components/radio-group.yaml.
  *
  * Preview 는 정적 HTML 이다 — 페이지의 Tailwind v4 browser CDN 이 클래스를 utility 로 만든다.
@@ -119,6 +120,24 @@ const radiomarkDotVariants = cvaOf(DOT_BASE, { variants: DOT_VARIANTS, defaultVa
 const radioVariants = cvaOf(ROW_BASE, { variants: ROW_VARIANTS, defaultVariants: ROW_DEFAULTS });
 const radioLabelVariants = cvaOf(LABEL_BASE, { variants: LABEL_VARIANTS, defaultVariants: LABEL_DEFAULTS });
 
+// ── field.tsx 의 클래스(field-examples.mjs 와 같다) — 오류 예의 Field ─────────────
+
+const FIELD_ROOT = "flex w-full min-w-0 flex-col gap-x2";
+const FIELD_HEADER = "flex items-center justify-between gap-x2_5 px-x0_5";
+const FIELD_LABEL = "min-w-0 font-sans text-t5 text-fg-neutral";
+const FIELD_LABEL_WEIGHT = { medium: "font-medium", bold: "font-bold" };
+const FIELD_FOOTER = "flex items-start gap-x2 px-x0_5 font-sans";
+const FIELD_ERROR = "m-0 flex min-w-0 text-t4 text-fg-critical";
+const FIELD_ERROR_ICON = "mr-x1_5 mt-[calc((var(--text-t4--line-height)_-_1rem)/2)] size-4 shrink-0";
+const FIELD_TEXT = "min-w-0";
+
+// 사이트의 `.content p { margin: 12px 0; color: text-primary }` 는 층 밖 규칙이라 utility 를 이긴다 — 꼬리의 <p> 에 한 번 더 적는다(field-examples.mjs 와 같다)
+const P_FIX_ERROR = "margin:0; color:var(--color-fg-critical);";
+const CIRCLE_ALERT =
+  '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="' +
+  FIELD_ERROR_ICON +
+  '" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>';
+
 // ── 미리보기 조각 ─────────────────────────────────────────────────────────
 
 const attrs = (list) => list.filter(Boolean).join(" ");
@@ -151,12 +170,14 @@ function radioGroup(
   options,
   { value, disabled = false, row = radio, ariaLabel = "", labelledBy = "", describedBy = "", invalid = false } = {},
 ) {
+  // 막힌 묶음은 aria-disabled 도 단다(레시피 RadioGroup — Field 의 막힘과 같다)
   const root = attrs([
     'role="radiogroup"',
     ariaLabel && `aria-label="${ariaLabel}"`,
     labelledBy && `aria-labelledby="${labelledBy}"`,
     describedBy && `aria-describedby="${describedBy}"`,
     invalid && 'aria-invalid="true"',
+    disabled && 'aria-disabled="true" data-disabled=""',
     `class="${GROUP}"`,
   ]);
   const rows = options.map(({ value: own, ...option }) =>
@@ -295,23 +316,24 @@ export const radioGroupExamples = [
   {
     title: "오류",
     description:
-      "오류가 나도 동그라미 모양은 바꾸지 않는다 — 동그라미마다 빨간 테두리를 두르지 않고, 묶음 아래에 무엇을 해야 하는지 글(fg-critical)로 알린다. 오류 글은 묶음에 aria-describedby 로 잇는다. 처음부터 하나를 골라 두면 오류가 날 일이 없다 — 골라 둘 수 없는 선택(사용자가 꼭 스스로 골라야 하는)에만 쓴다. 검사는 제출할 때 한다 — 누르는 동안에는 띄우지 않는다.",
-    jsx: `<RadioGroup aria-labelledby="repeat-title" aria-describedby="repeat-error" aria-invalid>
-  <Radio value="none" label="반복 없음" />
-  <Radio value="monthly" label="매월" />
-</RadioGroup>
-<p id="repeat-error" className="text-t2 text-fg-critical">반복을 골라 주세요.</p>`,
-    render: () =>
-      surface(
-        field(
-          "radio-ex-error-title",
-          `${radioGroup(repeat(["none", "monthly"]), {
-            labelledBy: "radio-ex-error-title",
-            describedBy: "radio-ex-error-text",
-            invalid: true,
-          })}<p id="radio-ex-error-text" style="margin:0; font-size:var(--text-t2); line-height:var(--text-t2--line-height); color:var(--color-fg-critical);">반복을 골라 주세요.</p>`,
-        ),
-      ),
+      "묶음을 Field 로 감싼다 — Field 의 라벨이 묶음의 이름(aria-labelledby), 오류 글이 묶음의 설명(aria-describedby)이 되고 묶음(radiogroup)에 aria-invalid 가 걸린다(필수면 aria-required). 오류가 나도 동그라미 모양은 바꾸지 않는다 — 동그라미마다 빨간 테두리를 두르지 않고, 묶음 아래에 무엇을 해야 하는지 글(fg-critical · 아이콘)로 알린다. 처음부터 하나를 골라 두면 오류가 날 일이 없다 — 골라 둘 수 없는 선택(사용자가 꼭 스스로 골라야 하는)에만 쓴다. 검사는 제출할 때 한다 — 누르는 동안에는 띄우지 않는다.",
+    jsx: `<Field label="반복" invalid errorMessage="반복을 골라 주세요.">
+  <RadioGroup>
+    <Radio value="none" label="반복 없음" />
+    <Radio value="monthly" label="매월" />
+  </RadioGroup>
+</Field>`,
+    render: () => {
+      // Field(field.tsx) — 묶음이면 라벨은 <span id> 이고 묶음이 aria-labelledby 로 가리킨다. 오류 글은 aria-hidden(화면 밖 알림 자리가 읽는다)
+      const id = "radio-ex-error";
+      const error = "반복을 골라 주세요.";
+      const header = `<div data-slot="field-header" class="${FIELD_HEADER}"><span id="${id}-label" class="${FIELD_LABEL} ${FIELD_LABEL_WEIGHT.medium}">반복</span></div>`;
+      const group = radioGroup(repeat(["none", "monthly"]), { labelledBy: `${id}-label`, describedBy: `${id}-error`, invalid: true });
+      const footer = `<div data-slot="field-footer" class="${FIELD_FOOTER}"><p id="${id}-error" aria-hidden="true" class="${FIELD_ERROR}" style="${P_FIX_ERROR}">${CIRCLE_ALERT}<span class="${FIELD_TEXT}">${error}</span></p></div>`;
+      return surface(
+        `<div data-slot="field" data-invalid="true" class="${FIELD_ROOT}">${header}${group}${footer}<span class="sr-only" aria-live="polite">${error}</span></div>`,
+      );
+    },
   },
 
   {

@@ -100,7 +100,9 @@ function token(raw, mode, where) {
       if (rounded[key] === undefined) break;
       return pxNumber(rounded[key]) ?? rounded[key];
     case "text": {
-      const t = typography[key];
+      // `$text-t1-static` — 같은 글자 토큰의 고정 px 판(Tailwind 내보내기가 만든다, DESIGN.md Typography v104). 값은 같고
+      // 웹은 rem 대신 px 클래스(text-t1-static), 앱은 TextScaler.noScaling 으로 쓴다
+      const t = typography[key.replace(/-static$/, "")];
       if (!t) break;
       const out = { fontSize: pxNumber(t.fontSize), lineHeight: pxNumber(t.lineHeight), fontWeight: Number(t.fontWeight), fontFamily: t.fontFamily };
       if (t.letterSpacing) out.letterSpacing = pxNumber(t.letterSpacing) ?? t.letterSpacing;

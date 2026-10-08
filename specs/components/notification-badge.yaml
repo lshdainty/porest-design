@@ -61,7 +61,7 @@ rules:
         paddingX: $spacing-x1
         background: { value: $color-bg-brand-solid, note: "알약 면은 다크 표면과 Desk 1.73 · HR 2.86 — 흰 숫자가 정보를 들고 있다(8.36 · 5.06)" }
       label:
-        typography: { value: $text-t1, note: "11 / 15 — 글자 크기 설정을 따르지 않는 px(text-t1-static, 앱 TextScaler.noScaling — SEED t1-static). 커지면 아이콘을 덮는다" }
+        typography: { value: $text-t1-static, note: "11 / 15 — 글자 크기 설정을 따르지 않는 px(웹 text-t1-static, 앱 TextScaler.noScaling — SEED t1-static). 커지면 아이콘을 덮는다" }
         foreground: { value: $color-static-white, note: "Desk 8.38 · 다크 8.36 · HR 5.06 · 5.06" }
         numerals: { value: tabular-nums, note: "숫자 폭을 같게 — 수가 바뀌어도 흔들리지 않는다" }
 

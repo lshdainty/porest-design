@@ -11,7 +11,8 @@
 # underline 은 화면에 입력이 하나뿐일 때(금액을 먼저 받는 화면 · 목록 위 검색 · 초대 코드 · 잠금 해제).
 #
 # SEED 와 다른 자리(input.md 의 "SEED 와 다른 점")
-#   - 지우기 버튼을 Text Input 에도 둔다(SEED 는 Input Button 에만) — 값은 SEED Input Button 의 지우기(22 · 18)를 따른다.
+#   - 지우기 버튼을 Text Input 에도 둔다(SEED 는 Input Button 에만) — 값은 SEED Input Button 의 지우기(22 · 18)를 따르고, 누르는 영역은
+#     44 다(기초 Inclusive Design v106 — 2026-10-08 앱 적용이 남긴 것).
 #   - 아이콘은 lucide 선 아이콘(기초 Iconography v106) — 지우기는 circle-x, SEED 는 채운 원.
 #   - 상자를 누르면(붙이개 · 여백 포함) 입력으로 포커스가 간다.
 
@@ -25,7 +26,7 @@ slots:
   prefixText: 앞 글자 — https:// · 만 · − 같은 고정 글
   suffixText: 뒤 글자 — 단위(원 · % · 일 · 회 · cm)
   suffixIcon: 뒤 아이콘
-  clearButton: 지우기 버튼 — 값이 있고 막히지 않았을 때만. 검색칸 · 선택 사항인 칸에 둔다
+  clearButton: 지우기 버튼 — 값이 있고 막히지 않았을 때만. 검색칸 · 선택 사항인 칸에 둔다. 누르는 영역 44
 
 variants:
   variant:
@@ -61,6 +62,7 @@ rules:
       value:
         foreground: $color-fg-neutral
         fontWeight: 400
+        caretColor: { value: $color-fg-neutral, note: "캐럿은 글자색 — 고른 글은 기기 기본 하이라이트(::selection 을 두지 않는다). SEED 도 정하지 않았다. 앱은 cursorColor 를 이 색으로(사용자 결정 2026-10-08)" }
       placeholder:
         foreground: $color-fg-placeholder
         fontWeight: 400
@@ -77,9 +79,10 @@ rules:
       clearButton:
         color: { value: $color-fg-neutral-subtle, note: "lucide circle-x. 이름 \"지우기\" — 누르면 값을 비우고 입력에 포커스를 둔다" }
         radius: $radius-full
+        touchTarget: { value: 44 × 44, note: "보이는 원(22 · 18)과 따로 둘레로 넓힌다 — 상자 밖은 상자가 자른다(medium 40 은 44 × 40). 기초 Inclusive Design v106(사용자 결정 2026-10-08)" }
     focused:
       root:
-        borderColor: { value: $color-stroke-neutral-contrast, note: "읽기 전용이면 바뀌지 않는다" }
+        borderColor: { value: $color-stroke-neutral-contrast, note: "읽기 전용이면 바뀌지 않는다 — 읽기 전용은 포커스 표시가 없다(SEED 와 같다, 사용자 결정 2026-10-08 — 까닭 · 2.4.7 은 input.md)" }
     invalid:
       root:
         borderColor: { value: $color-stroke-critical-solid, note: "포커스해도 그대로" }

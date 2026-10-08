@@ -9,6 +9,10 @@ import { cn } from "@/lib/utils";
  *   Field            머리(라벨 · 필수 점 또는 "선택" · 보조 액션) · 입력 · 꼬리(설명 또는 오류 · 글자 수). 사이 8
  *   useFieldControl  입력(Input · Textarea)이 Field 의 id · 설명 · 오류 · 필수 · 막힘을 받는다
  *   useFieldGroup    묶음(Checkbox · Radio · Select Box)이 Field 의 라벨을 이름으로, 설명 · 오류를 설명으로 받는다
+ *   useFieldGroupState  Checkbox · Radio 묶음이 Field 의 막힘 · 오류 · 필수를 받는다 — 묶음은 aria-disabled 와 칸마다 disabled,
+ *                    radiogroup 은 aria-invalid · aria-required, 체크박스 묶음(role=group)은 오류를 칸마다 aria-invalid 로 건다
+ *                    (role=group 은 aria-invalid · aria-required 를 받지 않는다 — SEED useFieldset 과 같다, 2026-10-08)
+ *   submitImplicitly Checkbox · Radio 의 Enter — 진짜 input 처럼 폼의 기본 버튼을 누른다(2026-10-08)
  *   useTextControl   입력 · 여러 줄 입력의 글자 수 — 자소 단위로 세고 최대에서 자른다(한글 조합이 끝난 뒤)
  *
  * 라벨은 칸과 잇는다 — 입력이면 <label for>, 묶음이면 묶음의 aria-labelledby(라벨은 <span>).
@@ -112,6 +116,23 @@ export function useFieldGroup<P extends { "aria-label"?: string; "aria-labelledb
     "aria-labelledby": props["aria-labelledby"] ?? (props["aria-label"] ? undefined : field.labelId),
     "aria-describedby": join(field.describedBy, props["aria-describedby"]),
   };
+}
+
+// Field 의 막힘 · 오류 · 필수 — Checkbox · Radio 묶음이 칸에 나눠 건다(useFieldGroupState 를 쓰는 자리마다 다르다 — 머리 주석).
+// Field 밖이면 모두 false. 묶음에 직접 준 값이 이기게 하는 것은 묶음이 한다
+export function useFieldGroupState() {
+  const field = useField();
+  return { disabled: field?.disabled ?? false, invalid: field?.invalid ?? false, required: field?.required ?? false };
+}
+
+// Checkbox · Radio 의 Enter — 진짜 input 처럼 폼의 기본 버튼(첫 제출 버튼)을 누른다(암묵 제출). 기본 버튼이 없거나 막혀 있으면
+// 아무것도 하지 않는다(크로미움의 진짜 input 과 같다). 버튼을 누르므로 그 버튼의 onClick(Button 의 누름 잠금 · 로딩)을 그대로 거친다
+export function submitImplicitly(control: { form: HTMLFormElement | null }) {
+  const submit = Array.from(control.form?.elements ?? []).find(
+    (el): el is HTMLButtonElement | HTMLInputElement =>
+      (el instanceof HTMLButtonElement && el.type === "submit") || (el instanceof HTMLInputElement && (el.type === "submit" || el.type === "image")),
+  );
+  if (submit && !submit.disabled) submit.click();
 }
 
 // 입력 · 여러 줄 입력이 함께 쓴다 — 값이 있는지(지우기 버튼) · 글자 수(Field)를 알리고, 최대에서 자른다.

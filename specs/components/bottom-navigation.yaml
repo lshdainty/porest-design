@@ -76,7 +76,7 @@ rules:
         color: $color-fg-neutral-subtle
         strokeWidth: { value: 2px, note: "lucide 기본" }
       label:
-        typography: { value: $text-t1, note: "11 / 15 — 글자 크기 설정을 따르지 않는다(text-t1-static, 앱 TextScaler.noScaling — SEED). 지금 10.5 를 11 로" }
+        typography: { value: $text-t1-static, note: "11 / 15 — 글자 크기 설정을 따르지 않는다(웹 text-t1-static, 앱 TextScaler.noScaling — SEED). 지금 10.5 를 11 로" }
         fontWeight: { value: 500, note: "고르든 안 고르든 500 — 고를 때 폭이 흔들리지 않는다" }
         foreground: $color-fg-neutral-subtle
         lineClamp: { value: 1, note: "한 줄 — 라벨은 한글 5자 이내로 쓴다" }

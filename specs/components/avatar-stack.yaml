@@ -4,6 +4,7 @@
 # 여러 사람을 겹쳐 보이는 묶음 — 지름의 약 1/4 을 겹치고, 놓인 바탕색 링으로 끊으며, 뒤에 오는 아바타가 앞 아바타 위에 그려진다.
 # 넘치면 앞 4명 + 끝에 "+N" 원(같은 크기 · 옅은 면 + 숫자) — "+N" 은 porest 가 더했다(SEED 는 앞에서부터 숨기기만 한다).
 # 크기는 묶음이 정하고 안의 아바타가 모두 따른다 — 한 묶음 안에서 크기를 섞지 않는다.
+# 링 색은 놓인 바탕이다 — surface 축(default · floating). 시트 · 대화상자 · 팝오버 안은 floating(2026-10-08 — 전엔 비고에만 있었다).
 
 name: AvatarStack
 
@@ -24,9 +25,13 @@ variants:
     "80": 80 — 겹침 20 · 링 4
     "96": 96 — 겹침 24 · 링 5
     "108": 108 — 겹침 27 · 링 5
+  surface:
+    default: 화면 위(bg-layer-default) — 기본
+    floating: 시트 · 대화상자 · 팝오버 안(bg-layer-floating) — 다크에서 두 바탕이 다르다
 
 defaults:
   size: "24"
+  surface: default
 
 states:
   enabled: 하나뿐 — 누르지 않는다(묶음을 누르는 자리는 감싼 버튼)
@@ -39,13 +44,22 @@ rules:
         items: { value: 4, note: "아바타는 앞 4명까지 — 5명 이상이면 앞 4명 + \"+N\"(N = 전체 − 4, 99 를 넘으면 \"+99\"). 4명 이하면 모두 보이고 \"+N\" 이 없다" }
       item:
         radius: $radius-full
-        outlineColor: { value: $color-bg-layer-default, note: "바깥 링 — 놓인 바탕과 같은 색으로 앞 아바타를 끊는다(SEED). 시트 · 대화상자 · 팝오버 안(bg-layer-floating)이면 그 바탕색 — 다크에서 두 바탕이 다르다(#242938 · #2D3346). 아바타의 1px 안쪽 테두리는 그대로 남는다" }
+        outlineColor: { value: $color-bg-layer-default, note: "바깥 링 — 놓인 바탕과 같은 색으로 앞 아바타를 끊는다(SEED). 시트 · 대화상자 · 팝오버 안은 surface floating 의 바탕색 — 다크에서 두 바탕이 다르다(#242938 · #2D3346). 아바타의 1px 안쪽 테두리는 그대로 남는다" }
       overflow:
         radius: $radius-full
         background: { value: $color-bg-neutral-weak, note: "옅은 면 — 흰 표면과 1.08 · 다크 1.30(바깥 링과 글이 알린다)" }
         foreground: { value: $color-fg-neutral-muted, note: "6.58 · 다크 5.93" }
         fontWeight: 700
         outlineColor: $color-bg-layer-default
+
+  # ── 바탕 ──────────────────────────────────────────────
+  # 링은 놓인 바탕색 — 다크에서 화면(#242938)과 떠 있는 바탕(#2D3346)이 달라, 화면 색 링이면 떠 있는 바탕 위에 짙은 테가 보인다
+  - when: { surface: floating }
+    enabled:
+      item:
+        outlineColor: { value: $color-bg-layer-floating, note: "시트 · 대화상자 · 팝오버 안 — 그 바탕색" }
+      overflow:
+        outlineColor: $color-bg-layer-floating
 
   # ── 크기 ──────────────────────────────────────────────
   # 겹침은 다음 아바타의 왼쪽 바깥 여백(음수) — 지름의 약 1/4. 링은 바깥 box-shadow(크기를 바꾸지 않는다)

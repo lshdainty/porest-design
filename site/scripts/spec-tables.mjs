@@ -28,6 +28,7 @@ export const PROP_LABEL = {
   'suffixIcon.color': '뒤 아이콘 색',
   'value.typography': '값 글자',
   'value.foreground': '값 글자색',
+  'value.caretColor': '캐럿 색',
   'value.paddingY': '입력 상하 여백',
   'value.paddingX': '입력 좌우 여백',
   'value.minHeight': '최소 높이',
@@ -39,6 +40,7 @@ export const PROP_LABEL = {
   'suffixText.foreground': '뒤 글자색',
   'clearButton.size': '지우기 버튼',
   'clearButton.color': '지우기 색',
+  'clearButton.touchTarget': '지우기 누르는 영역',
   'removeButton.size': '지우기 버튼',
   'removeButton.color': '지우기 색',
   'progressCircle.size': '로딩 원',
@@ -164,6 +166,8 @@ export const PROP_LABEL = {
   valueFormat: '값 형식',
   selectedForeground: '고른 글자색',
   numerals: '숫자 폭',
+  // 앱 적용이 남긴 것(2026-10-08) — 입력칸의 캐럿 색(고른 글은 기기 기본)
+  caretColor: '캐럿 색',
   // 기다림 묶음(2026-10-03) — Skeleton 의 기다리는 영역 · Progress Circle 의 호 · 당겨서 새로 고침 · Scroll Fog · Content Placeholder
   showAfter: '보이기 시작',
   slowAfter: '오래 걸림 글',
@@ -294,6 +298,8 @@ export const PROP_LABEL_BY_COMPONENT = {
   },
   // 비율 상자의 자식 하나
   AspectRatio: { 'child.inset': '자식 자리', 'child.objectFit': '자식 맞춤' },
+  // 이름 줄 — 이름과 오른쪽 글 사이
+  Progress: { 'header.gap': '이름 ↔ 오른쪽 글' },
 };
 // `부위.속성` 의 이름표 — 컴포넌트 것 → 공용 `부위.속성` → 공용 속성 → 키 그대로
 export function propLabelFor(name, slot, prop) {

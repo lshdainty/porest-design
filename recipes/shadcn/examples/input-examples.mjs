@@ -95,7 +95,7 @@ const ICON_COLOR = { enabled: "text-fg-neutral-muted", disabled: "text-fg-disabl
 
 // 입력(<input>) — 상자 높이를 채운다. 맨 앞 · 맨 뒤면 상자의 좌우 여백까지 차지한다. 레시피는 cn(이것, 값 색, className)
 const VALUE_BASE = [
-  "min-w-0 flex-1 self-stretch border-0 bg-transparent p-0 outline-none [font:inherit]",
+  "min-w-0 flex-1 self-stretch border-0 bg-transparent p-0 caret-fg-neutral outline-none [font:inherit]",
   "first:pl-[var(--text-input-px)] last:pr-[var(--text-input-px)] disabled:cursor-not-allowed",
   // 브라우저 자동 완성의 바탕색을 지운다 — 글자색은 칸 그대로(SEED)
   "[&:-webkit-autofill]:bg-clip-text [&:-webkit-autofill]:[-webkit-text-fill-color:var(--color-fg-neutral)] [&:-webkit-autofill]:[transition:background-color_9999s_9999s]",
@@ -108,9 +108,10 @@ const VALUE_COLOR = {
   underlineReadOnly: "text-fg-neutral-muted placeholder:text-fg-neutral-muted",
 };
 
-// 지우기 — 값이 있고 막히지 않았을 때만. 레시피는 cn(앞 두 줄, AFFIX_EDGE)
+// 지우기 — 값이 있고 막히지 않았을 때만. 누르는 영역은 원 둘레로 44(::before — 상자가 자른다). 레시피는 cn(앞 세 줄, AFFIX_EDGE)
 const CLEAR = [
-  "flex shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0 text-fg-neutral-subtle",
+  "relative flex shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0 text-fg-neutral-subtle",
+  "before:absolute before:left-1/2 before:top-1/2 before:size-11 before:-translate-x-1/2 before:-translate-y-1/2 before:content-['']",
   "[&>svg]:size-[var(--text-input-clear)]",
 ].join(" ");
 
@@ -613,7 +614,7 @@ import { Input } from "@/components/ui/input"
   {
     title: "지우기 버튼",
     description:
-      "clearable 을 주면 값이 있을 때만 끝에 지우기 버튼(circle-x · large 22 · medium 18 · fg-neutral-subtle)이 선다 — 막혔거나 읽기 전용이면 보이지 않는다. 누르면 값을 비우고(onChange 로 빈 값) 입력에 포커스를 둔다. 이름은 \"지우기\" 이고 Tab 순서에는 넣지 않는다. 검색칸 · 선택 사항인 칸에 둔다 — 필수 칸에는 두지 않는다. 정적 미리보기에는 지우는 스크립트가 없어 눌러도 값이 그대로다.",
+      "clearable 을 주면 값이 있을 때만 끝에 지우기 버튼(circle-x · large 22 · medium 18 · fg-neutral-subtle)이 선다 — 누르는 영역은 원 둘레로 44(상자가 잘라 medium 은 44 × 40), 막혔거나 읽기 전용이면 보이지 않는다. 누르면 값을 비우고(onChange 로 빈 값) 입력에 포커스를 둔다. 이름은 \"지우기\" 이고 Tab 순서에는 넣지 않는다. 검색칸 · 선택 사항인 칸에 둔다 — 필수 칸에는 두지 않는다. 정적 미리보기에는 지우는 스크립트가 없어 눌러도 값이 그대로다.",
     jsx: `import { Search } from "lucide-react"
 
 const [query, setQuery] = useState("")

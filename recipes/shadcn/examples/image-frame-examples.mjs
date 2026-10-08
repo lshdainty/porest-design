@@ -210,6 +210,7 @@ const LIST_ACTION_BASE = [
 
 const FOG_DEPTH = { row: { start: "20px", end: "20px" } };
 const FOG_SOLID = "linear-gradient(#000, #000)";
+const FOG_COMPOSITE = { "mask-composite": "intersect", "-webkit-mask-composite": "source-in" };
 const FOG_ROOT = { row: "overflow-x-auto overflow-y-hidden scroll-px-global-gutter [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" };
 const FOG_CONTENT = { row: "w-max min-w-full px-global-gutter" };
 
@@ -219,20 +220,22 @@ const FADE_MASK = /`gradient-fade-mask` \| `(linear-gradient\([^`]+\))`/.exec(re
 // 방향 없이 적힌(위 → 아래) 그라디언트 토큰에 방향을 붙인다
 const withDirection = (token, direction) => token.replace(/^linear-gradient\(/, `linear-gradient(${direction}, `);
 
-// 가로 축의 마스크 — 시작 쪽 흐림 · 가운데 불투명 · 끝 쪽 흐림(scroll-fog.tsx 의 fogMask 가로 갈래)
+// 가로 축의 마스크 — 흐린 쪽마다 상자 전체 크기의 층 하나(단계는 그 쪽 깊이의 몫), 두 층을 곱한다(scroll-fog.tsx 의 fogMask 가로 갈래)
 function fogMask(token, start, end) {
-  return {
-    image: `${withDirection(token, "to right")}, ${FOG_SOLID}, ${withDirection(token, "to left")}`,
-    size: `${start} 100%, calc(100% - ${start} - ${end}) 100%, ${end} 100%`,
-    position: `0 0, ${start} 0, 100% 0`,
-  };
+  const layers = [start, end].map((depth, i) =>
+    parseFloat(depth) > 0 ? withDirection(token.replace(/(\d+(?:\.\d+)?)%/g, (_m, p) => `calc(${depth} * ${Number(p) / 100})`), i === 0 ? "to right" : "to left") : FOG_SOLID,
+  );
+  return { image: layers.join(", "), size: "100% 100%, 100% 100%", position: "0 0, 0 0" };
 }
 
-// useScrollFog 가 상자의 style 에 넣는 값 — mask-* 와 -webkit-mask-* 를 같이
+// useScrollFog 가 상자의 style 에 넣는 값 — mask-* 와 -webkit-mask-* 를 같이, 그리고 FOG_COMPOSITE
 function fogStyle(use) {
   const { start, end } = FOG_DEPTH[use];
   const mask = { ...fogMask(FADE_MASK, start, end), repeat: "no-repeat" };
-  return ["image", "size", "position", "repeat"].map((p) => `mask-${p}:${mask[p]}; -webkit-mask-${p}:${mask[p]};`).join(" ");
+  return [
+    ...["image", "size", "position", "repeat"].map((p) => `mask-${p}:${mask[p]}; -webkit-mask-${p}:${mask[p]};`),
+    ...Object.entries(FOG_COMPOSITE).map(([p, v]) => `${p}:${v};`),
+  ].join(" ");
 }
 
 // ── 기관 색 표 — lib/institution-colors.ts 의 INSTITUTION_COLORS 를 그대로 읽는다 ─────
