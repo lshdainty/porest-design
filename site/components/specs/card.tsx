@@ -6,6 +6,8 @@ import type { CSSProperties, ReactNode } from 'react';
 import { Panel } from '../foundations/ui';
 import { CardActionView, CardHeaderView, CardSurface, HeroCardView, StatView } from './data-card-view';
 import { CardPlayground, ExHeroDemo, ExListDemo, ExPressDemo, ExStatDemo } from './data-card-play';
+import { toggleLook } from './input-look';
+import { ToggleView } from './toggle-view';
 import { contrastPair } from './data-contrast';
 import { NET_WORTH, STATS, TODAY } from './data-data';
 import { BudgetCard, CL, DimH, DimV, EDGE, Floor, GuideV, HomeDesktop, HomePhone, ListCard, MODES, ModeLabel, NetWorth, PINK, SCREEN_W, StatCard, pinkFill, spendRow, won, type Fig } from './data-screens';
@@ -61,7 +63,7 @@ const Hero: Fig = ({ caption }) => (
   </Panel>
 );
 
-const Playground: Fig = () => <CardPlayground look={CL()} sk={loadingKit('desk').skeleton} result={resultSectionLook('desk')} />;
+const Playground: Fig = () => <CardPlayground look={CL()} sk={loadingKit('desk').skeleton} result={resultSectionLook('desk')} toggle={toggleLook()} />;
 
 // ── Anatomy ───────────────────────────────────────────────
 const Anatomy: Fig = ({ caption }) => {
@@ -263,12 +265,8 @@ function MemoCard({ mode = 'auto', state }: { mode?: Mode; state?: 'pressed' | '
       {/* 제목 줄 오른쪽 고정 버튼(-mr-x2 · -mt-x2) — card.md 의 peers 코드와 같다 */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: c.header.gap }}>
         <span style={{ fontFamily: c.title.fontFamily, fontSize: c.title.fontSize, lineHeight: c.title.lineHeight, fontWeight: c.title.fontWeight, color: rc('fg-neutral', mode), minWidth: 0 }}>장보기 목록</span>
-        <span aria-hidden style={{ display: 'grid', placeItems: 'center', width: 40, height: 40, flexShrink: 0, marginTop: -c.header.gap, marginRight: -c.header.gap, borderRadius: 10, color: rc('fg-neutral', mode) }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <path d="M12 17v5" />
-            <path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z" />
-          </svg>
-        </span>
+        {/* 고정 — 켜고 끄는 아이콘 단추(Toggle — toggle.yaml): 끔은 흐린 선 2, 바탕은 누를 때만 */}
+        <ToggleView look={toggleLook()} mode={mode} state="enabled" icon="pin" ariaLabel="장보기 목록 고정" style={{ marginTop: -c.header.gap, marginRight: -c.header.gap }} />
       </div>
       <span style={{ fontFamily: c.stat.label.fontFamily, fontSize: c.stat.label.fontSize, lineHeight: c.stat.label.lineHeight, color: rc('fg-neutral-subtle', mode) }}>우유 · 계란 · 두부 · 대파</span>
     </CardSurface>
@@ -619,7 +617,7 @@ const ExStat: Fig = ({ caption }) => (
 );
 const ExPress: Fig = ({ caption }) => (
   <CodePreview caption={caption} w={W} pad={24} bg="bg-layer-basement">
-    <ExPressDemo look={CL()} />
+    <ExPressDemo look={CL()} toggle={toggleLook()} />
   </CodePreview>
 );
 const ExHero: Fig = ({ caption }) => (

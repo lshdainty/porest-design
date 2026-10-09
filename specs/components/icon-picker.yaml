@@ -1,112 +1,145 @@
-# IconPicker 의 수치 원본 — 형식은 button.yaml 머리 주석, 규칙은 specs/CLAUDE.md.
+# Icon Picker 의 수치 원본 — 카테고리 · 저축 목표 아이콘 고르기(2026-10-09 사용자 결정, 입력 비교 페이지 15A · 16A · 17A · "따라오는 것").
+# 형식은 button.yaml 머리 주석, 규칙은 specs/CLAUDE.md.
 #
-# md 의 크기 표 둘 — 크기별(trigger · popover · cell)과 md 상세(값 (md)) — 은 붙어 있어 한 표
-# (#grid.size)로 그린다. md 상세에만 있는 값(모서리 · 테두리 · 여백 · 간격 · 최대 높이 · 전환 등)은
-# md 규칙에만 둔다 — sm · lg 의 값은 md 가 적지 않았으므로 지어내지 않는다(표에서 —).
-# 선택 여부(active · inactive)는 hover · focus 와 곱해지므로 상태가 아니라 축(selected)이다(tabs 와 같다).
-# 포커스 링은 두 selected 규칙에 같은 값으로 둔다 — #states.selected 에 focus-visible 칸이 나오게.
+# Input Button 트리거(라벨 "아이콘" · 지금 아이콘 · 그 이름)가 고른 세트(category-icons.yaml — 148개 · 13 묶음)의 격자를
+# 1280 미만은 Bottom Sheet, 이상은 Popover 로 연다. 위에 찾기 칸(Input 밑줄형 — 한국어 이름 · 찾는 말), 아래 묶음 머리 + 칸 48 · 아이콘 24 격자.
+# 고른 칸은 안쪽 2px 짙은 테두리(Select Box v113 과 같다). 누르면 고르고 닫힌다(Input Button 의 "목록은 누르면 바로").
+# 격자는 2차원 화살표(roving tabindex), 찾으면 결과 수를 화면 밖으로 알리고, 0건이면 Result Section.
+# 트리거 · 시트 · 팝오버 · 찾기 칸 · 묶음 머리의 나머지 값은 input-button.yaml · bottom-sheet.yaml · popover.yaml · input.yaml · list-header.yaml 이 원본이다.
+#
+# 축 — selected(고름) · surface(시트 · 팝오버). 상태는 칸의 상태다.
+#
+# SEED 와 다른 자리(icon-picker.md 의 "SEED 와 다른 점")
+#   - SEED 에는 아이콘 고르기 부품이 없다 — 문서 사이트 Icon Library(칸 ≈ 60 · 사이 16 · 아이콘 24 · 고름 = bg.brand-weak 틴트 ·
+#     칸마다 Tab)는 제품 부품이 아니다. 아이콘 24 는 같고, 칸 48 · 고른 테두리 · 2차원 화살표 · 고른 세트 · 한국어 찾기는 porest 가 정했다.
 
-name: IconPicker
+name: Icon Picker
 
 slots:
-  trigger: ⓐ trigger — 현재 아이콘 미리보기 버튼
-  popover: ⓑ popover content
-  search: ⓒ search input
-  grid: ⓓ grid
-  cell: grid cell — 아이콘 버튼
-  focusRing: 키보드 포커스 링
+  trigger: 트리거 — Input Button. 라벨 "아이콘"(Field) · 앞 지금 아이콘 · 값 = 아이콘 이름 · 뒤 chevron-down
+  surface: 여는 자리 — 1280 미만 Bottom Sheet("아이콘") · 이상 Popover(머리 없이 · 이름 "아이콘")
+  search: 찾기 칸 — Input 밑줄형 · 앞 돋보기 · 지우기. 위에 붙는다
+  scroll: 스크롤 상자 — 묶음 머리 · 격자가 넘치면 이 안에서 스크롤한다(끝 흐림). 찾기 칸은 그 밖이라 늘 위에 있다
+  groupHeader: 묶음 머리 — "식비" · "카페" … 찾는 동안은 없다
+  grid: 격자 — listbox. 칸 48 을 들어가는 만큼(폰 시트 6열 · 팝오버 7열)
+  cell: 칸 — 48 · 모서리 12. 이름은 한국어 이름
+  icon: 칸 아이콘 — 24
+  count: 결과 수 — 화면 밖 알림
+  empty: 결과 없음 — Result Section medium
+  focusRing: 키보드 포커스 링 — 칸 바깥
 
 variants:
-  size: [sm, md, lg]
   selected:
-    inactive: 선택 안 됨
-    active: 선택됨(현재 value)
+    unselected: 안 고름
+    selected: 고름 — 지금 값. 안쪽 2px 짙은 테두리 + 선 2.5
+  surface:
+    sheet: 1280 미만 · 앱 — Bottom Sheet(기본)
+    popover: 1280 이상 데스크톱 웹 — Popover
 
 defaults:
-  size: md
-  selected: inactive
+  selected: unselected
+  surface: sheet
 
 states:
-  enabled: ""
-  hover: (inactive)
-  focus-visible: ""
+  enabled: 기본
+  hovered: 웹 — 누름과 같은 바탕(v106)
+  focused: 키보드 포커스 — 칸 바깥 링(roving — 격자에 Tab 하나)
+  pressed: 바탕 + 칸 2px 거리 축소(v104) — 손을 떼면 고르고 닫힌다
 
 rules:
-  # ── 크기 ──────────────────────────────────────────────
-  - when: { size: sm }
+  # ── 공통 ──────────────────────────────────────────────
+  - when: {}
     enabled:
       trigger:
-        height: 32px
-        width: 32px
-      popover:
-        width: 288px
-      grid:
-        columns: 8
-      cell:
-        height: 28px
-        width: 28px
-
-  - when: { size: md }
-    enabled:
-      trigger:
-        height: { value: 40px, note: input height 정합 }
-        width: 40px
-        radius: $radius-md
-        borderWidth: 1px
-        borderColor: $color-border-default
-        shadow: $shadow-sm
-      popover:
-        width: 320px
-        padding: $spacing-md
-        transitionProperty: { value: fade + scale, note: popover 기본 }
-        transitionDuration: $motion-duration-fast
+        component: { value: Input Button, note: "input-button.yaml — 크기 반응형(large 52 · medium 40). 라벨 \"아이콘\"(Field), 앞 아이콘 = 지금 아이콘(large 20 · medium 16 · fg-neutral-muted), 값 = 아이콘의 한국어 이름(\"커피\"), 뒤 chevron-down. 이름은 \"아이콘, 커피\"(라벨 + 값). 아이콘이 없는 항목은 태그 + \"태그\", 세트 밖 저장 아이콘은 그 아이콘 + \"지금 아이콘\"" }
       search:
-        size: { value: input-sm 톤, note: input spec }
+        variant: { value: underline, note: "Input 밑줄형 — 시트 · 팝오버에 입력이 하나뿐인 목록 위 찾기(Searchable List 와 같다). 앞 돋보기 · 지우기 · placeholder \"아이콘 이름 검색\" · 이름 \"아이콘 검색\". 목록이 스크롤해도 위에 붙는다" }
+        match: { value: 이름 · 찾는 말 · id, note: "찾는 말과 이름 · 찾는 말 · lucide 이름을 소문자로 바꾸고 공백을 뺀 뒤 부분 일치(\"커피\" → 커피 · 원두, \"월세\" → 집). 들고 있는 표라 치는 대로 바로 거른다 — 결과는 세트 차례 그대로, 묶음 머리 없이" }
+      groupHeader:
+        typography: { value: $text-t4, note: "List Header mediumWeak — 14 · 500" }
+        fontWeight: 500
+        foreground: { value: $color-fg-neutral-subtle, note: "시트 · 팝오버 위 5.50 · 다크 5.27" }
+        paddingTop: $spacing-x3
+        paddingBottom: $spacing-x2
       grid:
-        columns: 8
-        gap: { value: $spacing-xs, note: cell 사이 }
-        maxHeight: 240px
+        role: { value: listbox, note: "이름 \"아이콘\". 묶음은 role=\"group\" + 머리로 이름(aria-labelledby). 격자에 Tab 하나(고른 칸, 없으면 첫 칸)" }
+        columns: { value: 들어가는 만큼, note: "칸 48 · 사이 최소 4 로 들어가는 열 — 폰 시트(본문 312 ~ 342) 6열 · 팝오버(본문 360) 7열. 남는 폭은 칸 사이에 고르게 나눈다" }
+        columnGapMin: { value: $spacing-x1, note: "칸 사이 최소 4 — 남는 폭은 칸 사이에 고르게" }
+        rowGap: { value: $spacing-x1, note: "줄 사이 4" }
+        searchGap: { value: $spacing-x3, note: "찾는 동안(묶음 머리 없음) 격자 위 12 — 묶음 머리 위 여백(12)과 같다. 스크롤 상자의 흐림 여백(위 20)이 그 바깥에 더해져 찾기 칸 ↔ 격자는 32, 묶음으로 볼 때 찾기 칸 ↔ 첫 머리 글도 32 로 두 보기가 같다" }
+        keyboard: { value: "← → · ↑ ↓ · Home · End · Enter · Space", note: "← → 는 차례대로(줄 끝에서 다음 줄 · 다음 묶음으로), ↑ ↓ 는 보이는 위아래 줄의 가장 가까운 칸(묶음을 넘는다), Home · End 는 그 줄의 처음 · 끝, Enter · Space 로 고른다. 찾기 칸에서 ↓ 는 격자의 첫 칸으로. Esc 는 찾는 말이 있으면 먼저 지우고(초점은 찾기 칸), 없으면 닫는다" }
       cell:
-        height: 32px
-        width: 32px
-        radius: $radius-sm
-
-  - when: { size: lg }
-    enabled:
-      trigger:
-        height: 48px
-        width: 48px
-      popover:
-        width: 384px
-      grid:
-        columns: 8
-      cell:
-        height: 36px
-        width: 36px
-
-  # ── cell 상태 ─────────────────────────────────────────
-  - when: { selected: inactive }
-    enabled:
-      cell:
+        size: 48px
+        radius: $radius-r3
         background: transparent
-        foreground: $color-text-secondary
-    hover:
+        cursor: pointer
+        touchTarget: { value: 48 × 48, note: "AA ✓ · AAA ✓ — SEED Iconography \"24px 크기에서는 44px 이상\"" }
+        name: { value: 한국어 이름, note: "\"커피\" — 영어 lucide 이름을 이름으로 두지 않는다. 마우스는 같은 글의 툴팁" }
+        role: option
+      icon:
+        size: { value: 24px, note: "lucide 기본 격자 — v106 의 24" }
+        strokeWidth: { value: 2px, note: "lucide 기본" }
+        color: { value: $color-fg-neutral, note: "시트 · 팝오버 위 16.41 · 다크 11.62" }
+      count:
+        display: { value: 화면 밖, note: "aria-live=\"polite\" — 치기를 멈추고 500ms 뒤 \"검색 결과 2개\" 를 한 번 읽는다. 0건은 Result Section 이 알린다" }
+      empty:
+        size: { value: Result Section medium, note: "격자 자리 가운데 — 제목 \"'{검색어}'에 대한 아이콘이 없어요\" · 설명 \"다른 말로 찾거나 묶음에서 골라주세요.\" · role=\"status\"" }
+    hovered:
       cell:
-        background: $color-surface-input
-        foreground: $color-text-primary
-    focus-visible:
+        background: { value: $color-bg-layer-floating-pressed, note: "시트 · 팝오버(bg-layer-floating) 위의 누름 색 — Menu 와 같다" }
+    pressed:
+      cell:
+        background: $color-bg-layer-floating-pressed
+        scale: { value: 칸 2px 거리 축소, note: "기준 48 — Feedback 의 눌림 피드백(v104). 모션 줄이기면 하지 않는다" }
+        scaleDuration: $motion-duration-pressed-scale
+        scaleEasing: $motion-ease-pressed-scale
+    focused:
       focusRing:
         width: 2px
-        offset: 2px
-        color: { value: $color-border-focus, note: "`ring-2 ring-ring ring-offset-2` — ring = border-focus(shadcn bridge)" }
+        offset: { value: 2px, note: "칸 바깥 — 키보드 포커스에만" }
+        color: $color-stroke-focus-ring
 
-  - when: { selected: active }
+  # ── 고름 ──────────────────────────────────────────────
+  - when: { selected: selected }
     enabled:
       cell:
-        background: $color-primary
-        foreground: $color-text-on-accent
-    focus-visible:
-      focusRing:
-        width: 2px
-        offset: 2px
-        color: { value: $color-border-focus, note: "`ring-2 ring-ring ring-offset-2` — ring = border-focus(shadcn bridge)" }
+        borderWidth: { value: 2px, note: "안쪽에 덧그린다 — 아이콘이 밀리지 않는다(Select Box v113 의 고른 테두리와 같다). 바탕은 칠하지 않는다(반전 · 브랜드 채움은 고르지 않았다 — 17B)" }
+        borderColor: { value: $color-stroke-neutral-contrast, note: "시트 · 팝오버 위 16.41 · 다크 11.62" }
+      icon:
+        strokeWidth: { value: 2.5px, note: "v106 — 선택은 선 2.5" }
+
+  # ── 여는 자리 ─────────────────────────────────────────
+  - when: { surface: sheet }
+    enabled:
+      surface:
+        component: { value: Bottom Sheet, note: "bottom-sheet.yaml — 제목 \"아이콘\" · 닫기. 고르면 닫힌다(\"완료\" 없음)" }
+        paddingX: { value: $spacing-x6, note: "본문 좌우 24(Bottom Sheet)" }
+      grid:
+        columns: { value: 6, note: "폰 본문 312 ~ 342 — 48 × 6 + 4 × 5 = 308 이 들어간다. 본문이 308 보다 좁으면(320 폰) 들어가는 만큼(5열), 태블릿 시트(432)도 6열" }
+      scroll:
+        scrollFog: { value: 켬, note: "격자가 넘친다 — Bottom Sheet 본문의 끝 흐림(Scroll Fog overlayBody, 위 20 · 아래 80 늘 켜짐 · 2026-10-03 규칙). 찾기 칸은 스크롤 상자 밖이라 흐리지 않는다" }
+      search:
+        height: { value: 40px, note: "밑줄형 large — 글 18 / 24 · 돋보기 24" }
+  - when: { surface: popover }
+    enabled:
+      surface:
+        component: { value: Popover, note: "popover.yaml — 머리 없이(고르는 패널) · 이름 aria-label \"아이콘\" · 트리거 아래 8 · 최대 높이 600" }
+        width: { value: 408px, note: "칸 48 × 7 + 사이 4 × 6 = 360 + 좌우 24 × 2 — Popover 폭 320 ~ 480 안" }
+        paddingX: { value: $spacing-x6, note: "본문 좌우 24" }
+      grid:
+        columns: { value: 7, note: "본문 360 = 48 × 7 + 4 × 6" }
+      scroll:
+        scrollFog: { value: 켬, note: "격자가 넘친다 — Popover 본문의 끝 흐림(Scroll Fog overlayBody, 위 20 · 아래 80 늘 켜짐 · 2026-10-03 규칙). 찾기 칸은 스크롤 상자 밖" }
+      search:
+        height: { value: 34px, note: "밑줄형 medium — 글 16 / 22 · 돋보기 20" }
+
+motion:
+  "호버 · 누름 — 바탕":
+    duration: $motion-duration-color-transition
+    easing: $motion-ease-easing
+    properties: [background-color]
+  "누름 — 칸":
+    duration: $motion-duration-pressed-scale
+    easing: $motion-ease-pressed-scale
+    properties: [scale]
+    note: "칸 2px 거리 축소 — 모션 줄이기면 하지 않는다"

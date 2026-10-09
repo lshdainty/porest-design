@@ -92,11 +92,12 @@ const PlayRows = ({ tones, mode, n = 6, from = 0 }: { tones: Tones; mode: ViewMo
 const surfaceOf = (t: Tones, mode: ViewMode) => (mode === 'auto' ? `var(--p-${t['bg-layer-basement'].name})` : t['bg-layer-basement'][mode]);
 
 // ══ Top Navigation ═════════════════════════════════════════
-const TOP_ICONS: { icon: 'search' | 'bell' | 'settings' | 'eye-off'; label: string; jsx: string; on: string }[] = [
+// 금액 가리기는 켜고 끄는 단추 — 이름은 고정, 아이콘은 지금 상태(보임 eye · 가림 eye-off), 켬은 aria-pressed(Toggle · 19B)
+const TOP_ICONS: { icon: 'search' | 'bell' | 'settings' | 'eye'; label: string; jsx: string; on: string }[] = [
   { icon: 'search', label: '검색', jsx: 'Search', on: 'openSearch' },
   { icon: 'bell', label: '알림', jsx: 'Bell', on: 'openNotifications' },
   { icon: 'settings', label: '설정', jsx: 'Settings', on: 'openSettings' },
-  { icon: 'eye-off', label: '금액 가리기', jsx: 'EyeOff', on: 'toggleHidden' },
+  { icon: 'eye', label: '금액 가리기', jsx: 'Eye', on: 'toggleHidden' },
 ];
 const TITLES: Record<'root' | 'standard', [string, string]> = {
   root: ['홈', '이번 달 카드 결제 예정 금액 모아 보기'],
@@ -113,6 +114,7 @@ export function TopNavPlayground({ looks, tones }: { looks: Record<Brand, TopNav
   const [mode, setMode] = useState<ViewMode>('auto');
   const [brand, setBrand] = useState<Brand>('desk');
   const [said, setSaid] = useState('');
+  const [hidden, setHidden] = useState(false);
   const look = looks[brand];
   const t = tones[brand];
   const desktop = type === 'desktop';
@@ -125,7 +127,11 @@ export function TopNavPlayground({ looks, tones }: { looks: Record<Brand, TopNav
   const actions: TopAction[] = textBtn
     ? [{ kind: 'text', label: '모두 읽음' }]
     : [
-        ...shown.map((a) => ({ icon: a.icon, label: a.icon === 'bell' && dot === 'on' ? '알림, 새 알림 있음' : a.label, notification: a.icon === 'bell' && dot === 'on' })),
+        ...shown.map((a) =>
+          a.icon === 'eye'
+            ? { icon: hidden ? ('eye-off' as const) : ('eye' as const), label: a.label, pressed: hidden }
+            : { icon: a.icon, label: a.icon === 'bell' && dot === 'on' ? '알림, 새 알림 있음' : a.label, notification: a.icon === 'bell' && dot === 'on' },
+        ),
         ...(overflow ? [{ icon: 'more' as const, label: `${desktop ? '가계부' : title.split(' ')[0]} 더보기` }] : []),
       ];
   const code = useMemo(() => {
@@ -146,7 +152,10 @@ export function TopNavPlayground({ looks, tones }: { looks: Record<Brand, TopNav
         comps.add('TopNavigationActions').add('TopNavigationIconButton');
         icons.add(a.jsx);
         if (a.icon === 'bell' && dot === 'on') act.push(`    <TopNavigationIconButton notification={hasUnread} aria-label={hasUnread ? "알림, 새 알림 있음" : "알림"} onClick={${a.on}}><${a.jsx} /></TopNavigationIconButton>`);
-        else act.push(`    <TopNavigationIconButton aria-label="${a.label}" onClick={${a.on}}><${a.jsx} /></TopNavigationIconButton>`);
+        else if (a.icon === 'eye') {
+          icons.add('EyeOff');
+          act.push(`    <TopNavigationIconButton aria-label="${a.label}" aria-pressed={hidden} onClick={${a.on}}>{hidden ? <EyeOff /> : <Eye />}</TopNavigationIconButton>`);
+        } else act.push(`    <TopNavigationIconButton aria-label="${a.label}" onClick={${a.on}}><${a.jsx} /></TopNavigationIconButton>`);
       }
       if (overflow) {
         icons.add('Ellipsis');
@@ -169,14 +178,21 @@ export function TopNavPlayground({ looks, tones }: { looks: Record<Brand, TopNav
     return `${imp}${open}\n${lines.join('\n')}\n</TopNavigation>${tail}`;
   }, [desktop, textBtn, shown, dot, overflow, actions, type, leading, title]);
   const tap = (what: string) => setSaid(what);
+  const onAction = (i: number) => {
+    const a = actions[i];
+    if (a.kind !== 'text' && a.pressed !== undefined) {
+      setHidden((h) => !h);
+      setSaid(`금액 가리기, ${hidden ? '안 눌림' : '눌림'}`);
+    } else tap(a.label);
+  };
   const stage = desktop ? (
     <div style={{ overflow: 'hidden', borderRadius: 16, boxShadow: `inset 0 0 0 1px ${tc(t, 'stroke-neutral-subtle', mode)}`, background: tc(t, 'bg-layer-basement', mode), fontFamily: FONT }}>
-      <TopNavBar look={look} mode={mode} type="desktop" actions={actions} primary={{ label: '내역 추가', icon: 'plus' }} live onAction={(i) => tap(actions[i].label)} onPrimary={() => tap('내역 추가')} />
+      <TopNavBar look={look} mode={mode} type="desktop" actions={actions} primary={{ label: '내역 추가', icon: 'plus' }} live onAction={onAction} onPrimary={() => tap('내역 추가')} />
       <div style={{ paddingTop: look.desktop.navToTitle, paddingLeft: look.desktop.padLeft, paddingBottom: 24, ...{ fontFamily: look.desktop.screenTitle.fontFamily, fontSize: look.desktop.screenTitle.fontSize, lineHeight: look.desktop.screenTitle.lineHeight, fontWeight: look.desktop.screenTitle.fontWeight }, color: tc(t, 'fg-neutral', mode) }}>가계부</div>
     </div>
   ) : (
     <PlayScreen tones={t} mode={mode} h={300}>
-      <TopNavBar look={look} mode={mode} type={type} leading={leading} title={title} actions={actions} live onLeading={() => tap(look.leading[leading].label)} onAction={(i) => tap(actions[i].label)} />
+      <TopNavBar look={look} mode={mode} type={type} leading={leading} title={title} actions={actions} live onLeading={() => tap(look.leading[leading].label)} onAction={onAction} />
       <PlayRows tones={t} mode={mode} n={4} />
     </PlayScreen>
   );
@@ -200,6 +216,17 @@ export function TopNavPlayground({ looks, tones }: { looks: Record<Brand, TopNav
       code={code}
     />
   );
+}
+
+// ── Top Navigation 코드 — Desk 데스크톱 머리(주 버튼 + 아이콘 셋). 금액 가리기는 켜고 끄는 단추 ─────
+export function DeskHeaderLive({ look }: { look: TopNavLook }) {
+  const [hidden, setHidden] = useState(false);
+  const actions: TopAction[] = [
+    { icon: hidden ? 'eye-off' : 'eye', label: '금액 가리기', pressed: hidden },
+    { icon: 'bell', label: '알림, 새 알림 있음', notification: true },
+    { icon: 'settings', label: '설정' },
+  ];
+  return <TopNavBar look={look} type="desktop" actions={actions} primary={{ label: '내역 추가', icon: 'plus' }} live as="header" onAction={(i) => i === 0 && setHidden((h) => !h)} />;
 }
 
 // ══ Bottom Navigation ══════════════════════════════════════

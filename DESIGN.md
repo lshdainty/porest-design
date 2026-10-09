@@ -3008,7 +3008,7 @@ Tailwind v4는 `me-*`/`ms-*` (margin-end/start), `pe-*`/`ps-*`, `text-start`/`te
 
 | 토큰 | 값 | 쓰는 곳 |
 |---|---|---|
-| `shadow-s1` | `0 1px 2px 0 rgba(15, 18, 28, 0.05)` | 작은 손잡이(슬라이더 엄지)(옛 `shadow-sm`) — 카드는 2026-10-08 부터 그림자 없이 테두리 |
+| `shadow-s1` | `0 1px 2px 0 rgba(15, 18, 28, 0.05)` | 옛 `shadow-sm` — 슬라이더 손잡이(2026-10-09) · 카드(2026-10-08)는 그림자를 걷었다 |
 | `shadow-s2` | `0 2px 8px -1px rgba(15, 18, 28, 0.08), 0 1px 3px -1px rgba(15, 18, 28, 0.04)` | 드롭다운 · 툴팁 · 떠 있는 버튼(옛 `shadow-md`) |
 | `shadow-s3` | `0 8px 24px -4px rgba(15, 18, 28, 0.10), 0 2px 6px -2px rgba(15, 18, 28, 0.05)` | 팝오버 · 작은 모달(옛 `shadow-lg`) |
 | `shadow-s4` | `0 24px 48px -8px rgba(15, 18, 28, 0.16), 0 8px 16px -4px rgba(15, 18, 28, 0.08)` | 큰 모달 · 서랍(옛 `shadow-xl`) |
@@ -3352,7 +3352,9 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 
 - 호버와 누름이 같은 색이라, 마우스로 누를 때는 색이 더 바뀌지 않고 축소만 더해진다. 호버는 마우스가 있는 기기에서만 켠다 — 터치 화면에 호버가 붙어 남지 않게.
 - 불러오는 중 · 읽기 전용의 표면은 SEED 컴포넌트 값을 따랐다(불러오는 중 = 누름 색, 읽기 전용 = 비활성 배경).
-- 선택을 테두리로 보이는 요소: Select Box 는 고른 상자만 2px `stroke-neutral-contrast`(v113 — SEED 와 같다, 바탕은 바꾸지 않는다). 목록 · 메뉴의 지금 항목은 그 컴포넌트 차례에 SEED 와 비교해 정한다.
+- 선택을 테두리로 보이는 요소: Select Box 는 고른 상자만 2px `stroke-neutral-contrast`(v113 — SEED 와 같다, 바탕은 바꾸지 않는다). Icon Picker 의 고른 칸도 같은 안쪽 2px 이고, Color Swatch 의 고른 원은 2 를 띄운 2px 고리(같은 색) + 체크다 — 칸의 색이 곧 값이라 바탕을 바꿀 수 없다(2026-10-09). 목록 · 메뉴의 지금 항목은 그 컴포넌트 차례에 SEED 와 비교해 정한다.
+- 켜고 끄는 아이콘 단추(Toggle)는 켬에 바탕을 칠하지 않는다 — 위 표의 `selected` 바탕(반전)은 칩 · 세그먼트 · 날짜처럼 여럿 가운데 고르는 요소의 것이다. 켬은 아이콘이 진한 색 + 선 2.5 로 말한다(Iconography, 2026-10-09).
+- 누르는 순간 저장되는 컨트롤(Switch · Toggle · 할 일 완료 체크, 손을 뗄 때 저장되는 Slider)은 요청 중에도 `loading` · `disabled` 로 바꾸지 않는다 — 화면은 바로 바뀌고, 실패하면 되돌리고 그 자리에서 알린다. 한 요청이 화면의 다른 컨트롤을 막지도 않는다 — 막으면 키보드 초점이 본문으로 빠진다(2026-10-09).
 - 스위치처럼 색으로 켜짐을 뜻하는 요소의 비활성도 컴포넌트 단계에서 정한다(SEED 스위치는 불투명도 0.58).
 - **앱의 키보드 포커스** — 앱도 하드웨어 키보드로 옮길 때만 웹과 같은 링(2px · 띄움 2px · `stroke-focus-ring`)을 그린다 — Flutter 의 `FocusHighlightMode.traditional` 일 때만이고, 손가락으로 누를 때는 그리지 않는다. 누를 수 있는 것은 모두 포커스를 받아 Tab 순서에 든다 — 버튼(`PButton`)도(사용자 결정 2026-10-08).
 
@@ -3394,6 +3396,7 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 
 - 선은 lucide 기본 2(24px 격자 기준 — 16px 에서는 그만큼 가늘게 그려진다).
 - 켜짐 · 선택은 진한 색(또는 브랜드 색) + 선 2.5, 꺼짐은 lucide 의 `-off` 아이콘(사선)을 쓴다. SEED 의 "켜짐 = 채움" 을 이렇게 대신한다 — lucide 에는 채움 모양이 없고, 앱의 lucide 글꼴은 채울 수도 없다.
+- 모으기 단추(관심 · 고정)는 꺼짐에 사선을 긋지 않는다 — 같은 아이콘이 꺼짐은 흐린 색(`fg-neutral-muted`) + 선 2, 켜짐은 진한 색(`fg-neutral`) + 선 2.5 로만 갈린다(채우지 않는다). 사선(`-off`)은 기능이 꺼지는 단추(눈 · 종)에 쓰고, 아이콘은 지금 상태를 그린다 — 금액을 가렸으면 `eye-off`(사용자 결정 2026-10-09, `specs/components/toggle.md`).
 - 앱은 lucide 글꼴의 굵기 변형으로 같은 굵기를 맞춘다(앱 적용 때 고른다).
 
 #### 아이콘만 있는 버튼
@@ -3419,20 +3422,21 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 #### 보기
 
 - **대비** — 글자와 배경은 WCAG 2 AA(본문 4.5:1 · UI 3:1)를 검사기로 잰다. SEED 는 APCA(Lc)로 재서 수치를 옮기지 않는다. 비활성 · 플레이스홀더는 WCAG 가 따지지 않지만 전용 색(`fg-disabled` · `fg-placeholder`)으로 읽히게 둔다.
-- **색만으로 알리지 않는다** — 상태 · 오류 · 차트는 글자 · 아이콘 · 모양을 함께 쓴다.
+- **색만으로 알리지 않는다** — 상태 · 오류 · 차트는 글자 · 아이콘 · 모양을 함께 쓴다. 색을 고르는 칸도 칸마다 색 이름("빨강")을 이름으로 달고, 고른 칸은 고리 · 체크로 보인다(Color Swatch, 2026-10-09).
 - **위계와 순서** — 중요한 정보가 먼저 보이게 짜고, 화면 순서를 논리적으로 둔다. 스크린 리더가 그 순서로 읽는다.
 
 #### 조작
 
 - **터치 영역** — 누르는 영역은 모두 44 × 44 이상(`touch-min`). 보이는 크기가 작으면 보이지 않는 여백으로 넓힌다.
-- **제스처 대신 누르기** — 밀기 · 끌기 · 핀치 같은 제스처로 하는 일은 누르기로도 할 수 있게 한다.
+- **제스처 대신 누르기** — 밀기 · 끌기 · 핀치 같은 제스처로 하는 일은 누르기로도 할 수 있게 한다. Slider 는 트랙을 눌러 고르고 키보드로도 옮긴다(2026-10-09).
 - **보조 기술** — 모든 동작에 VoiceOver · TalkBack · 키보드로 닿는다. 키보드 포커스는 State › `focused`.
+- **요청 중에도 막지 않는다** — 누르는 순간 저장되는 컨트롤을 응답을 기다리며 막지 않는다. 막으면 초점이 본문으로 빠져 키보드 · 화면 읽기 프로그램 사용자가 자리를 잃는다. 실패하면 되돌리고 그 자리에서 알린다(State, 2026-10-09).
 - **앱의 키보드** — 앱도 누를 수 있는 것은 모두 키보드 포커스를 받는다(버튼 `PButton` 포함). 링은 키보드로 옮길 때만 웹과 같게 그리고, 손가락으로 누를 때는 그리지 않는다(State › 앱의 키보드 포커스, 사용자 결정 2026-10-08).
 - **길 찾기** — 지금 어디 있는지를 이름과 선택 표시로 알 수 있게 하고, 주요 기능은 찾기 쉬운 자리에 둔다.
 
 #### 콘텐츠
 
-- **이름** — 아이콘만 있는 버튼 · 이미지에는 기능과 맥락을 짧게 적은 이름을 단다(웹 `aria-label` · `alt`, 앱 `Semantics` label · `tooltip`). 장식은 보조 기술에서 숨긴다(`alt=""` · `aria-hidden` · `ExcludeSemantics`). 이름도 번역 문구에 둔다.
+- **이름** — 아이콘만 있는 버튼 · 이미지에는 기능과 맥락을 짧게 적은 이름을 단다(웹 `aria-label` · `alt`, 앱 `Semantics` label · `tooltip`). 장식은 보조 기술에서 숨긴다(`alt=""` · `aria-hidden` · `ExcludeSemantics`). 이름도 번역 문구에 둔다. 켜고 끄는 단추는 이름을 고정하고 켬은 `aria-pressed`(앱 `toggled`)로 알린다 — 상태마다 이름을 바꾸지 않는다(Toggle, 2026-10-09).
 - **오류** — 바로 알린다. 테두리 색(State › `invalid`)과 함께, 웹은 `aria-invalid` + `aria-describedby` 로 입력칸과 문구를 잇고 `role="alert"`(또는 `aria-live`)로 알린다. 앱은 `Semantics` liveRegion. 문구는 입력칸 가까이, 고칠 방법까지(Writing › 오류).
 
 #### 개인 설정
@@ -3656,8 +3660,11 @@ v63 `motion-duration-loop` (1500ms) + `motion-ease-linear` 페어 활용. 일부
 | `select` 트리거 · Input Button | `r3` · `r2` | 12px · 8px | Input 과 같다 — 2026-10-01 SEED Select · Input Button(`select.yaml` · `input-button.yaml`) |
 | `select` 목록 | `r5` | 20px | 칸 아래 뜨는 목록 |
 | `select-box` | `r3` | 12px | 2026-09-30 SEED Select Box(`select-box.yaml`) |
-| `slider` (track) | `full` | 9999px | |
-| `toggle` / `toggle-group` item | `sm` | 4px | |
+| `slider` (트랙 · 손잡이 · 말풍선) | `full` · `r1_5` | 9999px · 6px | 트랙 · 손잡이는 원, 끄는 동안 뜨는 말풍선은 6 — 2026-10-09 SEED Slider(`slider.yaml`) |
+| `toggle` (아이콘 단추) | `r2` | 8px | 누름 · 호버 바탕에만 보인다 — 2026-10-09(`toggle.yaml`). Toggle Group 은 걷었다 |
+| 인증 코드 칸(Input OTP) | `r3` · `r2` | 12px · 8px | Input 한 칸 — large · medium, Input 과 같다. 2026-10-09(`input-otp.yaml`) |
+| `color-swatch` (색 칸 · 고른 고리) | `full` | 9999px | 원 40 — 2026-10-09(`color-swatch.yaml`) |
+| `icon-picker` (칸) | `r3` | 12px | 칸 48 — 2026-10-09(`icon-picker.yaml`). 트리거는 Input Button |
 | `chip` | `full` | 9999px | 알약 — 2026-10-02 SEED Chip(`specs/components/chip.yaml`) |
 | `checkbox` (칸) | `r1` | 4px | SEED Checkmark(2026-09-30, `specs/components/checkbox.yaml`). 이 표는 2px 이었지만 스펙 · 코드는 4px 이었다 |
 | `radio-group` (동그라미 · 점) | `full` | 9999px | 원형 — SEED Radiomark(2026-09-30, `specs/components/radio-group.yaml`) |
@@ -4583,7 +4590,7 @@ binary on/off 상태 또는 group 선택을 표현하는 form control 3종. 공�
 
 #### 짜임
 
-Field 는 머리(라벨 · 필수 점 또는 "선택" · 보조 액션) · 입력 · 꼬리(설명 또는 오류 · 글자 수)를 8 간격으로 쌓는다. 머리 · 꼬리는 좌우로 2 들어온다. 입력은 Text Input · Textarea · Select · Input Button · Checkbox · Radio · Select Box 묶음이다.
+Field 는 머리(라벨 · 필수 점 또는 "선택" · 보조 액션) · 입력 · 꼬리(설명 또는 오류 · 글자 수)를 8 간격으로 쌓는다. 머리 · 꼬리는 좌우로 2 들어온다. 입력은 Text Input · Textarea · Select · Input Button · Checkbox · Radio · Select Box 묶음이고, 2026-10-09 부터 Slider(머리 오른쪽에 지금 값) · Input OTP · Color Swatch 묶음 · Icon Picker 도 감싼다.
 
 | 부위 | 값 |
 |---|---|
@@ -4765,6 +4772,56 @@ Field 는 머리(라벨 · 필수 점 또는 "선택" · 보조 액션) · 입�
 - 아이콘만 있는 버튼(상단 바 · + · 떠 있는 버튼)은 이름 필수 — 알림 점은 이름에 넣는다("알림, 새 알림 있음").
 - Pagination — `nav` "페이지 탐색" · 칸 "N페이지" · 끝 쪽에서 초점을 지금 쪽으로 · 쪽이 바뀌면 알린다. 칸 40 은 AA(2.5.8) ✓ · AAA(2.5.5) ⚠.
 
+### 입력 — Slider · Toggle · Input OTP · Color Swatch · Icon Picker
+
+> 2026-10-09 정했다(사용자 결정 — 비교 페이지 https://claude.ai/artifact/CwVJDATSmLtwQoH67wh1zj, 1B · 2C · 3B · 4B · 5A · 6B · 7A · 8A · 9A · 10A · 11B · 12C · 13B · 14B · 15A · 16A · 17A · 18A · 19B · 20A · 21A · 22A + 따라오는 것). SEED 가 컴포넌트로 가진 것은 Slider 와 Toggle Button(코드만)뿐이라, 인증 코드 칸 · 색 고르기 · 아이콘 고르기는 SEED 의 원칙(Text Input 의 "Input을 나누지 말고" · Iconography)에서 porest 가 정했다. 수치 원본은 `specs/components/slider.yaml` · `toggle.yaml` · `input-otp.yaml` · `color-swatch.yaml` · `icon-picker.yaml`, 아이콘 세트는 `category-icons.yaml`, 쓰는 규칙은 각 스펙 md 다. 옛 Slider · Toggle · Input OTP(v69) 절은 다시 정했고 Toggle Group 은 걷었다 — 옛 스펙은 각 `.history` 의 `v-pre-seed-input.*`. 토큰은 더하지 않았다.
+
+#### 나누기
+
+| 고르는 것 | 쓰는 것 |
+|---|---|
+| 범위 안의 자리(임계값 · 비율) · 2 ~ 5단계(별점) | Slider |
+| 정확한 숫자 · 금액 | Input — 숫자 키보드 · 뒤 단위 |
+| 단추 하나가 켜고 끄는 상태(관심 · 고정 · 금액 가리기 · 비밀값 보기) | Toggle — 아이콘 단추 |
+| 같은 내용을 2 ~ 4가지로 바로 다르게 보기 | Segmented Control |
+| 2 ~ 4개 짧은 폼 값 · 거르기 · 제안 | Chip |
+| 5개 이상 | Select |
+| 누르는 순간 적용되는 설정 줄 | Switch |
+| 저장해야 적용되는 켜고 끄기 · 할 일 완료 | Checkbox |
+| 메일로 받은 인증 코드 | Input OTP — Input 한 칸 |
+| 항목에 붙일 색 | Color Swatch |
+| 카테고리 · 저축 목표의 아이콘 | Icon Picker — Input Button + 시트 · 팝오버 |
+
+Toggle Group 은 두지 않는다 — 하나 고르기는 Segmented Control(2 ~ 4) · Chip, 여럿은 Chip, 5개 이상은 Select 다. 글이 있는 켜고 끄기 단추(SEED Toggle Button · 옛 porest Toggle)도 두지 않는다.
+
+#### 모양
+
+| | 값 |
+|---|---|
+| Slider | 손잡이 줄 44(줄 전체가 누르는 자리) · 트랙 4 `stroke-neutral-weak` · 채움 `fg-neutral` · 손잡이 원 20 `bg-neutral-inverted`(누르는 동안 24) · 테두리 · 그림자 없음 · 머리 값 16 / 22 · 700 · 말풍선 13 / 18 · 500(끄는 동안 · 호버 · 키보드 포커스) · 아래 양 끝 표식 · 눈금은 2 ~ 5 구간만(트랙을 끊는 틈 4) · 막힘 `bg-disabled` · `fg-disabled` |
+| Toggle | 보이는 40 · 누르는 44 · 아이콘 20 · 바탕은 누름 · 호버에만 · 끔 `fg-neutral-muted` + 선 2 · 켬 `fg-neutral` + 선 2.5 · 브랜드 채움 위는 흰 아이콘 · 상단 바 안은 상자 44 · 아이콘 24 · 끔도 `fg-neutral`(굵기 · 아이콘으로만 가른다) |
+| Input OTP | Input 상자형 한 칸 — large 52 · medium 40 · 숫자만 앞 6자리 · 고정폭 숫자 · 아래 설명 줄 · 다시 받기 Button `neutralWeak` medium(칸 아래 12, 보낸 뒤 60초 막힘) |
+| Color Swatch | 원 40 · 누르는 44 · 5 × 2(사이 12 · 폭 248) · 차트 10색(라이트 700 · 다크 800-dark) 진한 채움 · 고름 = 2 띄운 2px `stroke-neutral-contrast` 고리 + 체크 16 `fg-neutral-inverted` |
+| Icon Picker | 트리거 Input Button · 1280 미만 Bottom Sheet · 이상 Popover 408 · 찾기 칸 밑줄형 · 묶음 머리 14 · 500 · 칸 48 · 모서리 12 · 아이콘 24 · 고른 칸 안쪽 2px `stroke-neutral-contrast` + 선 2.5 |
+
+#### 쓰는 규칙
+
+- **요청 중에도 막지 않는다** — 누르는 순간 저장되는 Toggle · Switch 와 손을 뗄 때 한 번 저장되는 Slider 는 화면을 바로 바꾸고 요청은 뒤에서 보낸다. 실패하면 되돌리고 그 자리에서 알린다(Slider 는 Field 오류, Toggle 은 Snackbar). 단계마다 저장 · 지연 저장 · 저장 버튼은 두지 않는다.
+- **슬라이더 값** — 지금 값은 Field 머리 오른쪽에 늘, 끄는 동안 말풍선, 아래 양 끝 표식. 단계마다 숫자를 늘어놓지 않는다. 2 ~ 5단계 고르기도 Slider 다(옛 "3개 이하 금지" 는 걷었다).
+- **켜고 끄는 단추** — 이름은 고정하고 켬은 `aria-pressed`. 아이콘은 지금 상태를 그린다 — 금액을 가렸으면 `eye-off`. 모으기 단추(관심 · 고정)의 꺼짐은 사선 없이(Iconography). 켬에 바탕을 칠하지 않는다. 상단 바에서는 끔도 이웃 버튼과 같은 진한 색이다(2026-10-09).
+- **인증 코드** — 칸을 나누지 않는다. 붙여넣기 · 자동 채우기에서 숫자만 뽑고(`one-time-code` · 숫자 키보드), 6자리를 채워도 저절로 보내지 않는다. 설명 줄 "10분 안에 입력해주세요 · 5번 틀리면 다시 받아요." 를 늘 두고, 다시 받기 단추는 남은 초를 붙여 막는다 — 시계로 세지 않는다.
+- **색** — 새 항목은 v110 배정 순서에서 쓰지 않은 첫 색으로 시작한다(늘 빨강이 아니다). 고치기는 고르지 않으면 색을 바꾸지 않고, 팔레트 밖 색 · 색 없는 항목은 격자 앞 "지금 색" · "자동" 칸으로 보인다. 색을 꼭 고르게 하지 않는다.
+- **아이콘** — lucide 전체가 아니라 `category-icons.yaml` 의 세트(148개 · 13 묶음)만 연다. 한국어 이름 · 찾는 말로 찾고, 0건이면 "'{검색어}'에 대한 아이콘이 없어요". "없음" 은 두지 않는다 — 기본은 태그. 세트 밖으로 저장된 아이콘은 그대로 그린다.
+
+#### 접근성
+
+- Slider 이름은 Field 라벨, `aria-valuetext` 에 단위("80%"), 키보드는 APG(포커스한 손잡이의 Home · End, PageUp · PageDown 10단계). 트랙을 눌러도 고른다(끌기 대신).
+- Toggle 은 `<button aria-pressed>` + 고정 이름(앱 `Semantics` toggled — 라벨에 상태를 넣지 않는다).
+- Input OTP 는 입력 하나 — Field 라벨 · `aria-describedby`(설명 · 오류) · 오류 알림. 코드를 보내면 초점을 칸으로.
+- Color Swatch 는 radiogroup(이름 = Field 라벨) · 칸 이름 = 색 이름 · 묶음에 Tab 하나 + 2차원 화살표.
+- Icon Picker 격자는 listbox · 칸 이름 = 한국어 이름 · 격자에 Tab 하나 + 2차원 화살표 · 찾으면 결과 수를 한 번 알린다.
+- 누르는 영역은 44 이상 — 슬라이더 손잡이 줄 44 · 토글 44 · 색 칸 44 · 아이콘 칸 48. 인증 코드 칸 medium 40 은 1280 이상 데스크톱 웹만이다(Input 과 같다).
+
 ### Pagination (v67 추가)
 
 > 2026-10-04 다시 정했다 — 위 "화면 틀 · 이동" 절과 `specs/components/pagination.md` · `table-pagination.md`(SEED Pagination · Table Pagination). 옛 numbered · prev-next · load-more 변형, 지금 쪽 primary 채움, sm 32 · md 40 · lg 48 은 걷었다 — 폰의 긴 목록은 끝없이 불러오기이고 "더 보기" 버튼은 두지 않는다. 옛 스펙은 `specs/components/pagination.history/v-pre-seed-nav.*`.
@@ -4910,129 +4967,22 @@ Input + Dropdown 결합 — typing autocomplete + 선택. v45 Dropdown의 combob
 
 ### Slider (v69 추가)
 
-range 값 선택 (음량, 가격대, 평가 등). **신규 prose-token 후보 — 추후 검토**, 이번 추가 0 (기존 spacing/radius 합성).
-
-#### Variant
-| Variant | 사용 |
-|---|---|
-| **single** (default) | 단일 thumb, 0-100 또는 min-max |
-| **range** | 두 thumb (min-max 범위 선택) |
-
-#### Anatomy
-- track: `surface-input` 4px height + `radius-full`
-- fill: `primary` width transition (selected range)
-- thumb: 16×16 circle, `surface-default` + `primary` 2px outline + `shadow-sm`
-- label (옵션): thumb 위 또는 우측에 현재 값 (`caption` 12)
-- min/max label: track 양 끝 (`caption` `text-tertiary`)
-- ticks (옵션): 5/10 단위 마커 (1px tall on track)
-
-#### State
-- default: thumb `surface-default` + outline `primary`
-- hover: thumb scale(1.1)
-- dragging: thumb `primary` 채움 + `shadow-md` 등장 + 라벨 표시
-- focus: `border-focus` 2px outline + 1px offset
-- disabled: `text-disabled` track + thumb opacity 0.5
-
-#### Layout
-- horizontal default — 너비 100%, height 24-32 hit area (thumb 16, padding 8)
-- vertical 옵션 — 높이 100-200px (음량 등)
-- touch hit area: thumb 자체 16이지만 hit는 `touch-min` (44) — 외곽 padding으로
-
-#### Accessibility
-- `role="slider"` + `aria-valuenow` + `aria-valuemin` + `aria-valuemax` + `aria-label="음량"`
-- range slider: 두 thumb 각각 별도 slider, `aria-label="최소값"` / `aria-label="최대값"`
-- 키보드:
-  - 좌/우 arrow: ±1 step
-  - Shift + arrow: ±10 step (또는 spec step 정의)
-  - Home/End: min/max 점프
-  - Page Up/Down: ±10% 점프
+> 2026-10-09 다시 정했다 — 위 "입력" 절과 `specs/components/slider.md`(SEED Slider). 옛 브랜드 채움 · 흰 손잡이 16 + 브랜드 테두리 · 그림자 · 손잡이 위 · 옆 라벨 · 5 / 10 단위 가는 눈금 · 세로 슬라이더 · 호버 1.1배 · 불투명도 막힘 · PageUp ±10% 는 걷었다. 옛 스펙은 `specs/components/slider.history/v-pre-seed-input.*`.
 
 ### Toggle (v69 추가)
 
-단일 button on/off 상태. Switch와 다름 — Toggle은 button 톤(text/icon), Switch는 형태 변환 토글. **새 토큰 0**.
-
-#### Variant
-| Variant | 사용 |
-|---|---|
-| **icon** | icon only — 데스크탑 toolbar (Bold/Italic/Underline 같은) |
-| **text** | label only — 필터 button (전체/미완료/완료) |
-| **icon-text** | icon + label — bold "B" + 라벨 |
-
-#### State
-- off (default): transparent + `text-secondary` + 1px `border-default`
-- hover: `surface-input` 배경
-- on (pressed): `surface-input` 배경 + `text-primary` + `border-strong` 또는 `primary` 1px stroke
-- focus: `border-focus` 2px outline
-- disabled: opacity 0.5 + cursor not-allowed
-
-#### Differences vs Switch
-- **Switch**: track + handle 형태, 즉시 effect (예: 알림 켜기/끄기)
-- **Toggle**: button 형태, on/off 시각이 fill/outline (예: 텍스트 굵게)
-- 의미 차이: Switch는 setting, Toggle은 formatting/filtering
-
-#### Accessibility
-- `<button aria-pressed="true|false">` (true = on)
-- `aria-label="굵게 토글"` (icon only일 때 필수)
-- 키보드: Tab focus, Space/Enter toggle
+> 2026-10-09 다시 정했다 — 켜고 끄는 아이콘 단추 하나(위 "입력" 절과 `specs/components/toggle.md`). 글 · 아이콘 + 글 변형, 켬의 바탕 · 테두리, 불투명도 막힘은 걷었다 — 거르기는 Chip, 설정은 Switch 이고 서식 툴바는 쓰는 곳이 없다. 옛 스펙은 `specs/components/toggle.history/v-pre-seed-input.*`.
 
 ### Toggle Group (v69 추가)
 
-> 2026-10-02 — 같은 내용의 보기 바꾸기 · 정렬처럼 하나를 고르는 2 ~ 4칸은 Segmented Control(`specs/components/segmented-control.md`)이다. 아래 single 쓰임은 Toggle Button 차례에 다시 정한다.
-
-Toggle 묶음 — 단일 선택 (radio-like) 또는 다중 선택 (checkbox-like). **새 토큰 0**.
-
-#### Variant
-| Variant | 동작 |
-|---|---|
-| **single** | 한 번에 하나만 on (radio 의미) — 정렬 옵션 (이름순/날짜순/크기순) |
-| **multiple** | 다수 동시 on (checkbox 의미) — 텍스트 포맷팅 (Bold + Italic 동시 가능) |
-
-#### Layout
-- group: 버튼 list 좌→우, gap 0 (인접) 또는 `xs` (4px)
-- 인접 버튼: 외곽 join — 첫 버튼 좌측 radius, 마지막 버튼 우측 radius, 중간 radius 0
-
-#### State (group 인지)
-- single mode: 활성 1개 외 모두 off
-- multiple mode: 각 button 독립 on/off
-
-#### Accessibility
-- `role="group" aria-label="정렬"` wrapper
-- single: `role="radiogroup"` + items `role="radio" aria-checked`
-- multiple: items `<button aria-pressed>` (group은 단순 wrapper)
-- 키보드:
-  - single (radiogroup): arrow keys로 group 내 이동 + 선택, Tab은 group 진입/탈출
-  - multiple: 각 button 독립 — Tab으로 이동, Space/Enter toggle
+> 2026-10-09 걷었다 — 하나 고르기 2 ~ 4칸은 Segmented Control, 여럿 · 짧은 폼 값은 Chip, 5개 이상은 Select 다(위 "입력" 절). 옛 스펙은 `specs/components/toggle-group.history/v-pre-seed-input.*`.
 
 ### Input OTP (v69 추가)
 
-일회용 비밀번호 입력 — 6자리 (또는 4자리) 분할 input field. **새 토큰 0**.
-
-#### Anatomy
-- 6 (또는 4) 정사각 input — 각각 1자리, `40×40` 또는 `48×48`, `radius-md`
-- 가운데 separator (`-`) 옵션 (4-2 또는 3-3 grouping)
-- 자동 focus 이동: 입력 시 다음 칸으로 jump, backspace 시 이전 칸
-
-#### State
-- empty: `surface-input` 배경 + `border-default` 1px
-- focus: `border-focus` 2px outline + offset
-- filled: 텍스트 표시 (font-size 18-24px monospace)
-- error: `error` 1px border + alert text 동반 ("코드가 일치하지 않아요")
-- disabled: opacity 0.5
-
-#### Layout
-- gap `xs` (4px) 또는 `sm` (8px) (그룹 사이는 `md` 12px — `[3]-[3]` 패턴)
-- 정사각 cell — width = height
-- 가운데 정렬 (form 안에서)
-
-#### Accessibility
-- 각 input: `<input type="text" inputmode="numeric" maxlength="1" autocomplete="one-time-code" aria-label="OTP 1번째 자리">`
-- 첫 input에 `autoFocus`
-- iOS: `autocomplete="one-time-code"` — SMS 자동 채우기
-- screen reader: 6 input을 별개 field로 인지, label로 위치 알림
-- paste: 6자 일괄 paste 시 자동으로 모든 칸 채우기
+> 2026-10-09 다시 정했다 — Input 한 칸(위 "입력" 절과 `specs/components/input-otp.md`). 칸마다 입력 · 6칸 · 3-3 구분 · 자동 다음 칸은 걷었다 — 칸을 나누지 않는다(SEED Text Input). 옛 스펙은 `specs/components/input-otp.history/v-pre-seed-input.*`.
 
 #### HR / Desk 듀얼 브랜드 (v69 5종 공통)
-spec brand-neutral. brand 파일 — HR(Combobox 직원 검색 / Toggle Group 결재 상태 필터 / Slider 평가 점수), Desk(Combobox 태그 자동완성 / Toggle 메모 즐겨찾기 / Input OTP 2차 인증 / Slider 가계부 예산).
+spec brand-neutral. brand 파일 — HR(Combobox 직원 검색), Desk(Combobox 태그 자동완성). Slider · Toggle · Input OTP 의 쓰는 자리는 2026-10-09 "입력 — HR" · "입력 — Desk" 절로 옮겼다(Toggle Group 은 걷었다).
 
 ### Accordion (v70 추가)
 

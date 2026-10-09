@@ -6,7 +6,9 @@
  * BUBBLE · BUBBLE_TITLE · BUBBLE_DESCRIPTION · ARROW_PATH · ARROW · CLOSE · ROOT_RING 은 recipes/shadcn/components/ui/help-bubble.tsx 의 상수(BubbleArrow 의
  * 경로 · 클래스)와, TEXT · WITH_CLOSE 는 그 파일의 JSX 에 적힌 클래스와 글자 하나까지 같아야 한다 — 두 파일을 함께 고친다. tooltip.tsx 도 같은
  * BUBBLE · BUBBLE_TITLE · BubbleArrow 를 쓴다(tooltip-examples.mjs 의 것과 같다 — help-bubble.tsx 를 고치면 셋을 함께).
- * 트리거 · 기준 BUTTON_* 는 button.tsx 의 cva 와 같다(button-examples.mjs 의 것 — 이 파일이 쓰는 변형 · 크기 · 배치와 그에 걸리는 compound 만 옮겼다).
+ * 트리거 BUTTON_* 는 button.tsx 의 cva 와 같다(button-examples.mjs 의 것 — 이 파일이 쓰는 변형 · 크기 · 배치와 그에 걸리는 compound 만 옮겼다).
+ * 기준(금액 가리기)은 상단 바의 아이콘 버튼이다(TopNavigationIconButton — 이름 고정 · aria-pressed · 지금 상태 아이콘, 끔도 fg-neutral) —
+ * TN_* 는 top-navigation.tsx 의 상수(top-navigation-examples.mjs 의 것), NB_TARGET 은 notification-badge.tsx 의 것과 같다(2026-10-09).
  * 규칙은 specs/components/help-bubble.md, 수치 원본은 specs/components/help-bubble.yaml(Tooltip 과 한 파일).
  *
  * Preview 는 정적 HTML 이다 — 페이지의 Tailwind v4 browser CDN 이 클래스를 utility 로 만든다.
@@ -64,7 +66,7 @@ const ROOT_RING = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-
 const TEXT = "flex min-w-0 flex-1 flex-col gap-x0_5";
 const WITH_CLOSE = "flex items-start";
 
-// ── button.tsx 의 cva 와 같은 값 — ⓘ · 금액 가리기(ghost · medium · 아이콘만) ─────
+// ── button.tsx 의 cva 와 같은 값 — ⓘ(ghost · medium · 아이콘만) ─────
 
 const BUTTON_BASE = [
   "relative inline-flex items-center justify-center whitespace-nowrap font-sans font-bold",
@@ -97,6 +99,25 @@ const BUTTON_COMPOUND = [
 ];
 
 const BUTTON_DEFAULTS = { variant: "neutralSolid", size: "medium", layout: "withText", ghostColor: "neutral" };
+
+// ── top-navigation.tsx 의 상수와 같은 값 — 상단 바 아이콘 버튼(44 · 24) · notification-badge.tsx 의 TARGET ──
+
+const TN_PRESS_TRANSITION =
+  "[transition:background-color_var(--motion-duration-color-transition)_var(--motion-ease-easing),scale_var(--motion-duration-pressed-scale)_var(--motion-ease-pressed-scale)]";
+const TN_FOCUS_INSIDE = "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-stroke-focus-ring";
+// 아이콘 버튼 — 상자 44 = 누르는 영역 · 아이콘 24, 버튼끼리 붙는다
+const TN_ICON_BUTTON = [
+  "relative flex size-[44px] shrink-0 cursor-pointer items-center justify-center rounded-r2 border-0 bg-transparent p-0 text-fg-neutral",
+  "[&_svg]:size-6 [&_svg]:shrink-0",
+  // 켜고 끄는 단추(aria-pressed) — 끔 선 2 · 켬 선 2.5, 색은 그대로 fg-neutral(19B). aria-pressed 가 없는 버튼의 선은 건드리지 않는다
+  "aria-[pressed=false]:[&_svg]:[stroke-width:2] aria-pressed:[&_svg]:[stroke-width:2.5]",
+  TN_PRESS_TRANSITION,
+  "hover:bg-bg-layer-default-pressed active:bg-bg-layer-default-pressed active:[scale:calc(1-2/44)] motion-reduce:active:[scale:1]",
+  TN_FOCUS_INSIDE,
+  "disabled:cursor-not-allowed disabled:bg-transparent disabled:text-fg-disabled disabled:[scale:1]",
+].join(" ");
+// 아이콘 · 점 자리(NotificationBadge 의 TARGET — 점이 없어도 감싼다)
+const NB_TARGET = "relative inline-flex";
 
 // ── cva · cn 풀이 ─────────────────────────────────────────────────────────
 
@@ -190,9 +211,7 @@ const svg = (paths) =>
 const ICONS = {
   info: svg('<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>'),
   x: svg('<path d="M18 6 6 18"/><path d="m6 6 12 12"/>'),
-  eyeOff: svg(
-    '<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/>',
-  ),
+  eye: svg('<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>'),
 };
 
 // 미리보기 틀 — 뒤 화면 위에 말풍선. isolation 이 z-(--z-tooltip) 을 틀 안에 가둔다
@@ -300,32 +319,38 @@ export const helpBubbleExamples = [
   {
     title: "처음부터 열어 두는 안내 — 닫기 버튼",
     description:
-      "처음 쓰는 기능의 설명처럼 닫기 전까지 남겨 둘 안내는 처음부터 열어 두고(defaultOpen) 닫기 버튼(showCloseButton)을 두고, 바깥 누르기 · 바깥으로 간 초점에 닫히지 않게 한다(closeOnInteractOutside={false}) — 한 번 닫으면 다시 열지 않는다. 다른 버튼에 붙일 때는 HelpBubbleAnchor 로 자리만 잡는다(팝업 ARIA 를 달지 않고 누르면 그 버튼의 원래 동작이다). 닫기는 오른쪽 위 모서리에 붙은 38 투명 상자 · 아이콘 14(위 12 · 오른쪽 12 자리) · 글과 4 이고 누르는 영역은 44 다. 머리 오른쪽 끝의 버튼 아래(side=\"bottom\")라 Radix 가 말풍선을 화면 안으로 밀어 오른쪽 16 을 남겼고, 화살표는 그대로 버튼 가운데를 가리킨다.",
-    jsx: `import { HelpBubble, HelpBubbleAnchor, HelpBubbleContent } from "@/components/ui/help-bubble"
+      "처음 쓰는 기능의 설명처럼 닫기 전까지 남겨 둘 안내는 처음부터 열어 두고(defaultOpen) 닫기 버튼(showCloseButton)을 두고, 바깥 누르기 · 바깥으로 간 초점에 닫히지 않게 한다(closeOnInteractOutside={false}) — 한 번 닫으면 다시 열지 않는다. 다른 버튼에 붙일 때는 HelpBubbleAnchor 로 자리만 잡는다(팝업 ARIA 를 달지 않고 누르면 그 버튼의 원래 동작이다 — 여기서는 금액 가리기 Toggle: 이름 고정 + aria-pressed, 아이콘은 지금 상태라 금액이 보이면 eye). 닫기는 오른쪽 위 모서리에 붙은 38 투명 상자 · 아이콘 14(위 12 · 오른쪽 12 자리) · 글과 4 이고 누르는 영역은 44 다. 머리 오른쪽 끝의 버튼 아래(side=\"bottom\")라 Radix 가 말풍선을 화면 안으로 밀어 오른쪽 16 을 남겼고, 화살표는 그대로 버튼 가운데를 가리킨다.",
+    jsx: `import { Eye, EyeOff } from "lucide-react"
+import { HelpBubble, HelpBubbleAnchor, HelpBubbleContent } from "@/components/ui/help-bubble"
+import { TopNavigationIconButton } from "@/components/ui/top-navigation"
 
-{/* 처음 쓰는 사람에게 한 번 — 닫으면 다시 열지 않는다. Anchor 는 자리만 잡는다(누르면 원래 동작).
+{/* 처음 쓰는 사람에게 한 번 — 닫으면 다시 열지 않는다. Anchor 는 자리만 잡는다(누르면 원래 동작 — 상단 바의 금액 가리기).
     closeOnInteractOutside={false} — 바깥 누르기 · 바깥으로 간 초점(Tab)에 닫히지 않는다. 닫기 버튼 · Esc · 말풍선에서 Tab 으로 나가기로 닫는다 */}
 <HelpBubble defaultOpen={!seen} onOpenChange={(open) => !open && markSeen()}>
   <HelpBubbleAnchor asChild>
-    <Button variant="ghost" layout="iconOnly" aria-label="금액 가리기"><EyeOff /></Button>
+    <TopNavigationIconButton aria-label="금액 가리기" aria-pressed={hidden} onClick={toggleHidden}>{hidden ? <EyeOff /> : <Eye />}</TopNavigationIconButton>
   </HelpBubbleAnchor>
   <HelpBubbleContent title="금액을 가릴 수 있어요" description="누르면 화면의 금액이 모두 가려져요." showCloseButton closeOnInteractOutside={false} side="bottom" />
 </HelpBubble>`,
     render: () => {
+      // 기준은 상단 바의 금액 가리기(TopNavigationIconButton — asChild 라 기준의 data-slot 이 버튼에 간다). 처음은 끔 — 금액이 보이니 eye,
+      // 이름은 고정 + aria-pressed, 색은 끔도 fg-neutral · 선 2(19B)
       const anchor = `<button ${attrs([
+        'type="button"',
         'data-slot="help-bubble-anchor"',
-        `class="${button({ variant: "ghost", layout: "iconOnly" })}"`,
+        `class="${TN_ICON_BUTTON}"`,
         'aria-label="금액 가리기"',
-      ])}>${ICONS.eyeOff}</button>`;
-      // 버튼(오른쪽 끝에서 24) 아래 12 — 가운데에 맞추면 오른쪽 가장자리 16 을 넘어 Radix 가 민 자리(오른쪽 16).
-      // 화살표는 버튼 가운데(틀 오른쪽에서 24 + 20 = 44) — 말풍선 오른쪽에서 44 − 16 = 28 이라 span 은 오른쪽 22
-      const wrapper = `<div data-radix-popper-content-wrapper="" style="position:absolute; right:16px; top:calc(var(--spacing-x6) + 40px + 12px); min-width:max-content; z-index:var(--z-tooltip);">${bubbleContent({
+        'aria-pressed="false"',
+      ])}><span aria-hidden="true" data-slot="notification-badge-target" class="${NB_TARGET}">${ICONS.eye}</span></button>`;
+      // 버튼(상자 44 · 오른쪽 끝에서 24) 아래 12 — 가운데에 맞추면 오른쪽 가장자리 16 을 넘어 Radix 가 민 자리(오른쪽 16).
+      // 화살표는 버튼 가운데(틀 오른쪽에서 24 + 22 = 46) — 말풍선 오른쪽에서 46 − 16 = 30 이라 span(폭 12)은 오른쪽 24
+      const wrapper = `<div data-radix-popper-content-wrapper="" style="position:absolute; right:16px; top:calc(var(--spacing-x6) + 44px + 12px); min-width:max-content; z-index:var(--z-tooltip);">${bubbleContent({
         uid: "help-bubble-ex-close",
         title: "금액을 가릴 수 있어요",
         description: "누르면 화면의 금액이 모두 가려져요.",
         showCloseButton: true,
         side: "bottom",
-        arrowX: "right:22px;",
+        arrowX: "right:24px;",
         availableWidth: "calc(100cqw - 32px)",
       })}</div>`;
       const rows = [

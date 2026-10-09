@@ -75,7 +75,6 @@ import { accordionExamples } from "../recipes/shadcn/examples/accordion-examples
 import { collapsibleExamples } from "../recipes/shadcn/examples/collapsible-examples.mjs";
 // Phase 1 Form remaining
 import { toggleExamples } from "../recipes/shadcn/examples/toggle-examples.mjs";
-import { toggleGroupExamples } from "../recipes/shadcn/examples/toggle-group-examples.mjs";
 import { sliderExamples } from "../recipes/shadcn/examples/slider-examples.mjs";
 import { selectExamples } from "../recipes/shadcn/examples/select-examples.mjs";
 import { inputOtpExamples } from "../recipes/shadcn/examples/input-otp-examples.mjs";
@@ -172,7 +171,6 @@ const SHADCN_EXAMPLES = {
   collapsible: collapsibleExamples,
   // Phase 1 Form remaining
   toggle: toggleExamples,
-  "toggle-group": toggleGroupExamples,
   slider: sliderExamples,
   select: selectExamples,
   "input-otp": inputOtpExamples,
@@ -1968,26 +1966,28 @@ function parseExamplesMd() {
 // 각 항목: slug, name, category, description.
 // 페이지 1대1 매핑: 묶지 않음 (input-textarea 같은 묶음 폐기).
 const SHADCN_CATALOG = [
-  // Form (20)
+  // Form (21) — Toggle Group 은 2026-10-09 걷었다(하나 고르기 2 ~ 4칸은 Segmented Control · 여럿 · 짧은 폼 값은 Chip · 5개 이상은 Select).
+  // Color Swatch · Icon Picker 는 Field 의 입력이라 Domain 에서 옮겼다(2026-10-09 — field.md Input)
   { slug: "button", name: "Button", category: "Form", description: "액션을 실행하는 버튼. 변형 7 × 크기 4 × 배치 2(SEED Action Button 구조)." },
   { slug: "checkbox", name: "Checkbox", category: "Form", description: "여러 선택 가능한 박스." },
   { slug: "chip", name: "Chip", category: "Form", description: "2 ~ 4개 짧은 폼 값 고르기 · 누르면 값을 채우는 제안 · 목록 위 필터 바 · 지우기로 빼는 넣은 값을 맡는 작은 알약 (SEED Chip 구조)." },
+  { slug: "color-swatch", name: "Color Swatch", category: "Form", description: "카테고리 · 태그 · 저축 목표 · 캘린더에 붙일 색을 차트 10색으로 칠한 원 칸 40 을 5 × 2 로 늘어놓고 하나 고르는 묶음 — 고른 칸은 2 띄운 2px 짙은 고리 + 체크이고, 고칠 때는 격자 앞에 지금 색 칸을 둔다 (SEED 에 색 고르기 부품이 없어 porest 가 정했다 — 고른 고리는 Select Box 의 짙은 테두리)." },
   { slug: "combobox", name: "Combobox", category: "Form", description: "검색·필터 가능한 select." },
   { slug: "date-picker", name: "Date Picker", category: "Form", description: "날짜 · 기간 · 여러 날을 고르는 달력 — 날짜 칸(Input Button)을 누르면 1280 미만 시트 · 이상 팝오버로 열리고 \"완료\" 로 넣는다. 머리 · 요일 줄 · 날짜 칸 48 · 기간 띠, 한 달 · 두 달 · 이어지는 달 (SEED Date Picker 구조)." },
   { slug: "floating-action-button", name: "Floating Action Button", category: "Form", description: "화면 위에 떠 있는 그 화면의 주 동작 하나 — 오른쪽 아래(화면 끝 · 아래 끝에서 20)의 브랜드 원 56 에 흰 아이콘 24 이고, 폰의 탭 바가 없는 화면(할 일 · 더치페이)에만 둔다 (SEED Floating Action Button 구조)." },
   { slug: "field", name: "Field", category: "Form", description: "칸 이름 · 필수 표시 · 설명 · 오류 · 글자 수를 입력 하나에 붙이는 둘레 (SEED Field 구조)." },
+  { slug: "icon-picker", name: "Icon Picker", category: "Form", description: "카테고리 · 저축 목표에 붙일 아이콘을 고르는 칸 — Input Button 이 고른 세트(148개 · 13 묶음)의 칸 48 격자를 1280 미만 시트 · 이상 팝오버로 열고 한국어 이름 · 찾는 말로 찾는다 (SEED 에 아이콘 고르기 부품이 없어 porest 가 정했다 — 트리거는 SEED Input Button, 칸은 SEED Iconography 의 아이콘 24 · 누르는 자리 44 이상 권장)." },
   { slug: "input", name: "Input", category: "Form", description: "한 줄 글 · 숫자를 직접 치는 입력칸. 상자 · 밑줄 × large · medium · 반응형, 앞 · 뒤 붙이개 · 지우기 (SEED Text Input 구조)." },
   { slug: "input-button", name: "Input Button", category: "Form", description: "입력칸 모양의 버튼. 누르면 달력 · 시각 · 아이콘 격자 · 긴 목록을 1280 미만 시트 · 이상 팝오버로 열고 고른 값이 칸에 들어간다 (SEED Input Button 구조)." },
-  { slug: "input-otp", name: "Input OTP", category: "Form", description: "OTP / 인증 코드 입력." },
+  { slug: "input-otp", name: "Input OTP", category: "Form", description: "메일 · 문자로 받은 일회용 인증 코드(숫자 6자리)를 넣는 Input 한 칸 — 칸을 자릿수만큼 나누지 않고 붙여 넣으면 숫자만 남기며, 칸 아래 다시 받기 단추가 남은 초를 보이고 설명 줄이 유효 시간 · 틀릴 수 있는 횟수를 늘 알린다 (SEED 에 없는 부품 — 형식이 정해진 값은 칸을 나누지 말라는 SEED Text Input 규칙을 따라 porest 가 정했다)." },
   { slug: "radio-group", name: "Radio Group", category: "Form", description: "여러 옵션 중 하나만 선택." },
   { slug: "select-box", name: "Select Box", category: "Form", description: "제목 · 설명이 붙은 선택지를 상자로 비교해 하나 · 여럿을 고른다 (SEED Select Box 구조)." },
   { slug: "select", name: "Select", category: "Form", description: "짧은 선택지 5개 이상에서 폼 값을 고르는 칸. 칸 아래 목록 · 묶음 · 하나 · 여럿 고르기 × large · medium · 반응형 (SEED Select 구조)." },
-  { slug: "slider", name: "Slider", category: "Form", description: "범위 값 선택 슬라이더." },
+  { slug: "slider", name: "Slider", category: "Form", description: "정해진 범위에서 값을 끌어 고르는 컨트롤 — 예산 알림 임계값처럼 범위 안의 자리가 중요한 값과 별점처럼 2 ~ 5단계 가운데 하나를 고르고, 지금 값은 Field 머리 오른쪽 · 끄는 동안 손잡이 위 말풍선이며 손을 뗄 때 한 번 저장한다 (SEED Slider 구조 — 무채색 그대로)." },
   { slug: "switch", name: "Switch", category: "Form", description: "on/off 토글." },
   { slug: "textarea", name: "Textarea", category: "Form", description: "여러 줄 글을 받는 입력칸. 3줄에서 쓴 만큼 자라고 최대 · 고정 높이를 정할 수 있다 (SEED Textarea 구조)." },
   { slug: "time-picker", name: "Time Picker", category: "Form", description: "시각을 고르는 12시간 휠 — 오전·오후 · 시 · 분. 시각 칸을 누르면 1280 미만 시트 · 이상 팝오버로 열리고 \"완료\" 로 넣는다 (SEED Time Picker 구조)." },
-  { slug: "toggle", name: "Toggle", category: "Form", description: "on/off 버튼 (인라인)." },
-  { slug: "toggle-group", name: "Toggle Group", category: "Form", description: "단일 또는 복수 선택 토글 그룹." },
+  { slug: "toggle", name: "Toggle", category: "Form", description: "단추 하나가 한 상태를 켜고 끄는 아이콘 단추(보이는 40 · 누르는 44) — 관심 등록 · 메모 고정 · 금액 가리기 · 비밀값 보기에 쓰고, 이름은 그대로 둔 채 켬은 aria-pressed 와 아이콘의 모양 · 굵기 · 색으로만 가른다 (SEED 에 디자인 문서가 없어 SEED Iconography 의 켜고 끄기 규칙 · 하트 단추를 바탕으로 porest 가 정했다)." },
   { slug: "wheel-picker", name: "Wheel Picker", category: "Form", description: "순서가 있는 값을 세로로 굴려 고르는 휠 — 칼럼 · 항목 · 가운데 선택 띠 · 위아래 안개. Time Picker 의 바탕이고, 달력의 연 · 월 휠 · 달만 고르는 자리에 쓴다 (SEED Wheel Picker 구조)." },
 
   // Display (21)
@@ -2044,17 +2044,13 @@ const SHADCN_CATALOG = [
   { slug: "searchable-list", name: "Searchable List", category: "Data", description: "위 밑줄 검색칸에 치는 대로 걸러지는 긴 목록에서 하나를 고르는 묶음 — 분류 머리 · List 줄 + 오른쪽 라디오 · 콤보박스 키보드 · 0건 · 실패 · 불러오는 줄 (SEED Text Input 밑줄형 · List · Radiomark · Result Section 기준)." },
   { slug: "swipe-actions", name: "Swipe Actions", category: "Data", description: "폰 목록 줄을 왼쪽으로 밀면 동작 칸(원형 배지 36 + 라벨)이 드러나는 지름길 — 같은 동작은 늘 줄 끝 ⋮ → Menu Sheet 로도 연다 (SEED 에는 줄 밀기가 없어 대체 방법을 두라는 SEED Inclusive Design 기준)." },
   { slug: "table", name: "Table", category: "Data", description: "줄과 열로 된 데이터를 견주어 읽는 표 — 머리 41 · 줄 45(두 줄 칸이면 72) · 마지막 줄까지 줄 선 · 숫자 오른쪽 · 정렬 ↑↓ 늘 · 끝 ⋮ · 고른 줄은 체크로만, 768 미만은 List 줄 (SEED 문서 사이트 표 구조)." },
-
-  // Porest 도메인 spec (2) — shadcn 카탈로그 외, desk-front SoT 역방향 정합. Searchable List 는 Data 로 옮겼다(2026-10-08 — 부품마다 SEED)
-  { slug: "color-swatch", name: "Color Swatch", category: "Domain", description: "카테고리·라벨·태그 색 single-select 정사각형 grid (Porest 도메인 spec)." },
-  { slug: "icon-picker", name: "Icon Picker", category: "Domain", description: "Lucide 2000+ 아이콘 popover + 8-col grid 단일 선택 (Porest 도메인 spec)." },
 ];
 
 const COMPONENT_CATEGORIES = Object.fromEntries(
   SHADCN_CATALOG.map((c, i) => [c.slug, { category: c.category, sort: i }])
 );
 
-const CATEGORY_ORDER = ["Form", "Display", "Overlay", "Navigation", "Disclosure", "Data", "Domain"];
+const CATEGORY_ORDER = ["Form", "Display", "Overlay", "Navigation", "Disclosure", "Data"];
 
 // 컴포넌트 slug → preview.html render 함수 매핑
 // 각 함수는 brand 객체 받아 <section> HTML 반환 (custom CSS 사용 — pageCss로 스타일링)

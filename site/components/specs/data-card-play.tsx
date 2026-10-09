@@ -2,7 +2,6 @@
 // Card 의 플레이그라운드와 코드 미리보기 — 속성을 고르면 스펙대로 그린 카드와 그 코드가 바뀐다(누르는 카드는 실제로 눌린다).
 // 값은 card.yaml 을 푼 CardLook 만 쓴다(data-look). 코드는 card.md 의 "코드" 절과 같은 레시피 API 다.
 import { useMemo, useState, type ReactNode } from 'react';
-import { Pin } from 'lucide-react';
 import { CardHeaderView, CardSurface, HeroCardView, StatView, type DeltaSpec } from './data-card-view';
 import { TODAY, type Stat } from './data-data';
 import { formatWon, type CardLook, type CardPress, type CardStatSize, type DeltaDir, type ViewMode } from './data-shared';
@@ -15,6 +14,8 @@ import type { SkeletonLook } from './loading-shared';
 import { SkeletonView } from './loading-view';
 import { NavPlayFrame } from './nav-playground';
 import { MODES, Seg } from './select-playground';
+import type { ToggleLook } from './input-shared';
+import { ToggleView } from './toggle-view';
 
 const FONT = "'Pretendard Variable', Pretendard, sans-serif";
 const floor = (look: CardLook, mode: ViewMode) => dcv(look.floor, mode);
@@ -38,7 +39,8 @@ const DELTA: Record<DeltaDir, DeltaSpec> = {
   flat: { direction: 'flat', value: '', text: '지난달보다' },
 };
 
-export function CardPlayground({ look, sk, result }: { look: CardLook; sk: SkeletonLook; result: ResultSectionLook }) {
+export function CardPlayground({ look, sk, result, toggle }: { look: CardLook; sk: SkeletonLook; result: ResultSectionLook; toggle: ToggleLook }) {
+  const [pinned, setPinned] = useState(false);
   const [content, setContent] = useState<Content>('list');
   const [press, setPress] = useState<CardPress>('none');
   const [size, setSize] = useState<CardStatSize>('large');
@@ -70,10 +72,9 @@ export function CardPlayground({ look, sk, result }: { look: CardLook; sk: Skele
           // 제목 줄 오른쪽 고정 버튼 — card.md 의 peers 코드(flex · items-start · justify-between · gap-x2, 버튼 -mr-x2 · -mt-x2 · shrink-0)
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: look.header.gap, paddingBottom: look.header.padBottom }}>
             <span style={{ fontFamily: look.title.fontFamily, fontSize: look.title.fontSize, lineHeight: look.title.lineHeight, fontWeight: look.title.fontWeight, color: dcv(look.title.fg, mode) }}>10월 식비 예산</span>
-            <span style={{ display: 'flex', flexShrink: 0, marginTop: -look.header.gap, marginRight: -look.header.gap }} onClick={(e) => (e.stopPropagation(), setSaid('고정했어요.'))} onPointerDown={(e) => e.stopPropagation()}>
-              <button type="button" aria-label="10월 식비 예산 고정" aria-pressed={false} style={{ display: 'grid', placeItems: 'center', width: 40, height: 40, borderRadius: 10, borderWidth: 0, background: 'transparent', color: dcv(look.title.fg, mode), cursor: 'pointer' }}>
-                <Pin aria-hidden size={18} strokeWidth={2} />
-              </button>
+            {/* 고정 — 켜고 끄는 아이콘 단추(Toggle — toggle.yaml). 카드의 누름과 따로 */}
+            <span style={{ display: 'flex', flexShrink: 0, marginTop: -look.header.gap, marginRight: -look.header.gap }} onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
+              <ToggleView look={toggle} mode={mode} ariaLabel="10월 식비 예산 고정" pressed={pinned} icon="pin" onPressedChange={(v) => (setPinned(v), setSaid(v ? '고정했어요.' : '고정을 풀었어요.'))} />
             </span>
           </div>
         ) : (
@@ -156,15 +157,15 @@ export function CardPlayground({ look, sk, result }: { look: CardLook; sk: Skele
         '</Card>',
       ].join('\n');
     return [
-      ...(p === 'peers' ? ['import { Pin } from "lucide-react"', 'import { Button } from "@/components/ui/button"', 'import { Card, CardContent, CardLink } from "@/components/ui/card"'] : ['import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card"']),
+      ...(p === 'peers' ? ['import { Pin } from "lucide-react"', 'import { Card, CardContent, CardLink } from "@/components/ui/card"', 'import { Toggle } from "@/components/ui/toggle"'] : ['import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card"']),
       '',
       `<Card${p === 'whole' ? ' href={`/desk/budget/${budget.id}`}' : p === 'peers' ? ' press="peers"' : ''}>`,
       ...(p === 'peers'
         ? [
-            '  {/* 고정 버튼은 제목 줄 오른쪽 — 버튼 상자 40 이 줄 높이를 밀지 않게 위 · 오른쪽 8 을 당긴다 */}',
+            '  {/* 고정 버튼은 제목 줄 오른쪽 — 켜고 끄는 아이콘 단추(Toggle). 상자 40 이 줄 높이를 밀지 않게 위 · 오른쪽 8 을 당긴다 */}',
             '  <div className="flex items-start justify-between gap-x2">',
             '    <CardLink href={`/desk/budget/${budget.id}`}>10월 식비 예산</CardLink>',
-            '    <Button variant="ghost" layout="iconOnly" className="-mr-x2 -mt-x2 shrink-0" aria-label="10월 식비 예산 고정" aria-pressed={pinned} onClick={togglePin}><Pin /></Button>',
+            '    <Toggle className="-mr-x2 -mt-x2 shrink-0" aria-label="10월 식비 예산 고정" pressed={budget.pinned} onPressedChange={(pinned) => setPinned(budget.id, pinned)} icon={<Pin />} />',
             '  </div>',
           ]
         : ['  <CardHeader>', '    <CardTitle>10월 식비 예산</CardTitle>', ...(p === 'none' ? ['    <CardAction href="/desk/budget">관리</CardAction>'] : []), '  </CardHeader>']),
@@ -230,7 +231,7 @@ export function ExStatDemo({ look, stats }: { look: CardLook; stats: Stat[] }) {
     </div>
   );
 }
-export function ExPressDemo({ look }: { look: CardLook }) {
+export function ExPressDemo({ look, toggle }: { look: CardLook; toggle: ToggleLook }) {
   const [said, setSaid] = useState('');
   const [pinned, setPinned] = useState(false);
   return (
@@ -244,10 +245,9 @@ export function ExPressDemo({ look }: { look: CardLook }) {
         <CardSurface look={look} press="peers" live label="장보기 목록" onClick={() => setSaid('장보기 목록 열기')}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: look.header.gap }}>
             <span style={{ fontFamily: look.title.fontFamily, fontSize: look.title.fontSize, lineHeight: look.title.lineHeight, fontWeight: look.title.fontWeight, color: dcv(look.title.fg, 'auto') }}>장보기 목록</span>
-            <span style={{ display: 'flex', flexShrink: 0, marginTop: -look.header.gap, marginRight: -look.header.gap }} onClick={(e) => (e.stopPropagation(), setPinned((v) => !v), setSaid(pinned ? '고정을 풀었어요.' : '고정했어요.'))} onPointerDown={(e) => e.stopPropagation()}>
-              <button type="button" aria-label="장보기 목록 고정" aria-pressed={pinned} style={{ display: 'grid', placeItems: 'center', width: 40, height: 40, borderRadius: 10, borderWidth: 0, background: 'transparent', color: dcv(look.title.fg, 'auto'), cursor: 'pointer' }}>
-                <Pin aria-hidden size={18} strokeWidth={2} fill={pinned ? 'currentColor' : 'none'} />
-              </button>
+            {/* 고정 — Toggle(card.md 코드): 이름 "{메모 제목} 고정" 고정 · aria-pressed · pin 같은 아이콘(끔 흐린 선 2 · 켬 진한 선 2.5), 바탕은 칠하지 않는다 */}
+            <span style={{ display: 'flex', flexShrink: 0, marginTop: -look.header.gap, marginRight: -look.header.gap }} onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
+              <ToggleView look={toggle} ariaLabel="장보기 목록 고정" pressed={pinned} icon="pin" onPressedChange={(v) => (setPinned(v), setSaid(v ? '고정했어요.' : '고정을 풀었어요.'))} />
             </span>
           </div>
           <span style={{ fontFamily: FONT, fontSize: look.stat.label.fontSize, lineHeight: look.stat.label.lineHeight, color: dcv(look.stat.label.fg, 'auto') }}>우유 · 계란 · 두부 · 대파</span>

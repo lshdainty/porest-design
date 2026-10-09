@@ -257,7 +257,7 @@ import { Search } from "lucide-react"
 | 아이콘은 쓰는 쪽이 절대 위치로(`pl-9`) | `prefixIcon` · `suffixIcon` · `prefix` · `suffix` · `clearable` |
 | 상태 6(default · focused · filled · error · disabled · readonly) | 상태 5(enabled · focused · invalid · disabled · readonly) — 값이 있는지(filled)는 모습이 같다 |
 
-레시피는 `<input>` 하나에서 상자(div) + 입력으로 바뀌었다 — `className` 은 입력에, 상자에는 `rootClassName`. 쓰던 곳(Sidebar · Searchable List · Icon Picker)의 검색칸은 `prefixIcon` 으로 옮겼다. Select 의 트리거는 Select · Input Button 차례(2026-10-01)에 같은 상자로 맞췄다. Command 의 입력 · Input OTP 는 아직 옛 모양이다 — 그 컴포넌트 차례에 맞춘다.
+레시피는 `<input>` 하나에서 상자(div) + 입력으로 바뀌었다 — `className` 은 입력에, 상자에는 `rootClassName`. 쓰던 곳(Sidebar · Searchable List · Icon Picker)의 검색칸은 `prefixIcon` 으로 옮겼다. Select 의 트리거는 Select · Input Button 차례(2026-10-01)에 같은 상자로 맞췄다. Command 의 입력은 아직 옛 모양이다 — 그 컴포넌트 차례에 맞춘다. [Input OTP](input-otp.md) 는 2026-10-09 이 상자 한 칸으로 다시 썼다.
 
 제품은 앱 적용 단계에서 옮긴다(2026-10-01 조사).
 

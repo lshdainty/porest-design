@@ -91,7 +91,7 @@
 | 2 ~ 4개 짧은 폼 값 · 거르기의 한 축 | [Chip](chip.md)(하나 고르기) |
 | 목록 조건을 여럿 걸고 푼다 | [Chip](chip.md)(필터 바) |
 | 5개 이상 · 글이 긴 폼 값 | [Select](select.md) · Radio · Checkbox |
-| 켜고 끄는 단추 하나 | Toggle Button(그 차례에) |
+| 켜고 끄는 단추 하나 | [Toggle](toggle.md) — 아이콘 단추 |
 
 [그림: 쓰임 — 구역 이동은 탭 · 같은 내용 조작은 Segmented · 폼 값을 탭으로](../../site/components/specs/tabs.tsx#role-guide)
 

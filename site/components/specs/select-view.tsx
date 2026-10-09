@@ -4,7 +4,7 @@
 // Input Button 은 누르면 onClick 을 부른다(시트 · 팝오버는 input-button-pickers 가 연다).
 // 치수 · 색은 CSS 변수로 싣고 global.css 의 .psel 이 그린다 — 반응형(1280 에서 large → medium)과 키보드 포커스 링(:focus-visible)은 CSS 가 맡는다.
 // 색은 사이트 모드를 따르면(auto) --p-<토큰> 변수, 모드를 정하면 그 모드의 값이다.
-import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent, type PointerEvent, type Ref } from 'react';
+import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent, type PointerEvent, type ReactNode, type Ref } from 'react';
 import { createPortal } from 'react-dom';
 import type { TfFieldLook } from './text-field-shared';
 import { TfFieldView } from './text-field-view';
@@ -915,6 +915,8 @@ export type InputButtonViewProps = {
   placeholder?: string;
   prefix?: string;
   prefixIcon?: SelIcon;
+  // 앞 아이콘 자리에 직접 그린 아이콘(Icon Picker 의 지금 아이콘 — lucide 세트 아무것) — 크기 · 색은 칸이 건다(.psel-ic)
+  prefixNode?: ReactNode;
   suffix?: string;
   suffixIcon?: SelIcon;
   // 선택 사항인 칸 — 값이 있고 막히지 않았으면 지우기를 그린다
@@ -945,6 +947,7 @@ export function InputButtonView({
   placeholder,
   prefix,
   prefixIcon,
+  prefixNode,
   suffix,
   suffixIcon,
   clearable = false,
@@ -1027,9 +1030,9 @@ export function InputButtonView({
         />
       )}
       <span className="psel-row" style={{ '--psel-scale': scale } as CSSProperties}>
-        {prefixIcon && (
+        {(prefixIcon || prefixNode) && (
           <span className="psel-ic" style={zone?.prefix}>
-            <SelIconView name={prefixIcon} />
+            {prefixNode ?? (prefixIcon && <SelIconView name={prefixIcon} />)}
           </span>
         )}
         {prefix && (

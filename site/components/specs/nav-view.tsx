@@ -3,7 +3,7 @@
 // live 면 실제 버튼이다(마우스를 올리면 바탕 · 누르면 바탕 + 2px 축소 · 키보드 포커스에만 링). live 가 아니면 멈춘 그림이고
 // state 로 상태를 정해 그린다. 색은 사이트 모드를 따르면(auto) --p-<토큰> 변수, 모드를 정하면 그 모드의 값이다.
 // 인라인 스타일은 늘 긴 이름(paddingTop …)으로 쓴다 — 짧은 이름과 섞이면 링크로 들어올 때 값이 지워진다(사이트 #154).
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode, type ButtonHTMLAttributes } from 'react';
 import {
   BookOpen,
   Briefcase,
@@ -17,6 +17,7 @@ import {
   CreditCard,
   Download,
   Ellipsis,
+  Eye,
   EyeOff,
   FileText,
   Filter,
@@ -59,6 +60,7 @@ export const NAV_GLYPHS: Record<NavIcon, LucideIcon> = {
   bell: Bell,
   search: Search,
   settings: Settings,
+  eye: Eye,
   'eye-off': EyeOff,
   'chevron-left': ChevronLeft,
   'chevron-right': ChevronRight,
@@ -135,6 +137,7 @@ export function TopIconButton({
   icon,
   label,
   notification = false,
+  pressed,
   disabled = false,
   state,
   live = false,
@@ -144,12 +147,16 @@ export function TopIconButton({
   dotPin,
   ariaExpanded,
   ariaHaspopup,
+  buttonRef,
+  rootProps,
 }: {
   look: TopNavLook;
   mode?: ViewMode;
   icon: NavIcon;
   label: string;
   notification?: boolean;
+  // 켜고 끄는 단추 — aria-pressed. 켬은 선 굵게(pressedStroke), 색은 켬 · 끔 모두 fg(19B)
+  pressed?: boolean;
   disabled?: boolean;
   state?: TopState;
   live?: boolean;
@@ -159,6 +166,9 @@ export function TopIconButton({
   dotPin?: ReactNode;
   ariaExpanded?: boolean;
   ariaHaspopup?: 'dialog' | 'menu';
+  // 툴팁 · 말풍선 트리거 — 단추 요소와 aria · 포인터 처리를 넘긴다(단추의 호버 · 누름 · 링은 그대로)
+  buttonRef?: (el: HTMLButtonElement | null) => void;
+  rootProps?: ButtonHTMLAttributes<HTMLButtonElement>;
 }) {
   const p = usePress();
   const f = useFocusRing();
@@ -192,7 +202,7 @@ export function TopIconButton({
   };
   const glyph = (
     <span style={{ position: 'relative', display: 'block', width: I.icon, height: I.icon }}>
-      <NavGlyph name={icon} size={I.icon} />
+      <NavGlyph name={icon} size={I.icon} strokeWidth={pressed ? I.pressedStroke : I.stroke} />
       {notification && (
         <span aria-hidden data-nav-dot style={{ position: 'absolute', top: look.dot.top, right: look.dot.right, width: look.dot.size, height: look.dot.size, borderRadius: 9999, background: ncv(look.dot.color, mode), ...zone?.dot }}>
           {dotPin}
@@ -207,20 +217,52 @@ export function TopIconButton({
         {pin}
       </span>
     );
+  const h = p.handlers;
   return (
     <button
+      {...rootProps}
+      ref={buttonRef}
       type="button"
       data-nav-icon-button
       aria-label={label}
+      aria-pressed={pressed}
       aria-disabled={off || undefined}
-      aria-expanded={ariaExpanded}
-      aria-haspopup={ariaHaspopup}
+      aria-expanded={ariaExpanded ?? rootProps?.['aria-expanded']}
+      aria-haspopup={ariaHaspopup ?? rootProps?.['aria-haspopup']}
       style={box}
       className="outline-none"
-      onClick={off ? undefined : onClick}
-      onFocus={f.onFocus}
-      onBlur={f.onBlur}
-      {...p.handlers}
+      onClick={(e) => {
+        rootProps?.onClick?.(e);
+        if (!off) onClick?.();
+      }}
+      onFocus={(e) => {
+        rootProps?.onFocus?.(e);
+        f.onFocus(e);
+      }}
+      onBlur={(e) => {
+        rootProps?.onBlur?.(e);
+        f.onBlur();
+      }}
+      onPointerEnter={(e) => {
+        rootProps?.onPointerEnter?.(e);
+        h.onPointerEnter(e);
+      }}
+      onPointerLeave={(e) => {
+        rootProps?.onPointerLeave?.(e);
+        h.onPointerLeave();
+      }}
+      onPointerDown={(e) => {
+        rootProps?.onPointerDown?.(e);
+        h.onPointerDown();
+      }}
+      onPointerUp={(e) => {
+        rootProps?.onPointerUp?.(e);
+        h.onPointerUp();
+      }}
+      onPointerCancel={(e) => {
+        rootProps?.onPointerCancel?.(e);
+        h.onPointerCancel();
+      }}
     >
       {glyph}
       {pin}
@@ -407,7 +449,7 @@ export function TopNavBar({
               a.kind === 'text' ? (
                 <TopTextButton key={i} look={look} mode={mode} label={a.label} disabled={a.disabled} state={a.state} live={live} onClick={() => onAction?.(i)} zone={zone} pin={actionPins?.[i]} />
               ) : (
-                <TopIconButton key={i} look={look} mode={mode} icon={a.icon} label={a.label} notification={a.notification} disabled={a.disabled} state={a.state} live={live} onClick={() => onAction?.(i)} zone={zone} pin={actionPins?.[i]} dotPin={a.notification ? dotPin : undefined} />
+                <TopIconButton key={i} look={look} mode={mode} icon={a.icon} label={a.label} notification={a.notification} pressed={a.pressed} disabled={a.disabled} state={a.state} live={live} onClick={() => onAction?.(i)} zone={zone} pin={actionPins?.[i]} dotPin={a.notification ? dotPin : undefined} />
               ),
             )}
             {trailing}

@@ -127,6 +127,15 @@ function behaviorRow(spec: string, head: string) {
 }
 
 // ── Top Navigation ──────────────────────────────────────────
+// 켜고 끄는 단추의 켬 굵기(iconButton.strokeWidthOn — v106). Toggle(toggle.yaml)의 켬 굵기와 같아야 한다
+function pressedStrokeOf(raw: unknown, F: string) {
+  const on = len(raw, `${F} iconButton.strokeWidthOn`);
+  const t = resolveState(loadComponentSpec('toggle'), { toggled: 'on' }, 'enabled')['icon.strokeWidth'];
+  const want = Number(String(unbox(t)).replace('px', ''));
+  if (on !== want) throw new Error(`${F} 의 켬 굵기(${on})가 toggle.yaml 켬(${want})과 다르다`);
+  return on;
+}
+
 function topLook(brand: Brand): TopNavLook {
   const F = 'top-navigation.yaml';
   const spec = loadComponentSpec('top-navigation');
@@ -179,6 +188,8 @@ function topLook(brand: Brand): TopNavLook {
       size,
       radius: len(b['iconButton.radius'], `${F} iconButton.radius`),
       icon: len(b['iconButton.iconSize'], `${F} iconButton.iconSize`),
+      stroke: len(b['iconButton.strokeWidth'], `${F} iconButton.strokeWidth`),
+      pressedStroke: pressedStrokeOf(b['iconButton.strokeWidthOn'], F),
       fg: tok(b['iconButton.color'], brand, `${F} iconButton.color`),
       hoverBg: tok(hov['iconButton.background'], brand, `${F} hovered iconButton.background`),
       pressBg: tok(pr['iconButton.background'], brand, `${F} pressed iconButton.background`),

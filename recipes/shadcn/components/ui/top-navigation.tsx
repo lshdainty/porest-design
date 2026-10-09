@@ -21,7 +21,8 @@ import { useLeaveConfirm } from "@/components/ui/alert-dialog";
  *   TopNavigationActions        오른쪽 자리 — TopNavigationIconButton 3개까지(2개 권장) 또는 TopNavigationTextButton 하나,
  *                               desktop 이면 맨 앞에 TopNavigationPrimaryButton 하나
  *   TopNavigationIconButton     아이콘 버튼 — 상자 44 = 누르는 영역 · 아이콘 24. aria-label 필수. notification 은 벨의 알림 점(점만 —
- *                               이름에 "새 알림 있음" 을 넣는 것은 부르는 쪽). 그 밖은 <button type="button"> 속성
+ *                               이름에 "새 알림 있음" 을 넣는 것은 부르는 쪽). 그 밖은 <button type="button"> 속성.
+ *                               aria-pressed 를 주면 켜고 끄는 단추(금액 가리기) — 이름은 고정, 아이콘은 지금 상태를 넘긴다(가렸으면 eye-off)
  *   TopNavigationTextButton     글 버튼("완료" · "모두 읽음") — 오른쪽 자리에 하나, 아이콘 버튼과 섞지 않는다
  *   TopNavigationPrimaryButton  데스크톱 머리의 주 버튼 — Button brandSolid · small 그대로 + 오른쪽 8
  *   ScreenTitle                 데스크톱 본문 맨 위 제목 <h1 tabIndex={-1} data-screen-title> — text-screen-title 26 / 35 · 700, 머리 아래 20
@@ -35,6 +36,8 @@ import { useLeaveConfirm } from "@/components/ui/alert-dialog";
  *   standard 는 t6 18 / 24 · 화면 끝에서 56(6 + ← 44 + 6). 글자 크기 설정을 1.2배까지만 따른다(clamp — 바 높이는 56 그대로).
  * 아이콘 버튼: 상자 44 · 모서리 r2 8 · 아이콘 24 fg-neutral · 버튼끼리 붙는다(아이콘 중심 간격 44). 바탕은 누를 때 · 마우스를 올릴 때만
  *   bg-layer-default-pressed(불투명 — SEED bg.transparent-pressed 의 짝), 누르면 2px 거리 축소(44 → 0.955). 본문의 Button iconOnly(40 · 18)와 다른 부품이다.
+ *   켜고 끄는 단추(aria-pressed)는 켬 선 2.5 · 끔 선 2 이고 색은 켬 · 끔 모두 fg-neutral 이다 — Toggle 의 흐린 끔(fg-neutral-muted)을
+ *   상단 바에서 쓰지 않는다(아이콘 줄에서 하나만 흐리면 막힌 단추처럼 보인다, 사용자 결정 2026-10-09 19B). 바탕도 켬 · 끔에 따라 바뀌지 않는다.
  *   알림 점은 Notification Badge small — 24 아이콘 상자의 x 17 ~ 23 · y 1 ~ 7, 점만(숫자는 맨 오른쪽 버튼에서 화면 밖으로 나간다).
  * 글 버튼: 높이 44 · 좌우 10 · 모서리 8 · t5 16 / 22 · 500(1.2배까지), 누름 · 호버 같은 바탕 + 2px 거리 축소(기준 max(44, 폭 ÷ 4, 24)).
  * 막힘: 아이콘 · 글 fg-disabled — 흐리게 하지 않는다. 키보드 포커스에만 버튼 상자 안쪽 2px 링(붙은 이웃 · 화면 끝에 걸리지 않게).
@@ -120,6 +123,8 @@ const FOCUS_INSIDE = "focus-visible:outline-2 focus-visible:-outline-offset-2 fo
 const ICON_BUTTON = [
   "relative flex size-[44px] shrink-0 cursor-pointer items-center justify-center rounded-r2 border-0 bg-transparent p-0 text-fg-neutral",
   "[&_svg]:size-6 [&_svg]:shrink-0",
+  // 켜고 끄는 단추(aria-pressed) — 끔 선 2 · 켬 선 2.5, 색은 그대로 fg-neutral(19B). aria-pressed 가 없는 버튼의 선은 건드리지 않는다
+  "aria-[pressed=false]:[&_svg]:[stroke-width:2] aria-pressed:[&_svg]:[stroke-width:2.5]",
   PRESS_TRANSITION,
   "hover:bg-bg-layer-default-pressed active:bg-bg-layer-default-pressed active:[scale:calc(1-2/44)] motion-reduce:active:[scale:1]",
   FOCUS_INSIDE,

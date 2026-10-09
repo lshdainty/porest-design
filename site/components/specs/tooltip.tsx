@@ -5,9 +5,10 @@ import { Figure, Panel, MARK, MARK_LINE } from '../foundations/ui';
 import { buttonLook } from './button-look';
 import { ButtonView } from './button-view';
 import { DisabledReasonDemo, ToolbarTooltipDemo, TooltipPlayground } from './bubble-demos';
-import { Bubble, BubbleAt, DeskToolWindow, LeaveSummary, NativeTitle, ToolButton, bl } from './bubble-screens';
+import { Bubble, BubbleAt, DeskToolWindow, EyeToggle, LeaveSummary, NativeTitle, bl } from './bubble-screens';
+import { NK } from './nav-screens';
 import { COPY_REASON } from './menu-data';
-import { Board, Scaled, iconBtn, mk } from './menu-screens';
+import { Board, Scaled, mk } from './menu-screens';
 import { Legend, pinStyle } from './overlay-screens';
 import { MousePointer2 } from 'lucide-react';
 import { Phone, Verdict, rc } from './kit';
@@ -25,7 +26,7 @@ const Hero: Fig = ({ caption }) => (
       {(['light', 'dark'] as const).map((mode) => (
         <div key={mode} className="flex flex-wrap items-start justify-center gap-4">
           <Scaled w={460} h={300} s={0.66}>
-            <DeskToolWindow mode={mode} tip="toolbar" />
+            <DeskToolWindow mode={mode} tip="header" />
           </Scaled>
           <Scaled w={460} h={300} s={0.66}>
             <DeskToolWindow mode={mode} tip="sidebar" />
@@ -36,7 +37,7 @@ const Hero: Fig = ({ caption }) => (
   </Panel>
 );
 
-const Playground: Fig = () => <TooltipPlayground kits={{ desk: mk('desk'), hr: mk('hr') }} ghosts={{ desk: iconBtn('desk'), hr: iconBtn('hr') }} />;
+const Playground: Fig = () => <TooltipPlayground kits={{ desk: mk('desk'), hr: mk('hr') }} tops={{ desk: NK('desk').top, hr: NK('hr').top }} />;
 
 // ── Anatomy ───────────────────────────────────────────────
 const Anatomy: Fig = ({ caption }) => {
@@ -46,7 +47,7 @@ const Anatomy: Fig = ({ caption }) => {
       <div className="flex flex-col items-center gap-6">
         <Board style={{ padding: `${32 + b.height + b.bodyOffset}px 80px 28px` }}>
           <BubbleAt
-            trigger={<ToolButton icon="eye-off" label="금액 가리기" state="hovered" />}
+            trigger={<EyeToggle state="hovered" />}
             bubble={(p) => (
               <Bubble
                 title="금액 가리기"
@@ -191,7 +192,7 @@ const AssistGuide: Fig = ({ caption }) => {
       <div className="grid w-full gap-4 md:grid-cols-2">
         <Verdict ok note="아이콘 버튼의 이름은 aria-label — 툴팁은 그 이름을 마우스 · 키보드 사용자에게 보여 줄 뿐이다" bg={BASEMENT}>
           <div className="flex flex-col items-center gap-3" style={{ paddingTop: b.height + b.bodyOffset }}>
-            <BubbleAt trigger={<ToolButton icon="eye-off" label="금액 가리기" state="focused" />} bubble={(p) => <Bubble title="금액 가리기" {...p} />} />
+            <BubbleAt trigger={<EyeToggle state="focused" />} bubble={(p) => <Bubble title="금액 가리기" {...p} />} />
             <code className="rounded px-1.5 py-0.5 text-[12px]" style={{ background: rc('bg-layer-default'), color: rc('fg-neutral') }}>
               aria-label=&quot;금액 가리기&quot;
             </code>
@@ -231,7 +232,7 @@ const AssistGuide: Fig = ({ caption }) => {
 };
 
 // ── 코드 미리보기(실제로 마우스 · 키보드로 연다) ─────────────────
-const ExIcon: Fig = () => <ToolbarTooltipDemo kit={mk()} ghost={iconBtn()} />;
+const ExIcon: Fig = () => <ToolbarTooltipDemo kit={mk()} top={NK().top} />;
 const ExDisabled: Fig = () => <DisabledReasonDemo kit={mk()} weak={buttonLook({ variant: 'neutralWeak', size: 'medium' })} />;
 
 export const tooltipFigures: Record<string, Fig> = {

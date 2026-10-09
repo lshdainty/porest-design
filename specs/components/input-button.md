@@ -305,7 +305,7 @@ const done = <Button disabled={!draft} onClick={() => { setDate(draft); setOpen(
 
 사용자가 [비교 페이지](https://claude.ai/artifact/HTcwPnshaQH32xjEfqSkMB)에서 정했다 — 고르는 칸을 Select(짧은 선택지 5개 이상 · 칸 아래 목록)와 Input Button(달력 · 시각 · 아이콘 격자 · 긴 목록)으로 나눈다 · 1280 미만 시트 · 이상 팝오버 · 달력 · 시각은 "완료" 로 확정, 목록 시트는 누르면 바로 · 긴 목록은 Input Button + 검색 시트(Combobox 를 두지 않는다) · 상자는 Input 과 같다(52 · 40 · 반응형) · 누름은 바탕 + 콘텐츠 축소 · 키보드 포커스 링. 그전에는 이 자리를 맡는 컴포넌트가 없어 제품마다 Select 트리거 · 버튼 · 입력칸으로 따로 짰다.
 
-레시피는 `input-button.tsx` 를 새로 뒀다. [Icon Picker](icon-picker.md) 의 트리거(40 고정)는 아직 옛 모양이다 — 그 차례에 Input Button 으로 옮긴다.
+레시피는 `input-button.tsx` 를 새로 뒀다. [Icon Picker](icon-picker.md) 의 트리거(40 고정)는 2026-10-09 스펙에서 Input Button 으로 옮겼다(라벨 "아이콘" · 지금 아이콘 · 그 이름) — 레시피는 그 스펙을 따라 옮긴다.
 
 제품은 앱 적용 단계에서 옮긴다(2026-10-01 조사).
 

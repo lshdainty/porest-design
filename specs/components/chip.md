@@ -89,7 +89,7 @@
 | 제안 · 필터 바의 여는 칩 | `Chip` | 버튼 — 여는 칩은 `aria-haspopup="dialog"` | 제안은 고른 모습이 없다. 걸린 조건의 여는 칩은 고른 모습(짙은 채움) |
 | 입력값 | `InputChip` | 글 + "{글} 지우기" 버튼 | Outline Weak 고른 모습 + 뒤 지우기 |
 
-`aria-pressed` 는 쓰지 않는다(SEED) — 켜고 끄는 단추 하나는 Toggle Button(그 차례에)이다.
+`aria-pressed` 는 쓰지 않는다(SEED) — 켜고 끄는 단추 하나는 [Toggle](toggle.md)(아이콘 단추 — 2026-10-09)이다.
 
 [그림: 쓰임 — 고르기 · 제안 · 필터 바 · 입력값](../../site/components/specs/chip.tsx#uses)
 

@@ -230,8 +230,8 @@ import { Card, CardStat } from "@/components/ui/card"
 
 ```tsx
 import { Pin } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardLink } from "@/components/ui/card"
+import { Toggle } from "@/components/ui/toggle"
 
 {/* 한 곳으로 — 색 + 2px 축소 */}
 <Card href={`/desk/budget/${budget.id}`}>
@@ -240,10 +240,10 @@ import { Card, CardContent, CardLink } from "@/components/ui/card"
 
 {/* 카드를 누르면 열리고 고정 버튼이 따로 — 색만, 축소 없음 */}
 <Card press="peers">
-  {/* 고정 버튼은 제목 줄 오른쪽 — 버튼 상자 40 이 줄 높이를 밀지 않게 위 · 오른쪽 8 을 당긴다 */}
+  {/* 고정 버튼은 제목 줄 오른쪽 — 켜고 끄는 아이콘 단추(Toggle). 상자 40 이 줄 높이를 밀지 않게 위 · 오른쪽 8 을 당긴다 */}
   <div className="flex items-start justify-between gap-x2">
     <CardLink href={`/desk/memo/${memo.id}`}>{memo.title}</CardLink>
-    <Button variant="ghost" layout="iconOnly" className="-mr-x2 -mt-x2 shrink-0" aria-label={`${memo.title} 고정`} aria-pressed={memo.pinned} onClick={togglePin}><Pin /></Button>
+    <Toggle className="-mr-x2 -mt-x2 shrink-0" aria-label={`${memo.title} 고정`} pressed={memo.pinned} onPressedChange={(pinned) => setPinned(memo.id, pinned)} icon={<Pin />} />
   </div>
   <CardContent>…</CardContent>
 </Card>
