@@ -8,6 +8,7 @@ import { loadComponentSpec, num, resolveState, stateNames, axisValues, tokenValu
 import { color, design, pressScale, proseValue, type Brand } from '@/lib/design-tokens';
 import { overlayLook } from './overlay-look';
 import { MENU_TONES, type BubbleLook, type MColor, type MMotion, type MPress, type MRing, type MText, type MType, type MenuKit, type MenuLook, type MenuSheetLook, type SwipeKind, type SwipeLook } from './menu-shared';
+import { cardFace } from './card-face';
 export * from './menu-shared';
 
 type Spec = 'menu' | 'menu-sheet' | 'help-bubble' | 'swipe-actions';
@@ -453,6 +454,7 @@ export function menuKit(brand: Brand = 'desk'): MenuKit {
     sheet: menuSheetLook(brand),
     bubble: bubbleLook(brand),
     tone: Object.fromEntries(MENU_TONES.map((n) => [n, named(n, brand)])) as MenuKit['tone'],
+    card: cardFace(),
   };
   cache.set(brand, kit);
   return kit;

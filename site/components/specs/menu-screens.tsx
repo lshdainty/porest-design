@@ -5,8 +5,13 @@ import type { CSSProperties, ReactNode } from 'react';
 import { buttonLook } from './button-look';
 import { ButtonView, type IconName } from './button-view';
 import { MEMOS, MEMO_MENU, PEOPLE, PERSON_MENU, SWIPE_ACTIONS, type Memo } from './menu-data';
-import { menuKit, swipeLook, type MenuGroup, type MenuItemState, type MenuKit } from './menu-look';
-import { MenuIconView, MenuPanel, MenuSheetSurface, type MenuPanelDecor, type MenuPanelMarks, type MenuSheetSurfaceProps } from './menu-view';
+import { menuKit, type MenuGroup, type MenuItemState, type MenuKit } from './menu-look';
+import { swipeKit, tableLook } from './data-look';
+import { cardFace } from './card-face';
+import { dcv } from './display-shared';
+import { trayWidth as trayW } from './data-shared';
+import { SwipeTrayView, type SwipeAct } from './data-swipe-view';
+import { MenuPanel, MenuSheetSurface, type MenuPanelDecor, type MenuPanelMarks, type MenuSheetSurfaceProps } from './menu-view';
 import { Scaled } from './overlay-screens';
 import { DimView } from './overlay-view';
 export { Scaled };
@@ -89,7 +94,8 @@ export function MemoWindow({
     <WebWindow mode={mode} w={w} h={h}>
       <div style={{ height: '100%', boxSizing: 'border-box', padding: '22px 28px', background: rc('bg-layer-basement', mode) }}>
         <div style={{ fontSize: 20, lineHeight: '28px', fontWeight: 700, color: rc('fg-neutral', mode), paddingBottom: 14 }}>메모</div>
-        <div style={{ borderRadius: 12, padding: '4px 16px 4px 20px', background: rc('bg-layer-default', mode) }}>
+        {/* 카드 — card.yaml 의 면(흰 면 + 1px 테두리 · 모서리 16 · 좌우 24 — ⋮ 상자의 끝도 24). 머리 없는 목록 카드라 위아래 12 */}
+        <div style={{ boxSizing: 'border-box', borderRadius: cardFace().radius, borderWidth: cardFace().borderW, borderStyle: 'solid', borderColor: rc('stroke-neutral-weak', mode), paddingTop: cardFace().listBottom, paddingRight: cardFace().pad, paddingBottom: cardFace().listBottom, paddingLeft: cardFace().pad, background: rc('bg-layer-default', mode) }}>
           {MEMOS.map((m, i) => (
             <ListRow
               key={m.title}
@@ -114,28 +120,36 @@ export function MemoWindow({
 
 // ── HR 직원(데스크톱 창 · 표) ─────────────────────────────
 const PEOPLE_COLS = 'minmax(0,1.1fr) minmax(0,1fr) minmax(0,0.7fr) minmax(0,1fr) 40px';
+// 표는 table.yaml 대로 — 카드 안에 가장자리까지(첫 칸 앞 · ⋮ 뒤 24), 머리 41(14 / 20 · 500 · 짙은 글 · 바탕 없음), 줄 45(⋮ 40 은 위아래로 넘친다), 줄 선은 마지막 줄까지
 export function PeopleWindow({ mode = 'auto', w = 460, h = 420, open, states, hasLeave = true }: { mode?: Mode; w?: number; h?: number; open?: number; states?: Record<string, MenuItemState>; hasLeave?: boolean }) {
   const k = mk('hr');
-  const cell: CSSProperties = { fontSize: 14, lineHeight: '20px', color: rc('fg-neutral', mode, 'hr'), whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' };
+  const t = tableLook('hr');
+  const cf = cardFace();
+  const ty = (x: { fontFamily: string; fontSize: string; lineHeight?: string; fontWeight: number | string }): CSSProperties => ({ fontFamily: x.fontFamily, fontSize: x.fontSize, lineHeight: x.lineHeight, fontWeight: x.fontWeight });
+  const cell: CSSProperties = { ...ty(t.cell.type), color: dcv(t.cell.fg, mode), whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' };
+  const line = `${t.row.lineW}px solid ${dcv(t.row.line, mode)}`;
+  const bleed = -(t.more.size - parseFloat(t.cell.type.lineHeight ?? t.cell.type.fontSize)) / 2;
   return (
     <WebWindow mode={mode} w={w} h={h} url="hr.porest.app">
       <div style={{ height: '100%', boxSizing: 'border-box', padding: '22px 28px', background: rc('bg-layer-basement', mode, 'hr') }}>
         <div style={{ fontSize: 20, lineHeight: '28px', fontWeight: 700, color: rc('fg-neutral', mode, 'hr'), paddingBottom: 14 }}>직원</div>
-        <div style={{ borderRadius: 12, padding: '4px 12px 4px 20px', background: rc('bg-layer-default', mode, 'hr') }}>
-          <div style={{ display: 'grid', gridTemplateColumns: PEOPLE_COLS, gap: 12, alignItems: 'center', padding: '10px 0', borderBottom: `1px solid ${rc('stroke-neutral-subtle', mode, 'hr')}` }}>
-            {['이름', '부서', '직급', '입사일', ''].map((t, i) => (
-              <span key={i} style={{ fontSize: 13, lineHeight: '18px', fontWeight: 500, color: rc('fg-neutral-subtle', mode, 'hr') }}>
-                {t}
+        <div style={{ boxSizing: 'border-box', borderRadius: cf.radius, borderWidth: cf.borderW, borderStyle: 'solid', borderColor: rc('stroke-neutral-weak', mode, 'hr'), background: rc('bg-layer-default', mode, 'hr') }}>
+          <div style={{ display: 'grid', gridTemplateColumns: PEOPLE_COLS, gap: 12, alignItems: 'center', paddingTop: t.head.padY, paddingRight: t.edge, paddingBottom: t.head.padY, paddingLeft: t.edge, borderBottom: line }}>
+            {['이름', '부서', '직급', '입사일', ''].map((h, i) => (
+              <span key={i} style={{ ...ty(t.head.type), color: dcv(t.head.fg, mode) }}>
+                {h}
               </span>
             ))}
           </div>
           {PEOPLE.map((p, i) => (
-            <div key={p.name} style={{ display: 'grid', gridTemplateColumns: PEOPLE_COLS, gap: 12, alignItems: 'center', padding: '6px 0', borderBottom: i === PEOPLE.length - 1 ? 'none' : `1px solid ${rc('stroke-neutral-subtle', mode, 'hr')}` }}>
-              <span style={{ ...cell, fontWeight: 500 }}>{p.name}</span>
+            <div key={p.name} style={{ display: 'grid', gridTemplateColumns: PEOPLE_COLS, gap: 12, alignItems: 'center', paddingTop: t.cell.padY, paddingRight: t.edge, paddingBottom: t.cell.padY, paddingLeft: t.edge, borderBottom: line }}>
+              <span style={cell}>{p.name}</span>
               <span style={cell}>{p.team}</span>
               <span style={cell}>{p.role}</span>
-              <span style={{ ...cell, color: rc('fg-neutral-subtle', mode, 'hr') }}>{p.joined}</span>
-              <Anchored offset={k.menu.content.offset} trigger={<Kebab label={p.name} mode={mode} brand="hr" />} menu={open === i ? <Menu brand="hr" groups={PERSON_MENU(hasLeave)} mode={mode} states={states} /> : undefined} />
+              <span style={{ ...cell, fontVariantNumeric: 'tabular-nums' }}>{p.joined}</span>
+              <span style={{ display: 'flex', marginTop: bleed, marginBottom: bleed }}>
+                <Anchored offset={k.menu.content.offset} trigger={<Kebab label={p.name} mode={mode} brand="hr" />} menu={open === i ? <Menu brand="hr" groups={PERSON_MENU(hasLeave)} mode={mode} states={states} /> : undefined} />
+              </span>
             </div>
           ))}
         </div>
@@ -162,41 +176,22 @@ export function MemoPhone({ mode = 'auto', scale = 0.6, h = 640, overlay, swiped
   );
 }
 
-// 스와이프 트레이 — 원형 배지 + 아래 라벨, 위험한 것이 가장 안쪽(왼쪽). 첫 칸 앞 간격 · 칸 사이 · 마지막 칸은 화면 끝에 붙는다
-export function SwipeTray({ mode = 'auto', height }: { mode?: Mode; height: number }) {
-  const s = swipeLook('desk');
-  const shown = [...SWIPE_ACTIONS].reverse();
-  const pick = (c: { name?: string; light: string; dark: string }) => (mode === 'auto' ? (c.name ? `var(--p-${c.name})` : c.light) : mode === 'dark' ? c.dark : c.light);
-  return (
-    <span style={{ display: 'flex', height, flexShrink: 0 }}>
-      {shown.map((a, i) => {
-        const k = s.kinds[a.kind];
-        return (
-          <span key={a.value} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: s.gap, width: i === 0 ? s.first : s.rest, boxSizing: 'border-box', paddingLeft: (i === 0 ? s.first : s.rest) - s.badge }}>
-            <span style={{ display: 'grid', placeItems: 'center', width: s.badge, height: s.badge, borderRadius: 9999, background: pick(k.badge) }}>
-              <MenuIconView name={a.icon} size={s.icon} color={pick(k.icon)} />
-            </span>
-            <span style={{ fontFamily: s.label.fontFamily, fontSize: s.label.fontSize, lineHeight: s.label.lineHeight, fontWeight: s.label.fontWeight, color: pick(k.label) }}>{a.label}</span>
-          </span>
-        );
-      })}
-    </span>
-  );
+// 스와이프 트레이 — swipe-actions.yaml 대로 그린 트레이(SwipeTrayView · swipeKit). 위험한 것이 가장 안쪽(왼쪽), 마지막 칸은 화면 끝에 붙는다
+const SWIPE_ACTS: SwipeAct[] = SWIPE_ACTIONS.map((a) => ({ value: a.value, kind: a.kind, label: a.label, icon: a.icon }));
+export function SwipeTray({ mode = 'auto', height, rowLabel = '메모' }: { mode?: Mode; height: number; rowLabel?: string }) {
+  return <SwipeTrayView look={swipeKit()} mode={mode} actions={SWIPE_ACTS} height={height} rowLabel={rowLabel} open />;
 }
-export const trayWidth = () => {
-  const s = swipeLook('desk');
-  return s.first + s.rest * (SWIPE_ACTIONS.length - 1);
-};
+export const trayWidth = () => trayW(swipeKit(), SWIPE_ACTS.length);
 // 밀린 줄 — 줄(⋮ 포함)이 트레이 폭만큼 왼쪽으로 가고, 뒤에서 트레이가 드러난다. 트레이는 화면 끝까지
 // 줄 높이 — ListRow 의 위아래 10 + 제목 20 + 사이 2 + 부제 18(⋮ 40 + 위아래 10 과 같다). 트레이는 줄 높이를 따른다(최소 rowMin)
 const ROW_H = 10 + 20 + 2 + 18 + 10;
 function SwipedRow({ memo, mode, last }: { memo: Memo; mode: Mode; last: boolean }) {
   const tw = trayWidth();
-  const h = Math.max(swipeLook('desk').rowMin, ROW_H);
+  const h = Math.max(swipeKit().rowMin, ROW_H);
   return (
     <div style={{ position: 'relative', margin: '0 -24px', overflow: 'hidden', height: h, borderBottom: last ? 'none' : `1px solid ${rc('stroke-neutral-subtle', mode)}` }}>
       <div style={{ position: 'absolute', top: 0, bottom: 0, right: 0, display: 'flex', alignItems: 'center' }}>
-        <SwipeTray mode={mode} height={h} />
+        <SwipeTray mode={mode} height={h} rowLabel={memo.title} />
       </div>
       <div style={{ position: 'absolute', top: 0, bottom: 0, left: -tw, width: '100%', boxSizing: 'border-box', padding: '0 24px', display: 'flex', alignItems: 'center', background: rc('bg-layer-default', mode) }}>
         <div style={{ flex: '1 1 0%', minWidth: 0 }}>

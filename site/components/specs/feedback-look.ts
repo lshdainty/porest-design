@@ -5,6 +5,7 @@ import { axisValues, loadComponentSpec, num, resolveState, stateNames, tokenValu
 import { color, design, pressScale, proseValue, type Brand } from '@/lib/design-tokens';
 import { buttonLook } from './button-look';
 import { navKit } from './nav-look';
+import { cardFace } from './card-face';
 import {
   BANNER_VARIANTS,
   FB_ICONS,
@@ -132,6 +133,7 @@ function screen(brand: Brand): FbScreen {
   s.dim = { light: proseValue('overlay-dim-light'), dark: proseValue('overlay-dim-dark') };
   const nk = navKit(brand === 'hr' ? 'hr' : 'desk');
   s.nav = { top: nk.top, tab: nk.tab };
+  s.card = cardFace();
   screenCache.set(brand, s);
   return s;
 }
@@ -426,7 +428,7 @@ export function resultSectionLook(brand: Brand = 'desk'): ResultSectionLook {
   };
   const enter = motionBlock(spec, '결과로 바뀜', RESULT);
   const look: ResultSectionLook = {
-    root: { padX: len(b['root.paddingX'], 'root.paddingX', RESULT), padY: len(b['root.paddingY'], 'root.paddingY', RESULT) },
+    root: { padX: len(b['root.paddingX'], 'root.paddingX', RESULT), padY: len(b['root.paddingY'], 'root.paddingY', RESULT), padXInCard: numIn(noteOf(b['root.paddingX']), /카드\(card\.md\) 안에서는\s*(\d+)/, 'root.paddingX 비고(카드 안 좌우)', RESULT) },
     asset: {
       size: len(b['asset.size'], 'asset.size', RESULT),
       strokeWidth: numIn(noteOf(b['asset.size']), /굵기\s*([\d.]+)/, 'asset.size 비고(굵기)', RESULT),

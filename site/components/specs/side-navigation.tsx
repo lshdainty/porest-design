@@ -4,7 +4,8 @@
 import type { CSSProperties, ReactNode } from 'react';
 import { Figure, Panel as Plate } from '../foundations/ui';
 import { menuKit } from './menu-look';
-import { Verdict, rc, type Mode } from './kit';
+import { Card, Verdict, rc, type Mode } from './kit';
+import { cardLook } from './data-look';
 import { DESK_NAV, DESK_NAV_CODE } from './nav-data';
 import { SideNavPlayground } from './nav-side-playground';
 import {
@@ -409,11 +410,11 @@ const ParentGuide: Fig = ({ caption }) => {
             <Shell side={<Side current="stocks" open={['stocks']} groups={groupsBad} />} header={<DeskHeader />}>
               <div className="flex flex-col">
                 <ScreenTitle>증권</ScreenTitle>
-                <div className="grid grid-cols-2 gap-4" style={{ paddingTop: 20, paddingLeft: NK().margin, paddingRight: NK().margin }}>
+                <div className="grid grid-cols-2" style={{ gap: cardLook().gutter, paddingTop: 20, paddingLeft: NK().margin, paddingRight: NK().margin }}>
                   {['나무증권', '토스증권'].map((b) => (
-                    <div key={b} className="rounded-2xl text-[16px] font-bold" style={{ height: 120, paddingTop: 18, paddingLeft: 20, background: rc('bg-layer-default'), color: rc('fg-neutral') }}>
-                      {b}
-                    </div>
+                    <Card key={b} title={b} style={{ height: 120 }}>
+                      {null}
+                    </Card>
                   ))}
                 </div>
               </div>

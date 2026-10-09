@@ -3,7 +3,7 @@
 // state 를 주면 그 상태로 멈춘 그림(글은 span — 캐럿까지 그린다), 안 주면 실제 입력칸(쓰고 · 지우고 · 포커스할 수 있다).
 // 치수 · 색은 CSS 변수로 싣고 global.css 의 .ptf 가 그린다 — 반응형(1280 에서 large → medium)과 포커스(:has(:focus))를 CSS 가 맡는다.
 // 색은 사이트 모드를 따르면(auto) --p-<토큰> 변수, 모드를 정하면 그 모드의 값이다.
-import { useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties, type InputHTMLAttributes, type ReactNode, type Ref } from 'react';
 import { Calendar, CircleAlert, CircleX, Hash, Info, Link2, Lock, Mail, Search, Smartphone, Tag, User, type LucideIcon } from 'lucide-react';
 import type { TfColor, TfFieldLook, TfIcon, TfInputLook, TfInputSize, TfSizeProp, TfState, TfTextareaLook, TfVariant } from './text-field-shared';
 import type { ButtonLook } from './button-look';
@@ -78,6 +78,11 @@ export type TfInputViewProps = {
   zone?: CSSProperties;
   // 지우기 버튼의 누르는 영역을 칠해 보이기(그림 전용) — 칠 · 선 색
   hitMark?: { fill: string; line: string };
+  // 실제 입력칸에 더 거는 속성 · 참조 — 콤보박스(Searchable List 의 role · aria-activedescendant · 화살표 키)
+  inputProps?: InputHTMLAttributes<HTMLInputElement>;
+  inputRef?: Ref<HTMLInputElement>;
+  // 지우기 버튼을 누른 뒤(값을 비우고 입력칸에 초점)
+  onClear?: () => void;
 };
 
 export function TfInputView({
@@ -109,6 +114,9 @@ export function TfInputView({
   width,
   zone,
   hitMark,
+  inputProps,
+  inputRef: inputRefProp,
+  onClear,
 }: TfInputViewProps) {
   const live = state === undefined;
   const invalid = invalidProp || state === 'invalid' || state === 'invalid-focused';
@@ -186,7 +194,12 @@ export function TfInputView({
       {prefix && <span className="ptf-affix ptf-text">{prefix}</span>}
       {live ? (
         <input
-          ref={inputRef}
+          {...inputProps}
+          ref={(el) => {
+            inputRef.current = el;
+            if (typeof inputRefProp === 'function') inputRefProp(el);
+            else if (inputRefProp) (inputRefProp as { current: HTMLInputElement | null }).current = el;
+          }}
           id={id}
           className="ptf-input"
           value={value}
@@ -228,6 +241,7 @@ export function TfInputView({
             onClick={() => {
               set('');
               inputRef.current?.focus();
+              onClear?.();
             }}
           >
             <CircleX strokeWidth={2} aria-hidden />

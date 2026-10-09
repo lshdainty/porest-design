@@ -3,6 +3,7 @@
 // 넷은 서로의 그림에 자주 같이 나온다(나누기 · 오류 자리 · 자리 그림) — 그래서 한 묶음으로 둔다.
 import type { ButtonLook } from './button-look';
 import type { TabBarLook, TopNavLook } from './nav-shared';
+import type { CardFace } from './card-face';
 
 export type ViewMode = 'light' | 'dark' | 'auto';
 
@@ -93,7 +94,8 @@ export const FB_SCREEN_TONES = [
 ] as const;
 export type FbScreenTone = (typeof FB_SCREEN_TONES)[number];
 // 화면 틀 — 머리는 Top Navigation, 아래 탭 바는 Bottom Navigation(top-navigation · bottom-navigation.yaml 을 nav-look 이 푼 값)
-export type FbScreen = Record<FbScreenTone, FbColor> & { dim: { light: string; dark: string }; nav: { top: TopNavLook; tab: TabBarLook } };
+// card — 화면 속 카드(card.yaml — card-face)
+export type FbScreen = Record<FbScreenTone, FbColor> & { dim: { light: string; dark: string }; nav: { top: TopNavLook; tab: TabBarLook }; card: CardFace };
 
 // ── Snackbar ─────────────────────────────────────────────
 export type SnackbarLook = {
@@ -164,7 +166,8 @@ export type ResultSizeLook = { title: FbType; description: FbType; descGap: numb
 // 첫 · 둘째 버튼 — button.yaml 의 그 변형 · 크기(look 은 Button 그림이 그대로 쓴다)
 export type ResultButton = { variant: string; size: string; height: number; look: ButtonLook };
 export type ResultSectionLook = {
-  root: { padX: number; padY: number };
+  // padXInCard — 카드 안에서의 좌우(0 — 카드 안 여백 24 가 가장자리를 맡는다, 2026-10-09 사용자 결정 23B)
+  root: { padX: number; padY: number; padXInCard: number };
   asset: { size: number; strokeWidth: number; marginBottom: number; color: Record<ResultKind, FbColor>; glyph: Record<'failure' | 'done', FbIcon> };
   title: { color: FbColor; fontWeight: number | string };
   description: { color: FbColor; fontWeight: number | string };

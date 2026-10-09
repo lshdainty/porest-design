@@ -17,7 +17,7 @@ import { SK_RADII, type SkRadius, type SkText } from './loading-look';
 import { imageFrameLook, imageFrameRadius } from './image-look';
 import { SkeletonListDemo, SkeletonPeriodDemo } from './loading-demos';
 import { SkeletonPlayground } from './loading-playground';
-import { Bone, CardBox, Circle, L, LdPhone, MonthNav, SCREEN, SK_ROW, SlowText, SpendHead, StatRows, TimelineBar, TxList, TxSkeletonRows, keepMark, rowDims, type Fig } from './loading-screens';
+import { Bone, CardBox, Circle, L, LdPhone, MonthNav, SCREEN, SK_ROW, SlowText, SpendHead, StatRows, TimelineBar, TxList, TxSkeletonRows, cardStack, keepMark, ldCard, rowDims, type Fig } from './loading-screens';
 import { Band, Legend, Note, Pin, Shot } from './overlay-screens';
 
 const sk = () => L().skeleton;
@@ -35,7 +35,7 @@ const pin = (n: string, style: CSSProperties) => (
 // 가계부 — 요약 머리 · 최근 거래(틀은 그리고 데이터 자리만)
 function LedgerLoading({ mode, still }: { mode: Mode; still?: boolean }) {
   return (
-    <div className="flex flex-col gap-3 px-4 pt-1">
+    <div style={cardStack()}>
       <CardBox mode={mode}>
         <SpendHead mode={mode} still={still} />
       </CardBox>
@@ -51,9 +51,9 @@ function BenefitLoading({ mode }: { mode: Mode }) {
   const d = rowDims();
   const f = imageFrameLook();
   return (
-    <div className="flex flex-col gap-3 px-4 pt-1">
-      <CardBox mode={mode} padBottom={0}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: 24 }}>
+    <div style={cardStack()}>
+      <CardBox mode={mode}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <Bone mode={mode} radius={imageFrameRadius(CARD_W, f.bands)} width={CARD_W} height={CARD_W / f.ratios.card.value} />
           <span className="flex flex-col" style={{ gap: d.bodyGap }}>
             <Bone mode={mode} text="t5" width={120} />
@@ -120,20 +120,20 @@ const Anatomy: Fig = ({ caption }) => {
   const t4 = s.slowText;
   // 글 아래 → 첫 스켈레톤 위 = slowText.gap(줄의 위 여백만큼 덜 띄운다)
   const spacer = s.slowText.gap - d.padY;
-  const textTop = 52;
+  const cd = ldCard();
+  const textTop = cd.borderW + cd.head.top + px(cd.title.lineHeight) + cd.head.bottom;
   const firstRowTop = textTop + px(t4.lineHeight) + spacer;
   const titleLeft = d.padX + SK_ROW.avatar + d.prefixGap;
   return (
     <Figure caption={caption}>
       <div className="flex flex-col items-center gap-6">
         <div className="relative" style={{ width: 360 }}>
-          <div className="relative" style={{ borderRadius: 16, background: rc('bg-layer-default'), paddingBottom: 8, outline: `1px dashed ${MARK_LINE}`, outlineOffset: 4 }}>
-            <div style={{ padding: '16px 24px 12px', fontSize: 17, lineHeight: '24px', fontWeight: 700, color: rc('fg-neutral') }}>최근 거래</div>
-            <div style={{ padding: `0 ${d.padX}px`, marginBottom: spacer }}>
+          <CardBox title="최근 거래" style={{ position: 'relative', overflow: 'visible', outline: `1px dashed ${MARK_LINE}`, outlineOffset: 4 }}>
+            <div style={{ paddingLeft: sk().slowText.padXList, paddingRight: sk().slowText.padXList, marginBottom: spacer }}>
               <SlowText style={{ width: 'fit-content', outline: `1px dashed ${MARK_LINE}`, outlineOffset: 2 }} />
             </div>
             <TxSkeletonRows n={3} band={ANATOMY_BAND} marks={{ '0:title': { outline: `1px dashed ${MARK_LINE}`, outlineOffset: 2 } }} />
-          </div>
+          </CardBox>
           {pin('ⓐ', { left: -14, top: -14 })}
           {pin('ⓓ', { left: d.padX - 26, top: textTop - 1 })}
           {pin('ⓑ', { left: titleLeft + SK_ROW.title + 8, top: firstRowTop + d.padY + 1 })}
@@ -252,9 +252,9 @@ const Shimmer: Fig = ({ caption }) => {
   const m = sk().motion.shimmer;
   const card = (mode: Mode, still: boolean, label: string) => (
     <div className="flex flex-col items-center gap-2">
-      <div className="w-[186px] rounded-2xl" style={{ background: rc('bg-layer-default', mode), paddingBottom: 4 }}>
+      <CardBox mode={mode} body="list" style={{ width: 186 }}>
         <TxSkeletonRows n={2} mode={mode} still={still} amount={false} widths={{ ...SK_ROW, title: 72, detail: 48 }} />
-      </div>
+      </CardBox>
       <span className="text-[12px] leading-4 pk-muted">{label}</span>
     </div>
   );
@@ -347,9 +347,9 @@ const SurfaceGuide: Fig = ({ caption }) => {
     <Panel caption={caption}>
       <Pair>
         <Verdict ok note={`흰 면(카드 · 시트 · 대화상자) 위 — 면과 ${on('default', 'light')}:1(다크 ${on('default', 'dark')}:1), 띠가 지나가며 모양이 드러난다`} bg={BASEMENT}>
-          <div className="w-[300px] rounded-2xl pk-surface" style={{ paddingBottom: 4 }}>
+          <CardBox body="list" style={{ width: 300 }}>
             <TxSkeletonRows n={3} widths={{ ...SK_ROW, title: 110, detail: 70 }} />
-          </div>
+          </CardBox>
         </Verdict>
         <Verdict ok={false} note={`회색 페이지 바탕 위에 바로 — 바탕과 ${on('basement', 'light')}:1, 같은 색이라 사라진다. 카드 면을 먼저 그린다`} bg={BASEMENT}>
           <div className="relative w-[300px]" style={{ paddingBottom: 4, outline: `1px dashed ${MARK_LINE}`, outlineOffset: -1 }}>
@@ -384,7 +384,7 @@ const ShapeGuide: Fig = ({ caption }) => {
   );
   const pair = (top: ReactNode, h: number) => (
     <div className="flex items-start gap-3">
-      <div className="w-[300px] rounded-2xl pk-surface">
+      <CardBox body="list" style={{ width: 300 }}>
         <div className="relative">
           {top}
           <Band style={{ right: -2, top: 0, height: h, width: 4 }} label={`${h}`} vertical />
@@ -392,7 +392,7 @@ const ShapeGuide: Fig = ({ caption }) => {
         <div style={{ borderTop: `1px dashed ${MARK_LINE}` }}>
           <TxList n={1} />
         </div>
-      </div>
+      </CardBox>
     </div>
   );
   return (
@@ -443,13 +443,14 @@ function RecentCard({ mode = 'auto', phase }: { mode?: Mode; phase: 'quiet' | 'w
   return (
     <CardBox mode={mode} title="최근 거래" style={{ width: 270, minHeight: 296 }}>
       {phase === 'failed' ? (
-        <div style={{ padding: '24px 0 16px' }}>
-          <ResultSectionView look={r} mode={mode} kind="failure" size="medium" title="거래를 불러오지 못했어요" description="잠시 후 다시 시도해주세요." primary={{ label: '다시 시도' }} />
+        // 카드 안 결과 — 좌우는 목록 카드의 24 만(결과 자리의 좌우 0)
+        <div style={{ paddingTop: 24, paddingRight: sk().slowText.padXList, paddingBottom: 16, paddingLeft: sk().slowText.padXList }}>
+          <ResultSectionView look={r} mode={mode} kind="failure" size="medium" inCard title="거래를 불러오지 못했어요" description="잠시 후 다시 시도해주세요." primary={{ label: '다시 시도' }} />
         </div>
       ) : (
         <>
           {phase === 'slow' && (
-            <div style={{ padding: `0 ${d.padX}px`, marginBottom: spacer }}>
+            <div style={{ paddingLeft: sk().slowText.padXList, paddingRight: sk().slowText.padXList, marginBottom: spacer }}>
               <SlowText mode={mode} />
             </div>
           )}
@@ -499,7 +500,7 @@ const SlowGuide: Fig = ({ caption }) => {
       <div className="flex flex-wrap items-start justify-center gap-6">
         <Shot strong="스켈레톤 영역" cap={`첫 스켈레톤 위 ${s.slowText.gap} · 왼쪽 맞춤`}>
           <CardBox title="최근 거래" style={{ width: 280 }}>
-            <div style={{ padding: `0 ${d.padX}px`, marginBottom: spacer }}>
+            <div style={{ paddingLeft: sk().slowText.padXList, paddingRight: sk().slowText.padXList, marginBottom: spacer }}>
               <div className="relative">
                 <SlowText />
                 {gap}
@@ -510,7 +511,8 @@ const SlowGuide: Fig = ({ caption }) => {
         </Shot>
         <Shot strong="가운데 원" cap={`원 아래 ${s.slowText.gap} · 가운데 맞춤`}>
           <CardBox title="검색 결과" style={{ width: 280, minHeight: 220 }}>
-            <div className="flex flex-col items-center" style={{ paddingTop: 40 }}>
+            {/* 목록 카드 바로 아래 영역 — 글은 좌우 24 안에(skeleton.yaml slowText.paddingX 비고) */}
+            <div className="flex flex-col items-center" style={{ paddingTop: 40, paddingLeft: s.slowText.padXList, paddingRight: s.slowText.padXList }}>
               <div className="relative flex flex-col items-center" style={{ gap: s.slowText.gap }}>
                 <Circle size="40" decorative />
                 <SlowText align="center" />
@@ -555,7 +557,7 @@ const WhichGuide: Fig = ({ caption }) => {
           </CardBox>
         ))}
         {cell('저장 · 제출', '누른 버튼의 로딩 — 폭은 그대로', (
-          <CardBox style={{ padding: 16 }}>
+          <CardBox>
             <div className="flex flex-col gap-3">
               <span className="text-[14px] pk-muted">메모를 저장하는 중이에요.</span>
               <ButtonView look={save} label="저장" fill state="loading" />
@@ -573,19 +575,27 @@ const PeriodGuide: Fig = ({ caption }) => (
     <Pair>
       <Verdict ok note="고른 달 이름은 바로 9월 — 바뀔 숫자 자리만 스켈레톤, 10월 숫자는 지운다" bg={BASEMENT}>
         <LdPhone title="통계" scale={0.6} h={520} tabs={false}>
-          <div className="mx-4 rounded-2xl pk-surface">
-            <MonthNav month="2026년 9월" />
-            <SpendHead label="지출" bone={144} />
-            <StatRows amounts={false} />
+          <div style={cardStack()}>
+            <CardBox body="list">
+              <MonthNav month="2026년 9월" />
+              <div style={{ paddingTop: 4, paddingRight: 24, paddingBottom: 8, paddingLeft: 24 }}>
+                <SpendHead label="지출" bone={144} />
+              </div>
+              <StatRows amounts={false} />
+            </CardBox>
           </div>
         </LdPhone>
       </Verdict>
       <Verdict ok={false} note="9월 머리 아래 10월 숫자 — 새 값이 올 때까지 돈 숫자가 잘못 읽힌다" bg={BASEMENT}>
         <LdPhone title="통계" scale={0.6} h={520} tabs={false}>
-          <div className="mx-4 rounded-2xl pk-surface">
-            <MonthNav month="2026년 9월" right={<span className="ml-1.5"><Circle size="24" decorative /></span>} />
-            <SpendHead label="지출" amount="656,500원" />
-            <StatRows />
+          <div style={cardStack()}>
+            <CardBox body="list">
+              <MonthNav month="2026년 9월" right={<span className="ml-1.5"><Circle size="24" decorative /></span>} />
+              <div style={{ paddingTop: 4, paddingRight: 24, paddingBottom: 8, paddingLeft: 24 }}>
+                <SpendHead label="지출" amount="656,500원" />
+              </div>
+              <StatRows />
+            </CardBox>
           </div>
         </LdPhone>
       </Verdict>
@@ -606,7 +616,7 @@ const RefreshGuide: Fig = ({ caption }) => {
               <div className="absolute inset-x-0 top-0 flex items-center justify-center" style={{ height: pull.indicator }}>
                 <Circle size="24" label="새로 고치는 중" />
               </div>
-              <div style={{ transform: `translateY(${pull.threshold}px)` }} className="px-4 pt-1">
+              <div style={{ ...cardStack(), transform: `translateY(${pull.threshold}px)` }}>
                 <CardBox title="최근 거래">
                   <TxList n={3} />
                 </CardBox>
@@ -617,7 +627,7 @@ const RefreshGuide: Fig = ({ caption }) => {
         <Verdict ok note="실패해도 내용을 둔 채 스낵바로 가볍게 알린다" bg={BASEMENT}>
           <LdPhone title="가계부" scale={0.56} h={560}>
             <div className="relative h-full">
-              <div className="px-4 pt-1">
+              <div style={cardStack()}>
                 <CardBox title="최근 거래">
                   <TxList n={3} />
                 </CardBox>
@@ -630,7 +640,7 @@ const RefreshGuide: Fig = ({ caption }) => {
         </Verdict>
         <Verdict ok={false} note="다시 받는다고 스켈레톤으로 돌아간다 — 보던 내용이 사라지고 화면이 깜빡인다" bg={BASEMENT}>
           <LdPhone title="가계부" scale={0.56} h={560}>
-            <div className="px-4 pt-1">
+            <div style={cardStack()}>
               <CardBox title="최근 거래">
                 <TxSkeletonRows n={3} />
               </CardBox>

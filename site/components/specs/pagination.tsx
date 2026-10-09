@@ -6,8 +6,9 @@ import { Figure, Panel as Plate } from '../foundations/ui';
 import { Verdict, rc, type Mode } from './kit';
 import { BENEFITS, HR_USERS } from './nav-data';
 import { PaginationPlayground } from './nav-page-playground';
+import { cardFace } from './card-face';
 import { InfiniteListEndView, PaginationLive, PaginationView, PgCell, TablePaginationView, type PgPart } from './nav-page-view';
-import { Band, Bar, Cap, CodePreview, Desktop, Legend, MiniTable, NK, NPhone, PHONE, Reading, Shell, Side, DeskHeader, ScreenTitle, Wide, circleLook, markBox, markLine, modeKo, pinAt, type Fig } from './nav-screens';
+import { Band, Bar, Cap, CodePreview, Desktop, Legend, MiniTable, NK, NPhone, PHONE, PagingSlot, Reading, Shell, Side, DeskHeader, ScreenTitle, Wide, circleLook, markBox, markLine, modeKo, pinAt, tableCardH, type Fig } from './nav-screens';
 import type { PgState } from './nav-shared';
 
 const G = (brand: 'desk' | 'hr' = 'desk') => NK(brand).page;
@@ -81,7 +82,7 @@ const Hero: Fig = ({ caption }) => (
   </Figure>
 );
 
-const Playground: Fig = () => <PaginationPlayground look={G()} tones={NK().tone} />;
+const Playground: Fig = () => <PaginationPlayground look={G()} tones={NK().tone} card={cardFace()} />;
 
 // ── Anatomy ───────────────────────────────────────────────
 const Anatomy: Fig = ({ caption }) => {
@@ -290,10 +291,14 @@ const RoleGuide: Fig = ({ caption }) => {
             </NPhone>
           </Verdict>
           <Verdict ok note="데이터 표 — Table Pagination(줄 수 · 범위 · 이전 · 다음)">
-            <div className="flex w-[300px] flex-col" style={{ gap: tl.marginTop }}>
-              <MiniTable brand="hr" head={['이름', '부서']} rows={HR_USERS.slice(0, 4).map((u) => [u[0], u[1]])} rowH={40} />
-              <div style={{ transform: 'scale(0.62)', transformOrigin: 'left top', width: 480, height: tl.height * 0.62 }}>
-                <TablePaginationView look={tl} total={21} page={2} pageSize={10} />
+            {/* 표 카드(표 + 같은 상자 안 표 아래 줄)를 0.56 배로 — 자리도 같이 줄인다 */}
+            <div style={{ width: 528 * 0.56, height: tableCardH(4) * 0.56 }}>
+              <div style={{ width: 528, transform: 'scale(0.56)', transformOrigin: 'left top' }}>
+                <MiniTable brand="hr" title="사용자" head={['이름', '부서']} rows={HR_USERS.slice(0, 4).map((u) => [u[0], u[1]])}>
+                  <PagingSlot>
+                    <TablePaginationView look={tl} total={21} page={2} pageSize={10} />
+                  </PagingSlot>
+                </MiniTable>
               </div>
             </div>
           </Verdict>

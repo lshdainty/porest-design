@@ -9,8 +9,9 @@ import { ResultDoneDemo, ResultEmptyDemo, ResultFailureDemo } from './feedback-d
 import { ResultSectionPlayground } from './feedback-playground';
 import { Band, Legend, Muted, Pair, Pin, markBox, type Fig } from './feedback-screens';
 import { ResultSectionView, type ResultSectionViewProps } from './feedback-view';
-import { Phone, Verdict, rc, type Mode } from './kit';
+import { Card, Phone, Stat, Verdict, cardStack, rc, type Mode } from './kit';
 import { Cap, cta, tf } from './select-screens';
+import { cardFace } from './card-face';
 
 const rl = (brand: 'desk' | 'hr' = 'desk') => resultSectionLook(brand);
 const px = (v: string) => parseFloat(v);
@@ -39,21 +40,15 @@ function ResultPhone({ mode, title, scale = 0.65, h = 620, tabs = true, bottom, 
 function HomePhone({ mode, scale = 0.65, h = 620, children }: { mode: Mode; scale?: number; h?: number; children: ReactNode }) {
   return (
     <Phone title="홈" back={false} mode={mode} scale={scale} h={h} bg="bg-layer-basement" tabs>
-      <div className="flex flex-col gap-3 px-4 pt-1">
-        <div className="flex flex-col gap-1 rounded-2xl px-5 py-4" style={{ background: rc('bg-layer-default', mode) }}>
-          <span className="text-[13px]" style={{ color: rc('fg-neutral-subtle', mode) }}>
-            10월 지출
-          </span>
-          <span className="text-[22px] font-bold leading-[30px] tabular-nums" style={{ color: rc('fg-neutral', mode) }}>
-            412,300원
-          </span>
-        </div>
-        <div className="flex min-h-[280px] flex-col rounded-2xl px-5 pt-4" style={{ background: rc('bg-layer-default', mode) }}>
-          <span className="text-[17px] font-bold" style={{ color: rc('fg-neutral', mode) }}>
-            최근 거래
-          </span>
-          {children}
-        </div>
+      {/* 회색 바닥 위 카드 — card.yaml(흰 면 + 1px 테두리 · 여백 24 · 지표 카드 · 목록 카드 머리) */}
+      <div style={cardStack()}>
+        <Card mode={mode}>
+          <Stat mode={mode} label="10월 지출" value="412,300원" />
+        </Card>
+        <Card mode={mode} body="list" title="최근 거래" style={{ minHeight: 280 }}>
+          {/* 카드 안 결과 — 결과 자리의 좌우 0, 목록 카드의 24 는 감싼 칸이 맡는다(result-section.yaml root.paddingX 비고) */}
+          <div style={{ display: 'flex', flexDirection: 'column', flex: '1 1 auto', paddingLeft: cardFace().head.x, paddingRight: cardFace().head.x }}>{children}</div>
+        </Card>
       </div>
     </Phone>
   );
@@ -69,7 +64,7 @@ const Hero: Fig = ({ caption }) => (
           <R mode="light" size="large" {...EMPTY} />
         </ResultPhone>
         <HomePhone mode="light">
-          <R mode="light" size="medium" {...FAILURE} />
+          <R mode="light" size="medium" inCard {...FAILURE} />
         </HomePhone>
       </div>
       <div className="flex items-start gap-4">
@@ -77,7 +72,7 @@ const Hero: Fig = ({ caption }) => (
           <R mode="dark" size="large" {...DONE} />
         </ResultPhone>
         <HomePhone mode="dark">
-          <R mode="dark" size="medium" {...FAILURE} />
+          <R mode="dark" size="medium" inCard {...FAILURE} />
         </HomePhone>
       </div>
     </div>
@@ -153,17 +148,22 @@ const Sizes: Fig = ({ caption }) => {
           <Cap strong="large(기본) — 화면 전체">{line('large')}</Cap>
         </div>
         <div className="flex w-[344px] max-w-full flex-col gap-2">
-          <div className="flex flex-col rounded-2xl pk-basement p-4">
-            <div className="flex flex-col rounded-2xl pk-surface pt-4">
-              <span className="px-5 pb-6 text-[17px] font-bold pk-text">최근 거래</span>
-              <Measured size="medium" />
-            </div>
+          <div className="flex flex-col rounded-2xl pk-surface">
+            <Measured size="medium" />
           </div>
-          <Cap strong="medium — 카드 · 섹션 · 시트 안">{line('medium')}</Cap>
+          <Cap strong="medium — 섹션 · 시트 안">{line('medium')}</Cap>
+        </div>
+        <div className="flex w-[344px] max-w-full flex-col gap-2">
+          <div className="rounded-2xl pk-basement" style={{ ...cardStack(), paddingTop: 24, paddingBottom: 24 }}>
+            <Card title="최근 거래">
+              <R size="medium" inCard grow={false} {...FAILURE} />
+            </Card>
+          </div>
+          <Cap strong="medium — 카드 안">결과 자리의 좌우 {l.root.padXInCard} — 카드 안 여백 {cardFace().pad} 이 가장자리를 맡는다(둘 다 두면 {cardFace().pad + l.root.padX})</Cap>
         </div>
       </div>
       <p className="mt-4 text-center text-[12px] leading-5 text-fd-muted-foreground">
-        두 크기 모두 좌우 {l.root.padX} · 위아래 {l.root.padY} · 아이콘 {l.asset.size}(굵기 {l.asset.strokeWidth}) + 아래 {l.asset.marginBottom} — 첫 버튼 {l.primary.variant} {l.primary.size} {l.primary.height}, 둘째 버튼 {l.secondary.variant} {l.secondary.size} {l.secondary.height}. 버튼 사이 {l.actions.gap} — 둘째 버튼이 위아래로 {l.secondary.padY} 블리드해 글 자리만 차지하므로 상자 사이는 {l.actions.gap - l.secondary.padY}
+        두 크기 모두 좌우 {l.root.padX}(카드 안에서는 {l.root.padXInCard}) · 위아래 {l.root.padY} · 아이콘 {l.asset.size}(굵기 {l.asset.strokeWidth}) + 아래 {l.asset.marginBottom} — 첫 버튼 {l.primary.variant} {l.primary.size} {l.primary.height}, 둘째 버튼 {l.secondary.variant} {l.secondary.size} {l.secondary.height}. 버튼 사이 {l.actions.gap} — 둘째 버튼이 위아래로 {l.secondary.padY} 블리드해 글 자리만 차지하므로 상자 사이는 {l.actions.gap - l.secondary.padY}
       </p>
     </Panel>
   );
@@ -182,9 +182,10 @@ const Kinds: Fig = ({ caption }) => {
       <div className="flex flex-col gap-3 rounded-xl p-3" style={{ background: rc('bg-layer-basement', mode) }}>
         {(Object.keys(KIND_TEXT) as ResultKind[]).map((k) => (
           <div key={k} className="flex flex-col gap-1">
-            <div className="rounded-2xl" style={{ background: rc('bg-layer-default', mode) }}>
-              <R mode={mode} size="medium" {...KIND_TEXT[k]} />
-            </div>
+            {/* 카드 안의 결과 — 좌우는 카드 여백 24 만(결과 자리의 좌우 0) */}
+            <Card mode={mode}>
+              <R mode={mode} size="medium" inCard {...KIND_TEXT[k]} />
+            </Card>
             <Muted mode={mode} className="px-1">
               <b>{k}</b> — {l.asset.color[k].name} {l.asset.color[k][mode].toUpperCase()}
             </Muted>

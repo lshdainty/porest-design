@@ -114,7 +114,7 @@
 
 ### 오래 걸림 글
 
-5초가 지나도 안 오면 기다리는 자리에 글 한 줄을 더한다 — "평소보다 오래 걸리고 있어요." 스켈레톤 · 원은 그대로 둔다. 스켈레톤 영역이면 첫 스켈레톤 위에 왼쪽 맞춤으로, 가운데 원이면 원 아래에 가운데 맞춤으로 16 띄워 둔다. 영역 하나에 한 줄이고, 화면이 통째로 기다리면 콘텐츠 영역 맨 위 한 줄이다. 보조 기술에는 한 번 정중하게 읽힌다(아래 "알리기").
+5초가 지나도 안 오면 기다리는 자리에 글 한 줄을 더한다 — "평소보다 오래 걸리고 있어요." 스켈레톤 · 원은 그대로 둔다. 스켈레톤 영역이면 첫 스켈레톤 위에 왼쪽 맞춤으로, 가운데 원이면 원 아래에 가운데 맞춤으로 16 띄워 둔다. 목록 카드(`body="list"`) 안의 영역이면 이 글과 실패 Result Section 이 좌우 24 를 갖는다 — 목록 카드는 줄마다 24 를 갖고 카드 여백이 없어, 카드 안 글이 늘 24 에 서게 한다(Card 23B). 내용 카드 안이면 카드의 24 가 맡는다. 영역 하나에 한 줄이고, 화면이 통째로 기다리면 콘텐츠 영역 맨 위 한 줄이다. 보조 기술에는 한 번 정중하게 읽힌다(아래 "알리기").
 
 [그림: 5초 — 스켈레톤 위 · 원 아래의 안내 글](../../site/components/specs/skeleton.tsx#slow-guide)
 
@@ -203,8 +203,8 @@ function TransactionRowsSkeleton({ rows }: { rows: number }) {
   )
 }
 
-<Card>
-  <CardHeader><CardTitle>최근 거래</CardTitle></CardHeader>{/* 틀 — 처음부터 그린다 */}
+<Card body="list">
+  <CardHeader><CardTitle>최근 거래</CardTitle></CardHeader>{/* 틀 — 처음부터 그린다. 목록 카드는 줄이 가장자리까지(card.md) */}
   <LoadingRegion
     pending={query.isPending}
     failed={query.isError && !query.data}

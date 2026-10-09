@@ -1,32 +1,58 @@
 // Table Pagination 페이지의 그림 — specs/components/table-pagination.md 의 `[그림: …](../../site/components/specs/table-pagination.tsx#<id>)` 자리.
 // 줄은 table-pagination.yaml 을 푼 값(navKit().table — nav-page-view 의 TablePaginationView)으로, 두 고르기는 select.yaml medium(select-view)으로 그린다.
-// 표는 아직 스펙이 없어 역할 색으로 간단히 그린 대역이다(지어낸 내용).
+// 표는 table.yaml 대로 카드 안에 가장자리까지 붙고(nav-screens MiniTable — TableView), 줄은 표와 같은 상자 안 표 아래 12 다(지어낸 내용).
 import type { ReactNode } from 'react';
 import { Figure, Panel as Plate } from '../foundations/ui';
 import { Verdict, rc, type Mode } from './kit';
 import { HR_LEAVES, HR_USERS } from './nav-data';
 import { TablePaginationPlayground } from './nav-page-playground';
+import { cardFace } from './card-face';
+import { cardLook, tableLook } from './data-look';
 import { TablePaginationLive, TablePaginationView } from './nav-page-view';
 import { SelectOpenView } from './select-view';
-import { Band, Cap, CodePreview, Legend, MiniTable, NK, markBox, markLine, modeKo, pinAt, type Fig } from './nav-screens';
+import { Band, Cap, CodePreview, Legend, MiniTable, NK, PagingSlot, markBox, markLine, modeKo, pinAt, tableCardH, type Fig } from './nav-screens';
+import { CardHeaderView, CardSurface } from './data-card-view';
 
 const TL = (brand: 'desk' | 'hr' = 'hr') => NK(brand).table;
 const MODES = ['light', 'dark'] as const;
 const Pair = ({ children, stack = false }: { children: ReactNode; stack?: boolean }) => <div className={`flex w-full flex-col gap-4 ${stack ? 'mx-auto max-w-[560px]' : 'max-w-[820px] md:flex-row'}`}>{children}</div>;
 const W = 560;
+// 반으로 줄인 표 카드 — 자리(폭 W · 높이 h)도 같이 줄인다
+const Shrunk = ({ h, children }: { h: number; children: ReactNode }) => (
+  <div style={{ width: W / 2, height: h / 2 }}>
+    <div style={{ width: W, transform: 'scale(0.5)', transformOrigin: 'left top' }}>{children}</div>
+  </div>
+);
 const USERS_HEAD = ['이름', '부서', '직책', '상태'];
-// 표 + 아래 줄 — 표 아래 12(spacing-component-default)
-function TableBlock({ mode = 'auto', w = W, rows = 4, head = USERS_HEAD, data = HR_USERS, total = 21, page = 2, pageSize = 10, row }: { mode?: Mode; w?: number; rows?: number; head?: string[]; data?: string[][]; total?: number; page?: number; pageSize?: number; row?: ReactNode }) {
+// 표 카드 — 머리(표 이름) + 표 + 아래 줄. 줄은 표와 같은 상자 안 표 아래 12(spacing-component-default)
+function TableBlock({ mode = 'auto', w = W, rows = 4, head = USERS_HEAD, data = HR_USERS, total = 21, page = 2, pageSize = 10, row, title = '사용자' }: { mode?: Mode; w?: number; rows?: number; head?: string[]; data?: string[][]; total?: number; page?: number; pageSize?: number; row?: ReactNode; title?: string }) {
   return (
-    <div className="flex flex-col" style={{ width: w, gap: TL().marginTop }}>
-      <MiniTable mode={mode} brand="hr" head={head} rows={data.slice(0, rows)} rowH={44} />
-      {row ?? <TablePaginationView look={TL()} mode={mode} total={total} page={page} pageSize={pageSize} />}
+    <div style={{ width: w }}>
+      <MiniTable mode={mode} brand="hr" title={title} head={head} rows={data.slice(0, rows)} empty={rows === 0 ? '사용자가 없어요' : undefined}>
+        <PagingSlot>{row ?? <TablePaginationView look={TL()} mode={mode} total={total} page={page} pageSize={pageSize} />}</PagingSlot>
+      </MiniTable>
     </div>
   );
 }
-function Board({ children, mode = 'auto', pad = 20 }: { children: ReactNode; mode?: Mode; pad?: number }) {
+// 판 — 표 카드를 놓는 회색 바닥(bg-layer-basement). face 면 카드 면(흰 면 + 1px 테두리 · 모서리 16, card.yaml) —
+// 줄은 표와 같은 카드 안에 있으므로 줄만 떼어 그릴 때도 카드 면 위에 둔다
+function Board({ children, mode = 'auto', pad = 24, face = false }: { children: ReactNode; mode?: Mode; pad?: number; face?: boolean }) {
+  const c = cardLook().surface;
   return (
-    <div className="flex flex-col gap-3 rounded-xl" style={{ background: rc('bg-layer-basement', mode, 'hr'), paddingTop: pad, paddingBottom: pad, paddingLeft: pad, paddingRight: pad }}>
+    <div
+      className="flex flex-col gap-3"
+      style={{
+        background: rc(face ? 'bg-layer-default' : 'bg-layer-basement', mode, 'hr'),
+        borderWidth: face ? c.borderW : 0,
+        borderStyle: 'solid',
+        borderColor: rc('stroke-neutral-weak', mode, 'hr'),
+        borderRadius: face ? c.radius : 12,
+        paddingTop: pad,
+        paddingBottom: pad,
+        paddingLeft: pad,
+        paddingRight: pad,
+      }}
+    >
       {children}
     </div>
   );
@@ -39,20 +65,20 @@ const Hero: Fig = ({ caption }) => (
       {MODES.map((mode) => (
         <Board key={mode} mode={mode}>
           <span className="text-[12px] font-semibold" style={{ color: rc('fg-neutral-subtle', mode) }}>{modeKo(mode)}</span>
-          {mode === 'light' ? <TableBlock mode={mode} /> : <TableBlock mode={mode} head={['날짜', '종류', '일수', '상태']} data={HR_LEAVES} rows={4} total={23} page={1} pageSize={10} />}
+          {mode === 'light' ? <TableBlock mode={mode} title="사용자 21명" /> : <TableBlock mode={mode} title="휴가 내역" head={['날짜', '종류', '일수', '상태']} data={HR_LEAVES} rows={4} total={23} page={1} pageSize={10} />}
         </Board>
       ))}
     </div>
   </Figure>
 );
 
-const Playground: Fig = () => <TablePaginationPlayground look={TL()} tones={NK('hr').tone} />;
+const Playground: Fig = () => <TablePaginationPlayground look={TL()} tones={NK('hr').tone} table={tableLook('hr')} card={cardFace()} />;
 
 // ── Anatomy ───────────────────────────────────────────────
 const Anatomy: Fig = ({ caption }) => (
   <Figure caption={caption}>
     <div className="flex flex-col items-center gap-5">
-      <Board>
+      <Board face>
         <div className="relative" style={{ width: W, marginTop: 24, marginBottom: 6 }}>
           <TablePaginationView look={TL()} total={237} page={2} pageSize={10} zone={{ pageSize: markLine, pageRange: markLine, arrows: markBox }} pins={{ pageSize: pinAt('ⓐ', { left: -8, top: -28 }), pageRange: pinAt('ⓑ', { left: -8, top: -28 }), arrows: pinAt('ⓒ', { left: 30, top: -28 }) }} />
         </div>
@@ -74,7 +100,7 @@ const Layout: Fig = ({ caption }) => {
   return (
     <Figure caption={caption}>
       <div className="flex flex-col items-center gap-3">
-        <Board>
+        <Board face>
         <div className="relative" style={{ width: W, marginTop: 18, marginBottom: 18, marginLeft: 16 }}>
           <TablePaginationView look={t} total={237} page={2} pageSize={10} zone={{ root: markLine }} />
           <Band style={{ left: -16, top: 0, width: 6, height: t.height }} label={`${t.height}`} vertical tag="left" />
@@ -93,7 +119,7 @@ const Layout: Fig = ({ caption }) => {
 
 const Total: Fig = ({ caption }) => (
   <Figure caption={caption}>
-    <Board>
+    <Board face>
     <div className="flex flex-col items-center gap-6">
       <div className="flex flex-col items-center gap-2">
         <div style={{ width: W }}>
@@ -117,13 +143,15 @@ const Ends: Fig = ({ caption }) => (
     <Board>
     <div className="flex flex-col items-center gap-6">
       <div className="flex flex-col items-center gap-2">
-        <div style={{ width: W }}>
-          <TablePaginationView look={TL()} total={237} page={1} pageSize={10} />
-        </div>
+        <Board face pad={12}>
+          <div style={{ width: W - 48 }}>
+            <TablePaginationView look={TL()} total={237} page={1} pageSize={10} />
+          </div>
+        </Board>
         <Cap>첫 범위 — 이전이 막힌다(숨기지 않는다 · 초점은 남는다)</Cap>
       </div>
       <div className="flex flex-col items-center gap-2">
-        <TableBlock rows={0} total={0} page={1} pageSize={10} />
+        <TableBlock rows={0} total={0} page={1} pageSize={10} title="사용자 0명" />
         <Cap>빈 표 — &ldquo;0-0 / 총 0개&rdquo;, 이전 · 다음 모두 막힘. 줄 수는 그대로 바꿀 수 있다</Cap>
       </div>
     </div>
@@ -135,18 +163,17 @@ const Ends: Fig = ({ caption }) => (
 const PlaceGuide: Fig = ({ caption }) => (
   <Plate caption={caption}>
     <Pair>
-      <Verdict ok note="데이터 표 아래에 한 줄">
-        <div style={{ transform: 'scale(0.5)', transformOrigin: 'center', width: W, height: 300, marginTop: -75, marginBottom: -75, marginLeft: -140, marginRight: -140 }}>
+      <Verdict ok note="데이터 표 아래에 한 줄" bg="var(--p-bg-layer-basement)">
+        <Shrunk h={tableCardH(4)}>
           <TableBlock rows={4} />
-        </div>
+        </Shrunk>
       </Verdict>
-      <Verdict ok={false} note="표 위에 둔 줄">
-        <div style={{ transform: 'scale(0.5)', transformOrigin: 'center', width: W, height: 300, marginTop: -75, marginBottom: -75, marginLeft: -140, marginRight: -140 }}>
-          <div className="flex flex-col" style={{ gap: TL().marginTop }}>
-            <TablePaginationView look={TL()} total={21} page={2} pageSize={10} />
-            <MiniTable brand="hr" head={USERS_HEAD} rows={HR_USERS.slice(0, 4)} rowH={44} />
+      <Verdict ok={false} note="표 위에 둔 줄" bg="var(--p-bg-layer-basement)">
+        <Shrunk h={tableCardH(4)}>
+          <div style={{ width: W }}>
+            <MiniTable brand="hr" title="사용자" head={USERS_HEAD} rows={HR_USERS.slice(0, 4)} above={<PagingSlot above><TablePaginationView look={TL()} total={21} page={2} pageSize={10} /></PagingSlot>} />
           </div>
-        </div>
+        </Shrunk>
       </Verdict>
     </Pair>
   </Plate>
@@ -158,7 +185,7 @@ const OptionsGuide: Fig = ({ caption }) => {
   const txt = { fontSize: t.suffix.fontSize, lineHeight: t.suffix.lineHeight, color: rc('fg-neutral', 'auto', 'hr') };
   return (
     <Figure caption={caption}>
-      <Board>
+      <Board face>
         <div className="flex items-start gap-10">
           <div className="flex flex-col items-center gap-3">
             <div className="flex items-start" style={{ columnGap: t.pageSize.gap, height: 230 }}>
@@ -187,22 +214,30 @@ const OptionsGuide: Fig = ({ caption }) => {
 const NarrowGuide: Fig = ({ caption }) => (
   <Plate caption={caption}>
     <Pair>
-      <Verdict ok note="좁은 화면 — 표와 줄이 같은 가로 스크롤 상자 안에서 함께 민다">
-        <div className="relative overflow-hidden rounded-xl" style={{ width: 300, background: rc('bg-layer-basement', 'auto', 'hr'), paddingTop: 12, paddingBottom: 16 }}>
-          <div style={{ marginLeft: -120 }}>
-            <TableBlock w={W} rows={3} />
-          </div>
-          <span aria-hidden className="absolute bottom-1 left-6 right-6 block h-1 rounded-full" style={{ background: rc('stroke-neutral-weak') }}>
-            <span className="block h-1 rounded-full" style={{ width: '45%', marginLeft: '25%', background: rc('fg-neutral-subtle') }} />
-          </span>
+      <Verdict ok note="좁은 칸 — 카드 안 표 상자에서 표와 줄이 함께 가로로 민다(카드 머리는 그대로)" bg="var(--p-bg-layer-basement)">
+        <div style={{ width: 300 }}>
+          <CardSurface look={cardLook()} body="list">
+            <CardHeaderView look={cardLook()} title="사용자" body="list" heading="span" />
+            <div className="relative">
+              <MiniTable bare brand="hr" title="사용자" head={USERS_HEAD} rows={HR_USERS.slice(0, 3)} minWidth={W} scrollLeft={120}>
+                <PagingSlot>
+                  <TablePaginationView look={TL()} total={21} page={2} pageSize={10} />
+                </PagingSlot>
+              </MiniTable>
+              <span aria-hidden className="absolute -bottom-2 left-6 right-6 block h-1 rounded-full" style={{ background: rc('stroke-neutral-weak') }}>
+                <span className="block h-1 rounded-full" style={{ width: '45%', marginLeft: '25%', background: rc('fg-neutral-subtle') }} />
+              </span>
+            </div>
+          </CardSurface>
         </div>
       </Verdict>
-      <Verdict ok={false} note="줄만 두 줄로 접는다 — 줄은 늘 한 줄">
-        <div className="rounded-xl" style={{ width: 300, background: rc('bg-layer-basement', 'auto', 'hr'), paddingTop: 12, paddingBottom: 12, paddingLeft: 12, paddingRight: 12 }}>
-          <div className="flex flex-col" style={{ gap: TL().marginTop }}>
-            <MiniTable brand="hr" head={['이름', '부서']} rows={HR_USERS.slice(0, 3).map((u) => [u[0], u[1]])} rowH={40} />
-            <TablePaginationView look={TL()} total={21} page={2} pageSize={10} wrap />
-          </div>
+      <Verdict ok={false} note="줄만 두 줄로 접는다 — 줄은 늘 한 줄" bg="var(--p-bg-layer-basement)">
+        <div style={{ width: 300 }}>
+          <MiniTable brand="hr" title="사용자" head={['이름', '부서']} rows={HR_USERS.slice(0, 3).map((u) => [u[0], u[1]])}>
+            <PagingSlot>
+              <TablePaginationView look={TL()} total={21} page={2} pageSize={10} wrap />
+            </PagingSlot>
+          </MiniTable>
         </div>
       </Verdict>
     </Pair>
@@ -210,14 +245,14 @@ const NarrowGuide: Fig = ({ caption }) => (
 );
 
 // ── 코드 예시(미리보기) — table-pagination.md 의 코드 그대로 ──────
+// 표 상자(overflow-x-auto) 안에 표와 줄 — 카드 머리(표 이름)는 표를 담는 카드의 것
 const ExTable: Fig = ({ caption }) => (
-  <CodePreview caption={caption} pad={16} w={W} brand="hr" bg="bg-layer-basement">
-    <div className="overflow-x-auto">
-      <div className="flex flex-col" style={{ minWidth: W, gap: TL().marginTop }}>
-        <MiniTable brand="hr" head={USERS_HEAD} rows={HR_USERS.slice(0, 4)} rowH={44} />
+  <CodePreview caption={caption} pad={24} w={W + 48} brand="hr" bg="bg-layer-basement">
+    <MiniTable brand="hr" title="사용자 21명" head={USERS_HEAD} rows={HR_USERS.slice(0, 4)} minWidth={W - 2}>
+      <PagingSlot>
         <TablePaginationLive look={TL()} total={21} page={2} pageSize={10} />
-      </div>
-    </div>
+      </PagingSlot>
+    </MiniTable>
   </CodePreview>
 );
 

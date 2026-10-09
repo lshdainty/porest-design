@@ -7,6 +7,9 @@ import { comma, FONT, ncv, tablePages, tableRange, type NColor, type NavTone, ty
 import { NavPlayFrame } from './nav-playground';
 import { PaginationView, TablePaginationView } from './nav-page-view';
 import { MODES, Seg } from './select-playground';
+import type { CardFace } from './card-face';
+import type { TableLook } from './data-shared';
+import { TableView, type TCol, type TRow } from './data-table-view';
 
 type Tones = Record<NavTone, NColor>;
 const tc = (t: Tones, n: NavTone, mode: ViewMode) => ncv(t[n], mode);
@@ -24,7 +27,7 @@ function Said({ text }: { text: string }) {
 
 // ══ Pagination ═════════════════════════════════════════════
 const TOTALS = [1, 5, 8, 12, 30, 120] as const;
-export function PaginationPlayground({ look, tones }: { look: PaginationLook; tones: Tones }) {
+export function PaginationPlayground({ look, tones, card }: { look: PaginationLook; tones: Tones; card: CardFace }) {
   const [total, setTotal] = useState<(typeof TOTALS)[number]>(12);
   const [page, setPage] = useState(5);
   const [width, setWidth] = useState<'regular' | 'narrow'>('regular');
@@ -62,7 +65,8 @@ export function PaginationPlayground({ look, tones }: { look: PaginationLook; to
       wide={width === 'regular'}
       stage={
         <div className="flex flex-col items-center gap-4">
-          <div style={{ width: '100%', maxWidth: width === 'regular' ? 520 : 360, borderRadius: 16, background: tc(tones, 'bg-layer-default', mode), paddingTop: 8, paddingBottom: 8, paddingLeft: 20, paddingRight: 20, fontFamily: FONT }}>
+          {/* 카드 — card.yaml 의 면(흰 면 + 1px 테두리 · 모서리 16 · 좌우 24). 머리 없는 목록 카드라 위아래 12 */}
+          <div style={{ boxSizing: 'border-box', width: '100%', maxWidth: width === 'regular' ? 520 : 360, borderRadius: card.radius, borderWidth: card.borderW, borderStyle: 'solid', borderColor: tc(tones, 'stroke-neutral-weak', mode), background: tc(tones, 'bg-layer-default', mode), paddingTop: card.listBottom, paddingBottom: card.listBottom, paddingLeft: card.pad, paddingRight: card.pad, fontFamily: FONT }}>
             {rows.map(([n, b]) => (
               <div key={n} style={{ display: 'flex', alignItems: 'center', columnGap: 12, minHeight: 56, boxShadow: `inset 0 -1px 0 ${tc(tones, 'stroke-neutral-subtle', mode)}` }}>
                 <span aria-hidden style={{ width: 52, height: 33, borderRadius: 4, background: tc(tones, 'bg-neutral-weak', mode), flexShrink: 0 }} />
@@ -98,7 +102,18 @@ export function PaginationPlayground({ look, tones }: { look: PaginationLook; to
 
 // ══ Table Pagination ═══════════════════════════════════════
 type TotalKind = 'known' | 'unknown' | 'empty';
-export function TablePaginationPlayground({ look, tones }: { look: TablePaginationLook; tones: Tones }) {
+// 표 — 이름(첫 열) · 부서 · 상태(배지) · 번호(숫자 — 오른쪽). 넘기면 번호가 범위대로 바뀐다
+const PG_COLS: TCol[] = [
+  { key: 'name', label: '이름' },
+  { key: 'dept', label: '부서' },
+  { key: 'status', label: '상태' },
+  { key: 'n', label: '번호', align: 'end' },
+];
+const pgRow = (n: number): TRow => {
+  const u = HR_USERS[(n - 1) % HR_USERS.length];
+  return { id: `u${n}`, name: u[0], cells: { name: u[0], dept: u[1], status: { badge: { label: u[3], tone: u[3] === '휴직' ? 'warning' : 'positive' } }, n: String(n) } };
+};
+export function TablePaginationPlayground({ look, tones, table, card }: { look: TablePaginationLook; tones: Tones; table: TableLook; card: CardFace }) {
   const [kind, setKind] = useState<TotalKind>('known');
   const [pageSize, setPageSize] = useState(look.options[0]);
   const [page, setPage] = useState(2);
@@ -149,47 +164,32 @@ export function TablePaginationPlayground({ look, tones }: { look: TablePaginati
       wide
       stage={
         <div className="flex flex-col gap-3" style={{ fontFamily: FONT }}>
-          <div style={{ overflow: 'hidden', borderRadius: 16, background: tc(tones, 'bg-layer-default', mode) }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '64px 1fr 1fr 1fr', fontSize: 13, fontWeight: 600, color: tc(tones, 'fg-neutral-subtle', mode), boxShadow: `inset 0 -1px 0 ${tc(tones, 'stroke-neutral-subtle', mode)}` }}>
-              {['번호', '이름', '부서', '상태'].map((h) => (
-                <span key={h} style={{ display: 'flex', alignItems: 'center', height: 40, paddingLeft: 16 }}>
-                  {h}
-                </span>
-              ))}
+          {/* 표 카드 — card.yaml 면 + 머리(표 이름). 표(table.yaml)와 넘김 줄은 같은 가로 스크롤 상자 안, 줄은 표 아래 12 · 좌우 24 */}
+          <div style={{ boxSizing: 'border-box', overflow: 'hidden', borderRadius: card.radius, borderWidth: card.borderW, borderStyle: 'solid', borderColor: tc(tones, 'stroke-neutral-weak', mode), background: tc(tones, 'bg-layer-default', mode), paddingBottom: card.listBottom }}>
+            <div style={{ paddingTop: card.head.top, paddingRight: card.head.x, paddingBottom: card.head.bottom, paddingLeft: card.head.x, fontFamily: card.title.fontFamily, fontSize: card.title.fontSize, lineHeight: card.title.lineHeight, fontWeight: card.title.fontWeight, color: tc(tones, 'fg-neutral', mode) }}>사용자</div>
+            <div style={{ overflowX: 'auto' }}>
+              <div style={{ minWidth: 520 }}>
+                <TableView look={table} mode={mode} caption="사용자" columns={PG_COLS} rows={shown.map(pgRow)} status={shown.length === 0 ? { kind: 'empty', title: '사용자가 없어요' } : undefined} />
+                {shown.length > 0 && to - from + 1 > shown.length && <div style={{ height: 28, paddingLeft: table.edge, fontSize: 12, lineHeight: '28px', color: tc(tones, 'fg-neutral-subtle', mode) }}>… {to - from + 1 - shown.length}줄 더(그림에서 줄였다)</div>}
+                <div style={{ marginTop: look.marginTop, paddingLeft: table.edge, paddingRight: table.edge }}>
+                  <TablePaginationView
+                    look={look}
+                    mode={mode}
+                    total={total}
+                    hasNext={p < pages}
+                    page={p}
+                    pageSize={pageSize}
+                    live
+                    onChange={(v, reason) => {
+                      setPageSize(v.pageSize);
+                      setPage(v.page);
+                      const r = tableRange(v.page, v.pageSize, total);
+                      setSaid(`${r.from}-${r.to}${total !== undefined ? `, 총 ${comma(total)}개` : ''}${reason === 'page-size' ? ' — 첫 범위로' : ''}`);
+                    }}
+                  />
+                </div>
+              </div>
             </div>
-            {shown.length === 0 ? (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 96, fontSize: 14, color: tc(tones, 'fg-neutral-subtle', mode) }}>사용자가 없어요</div>
-            ) : (
-              shown.map((n) => {
-                const u = HR_USERS[(n - 1) % HR_USERS.length];
-                return (
-                  <div key={n} style={{ display: 'grid', gridTemplateColumns: '64px 1fr 1fr 1fr', fontSize: 14, color: tc(tones, 'fg-neutral', mode), boxShadow: `inset 0 -1px 0 ${tc(tones, 'stroke-neutral-subtle', mode)}` }}>
-                    <span style={{ display: 'flex', alignItems: 'center', height: 44, paddingLeft: 16, fontVariantNumeric: 'tabular-nums', color: tc(tones, 'fg-neutral-subtle', mode) }}>{n}</span>
-                    <span style={{ display: 'flex', alignItems: 'center', paddingLeft: 16 }}>{u[0]}</span>
-                    <span style={{ display: 'flex', alignItems: 'center', paddingLeft: 16, color: tc(tones, 'fg-neutral-muted', mode) }}>{u[1]}</span>
-                    <span style={{ display: 'flex', alignItems: 'center', paddingLeft: 16, color: tc(tones, 'fg-neutral-muted', mode) }}>{u[3]}</span>
-                  </div>
-                );
-              })
-            )}
-            {shown.length > 0 && to - from + 1 > shown.length && <div style={{ height: 28, paddingLeft: 16, fontSize: 12, lineHeight: '28px', color: tc(tones, 'fg-neutral-subtle', mode) }}>… {to - from + 1 - shown.length}줄 더(그림에서 줄였다)</div>}
-          </div>
-          <div style={{ overflowX: 'auto' }}>
-            <TablePaginationView
-              look={look}
-              mode={mode}
-              total={total}
-              hasNext={p < pages}
-              page={p}
-              pageSize={pageSize}
-              live
-              onChange={(v, reason) => {
-                setPageSize(v.pageSize);
-                setPage(v.page);
-                const r = tableRange(v.page, v.pageSize, total);
-                setSaid(`${r.from}-${r.to}${total !== undefined ? `, 총 ${comma(total)}개` : ''}${reason === 'page-size' ? ' — 첫 범위로' : ''}`);
-              }}
-            />
           </div>
           <div className="flex justify-center">
             <Said text={said} />

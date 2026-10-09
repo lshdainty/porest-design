@@ -9,7 +9,10 @@ import { buttonLook } from './button-look';
 import { InputButtonPlayground } from './input-button-playground';
 import { avatarLook } from './display-look';
 import { PEOPLE } from './input-button-data';
-import { CategoryGrid, InputButtonDemo, PeopleList, SheetOverlay, SheetPanel } from './input-button-pickers';
+import { CategoryGrid, InputButtonDemo, SheetOverlay, SheetPanel } from './input-button-pickers';
+import { searchLook } from './data-look';
+import { SearchableListView } from './data-search-view';
+import { AvatarView } from './display-view';
 import { D, DONE, DeskPopover, PickerPopover, PickerSheet, SCREEN, dk, popFooter, popoverH, sheetFooter } from './date-screens';
 import { DatePickerView } from './date-view';
 import { TimePickerView } from './wheel-view';
@@ -17,7 +20,6 @@ import type { IbState } from './select-look';
 import { PHONE_SAFE, overlayKit, ov } from './overlay-screens';
 import { Cap, Cell, DeskTxPhone, F, Form, Live, ScaledBox, Surface, desk, hr, tf } from './select-screens';
 import { InputButtonView, SelectOpenView, SelectTriggerView } from './select-view';
-import { TfInputView } from './text-field-view';
 import { Phone, Verdict, WebWindow, rc, type Mode } from './kit';
 
 type Fig = (p: { caption?: string }) => ReactNode;
@@ -439,26 +441,31 @@ const ListGuide: Fig = ({ caption }) => {
   );
 };
 
+// 검색 시트 — 위 밑줄형 검색칸(Searchable List · input.md "화면에 입력이 하나뿐이면 밑줄"), 아래 결재자 목록(List 줄 + 오른쪽 라디오)
 const SearchGuide: Fig = ({ caption }) => {
   const lk = desk();
-  const t = tf();
-  const people = PEOPLE.filter((p) => p.name.startsWith('김'));
+  const sl = searchLook();
   const all = [{ items: PEOPLE.map((p) => ({ value: p.value, label: p.name, description: p.team })) }];
   return (
     <Panel caption={caption}>
       <Pair>
-        <Verdict ok note="시트 위에 검색칸, 아래 목록 — 치는 대로 걸러지고, 고르면 닫힌다">
+        <Verdict ok note="시트 위에 밑줄형 검색칸, 아래 목록 — 치는 대로 걸러지고, 고르면 닫힌다">
           <Screen
             title="휴가 신청"
             overlay={
               <SheetOverlay ov={ov()} mode="light">
                 <SheetPanel ov={ov()} mode="light" title="결재자" bodyPad={false} safe={PHONE_SAFE}>
-                  <div className="flex flex-col gap-2">
-                    <div style={{ padding: `0 ${ov().sheet.body.padX}px` }}>
-                      <TfInputView look={t.input} mode="light" size="large" state="focused" prefixIcon="search" value="김" clearable />
-                    </div>
-                    <PeopleList look={lk} avatar={avatarLook()} mode="light" people={people} query="김" />
-                  </div>
+                  <SearchableListView
+                    look={sl}
+                    mode="light"
+                    groups={[{ items: PEOPLE.map((p) => ({ value: p.value, title: p.name, detail: p.team, detailText: p.team })) }]}
+                    prefixes={Object.fromEntries(PEOPLE.map((p) => [p.value, <AvatarView key={p.value} look={avatarLook()} mode="light" size={sl.prefix.avatar.two} name={p.name} />]))}
+                    prefixKind="avatar"
+                    query="김"
+                    focused
+                    placeholder="이름 · 팀 검색"
+                    ariaLabel="결재자"
+                  />
                 </SheetPanel>
               </SheetOverlay>
             }
@@ -493,7 +500,7 @@ const ExList: Fig = () => (
 );
 const ExSearch: Fig = () => (
   <Live>
-    <InputButtonDemo look={desk()} kit={overlayKit()} avatar={avatarLook()} field={tf().field} input={tf().input} kind="people" label="참조자" indicator="optional" placeholder="참조자 선택" clearable initial="pore" />
+    <InputButtonDemo look={desk()} kit={overlayKit()} avatar={avatarLook()} search={searchLook()} field={tf().field} input={tf().input} kind="people" label="참조자" indicator="optional" placeholder="참조자 선택" clearable initial="pore" />
   </Live>
 );
 const ExStates: Fig = () => {

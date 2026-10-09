@@ -535,12 +535,12 @@ const ConcentricGuide: Fig = ({ caption }) => (
   <Panel caption={caption}>
     <Pair>
       <Verdict ok note="카드 16 − 들임 6 = 10 — 누름 바탕이 카드와 같은 곡선" bg={rc('bg-layer-basement', 'dark')}>
-        <Card mode="dark" pad={0} style={{ paddingBlock: 8, width: '100%' }}>
+        <Card mode="dark" body="list">
           <L rows={pressedMiddle(SETTINGS)} mode="dark" />
         </Card>
       </Verdict>
       <Verdict ok={false} note="누름 바탕을 카드와 같은 16 으로 — 안쪽 곡선이 바깥보다 커 보여 어긋난다" bg={rc('bg-layer-basement', 'dark')}>
-        <Card mode="dark" pad={0} style={{ paddingBlock: 8, width: '100%' }}>
+        <Card mode="dark" body="list">
           <L rows={pressedMiddle(SETTINGS)} mode="dark" bgRadius={16} />
         </Card>
       </Verdict>

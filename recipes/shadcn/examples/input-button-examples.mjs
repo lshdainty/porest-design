@@ -19,7 +19,8 @@
  * 레시피가 cn() 으로 합치는 자리는 merge() 로 똑같이 합친다 — 같은 속성을 다시 쓴 클래스는 뒤의 것만 남는다.
  * 이름은 Field 의 라벨 + 값(aria-labelledby), 붙이개 글은 설명(aria-describedby)이다. id 는 레시피의 useId 자리다 — 예제마다 앞말을 달리한다.
  * 아이콘은 lucide-react 와 같은 모양의 inline SVG 다(lucide 의 class · xmlns 는 그리지 않는다).
- * 여는 자리는 Bottom Sheet · Popover 레시피(bottom-sheet.tsx · popover.tsx)가 그리고, 그 안의 달력은 Date Picker 레시피(date-picker.tsx)다 —
+ * 여는 자리는 Bottom Sheet · Popover 레시피(bottom-sheet.tsx · popover.tsx)가 그리고, 그 안의 달력은 Date Picker 레시피(date-picker.tsx) ·
+ * 검색 시트의 내용은 Searchable List 레시피(searchable-list.tsx — 밑줄형 검색칸 · List 줄 + 오른쪽 라디오, 2026-10-08)다 —
  * 그 모습은 그 페이지들의 예제에 있어 미리보기는 칸만 그린다.
  * 레시피의 스크립트(누르는 순간 --press-basis 재기 · 지우기 · 읽기 전용에서 누르기 삼키기)는 정적 HTML 에 없다 — 칸에 마우스를 올리거나
  * 누르면 바탕은 레시피 그대로 바뀌지만 콘텐츠는 줄지 않고, 지우기를 눌러도 값이 그대로다.
@@ -543,7 +544,7 @@ const done = <Button disabled={!draft} onClick={() => { setDate(draft); setOpen(
   {
     title: "검색 시트 · 지우기",
     description:
-      "스크롤로 찾기 어려운 목록(결재자 · 사람 · 종목 · 카드사)은 시트 · 팝오버 위에 검색칸, 아래에 목록을 둔다 — 열면 검색칸에 포커스가 가고, 치는 대로 목록이 걸러지고, 고르면 닫힌다. 칸에 바로 치는 Combobox 는 두지 않는다. 선택 사항인 칸이면 onClear 를 준다 — 값이 있을 때만 값 바로 뒤 · 뒤 아이콘 앞에 지우기(circle-x · 22 · 18 · fg-neutral-subtle)가 서고, 누르면 값만 비우고 아무것도 열지 않는다. 지우기는 상자 위에서 따로 눌리는 버튼이다(이름 \"지우기\" · Tab 순서에 없다).",
+      "스크롤로 찾기 어려운 목록(결재자 · 사람 · 종목 · 카드사)은 시트 · 팝오버 위에 검색칸, 아래에 목록을 둔다 — Searchable List 다. 검색칸은 Input 의 밑줄형이다(시트에 입력이 하나뿐인 목록 위 검색 — 사용자 결정 2026-10-08 17A, 상자형 52 는 두지 않는다): 아래 1px stroke-neutral-weak · 치는 동안 2px stroke-neutral-contrast · 앞 돋보기, large 40 · 데스크톱 medium 34. 결과는 List 줄 + 오른쪽 라디오, 키보드는 콤보박스(초점은 검색칸 · ↓ ↑ 강조 · Enter 고름)다 — 모양 · 쓰임은 Searchable List 페이지에 있다. 열면 검색칸에 포커스가 가고, 치는 대로 목록이 걸러지고, 고르면 닫힌다. 칸에 바로 치는 Combobox 는 두지 않는다. 선택 사항인 칸이면 onClear 를 준다 — 값이 있을 때만 값 바로 뒤 · 뒤 아이콘 앞에 지우기(circle-x · 22 · 18 · fg-neutral-subtle)가 서고, 누르면 값만 비우고 아무것도 열지 않는다. 지우기는 상자 위에서 따로 눌리는 버튼이다(이름 \"지우기\" · Tab 순서에 없다).",
     jsx: `<Field label="참조자" indicator="선택">
   <InputButton
     placeholder="참조자 선택"
@@ -555,7 +556,7 @@ const done = <Button disabled={!draft} onClick={() => { setDate(draft); setOpen(
     onClick={() => setOpen(true)}
   />
 </Field>
-{/* 시트 · 팝오버: 위에 <Input prefixIcon={<Search />} autoFocus />, 아래 걸러진 목록 */}`,
+{/* 시트 · 팝오버: Searchable List — 위에 밑줄형 검색칸(<SearchableListInput> = Input variant="underline" · 앞 돋보기), 아래 걸러진 목록 */}`,
     render: () =>
       surface(
         narrow(

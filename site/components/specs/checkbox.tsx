@@ -10,7 +10,7 @@ import { buttonLook } from './button-look';
 import { ButtonView } from './button-view';
 import { switchLook } from './switch-look';
 import { SwitchView } from './switch-view';
-import { Card, Phone, Sheet, Verdict, rc, type Mode } from './kit';
+import { Card, Phone, Sheet, Verdict, cardStack, rc, type Mode } from './kit';
 
 type Fig = (p: { caption?: string }) => ReactNode;
 const spec = () => loadComponentSpec('checkbox');
@@ -295,8 +295,8 @@ const TouchTarget: Fig = ({ caption }) => (
         <div className="w-[300px] overflow-hidden rounded-xl pk-surface">
           {[
             ['월급', '+3,200,000원', true],
-            ['점심 식사', '-12,000원', false],
-            ['버스', '-1,500원', true],
+            ['점심 식사', '−12,000원', false],
+            ['버스', '−1,500원', true],
           ].map(([t, a, on], i) => (
             <div key={String(t)} className="relative flex items-center gap-3 px-5 py-3" style={{ borderTop: i ? `1px solid ${rc('stroke-neutral-subtle')}` : undefined }}>
               {i === 0 && <span className="absolute inset-0 z-0" style={{ background: MARK, outline: `1px dashed ${MARK_LINE}` }} />}
@@ -447,7 +447,7 @@ const VsSwitch: Fig = ({ caption }) => (
     <div className="flex gap-6">
       <div className="flex flex-col items-center gap-3">
         <Phone title="알림" h={500} scale={0.72}>
-          <div className="flex flex-col gap-3 p-5">
+          <div style={cardStack()}>
             <Card>
               {[
                 ['결제일 하루 전', true],
@@ -529,7 +529,7 @@ const ExCheckmark: Fig = ({ caption }) => (
     <div className="w-[320px] overflow-hidden rounded-xl border border-fd-border">
       {[
         ['월급', '+3,200,000원', 'checked'],
-        ['점심 식사', '-12,000원', 'unchecked'],
+        ['점심 식사', '−12,000원', 'unchecked'],
       ].map(([t, a, ch], i) => (
         <div key={t} className="flex items-center gap-3 px-6 py-3" style={{ borderTop: i ? `1px solid ${rc('stroke-neutral-subtle')}` : undefined }}>
           <C checked={ch as Checked} ariaLabel={`${t} 선택`} />

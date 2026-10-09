@@ -7,10 +7,11 @@ import { contrast } from '@/lib/design-tokens';
 import { Figure, Panel, MARK, MARK_LINE } from '../foundations/ui';
 import { Verdict, rc, type Mode } from './kit';
 import { FrameCardDemo, type CardRow } from './image-demos';
+import { cardFace } from './card-face';
 import { dcv, findInstitution, imageFrameLook, imageFrameRadius, imageTones, institutions } from './image-look';
 import { CP_GLYPHS, glyphSize, type CpGlyph } from './loading-look';
 import { PlaceholderPlayground } from './loading-playground';
-import { Bone, CardBox, L, LdPhone, Placeholder, SCREEN, type Fig } from './loading-screens';
+import { Bone, CardBox, L, LdPhone, Placeholder, SCREEN, cardStack, type Fig } from './loading-screens';
 import { Legend, Note, Pin } from './overlay-screens';
 
 const cp = () => L().placeholder;
@@ -49,7 +50,7 @@ function CardList({ mode }: { mode: Mode }) {
     ['BC 그린 카드', '10월 64,500원', 'none'],
   ];
   return (
-    <div className="px-4 pt-1">
+    <div style={cardStack()}>
       <CardBox mode={mode} title="카드">
         {rows.map(([name, sub, img]) => (
           <div key={name} className="flex items-center gap-4" style={{ padding: '12px 24px' }}>
@@ -76,7 +77,7 @@ function BenefitList({ mode }: { mode: Mode }) {
     ['편의점 10% 할인', 'GS25 · CU', 'none'],
   ];
   return (
-    <div className="px-4 pt-1">
+    <div style={cardStack()}>
       <CardBox mode={mode} title="받을 수 있는 혜택">
         {rows.map(([name, sub, img]) => (
           <div key={name} className="flex items-center gap-4" style={{ padding: '12px 24px' }}>
@@ -99,7 +100,7 @@ function Attachment({ mode }: { mode: Mode }) {
   const w = 344;
   const h = Math.round((w * 3) / 4);
   const keys: [string, string][] = [
-    ['금액', '-12,000원'],
+    ['금액', '−12,000원'],
     ['카테고리', '식비'],
     ['결제 수단', '현대카드 M'],
   ];
@@ -359,7 +360,7 @@ const ExBasic: Fig = () => {
     <figure className="not-prose mb-0 mt-6">
       <div className="flex min-h-[110px] items-center justify-center rounded-t-xl border border-b-0 border-fd-border px-2 py-6" style={{ background: rc('bg-layer-basement') }}>
         <div className="w-full max-w-[400px]">
-          <FrameCardDemo look={imageFrameLook()} rows={EX_CARDS} sub={{ title: t['fg-neutral'], detail: t['fg-neutral-subtle'], surface: t['bg-layer-default'] }} />
+          <FrameCardDemo look={imageFrameLook()} rows={EX_CARDS} sub={{ title: t['fg-neutral'], detail: t['fg-neutral-subtle'], surface: t['bg-layer-default'], border: t['stroke-neutral-weak'] }} card={cardFace()} />
         </div>
       </div>
     </figure>

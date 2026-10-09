@@ -112,9 +112,9 @@ Input Button 은 늘 고르는 자리를 연다 — 달력 · 시각 휠 · 아�
 
 ### 긴 목록은 검색 시트
 
-스크롤로 찾기 어려운 목록(결재자 · 사람 · 종목 · 카드사)은 시트 · 팝오버 위에 검색칸, 아래에 목록을 둔다. 열면 검색칸에 포커스가 가고, 치는 대로 목록이 걸러지고, 고르면 닫힌다. 칸에 바로 치는 Combobox 는 두지 않는다 — 폰에서는 키보드가 목록을 가리고, 데스크톱도 같은 부품으로 짠다.
+스크롤로 찾기 어려운 목록(결재자 · 사람 · 종목 · 카드사)은 시트 · 팝오버 위에 검색칸, 아래에 목록을 둔다([Searchable List](searchable-list.md)). 검색칸은 [Input](input.md) 의 밑줄형이다 — 시트에 입력이 하나뿐인 목록 위 검색이다(사용자 결정 2026-10-08). 열면 검색칸에 포커스가 가고, 치는 대로 목록이 걸러지고, 고르면 닫힌다. 칸에 바로 치는 Combobox 는 두지 않는다 — 폰에서는 키보드가 목록을 가리고, 데스크톱도 같은 부품으로 짠다.
 
-[그림: 검색 시트 — 결재자 · 검색 없는 긴 Select](../../site/components/specs/input-button.tsx#search-guide)
+[그림: 검색 시트 — 위 밑줄형 검색칸 + 결재자 목록 · 검색 없는 긴 Select](../../site/components/specs/input-button.tsx#search-guide)
 
 ### 값 · placeholder 글
 
@@ -203,7 +203,7 @@ const done = <Button disabled={!draft} onClick={() => { setDate(draft); setOpen(
 
 ### 검색 시트 · 지우기
 
-[그림: 검색 시트 — 결재자](../../site/components/specs/input-button.tsx#ex-search)
+[그림: 검색 시트 — 밑줄형 검색칸 · 결재자](../../site/components/specs/input-button.tsx#ex-search)
 
 ```tsx
 <Field label="참조자" indicator="선택">
@@ -217,7 +217,7 @@ const done = <Button disabled={!draft} onClick={() => { setDate(draft); setOpen(
     onClick={() => setOpen(true)}
   />
 </Field>
-{/* 시트 · 팝오버: 위에 <Input prefixIcon={<Search />} autoFocus />, 아래 걸러진 목록 */}
+{/* 시트 · 팝오버: Searchable List — 위에 밑줄형 검색칸(<SearchableListInput> = Input variant="underline" · 앞 돋보기), 아래 걸러진 목록 */}
 ```
 
 ### 상태
@@ -296,6 +296,10 @@ const done = <Button disabled={!draft} onClick={() => { setDate(draft); setOpen(
 - **여는 자리를 고르는 도움(`useInputButtonSurface`)을 둔다** — SEED 는 Date Picker · Time Picker 문서에 규칙만 적었다.
 
 ## Migration notes
+
+### 2026-10-08 — 검색 시트의 검색칸은 밑줄형
+
+사용자가 [데이터 표시 비교 페이지](https://claude.ai/artifact/85zjM3PRBiEGnqjXXRrPRj) 17A 로 정했다 — 목록 위 검색칸은 [Input](input.md) 의 밑줄형("화면에 입력이 하나뿐이면 밑줄 — 목록 위 검색", SEED)이다. 검색 시트 · 팝오버의 묶음은 [Searchable List](searchable-list.md) 다(검색칸 밑줄 large 40 · medium 34, 결과는 List 줄 + 오른쪽 라디오, 콤보박스 키보드). 상자형 52 검색칸(17B)은 고르지 않았다 — 검색 시트 그림(`search-guide` · `ex-search`)을 밑줄형으로 다시 그린다.
 
 ### 2026-10-01 — 새로 둔다(SEED Input Button)
 

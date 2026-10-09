@@ -7,7 +7,7 @@ import { buttonLook } from './button-look';
 import { ButtonView } from './button-view';
 import { snackbarLook } from './feedback-look';
 import { SnackbarView } from './feedback-view';
-import { Verdict, rc, type Mode } from './kit';
+import { Card, Verdict, rc, type Mode } from './kit';
 import { DUTCH_ROWS, TODO_ROWS } from './nav-data';
 import { FabPlayground } from './nav-playground';
 import { Band, Bar, Cap, CodePreview, Desktop, Fab, HomeIndicator, Legend, NK, NPhone, PHONE, ScreenTitle, Shell, Side, modeKo, pinAt, type Fig } from './nav-screens';
@@ -212,9 +212,9 @@ const WhereGuide: Fig = ({ caption }) => (
           <Shell side={<Side current="todo" collapsed />} header={<Bar type="desktop" actions={[{ icon: 'bell', label: '알림' }, { icon: 'settings', label: '설정' }]} primary={{ label: '할 일 추가', icon: 'plus' }} />}>
             <ScreenTitle>할 일</ScreenTitle>
             <div style={{ paddingTop: 16, paddingLeft: NK().margin, paddingRight: NK().margin }}>
-              <div className="rounded-2xl" style={{ background: rc('bg-layer-default'), paddingTop: 8, paddingBottom: 8 }}>
+              <Card body="list">
                 <TodoRows n={8} />
-              </div>
+              </Card>
             </div>
           </Shell>
         </Desktop>

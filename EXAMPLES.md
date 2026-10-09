@@ -202,6 +202,8 @@ Textarea — max-length + counter (Desk 메모 550자 제한 등).
 
 ## Card
 
+> 2026-10-08 — 카드는 `specs/components/card.md`(SEED 면 — 회색 바닥 위 흰 면 + 1px `stroke-neutral-weak` · 그림자 없음 · 모서리 16 · 머리 16 / 22 · 700) · 표는 `table.md` · 차트는 `chart.md` 가 원본이다. 아래 마크업은 옛 모양이다(그림자 · hover 그림자 상승 · 모서리 12 는 걷었다).
+
 ```html
 <article class="bg-surface-default border border-default rounded-lg shadow-sm p-4 flex flex-col gap-3 max-w-md">
   <header class="flex items-start justify-between">

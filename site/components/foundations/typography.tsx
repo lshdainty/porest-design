@@ -17,7 +17,8 @@ export function TypePreviewFigure() {
   const fg = color('fg-neutral'), muted = color('fg-neutral-muted'), subtle = color('fg-neutral-subtle');
   return (
     <Figure caption="screen-title · article-body · article-note 로 쓴 화면">
-      <div className="w-[340px] rounded-2xl bg-white p-6 shadow-sm" style={{ color: fg }}>
+      {/* 카드 — 그림자 없이 1px stroke-neutral-weak(card.md) */}
+      <div className="w-[340px] rounded-2xl bg-white p-6" style={{ color: fg, border: `1px solid ${color('stroke-neutral-weak')}` }}>
         <div style={{ fontSize: title.fontSize, lineHeight: title.lineHeight, fontWeight: title.fontWeight }}>이번 달 돈 흐름</div>
         <div className="mt-1.5" style={{ fontSize: note.fontSize, lineHeight: note.lineHeight, color: subtle }}>9월 1일 – 9월 29일</div>
         <p className="mt-4" style={{ fontSize: body.fontSize, lineHeight: body.lineHeight, color: muted }}>

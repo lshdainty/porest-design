@@ -4,7 +4,7 @@ import type { CSSProperties, ReactNode } from 'react';
 import { Figure, Panel } from '../foundations/ui';
 import { buttonLook, type ButtonCombo, type ButtonState } from './button-look';
 import { ButtonView, LoadingDemo, type IconName } from './button-view';
-import { AlertBox, Card, Field, Heading, KV, Line, Phone, Row, Sheet, Verdict, WebDialog, WebWindow, rc, type Mode } from './kit';
+import { AlertBox, Card, Field, Heading, KV, Line, Phone, Row, Sheet, Stat, Verdict, WebDialog, WebWindow, cardStack, rc, type Mode } from './kit';
 
 type Fig = (p: { caption?: string }) => ReactNode;
 type Brand = 'desk' | 'hr';
@@ -33,12 +33,7 @@ function Cap({ children, strong }: { children: ReactNode; strong?: ReactNode }) 
 function SpendCard({ mode = 'auto', actions }: { mode?: Mode; actions?: ReactNode }) {
   return (
     <Card mode={mode}>
-      <span className="text-[13px]" style={{ color: rc('fg-neutral-subtle', mode) }}>
-        9월에 쓴 돈
-      </span>
-      <div className="mt-1 text-[24px] font-bold tabular-nums" style={{ color: rc('fg-neutral', mode) }}>
-        1,284,500원
-      </div>
+      <Stat mode={mode} label="9월에 쓴 돈" value="1,284,500원" />
       <div className="mt-3 h-2 overflow-hidden rounded-full" style={{ background: rc('bg-neutral-weak', mode) }}>
         <div className="h-full rounded-full" style={{ width: '64%', background: rc('chart-blue', mode) }} />
       </div>
@@ -51,12 +46,9 @@ function SpendCard({ mode = 'auto', actions }: { mode?: Mode; actions?: ReactNod
 }
 function RecentCard({ mode = 'auto', action }: { mode?: Mode; action?: ReactNode }) {
   return (
-    <Card mode={mode}>
-      <Heading mode={mode} sub={action ? undefined : '전체 보기'}>
-        최근 거래
-      </Heading>
-      <Row title="점심 식사" sub="식비 · 오늘" amount="-12,000원" hue="orange" mode={mode} />
-      <Row title="버스" sub="교통 · 오늘" amount="-1,500원" hue="blue" mode={mode} />
+    <Card mode={mode} title="최근 거래" action={action ? undefined : '전체 보기'}>
+      <Row title="점심 식사" sub="식비 · 오늘" amount="−12,000원" hue="orange" mode={mode} />
+      <Row title="버스" sub="교통 · 오늘" amount="−1,500원" hue="blue" mode={mode} />
       <Row title="월급" sub="수입 · 9월 25일" amount="+3,200,000원" hue="green" mode={mode} />
       {action && <div className="mt-2 flex justify-center">{action}</div>}
     </Card>
@@ -108,20 +100,14 @@ const Usage: Fig = ({ caption }) => {
       <div className="grid grid-cols-2 justify-items-center gap-x-4 gap-y-6">
         {cell(
           <Phone title="휴가" back={false} h={560} scale={s} bottom={<B variant="brandSolid" size="large" fill label="휴가 신청" brand="hr" />}>
-            <div className="flex flex-col gap-3 p-5">
+            <div style={cardStack()}>
               <Card>
-                <span className="text-[13px]" style={{ color: rc('fg-neutral-subtle') }}>
-                  남은 연차
-                </span>
-                <div className="mt-1 text-[26px] font-bold" style={{ color: rc('fg-neutral') }}>
-                  12.5일
-                </div>
-                <span className="text-[12px]" style={{ color: rc('fg-neutral-subtle') }}>
+                <Stat label="남은 연차" value="12.5일" />
+                <span className="mt-1 text-[12px]" style={{ color: rc('fg-neutral-subtle') }}>
                   올해 15일 중 2.5일 사용
                 </span>
               </Card>
-              <Card>
-                <Heading>신청 내역</Heading>
+              <Card title="신청 내역">
                 <Row title="연차" sub="10월 2일 · 승인 대기" hue="green" />
                 <Row title="반차" sub="9월 12일 · 승인" hue="indigo" />
               </Card>
@@ -163,12 +149,12 @@ const Usage: Fig = ({ caption }) => {
         )}
         {cell(
           <Phone title="고정 지출" h={560} scale={s}>
-            <div className="flex flex-col gap-3 p-5">
+            <div style={cardStack()}>
               {[
                 ['넷플릭스', '매달 18일 · 13,500원', 'red'],
                 ['휴대폰 요금', '매달 25일 · 49,000원', 'blue'],
               ].map(([t, sub, hue]) => (
-                <Card key={t} pad={18}>
+                <Card key={t}>
                   <Row title={t} sub={sub} hue={hue} />
                   <div className="mt-2 flex gap-2">
                     <B variant="neutralOutline" size="small" grow={1} label="건너뛰기" />
@@ -197,7 +183,7 @@ function Home({ brandy }: { brandy: boolean }) {
       right={<B variant={brandy ? 'brandSolid' : 'ghost'} ghostColor="neutralSubtle" size="small" layout="iconOnly" icon="bell" label="알림" />}
       bottom={<B variant="brandSolid" size="large" fill label="거래 추가" prefix="plus" />}
     >
-      <div className="flex flex-col gap-3 p-5">
+      <div style={cardStack()}>
         <SpendCard
           actions={
             <>
@@ -328,9 +314,9 @@ const Placement: Fig = ({ caption }) => (
 const SideBySide: Fig = ({ caption }) => (
   <Panel caption={caption}>
     <Pair>
-      <Verdict ok note="위계가 비슷한 neutralWeak 둘은 나란히 둘 수 있다">
+      <Verdict ok note="위계가 비슷한 neutralWeak 둘은 나란히 둘 수 있다" bg="var(--p-bg-layer-basement)">
         <div className="w-[260px]">
-          <Card pad={18} style={{ border: `1px solid ${rc('stroke-neutral-weak')}` }}>
+          <Card>
             <Row title="팀 회식" sub="10월 2일 (목) 19:00" hue="violet" />
             <div className="mt-2 flex gap-2">
               <B variant="neutralWeak" size="small" grow={1} label="캘린더에 추가" />
@@ -364,7 +350,7 @@ function DeskWebPage() {
       </div>
       <div className="flex flex-1 flex-col gap-2 p-4">
         <Line w="30%" h={12} tone="fg-neutral-muted" />
-        <Card pad={12}>
+        <Card>
           <Line w="70%" />
           <div className="h-2" />
           <Line w="50%" />
@@ -391,7 +377,7 @@ const ModalFooter: Fig = ({ caption }) => (
               </>
             }
           >
-            <KV k="금액" v="-12,000원" />
+            <KV k="금액" v="−12,000원" />
             <KV k="내용" v="점심 식사" />
             <KV k="카테고리" v="식비" />
           </WebDialog>

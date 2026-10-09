@@ -13,6 +13,7 @@ import { segmentedLook } from './segmented-control-look';
 import { SegmentedView } from './segmented-control-view';
 import { Cap } from './select-screens';
 import { Verdict, WebWindow, rc, type Mode } from './kit';
+import { cardFace } from './card-face';
 
 type Fig = (p: { caption?: string }) => ReactNode;
 const px = (v: string) => parseFloat(v);
@@ -272,7 +273,7 @@ function ThemeSettings({ mode = 'auto' }: { mode?: Mode }) {
     <WebWindow mode={mode} w={400} h={250}>
       <div style={{ height: '100%', boxSizing: 'border-box', padding: '22px 28px', background: rc('bg-layer-basement', mode) }}>
         <div style={{ fontSize: 20, lineHeight: '28px', fontWeight: 700, color: rc('fg-neutral', mode), paddingBottom: 14 }}>설정</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, borderRadius: 12, padding: '16px 20px', background: rc('bg-layer-default', mode) }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, boxSizing: 'border-box', borderRadius: cardFace().radius, borderWidth: cardFace().borderW, borderStyle: 'solid', borderColor: rc('stroke-neutral-weak', mode), paddingTop: cardFace().pad, paddingRight: cardFace().pad, paddingBottom: cardFace().pad, paddingLeft: cardFace().pad, background: rc('bg-layer-default', mode) }}>
           <span style={{ fontSize: 15, lineHeight: '20px', fontWeight: 500, color: rc('fg-neutral', mode) }}>화면 모드</span>
           <SegmentedView look={seg} mode={mode} items={THEMES} value="dark" live={false} ariaLabel="화면 모드" />
         </div>
