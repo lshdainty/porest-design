@@ -188,7 +188,7 @@ export function SnackBasicDemo({ look, cta }: { look: SnackbarLook; cta: ButtonL
   );
 }
 
-// 거래 삭제 · 되돌리기(6초) — 가볍게 실패(관심 종목)는 critical. 한 번에 하나
+// 거래 삭제 · 되돌리기(6초) — 가볍게 실패(관심 종목)는 critical + "다시 시도"(6초 — Toggle 20A). 한 번에 하나
 export function SnackActionDemo({ look }: { look: SnackbarLook }) {
   const s = look.screen;
   const host = useSnackbarHost(look);
@@ -214,13 +214,24 @@ export function SnackActionDemo({ look }: { look: SnackbarLook }) {
     <DemoStage
       controls={
         <>
-          <DemoButton onClick={() => host.show({ tone: 'critical', message: '관심 종목에 넣지 못했어요. 다시 눌러 주세요.' })}>관심 종목 넣기 — 실패</DemoButton>
+          <DemoButton
+            onClick={() =>
+              host.show({
+                tone: 'critical',
+                message: '관심 종목에 넣지 못했어요. 다시 시도해주세요.',
+                // 같은 요청을 다시 보낸다 — 그림에서는 이번에는 넣어진다
+                action: { label: '다시 시도', onClick: () => host.show({ tone: 'positive', message: '관심 종목에 넣었어요.' }) },
+              })
+            }
+          >
+            관심 종목 넣기 — 실패
+          </DemoButton>
           <DemoButton onClick={() => setRows(LEDGER)} disabled={rows.length === LEDGER.length}>
             목록 되돌리기
           </DemoButton>
         </>
       }
-      note="휴지통을 누르면 거래가 빠지고 띠가 6초 동안 뜬다(액션이 있으면 6초). 되돌리기를 누르면 그 자리로 돌아오고 띠는 닫힌다."
+      note="휴지통을 누르면 거래가 빠지고 띠가 6초 동안 뜬다(액션이 있으면 6초). 되돌리기를 누르면 그 자리로 돌아오고 띠는 닫힌다. 관심 종목 넣기가 실패하면 띠에 다시 시도가 달린다(6초)."
     >
       <ScreenFrame screen={s} title="가계부" height={460} bottom={<DemoTabBar screen={s} />}>
         <ul style={{ margin: 0, padding: '0 16px 0 24px' }}>

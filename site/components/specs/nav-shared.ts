@@ -33,7 +33,7 @@ export const srOnly: CSSProperties = { position: 'absolute', width: 1, height: 1
 
 // ── 아이콘 — 그림이 쓰는 lucide 이름(뷰가 컴포넌트로 바꾼다) ─────────
 export const NAV_ICONS = [
-  'house', 'ledger', 'calendar', 'menu', 'plus', 'bell', 'search', 'settings', 'eye-off', 'chevron-left', 'chevron-right', 'chevron-down', 'x', 'more',
+  'house', 'ledger', 'calendar', 'menu', 'plus', 'bell', 'search', 'settings', 'eye', 'eye-off', 'chevron-left', 'chevron-right', 'chevron-down', 'x', 'more',
   'panel-left', 'grid', 'wallet', 'trend', 'pie', 'target', 'todo', 'users', 'memo', 'card', 'plane', 'briefcase', 'heart', 'shield', 'megaphone', 'pencil',
   'user', 'clock', 'file-text', 'filter', 'download', 'book', 'help',
 ] as const;
@@ -54,7 +54,8 @@ export type TopNavLook = {
   title: { fg: NColor; weight: number; gap: number };
   types: Record<'root' | 'standard', { text: NType; left: number }>;
   desktop: { padLeft: number; padRight: number; primarySize: string; primaryGap: number; screenTitle: NType; navToTitle: number };
-  icon: { size: number; radius: number; icon: number; fg: NColor; hoverBg: NColor; pressBg: NColor; disabledFg: NColor };
+  // 선 굵기 — 켜고 끄는 단추(aria-pressed)의 켬만 pressedStroke(v106). 색은 켬 · 끔 모두 fg(사용자 결정 2026-10-09 19B)
+  icon: { size: number; radius: number; icon: number; stroke: number; pressedStroke: number; fg: NColor; hoverBg: NColor; pressBg: NColor; disabledFg: NColor };
   text: { height: number; padX: number; radius: number; type: NType; fg: NColor; hoverBg: NColor; pressBg: NColor; disabledFg: NColor };
   dot: { size: number; top: number; right: number; color: NColor };
   ring: NRing;
@@ -65,7 +66,8 @@ export type TopNavLook = {
   primary: ButtonLook;
 };
 // 오른쪽 자리 하나 — 아이콘 버튼 · 글 버튼
-export type TopAction = { kind?: 'icon'; icon: NavIcon; label: string; notification?: boolean; disabled?: boolean; state?: TopState } | { kind: 'text'; label: string; disabled?: boolean; state?: TopState };
+// pressed 를 주면 켜고 끄는 단추(aria-pressed) — 이름은 고정, 아이콘은 지금 상태를 넘긴다(금액 가리기: 보임 eye · 가림 eye-off)
+export type TopAction = { kind?: 'icon'; icon: NavIcon; label: string; notification?: boolean; pressed?: boolean; disabled?: boolean; state?: TopState } | { kind: 'text'; label: string; disabled?: boolean; state?: TopState };
 
 // ── Bottom Navigation ───────────────────────────────────────
 export const TAB_SIZES = ['regular', 'compact'] as const;

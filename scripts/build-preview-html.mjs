@@ -228,7 +228,7 @@ export function brandProfile(brandName, tokens) {
       snackbars: [
         { message: "휴가 신청을 결재 라인에 보냈어요." },
         { tone: "positive", message: "김지원의 휴가 신청을 승인했어요." },
-        { tone: "critical", message: "결재 의견을 보내지 못했어요. 다시 눌러 주세요." },
+        { tone: "critical", message: "결재 의견을 보내지 못했어요. 다시 시도해주세요.", action: "다시 시도" },
         { message: "휴가 신청을 취소했어요.", action: "되돌리기" },
       ],
       // 폼 칸 — renderForm 이 Field 로 그린다. pair 는 다음 칸과 나란히(짧은 두 칸), max 는 글자 수 최대.
@@ -399,7 +399,7 @@ export function brandProfile(brandName, tokens) {
       snackbars: [
         { message: "메모를 저장했어요." },
         { tone: "positive", message: "거래 1,204건을 가져왔어요." },
-        { tone: "critical", message: "관심 종목에 넣지 못했어요. 다시 눌러 주세요." },
+        { tone: "critical", message: "관심 종목에 넣지 못했어요. 다시 시도해주세요.", action: "다시 시도" },
         { message: "메모를 보관함으로 옮겼어요.", action: "되돌리기" },
       ],
       form: {
@@ -2061,7 +2061,8 @@ export function renderSelectBoxGallery(brand) {
 // Field .ptf-field(머리 · 입력 · 꼬리) · 입력칸 .ptf-input(Text Input) · 여러 줄 .ptf-textarea(Textarea). 짜임은 field.tsx · input.tsx · textarea.tsx 와 같다 —
 // 상자(div)가 테두리 · 바탕 · 모서리를 맡고 입력(<input> · <textarea>)이 그 안을 채운다. 상태는 상자의 data-invalid · data-disabled · data-readonly 다(레시피와 같은 이름).
 // 미리보기의 입력칸 · 여러 줄 입력칸 · 폼 칸 이름 · 설명 · 오류는 모두 이 도우미로 그린다 — 옛 회색 채운 칸(.fv-input · .form-input · .search-pill)은 걷었다.
-// 고르는 칸은 아래 Select · Input Button 도우미(selectTrigger · inputButton — 03h)로 그린다. Command 의 입력 · Input OTP 는 그 컴포넌트 차례에 맞춘다(input.md Migration notes).
+// 고르는 칸은 아래 Select · Input Button 도우미(selectTrigger · inputButton — 03h)로 그린다. Command 의 입력은 그 컴포넌트 차례에 맞춘다(input.md Migration notes).
+// 인증 코드 칸(Input OTP)은 이 입력칸 한 칸이다 — 숫자 키보드 · one-time-code · 고정폭 숫자만 더한다(03t 의 potpField, 2026-10-09).
 // 옛 칩 안의 입력칸(.chip--input)은 걷었다 — 입력값 칩(03i — chipField · chip kind "input")은 넣은 값만 보이고, 값을 넣는 칸은 이 Text Input 이다.
 // 상자를 눌러 포커스 · 지우기 · 글자 수 · 자동 높이 · 금액 쉼표 · 제출 시 검증은 페이지 끝 스크립트(renderHtml)가 레시피처럼 맡는다.
 const TEXT_FIELD_ICON = {
@@ -3937,7 +3938,7 @@ export function renderFeedbackGallery(brand) {
     samples([
       sample("neutral — 아이콘 없음", "tone=\"neutral\"(기본) — 결과 · 안내", strip(snackbar({ message: "거래를 저장했어요." }))),
       sample("positive — 체크", "아이콘 24 · fg-positive-inverted — 성공을 눈에 띄게 알릴 때만", strip(snackbar({ tone: "positive", message: "관심 종목에 넣었어요." }))),
-      sample("critical — 느낌표", "아이콘 24 · fg-critical-inverted — 다시 하면 되는 가벼운 실패", strip(snackbar({ tone: "critical", message: "관심 종목에 넣지 못했어요. 다시 눌러 주세요." }))),
+      sample("critical — 느낌표", "아이콘 24 · fg-critical-inverted — 다시 하면 되는 가벼운 실패 + 다시 시도", strip(snackbar({ tone: "critical", message: "관심 종목에 넣지 못했어요. 다시 시도해주세요.", action: "다시 시도" }))),
       sample("액션 — 되돌리기", "action — 14 · 700 · fg-brand-inverted · 누르는 영역 44", strip(snackbar({ message: "거래를 삭제했어요.", action: "되돌리기" }))),
       sample("긴 글 — 줄을 바꾸고 자르지 않는다", "단어 단위 줄바꿈(v114) · 글과 액션은 양 끝 · 사이 10", strip(snackbar({ tone: "positive", message: "미리 낸 돈 중 32,000원이 계좌로 돌아왔어요.", action: "잔액 고치기" }))),
       sample("누름 — 액션 글만 2px 거리 축소", "pressed — 기준 max(높이, 폭 ÷ 4, 24) · 150ms", strip(snackbar({ message: "거래를 삭제했어요.", action: "되돌리기", state: "pressed" }))),
@@ -3962,7 +3963,9 @@ export function renderFeedbackGallery(brand) {
   const shows = [
     { label: "결과 — 4초", message: "거래를 저장했어요." },
     { label: "되돌리기 — 6초", message: "거래를 삭제했어요.", action: "되돌리기" },
-    { label: "가벼운 실패 — 4초", tone: "critical", message: "관심 종목에 넣지 못했어요. 다시 눌러 주세요." },
+    // 가벼운 실패 — 같은 단추를 다시 누르면 되는 일(복사)은 액션 없이 4초, 요청을 다시 보내는 일은 "다시 시도" 를 달아 6초(snackbar.md · Toggle 20A)
+    { label: "가벼운 실패 — 4초", tone: "critical", message: "계좌번호를 복사하지 못했어요." },
+    { label: "실패 · 다시 시도 — 6초", tone: "critical", message: "관심 종목에 넣지 못했어요. 다시 시도해주세요.", action: "다시 시도" },
     { label: "잔액 고치기 — 6초", tone: "positive", message: "미리 낸 돈 중 32,000원이 계좌로 돌아왔어요.", action: "잔액 고치기" },
   ];
   const showButtons = shows.map(s => `<button class="btn btn-neutral-weak btn-size-small" type="button" data-psnack-show="" data-psnack-target="${regionId}" data-psnack-message="${escape(s.message)}"${
@@ -4322,15 +4325,7 @@ const helpTrigger = ({ id, name, controls, open = true }) => `<button ${attrsOf(
   `data-pbub-trigger="${controls}"`,
 ])}>${MENU_ICON.info}</button>`;
 
-// 아이콘 버튼 — Button ghost · iconOnly(medium 40), 이름은 aria-label. tip 을 주면 열린 툴팁을 aria-describedby 로 잇고, live 면 data-ptip 으로 페이지 끝 스크립트가 연다
-const toolButton = ({ id, icon, name, tip = "", live = "" }) => `<button ${attrsOf([
-  'class="btn btn-ghost btn-icon-only"',
-  'type="button"',
-  `id="${id}"`,
-  `aria-label="${escape(name)}"`,
-  tip && `aria-describedby="${tip}"`,
-  live && `data-ptip="${live}"`,
-])}>${MENU_ICON[icon]}</button>`;
+// 툴팁 · 말풍선 기준의 아이콘 버튼은 03r 의 상단 바 아이콘 버튼(topNavIcon — 44 · 24)이다(tooltip.md · help-bubble.md 코드, 2026-10-09)
 
 // 뒤 화면 — 제목(오른쪽에 버튼을 둘 수 있다) + 내용. desktop 은 03k 처럼 회색 바탕 위 흰 카드에 내용을 둔다. 2026년 10월 1일은 목요일이다
 const menuPage = ({ title, action = "", body = "", desktop = false }) =>
@@ -4506,7 +4501,8 @@ export function renderMenuGallery(brand) {
   const hideFrame = overlayFrame({
     device: "phone",
     height: 440,
-    page: menuPage({ title: "가계부", action: toolButton({ id: hideTid, icon: "eyeOff", name: "금액 가리기" }), body: listOf(OVERLAY_LEDGER.map(overlayRow)) }),
+    // 기준(Anchor)은 자리만 잡는다 — 누르면 원래 동작(상단 바의 금액 가리기 — 03r 의 아이콘 버튼 44 · 24, 이름 고정 · aria-pressed · 지금 상태 아이콘 · 끔도 fg-neutral)
+    page: menuPage({ title: "가계부", action: topNavIcon({ icon: "eye", name: "금액 가리기", attrs: `aria-pressed="false" id="${hideTid}"` }), body: listOf(OVERLAY_LEDGER.map(overlayRow)) }),
     floats: [bubble({ id: hideBid, title: "금액을 가릴 수 있어요", description: "누르면 화면의 금액이 모두 가려져요.", trigger: hideTid, side: "bottom", close: true, live: true })],
   });
   const closeCols = [
@@ -4542,17 +4538,24 @@ export function renderMenuGallery(brand) {
   );
 
   // 5. Tooltip — 아이콘 버튼의 이름(그 순간) · 이어서 옮기기(그 순간) · 직접 올려 보기 · 막힌 버튼의 이유
-  const TOOLS = [{ icon: "search", name: "검색" }, { icon: "eyeOff", name: "금액 가리기" }, { icon: "rotateCcw", name: "필터 초기화" }];
+  // 트리거는 Desk 웹 데스크톱 머리의 아이콘 버튼(03r — 44 · 24, 버튼끼리 붙는다)이다(tooltip.md 코드). 금액 가리기는 켜고 끄는 단추라
+  // 이름이 고정이고 툴팁도 그대로다 — 켬은 aria-pressed 가 알린다
+  const TOOLS = [{ icon: "eye", name: "금액 가리기", pressed: false }, { icon: "bell", name: "알림" }, { icon: "settings", name: "설정" }];
   const toolFrame = ({ open = "", live = false }) => {
     const ids = TOOLS.map(() => nextMenuId("ptip-trigger"));
     const tips = TOOLS.map(() => nextMenuId("ptip"));
     const at = TOOLS.findIndex(t => t.name === open);
-    const tools = `<div class="pmenu-tools">${TOOLS.map((t, i) => toolButton({ id: ids[i], icon: t.icon, name: t.name, tip: i === at ? tips[i] : "", live: live ? tips[i] : "" })).join("")}</div>`;
+    const tools = `<div class="ptnav-actions pmenu-nav-actions">${TOOLS.map((t, i) => topNavIcon({ icon: t.icon, name: t.name, attrs: attrsOf([
+      t.pressed != null && `aria-pressed="${t.pressed ? "true" : "false"}"`,
+      `id="${ids[i]}"`,
+      i === at && `aria-describedby="${tips[i]}"`,
+      live && `data-ptip="${tips[i]}"`,
+    ]) })).join("")}</div>`;
     const floats = TOOLS.map((t, i) => (live || i === at ? bubble({ id: tips[i], kind: "tooltip", title: t.name, trigger: ids[i], hidden: live }) : "")).filter(Boolean);
     return overlayFrame({
       device: "desktop",
       height: 340,
-      page: menuPage({ title: "가계부", desktop: true, body: `<div class="pmenu-card-head"><span>10월 거래</span>${tools}</div>${listOf(OVERLAY_LEDGER.slice(0, 3).map(overlayRow))}` }),
+      page: menuPage({ title: "가계부", desktop: true, action: tools, body: `<div class="pmenu-card-head"><span>10월 거래</span></div>${listOf(OVERLAY_LEDGER.slice(0, 3).map(overlayRow))}` }),
       floats,
     });
   };
@@ -4560,10 +4563,10 @@ export function renderMenuGallery(brand) {
   const reason = `<div class="pmenu-reason"><button class="btn btn-neutral-weak" type="button" disabled aria-describedby="${reasonId}"><span>지난달 예산 복사</span></button><p class="pmenu-reason-text" id="${reasonId}">복사할 지난달 예산이 없어요.</p></div>`;
   const tooltipPanel = panel(
     "Tooltip — 아이콘 버튼의 이름 · 이어서 옮기기",
-    "툴팁은 Help Bubble 과 같은 말풍선을 마우스 · 키보드로 여는 보조다 — 글 하나(13/18 · 700)만 두고 누를 것이 없다(role=tooltip · 트리거의 aria-describedby). 마우스를 올리면 200ms 뒤에 열고, 트리거와 말풍선을 모두 벗어나면 100ms 뒤에 닫는다 — 말풍선 위로 옮겨도 닫히지 않는다(WCAG 1.4.13). 키보드 초점이 오면 바로 열고, 하나가 열린 뒤 옆 트리거로 옮기면 기다리지 않고 모션 없이 바로 바꿔 연다. 트리거를 누르거나 Esc 로 닫는다. 손가락으로 누르면 열지 않는다 — 그래서 아이콘 버튼의 이름은 늘 aria-label 에 두고 툴팁은 그 이름을 보여 줄 뿐이며, 막힌 버튼의 이유는 툴팁이 아니라 가까운 글로 보인다(막힌 버튼은 초점을 받지 못해 키보드로 툴팁을 열 수 없다). 글자가 이미 보이는 버튼에는 두지 않고, 네이티브 title 은 쓰지 않는다. 폰에서도 읽어야 하는 설명은 Help Bubble 이다. 셋째 그림의 툴바는 직접 올리고 Tab 으로 옮겨 볼 수 있다.",
+    "툴팁은 Help Bubble 과 같은 말풍선을 마우스 · 키보드로 여는 보조다 — 글 하나(13/18 · 700)만 두고 누를 것이 없다(role=tooltip · 트리거의 aria-describedby). 마우스를 올리면 200ms 뒤에 열고, 트리거와 말풍선을 모두 벗어나면 100ms 뒤에 닫는다 — 말풍선 위로 옮겨도 닫히지 않는다(WCAG 1.4.13). 키보드 초점이 오면 바로 열고, 하나가 열린 뒤 옆 트리거로 옮기면 기다리지 않고 모션 없이 바로 바꿔 연다. 트리거를 누르거나 Esc 로 닫는다. 손가락으로 누르면 열지 않는다 — 그래서 아이콘 버튼의 이름은 늘 aria-label 에 두고 툴팁은 그 이름을 보여 줄 뿐이며, 막힌 버튼의 이유는 툴팁이 아니라 가까운 글로 보인다(막힌 버튼은 초점을 받지 못해 키보드로 툴팁을 열 수 없다). 글자가 이미 보이는 버튼에는 두지 않고, 네이티브 title 은 쓰지 않는다. 폰에서도 읽어야 하는 설명은 Help Bubble 이다. 셋째 그림의 머리 버튼(금액 가리기 · 알림 · 설정)은 직접 올리고 Tab 으로 옮겨 볼 수 있다.",
     `${samples([
-      sample("아이콘 버튼의 이름 — 데스크톱", "TooltipContent — aria-label 과 같은 글 · 트리거 위 · 200ms 뒤", toolFrame({ open: "금액 가리기" })),
-      sample("이어서 옮기기 — 옆 트리거로", "TooltipProvider — 하나가 열린 뒤 옆으로 옮기면 기다리지 않고 모션 없이 바로", toolFrame({ open: "필터 초기화" })),
+      sample("아이콘 버튼의 이름 — 데스크톱 머리", "TooltipContent — aria-label 과 같은 글 · 200ms 뒤 · 머리라 위에 자리가 없어 아래로 뒤집는다", toolFrame({ open: "금액 가리기" })),
+      sample("이어서 옮기기 — 옆 트리거로", "TooltipProvider — 하나가 열린 뒤 옆으로 옮기면 기다리지 않고 모션 없이 바로", toolFrame({ open: "알림" })),
       sample("직접 올려 보기", "마우스 200ms · 키보드 바로 · 옆으로 옮기면 바로 · 손가락은 열지 않는다", toolFrame({ live: true })),
       sample("막힌 버튼 — 이유는 툴팁이 아니라 가까운 글", "disabled · aria-describedby — 툴팁에만 두지 않는다", reason),
     ], DESKTOP)}`,
@@ -6528,6 +6531,7 @@ const NAV_ICON = {
   search: MENU_ICON.search,
   bell: LIST_ICON.bell,
   eyeOff: MENU_ICON.eyeOff,
+  eye: DISPLAY_ICON.eye,
   settings: listSvg('<path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/>'),
   plus: listSvg('<path d="M5 12h14"/><path d="M12 5v14"/>'),
   ellipsis: LIST_ICON.more,
@@ -6889,7 +6893,7 @@ export function renderNavGallery(brand) {
     : topNavText({ label: "모두 읽음", interaction: c.i, disabled: c.i === "disabled" })}</span>`);
   const dotZoom = `<span class="pnav-zoom" aria-hidden="true"><span class="pnav-zoom-in">${topNavIcon({ icon: "bell", name: "알림, 새 알림 있음", dot: true })}</span></span>`;
   const longTitle = pnavPhone({ height: 56, home: false, cls: "pnav-phone--bar", inner: topNav({ title: "현대카드 M Edition3 카드 혜택 자세히 보기", actions: [{ icon: "share", name: "공유" }, { icon: "ellipsis", name: "카드 혜택 더보기" }] }) });
-  const threeIcons = pnavPhone({ height: 56, home: false, cls: "pnav-phone--bar", inner: topNav({ type: "root", title: "가계부", actions: [{ icon: "search", name: "검색" }, { icon: "eyeOff", name: "금액 가리기" }, { icon: "ellipsis", name: "가계부 더보기" }] }) });
+  const threeIcons = pnavPhone({ height: 56, home: false, cls: "pnav-phone--bar", inner: topNav({ type: "root", title: "가계부", actions: [{ icon: "search", name: "검색" }, { icon: "eye", name: "금액 가리기", attrs: 'aria-pressed="false"' }, { icon: "ellipsis", name: "가계부 더보기" }] }) });
   const buttonPanel = panel(
     "Top Navigation — 버튼 상태 · 알림 점 · 긴 제목 · 넘치면 ⋯",
     "버튼의 바탕은 누를 때 · 마우스를 올릴 때만 보인다 — 누름은 bg-layer-default-pressed + 2px 거리 축소(배율 (44 − 2) ÷ 44, 150ms pressed-scale — 모션 줄이기면 색만), 호버는 같은 바탕이고 축소가 없다(웹). 모서리는 8(r2)이다. 키보드 포커스에만 상자 안쪽 2px 링(stroke-focus-ring) — 버튼끼리 붙어 바깥 링이 이웃에 걸리기 때문이다. 막힌 버튼은 아이콘 · 글이 fg-disabled 이고 흐리게 하지 않는다. 알림 점은 벨에 Notification Badge small(점 6 · fg-brand)을 붙인다 — 24 아이콘 상자의 x 17 ~ 23 · y 1 ~ 7 이고(오른쪽 그림은 3배), 상단 바에는 점만 둔다(숫자는 두지 않는다). 새 알림이 있는지는 버튼 이름에 넣는다(\"알림, 새 알림 있음\"). 제목은 한 줄 — 길면 말줄임(…)하고 오른쪽 자리 앞 8 을 비운다. 오른쪽 아이콘이 셋을 넘으면 자주 쓰는 것만 남기고 나머지는 ⋯ 하나에 모은다(이름 \"{화면 이름} 더보기\" — 1280 이상 Menu, 미만 Menu Sheet). 표는 그 순간을 멈춰 그렸다.",
@@ -6913,7 +6917,7 @@ export function renderNavGallery(brand) {
   );
 
   // 4. Top Navigation — 데스크톱 머리(Desk) · HR 은 머리 없음. 창 1024 — 가로로 밀린다
-  const deskHeader = topNav({ type: "desktop", primary: "내역 추가", actions: [{ icon: "eyeOff", name: "금액 가리기" }, { icon: "bell", name: "알림, 새 알림 있음", dot: true }, { icon: "settings", name: "설정" }] });
+  const deskHeader = topNav({ type: "desktop", primary: "내역 추가", actions: [{ icon: "eye", name: "금액 가리기", attrs: 'aria-pressed="false"' }, { icon: "bell", name: "알림, 새 알림 있음", dot: true }, { icon: "settings", name: "설정" }] });
   const deskMain = `${pnavScreenTitle("가계부")}<div class="pnav-desk-cards">${pnavCard(`<div class="pnav-card-cap">이번 달 지출</div><div class="pnav-card-num">1,240,000원</div>`)}${pnavCard(`<div class="pnav-card-cap">수입</div><div class="pnav-card-num">3,200,000원</div>`)}${pnavCard(`<div class="pnav-card-cap">남은 예산</div><div class="pnav-card-num">360,000원</div>`)}</div>${pnavCard(pnavRows(PNAV_LEDGER, 6), "pnav-card--list")}`;
   const deskFrame = pnavDesk({ height: 480, side: sideNav({ groups: PNAV_DESK_NAV, current: "가계부", collapsed: true }), header: deskHeader, main: deskMain });
   const hrMain = `<div class="pnav-desk-top">${pnavScreenTitle("휴가 현황")}</div>${pnavCard(pnavRows(PNAV_LEAVE), "pnav-card--list")}`;
@@ -7864,8 +7868,8 @@ export function renderDataGallery(brand) {
 
   // 11. 누름 — 카드 전체(색 + 2px) · 대등한 동작이 있는 카드(색만) · 상태 · 카드마다 기다림 · 실패
   const budgetLink = pcard({ press: "whole", attrs: 'aria-label="식비 예산 — 남은 120,000원"', content: `<div class="pcard-stat"><div class="pcard-stat-label">식비 예산</div><div class="pcard-stat-value pcard-stat-value--large">120,000원 남음</div><div class="pcard-stat-delta"><span class="pdata-note">400,000원 중 280,000원 썼어요.</span></div></div>` });
-  // 대등한 동작 — 고정 버튼은 제목 줄 오른쪽(버튼 상자 40 이 줄 높이를 밀지 않게 위 · 오른쪽 8 을 당긴다), 본문은 그 아래(card.md 의 코드)
-  const memoPeers = (interaction = "") => pcard({ press: "peers", interaction, link: `<div class="pdata-memo">${pcardLink("회의록 — 10월 8일")}<button class="btn btn-ghost btn-icon-only pdata-pin" type="button" aria-label="회의록 — 10월 8일 고정" aria-pressed="false" data-pdata-pin>${DATA_ICON.pin}</button></div>`, content: `<div class="pdata-note">표 컴포넌트 정리 · 다음 주 화요일까지</div>` });
+  // 대등한 동작 — 고정 단추(Toggle — 03t)는 제목 줄 오른쪽(상자 40 이 줄 높이를 밀지 않게 위 · 오른쪽 8 을 당긴다), 본문은 그 아래(card.md 의 코드)
+  const memoPeers = (interaction = "") => pcard({ press: "peers", interaction, link: `<div class="pdata-memo">${pcardLink("회의록 — 10월 8일")}${ptoggleOf("pin", { name: "회의록 — 10월 8일 고정", attrs: "data-pdata-pin" })}</div>`, content: `<div class="pdata-note">표 컴포넌트 정리 · 다음 주 화요일까지</div>` });
   const pressCells = matrix("pdata-matrix pdata-matrix--cards", "카드", STATES, [
     { ko: "카드 전체", en: "press whole — 색 + 2px", k: "whole" },
     { ko: "대등한 동작", en: "press peers — 색만", k: "peers" },
@@ -8044,6 +8048,890 @@ export function renderDataGallery(brand) {
     ${slPanel}
     ${slStatesPanel}
     ${swipePanel}
+  </section>`;
+}
+
+// 입력 — spec: specs/components/slider.md · toggle.md · input-otp.md · color-swatch.md · icon-picker.md · 수치 slider.yaml · toggle.yaml · input-otp.yaml ·
+// color-swatch.yaml · icon-picker.yaml · 아이콘 세트 category-icons.yaml. SEED 가 컴포넌트로 가진 것은 Slider 와 Toggle Button(코드만)뿐이라, 인증 코드 칸 ·
+// 색 고르기 · 아이콘 고르기는 SEED 의 원칙(Text Input 의 "Input을 나누지 말고" · Iconography)에서 porest 가 정했다(2026-10-09 사용자 결정 1 ~ 22 · 따라오는 것).
+// 슬라이더 .psld(--none · --discrete) > 손잡이 줄 .psld-control(44 — 줄 전체가 누르는 자리) > 트랙 .psld-track(채움 .psld-fill · 눈금 틈 .psld-tick) ·
+//   손잡이 .psld-thumb(role=slider) + 말풍선 .psld-bubble · 아래 표식 .psld-markers. 머리 값 .psld-value 는 Field 머리(03g 의 .ptf-field-header) 오른쪽이다.
+// 켜고 끄는 아이콘 단추 .ptgl(<button aria-pressed> — 보이는 40 · 누르는 44 · 아이콘 20). 끔 · 켬 아이콘을 둘 다 담고 aria-pressed 로 하나를 보인다.
+// 인증 코드 칸은 03g 의 입력칸 한 칸(.ptf-input) + .potp-input(고정폭 숫자) · 다시 받기 .potp-resend(Button neutralWeak medium — 칸 꼬리 아래 12).
+// 색 고르기 .pcsw(radiogroup) > 지금 색 칸 .pcsw-current · 세로 선 .pcsw-divider · 격자 .pcsw-grid > 칸 .pcsw-swatch(role=radio · 원 40 · 체크 16).
+// 아이콘 고르기 — 트리거는 03h 의 Input Button(.pib), 여는 자리는 03k 의 시트 · 팝오버, 그 안의 .pipk > 찾기 칸(03g 의 밑줄형 .ptf-input) · 격자 .pipk-grid(listbox) >
+//   묶음 .pipk-group(머리 .pipk-group-head) > 칸 .pipk-cell(role=option · 48 · 아이콘 24) · 결과 수 .pipk-count · 결과 없음(03l 의 Result Section medium).
+// 화면 틀(.pinp-phone · .pinp-desk)과 라이트 · 다크 나란히 틀(.pdsp-pair · .pdsp-theme — 03o)은 갤러리 것이다.
+// 그림은 그 순간을 멈춘 것이고, "직접" 이 붙은 견본은 페이지 끝 스크립트가 끌기 · 누름 · 키보드 · 붙여넣기에 따라 바꾼다.
+
+// 아이콘 — lucide-react 1.28.0(Desk 웹 판)의 모양 그대로(안쪽 마크업). 카테고리 세트 148(category-icons.yaml 의 id)과 이 블록의 단추 · 칸 아이콘이다.
+// 세트에 아이콘을 더하면 여기에도 더한다 — 없는 id 는 빌드가 멈춘다(CATEGORY_ICON_SET)
+const INPUT_ICON_PATHS = {
+  "utensils": "<path d=\"M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2\"/><path d=\"M7 2v20\"/><path d=\"M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7\"/>",
+  "utensils-crossed": "<path d=\"m16 2-2.3 2.3a3 3 0 0 0 0 4.2l1.8 1.8a3 3 0 0 0 4.2 0L22 8\"/><path d=\"M15 15 3.3 3.3a4.2 4.2 0 0 0 0 6l7.3 7.3c.7.7 2 .7 2.8 0L15 15Zm0 0 7 7\"/><path d=\"m2.1 21.8 6.4-6.3\"/><path d=\"m19 5-7 7\"/>",
+  "chef-hat": "<path d=\"M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z\"/><path d=\"M6 17h12\"/>",
+  "soup": "<path d=\"M12 21a9 9 0 0 0 9-9H3a9 9 0 0 0 9 9Z\"/><path d=\"M7 21h10\"/><path d=\"M19.5 12 22 6\"/><path d=\"M16.25 3c.27.1.8.53.75 1.36-.06.83-.93 1.2-1 2.02-.05.78.34 1.24.73 1.62\"/><path d=\"M11.25 3c.27.1.8.53.74 1.36-.05.83-.93 1.2-.98 2.02-.06.78.33 1.24.72 1.62\"/><path d=\"M6.25 3c.27.1.8.53.75 1.36-.06.83-.93 1.2-1 2.02-.05.78.34 1.24.74 1.62\"/>",
+  "salad": "<path d=\"M7 21h10\"/><path d=\"M12 21a9 9 0 0 0 9-9H3a9 9 0 0 0 9 9Z\"/><path d=\"M11.38 12a2.4 2.4 0 0 1-.4-4.77 2.4 2.4 0 0 1 3.2-2.77 2.4 2.4 0 0 1 3.47-.63 2.4 2.4 0 0 1 3.37 3.37 2.4 2.4 0 0 1-1.1 3.7 2.51 2.51 0 0 1 .03 1.1\"/><path d=\"m13 12 4-4\"/><path d=\"M10.9 7.25A3.99 3.99 0 0 0 4 10c0 .73.2 1.41.54 2\"/>",
+  "sandwich": "<path d=\"m2.37 11.223 8.372-6.777a2 2 0 0 1 2.516 0l8.371 6.777\"/><path d=\"M21 15a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-5.25\"/><path d=\"M3 15a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h9\"/><path d=\"m6.67 15 6.13 4.6a2 2 0 0 0 2.8-.4l3.15-4.2\"/><rect width=\"20\" height=\"4\" x=\"2\" y=\"11\" rx=\"1\"/>",
+  "pizza": "<path d=\"m12 14-1 1\"/><path d=\"m13.75 18.25-1.25 1.42\"/><path d=\"M17.775 5.654a15.68 15.68 0 0 0-12.121 12.12\"/><path d=\"M18.8 9.3a1 1 0 0 0 2.1 7.7\"/><path d=\"M21.964 20.732a1 1 0 0 1-1.232 1.232l-18-5a1 1 0 0 1-.695-1.232A19.68 19.68 0 0 1 15.732 2.037a1 1 0 0 1 1.232.695z\"/>",
+  "hamburger": "<path d=\"M12 16H4a2 2 0 1 1 0-4h16a2 2 0 1 1 0 4h-4.25\"/><path d=\"M5 12a2 2 0 0 1-2-2 9 7 0 0 1 18 0 2 2 0 0 1-2 2\"/><path d=\"M5 16a2 2 0 0 0-2 2 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 2 2 0 0 0-2-2q0 0 0 0\"/><path d=\"m6.67 12 6.13 4.6a2 2 0 0 0 2.8-.4l3.15-4.2\"/>",
+  "drumstick": "<path d=\"M15.4 15.63a7.875 6 135 1 1 6.23-6.23 4.5 3.43 135 0 0-6.23 6.23\"/><path d=\"m8.29 12.71-2.6 2.6a2.5 2.5 0 1 0-1.65 4.65A2.5 2.5 0 1 0 8.7 18.3l2.59-2.59\"/>",
+  "beef": "<path d=\"M16.4 13.7A6.5 6.5 0 1 0 6.28 6.6c-1.1 3.13-.78 3.9-3.18 6.08A3 3 0 0 0 5 18c4 0 8.4-1.8 11.4-4.3\"/><path d=\"m18.5 6 2.19 4.5a6.48 6.48 0 0 1-2.29 7.2C15.4 20.2 11 22 7 22a3 3 0 0 1-2.68-1.66L2.4 16.5\"/><circle cx=\"12.5\" cy=\"8.5\" r=\"2.5\"/>",
+  "fish": "<path d=\"M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6Z\"/><path d=\"M18 12v.5\"/><path d=\"M16 17.93a9.77 9.77 0 0 1 0-11.86\"/><path d=\"M7 10.67C7 8 5.58 5.97 2.73 5.5c-1 1.5-1 5 .23 6.5-1.24 1.5-1.24 5-.23 6.5C5.58 18.03 7 16 7 13.33\"/><path d=\"M10.46 7.26C10.2 5.88 9.17 4.24 8 3h5.8a2 2 0 0 1 1.98 1.67l.23 1.4\"/><path d=\"m16.01 17.93-.23 1.4A2 2 0 0 1 13.8 21H9.5a5.96 5.96 0 0 0 1.49-3.98\"/>",
+  "egg-fried": "<circle cx=\"11.5\" cy=\"12.5\" r=\"3.5\"/><path d=\"M3 8c0-3.5 2.5-6 6.5-6 5 0 4.83 3 7.5 5s5 2 5 6c0 4.5-2.5 6.5-7 6.5-2.5 0-2.5 2.5-6 2.5s-7-2-7-5.5c0-3 1.5-3 1.5-5C3.5 10 3 9 3 8Z\"/>",
+  "croissant": "<path d=\"M10.2 18H4.774a1.5 1.5 0 0 1-1.352-.97 11 11 0 0 1 .132-6.487\"/><path d=\"M18 10.2V4.774a1.5 1.5 0 0 0-.97-1.352 11 11 0 0 0-6.486.132\"/><path d=\"M18 5a4 3 0 0 1 4 3 2 2 0 0 1-2 2 10 10 0 0 0-5.139 1.42\"/><path d=\"M5 18a3 4 0 0 0 3 4 2 2 0 0 0 2-2 10 10 0 0 1 1.42-5.14\"/><path d=\"M8.709 2.554a10 10 0 0 0-6.155 6.155 1.5 1.5 0 0 0 .676 1.626l9.807 5.42a2 2 0 0 0 2.718-2.718l-5.42-9.807a1.5 1.5 0 0 0-1.626-.676\"/>",
+  "cake-slice": "<path d=\"M16 13H3\"/><path d=\"M16 17H3\"/><path d=\"m7.2 7.9-3.388 2.5A2 2 0 0 0 3 12.01V20a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-8.654c0-2-2.44-6.026-6.44-8.026a1 1 0 0 0-1.082.057L10.4 5.6\"/><circle cx=\"9\" cy=\"7\" r=\"2\"/>",
+  "ice-cream-cone": "<path d=\"m7 11 4.08 10.35a1 1 0 0 0 1.84 0L17 11\"/><path d=\"M17 7A5 5 0 0 0 7 7\"/><path d=\"M17 7a2 2 0 0 1 0 4H7a2 2 0 0 1 0-4\"/>",
+  "cookie": "<path d=\"M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5\"/><path d=\"M8.5 8.5v.01\"/><path d=\"M16 15.5v.01\"/><path d=\"M12 12v.01\"/><path d=\"M11 17v.01\"/><path d=\"M7 14v.01\"/>",
+  "candy": "<path d=\"M10 7v10.9\"/><path d=\"M14 6.1V17\"/><path d=\"M16 7V3a1 1 0 0 1 1.707-.707 2.5 2.5 0 0 0 2.152.717 1 1 0 0 1 1.131 1.131 2.5 2.5 0 0 0 .717 2.152A1 1 0 0 1 21 8h-4\"/><path d=\"M16.536 7.465a5 5 0 0 0-7.072 0l-2 2a5 5 0 0 0 0 7.07 5 5 0 0 0 7.072 0l2-2a5 5 0 0 0 0-7.07\"/><path d=\"M8 17v4a1 1 0 0 1-1.707.707 2.5 2.5 0 0 0-2.152-.717 1 1 0 0 1-1.131-1.131 2.5 2.5 0 0 0-.717-2.152A1 1 0 0 1 3 16h4\"/>",
+  "apple": "<path d=\"M12 6.528V3a1 1 0 0 1 1-1h0\"/><path d=\"M18.237 21A15 15 0 0 0 22 11a6 6 0 0 0-10-4.472A6 6 0 0 0 2 11a15.1 15.1 0 0 0 3.763 10 3 3 0 0 0 3.648.648 5.5 5.5 0 0 1 5.178 0A3 3 0 0 0 18.237 21\"/>",
+  "carrot": "<path d=\"M15 16a1 1 0 0 0-7-7q-4 4-5.987 12.385a.5.5 0 0 0 .602.602Q11 20 15 16l-3-3\"/><path d=\"M15 9q4 4 7 0-3-4-7 0 4-4 0-7-4 3 0 7\"/><path d=\"m8 15-2.58-2.58\"/>",
+  "popcorn": "<path d=\"M18 8a2 2 0 0 0 0-4 2 2 0 0 0-4 0 2 2 0 0 0-4 0 2 2 0 0 0-4 0 2 2 0 0 0 0 4\"/><path d=\"M10 22 9 8\"/><path d=\"m14 22 1-14\"/><path d=\"M20 8c.5 0 .9.4.8 1l-2.6 12c-.1.5-.7 1-1.2 1H7c-.6 0-1.1-.4-1.2-1L3.2 9c-.1-.6.3-1 .8-1Z\"/>",
+  "milk": "<path d=\"M8 2h8\"/><path d=\"M9 2v2.789a4 4 0 0 1-.672 2.219l-.656.984A4 4 0 0 0 7 10.212V20a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-9.789a4 4 0 0 0-.672-2.219l-.656-.984A4 4 0 0 1 15 4.788V2\"/><path d=\"M7 15a6.472 6.472 0 0 1 5 0 6.47 6.47 0 0 0 5 0\"/>",
+  "wheat": "<path d=\"M2 22 16 8\"/><path d=\"M3.47 12.53 5 11l1.53 1.53a3.5 3.5 0 0 1 0 4.94L5 19l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z\"/><path d=\"M7.47 8.53 9 7l1.53 1.53a3.5 3.5 0 0 1 0 4.94L9 15l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z\"/><path d=\"M11.47 4.53 13 3l1.53 1.53a3.5 3.5 0 0 1 0 4.94L13 11l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z\"/><path d=\"M20 2h2v2a4 4 0 0 1-4 4h-2V6a4 4 0 0 1 4-4Z\"/><path d=\"M11.47 17.47 13 19l-1.53 1.53a3.5 3.5 0 0 1-4.94 0L5 19l1.53-1.53a3.5 3.5 0 0 1 4.94 0Z\"/><path d=\"M15.47 13.47 17 15l-1.53 1.53a3.5 3.5 0 0 1-4.94 0L9 15l1.53-1.53a3.5 3.5 0 0 1 4.94 0Z\"/><path d=\"M19.47 9.47 21 11l-1.53 1.53a3.5 3.5 0 0 1-4.94 0L13 11l1.53-1.53a3.5 3.5 0 0 1 4.94 0Z\"/>",
+  "shopping-basket": "<path d=\"m15 11-1 9\"/><path d=\"m19 11-4-7\"/><path d=\"M2 11h20\"/><path d=\"m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4\"/><path d=\"M4.5 15.5h15\"/><path d=\"m5 11 4-7\"/><path d=\"m9 11 1 9\"/>",
+  "coffee": "<path d=\"M10 2v2\"/><path d=\"M14 2v2\"/><path d=\"M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1\"/><path d=\"M6 2v2\"/>",
+  "cup-soda": "<path d=\"m6 8 1.75 12.28a2 2 0 0 0 2 1.72h4.54a2 2 0 0 0 2-1.72L18 8\"/><path d=\"M5 8h14\"/><path d=\"M7 15a6.47 6.47 0 0 1 5 0 6.47 6.47 0 0 0 5 0\"/><path d=\"m12 8 1-6h2\"/>",
+  "glass-water": "<path d=\"M5.116 4.104A1 1 0 0 1 6.11 3h11.78a1 1 0 0 1 .994 1.105L17.19 20.21A2 2 0 0 1 15.2 22H8.8a2 2 0 0 1-2-1.79z\"/><path d=\"M6 12a5 5 0 0 1 6 0 5 5 0 0 0 6 0\"/>",
+  "beer": "<path d=\"M17 11h1a3 3 0 0 1 0 6h-1\"/><path d=\"M9 12v6\"/><path d=\"M13 12v6\"/><path d=\"M14 7.5c-1 0-1.44.5-3 .5s-2-.5-3-.5-1.72.5-2.5.5a2.5 2.5 0 0 1 0-5c.78 0 1.57.5 2.5.5S9.44 2 11 2s2 1.5 3 1.5 1.72-.5 2.5-.5a2.5 2.5 0 0 1 0 5c-.78 0-1.5-.5-2.5-.5Z\"/><path d=\"M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8\"/>",
+  "wine": "<path d=\"M8 22h8\"/><path d=\"M7 10h10\"/><path d=\"M12 15v7\"/><path d=\"M12 15a5 5 0 0 0 5-5c0-2-.5-4-2-8H9c-1.5 4-2 6-2 8a5 5 0 0 0 5 5Z\"/>",
+  "martini": "<path d=\"M12 12 4.207 4.207A.707.707 0 0 1 4.707 3h14.586a.707.707 0 0 1 .5 1.207z\"/><path d=\"M12 12v10\"/><path d=\"M7 22h10\"/>",
+  "bean": "<path d=\"M10.165 6.598C9.954 7.478 9.64 8.36 9 9c-.64.64-1.521.954-2.402 1.165A6 6 0 0 0 8 22c7.732 0 14-6.268 14-14a6 6 0 0 0-11.835-1.402Z\"/><path d=\"M5.341 10.62a4 4 0 1 0 5.279-5.28\"/>",
+  "bus": "<path d=\"M8 6v6\"/><path d=\"M15 6v6\"/><path d=\"M2 12h19.6\"/><path d=\"M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3\"/><circle cx=\"7\" cy=\"18\" r=\"2\"/><path d=\"M9 18h5\"/><circle cx=\"16\" cy=\"18\" r=\"2\"/>",
+  "train-front": "<path d=\"M8 3.1V7a4 4 0 0 0 8 0V3.1\"/><path d=\"m9 15-1-1\"/><path d=\"m15 15 1-1\"/><path d=\"M9 19c-2.8 0-5-2.2-5-5v-4a8 8 0 0 1 16 0v4c0 2.8-2.2 5-5 5Z\"/><path d=\"m8 19-2 3\"/><path d=\"m16 19 2 3\"/>",
+  "tram-front": "<rect width=\"16\" height=\"16\" x=\"4\" y=\"3\" rx=\"2\"/><path d=\"M4 11h16\"/><path d=\"M12 3v8\"/><path d=\"m8 19-2 3\"/><path d=\"m18 22-2-3\"/><path d=\"M8 15h.01\"/><path d=\"M16 15h.01\"/>",
+  "car": "<path d=\"M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2\"/><circle cx=\"7\" cy=\"17\" r=\"2\"/><path d=\"M9 17h6\"/><circle cx=\"17\" cy=\"17\" r=\"2\"/>",
+  "car-taxi-front": "<path d=\"M10 2h4\"/><path d=\"m21 8-2 2-1.5-3.7A2 2 0 0 0 15.646 5H8.4a2 2 0 0 0-1.903 1.257L5 10 3 8\"/><path d=\"M7 14h.01\"/><path d=\"M17 14h.01\"/><rect width=\"18\" height=\"8\" x=\"3\" y=\"10\" rx=\"2\"/><path d=\"M5 18v2\"/><path d=\"M19 18v2\"/>",
+  "fuel": "<path d=\"M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 4 0v-6.998a2 2 0 0 0-.59-1.42L18 5\"/><path d=\"M14 21V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v16\"/><path d=\"M2 21h13\"/><path d=\"M3 9h11\"/>",
+  "circle-parking": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M9 17V7h4a3 3 0 0 1 0 6H9\"/>",
+  "plane": "<path d=\"M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z\"/>",
+  "ship": "<path d=\"M12 10.189V14\"/><path d=\"M12 2v3\"/><path d=\"M19 13V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6\"/><path d=\"M19.38 20A11.6 11.6 0 0 0 21 14l-8.188-3.639a2 2 0 0 0-1.624 0L3 14a11.6 11.6 0 0 0 2.81 7.76\"/><path d=\"M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1s1.2 1 2.5 1c2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1\"/>",
+  "bike": "<circle cx=\"18.5\" cy=\"17.5\" r=\"3.5\"/><circle cx=\"5.5\" cy=\"17.5\" r=\"3.5\"/><circle cx=\"15\" cy=\"5\" r=\"1\"/><path d=\"M12 17.5V14l-3-3 4-3 2 3h2\"/>",
+  "ticket": "<path d=\"M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z\"/><path d=\"M13 5v2\"/><path d=\"M13 17v2\"/><path d=\"M13 11v2\"/>",
+  "route": "<circle cx=\"6\" cy=\"19\" r=\"3\"/><path d=\"M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15\"/><circle cx=\"18\" cy=\"5\" r=\"3\"/>",
+  "house": "<path d=\"M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8\"/><path d=\"M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\"/>",
+  "building": "<path d=\"M12 10h.01\"/><path d=\"M12 14h.01\"/><path d=\"M12 6h.01\"/><path d=\"M16 10h.01\"/><path d=\"M16 14h.01\"/><path d=\"M16 6h.01\"/><path d=\"M8 10h.01\"/><path d=\"M8 14h.01\"/><path d=\"M8 6h.01\"/><path d=\"M9 22v-3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3\"/><rect x=\"4\" y=\"2\" width=\"16\" height=\"20\" rx=\"2\"/>",
+  "key-round": "<path d=\"M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z\"/><circle cx=\"16.5\" cy=\"7.5\" r=\".5\" fill=\"currentColor\"/>",
+  "zap": "<path d=\"M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z\"/>",
+  "droplet": "<path d=\"M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z\"/>",
+  "flame": "<path d=\"M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4\"/>",
+  "wifi": "<path d=\"M12 20h.01\"/><path d=\"M2 8.82a15 15 0 0 1 20 0\"/><path d=\"M5 12.859a10 10 0 0 1 14 0\"/><path d=\"M8.5 16.429a5 5 0 0 1 7 0\"/>",
+  "smartphone": "<rect width=\"14\" height=\"20\" x=\"5\" y=\"2\" rx=\"2\" ry=\"2\"/><path d=\"M12 18h.01\"/>",
+  "tv": "<path d=\"m17 2-5 5-5-5\"/><rect width=\"20\" height=\"15\" x=\"2\" y=\"7\" rx=\"2\"/>",
+  "sofa": "<path d=\"M20 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v3\"/><path d=\"M2 16a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z\"/><path d=\"M4 18v2\"/><path d=\"M20 18v2\"/><path d=\"M12 4v9\"/>",
+  "bed": "<path d=\"M2 4v16\"/><path d=\"M2 8h18a2 2 0 0 1 2 2v10\"/><path d=\"M2 17h20\"/><path d=\"M6 8v9\"/>",
+  "lamp": "<path d=\"M12 12v6\"/><path d=\"M4.077 10.615A1 1 0 0 0 5 12h14a1 1 0 0 0 .923-1.385l-3.077-7.384A2 2 0 0 0 15 2H9a2 2 0 0 0-1.846 1.23Z\"/><path d=\"M8 20a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1z\"/>",
+  "wrench": "<path d=\"M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z\"/>",
+  "paint-roller": "<rect width=\"16\" height=\"6\" x=\"2\" y=\"2\" rx=\"2\"/><path d=\"M10 16v-2a2 2 0 0 1 2-2h8a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2\"/><rect width=\"4\" height=\"6\" x=\"8\" y=\"16\" rx=\"1\"/>",
+  "shopping-cart": "<circle cx=\"8\" cy=\"21\" r=\"1\"/><circle cx=\"19\" cy=\"21\" r=\"1\"/><path d=\"M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12\"/>",
+  "spray-can": "<path d=\"M3 3h.01\"/><path d=\"M7 5h.01\"/><path d=\"M11 7h.01\"/><path d=\"M3 7h.01\"/><path d=\"M7 9h.01\"/><path d=\"M3 11h.01\"/><rect width=\"4\" height=\"4\" x=\"15\" y=\"5\"/><path d=\"m19 9 2 2v10c0 .6-.4 1-1 1h-6c-.6 0-1-.4-1-1V11l2-2\"/><path d=\"m13 14 8-2\"/><path d=\"m13 19 8-2\"/>",
+  "washing-machine": "<path d=\"M3 6h3\"/><path d=\"M17 6h.01\"/><rect width=\"18\" height=\"20\" x=\"3\" y=\"2\" rx=\"2\"/><circle cx=\"12\" cy=\"13\" r=\"5\"/><path d=\"M12 18a2.5 2.5 0 0 0 0-5 2.5 2.5 0 0 1 0-5\"/>",
+  "scissors": "<circle cx=\"6\" cy=\"6\" r=\"3\"/><path d=\"M8.12 8.12 12 12\"/><path d=\"M20 4 8.12 15.88\"/><circle cx=\"6\" cy=\"18\" r=\"3\"/><path d=\"M14.8 14.8 20 20\"/>",
+  "sparkles": "<path d=\"M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z\"/><path d=\"M20 2v4\"/><path d=\"M22 4h-4\"/><circle cx=\"4\" cy=\"20\" r=\"2\"/>",
+  "trash-2": "<path d=\"M10 11v6\"/><path d=\"M14 11v6\"/><path d=\"M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6\"/><path d=\"M3 6h18\"/><path d=\"M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2\"/>",
+  "package": "<path d=\"M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z\"/><path d=\"M12 22V12\"/><polyline points=\"3.29 7 12 12 20.71 7\"/><path d=\"m7.5 4.27 9 5.15\"/>",
+  "mail": "<path d=\"m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7\"/><rect x=\"2\" y=\"4\" width=\"20\" height=\"16\" rx=\"2\"/>",
+  "umbrella": "<path d=\"M12 13v7a2 2 0 0 0 4 0\"/><path d=\"M12 2v2\"/><path d=\"M20.992 13a1 1 0 0 0 .97-1.274 10.284 10.284 0 0 0-19.923 0A1 1 0 0 0 3 13z\"/>",
+  "baby": "<path d=\"M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5\"/><path d=\"M15 12h.01\"/><path d=\"M19.38 6.813A9 9 0 0 1 20.8 10.2a2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1\"/><path d=\"M9 12h.01\"/>",
+  "dog": "<path d=\"M11.25 16.25h1.5L12 17z\"/><path d=\"M16 14v.5\"/><path d=\"M4.42 11.247A13.152 13.152 0 0 0 4 14.556C4 18.728 7.582 21 12 21s8-2.272 8-6.444a11.702 11.702 0 0 0-.493-3.309\"/><path d=\"M8 14v.5\"/><path d=\"M8.5 8.5c-.384 1.05-1.083 2.028-2.344 2.5-1.931.722-3.576-.297-3.656-1-.113-.994 1.177-6.53 4-7 1.923-.321 3.651.845 3.651 2.235A7.497 7.497 0 0 1 14 5.277c0-1.39 1.844-2.598 3.767-2.277 2.823.47 4.113 6.006 4 7-.08.703-1.725 1.722-3.656 1-1.261-.472-1.855-1.45-2.239-2.5\"/>",
+  "cat": "<path d=\"M12 5c.67 0 1.35.09 2 .26 1.78-2 5.03-2.84 6.42-2.26 1.4.58-.42 7-.42 7 .57 1.07 1 2.24 1 3.44C21 17.9 16.97 21 12 21s-9-3-9-7.56c0-1.25.5-2.4 1-3.44 0 0-1.89-6.42-.5-7 1.39-.58 4.72.23 6.5 2.23A9.04 9.04 0 0 1 12 5Z\"/><path d=\"M8 14v.5\"/><path d=\"M16 14v.5\"/><path d=\"M11.25 16.25h1.5L12 17l-.75-.75Z\"/>",
+  "paw-print": "<circle cx=\"11\" cy=\"4\" r=\"2\"/><circle cx=\"18\" cy=\"8\" r=\"2\"/><circle cx=\"20\" cy=\"16\" r=\"2\"/><path d=\"M9 10a5 5 0 0 1 5 5v3.5a3.5 3.5 0 0 1-6.84 1.045Q6.52 17.48 4.46 16.84A3.5 3.5 0 0 1 5.5 10Z\"/>",
+  "flower": "<circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M12 16.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 1 1 12 7.5a4.5 4.5 0 1 1 4.5 4.5 4.5 4.5 0 1 1-4.5 4.5\"/><path d=\"M12 7.5V9\"/><path d=\"M7.5 12H9\"/><path d=\"M16.5 12H15\"/><path d=\"M12 16.5V15\"/><path d=\"m8 8 1.88 1.88\"/><path d=\"M14.12 9.88 16 8\"/><path d=\"m8 16 1.88-1.88\"/><path d=\"M14.12 14.12 16 16\"/>",
+  "sprout": "<path d=\"M14 9.536V7a4 4 0 0 1 4-4h1.5a.5.5 0 0 1 .5.5V5a4 4 0 0 1-4 4 4 4 0 0 0-4 4c0 2 1 3 1 5a5 5 0 0 1-1 3\"/><path d=\"M4 9a5 5 0 0 1 8 4 5 5 0 0 1-8-4\"/><path d=\"M5 21h14\"/>",
+  "shopping-bag": "<path d=\"M16 10a4 4 0 0 1-8 0\"/><path d=\"M3.103 6.034h17.794\"/><path d=\"M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z\"/>",
+  "shirt": "<path d=\"M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z\"/>",
+  "glasses": "<circle cx=\"6\" cy=\"15\" r=\"4\"/><circle cx=\"18\" cy=\"15\" r=\"4\"/><path d=\"M14 15a2 2 0 0 0-2-2 2 2 0 0 0-2 2\"/><path d=\"M2.5 13 5 7c.7-1.3 1.4-2 3-2\"/><path d=\"M21.5 13 19 7c-.7-1.3-1.5-2-3-2\"/>",
+  "watch": "<path d=\"M12 10v2.2l1.6 1\"/><path d=\"m16.13 7.66-.81-4.05a2 2 0 0 0-2-1.61h-2.68a2 2 0 0 0-2 1.61l-.78 4.05\"/><path d=\"m7.88 16.36.8 4a2 2 0 0 0 2 1.61h2.72a2 2 0 0 0 2-1.61l.81-4.05\"/><circle cx=\"12\" cy=\"12\" r=\"6\"/>",
+  "gem": "<path d=\"M10.5 3 8 9l4 13 4-13-2.5-6\"/><path d=\"M17 3a2 2 0 0 1 1.6.8l3 4a2 2 0 0 1 .013 2.382l-7.99 10.986a2 2 0 0 1-3.247 0l-7.99-10.986A2 2 0 0 1 2.4 7.8l2.998-3.997A2 2 0 0 1 7 3z\"/><path d=\"M2 9h20\"/>",
+  "gift": "<path d=\"M12 7v14\"/><path d=\"M20 11v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8\"/><path d=\"M7.5 7a1 1 0 0 1 0-5A4.8 8 0 0 1 12 7a4.8 8 0 0 1 4.5-5 1 1 0 0 1 0 5\"/><rect x=\"3\" y=\"7\" width=\"18\" height=\"4\" rx=\"1\"/>",
+  "store": "<path d=\"M15 21v-5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5\"/><path d=\"M17.774 10.31a1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.451 0 1.12 1.12 0 0 0-1.548 0 2.5 2.5 0 0 1-3.452 0 1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.77-3.248l2.889-4.184A2 2 0 0 1 7 2h10a2 2 0 0 1 1.653.873l2.895 4.192a2.5 2.5 0 0 1-3.774 3.244\"/><path d=\"M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05\"/>",
+  "laptop": "<path d=\"M18 5a2 2 0 0 1 2 2v8.526a2 2 0 0 0 .212.897l1.068 2.127a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45l1.068-2.127A2 2 0 0 0 4 15.526V7a2 2 0 0 1 2-2z\"/><path d=\"M20.054 15.987H3.946\"/>",
+  "headphones": "<path d=\"M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3\"/>",
+  "camera": "<path d=\"M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z\"/><circle cx=\"12\" cy=\"13\" r=\"3\"/>",
+  "book": "<path d=\"M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20\"/>",
+  "backpack": "<path d=\"M4 10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z\"/><path d=\"M8 10h8\"/><path d=\"M8 18h8\"/><path d=\"M8 22v-6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v6\"/><path d=\"M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2\"/>",
+  "heart-pulse": "<path d=\"M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5\"/><path d=\"M3.22 13H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27\"/>",
+  "hospital": "<path d=\"M12 7v4\"/><path d=\"M14 21v-3a2 2 0 0 0-4 0v3\"/><path d=\"M14 9h-4\"/><path d=\"M18 11h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h2\"/><path d=\"M18 21V5a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16\"/>",
+  "pill": "<path d=\"m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z\"/><path d=\"m8.5 8.5 7 7\"/>",
+  "stethoscope": "<path d=\"M11 2v2\"/><path d=\"M5 2v2\"/><path d=\"M5 3H4a2 2 0 0 0-2 2v4a6 6 0 0 0 12 0V5a2 2 0 0 0-2-2h-1\"/><path d=\"M8 15a6 6 0 0 0 12 0v-3\"/><circle cx=\"20\" cy=\"10\" r=\"2\"/>",
+  "syringe": "<path d=\"m18 2 4 4\"/><path d=\"m17 7 3-3\"/><path d=\"M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5\"/><path d=\"m9 11 4 4\"/><path d=\"m5 19-3 3\"/><path d=\"m14 4 6 6\"/>",
+  "dumbbell": "<path d=\"M17.596 12.768a2 2 0 1 0 2.829-2.829l-1.768-1.767a2 2 0 0 0 2.828-2.829l-2.828-2.828a2 2 0 0 0-2.829 2.828l-1.767-1.768a2 2 0 1 0-2.829 2.829z\"/><path d=\"m2.5 21.5 1.4-1.4\"/><path d=\"m20.1 3.9 1.4-1.4\"/><path d=\"M5.343 21.485a2 2 0 1 0 2.829-2.828l1.767 1.768a2 2 0 1 0 2.829-2.829l-6.364-6.364a2 2 0 1 0-2.829 2.829l1.768 1.767a2 2 0 0 0-2.828 2.829z\"/><path d=\"m9.6 14.4 4.8-4.8\"/>",
+  "activity": "<path d=\"M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2\"/>",
+  "heart": "<path d=\"M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5\"/>",
+  "smile": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M8 14s1.5 2 4 2 4-2 4-2\"/><line x1=\"9\" x2=\"9.01\" y1=\"9\" y2=\"9\"/><line x1=\"15\" x2=\"15.01\" y1=\"9\" y2=\"9\"/>",
+  "eye": "<path d=\"M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>",
+  "wallet": "<path d=\"M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1\"/><path d=\"M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4\"/>",
+  "banknote": "<rect width=\"20\" height=\"12\" x=\"2\" y=\"6\" rx=\"2\"/><circle cx=\"12\" cy=\"12\" r=\"2\"/><path d=\"M6 12h.01M18 12h.01\"/>",
+  "coins": "<path d=\"M13.744 17.736a6 6 0 1 1-7.48-7.48\"/><path d=\"M15 6h1v4\"/><path d=\"m6.134 14.768.866-.5 2 3.464\"/><circle cx=\"16\" cy=\"8\" r=\"6\"/>",
+  "piggy-bank": "<path d=\"M11 17h3v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3a3.16 3.16 0 0 0 2-2h1a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1h-1a5 5 0 0 0-2-4V3a4 4 0 0 0-3.2 1.6l-.3.4H11a6 6 0 0 0-6 6v1a5 5 0 0 0 2 4v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1z\"/><path d=\"M16 10h.01\"/><path d=\"M2 8v1a2 2 0 0 0 2 2h1\"/>",
+  "credit-card": "<rect width=\"20\" height=\"14\" x=\"2\" y=\"5\" rx=\"2\"/><line x1=\"2\" x2=\"22\" y1=\"10\" y2=\"10\"/>",
+  "landmark": "<path d=\"M10 18v-7\"/><path d=\"M11.119 2.205a2 2 0 0 1 1.762 0l7.84 3.846A.5.5 0 0 1 20.5 7h-17a.5.5 0 0 1-.22-.949z\"/><path d=\"M14 18v-7\"/><path d=\"M18 18v-7\"/><path d=\"M3 22h18\"/><path d=\"M6 18v-7\"/>",
+  "receipt": "<path d=\"M12 17V7\"/><path d=\"M16 8h-6a2 2 0 0 0 0 4h4a2 2 0 0 1 0 4H8\"/><path d=\"M4 3a1 1 0 0 1 1-1 1.3 1.3 0 0 1 .7.2l.933.6a1.3 1.3 0 0 0 1.4 0l.934-.6a1.3 1.3 0 0 1 1.4 0l.933.6a1.3 1.3 0 0 0 1.4 0l.933-.6a1.3 1.3 0 0 1 1.4 0l.934.6a1.3 1.3 0 0 0 1.4 0l.933-.6A1.3 1.3 0 0 1 19 2a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1 1.3 1.3 0 0 1-.7-.2l-.933-.6a1.3 1.3 0 0 0-1.4 0l-.934.6a1.3 1.3 0 0 1-1.4 0l-.933-.6a1.3 1.3 0 0 0-1.4 0l-.933.6a1.3 1.3 0 0 1-1.4 0l-.934-.6a1.3 1.3 0 0 0-1.4 0l-.933.6a1.3 1.3 0 0 1-.7.2 1 1 0 0 1-1-1z\"/>",
+  "percent": "<line x1=\"19\" x2=\"5\" y1=\"5\" y2=\"19\"/><circle cx=\"6.5\" cy=\"6.5\" r=\"2.5\"/><circle cx=\"17.5\" cy=\"17.5\" r=\"2.5\"/>",
+  "trending-up": "<path d=\"M16 7h6v6\"/><path d=\"m22 7-8.5 8.5-5-5L2 17\"/>",
+  "chart-line": "<path d=\"M3 3v16a2 2 0 0 0 2 2h16\"/><path d=\"m19 9-5 5-4-4-3 3\"/>",
+  "hand-coins": "<path d=\"M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 17\"/><path d=\"m7 21 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9\"/><path d=\"m2 16 6 6\"/><circle cx=\"16\" cy=\"9\" r=\"2.9\"/><circle cx=\"6\" cy=\"5\" r=\"3\"/>",
+  "shield-check": "<path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\"/><path d=\"m9 12 2 2 4-4\"/>",
+  "calculator": "<rect width=\"16\" height=\"20\" x=\"4\" y=\"2\" rx=\"2\"/><line x1=\"8\" x2=\"16\" y1=\"6\" y2=\"6\"/><line x1=\"16\" x2=\"16\" y1=\"14\" y2=\"18\"/><path d=\"M16 10h.01\"/><path d=\"M12 10h.01\"/><path d=\"M8 10h.01\"/><path d=\"M12 14h.01\"/><path d=\"M8 14h.01\"/><path d=\"M12 18h.01\"/><path d=\"M8 18h.01\"/>",
+  "briefcase": "<path d=\"M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16\"/><rect width=\"20\" height=\"14\" x=\"2\" y=\"6\" rx=\"2\"/>",
+  "arrow-left-right": "<path d=\"M8 3 4 7l4 4\"/><path d=\"M4 7h16\"/><path d=\"m16 21 4-4-4-4\"/><path d=\"M20 17H4\"/>",
+  "repeat": "<path d=\"m17 2 4 4-4 4\"/><path d=\"M3 11v-1a4 4 0 0 1 4-4h14\"/><path d=\"m7 22-4-4 4-4\"/><path d=\"M21 13v1a4 4 0 0 1-4 4H3\"/>",
+  "film": "<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M7 3v18\"/><path d=\"M3 7.5h4\"/><path d=\"M3 12h18\"/><path d=\"M3 16.5h4\"/><path d=\"M17 3v18\"/><path d=\"M17 7.5h4\"/><path d=\"M17 16.5h4\"/>",
+  "clapperboard": "<path d=\"m12.296 3.464 3.02 3.956\"/><path d=\"M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3z\"/><path d=\"M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\"/><path d=\"m6.18 5.276 3.1 3.899\"/>",
+  "music": "<path d=\"M9 18V5l12-2v13\"/><circle cx=\"6\" cy=\"18\" r=\"3\"/><circle cx=\"18\" cy=\"16\" r=\"3\"/>",
+  "gamepad-2": "<line x1=\"6\" x2=\"10\" y1=\"11\" y2=\"11\"/><line x1=\"8\" x2=\"8\" y1=\"9\" y2=\"13\"/><line x1=\"15\" x2=\"15.01\" y1=\"12\" y2=\"12\"/><line x1=\"18\" x2=\"18.01\" y1=\"10\" y2=\"10\"/><path d=\"M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z\"/>",
+  "drama": "<path d=\"M10 11h.01\"/><path d=\"M14 6h.01\"/><path d=\"M18 6h.01\"/><path d=\"M6.5 13.1h.01\"/><path d=\"M22 5c0 9-4 12-6 12s-6-3-6-12c0-2 2-3 6-3s6 1 6 3\"/><path d=\"M17.4 9.9c-.8.8-2 .8-2.8 0\"/><path d=\"M10.1 7.1C9 7.2 7.7 7.7 6 8.6c-3.5 2-4.7 3.9-3.7 5.6 4.5 7.8 9.5 8.4 11.2 7.4.9-.5 1.9-2.1 1.9-4.7\"/><path d=\"M9.1 16.5c.3-1.1 1.4-1.7 2.4-1.4\"/>",
+  "palette": "<path d=\"M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z\"/><circle cx=\"13.5\" cy=\"6.5\" r=\".5\" fill=\"currentColor\"/><circle cx=\"17.5\" cy=\"10.5\" r=\".5\" fill=\"currentColor\"/><circle cx=\"6.5\" cy=\"12.5\" r=\".5\" fill=\"currentColor\"/><circle cx=\"8.5\" cy=\"7.5\" r=\".5\" fill=\"currentColor\"/>",
+  "book-open": "<path d=\"M12 5v16\"/><path d=\"M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z\"/>",
+  "tent": "<path d=\"M3.5 21 14 3\"/><path d=\"M20.5 21 10 3\"/><path d=\"M15.5 21 12 15l-3.5 6\"/><path d=\"M2 21h20\"/>",
+  "mountain": "<path d=\"m8 3 4 8 5-5 5 15H2L8 3z\"/>",
+  "waves-horizontal": "<path d=\"M2 12q2.5 2 5 0t5 0 5 0 5 0\"/><path d=\"M2 19q2.5 2 5 0t5 0 5 0 5 0\"/><path d=\"M2 5q2.5 2 5 0t5 0 5 0 5 0\"/>",
+  "trophy": "<path d=\"M10 14.66V17a1 1 0 0 1-1 1 2 2 0 0 0-2 2v2\"/><path d=\"M14 14.66V17a1 1 0 0 0 1 1 2 2 0 0 1 2 2v2\"/><path d=\"M17.916 10H19.5A2.5 2.5 0 0 0 22 7.5V5a1 1 0 0 0-1-1h-3\"/><path d=\"M4 22h16\"/><path d=\"M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z\"/><path d=\"M6.084 10H4.5A2.5 2.5 0 0 1 2 7.5V5a1 1 0 0 1 1-1h3\"/>",
+  "guitar": "<path d=\"m11.9 12.1 4.514-4.514\"/><path d=\"M20.1 2.3a1 1 0 0 0-1.4 0l-1.114 1.114A2 2 0 0 0 17 4.828v1.344a2 2 0 0 1-.586 1.414A2 2 0 0 1 17.828 7h1.344a2 2 0 0 0 1.414-.586L21.7 5.3a1 1 0 0 0 0-1.4z\"/><path d=\"m6 16 2 2\"/><path d=\"M8.23 9.85A3 3 0 0 1 11 8a5 5 0 0 1 5 5 3 3 0 0 1-1.85 2.77l-.92.38A2 2 0 0 0 12 18a4 4 0 0 1-4 4 6 6 0 0 1-6-6 4 4 0 0 1 4-4 2 2 0 0 0 1.85-1.23z\"/>",
+  "party-popper": "<path d=\"M5.8 11.3 2 22l10.7-3.79\"/><path d=\"M4 3h.01\"/><path d=\"M22 8h.01\"/><path d=\"M15 2h.01\"/><path d=\"M22 20h.01\"/><path d=\"m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10\"/><path d=\"m22 13-.82-.33c-.86-.34-1.82.2-1.98 1.11c-.11.7-.72 1.22-1.43 1.22H17\"/><path d=\"m11 2 .33.82c.34.86-.2 1.82-1.11 1.98C9.52 4.9 9 5.52 9 6.23V7\"/><path d=\"M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2Z\"/>",
+  "dice-5": "<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" ry=\"2\"/><path d=\"M16 8h.01\"/><path d=\"M8 8h.01\"/><path d=\"M8 16h.01\"/><path d=\"M16 16h.01\"/><path d=\"M12 12h.01\"/>",
+  "puzzle": "<path d=\"M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z\"/>",
+  "luggage": "<path d=\"M6 20a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2\"/><path d=\"M8 18V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v14\"/><path d=\"M10 20h4\"/><circle cx=\"16\" cy=\"20\" r=\"2\"/><circle cx=\"8\" cy=\"20\" r=\"2\"/>",
+  "hotel": "<path d=\"M10 22v-6.57\"/><path d=\"M12 11h.01\"/><path d=\"M12 7h.01\"/><path d=\"M14 15.43V22\"/><path d=\"M15 16a5 5 0 0 0-6 0\"/><path d=\"M16 11h.01\"/><path d=\"M16 7h.01\"/><path d=\"M8 11h.01\"/><path d=\"M8 7h.01\"/><rect x=\"4\" y=\"2\" width=\"16\" height=\"20\" rx=\"2\"/>",
+  "map": "<path d=\"M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z\"/><path d=\"M15 5.764v15\"/><path d=\"M9 3.236v15\"/>",
+  "map-pin": "<path d=\"M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/>",
+  "globe": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20\"/><path d=\"M2 12h20\"/>",
+  "tree-palm": "<path d=\"M13 8c0-2.76-2.46-5-5.5-5S2 5.24 2 8h2l1-1 1 1h4\"/><path d=\"M13 7.14A5.82 5.82 0 0 1 16.5 6c3.04 0 5.5 2.24 5.5 5h-3l-1-1-1 1h-3\"/><path d=\"M5.89 9.71c-2.15 2.15-2.3 5.47-.35 7.43l4.24-4.25.7-.7.71-.71 2.12-2.12c-1.95-1.96-5.27-1.8-7.42.35\"/><path d=\"M11 15.5c.5 2.5-.17 4.5-1 6.5h4c2-5.5-.5-12-1-14\"/>",
+  "graduation-cap": "<path d=\"M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z\"/><path d=\"M22 10v6\"/><path d=\"M6 12.5V16a6 3 0 0 0 12 0v-3.5\"/>",
+  "school": "<path d=\"M14 21v-3a2 2 0 0 0-4 0v3\"/><path d=\"M18 4.933V21\"/><path d=\"m4 6 7.106-3.79a2 2 0 0 1 1.788 0L20 6\"/><path d=\"m6 11-3.52 2.147a1 1 0 0 0-.48.854V19a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a1 1 0 0 0-.48-.853L18 11\"/><path d=\"M6 4.933V21\"/><circle cx=\"12\" cy=\"9\" r=\"2\"/>",
+  "pencil": "<path d=\"M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z\"/><path d=\"m15 5 4 4\"/>",
+  "notebook-pen": "<path d=\"M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4\"/><path d=\"M2 6h4\"/><path d=\"M2 10h4\"/><path d=\"M2 14h4\"/><path d=\"M2 18h4\"/><path d=\"M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z\"/>",
+  "library": "<path d=\"m16 6 4 14\"/><path d=\"M12 6v14\"/><path d=\"M8 8v12\"/><path d=\"M4 4v16\"/>",
+  "languages": "<path d=\"m5 8 6 6\"/><path d=\"m4 14 6-6 2-3\"/><path d=\"M2 5h12\"/><path d=\"M7 2h1\"/><path d=\"m22 22-5-10-5 10\"/><path d=\"M14 18h6\"/>",
+  "cake": "<path d=\"M20 21v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8\"/><path d=\"M4 16s.5-1 2-1 2.5 2 4 2 2.5-2 4-2 2.5 2 4 2 2-1 2-1\"/><path d=\"M2 21h20\"/><path d=\"M7 8v3\"/><path d=\"M12 8v3\"/><path d=\"M17 8v3\"/><path d=\"M7 4h.01\"/><path d=\"M12 4h.01\"/><path d=\"M17 4h.01\"/>",
+  "heart-handshake": "<path d=\"M19.414 14.414C21 12.828 22 11.5 22 9.5a5.5 5.5 0 0 0-9.591-3.676.6.6 0 0 1-.818.001A5.5 5.5 0 0 0 2 9.5c0 2.3 1.5 4 3 5.5l5.535 5.362a2 2 0 0 0 2.879.052 2.12 2.12 0 0 0-.004-3 2.124 2.124 0 1 0 3-3 2.124 2.124 0 0 0 3.004 0 2 2 0 0 0 0-2.828l-1.881-1.882a2.41 2.41 0 0 0-3.409 0l-1.71 1.71a2 2 0 0 1-2.828 0 2 2 0 0 1 0-2.828l2.823-2.762\"/>",
+  "hand-heart": "<path d=\"M11 14h2a2 2 0 0 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 16\"/><path d=\"m14.45 13.39 5.05-4.694C20.196 8 21 6.85 21 5.75a2.75 2.75 0 0 0-4.797-1.837.276.276 0 0 1-.406 0A2.75 2.75 0 0 0 11 5.75c0 1.2.802 2.248 1.5 2.946L16 11.95\"/><path d=\"m2 15 6 6\"/><path d=\"m7 20 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a1 1 0 0 0-2.75-2.91\"/>",
+  "users": "<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\"/><path d=\"M16 3.128a4 4 0 0 1 0 7.744\"/><path d=\"M22 21v-2a4 4 0 0 0-3-3.87\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/>",
+  "church": "<path d=\"M10 9h4\"/><path d=\"M12 7v5\"/><path d=\"M14 21v-3a2 2 0 0 0-4 0v3\"/><path d=\"m18 9 3.52 2.147a1 1 0 0 1 .48.854V19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6.999a1 1 0 0 1 .48-.854L6 9\"/><path d=\"M6 21V7a1 1 0 0 1 .376-.782l5-3.999a1 1 0 0 1 1.249.001l5 4A1 1 0 0 1 18 7v14\"/>",
+  "mail-open": "<path d=\"M21.2 8.4c.5.38.8.97.8 1.6v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V10a2 2 0 0 1 .8-1.6l8-6a2 2 0 0 1 2.4 0l8 6Z\"/><path d=\"m22 10-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 10\"/>",
+  "tag": "<path d=\"M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z\"/><circle cx=\"7.5\" cy=\"7.5\" r=\".5\" fill=\"currentColor\"/>",
+  "star": "<path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\"/>",
+  "bookmark": "<path d=\"M17 3a2 2 0 0 1 2 2v15a1 1 0 0 1-1.496.868l-4.512-2.578a2 2 0 0 0-1.984 0l-4.512 2.578A1 1 0 0 1 5 20V5a2 2 0 0 1 2-2z\"/>",
+  "box": "<path d=\"M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z\"/><path d=\"m3.3 7 8.7 5 8.7-5\"/><path d=\"M12 22V12\"/>",
+  "folder": "<path d=\"M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z\"/>",
+  "ellipsis": "<circle cx=\"12\" cy=\"12\" r=\"1\"/><circle cx=\"19\" cy=\"12\" r=\"1\"/><circle cx=\"5\" cy=\"12\" r=\"1\"/>",
+  "pin": "<path d=\"M12 17v5\"/><path d=\"M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z\"/>",
+  "eye-off": "<path d=\"M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49\"/><path d=\"M14.084 14.158a3 3 0 0 1-4.242-4.242\"/><path d=\"M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143\"/><path d=\"m2 2 20 20\"/>",
+  "check": "<path d=\"M20 6 9 17l-5-5\"/>",
+  "chevron-down": "<path d=\"m6 9 6 6 6-6\"/>",
+  "search": "<path d=\"m21 21-4.34-4.34\"/><circle cx=\"11\" cy=\"11\" r=\"8\"/>",
+  "x": "<path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/>",
+  "a-arrow-down": "<path d=\"m14 12 4 4 4-4\"/><path d=\"M18 16V7\"/><path d=\"m2 16 4.039-9.69a.5.5 0 0 1 .923 0L11 16\"/><path d=\"M3.304 13h6.392\"/>",
+  "circle-x": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m15 9-6 6\"/><path d=\"m9 9 6 6\"/>",
+  "circle-alert": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><line x1=\"12\" x2=\"12\" y1=\"8\" y2=\"12\"/><line x1=\"12\" x2=\"12.01\" y1=\"16\" y2=\"16\"/>",
+  "rotate-ccw": "<path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\"/><path d=\"M3 3v5h5\"/>",
+  "send": "<path d=\"M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z\"/><path d=\"m21.854 2.147-10.94 10.939\"/>",
+  "wifi-off": "<path d=\"M12 20h.01\"/><path d=\"M8.5 16.429a5 5 0 0 1 7 0\"/><path d=\"M5 12.859a10 10 0 0 1 5.17-2.69\"/><path d=\"M19 12.859a10 10 0 0 0-2.007-1.523\"/><path d=\"M2 8.82a15 15 0 0 1 4.177-2.643\"/><path d=\"M22 8.82a15 15 0 0 0-11.288-3.764\"/><path d=\"m2 2 20 20\"/>",
+};
+const inputSvg = (name) => {
+  if (!INPUT_ICON_PATHS[name]) throw new Error(`입력 블록에 아이콘 "${name}" 이 없다 — INPUT_ICON_PATHS 에 더한다`);
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${INPUT_ICON_PATHS[name]}</svg>`;
+};
+let pinpSeq = 0;
+const nextPinpId = (prefix = "pinp") => `${prefix}-${(pinpSeq += 1)}`;
+
+// 카테고리 아이콘 세트 — specs/components/category-icons.yaml 을 빌드 때 읽는다(148개 · 13 묶음). 한 줄에 한 아이콘인 흐름 맵이라 줄마다 푼다(바깥 의존성 없이 —
+// INSTITUTIONS 와 같다). 묶음 차례는 groups, 묶음 안은 표의 차례다
+const CATEGORY_ICON_SET = (() => {
+  const src = readFileSync(resolve(ROOT, "specs/components/category-icons.yaml"), "utf8");
+  const list = (text) => text.replace(/^\[|\]$/g, "").split(",").map((s) => s.trim()).filter(Boolean);
+  const groupsLine = /^groups: (\[.*\])\s*$/m.exec(src);
+  if (!groupsLine) throw new Error("category-icons.yaml 에 groups 가 없다");
+  const groups = list(groupsLine[1]);
+  const fallback = (/^default: ([a-z0-9-]+)\s*$/m.exec(src) || [])[1];
+  const entries = [];
+  for (const raw of src.split("\n")) {
+    const m = /^\s*- \{ (.*) \}\s*$/.exec(raw);
+    if (!m) continue;
+    // 맨 위 쉼표로 가른다 — [ ] 안의 쉼표는 그 값의 것이다
+    const parts = [];
+    let depth = 0;
+    let start = 0;
+    for (let i = 0; i < m[1].length; i++) {
+      const ch = m[1][i];
+      if (ch === "[") depth++;
+      else if (ch === "]") depth--;
+      else if (ch === "," && depth === 0) { parts.push(m[1].slice(start, i)); start = i + 1; }
+    }
+    parts.push(m[1].slice(start));
+    const e = {};
+    for (const part of parts) {
+      const at = part.indexOf(":");
+      const key = part.slice(0, at).trim();
+      const value = part.slice(at + 1).trim();
+      e[key] = value.startsWith("[") ? list(value) : value;
+    }
+    if (!e.id || !e.group || !e.name || !Array.isArray(e.aliases)) throw new Error(`category-icons.yaml 을 풀지 못했다: ${raw.trim()}`);
+    if (!groups.includes(e.group)) throw new Error(`category-icons.yaml — ${e.id} 의 묶음 "${e.group}" 이 groups 에 없다`);
+    if (!INPUT_ICON_PATHS[e.id]) throw new Error(`category-icons.yaml — ${e.id} 의 모양이 INPUT_ICON_PATHS 에 없다`);
+    entries.push({ id: e.id, group: e.group, name: e.name, aliases: e.aliases, lucideAliases: e.lucideAliases || [] });
+  }
+  if (!entries.length) throw new Error("category-icons.yaml 에 아이콘이 없다");
+  return { groups, entries, fallback };
+})();
+// 찾기 — 찾는 말과 이름 · 찾는 말 · id 를 소문자로 바꾸고 공백을 모두 뺀 뒤 부분 일치, 결과는 표의 차례 그대로(category-icons.yaml 머리 · icon-picker.yaml search.match).
+// 페이지 끝 스크립트도 같은 코드를 쓰므로 바깥 이름을 부르지 않고 ES5 로 쓴다
+function categoryIconLib(ENTRIES) {
+  function norm(s) { return String(s).toLowerCase().replace(/\s+/g, ""); }
+  return {
+    search: function (query) {
+      var q = norm(query);
+      if (!q) return ENTRIES.slice();
+      return ENTRIES.filter(function (e) { return [e.name, e.id].concat(e.aliases).some(function (t) { return norm(t).indexOf(q) >= 0; }); });
+    },
+    // 저장 값 → 세트의 아이콘(id 또는 옛 lucide 이름). 세트 밖이면 null
+    find: function (id) {
+      for (var i = 0; i < ENTRIES.length; i++) if (ENTRIES[i].id === id || ENTRIES[i].lucideAliases.indexOf(id) >= 0) return ENTRIES[i];
+      return null;
+    },
+  };
+}
+const CATEGORY_ICON = categoryIconLib(CATEGORY_ICON_SET.entries);
+
+// ── Slider ───────────────────────────────────────────────────────────────
+// 자리 — 값을 0 ~ 1 로(p). 손잡이 가운데는 트랙 양 끝에서 반지름 10 들어온 범위를 p 로 나눈 자리다(slider.yaml thumb.inset — CSS 가 calc 로 푼다)
+const psldP = (v, min, max) => (max === min ? 0 : Math.min(1, Math.max(0, (v - min) / (max - min))));
+// 눈금 — 구간(단계 사이)이 2 ~ 5 면 discrete(트랙을 끊는 틈 · 단계마다 표식), 그 밖은 none(양 끝 표식만). 레시피가 min · max · step 으로 가른다
+const psldTicks = (min, max, step) => {
+  const n = Math.round((max - min) / step);
+  return n >= 2 && n <= 5 ? "discrete" : "none";
+};
+const PSLD_STATES = ["hover", "focus", "pressed"];
+
+// 슬라이더 하나 — 값 하나(value) · 둘(values — [최소, 최대]). 글(format 의 글 · 이름)은 여기서 escape 한다.
+//   format      단위를 붙인 글(formatValue — aria-valuetext · 말풍선 · 표식이 같은 글). 기본은 숫자 그대로
+//   labelledby  값 하나의 이름 — Field 라벨 id(aria-labelledby). 범위는 손잡이마다 "{label} 최소 · 최대"(aria-label — thumbLabels)
+//   describedby Field 의 설명 · 오류 id
+//   state       hover · focus · pressed — 그 순간을 멈춘 손잡이(갤러리 전용, stateAt 번째). 말풍선은 그 상태가 띄운다
+//   disabled    막힘 — 전용 색, 손잡이는 Tab 순서에서 빠진다(aria-disabled)
+//   live        commit(손을 뗄 때 저장 — 요청을 흉내 낸다) · form(폼의 값 — 보내지 않는다) · range — 페이지 끝 스크립트가 끌기 · 누르기 · 키보드를 맡는다
+//   surface     눈금 틈의 색 — 놓인 표면(default · floating)
+//   guide       부위를 점선으로 잰다(손잡이 줄 44 · 트랙 · 손잡이 — 갤러리 전용)
+function pslider({ id = nextPinpId("psld"), min = 0, max = 100, step = 1, value = 0, values = null, format = (v) => String(v), label = "", labelledby = "", describedby = "", thumbLabels = ["최소", "최대"], state = "", stateAt = 0, disabled = false, live = "", surface = "default", guide = false, attrs = "" } = {}) {
+  const range = Array.isArray(values);
+  const vals = range ? values : [value];
+  const ps = vals.map((v) => psldP(v, min, max));
+  const ticks = psldTicks(min, max, step);
+  const n = Math.round((max - min) / step);
+  const cls = ["psld", `psld--${ticks}`, surface === "floating" && "psld--floating", guide && "psld--guide"].filter(Boolean).join(" ");
+  const tickHtml = ticks === "discrete" ? Array.from({ length: n - 1 }, (_, i) => `<span class="psld-tick" style="--psld-at: ${(i + 1) / n};"></span>`).join("") : "";
+  const thumbs = vals.map((v, i) => {
+    const st = state && i === stateAt && PSLD_STATES.includes(state) ? ` psld-thumb--${state}` : "";
+    const name = range ? `aria-label="${escape(`${label} ${thumbLabels[i]}`)}"` : labelledby ? `aria-labelledby="${labelledby}"` : `aria-label="${escape(label)}"`;
+    const thumb = `<span ${attrsOf([
+      `class="psld-thumb${st}"`,
+      'role="slider"',
+      !disabled && 'tabindex="0"',
+      name,
+      describedby && `aria-describedby="${describedby}"`,
+      `aria-valuemin="${min}"`,
+      `aria-valuemax="${max}"`,
+      `aria-valuenow="${v}"`,
+      `aria-valuetext="${escape(format(v))}"`,
+      'aria-orientation="horizontal"',
+      disabled && 'aria-disabled="true"',
+      `data-psld-i="${i}"`,
+      `style="--psld-p: ${ps[i]};"`,
+    ])}></span>`;
+    const tip = `<span class="psld-bubble" aria-hidden="true" style="--psld-p: ${ps[i]};"><span class="psld-bubble-box">${escape(format(v))}</span><span class="psld-bubble-arrow"></span></span>`;
+    return thumb + tip;
+  }).join("");
+  const steps = ticks === "discrete" ? Array.from({ length: n + 1 }, (_, i) => min + i * step) : [min, max];
+  const markers = `<div class="psld-markers" aria-hidden="true">${steps.map((v, i) => `<span class="psld-marker" style="--psld-at: ${i / (steps.length - 1)};">${escape(format(v))}</span>`).join("")}</div>`;
+  const root = attrsOf([
+    `class="${cls}"`,
+    `id="${id}"`,
+    `data-mode="${range ? "range" : "single"}"`,
+    `data-min="${min}"`,
+    `data-max="${max}"`,
+    `data-step="${step}"`,
+    disabled && 'data-disabled=""',
+    live && `data-psld-live="${live}"`,
+    `style="--psld-from: ${range ? ps[0] : 0}; --psld-to: ${ps[ps.length - 1]};"`,
+    attrs,
+  ]);
+  return `<div ${root}><div class="psld-control"><div class="psld-track"><span class="psld-fill"></span>${tickHtml}</div>${thumbs}</div>${markers}</div>`;
+}
+
+// 슬라이더 Field — 머리(라벨 · 오른쪽 머리 값 .psld-value — 16 / 22 · 700 · 고정폭 숫자 · aria-hidden) · 슬라이더 · 꼬리(설명 또는 오류). 03g 의 .ptf-field 틀이다.
+// 라벨은 <label> 이 아니라 이름 글이다 — 손잡이가 aria-labelledby 로 잇는다(레시피의 useFieldGroup). 오류는 설명 자리를 대신하고 화면 밖 polite 자리가 한 번 읽는다.
+// format 을 주면 머리 값을 그 글로 쓴다(범위는 "30% ~ 70%")
+function psldField({ id = nextPinpId("psld-field"), label = "", description = "", error = "", invalid = false, slider = {}, headValue = null, attrs = "" } = {}) {
+  const ids = { label: `${id}-label`, desc: `${id}-desc`, error: `${id}-error` };
+  const showError = invalid && error;
+  const format = slider.format || ((v) => String(v));
+  const shown = headValue ?? (Array.isArray(slider.values) ? `${format(slider.values[0])} ~ ${format(slider.values[1])}` : format(slider.value ?? 0));
+  const disabled = !!slider.disabled;
+  const head = `<div class="ptf-field-header"><span class="ptf-label" id="${ids.label}">${escape(label)}</span><span class="psld-value" aria-hidden="true">${escape(shown)}</span></div>`;
+  const describedby = [showError && ids.error, description && ids.desc].filter(Boolean).join(" ");
+  const errorEl = `<p class="ptf-error" id="${ids.error}" aria-hidden="true"${showError ? "" : " hidden"}>${TEXT_FIELD_ICON.circleAlert}<span>${escape(error)}</span></p>`;
+  const descEl = description ? `<p class="ptf-desc" id="${ids.desc}"${showError ? " hidden" : ""}><span>${escape(description)}</span></p>` : "";
+  const footer = description || error ? `<div class="ptf-field-footer">${error ? errorEl : ""}${descEl}</div>` : "";
+  const live = `<span class="ptf-sr-only ptf-live" aria-live="polite">${showError ? escape(error) : ""}</span>`;
+  return `<div ${attrsOf([`class="ptf-field psld-field"`, 'data-slot="field"', showError && 'data-invalid=""', disabled && 'data-disabled=""', attrs])}>${head}${pslider({ ...slider, label: slider.label ?? label, labelledby: ids.label, describedby })}${footer}${live}</div>`;
+}
+
+// ── Toggle ───────────────────────────────────────────────────────────────
+// 켜고 끄는 아이콘 단추 — <button type="button" aria-pressed> 하나. 이름(aria-label)은 고정이고 켬은 aria-pressed 가 알린다. 글은 여기서 escape 한다.
+//   icon · pressedIcon  끔 · 켬일 때의 아이콘(INPUT_ICON_PATHS 이름) — pressedIcon 이 없으면 icon 그대로(모으기 단추 — 관심 · 고정은 사선 없이 굵기 · 색만)
+//   tone         default(흰 표면 · 카드 · 시트 위) · inverted(브랜드 채움 위 — 순자산 카드. 켬 · 끔 모두 흰 아이콘, 원 · 바탕 없음)
+//   interaction  hover · pressed · focus — 그 순간을 멈춘 단추(갤러리 전용)
+//   live         누르면 켬 ↔ 끔(페이지 끝 스크립트) — server 면 요청을 흉내 내고 실패하면 되돌려 스낵바로 알린다
+const PTGL_INTERACTIONS = ["hover", "pressed", "focus"];
+function ptoggle({ name, icon, pressedIcon = "", pressed = false, tone = "default", interaction = "", disabled = false, live = "", attrs = "" } = {}) {
+  const cls = ["ptgl", tone === "inverted" && "ptgl--inverted", PTGL_INTERACTIONS.includes(interaction) && `ptgl--${interaction}`].filter(Boolean).join(" ");
+  return `<button ${attrsOf([
+    `class="${cls}"`,
+    'type="button"',
+    `aria-pressed="${pressed ? "true" : "false"}"`,
+    `aria-label="${escape(name)}"`,
+    disabled && "disabled",
+    live && `data-ptgl-live="${live}"`,
+    attrs,
+  ])}><span class="ptgl-icon ptgl-icon--off">${inputSvg(icon)}</span><span class="ptgl-icon ptgl-icon--on">${inputSvg(pressedIcon || icon)}</span></button>`;
+}
+// 단추 넷 — 이름(고정) · 끔 · 켬 아이콘(toggle.md 의 표). 눈은 지금 상태를 그린다 — 금액이 가려져 있으면(켬) eye-off, 키가 보이면(켬) eye
+const PTGL_KINDS = {
+  watch: { name: "관심 등록", icon: "star", said: ["관심에 넣지 않음", "관심에 넣었다"] },
+  pin: { name: "장보기 목록 고정", icon: "pin", said: ["고정하지 않음", "고정했다"] },
+  hide: { name: "금액 가리기", icon: "eye", pressedIcon: "eye-off", said: ["금액이 보인다 — eye", "금액을 가렸다 — eye-off"] },
+  key: { name: "App Key 보기", icon: "eye-off", pressedIcon: "eye", said: ["키가 가려져 있다 — eye-off", "키를 보였다 — eye"] },
+};
+const ptoggleOf = (kind, opts = {}) => ptoggle({ ...PTGL_KINDS[kind], ...opts });
+
+// ── Input OTP ────────────────────────────────────────────────────────────
+// 인증 코드 칸 — 03g 의 Field + 입력칸 한 칸(Input 상자형). 숫자 키보드(inputmode numeric) · 받은 코드 제안(autocomplete one-time-code) · 고정폭 숫자 ·
+// placeholder "6자리 숫자". maxLength 는 걸지 않는다 — 브라우저가 먼저 자르면 붙인 글의 숫자를 잃는다. 숫자만 뽑기는 페이지 끝 스크립트(data-potp)가 한다
+const POTP_DESC = "10분 안에 입력해주세요 · 5번 틀리면 다시 받아요.";
+const POTP_ERROR = "코드가 맞지 않거나 시간이 지났어요. 확인하거나 다시 받아주세요.";
+function potpField({ id = nextPinpId("potp"), size = "responsive", value = "", invalid = false, error = POTP_ERROR, disabled = false, focus = false, live = false } = {}) {
+  const html = textField({ id, label: "인증 코드", description: POTP_DESC, invalid, error, control: { kind: "input", size, value, placeholder: "6자리 숫자", inputmode: "numeric", disabled, focus, rootClass: "potp-input" } });
+  return html.replace('<input class="ptf-input-value"', `<input class="ptf-input-value" autocomplete="one-time-code"${live ? ' data-potp=""' : ""}`);
+}
+// 다시 받기 — Button neutralWeak medium(40), 칸 꼬리 아래 12 · 왼쪽. first "코드 받기" · cooldown "다시 받기(52초)" 막힘(전용 색) · ready "다시 받기"
+function potpResend({ when = "ready", seconds = 52, live = "", attrs = "" } = {}) {
+  const text = when === "first" ? "코드 받기" : when === "cooldown" ? `다시 받기(${seconds}초)` : "다시 받기";
+  return `<button ${attrsOf(['class="btn btn-neutral-weak btn-size-medium potp-resend"', 'type="button"', when === "cooldown" && "disabled", live && `data-potp-resend="${live}"`, attrs])}><span>${escape(text)}</span></button>`;
+}
+
+// ── Color Swatch ─────────────────────────────────────────────────────────
+// 색 — v110 차트 10색(라이트 700 · 다크 800-dark). 차례는 색상환(5 × 2 — ↑ ↓ 가 늘 같은 칸으로), 새 항목은 배정 순서에서 쓰지 않은 첫 색(회색은 주지 않는다)
+const PCSW_ORDER = ["red", "orange", "yellow", "green", "blue", "indigo", "violet", "pink", "brown", "gray"];
+const PCSW_NAMES = { red: "빨강", orange: "주황", yellow: "노랑", green: "초록", blue: "파랑", indigo: "남색", violet: "보라", pink: "분홍", brown: "갈색", gray: "회색" };
+const PCSW_ASSIGN = ["blue", "green", "orange", "violet", "pink", "indigo", "red", "yellow", "brown"];
+const pcswFirstUnused = (used) => PCSW_ASSIGN.find((c) => !used.includes(c)) ?? PCSW_ASSIGN[0];
+// 팔레트 밖 저장 색의 체크 — fg-neutral · fg-neutral-inverted 가운데 그 색 위 대비가 큰 쪽(color-swatch.yaml current.custom). 두 색이 모드마다 바뀌어
+// 그리는 때가 아니라 페이지 끝 스크립트가 그 자리(라이트 · 다크 틀)에서 잰다 — 레시피의 useCheckTone 과 같다
+const PCSW_STATES = ["hover", "focus", "pressed"];
+
+// 색 고르기 묶음 — radiogroup. 이름은 Field 라벨(labelledby) 또는 label(aria-label — Field 밖에서만). 칸 이름은 색 이름("빨강"), 지금 색 칸은 "지금 색" · "자동".
+//   value     고른 색(차트 색 이름) · "current"(지금 색 칸) · ""(아무것도 안 고름)
+//   current   { kind: "custom", color: "#9E9E9E" } 팔레트 밖 저장 색 · { kind: "auto", color: "brown" } 색 없음(차트가 쓸 색을 점선 원으로) — 격자 앞 칸 + 세로 선
+//   state     { at: 색 이름 · "current", i: hover · focus · pressed } — 그 순간을 멈춘 칸(갤러리 전용)
+//   live      누르기 · 화살표 · Space 로 고른다(페이지 끝 스크립트)
+// 칸 하나 — role=radio 버튼(원 40 · 누르는 44). key 는 차트 색 이름 또는 "current"(지금 색 칸 — current 를 준다). 체크는 늘 담고 고른 칸에서만 보인다
+function pcswSwatch({ key, current = null, checked = false, tab = false, state = "", disabled = false } = {}) {
+  const isCurrent = key === "current";
+  const kind = isCurrent ? (current.kind === "auto" ? `pcsw-swatch--auto pcsw-swatch--${current.color}` : "pcsw-swatch--custom") : `pcsw-swatch--${key}`;
+  const name = isCurrent ? (current.kind === "auto" ? "자동" : "지금 색") : PCSW_NAMES[key];
+  return `<button ${attrsOf([
+    `class="pcsw-swatch ${kind}${PCSW_STATES.includes(state) ? ` pcsw-swatch--${state}` : ""}"`,
+    'type="button"',
+    'role="radio"',
+    `aria-checked="${checked ? "true" : "false"}"`,
+    `tabindex="${tab ? 0 : -1}"`,
+    `aria-label="${name}"`,
+    `data-pcsw-value="${key}"`,
+    isCurrent && current.kind === "custom" && `style="--pcsw-c: ${current.color};"`,
+    disabled && "disabled",
+  ])}><span class="pcsw-check">${inputSvg("check")}</span></button>`;
+}
+function pcswGroup({ id = nextPinpId("pcsw"), value = "", current = null, label = "", labelledby = "", disabled = false, state = null, live = false, attrs = "" } = {}) {
+  const order = [...(current ? ["current"] : []), ...PCSW_ORDER];
+  const tabAt = order.includes(value) ? value : order[0];
+  const cell = (key) => pcswSwatch({ key, current, checked: value === key, tab: key === tabAt, state: state && state.at === key ? state.i : "", disabled });
+  const head = current
+    ? `<div class="pcsw-current">${cell("current")}<span class="pcsw-current-label" aria-hidden="true">${current.kind === "auto" ? "자동" : "지금 색"}</span></div><span class="pcsw-divider" aria-hidden="true"></span>`
+    : "";
+  return `<div ${attrsOf([
+    'class="pcsw"',
+    `id="${id}"`,
+    'role="radiogroup"',
+    labelledby ? `aria-labelledby="${labelledby}"` : label && `aria-label="${escape(label)}"`,
+    disabled && 'aria-disabled="true"',
+    disabled && 'data-disabled=""',
+    live && 'data-pcsw-live=""',
+    attrs,
+  ])}>${head}<div class="pcsw-grid">${PCSW_ORDER.map(cell).join("")}</div></div>`;
+}
+// 색 Field — 라벨 "색상"(묶음 이름 — aria-labelledby). 라벨은 <label> 이 아니라 이름 글이다
+function pcswField({ id = nextPinpId("pcsw-field"), label = "색상", group = {}, attrs = "" } = {}) {
+  const labelId = `${id}-label`;
+  return `<div ${attrsOf(['class="ptf-field pcsw-field"', 'data-slot="field"', group.disabled && 'data-disabled=""', attrs])}><div class="ptf-field-header"><span class="ptf-label" id="${labelId}">${escape(label)}</span></div>${pcswGroup({ ...group, labelledby: labelId })}</div>`;
+}
+
+// ── Icon Picker ──────────────────────────────────────────────────────────
+// 칸 하나 — role=option · 48 · 아이콘 24. 이름은 한국어 이름(aria-label — 마우스는 같은 글의 툴팁이고 네이티브 title 은 쓰지 않는다). roving tabindex — 격자에 Tab 하나
+const PIPK_STATES = ["hover", "pressed", "focus"];
+function pipkCell(entry, { selected = false, tab = false, state = "", idPrefix = "" } = {}) {
+  return `<div ${attrsOf([
+    `class="pipk-cell${PIPK_STATES.includes(state) ? ` pipk-cell--${state}` : ""}"`,
+    'role="option"',
+    idPrefix && `id="${idPrefix}-${entry.id}"`,
+    `aria-selected="${selected ? "true" : "false"}"`,
+    `tabindex="${tab ? 0 : -1}"`,
+    `aria-label="${escape(entry.name)}"`,
+    `data-pipk-id="${entry.id}"`,
+  ])}>${inputSvg(entry.id)}</div>`;
+}
+// 격자 — listbox(이름 "아이콘"). 찾는 말이 없으면 묶음(role=group + 머리 aria-labelledby)마다, 있으면 결과를 표의 차례로 묶음 머리 없이 늘어놓는다.
+//   value    지금 값(lucide 이름) — 고른 칸(안쪽 2px 짙은 테두리 + 선 2.5). 세트 밖 · 없음이면 고른 칸이 없다
+//   groups   그릴 묶음 수(그림을 짧게 — 기본 모두) · query 찾는 말 · state { id, i } 그 순간을 멈춘 칸
+function pipkGrid({ id = nextPinpId("pipk-grid"), value = "", query = "", groups = 0, state = null } = {}) {
+  const hit = CATEGORY_ICON.find(value);
+  const results = query ? CATEGORY_ICON.search(query) : null;
+  const list = results ?? CATEGORY_ICON_SET.entries;
+  const tabId = list.some((e) => hit && e.id === hit.id) ? hit.id : list[0]?.id;
+  const cellOf = (e) => pipkCell(e, { selected: !!hit && hit.id === e.id, tab: e.id === tabId, state: state && state.id === e.id ? state.i : "", idPrefix: id });
+  let body;
+  if (results) body = `<div class="pipk-cells">${results.map(cellOf).join("")}</div>`;
+  else {
+    const shown = groups ? CATEGORY_ICON_SET.groups.slice(0, groups) : CATEGORY_ICON_SET.groups;
+    body = shown.map((g, gi) => `<div class="pipk-group" role="group" aria-labelledby="${id}-g${gi}"><div class="pipk-group-head" id="${id}-g${gi}">${escape(g)}</div><div class="pipk-cells">${CATEGORY_ICON_SET.entries.filter((e) => e.group === g).map(cellOf).join("")}</div></div>`).join("");
+  }
+  return `<div class="pipk-grid" id="${id}" role="listbox" aria-label="아이콘"${results && !results.length ? " hidden" : ""}>${body}</div>`;
+}
+// 여는 자리 안 — 위에 붙는 찾기 칸(Input 밑줄형 · 시트 large 40 · 팝오버 medium 34 · 앞 돋보기 · 지우기) · 격자 · 결과 수(화면 밖 polite) · 결과 없음(Result Section medium)
+function pipkPanel({ surface = "sheet", value = "", query = "", groups = 0, state = null, live = false } = {}) {
+  const results = query ? CATEGORY_ICON.search(query) : null;
+  const search = textInput({ variant: "underline", size: surface === "sheet" ? "large" : "medium", value: query, placeholder: "아이콘 이름 검색", label: "아이콘 검색", prefixIcon: "search", clearable: true });
+  const empty = resultSection({ kind: "empty", size: "medium", icon: "searchX", title: `'${query}'에 대한 아이콘이 없어요`, description: "다른 말로 찾거나 묶음에서 골라주세요.", level: 3 });
+  // 찾기 칸은 스크롤 상자 밖(늘 위) — 묶음 머리 · 격자는 끝 흐림 스크롤 상자 안(Scroll Fog overlayBody — 위 20 · 아래 80 늘 켜짐 · 본문 안 여백 그만큼).
+  // 찾기 칸 ↔ 첫 머리 글 · 찾는 동안 격자 32(흐림 여백 20 + 위 12)
+  return `<div ${attrsOf([`class="pipk pipk--${surface}"`, live && 'data-pipk-live=""'])}><div class="pipk-search">${search}</div><div class="pipk-scroll pfog--overlay-body" data-scroll-fog="overlayBody">${pipkGrid({ value, query, groups, state })}<div class="pipk-empty"${results && !results.length ? "" : " hidden"}>${results && !results.length ? empty : ""}</div><p class="pinp-sr pipk-count" aria-live="polite">${results && results.length ? `검색 결과 ${results.length}개` : ""}</p></div></div>`;
+}
+// 트리거 — 03h 의 Input Button. 라벨 "아이콘"(Field), 앞에 지금 아이콘, 값은 그 이름, 뒤 아래 화살표. 아이콘이 없으면 태그 + "태그", 세트 밖이면 그 아이콘 + "지금 아이콘"
+function pipkTrigger({ value = "", size = "responsive", interaction = "", expanded = false, live = "" } = {}) {
+  const hit = value ? CATEGORY_ICON.find(value) : CATEGORY_ICON.find(CATEGORY_ICON_SET.fallback);
+  const icon = hit ? hit.id : value;
+  const text = hit ? hit.name : "지금 아이콘";
+  const html = textField({ label: "아이콘", control: { kind: "inputButton", size, value: text, suffixIcon: "chevronDown", interaction, expanded } });
+  return html.replace('<span class="pib-content">', `<span class="pib-content"><span class="pib-icon pipk-trigger-icon" aria-hidden="true">${inputSvg(icon)}</span>`).replace('class="pib-button"', `class="pib-button"${live ? ` data-pipk-trigger="${live}"` : ""}`);
+}
+
+// 입력 갤러리 — Slider 다섯 · Toggle 다섯(순자산 카드 위는 Desk 만) · Input OTP 셋 · Color Swatch 넷 · Icon Picker 넷, 판을 흰 표면(.vignette-card) 위에 그린다.
+// 견본 틀(.ptf-samples · .ptf-cap)과 상태 표(.cb-matrix)는 Text Field 갤러리 것, 라이트 · 다크 나란히 틀(.pdsp-pair · .pdsp-theme)은 03o 것이다 — 나란히 틀에는
+// 이 블록의 부품과 03g 의 Field · 입력칸 · 03h 의 Input Button · 03r 의 상단 바 · 03s 의 카드만 담는다(시트 · 팝오버 · 스낵바는 페이지 테마를 따른다).
+// 글은 각 스펙 md 의 코드 예와 같은 자리다 — Desk(예산 알림 임계값 · 관심 등록 · 금액 가리기 · 메모 고정 · 이용 해지 본인 확인 · 카테고리 추가)와 만족도 · 예산 사용률.
+export function renderInputGallery(brand) {
+  const desk = brand.key === "desk";
+  const panel = (title, sub, body) => `
+    <div class="vignette-card cb-panel pinp-panel">
+      <div class="vignette-head">
+        <div class="vignette-title">${escape(title)}</div>
+        <div class="vignette-sub">${escape(sub)}</div>
+      </div>${body}
+    </div>`;
+  const samples = (items, cls = "ptf-samples") => `
+      <div class="${cls}">${items.join("")}
+      </div>`;
+  const sample = (capText, en, body) => `
+        <div class="ptf-sample">
+          <div class="ptf-cap">${escape(capText)}<span>${escape(en)}</span></div>
+          ${body}
+        </div>`;
+  const matrix = (cls, first, cols, rows, cell) => `
+      <div class="cb-matrix ${cls}" style="--cb-cols: ${cols.length};">
+        <div class="cb-matrix-row cb-matrix-row--head"><div class="cb-matrix-head">${escape(first)}</div>${
+          cols.map((c) => `<div class="cb-matrix-head">${escape(c.ko)}<span>${escape(c.en)}</span></div>`).join("")
+        }</div>${rows.map((r) => `
+        <div class="cb-matrix-row"><div class="cb-matrix-label">${escape(r.ko)}<span>${escape(r.en)}</span></div>${
+          cols.map((c) => `<div class="cb-matrix-cell pinp-cell">${cell(r, c)}</div>`).join("")
+        }</div>`).join("")}
+      </div>`;
+  const pair = (body, cls = "") => `<div class="pdsp-pair${cls ? ` ${cls}` : ""}">${["light", "dark"].map((t) => `<div class="pdsp-theme pdsp-theme--${t}"><div class="pdsp-theme-cap">${t === "light" ? "라이트" : "다크"}</div>${typeof body === "function" ? body(t) : body}</div>`).join("")}</div>`;
+  const cap = (text, sub = "") => `<div class="pnav-cap pinp-cap">${escape(text)}${sub ? `<span>${escape(sub)}</span>` : ""}</div>`;
+  const status = (attr, text) => `<p class="pnav-live-status pinp-live-status" aria-hidden="true" ${attr}="">${escape(text)}</p>`;
+  // 화면 틀 — 폰(390 · 좌우 24 → 칸 342) · 데스크톱 설정 카드(760 · 여백 24). 좁은 미리보기에서는 폰은 줄고 데스크톱은 가로로 민다
+  const phone = (body, cls = "") => `<div class="pinp-phone${cls ? ` ${cls}` : ""}">${body}</div>`;
+  const deskCard = (body, cls = "") => `<div class="pinp-wide"><div class="pinp-desk${cls ? ` ${cls}` : ""}">${body}</div></div>`;
+  const controls = (items) => `<div class="pinp-controls">${items.map(([label, attr]) => `<button class="btn btn-neutral-weak btn-size-small" type="button" ${attr}><span>${escape(label)}</span></button>`).join("")}</div>`;
+  const NEXT = "ptf-samples pov-samples--next";
+  // 넓은 견본(데스크톱 카드 · 대화상자 · 화면 틀)은 한 줄을 다 쓴다 · 폰 시트 틀은 360 이 들어가는 칸에
+  const WIDE = "ptf-samples pinp-samples--wide pov-samples--next";
+  const SHEET = "ptf-samples pinp-samples--sheet";
+  const pct = (v) => `${v}%`;
+  const pts = (v) => `${v}점`;
+
+  // ── Slider ─────────────────────────────────────────────────────────────
+  const THRESHOLD = { min: 50, max: 100, step: 5, format: pct, value: 80 };
+  const thresholdField = ({ slider = {}, ...rest } = {}) => psldField({ label: "예산 알림 임계값", description: "예산 사용률이 이 값을 넘으면 알려줘요.", ...rest, slider: { ...THRESHOLD, ...slider } });
+  const scoreField = ({ slider = {}, ...rest } = {}) => psldField({ label: "만족도", ...rest, slider: { min: 1, max: 5, step: 1, format: pts, value: 4, ...slider } });
+  const usageField = ({ slider = {}, ...rest } = {}) => psldField({ label: "예산 사용률", ...rest, slider: { min: 0, max: 100, step: 10, format: pct, values: [30, 70], ...slider } });
+
+  // 1. 모양 — SEED 무채색 · 손잡이 줄 44 · 폰 · 데스크톱 · 부위 · 누르는 동안
+  const sliderLook = panel(
+    "Slider — SEED 무채색: 트랙 4 · 채움 · 손잡이 20 · 손잡이 줄 44",
+    "정해진 범위에서 값을 끌어 고르는 컨트롤이다 — 모양은 SEED 의 무채색 그대로다. 트랙 4 stroke-neutral-weak(SEED gray-400 의 역할 짝 — 흰 표면 위 1.23) · 채움 fg-neutral · 손잡이 원 20 bg-neutral-inverted 이고 테두리 · 그림자가 없다. 라이트 · 다크 모두 채움과 손잡이가 같은 색이라 손잡이는 크기(20 · 4)로 갈린다 — 체크박스 · 라디오 · 스위치의 켬과 같은 짙은 회색이고 브랜드 색으로 칠하지 않는다. 손잡이 줄은 높이 44 이고 줄 전체가 누르는 자리다(트랙 위아래 20 · 손잡이 위아래 12 — SEED 26 은 44 에 못 미친다). 손잡이는 트랙 양 끝에서 반지름 10 만큼 들어온 자리까지만 가고, 채움도 그 가운데까지다. 지금 값은 Field 머리 오른쪽에 늘 둔다(16 / 22 · 700 · 고정폭 숫자), 아래 2 에는 양 끝 값 표식(13 / 18 · fg-neutral-muted)뿐이다 — 단계를 숫자로 늘어놓지 않는다. 누르거나 끄는 동안 손잡이가 24(SEED 1.2배)로 커진다. 그림은 Desk 설정 > 알림 > 예산 알림 임계값(50 ~ 100 · 5 단위)이다. 옛 브랜드 채움 · 흰 손잡이 16 + 2px 브랜드 테두리 + 그림자 · 아래 \"현재 값\" 줄은 걷었다.",
+    `${pair(() => phone(thresholdField()))}${samples([
+      sample("데스크톱 — 설정 카드 760 · 트랙 712", "같은 크기 · 같은 값 — 폭만 놓인 자리를 채운다", deskCard(thresholdField())),
+    ], WIDE)}${samples([
+      sample("부위 — 손잡이 줄 44(점선) · 트랙 4 · 손잡이 20", "손잡이 위아래 12 · 트랙 위아래 20 이 함께 눌린다 · 손잡이는 양 끝에서 10 들어온 자리까지", phone(thresholdField({ slider: { guide: true } }))),
+      sample("누르는 동안 — 손잡이 24 + 말풍선", "pressed — 손가락 밑에서 손잡이가 보이게(SEED 1.2배)", phone(thresholdField({ slider: { value: 65, state: "pressed" } }), "pinp-phone--bubble")),
+    ], NEXT)}`,
+  );
+
+  // 2. 값 보이기 — 머리 값 · 말풍선(누름 · 호버 · 포커스) · 끝에서 밀린 말풍선
+  const sliderValue = panel(
+    "값 보이기 — 머리 값 · 끄는 동안 말풍선 · 양 끝 표식",
+    "값은 세 자리에 같은 글(formatValue — \"80%\")로 보인다. 머리 값은 늘 보이고 손을 떼도 남는다. 말풍선은 끄는 동안 · 마우스를 손잡이에 올렸을 때 · 키보드 포커스일 때만 손잡이 위 12 에 뜬다 — 13 / 18 · 500 · 고정폭 숫자 · bg-neutral-inverted 바탕 · 위아래 4 · 좌우 8 · 모서리 6 · 최소 24 · 아래 8 × 6 화살표(SEED). 트랙 끝에서는 상자만 트랙 안으로 밀리고 화살표는 손잡이 가운데를 그대로 가리킨다. 트랙을 눌러 건너뛰기만 하면 뜨지 않는다. 손잡이 줄 위 24 는 말풍선 자리다 — Field 머리 ↔ 손잡이 줄 32 라 끄는 동안 말풍선이 머리(라벨 · 머리 값)를 덮지 않는다(누르는 자리는 손잡이 줄 44 그대로). 머리 값 · 말풍선 · 표식은 보조 기술에 숨기고, 값은 손잡이의 aria-valuetext(\"80%\")가 한 번 읽는다 — 이름은 칸 이름(Field 라벨)이고 이름 자리에 값을 넣지 않는다(\"예산 알림 임계값, 80%, 슬라이더\").",
+    `${pair(() => phone(thresholdField({ slider: { value: 65, state: "pressed" } }), "pinp-phone--bubble"))}${samples([
+      sample("마우스를 손잡이에 올림", "hovered(웹) — 손잡이의 색 · 크기는 그대로", phone(thresholdField({ slider: { state: "hover" } }), "pinp-phone--bubble")),
+      sample("키보드 포커스 — 링 2px · 띄움 2 + 말풍선", "focused — 키를 누를 때마다 값이 바뀌어 늘 띄운다", phone(thresholdField({ slider: { state: "focus" } }), "pinp-phone--bubble")),
+      sample("끝에서 — 상자만 안으로", "최솟값 50% — 화살표는 손잡이를 가리킨다", phone(thresholdField({ slider: { value: 50, state: "pressed" } }), "pinp-phone--bubble")),
+      sample("끝에서 — 오른쪽", "최댓값 100%", phone(thresholdField({ slider: { value: 100, state: "pressed" } }), "pinp-phone--bubble")),
+    ], NEXT)}`,
+  );
+
+  // 3. 단계 · 눈금 · 값 둘
+  const sliderSteps = panel(
+    "단계 · 눈금 — 2 ~ 5 구간만 굵은 틈 · 값 둘",
+    "구간(단계 사이)이 2 ~ 5개면 단계 자리마다 트랙 · 채움을 끊는 틈 4(놓인 표면과 같은 색 — 시트 · 팝오버 위면 bg-layer-floating)를 두고 표식도 단계마다 둔다 — 별점 1 ~ 5 는 구간 4 · 틈 3 · 표식 5 이고, 끝 둘은 끝에 맞추고 나머지는 단계 자리 가운데다. 손잡이는 끄는 동안에도 단계 자리에만 선다. 구간이 6개 이상이면 눈금 없이 양 끝 표식만 둔다(예산 알림 임계값 10 구간) — 단계는 끄는 동안 말풍선으로 안다. 레시피가 min · max · step 으로 스스로 가른다. 값 둘(RangeSlider)은 두 손잡이 사이를 채우고 서로를 넘지 않으며, 손잡이마다 이름이 다르다(\"예산 사용률 최소\" · \"예산 사용률 최대\"). 머리 값은 \"30% ~ 70%\" 다. 가는 눈금 · 점 눈금은 두지 않는다.",
+    `${pair(() => phone(`<div class="pinp-stack">${scoreField()}${usageField()}</div>`))}${samples([
+      sample("10 구간 — 눈금 없이 양 끝 표식", "50 ~ 100 · 5 단위 — ticks none", phone(thresholdField({ description: "" }))),
+      sample("별점 4 구간 — 틈 3 · 표식 5", "1 ~ 5 — ticks discrete, 손잡이는 단계 자리에만", phone(scoreField({ slider: { value: 3, state: "pressed" } }), "pinp-phone--bubble")),
+      sample("값 둘 — 두 손잡이 사이를 채운다", "움직이는 손잡이 위에만 말풍선 — \"예산 사용률 최대\"", phone(usageField({ slider: { state: "pressed", stateAt: 1 } }), "pinp-phone--bubble")),
+    ], NEXT)}`,
+  );
+
+  // 4. 상태
+  const SLD_STATES = [
+    { ko: "기본", en: "enabled", i: "" },
+    { ko: "호버", en: "hovered — 웹", i: "hover" },
+    { ko: "포커스", en: "focused — 키보드", i: "focus" },
+    { ko: "누름", en: "pressed — 끄는 동안", i: "pressed" },
+    { ko: "막힘", en: "disabled", i: "disabled" },
+  ];
+  const sliderStates = panel(
+    "상태 — 기본 · 호버 · 포커스 · 누름 · 막힘",
+    "호버는 말풍선만 띄우고 손잡이의 색 · 크기는 그대로다. 키보드 포커스는 손잡이 둘레 링 2px(띄움 2 · stroke-focus-ring) + 말풍선, 누름은 손잡이 24 + 말풍선이다. 막힘은 전용 색이다 — 트랙 bg-disabled · 채움 · 손잡이 · 표식 · 머리 값 fg-disabled, 불투명도로 흐리게 하지 않고 손잡이는 Tab 순서에서 빠진다. 오류(invalid)는 슬라이더 모양을 바꾸지 않는다 — Field 꼬리의 오류 글이 알린다(SEED 와 같다).",
+    `${matrix("pinp-matrix", "슬라이더", SLD_STATES, [
+      { ko: "눈금 없음", en: "임계값 80% — 10 구간", s: { ...THRESHOLD, label: "예산 알림 임계값" } },
+      { ko: "2 ~ 5 구간", en: "만족도 4점 — 4 구간", s: { min: 1, max: 5, step: 1, format: pts, value: 4, label: "만족도" } },
+    ], (r, c) => `<div class="pinp-surface pinp-surface--slider">${pslider({ ...r.s, state: c.i === "disabled" ? "" : c.i, disabled: c.i === "disabled" })}</div>`)}${samples([
+      sample("막힘 — Field 째", "머리 값 · 표식도 fg-disabled — 흐리게 하지 않는다", phone(thresholdField({ slider: { disabled: true } }))),
+      sample("오류 — 저장 실패", "슬라이더는 그대로 · 오류 글이 설명을 대신한다(Field)", phone(thresholdField({ invalid: true, error: "저장하지 못했어요. 값을 되돌렸어요 — 다시 해주세요." }))),
+    ], NEXT)}`,
+  );
+
+  // 5. 직접 — 손을 뗄 때 저장 · 요청 중에도 막지 않음 · 실패하면 되돌림 · 폼의 값 · 범위
+  const liveCommit = `<div class="pinp-live" data-psld-host="commit">${thresholdField({ error: "저장하지 못했어요. 값을 되돌렸어요 — 다시 해주세요.", slider: { live: "commit" } })}${controls([["다음 저장을 실패로", 'data-psld-fail=""']])}${status("data-psld-status", "손을 떼면 요청이 한 번 나간다 — 끌어 보세요.")}<ol class="pinp-log" aria-hidden="true" data-psld-log=""></ol></div>`;
+  const liveForm = `<div class="pinp-live" data-psld-host="form">${scoreField({ slider: { live: "form" } })}${status("data-psld-status", "폼의 값 — 손을 떼도 보내지 않는다.")}</div>`;
+  const liveRange = `<div class="pinp-live" data-psld-host="range">${usageField({ slider: { live: "range" } })}${status("data-psld-status", "가까운 손잡이가 움직인다 — 서로를 넘지 않는다.")}</div>`;
+  const sliderLive = panel(
+    "직접 — 손을 뗄 때 한 번 저장 · 요청 중에도 막지 않는다",
+    "누르는 순간 적용되는 슬라이더(설정)는 끄는 동안 화면(채움 · 손잡이 · 머리 값 · 말풍선)만 따라가고 손을 뗄 때 한 번 저장한다 — SEED onValuesCommit · 앱 onChangeEnd, 키보드는 키마다 한 번. 요청하는 동안에도 슬라이더를 막지 않는다 — 막으면 손잡이가 Tab 순서에서 빠져 키보드 초점이 본문으로 떨어진다. 요청이 겹치면 마지막 요청의 결과만 반영한다(앞 요청의 늦은 응답으로 되돌리지 않는다). 실패하면 값을 되돌리고 그 자리(Field 꼬리)에 알린다 — 오류 글이 설명을 대신하고 화면 읽기 프로그램에 한 번 알린다. 단계마다 저장 · 멈추고 400ms 뒤 저장 · 저장 버튼은 쓰지 않는다. 폼 안의 슬라이더(별점)는 폼의 값이라 손을 떼도 보내지 않는다. 직접 끌고, 트랙을 눌러 건너뛰고(150ms), 손잡이에 초점을 두고 ← → ↑ ↓(한 단계) · Shift + 화살표 · PageUp · PageDown(10단계) · Home · End 를 눌러 볼 수 있다 — 요청은 0.8초 걸린다. 모션 줄이기면 건너뛰기 · 말풍선 모션이 없다.",
+    samples([
+      sample("설정 — 예산 알림 임계값", "onValueCommit — 손을 뗄 때 · 키마다 한 번 · 마지막 요청만 반영", phone(liveCommit, "pinp-phone--bubble")),
+      sample("폼 — 만족도", "onValueCommit 없음 — 폼의 저장 버튼이 반영한다", phone(liveForm, "pinp-phone--bubble")),
+      sample("범위 — 예산 사용률", "RangeSlider — Home · End 는 다른 손잡이 값까지", phone(liveRange, "pinp-phone--bubble")),
+    ]),
+  );
+
+  // ── Toggle ─────────────────────────────────────────────────────────────
+  const TGL_WHERE = { watch: "증권 상세 머리 — star", hide: "상단 바 · 홈 · 자산 — eye ↔ eye-off", pin: "메모 카드 — pin", key: "연결 설정 — eye-off ↔ eye" };
+  const tglRead = (kind, on) => `"${PTGL_KINDS[kind].name}, ${on ? "눌림" : "안 눌림"}"`;
+  const tglTable = () => `<div class="pinp-tgl-table"><div class="pinp-tgl-row pinp-tgl-row--head"><span></span><span>끔</span><span>켬</span></div>${["watch", "hide", "pin", "key"].map((k) => `<div class="pinp-tgl-row"><span class="pinp-tgl-name">${escape(PTGL_KINDS[k].name)}<span>${escape(TGL_WHERE[k])}</span></span>${[false, true].map((on) => `<span class="pinp-tgl-cell">${ptoggleOf(k, { pressed: on })}<span class="pinp-tgl-read">${escape(tglRead(k, on))}</span></span>`).join("")}</div>`).join("")}</div>`;
+  const tglLive = `<div class="pinp-live" data-ptgl-host="">${`<div class="pinp-tgl-strip">${["watch", "hide", "pin", "key"].map((k) => ptoggleOf(k, { live: "local" })).join("")}</div>`}${status("data-ptgl-status", "눌러 보세요 — 이름은 그대로이고 aria-pressed 만 바뀐다.")}</div>`;
+
+  // 1. 켬 · 끔 · 아이콘 · 이름
+  const toggleLook = panel(
+    "Toggle — 켬 · 끔은 아이콘만: 관심 · 금액 가리기 · 고정 · App Key 보기",
+    "단추 하나가 한 상태를 켜고 끄는 아이콘 단추다(<button aria-pressed>). 켬 · 끔은 아이콘이 말한다 — 켬은 진한 색 fg-neutral + 선 2.5, 끔은 흐린 색 fg-neutral-muted + 선 2(기초 Iconography v106 — lucide 에 채움 모양이 없어 SEED 의 켬 = 채움을 굵기와 색으로 대신한다). 바탕은 켬 · 끔 모두 투명하다 — 켜면 옅은 바탕 · 반전 상자는 고르지 않았다. 아이콘은 누르면 할 일이 아니라 지금 상태를 그린다. 기능 단추(눈)는 lucide 의 -off 짝으로 지금 상태 쪽을 보인다 — 금액을 가렸으면(켬) eye-off, App Key 가 가려져 있으면(끔) eye-off. 모으기 단추(관심 · 고정)는 끔에도 사선을 두지 않는다 — 같은 아이콘이 흐린 선 2 · 진한 선 2.5 로만 갈린다(SEED 하트처럼, 채우지 않는다). 이름은 고정이다 — \"관심 등록\" 이 켜지면 \"관심 등록, 눌림\" 이고 \"관심 해제\" 로 바꾸지 않는다. 글이 있는 켜고 끄기 단추 · Toggle Group 은 걷었다 — 거르기는 Chip, 누르는 순간 적용되는 설정은 Switch 다.",
+    `${pair(tglTable)}${samples([sample("직접 — 눌러 보기", "켬 ↔ 끔은 손을 뗄 때 · 아이콘 · 굵기 · 색이 바로 바뀐다", phone(tglLive))], NEXT)}`,
+  );
+
+  // 2. 크기 · 자리 — 40 · 44 · 20, 상단 바 44 · 24(끔도 fg-neutral — 19B), 증권 머리 · 메모 카드 · App Key
+  const topBar = (hidden) => pnavPhone({ height: 56, home: false, cls: "pnav-phone--bar", inner: topNav({ type: "root", title: "가계부", actions: [{ icon: "search", name: "검색" }, { icon: hidden ? "eyeOff" : "eye", name: "금액 가리기", attrs: `aria-pressed="${hidden ? "true" : "false"}"` }, { icon: "ellipsis", name: "가계부 더보기" }] }) });
+  const deskBar = pnavDesk({ minWidth: 640, height: 132, header: topNav({ type: "desktop", primary: "내역 추가", actions: [{ icon: "eye", name: "금액 가리기", attrs: 'aria-pressed="false"' }, { icon: "bell", name: "알림, 새 알림 있음", dot: true }, { icon: "settings", name: "설정" }] }), main: pnavScreenTitle("가계부") });
+  const stockHead = (on, opts = {}) => `<div class="pinp-stock">${logoTile({ name: "삼성전자", size: 40 })}<div class="pinp-stock-body"><span class="pinp-stock-name">삼성전자</span><span class="pinp-stock-meta">005930 · 71,200원</span></div>${ptoggleOf("watch", { pressed: on, ...opts })}</div>`;
+  const memoCard = (title, body, on, opts = {}) => pcard({ press: "peers", link: `<div class="pdata-memo">${pcardLink(title)}${ptoggle({ name: `${title} 고정`, icon: "pin", pressed: on, ...opts })}</div>`, content: `<div class="pdata-note">${escape(body)}</div>` });
+  // App Key 칸 — 03g 의 입력칸(상자형 large)에 끝 단추로 Toggle 을 둔다. 가려져 있으면 password(끔 · eye-off), 보이면 text(켬 · eye)
+  const secret = (on) => textField({ label: "App Key", control: { kind: "input", size: "large", type: on ? "text" : "password", value: "PSmd8b3x7K2qL9vR", rootClass: "pinp-secret" } }).replace(/(<input [^>]*>)/, `$1${ptoggleOf("key", { pressed: on })}`);
+  const toggleSize = panel(
+    "크기 · 자리 — 보이는 40 · 누르는 44 · 아이콘 20 · 상단 바는 44 · 24",
+    "크기는 하나다 — 보이는 상자 40(누름 · 호버 바탕에만 보인다 · 모서리 8) · 누르는 영역 44(둘레로 2 씩) · 아이콘 20, Button medium 의 아이콘만 있는 단추와 같은 상자다. 상단 바 안에서는 Top Navigation 의 아이콘 버튼(상자 44 = 누르는 영역 · 아이콘 24)을 쓴다 — 이름 고정 · aria-pressed · 지금 상태의 아이콘 · 굵기(끔 2 · 켬 2.5)는 같지만 끔도 이웃 버튼과 같은 fg-neutral 이다. 알림 · 설정 사이에서 눈만 흐리면 막힌 단추처럼 보이기 때문이다(19B). 자리 — 증권 상세 머리의 관심 등록, 메모 카드 제목 줄의 고정(카드를 누르면 열리고 고정은 따로 눌린다 — 고정 단추 상자 40 이 줄 높이를 밀지 않게 위 · 오른쪽 8 을 당긴다), 연결 설정의 App Key 보기(가려져 있으면 끔 · eye-off). 보이는 크기를 40 보다 작게 두지 않는다(지금 18 · 21 · 26 · 28 · 32 · 36).",
+    `${samples([
+      sample("보이는 40 · 누르는 44(점선) · 아이콘 20", "끔 · 켬 — 바탕은 칠하지 않는다", `<div class="pinp-surface pinp-surface--tgl-guide">${ptoggleOf("watch", { attrs: 'data-ptgl-guide=""' })}${ptoggleOf("watch", { pressed: true, attrs: 'data-ptgl-guide=""' })}${ptoggleOf("hide", { attrs: 'data-ptgl-guide=""' })}${ptoggleOf("hide", { pressed: true, attrs: 'data-ptgl-guide=""' })}</div>`),
+      sample("상단 바 — 끔(eye)", "TopNavigationIconButton aria-pressed=\"false\" — 끔도 fg-neutral · 선 2", topBar(false)),
+      sample("상단 바 — 켬(eye-off)", "aria-pressed=\"true\" — 선 2.5 · 이웃과 같은 색", topBar(true)),
+    ])}${samples([
+      sample("데스크톱 머리 — 주 버튼 + 금액 가리기 · 알림 · 설정", "상자 44 · 아이콘 24 — 끔도 이웃과 같은 색", deskBar),
+    ], WIDE)}${pair(() => `<div class="pinp-stack pinp-stack--floor">${cap("증권 상세 머리 — 관심 등록 끔 · 켬", "star — 끔도 사선 없이")}${stockHead(false)}${stockHead(true)}${cap("메모 카드 — 위 하나만 고정", "press peers — 카드를 누르면 열리고 고정은 따로")}${memoCard("장보기 목록", "우유 · 계란 · 두부 · 대파", true)}${memoCard("이번 달 고정비", "월세 · 통신 · 보험", false)}${cap("연결 설정 — App Key 보기 끔 · 켬", "가려져 있으면 끔 · eye-off, 보이면 켬 · eye")}${secret(false)}${secret(true)}</div>`, "pinp-pair--next")}`,
+  );
+
+  // 3. 순자산 카드 위(Desk) — 흰 아이콘만
+  const heroCard = (hidden, interaction = "") => pcard({
+    variant: "hero",
+    content: `<div class="pinp-hero-head"><div class="pcard-hero-label">순자산</div>${ptoggleOf("hide", { tone: "inverted", pressed: hidden, interaction })}</div><div class="pcard-hero-amount">${hidden ? "••••••원" : "42,898,100원"}</div><div class="pcard-hero-detail">${pdelta({ direction: "up", value: "1.8%", text: "지난달보다" })}</div>`,
+  });
+  const toggleTone = desk ? panel(
+    "Tone — 순자산 카드 위: 흰 아이콘만(Desk)",
+    "브랜드 채움 위(tone=\"inverted\" — 순자산 카드의 금액 가리기)에서는 아이콘이 켬 · 끔 모두 흰색(static-white)이고 모양(eye · eye-off)과 굵기(2 · 2.5)로만 갈린다 — 그라디언트 위 라이트 8.38 ~ 14.78 · 다크 8.36 ~ 11.25(장식 빛 위 가장 낮은 자리 4.88). 단추 둘레에 원 · 바탕을 두지 않는다 — 흰 아이콘만이다(21A — 늘 흰 12% 원은 고르지 않았다). 브랜드 채움에는 누름 색 짝이 없어 누르면 축소만 한다(Card 의 순자산 카드와 같다). 키보드 포커스 링은 흰색(static-white) 2px · 띄움 2 다 — stroke-focus-ring 은 채움에 묻힌다. 이름은 다른 자리와 같은 \"금액 가리기\" · 가렸으면 눌림 · eye-off 다.",
+    pair(() => `<div class="pinp-stack pinp-stack--floor">${heroCard(false)}${cap("끔 — 보임 · eye · 선 2", "\"금액 가리기, 안 눌림\"")}${heroCard(true)}${cap("켬 — 가림 · eye-off · 선 2.5", "\"금액 가리기, 눌림\" — 금액은 ••••••")}${heroCard(false, "focus")}${cap("키보드 포커스 — 흰 링 2 · 띄움 2", "브랜드 채움 위에서는 stroke-focus-ring 대신 static-white(채움에 묻히지 않게)")}</div>`),
+  ) : "";
+
+  // 4. 상태
+  const TGL_STATES = [
+    { ko: "기본", en: "enabled", i: "" },
+    { ko: "호버", en: "hovered — 웹", i: "hover" },
+    { ko: "포커스", en: "focused — 키보드", i: "focus" },
+    { ko: "누름", en: "pressed — 2px 축소", i: "pressed" },
+    { ko: "막힘", en: "disabled", i: "disabled" },
+  ];
+  const tglRows = [
+    { ko: "끔", en: "관심 등록 — star 선 2", k: "watch", on: false },
+    { ko: "켬", en: "관심 등록 — star 선 2.5", k: "watch", on: true },
+    { ko: "켬 — 기능 단추", en: "금액 가리기 — eye-off 선 2.5", k: "hide", on: true },
+    ...(desk ? [{ ko: "순자산 카드 위", en: "tone inverted — 흰 아이콘", k: "hide", on: false, tone: "inverted" }] : []),
+  ];
+  const toggleStates = panel(
+    "상태 — 기본 · 호버 · 포커스 · 누름 · 막힘 × 끔 · 켬",
+    "호버(웹)는 누름과 같은 바탕 bg-layer-default-pressed 이고 축소는 없다. 누르는 동안은 같은 바탕 + 단추 전체 2px 거리 축소(배율 38 ÷ 40)이고, 켬 · 끔은 손을 뗄 때 바뀐다. 키보드 포커스에만 링 2px · 띄움 2(stroke-focus-ring). 막힘은 아이콘만 fg-disabled — 켬은 선 2.5 를 그대로 둬 켜져 있던 것이 보이고, 흐리게 하지 않으며 Tab 순서에서 빠진다(진짜 disabled). 순자산 카드 위는 바탕을 칠하지 않고 축소만 한다. 모션 줄이기면 축소를 뺀다.",
+    matrix("pinp-matrix pinp-matrix--tgl", "단추", TGL_STATES, tglRows, (r, c) => `<span class="pinp-surface${r.tone ? " pinp-surface--hero" : ""}">${ptoggleOf(r.k, { pressed: r.on, tone: r.tone || "default", interaction: c.i === "disabled" ? "" : c.i, disabled: c.i === "disabled" })}</span>`),
+  );
+
+  // 5. 직접 — 바로 바꾸고 보낸다 · 실패하면 되돌리고 스낵바(20A)
+  const snackId = nextPinpId("pinp-snack");
+  const snackTrigger = `<button type="button" hidden data-psnack-show="" data-psnack-target="${snackId}" data-psnack-tone="critical" data-psnack-message="" data-psnack-action="다시 시도" data-ptgl-snack=""></button>`;
+  const toggleLive = panel(
+    "직접 — 바로 바꾸고 보낸다 · 실패하면 되돌리고 스낵바",
+    "누르면 아이콘이 바로 바뀌고 요청은 뒤에서 나간다 — 응답을 기다리며 단추를 막지 않는다(막으면 키보드 초점이 본문으로 빠진다). 빠르게 여러 번 누르면 마지막 상태만 남는다. 실패하면 단추를 옛 모습으로 되돌린 뒤 Snackbar critical 로 알린다 — \"고정하지 못했어요. 다시 시도해주세요.\" + 액션 \"다시 시도\"(같은 요청을 다시 보낸다 · 액션이 있어 6초). 단추가 이미 돌아가 있어 카드에 빨간 오류 줄을 붙이지 않는다(20A). 아래는 요청이 0.8초 걸리고, \"다음 요청을 실패로\" 를 누르면 그다음 요청이 실패한다.",
+    samples([
+      sample("메모 고정 · 관심 등록 — 직접", "onPressedChange 는 바로 — 요청을 기다리지 않는다", `<div class="pinp-phone pinp-phone--screen" data-ptgl-server="">${`<div class="pinp-stack pinp-stack--floor pinp-stack--screen">${cap("관심 등록", "증권 상세 머리")}${stockHead(false, { live: "server", attrs: 'data-ptgl-what="관심 종목에 넣지 못했어요.|관심 종목에서 빼지 못했어요."' })}${cap("메모 고정", "카드 제목 줄")}${memoCard("장보기 목록", "우유 · 계란 · 두부 · 대파", true, { live: "server", attrs: 'data-ptgl-what="고정하지 못했어요.|고정을 풀지 못했어요."' })}</div>`}${controls([["다음 요청을 실패로", 'data-ptgl-fail=""']])}${status("data-ptgl-status", "눌러 보세요 — 요청은 0.8초.")}<div class="psnack-region" id="${snackId}" role="region" aria-label="알림" aria-live="polite"></div>${snackTrigger}</div>`),
+    ]),
+  );
+
+  // ── Input OTP ──────────────────────────────────────────────────────────
+  const otpScreen = ({ size = "large", value = "", when = "cooldown", invalid = false, focus = false, error = POTP_ERROR } = {}) =>
+    `<div class="pinp-otp">${topNav({ type: "standard", leading: "back", title: "이용 해지" })}<div class="pinp-otp-body"><div class="pinp-otp-title">본인 확인</div><p class="pinp-otp-lead">메일로 받은 인증 코드를 넣어주세요.</p>${potpField({ size, value, invalid, focus, error })}${potpResend({ when })}</div><div class="pinp-otp-foot"><button class="btn btn-neutral-solid btn-size-large" type="button"><span>확인</span></button></div></div>`;
+  // 1. 한 칸 · 설명 줄 · 다시 받기
+  const otpLook = panel(
+    "Input OTP — Input 한 칸 · 설명 줄 · 칸 아래 다시 받기",
+    "메일 · 문자로 받은 일회용 인증 코드(지금은 숫자 6자리)를 넣는 칸이다 — Input 상자형 한 칸이고 칸을 자릿수만큼 나누지 않는다(SEED Text Input — \"Input을 나누지 말고 … 한 번에 입력\"). 크기 · 상자 · 포커스 · 오류 · 막힘은 Input 그대로다 — large 52(폰 · 앱) · medium 40(1280 이상 데스크톱 웹), 웹의 기본은 반응형. 숫자는 고정폭 숫자(tabular-nums)로 다른 칸처럼 왼쪽에 쓰고 — 고정폭 글꼴 · 글자 사이 띄움 · 가운데 맞춤 · 3-3 구분은 두지 않는다 — 자릿수는 placeholder \"6자리 숫자\" 가 알린다. 설명 줄은 늘 \"10분 안에 입력해주세요 · 5번 틀리면 다시 받아요.\" 이다(서버 규칙 — 남은 시간을 시계로 세지 않는다). 다시 받기는 칸 꼬리 아래 12 에 Button neutralWeak medium(40)을 왼쪽에 둔다 — 보내기 전 \"코드 받기\", 보낸 뒤 60초 동안 \"다시 받기(52초)\" 로 남은 초를 붙이고 막는다(전용 색), 지나면 \"다시 받기\". 칸 옆에 두지 않는다 — 칸(52 · 40)과 단추 높이가 맞지 않는다. 6자리를 채워도 저절로 보내지 않는다 — 확인 단추를 누른다. 옛 칸 6 × 40 · 3-3 구분 줄 · 만료 카운트다운은 걷었다.",
+    `${pair(() => phone(otpScreen({ value: "1234" }), "pinp-phone--flush"))}${samples([
+      sample("크기 — large 52", "폰 · 앱 · 1280 미만 웹 — 글 16 / 22", phone(potpField({ size: "large" }))),
+      sample("다시 받기의 때", "처음 \"코드 받기\" · 보낸 뒤 60초 \"다시 받기(52초)\" 막힘 · 지나면 \"다시 받기\"", `<div class="pinp-resend-row">${potpResend({ when: "first" })}${potpResend({ when: "cooldown" })}${potpResend({ when: "ready" })}</div>`),
+    ], NEXT)}${samples([
+      sample("크기 — medium 40", "1280 이상 데스크톱 웹 — 글 14 / 19 · 단추는 그대로 medium 40", deskCard(`<div class="pinp-live">${potpField({ size: "medium", value: "123456" })}${potpResend({ when: "ready" })}</div>`)),
+    ], WIDE)}`,
+  );
+
+  // 2. 상태 — 기본 · 포커스 · 오류 · 막힘(오류 글이 설명 줄을 대신 — 18A)
+  const OTP_STATES = [
+    { ko: "기본", en: "enabled", o: {} },
+    { ko: "포커스", en: "focused — 눌러도", o: { focus: true, value: "123" } },
+    { ko: "오류", en: "invalid — 오류 글이 설명을 대신", o: { invalid: true, value: "123465" } },
+    { ko: "막힘", en: "disabled", o: { disabled: true, value: "123456" } },
+  ];
+  const otpStates = panel(
+    "상태 — 기본 · 포커스 · 오류 · 막힘",
+    "기본은 투명 바탕 · 안쪽 1px stroke-neutral-weak, 포커스는 안쪽 2px stroke-neutral-contrast(마우스 · 터치로 눌러도 — Input), 오류는 안쪽 2px stroke-critical-solid 이고 Field 의 오류 글(14 · fg-critical + 아이콘 16)이 설명 줄을 대신한다 — 칸을 고치기 시작하면 설명 줄이 돌아온다(18A — 오류 글과 설명 줄을 함께 보이는 예외는 고르지 않았다). 오류 글은 서버가 보낸 글이 아니라 화면 글이다 — \"코드가 맞지 않거나 시간이 지났어요. 확인하거나 다시 받아주세요.\" 6자리가 안 되면 확인을 누를 때 \"인증 코드 6자리를 입력해주세요.\" 다. 막힘은 bg-disabled · fg-disabled — 흐리게 하지 않는다.",
+    samples(OTP_STATES.map((s) => sample(s.ko, s.en, phone(potpField({ size: "large", ...s.o }))))),
+  );
+
+  // 3. 직접 — 숫자만 뽑기 · 다시 받기 남은 초 · 확인
+  const otpLiveId = nextPinpId("potp-live");
+  const otpLive = `<div class="pinp-live" data-potp-host="">${potpField({ id: otpLiveId, size: "large", live: true })}${potpResend({ when: "first", live: otpLiveId })}<div class="pinp-controls pinp-controls--paste"><span class="pinp-controls-cap">붙여 보기</span>${["123 456", "123-456", " 123456", "인증 코드: 123456", "１２３４５６"].map((t) => `<button class="btn btn-neutral-weak btn-size-xsmall" type="button" data-potp-paste="${escape(t)}"><span>${escape(t === " 123456" ? "␣123456" : t === "１２３４５６" ? "１２３４５６(전각)" : t)}</span></button>`).join("")}<button class="btn btn-neutral-weak btn-size-xsmall" type="button" data-potp-paste="인증 코드: 654321" data-potp-before="12"><span>칸에 12 · 인증 코드: 654321</span></button></div>${controls([["시계 10초 빨리", 'data-potp-fast=""']])}<div class="pinp-otp-confirm"><button class="btn btn-neutral-solid btn-size-large" type="button" data-potp-confirm=""><span>확인</span></button></div>${status("data-potp-status", "맞는 코드는 123456 — 붙이기 · 치기 · 확인을 눌러 보세요.")}</div>`;
+  const otpLivePanel = panel(
+    "직접 — 숫자만 뽑기 · 다시 받기 남은 초 · 확인",
+    "치기 · 붙여넣기 · 자동 채우기 모두 글에서 숫자만 뽑아 앞 6자리를 쓴다 — \"123 456\" · \"123-456\" · \" 123456\" · \"인증 코드: 123456\" 이 모두 123456 이다. maxLength 를 걸지 않는다 — 브라우저가 먼저 자르면 붙인 글의 숫자를 잃는다(지금 웹 \"123 456\" → \"12345\"). 숫자 키보드(inputmode=\"numeric\")를 띄우고 받은 코드를 키보드 위에 제안하도록 autocomplete=\"one-time-code\" 를 둔다(앱 AutofillHints.oneTimeCode) — 메일 코드는 OS 가 제안하지 않을 수 있어 붙여넣기가 늘 되는 길이다. \"코드 받기\" 를 누르면 코드를 보내고 초점을 칸으로 옮긴다 — 막히는 단추에 초점이 남아 본문으로 빠지지 않게. 남은 초는 1초마다 줄고(단추 이름에 들어 있어 초점이 오면 읽힌다 — 1초마다 알리지 않는다) 0 이면 \"다시 받기\" 로 풀린다. 붙이기 단추는 클립보드 대신 그 글을 칸에 넣는다.",
+    samples([sample("이용 해지 — 본인 확인", "InputOTP · InputOTPResend — 확인은 켜 두고 누를 때 알린다", phone(otpLive))]),
+  );
+
+  // ── Color Swatch ───────────────────────────────────────────────────────
+  const legend = `<div class="pinp-swatch-legend" aria-hidden="true">${PCSW_ORDER.map((c) => `<span class="pinp-swatch-legend-item"><span class="pcsw-swatch pcsw-swatch--${c} pinp-swatch-dot"></span><span>${PCSW_NAMES[c]}</span><code>chart-${c}</code></span>`).join("")}</div>`;
+  const catForm = (size, group) => `<div class="ptf-form">${textField({ label: "이름", control: { kind: "input", size, value: "반려동물" } })}${pcswField({ group })}</div>`;
+  // 1. 원 40 · 5 × 2 · 차트 10색
+  const swatchLook = panel(
+    "Color Swatch — 차트 10색 · 원 40 · 5 × 2 · 사이 12",
+    "카테고리 · 태그 · 라벨 · 저축 목표 · 캘린더에 붙일 색을 고르는 묶음이다. 칸은 v110 차트 10색(라이트 700 · 다크 800-dark)으로 꽉 채운다 — 칸이 곧 그 항목의 차트 · 아이콘 · 점에 칠해질 색이다. 옅게 섞은 칸 · v111 옅은 바탕 칸은 쓰지 않는다(옅은 칸끼리는 남색 · 보라 · 분홍이 헷갈린다). 칸은 원 40(누르는 44)이고 폭과 상관없이 5개씩 두 줄 · 사이 12(묶음 248) — 데스크톱 대화상자에서도 폰 시트에서도 같은 크기 · 같은 줄이다. 차례는 색상환(빨강 → 주황 → 노랑 → 초록 → 파랑 → 남색 → 보라 → 분홍 → 갈색 → 회색)이라 ↑ ↓ 가 늘 같은 칸으로 간다. 칸의 이름은 색 이름(\"빨강\")이고 묶음의 이름은 Field 라벨(\"색상\")이다 — 칸 아래에 이름 글을 늘어놓지 않는다 — 보조 기술이 읽고, 마우스를 올리면 porest Tooltip 이 같은 이름을 보인다(200ms 뒤 · 키보드 초점이면 바로 — 네이티브 title 은 쓰지 않는다. \"직접\" 견본에서 올려 볼 수 있다). SEED 에는 색 고르기 부품이 없어 porest 가 정했다. 옛 폭을 나눈 정사각 칸 · currentColor 테두리 · 마우스 1.05배는 걷었다.",
+    `${pair(() => phone(pcswField({ group: { value: "blue" } })))}${samples([
+      sample("10색 — 이름 · 차례", "칸의 이름 = 색 이름, 색 = chart-{색}(라이트 700 · 다크 800-dark)", legend),
+      sample("폰 시트 — 칸 342 안의 248", "large — 같은 크기 · 같은 줄", phone(catForm("large", { value: "brown" }))),
+    ], NEXT)}${samples([
+      sample("데스크톱 대화상자 — 칸 432 안의 248", "카테고리 추가 · medium — 폭이 넓어도 5 × 2", deskCard(catForm("medium", { value: "brown" }), "pinp-desk--dialog")),
+    ], WIDE)}`,
+  );
+
+  // 2. 고른 표시 — 고리 + 체크(라이트 흰 · 다크 짙은)
+  // 그림 — 열 칸을 모두 고른 모습(실제 묶음이 아니라 보조 기술 · 누르기에서 뺀다 — inert)
+  const allSelected = `<div class="pinp-swatch-all" aria-hidden="true" inert>${PCSW_ORDER.map((c) => pcswSwatch({ key: c, checked: true })).join("")}</div>`;
+  const swatchSelected = panel(
+    "고른 표시 — 고리(띄움 2 · 2px) + 체크 16",
+    "고른 칸은 바깥 2 를 띄운 2px 짙은 고리(stroke-neutral-contrast — Select Box 의 고른 테두리와 같은 색) + 가운데 체크 16(선 2.5)이다. 띄운 2 는 놓인 표면 색이라 칸 색과 고리가 붙지 않는다. 체크는 fg-neutral-inverted 라 라이트는 흰색, 다크는 짙은 글자다 — 다크 800-dark 칸 위 흰 체크는 1.88 ~ 2.39 라 읽히지 않는다(아바타 이니셜과 같은 규칙). 칸 위 체크는 라이트 4.55 ~ 5.50 · 다크 6.07 ~ 7.70 이다. 고름은 색과 함께 고리 · 체크 모양으로도 알린다. 아래는 10칸을 모두 고른 모습으로 그린 그림이다(실제로는 하나만 고른다).",
+    pair(() => allSelected),
+  );
+
+  // 3. 지금 색 · 자동
+  const swatchCurrent = panel(
+    "지금 색 · 자동 — 격자 앞 칸 + 세로 선(좁으면 위 줄 + 가로 선)",
+    "고치는 항목의 색이 팔레트 밖이거나(가져오기가 만드는 #9E9E9E) 색이 없으면 격자 앞에 칸 하나를 따로 둔다 — 세로 선(1px stroke-neutral-weak · 양옆 16)으로 격자와 가르고, 처음에는 그 칸이 골라져 있다. 지금 색은 저장된 색을 그대로 칠하고(두 모드 같은 값) 체크는 fg-neutral · fg-neutral-inverted 가운데 그 색 위 대비가 큰 쪽이다(모드마다 그 자리에서 잰다 — #9E9E9E 는 라이트 fg-neutral 6.13 · 다크 fg-neutral-inverted 5.41). 칸 · 선 · 격자의 폭은 321 이다 — 놓인 자리가 그보다 좁으면(360 폰 본문 312) 지금 색 칸을 격자 위 줄에 두고 선을 가로 1px 로 바꾼다(사이는 그대로 16). 자동은 색이 없는 항목이다 — 차트가 그 항목에 줄 색(아직 쓰지 않은 색)을 2px 점선 원(stroke-neutral-solid)으로 보인다. 칸 아래 글 12 · fg-neutral-muted(아래 6). 격자에서 색을 고르면 그 색으로 바뀌고, 지금 색 칸을 다시 고르면 저장 값을 그대로 둔다 — 아무것도 고르지 않고 저장하면 색은 바뀌지 않는다(몰래 빨강으로 바꾸지 않는다). 새 항목은 같은 목록이 쓰지 않은 첫 색으로 시작한다(v110 배정 순서 — 기본 지출 카테고리 여덟이 여덟 색을 쓰고 있어 아홉 번째는 갈색).",
+    `${pair(() => phone(`<div class="pinp-stack">${pcswField({ group: { value: "current", current: { kind: "custom", color: "#9E9E9E" } } })}${pcswField({ group: { value: "current", current: { kind: "auto", color: "brown" } } })}</div>`))}${samples([
+      sample("새 카테고리 — 쓰지 않은 첫 색", "firstUnusedColor(기본 여덟) → 갈색 · 늘 빨강이 아니다", phone(newCategory())),
+      sample("격자에서 고르면 바뀐다", "가져온 분류 — 주황을 고른 뒤", phone(pcswField({ group: { value: "orange", current: { kind: "custom", color: "#9E9E9E" } } }))),
+      sample("360 폰 — 본문 312 < 321", "지금 색 칸을 격자 위 줄에 · 선은 가로 1px · 사이 16(divider.stackBelow)", phone(pcswField({ group: { value: "current", current: { kind: "custom", color: "#9E9E9E" } } }), "pinp-phone--360")),
+    ], NEXT)}`,
+  );
+  function newCategory() {
+    const DEFAULTS = [["식비", "utensils", "red"], ["카페·간식", "coffee", "orange"], ["교통", "bus", "yellow"], ["주거·통신", "house", "green"], ["생활", "shopping-cart", "blue"], ["쇼핑", "shirt", "indigo"], ["건강", "heart", "pink"], ["문화·여가", "film", "violet"]];
+    const next = pcswFirstUnused(DEFAULTS.map((d) => d[2]));
+    const rows = DEFAULTS.map(([t, icon, color]) => `<li class="pinp-cat"><span class="pinp-tile pinp-tile--${color}">${inputSvg(icon)}</span><span>${escape(t)}</span></li>`).join("");
+    return `<ul class="pinp-cats" aria-label="기본 지출 카테고리">${rows}<li class="pinp-cat pinp-cat--new"><span class="pinp-tile pinp-tile--${next}">${inputSvg("tag")}</span><span>새 카테고리 — ${PCSW_NAMES[next]}</span></li></ul>${pcswField({ group: { value: next } })}`;
+  }
+
+  // 4. 상태
+  const SW_STATES = [
+    { ko: "기본", en: "enabled", i: "" },
+    { ko: "호버", en: "hovered — 바뀌지 않는다", i: "hover" },
+    { ko: "포커스", en: "focused — 링 띄움 6", i: "focus" },
+    { ko: "누름", en: "pressed — 2px 축소", i: "pressed" },
+    { ko: "막힘", en: "disabled", i: "disabled" },
+  ];
+  const swatchStates = panel(
+    "상태 — 기본 · 호버 · 포커스 · 누름 · 막힘 × 안 고름 · 고름",
+    "호버(웹)는 바뀌지 않는다 — 칸의 색이 곧 값이라 커서만 pointer 다. 키보드 포커스에만 고른 고리 바깥 링 2px(띄움 6 · stroke-focus-ring), 누르는 동안 칸 2px 거리 축소(38 ÷ 40). 막힘은 색을 그대로 두고 누르기만 막는다 — 고른 칸은 고리를 stroke-neutral-solid 로 남겨 무엇을 골랐는지 보이고, 칸 이름(Field 라벨)이 비활성 색이 된다. 고리 · 체크는 바로 나타난다(옛 확대 없음).",
+    `${matrix("pinp-matrix pinp-matrix--swatch", "칸", SW_STATES, [
+      { ko: "안 고름", en: "aria-checked=\"false\"", on: false },
+      { ko: "고름", en: "aria-checked=\"true\" — 고리 + 체크", on: true },
+    ], (r, c) => `<span class="pinp-surface pinp-surface--swatch" role="radiogroup" aria-label="${escape(`빨강 — ${r.ko} · ${c.ko}`)}">${pcswSwatch({ key: "red", checked: r.on, tab: true, state: c.i === "disabled" ? "" : c.i, disabled: c.i === "disabled" })}</span>`)}${samples([
+      sample("막힘 — 묶음째", "고른 칸은 회색 고리로 남는다 · 라벨이 비활성 색", phone(pcswField({ group: { value: "green", disabled: true } }))),
+    ], NEXT)}`,
+  );
+
+  // 5. 직접 — 2차원 화살표
+  const swatchLive = panel(
+    "직접 — 누르기 · 2차원 화살표",
+    "묶음(radiogroup)에 Tab 은 한 번이다 — 고른 칸(없으면 첫 칸)에 선다. ← → 는 차례대로 옮기며 고르고(줄 끝에서 다음 줄로, 지금 색 칸은 차례의 맨 앞 — RTL 은 반대), ↑ ↓ 는 위아래 줄의 같은 칸으로 옮기며 고른다. Home · End 는 첫 칸 · 마지막 칸, Space 는 초점의 칸을 고른다. 고른 칸을 다시 눌러도 그대로다(라디오). 아래 글은 화면 읽기 프로그램이 읽는 말이다.",
+    samples([
+      sample("카테고리 고치기", "ColorSwatchGroup — value · onValueChange", phone(`<div class="pinp-live" data-pcsw-host="">${pcswField({ group: { value: "blue", live: true } })}${status("data-pcsw-status", "\"색상, 라디오 그룹 · 파랑, 선택됨, 5/10\"")}</div>`)),
+      sample("가져온 분류 고치기 — 지금 색 칸이 맨 앞", "currentColor=\"#9E9E9E\" — 고르지 않으면 저장 값 그대로", phone(`<div class="pinp-live" data-pcsw-host="">${pcswField({ group: { value: "current", current: { kind: "custom", color: "#9E9E9E" }, live: true } })}${status("data-pcsw-status", "\"색상, 라디오 그룹 · 지금 색, 선택됨, 1/11\"")}</div>`)),
+    ]),
+  );
+
+  // ── Icon Picker ────────────────────────────────────────────────────────
+  // 1. 트리거
+  const ipkTriggerPanel = panel(
+    "Icon Picker — 트리거는 Input Button: 라벨 · 지금 아이콘 · 그 이름",
+    "카테고리 · 저축 목표에 붙일 아이콘을 고르는 칸이다. 트리거는 Input Button 이다 — 라벨 \"아이콘\"(Field), 앞 붙이개에 지금 아이콘(large 20 · medium 16 · fg-neutral-muted), 값에 그 아이콘의 한국어 이름(\"커피\"), 뒤에 아래 화살표. 이름은 \"아이콘, 커피\" 로 읽힌다. 아이콘이 없는 항목은 태그 + \"태그\"(\"없음\" 을 고르는 칸은 두지 않는다 — 어차피 태그로 그린다), 세트 밖 아이콘이 저장된 항목은 그 아이콘 + \"지금 아이콘\" 이다. 크기는 반응형(1280 미만 large 52 · 이상 medium 40)이고 앱은 large 다. 누름 · 오류 · 막힘 · 읽기 전용은 Input Button 그대로다(03h). SEED 에는 아이콘 고르기 부품이 없어 porest 가 정했다. 옛 40 정사각 트리거 · 아이콘만 · 없으면 \"—\" 는 걷었다.",
+    `${pair(() => phone(pipkTrigger({ size: "large", value: "coffee" })))}${samples([
+      sample("아이콘이 없는 항목 — 태그", "\"\" · null 은 태그로 그린다 — \"없음\" 칸은 없다", phone(pipkTrigger({ size: "large", value: "" }))),
+      sample("세트 밖 아이콘 — 지금 아이콘", "a-arrow-down — 지우지도 바꾸지도 않는다 · 격자에는 고른 칸이 없다", phone(pipkTrigger({ size: "large", value: "a-arrow-down" }))),
+      sample("서버 시드의 home — 집", "lucideAliases — 세트의 house 를 고른 것으로 본다", phone(pipkTrigger({ size: "large", value: "home" }))),
+    ], NEXT)}${samples([
+      sample("medium 40 — 1280 이상 데스크톱 웹", "앞 아이콘 16 · 글 14", deskCard(pipkTrigger({ size: "medium", value: "coffee" }))),
+    ], WIDE)}`,
+  );
+
+  // 2. 여는 자리 · 격자 · 고른 칸
+  const ipkSheet = overlayFrame({
+    device: "phone",
+    height: 680,
+    page: overlayPage({ title: "카테고리 추가", body: `<div class="ptf-form">${textField({ label: "이름", control: { kind: "input", size: "large", value: "카페" } })}${pipkTrigger({ size: "large", value: "coffee", expanded: true })}</div>` }),
+    layers: [overlayScrim(), overlayLayer("sheet", bottomSheet({ title: "아이콘", body: pipkPanel({ surface: "sheet", value: "coffee", groups: 4 }) }))],
+  });
+  const ipkPopover = overlayFrame({
+    device: "desktop",
+    // 팝오버 600(최대 높이)이 다 보이게 — 아래 끝 흐림(80)까지
+    height: 860,
+    page: overlayPage({ title: "카테고리", desktop: true, body: overlayAnchor(`<div class="ptf-form pinp-anchor-form">${pipkTrigger({ size: "medium", value: "coffee", expanded: true })}</div>`, overlayPopover({ label: "아이콘", body: pipkPanel({ surface: "popover", value: "coffee", groups: 4 }) }).replace('class="pov-popover"', 'class="pov-popover pipk-pop"')) }),
+  });
+  const ipkSurface = panel(
+    "여는 자리 — 폰 시트 6열 · 데스크톱 팝오버 7열 · 칸 48 · 묶음 머리",
+    "1280 미만 · 앱은 Bottom Sheet(제목 \"아이콘\" · 닫기), 1280 이상은 Popover(머리 없이 · 이름 \"아이콘\" · 폭 408 = 칸 48 × 7 + 사이 4 × 6 + 좌우 24 × 2)다 — 고르면 바로 닫힌다(\"완료\" 없음). 위에 찾기 칸(Input 밑줄형 · 시트 large 40 · 팝오버 medium 34 · 앞 돋보기 · 지우기 · placeholder \"아이콘 이름 검색\")이 목록이 스크롤해도 붙어 있다 — 스크롤 상자 밖이라 흐리지 않고, 묶음 머리 · 격자는 그 아래 스크롤 상자에서 끝을 늘 흐린다(Scroll Fog overlayBody — 위 20 · 아래 80, 찾기 칸 ↔ 첫 머리 글 32). 고를 수 있는 것은 고른 세트뿐이다 — category-icons.yaml 의 148개 · 13 묶음(식비 · 카페 · 교통 · 주거 · 생활 · 쇼핑 · 건강 · 금융 · 여가 · 여행 · 교육 · 경조사 · 기타), lucide 전체 2,000개를 열지 않는다. 묶음마다 머리(14 · 500 · fg-neutral-subtle — List Header mediumWeak, 위 12 · 아래 8)를 둔다. 칸은 48 · 모서리 12 · 아이콘 24(fg-neutral · 선 2)이고 놓인 폭에 들어가는 만큼 열을 둔다 — 칸 사이 최소 4, 남는 폭은 칸 사이에 고르게(폰 시트 312 · 342 는 6열, 팝오버 360 은 7열), 줄 사이 4. 칸 48 이 곧 누르는 영역이다(SEED Iconography — 24px 아이콘은 44 이상). 지금 값의 칸은 안쪽 2px 짙은 테두리(stroke-neutral-contrast — Select Box 의 고른 상자와 같다) + 선 2.5 다 — 바탕은 칠하지 않는다(반전 · 브랜드 채움은 고르지 않았다). 열면 고른 칸이 보이게 스크롤하고 초점도 그 칸이다. 그림은 처음 네 묶음만 그렸다.",
+    `${samples([
+      sample("폰 — Bottom Sheet · 6열", "1280 미만 · 앱 — 본문 312(360 화면)", ipkSheet),
+    ], SHEET)}${samples([
+      sample("데스크톱 웹 — Popover 408 · 7열", "1280 이상 — 트리거 아래 8 · 왼쪽 맞춤", `<div class="pinp-wide">${ipkPopover}</div>`),
+    ], WIDE)}`,
+  );
+
+  // 3. 찾기
+  const findBox = (query) => `<div class="pinp-float">${pipkPanel({ surface: "popover", value: "coffee", query })}</div>`;
+  const ipkSearch = panel(
+    "찾기 — 한국어 이름 · 찾는 말 · 결과 수 · 결과 없음",
+    "치는 대로 세트를 거른다 — 찾는 말과 이름 · 찾는 말 · lucide 이름을 소문자로 바꾸고 공백을 뺀 뒤 부분 일치다(\"커피\" → 커피 · 원두, \"월세\" → 집, \"coffee\" → 커피). 아이콘마다 한국어 이름 하나(칸의 이름 · 트리거의 값 글)와 사람들이 그 아이콘을 부를 찾는 말(\"카페 · 아메리카노 · 라떼\")이 있다 — 영어 lucide 이름을 화면에 내지 않는다. 결과는 세트 차례 그대로 묶음 머리 없이 늘어놓고, 개수는 화면 밖으로 한 번 알린다(\"검색 결과 2개\" — aria-live polite). 0건이면 격자 자리에 Result Section medium — \"'유니콘'에 대한 아이콘이 없어요\" · \"다른 말로 찾거나 묶음에서 골라주세요.\" 다.",
+    samples([
+      sample("\"커피\" — 2개", "이름 커피 · 찾는 말 커피콩(원두)", findBox("커피")),
+      sample("\"월세\" — 1개", "찾는 말 — 집(house)", findBox("월세")),
+      sample("\"coffee\" — 1개", "lucide 이름으로도 — 화면에는 \"커피\"", findBox("coffee")),
+      sample("\"유니콘\" — 0개", "Result Section medium · role=\"status\"", findBox("유니콘")),
+    ], "ptf-samples pinp-samples--find"),
+  );
+
+  // 4. 상태
+  const IPK_STATES = [
+    { ko: "기본", en: "enabled", i: "" },
+    { ko: "호버", en: "hovered — 웹", i: "hover" },
+    { ko: "포커스", en: "focused — 키보드", i: "focus" },
+    { ko: "누름", en: "pressed — 2px 축소", i: "pressed" },
+  ];
+  const coffee = CATEGORY_ICON.find("coffee");
+  const ipkStates = panel(
+    "상태 — 기본 · 호버 · 포커스 · 누름 × 안 고름 · 고름",
+    "칸은 바탕이 없다. 호버(웹)는 누름과 같은 바탕 bg-layer-floating-pressed(시트 · 팝오버 위의 누름 색 — Menu 와 같다), 누르는 동안은 같은 바탕 + 칸 2px 거리 축소(46 ÷ 48)이고 손을 떼면 고르고 닫힌다. 키보드 포커스는 칸 바깥 링 2px · 띄움 2 — 격자에 Tab 하나(roving)다. 고른 칸은 안쪽 2px 짙은 테두리 + 선 2.5 가 다른 상태와 함께 남는다.",
+    matrix("pinp-matrix pinp-matrix--ipk", "칸", IPK_STATES, [
+      { ko: "안 고름", en: "aria-selected=\"false\"", on: false },
+      { ko: "고름", en: "aria-selected=\"true\" — 안쪽 2px · 선 2.5", on: true },
+    ], (r, c) => `<span class="pinp-surface pinp-surface--float" role="listbox" aria-label="${escape(`아이콘 — ${r.ko} · ${c.ko}`)}">${pipkCell(coffee, { selected: r.on, tab: true, state: c.i })}</span>`),
+  );
+
+  // 5. 직접 — 찾기 · 2차원 화살표 · 고르면 닫힌다
+  const ipkLiveId = nextPinpId("pipk-live");
+  const ipkLive = panel(
+    "직접 — 찾기 · 2차원 화살표 · 고르면 닫힌다",
+    "격자는 칸마다 Tab 이 서지 않는다 — 격자에 Tab 하나(고른 칸, 없으면 첫 칸)로 들어와 화살표로 옮긴다. ← → 는 차례대로(줄 끝에서 다음 줄 · 다음 묶음으로), ↑ ↓ 는 보이는 위아래 줄의 가장 가까운 칸(묶음 머리를 넘는다), Home · End 는 그 줄의 처음 · 끝, Enter · Space 로 고른다 — 고르면 닫히고 초점은 트리거로 간다. 찾기 칸에서 ↓ 는 격자의 첫 칸으로. Esc 는 찾는 말이 있으면 지우고, 비었으면 닫는다(값은 그대로). 칸의 한국어 이름은 porest Tooltip 으로도 보인다(마우스 200ms 뒤 · 키보드로 옮기면 바로). 열면 초점은 고른 칸이다 — 폰에서 키보드가 올라와 격자를 가리지 않게, 찾기 칸은 눌러야 친다. 아래는 트리거 아래에 여는 팝오버(1280 이상)로 그렸다 — 세트 148개를 모두 담았다.",
+    samples([sample("카테고리 — 아이콘", "IconPicker — value · onValueChange", `<div class="pinp-live pinp-live--ipk" data-pipk-host="${ipkLiveId}">${pipkTrigger({ size: "medium", value: "coffee", live: ipkLiveId })}<div class="pinp-float pinp-float--live" id="${ipkLiveId}" role="dialog" aria-label="아이콘" hidden>${pipkPanel({ surface: "popover", value: "coffee", live: true })}</div>${status("data-pipk-status", "트리거를 눌러 열어 보세요.")}</div>`)], "ptf-samples pinp-samples--wide"),
+  );
+
+  const lede = "SEED Slider 와 SEED 의 원칙(Text Input 의 \"Input을 나누지 말고\" · Iconography)에서 정한 입력 다섯이다(2026-10-09 사용자 결정 — 비교 페이지 1 ~ 22 · 따라오는 것). SEED 가 컴포넌트로 가진 것은 Slider 와 Toggle Button(코드만)뿐이라, 켜고 끄는 아이콘 단추 · 인증 코드 칸 · 색 고르기 · 아이콘 고르기는 porest 가 정했다. 슬라이더는 SEED 무채색(트랙 4 · 채움 · 손잡이 20 · 누르면 24) · 손잡이 줄 44 · 머리 값 + 끄는 동안 말풍선 + 양 끝 표식 · 2 ~ 5 구간만 굵은 틈 · 손을 뗄 때 한 번 저장(요청 중에도 막지 않는다)이다. 켜고 끄는 단추는 아이콘만 바뀐다(켬 = 진한 색 + 선 2.5, 바탕 없음) · 이름 고정 + aria-pressed · 눈은 지금 상태 · 관심 · 고정의 끔은 사선 없이 · 보이는 40 · 누르는 44 이고, 상단 바에서는 끔도 이웃과 같은 진한 색이다. 인증 코드는 Input 한 칸 · 숫자만 뽑기 · 설명 줄 · 칸 아래 다시 받기(남은 초)다. 색은 차트 10색 원 40 · 5 × 2 · 고리 + 체크 · 지금 색 칸이고, 아이콘은 Input Button 트리거 · 고른 세트 148 · 한국어 찾기 · 칸 48 · 안쪽 2px 테두리다. 옛 Slider(브랜드 채움 · 흰 손잡이) · 글 Toggle · Toggle Group · 6칸 OTP · 정사각 색 칸 · 8열 아이콘 팝오버는 걷었다 — 16 Input · 21 Domain selectors 의 옛 칸과 CSS 도 걷었다."
+    + (desk ? "" : brand.key === "hr" ? " 순자산 카드 위 단추(tone inverted)는 Desk 에만 있어 Desk 미리보기에 그렸다." : " 공유 토큰에는 브랜드 역할 색이 없어 포커스 링이 여기서는 중립으로 보이고, 순자산 카드 위 단추는 Desk 미리보기에 그렸다.");
+
+  return `
+  <section class="section pinp-section">
+    <header class="section-head">
+      <div class="section-eyebrow">03t — 입력: Slider · Toggle · Input OTP · Color Swatch · Icon Picker</div>
+      <h2 class="section-title">입력 — 슬라이더 · 켜고 끄는 단추 · 인증 코드 · 색 고르기 · 아이콘 고르기</h2>
+      <p class="section-lede">${escape(lede)}</p>
+    </header>
+    ${sliderLook}
+    ${sliderValue}
+    ${sliderSteps}
+    ${sliderStates}
+    ${sliderLive}
+    ${toggleLook}
+    ${toggleSize}
+    ${toggleTone}
+    ${toggleStates}
+    ${toggleLive}
+    ${otpLook}
+    ${otpStates}
+    ${otpLivePanel}
+    ${swatchLook}
+    ${swatchSelected}
+    ${swatchCurrent}
+    ${swatchStates}
+    ${swatchLive}
+    ${ipkTriggerPanel}
+    ${ipkSurface}
+    ${ipkSearch}
+    ${ipkStates}
+    ${ipkLive}
   </section>`;
 }
 
@@ -8644,13 +9532,14 @@ export function renderShadcnNav(brand) {
 }
 
 export function renderShadcnInput(brand) {
-  // v69 Input 5
+  // v69 Input — 옛 Slider(.sld — 브랜드 채움 · 흰 손잡이) · Toggle(.tg — 글 토글) · Toggle Group(.tgg) · Input OTP(.otp — 칸 6 × 40) 칸은 걷었다(2026-10-09).
+  // 슬라이더 · 켜고 끄는 아이콘 단추 · 인증 코드 칸은 03t — 입력이다. Toggle Group 은 걷었다 — 하나 고르기는 Segmented Control · Chip, 여럿은 Chip, 5개 이상은 Select
   return `
   <section class="section">
     <header class="section-head">
       <div class="section-eyebrow">16 — Input (v69)</div>
-      <h2 class="section-title">Combobox · Slider · Toggle · Toggle Group · Input OTP</h2>
-      <p class="section-lede">5 input/selection 컴포넌트 — typing autocomplete, range, on/off, group, 일회용 코드.</p>
+      <h2 class="section-title">Combobox</h2>
+      <p class="section-lede">typing autocomplete. 옛 Slider · Toggle · Toggle Group · Input OTP 칸은 걷었다 — 슬라이더 · 켜고 끄는 아이콘 단추 · 인증 코드 칸은 03t — 입력이다. Toggle Group 은 걷었다(하나 고르기는 Segmented Control · Chip, 여럿은 Chip, 5개 이상은 Select).</p>
     </header>
     <div class="sc-grid">
       <div class="sc-card">
@@ -8660,52 +9549,6 @@ export function renderShadcnInput(brand) {
           <span class="cb-caret">▾</span>
         </div>
         <div class="sc-note">typing 시 autocomplete dropdown</div>
-      </div>
-      <div class="sc-card">
-        <div class="sc-head">Slider</div>
-        <div class="sld">
-          <div class="sld-track">
-            <div class="sld-fill" style="width: 62%;"></div>
-            <div class="sld-thumb" style="left: 62%;"></div>
-          </div>
-          <div class="sld-meta"><span>${brand.key === "hr" ? "0" : "₩0"}</span><span>62%</span><span>${brand.key === "hr" ? "100" : "₩1M"}</span></div>
-        </div>
-      </div>
-      <div class="sc-card">
-        <div class="sc-head">Toggle (single)</div>
-        <div class="tg-row">
-          <button class="tg tg--on" aria-pressed="true">★ 즐겨찾기</button>
-          <button class="tg" aria-pressed="false">🔖 보관</button>
-        </div>
-      </div>
-      <div class="sc-card">
-        <div class="sc-head">Toggle Group (single)</div>
-        <div class="tgg" role="radiogroup">
-          <button class="tgg-item">${brand.key === "hr" ? "이름순" : "list"}</button>
-          <button class="tgg-item tgg-item--active" aria-checked="true">${brand.key === "hr" ? "날짜순" : "grid"}</button>
-          <button class="tgg-item">${brand.key === "hr" ? "우선순위" : "card"}</button>
-        </div>
-      </div>
-      <div class="sc-card">
-        <div class="sc-head">Toggle Group (solid)</div>
-        <div class="tgg tgg--solid" role="radiogroup">
-          <button class="tgg-item">주간</button>
-          <button class="tgg-item tgg-item--active" aria-checked="true">월간</button>
-          <button class="tgg-item">연간</button>
-        </div>
-      </div>
-      <div class="sc-card sc-card--full">
-        <div class="sc-head">Input OTP — 6자리</div>
-        <div class="otp">
-          <div class="otp-cell otp-cell--filled">3</div>
-          <div class="otp-cell otp-cell--filled">7</div>
-          <div class="otp-cell otp-cell--filled">2</div>
-          <span class="otp-sep" role="separator" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
-          <div class="otp-cell otp-cell--focus">4</div>
-          <div class="otp-cell"></div>
-          <div class="otp-cell"></div>
-        </div>
-        <div class="sc-note">autocomplete="one-time-code" — iOS SMS 자동 채우기</div>
       </div>
     </div>
   </section>`;
@@ -8986,85 +9829,8 @@ export function renderBatchV73V78(brand) {
   </section>`;
 }
 
-export function renderBatchSpecs5(brand) {
-  // 신규 spec (2026-05-15) — color-swatch / icon-picker. 옛 SearchableList 칸(카드 카탈로그 — 테두리 상자 · 바탕 칠한 고른 줄 · 44 × 28 썸네일)은 걷었다(2026-10-08) —
-  // 검색해서 고르기는 03s — 데이터 표시의 Searchable List(밑줄 검색칸 · 분류 머리 · 오른쪽 라디오)다.
-  // 도메인 시나리오: 카테고리 색/아이콘. 기본 통화(옛 radio-list)는 List 의 라디오 줄로 옮겼다(2026-10-01 — renderListGallery).
-  // 테마 선택(옛 tile)은 앞에 미리보기를 둔 List 라디오 줄로, 제목 · 설명이 붙는 미리보기 카드는 Select Box 로 옮겼다(2026-10-01 — renderSelectBoxGallery).
-  const isHr = brand.key === "hr";
-  const isDesk = brand.key === "desk";
-
-  // ColorSwatch palette (10색)
-  const palette = [
-    { v: "rose", bg: "#FFE7EB", fg: "#C53052" },
-    { v: "coral", bg: "#FFE2D5", fg: "#C04E20" },
-    { v: "amber", bg: "#FFF1C7", fg: "#9F6907" },
-    { v: "lime", bg: "#E2F5C7", fg: "#4E7A14" },
-    { v: "forest", bg: "#D4EBD9", fg: "#1E7D4C" },
-    { v: "teal", bg: "#CFEFEC", fg: "#107069" },
-    { v: "sky", bg: "#D6E9FB", fg: "#1E68B3" },
-    { v: "indigo", bg: "#DDDCFB", fg: "#3A36AD" },
-    { v: "violet", bg: "#EAD9FA", fg: "#7237AF" },
-    { v: "slate", bg: "#E5E8EE", fg: "#3F4960" },
-  ];
-  const CHECK14 = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-  const activeColorIdx = isHr ? 4 : isDesk ? 6 : 4; // HR=forest, Desk=sky, base=forest
-  const swatchCells = palette.map((c, i) =>
-    `<button type="button" class="csw-cell${i === activeColorIdx ? " csw-cell--active" : ""}" style="background:${c.bg}; color:${c.fg};" aria-label="${c.v}" aria-checked="${i === activeColorIdx}">${i === activeColorIdx ? CHECK14 : ""}</button>`
-  ).join("");
-
-  // IconPicker — 도메인별 활성 아이콘 인덱스
-  // 검색칸은 Input 의 앞 아이콘(textInput prefixIcon) — 아이콘을 절대 위치로 겹쳐 그리던 것을 걷었다(icon-picker.md · searchable-list.md 2026-10-01)
-  const STAR = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
-  const HEART = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
-  const COFFEE = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 0 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>';
-  const HOME = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>';
-  const BOOK = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>';
-  const CAR = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.63A6 6 0 0 0 2 12.42V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg>';
-  const GIFT = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>';
-  const MUSIC = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>';
-  const CAMERA = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>';
-  const SETTING = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>';
-
-  const iconSet = [STAR, HEART, COFFEE, HOME, BOOK, CAR, GIFT, MUSIC, CAMERA, SETTING, STAR, HEART, COFFEE, HOME, BOOK, CAR, GIFT, MUSIC, CAMERA, SETTING, STAR, HEART, COFFEE, HOME];
-  const activeIconIdx = isHr ? 7 : isDesk ? 2 : 0; // HR=music(이벤트), Desk=coffee, base=star
-  const iconCells = iconSet.map((svg, i) =>
-    `<button type="button" class="ipk-cell${i === activeIconIdx ? " ipk-cell--active" : ""}" aria-label="icon-${i}" aria-pressed="${i === activeIconIdx}">${svg}</button>`
-  ).join("");
-
-  return `
-  <section class="section">
-    <header class="section-head">
-      <div class="section-eyebrow">21 — Domain selectors (2026-05-15 신규 spec)</div>
-      <h2 class="section-title">ColorSwatch · IconPicker</h2>
-      <p class="section-lede">desk-front 도메인에서 spec으로 끌어올린 단일-선택 패턴 둘 — 카테고리 색/아이콘. 옛 SearchableList(카드 카탈로그) 칸은 걷었다 — 검색해서 고르기는 03s — 데이터 표시의 Searchable List 다. 기본 통화(옛 RadioList)는 03e — List 의 라디오 줄로 옮겼다. 테마 선택(옛 Tile)은 앞에 미리보기를 둔 List 라디오 줄로 옮겼고, 제목 · 설명이 붙는 미리보기 카드는 03f — Select Box 다.</p>
-    </header>
-
-    <div class="sc-grid">
-      <!-- ColorSwatch -->
-      <div class="sc-card">
-        <div class="sc-head">ColorSwatch — 카테고리/라벨 색 (10색 grid)</div>
-        <div class="csw" role="radiogroup" style="grid-template-columns: repeat(5, minmax(0, 1fr)); max-width: 260px;">
-          ${swatchCells}
-        </div>
-        <div class="sc-note">aspect-ratio 1 + radius-tile. active swatch는 자기 색의 currentColor border 2px + ✓. hover scale(1.05).</div>
-      </div>
-
-      <!-- IconPicker -->
-      <div class="sc-card">
-        <div class="sc-head">IconPicker — 카테고리 아이콘 (popover + grid 8-col)</div>
-        <div style="display:flex; align-items:flex-start; gap: var(--spacing-md);">
-          <button type="button" class="ipk-trigger" aria-haspopup="dialog" aria-expanded="true">${iconSet[activeIconIdx]}</button>
-          <div class="ipk-content">
-            <div class="ipk-search">${textInput({ size: "responsive", label: "아이콘 검색", placeholder: "아이콘 검색...", prefixIcon: "search", clearable: true })}</div>
-            <div class="ipk-grid">${iconCells}</div>
-          </div>
-        </div>
-        <div class="sc-note">2000+ Lucide 아이콘 중 매칭 상위 100건 limit. trigger 40×40 — Input medium(데스크톱 웹)과 같은 높이(icon-picker.md).</div>
-      </div>
-    </div>
-  </section>`;
-}
+// 21 — Domain selectors(옛 ColorSwatch · IconPicker — 폭을 나눈 정사각 칸 · currentColor 테두리 · 8열 × 32 팝오버 · 영어 이름 찾기)는 걷었다(2026-10-09).
+// 색 고르기 · 아이콘 고르기는 03t — 입력의 Color Swatch(차트 10색 원 40 · 5 × 2) · Icon Picker(Input Button 트리거 · 고른 세트 148 · 칸 48)다
 
 function renderTokenCatalog(tokens) {
   const colorGrid = tokens.colors.map(t => `
@@ -12931,7 +13697,6 @@ export function pageCss() {
     .pmenu-page-head > .pov-page-title { margin-bottom: 0; padding: 0; }
     .pov-frame--desktop .pmenu-page-head { padding: 0; }
     .pmenu-card-head { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-x3); padding: var(--spacing-x1) var(--spacing-global-gutter); font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 700; color: var(--color-fg-neutral); }
-    .pmenu-tools { display: flex; gap: var(--spacing-x1); }
     .pmenu-lead { display: flex; align-items: center; gap: var(--spacing-x1); margin-top: var(--spacing-x4); padding: 0 var(--spacing-global-gutter); font-family: var(--font-sans); font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 500; color: var(--color-fg-neutral); }
     .pov-frame--desktop .pmenu-lead { padding: 0; }
     .pmenu-reason { display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-x1_5); }
@@ -14186,7 +14951,7 @@ export function pageCss() {
        떨어진 칸(쪽 칸 · + · 떠 있는 버튼)은 바깥 2. 모션 줄이기면 축소 · 미끄러짐을 뺀다. 화면 틀(.pnav-phone · .pnav-desk)은 갤러리 것이고 틀의 --pnav-safe-top ·
        --pnav-safe-bottom 이 레시피의 env(safe-area-inset-*) 자리다. --hover · --pressed · --focus 는 갤러리에서 그 순간을 고정해 보여 주는 클래스다.
        다크 짝은 이 블록 끝에서 바꾼다 — 03o 의 라이트 · 다크 나란히 틀(.pdsp-theme--light · --dark)은 페이지 테마와 관계없이 그 테마로 그린다. */
-    :is(.pnav-phone, .pnav-desk, .pnav-surface, .pnav-navs, .ptnav, .ptbar, .psnav, .psnav-flyout, .pspanel, .ppgn, .ptpg, .pinf, .pfab) {
+    :is(.pnav-phone, .pnav-desk, .pnav-surface, .pnav-navs, .ptnav, .ptnav-icon, .ptbar, .psnav, .psnav-flyout, .pspanel, .ppgn, .ptpg, .pinf, .pfab) {
       /* 포커스 링 · 브랜드 채움 — 공유 토큰(DESIGN.md)에는 브랜드 역할 색이 없어 중립으로 떨어진다(.pnb · .btn 과 같은 대체 사슬).
          채움 위 흰 아이콘도 브랜드 채움이 있을 때만 흰색이고, 없으면 짙은 채움 위 반전 글자색이다 */
       --pnav-ring: var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral)));
@@ -14332,6 +15097,8 @@ export function pageCss() {
     }
     .ptnav-icon { width: 44px; }
     .ptnav-icon svg { display: block; width: 24px; height: 24px; }
+    /* 켜고 끄는 아이콘 버튼(aria-pressed — 금액 가리기) — 켬은 선 2.5, 끔은 선 2. 색은 켬 · 끔 모두 이웃 버튼과 같은 fg-neutral 이다(Toggle 의 흐린 끔은 상단 바에서 쓰지 않는다 — 19B) */
+    .ptnav-icon[aria-pressed="true"] svg { stroke-width: 2.5; }
     /* 글 버튼 — 높이 44 · 좌우 10 · 16/22 · 500(글자 크기 설정은 1.2배까지) */
     .ptnav-text { padding: 0 var(--spacing-x2_5); font-size: clamp(var(--text-t5-static), var(--text-t5), calc(var(--text-t5-static) * 1.2)); line-height: clamp(var(--text-t5-static--line-height), var(--text-t5--line-height), calc(var(--text-t5-static--line-height) * 1.2)); font-weight: 500; white-space: nowrap; }
     @media (hover: hover) {
@@ -15165,8 +15932,7 @@ export function pageCss() {
     .pdata-stack--guide { padding-top: var(--spacing-x6); }
     .pdata-guide-line { position: absolute; top: 0; bottom: 0; left: calc(var(--spacing-global-gutter) + 1px + var(--spacing-x6)); z-index: 2; border-left: 1px dashed var(--color-fg-disabled); pointer-events: none; }
     .pdata-memo { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--spacing-x2); }
-    .pdata-pin { flex-shrink: 0; margin: calc(-1 * var(--spacing-x2)) calc(-1 * var(--spacing-x2)) 0 0; }
-    .pdata-pin[aria-pressed="true"] { --btn-fg: var(--color-fg-neutral); }
+    /* 고정 단추는 켜고 끄는 아이콘 단추(.ptgl — 입력 블록 03t)다. 제목 줄 오른쪽 · 위 · 오른쪽 8 을 당긴다(.pdata-memo > .ptgl) */
     .pdata-sort-line { padding: var(--spacing-x2) var(--spacing-global-gutter) var(--spacing-x3); }
     .pdata-chart-card { width: max-content; max-width: 100%; }
     @media (prefers-reduced-motion: reduce) {
@@ -15532,6 +16298,469 @@ export function pageCss() {
     .pdsp-theme--dark .pcard--hero { --pcard-hero-end: var(--color-brand-300-dark, var(--color-bg-neutral-inverted)); }
     [data-theme="dark"] .pheat,
     .pdsp-theme--dark .pheat { --pheat-ink-4: var(--color-fg-neutral); --pheat-ink-5: var(--color-fg-neutral); }
+
+    /* === 입력 — Slider · Toggle · Input OTP · Color Swatch · Icon Picker ===
+       specs/components/slider.md · toggle.md · input-otp.md · color-swatch.md · icon-picker.md(수치 원본은 같은 이름의 .yaml) · 아이콘 세트 category-icons.yaml.
+       SEED 가 컴포넌트로 가진 것은 Slider 와 Toggle Button(코드만)뿐이라 나머지는 SEED 의 원칙에서 porest 가 정했다(2026-10-09 사용자 결정).
+       슬라이더는 손잡이 줄 44 안에 트랙 4 · 채움 · 손잡이 20 — 손잡이 가운데는 트랙 양 끝에서 반지름(--psld-r 10)만큼 들어온 범위를 값으로 나눈 자리다(calc).
+       채움 · 손잡이는 트랙을 누르거나 키보드로 옮길 때 150ms 로 건너뛰고, 끄는 동안(data-dragging)은 1:1 로 따라간다. 말풍선은 누름 · 호버 · 키보드 포커스에만 뜨고
+       트랙 끝에서는 상자만 안으로 민다(--psld-shift — 페이지 끝 스크립트가 잰다). 켜고 끄는 단추는 바탕을 칠하지 않고 아이콘의 모양 · 굵기 · 색만 바꾼다.
+       색 칸의 고른 고리는 outline(띄움 2 · 2px), 키보드 포커스 링은 ::after(띄움 6 · 2px), 누르는 영역 44 는 ::before 다. 아이콘 칸의 고른 테두리는 안쪽 2px(box-shadow).
+       --hover · --pressed · --focus 는 갤러리에서 그 순간을 고정해 보여 주는 클래스다. 모션 줄이기면 건너뛰기 · 말풍선 · 축소를 뺀다. 다크 짝은 이 블록 끝에서 바꾼다. */
+    :is(.pinp-section, .psld, .ptgl, .pcsw, .pcsw-swatch, .pipk, .pipk-cell) {
+      --pinp-ring: var(--color-stroke-focus-ring, var(--color-border-focus, var(--color-fg-neutral)));
+    }
+    .pinp-section [hidden] { display: none !important; }
+    .pinp-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+
+    /* 갤러리 틀 — 폰(390 · 좌우 24 → 칸 342) · 데스크톱 설정 카드(760 · 여백 24, 좁으면 가로로 민다) · 바닥 위 묶음 · 견본 단추 줄 · 상태 표 칸 */
+    .pinp-panel > :not(.vignette-head) + :is(.pdsp-pair, .cb-matrix) { margin-top: var(--spacing-xl); }
+    .pinp-pair--next { margin-top: var(--spacing-xl); }
+    .pinp-cap { margin-top: var(--spacing-x2); }
+    .pinp-stack > .pinp-cap:first-child { margin-top: 0; }
+    .pinp-phone { box-sizing: border-box; width: 100%; max-width: 390px; padding: var(--spacing-x5) var(--spacing-x6) var(--spacing-x6); border: 1px solid var(--color-stroke-neutral-subtle); border-radius: var(--radius-r4); background: var(--color-bg-layer-default); color: var(--color-fg-neutral); font-family: var(--font-sans); }
+    .pinp-phone--bubble { padding-top: var(--spacing-x6); }
+    .pinp-phone--flush { padding: 0; overflow: hidden; }
+    .pinp-phone--360 { max-width: 360px; }
+    .pinp-phone--screen { position: relative; min-height: 480px; padding-bottom: 88px; }
+    .pinp-wide { position: relative; max-width: 100%; min-width: 0; overflow-x: auto; scrollbar-width: thin; }
+    .pinp-desk { box-sizing: border-box; width: 760px; padding: var(--spacing-x6); border: 1px solid var(--color-stroke-neutral-subtle); border-radius: var(--radius-r4); background: var(--color-bg-layer-default); color: var(--color-fg-neutral); font-family: var(--font-sans); }
+    .pinp-desk--dialog { width: 480px; border-radius: var(--radius-r5); background: var(--color-bg-layer-floating); }
+    .pinp-stack { display: flex; flex-direction: column; gap: var(--spacing-x6); }
+    .pinp-stack--floor { gap: var(--spacing-x2); padding: var(--spacing-x4); border-radius: var(--radius-r4); background: var(--color-bg-layer-basement); }
+    .pinp-stack--screen { margin: calc(-1 * var(--spacing-x5)) calc(-1 * var(--spacing-x6)) 0; border-radius: var(--radius-r4) var(--radius-r4) 0 0; }
+    .pinp-controls { display: flex; flex-wrap: wrap; gap: var(--spacing-x2); margin-top: var(--spacing-x4); }
+    .pinp-controls--paste { align-items: center; gap: var(--spacing-x1_5); }
+    .pinp-controls-cap { margin-right: var(--spacing-x1); font-size: var(--text-t3); line-height: var(--text-t3--line-height); color: var(--color-fg-neutral-subtle); }
+    .pinp-samples--wide { grid-template-columns: minmax(0, 1fr); }
+    .pinp-samples--sheet { grid-template-columns: repeat(auto-fill, minmax(min(100%, 362px), 1fr)); }
+    .pinp-live-status { margin-top: var(--spacing-x2); }
+    /* 칸 툴팁(.pinp-tip — 03m 의 .pbub--tooltip 모양)은 "직접" 견본 안에 띄운다 — 자리는 페이지 끝 스크립트가 칸 위 12 로 잰다 */
+    .pinp-live { position: relative; }
+    .pinp-log { display: flex; flex-direction: column; gap: var(--spacing-x0_5); margin: var(--spacing-x2) 0 0; padding: 0; list-style: none; font-size: var(--text-t3); line-height: var(--text-t3--line-height); color: var(--color-fg-neutral-subtle); font-variant-numeric: tabular-nums; }
+    .pinp-log:empty { display: none; }
+    .pinp-cell { justify-content: flex-start; }
+    .pinp-surface { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-x2); max-width: 100%; box-sizing: border-box; padding: var(--spacing-x2); border-radius: var(--radius-r2); background: var(--color-bg-layer-default); color: var(--color-fg-neutral); font-family: var(--font-sans); }
+    .pinp-surface--slider { display: block; width: 100%; padding: 40px var(--spacing-x2) var(--spacing-x2); }
+    .pinp-surface--swatch { padding: var(--spacing-x3); }
+    .pinp-surface--float { background: var(--color-bg-layer-floating); }
+    .pinp-surface--tgl-guide { gap: var(--spacing-x4); padding: var(--spacing-x4); }
+    .pinp-surface--hero { background: linear-gradient(135deg, var(--color-bg-brand-solid, var(--color-bg-neutral-inverted)), var(--pinp-hero-end, var(--color-brand-900, var(--color-bg-neutral-inverted)))); }
+    .pinp-matrix { margin-top: var(--spacing-xl); }
+    .pinp-matrix .cb-matrix-row { grid-template-columns: 168px repeat(var(--cb-cols), minmax(176px, 1fr)); }
+    .pinp-matrix:is(.pinp-matrix--tgl, .pinp-matrix--swatch, .pinp-matrix--ipk) .cb-matrix-row { grid-template-columns: 168px repeat(var(--cb-cols), minmax(96px, 1fr)); }
+    .pinp-panel > .cb-matrix:first-of-type:not(:first-child) { margin-top: var(--spacing-xl); }
+    @media (max-width: 900px) {
+      .pinp-matrix .cb-matrix-row { grid-template-columns: 120px repeat(var(--cb-cols), minmax(176px, 1fr)); }
+      .pinp-matrix:is(.pinp-matrix--tgl, .pinp-matrix--swatch, .pinp-matrix--ipk) .cb-matrix-row { grid-template-columns: 120px repeat(var(--cb-cols), minmax(96px, 1fr)); }
+    }
+    @media (max-width: 480px) {
+      .pinp-phone { padding-right: var(--spacing-x4); padding-left: var(--spacing-x4); }
+      .pinp-stack--screen { margin-right: calc(-1 * var(--spacing-x4)); margin-left: calc(-1 * var(--spacing-x4)); }
+    }
+
+    /* 슬라이더 — 루트 .psld(--none · --discrete · --floating) 는 손잡이 줄과 표식을 2 간격으로 쌓는다. 폭은 놓인 자리를 채운다 */
+    .psld {
+      --psld-r: 10px;
+      --psld-gap: var(--color-bg-layer-default);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-x0_5);
+      width: 100%;
+      min-width: 0;
+      /* 말풍선 자리 24 — Field 머리 ↔ 손잡이 줄 32(Field 간격 8 + 24). 누른 손잡이(24) 위 12 의 말풍선(26)이 머리를 덮지 않고 4 가 남는다(slider.yaml root.paddingTop) */
+      padding-top: var(--spacing-x6);
+      font-family: var(--font-sans);
+    }
+    .psld--floating { --psld-gap: var(--color-bg-layer-floating); }
+    /* 손잡이 줄 — 높이 44 전체가 누르는 자리(손잡이 위아래 12 · 트랙 위아래 20). 가로로 끄는 동안 화면이 스크롤되지 않게 touch-action none */
+    .psld-control { position: relative; height: 44px; cursor: pointer; touch-action: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+    .psld-track { position: absolute; top: 50%; right: 0; left: 0; height: 4px; overflow: hidden; translate: 0 -50%; border-radius: var(--radius-full); background: var(--color-stroke-neutral-weak); }
+    /* 채움 — 값 하나는 트랙 왼쪽 끝에서 손잡이 가운데까지, 값 둘은 두 손잡이 가운데 사이. 모서리는 트랙이 잘라 준다 */
+    .psld-fill {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: calc(var(--psld-r) + var(--psld-from) * (100% - 2 * var(--psld-r)));
+      width: calc((var(--psld-to) - var(--psld-from)) * (100% - 2 * var(--psld-r)));
+      background: var(--color-fg-neutral);
+      transition: left var(--motion-duration-d3) var(--motion-ease-easing), width var(--motion-duration-d3) var(--motion-ease-easing);
+    }
+    .psld[data-mode="single"] .psld-fill { left: 0; width: calc(var(--psld-r) + var(--psld-to) * (100% - 2 * var(--psld-r))); }
+    /* 눈금 — 2 ~ 5 구간이면 단계 자리마다 트랙 · 채움을 끊는 틈 4(놓인 표면 색) */
+    .psld-tick { position: absolute; top: 0; bottom: 0; left: calc(var(--psld-r) + var(--psld-at) * (100% - 2 * var(--psld-r))); width: 4px; translate: -50% 0; background: var(--psld-gap); }
+    /* 손잡이 — 원 20 · bg-neutral-inverted · 테두리 · 그림자 없음. 누르는 동안 24(1.2배) */
+    .psld-thumb {
+      position: absolute;
+      top: 50%;
+      left: calc(var(--psld-r) + var(--psld-p) * (100% - 2 * var(--psld-r)));
+      z-index: 1;
+      width: 20px;
+      height: 20px;
+      box-sizing: border-box;
+      translate: -50% -50%;
+      border-radius: var(--radius-full);
+      background: var(--color-bg-neutral-inverted);
+      cursor: grab;
+      outline: none;
+      transition: left var(--motion-duration-d3) var(--motion-ease-easing), scale var(--motion-duration-d3) var(--motion-ease-easing);
+    }
+    .psld-thumb[data-pressed],
+    .psld-thumb--pressed { scale: 1.2; cursor: grabbing; }
+    /* 링 · 말풍선은 키보드로 왔을 때만(data-focus-visible — 페이지 끝 스크립트, 레시피의 trackInput). 손잡이를 누르면 초점을 직접 두는데
+       :focus-visible 은 그 앞의 키보드 초점을 이어받아 누른 손잡이에도 링이 뜬다(Chromium) */
+    .psld-thumb[data-focus-visible],
+    .psld-thumb--focus { outline: 2px solid var(--pinp-ring); outline-offset: 2px; }
+    .psld[data-dragging] :is(.psld-fill, .psld-thumb, .psld-bubble) { transition-property: scale, opacity, transform; }
+    /* 말풍선 — 손잡이 위 12(상자 아래 끝 ↔ 손잡이 위 끝) · 13 / 18 · 500 · 고정폭 숫자 · 위아래 4 · 좌우 8 · 모서리 6 · 최소 24 · 아래 8 × 6 화살표.
+       보조 기술에는 숨긴다(값은 손잡이의 aria-valuetext). 나타남 200ms enter(0.9배 · 아래 5 에서) · 사라짐 200ms */
+    .psld-bubble {
+      position: absolute;
+      bottom: calc(50% + 10px + 12px);
+      left: calc(var(--psld-r) + var(--psld-p) * (100% - 2 * var(--psld-r)));
+      z-index: 2;
+      width: 0;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(5px) scale(0.9);
+      transform-origin: 0 100%;
+      transition: opacity var(--motion-duration-d4) var(--motion-ease-easing), transform var(--motion-duration-d4) var(--motion-ease-easing), left var(--motion-duration-d3) var(--motion-ease-easing);
+    }
+    .psld-bubble-box {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      box-sizing: border-box;
+      min-width: 24px;
+      padding: var(--spacing-x1) var(--spacing-x2);
+      translate: calc(-50% + var(--psld-shift, 0px)) 0;
+      border-radius: var(--radius-r1_5);
+      background: var(--color-bg-neutral-inverted);
+      color: var(--color-fg-neutral-inverted);
+      font-size: var(--text-t3);
+      line-height: var(--text-t3--line-height);
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .psld-bubble-arrow { position: absolute; top: 0; left: 0; width: 0; height: 0; translate: -50% 0; border-top: 6px solid var(--color-bg-neutral-inverted); border-right: 4px solid transparent; border-left: 4px solid transparent; }
+    :is(.psld-thumb[data-focus-visible], .psld-thumb[data-pressed], .psld-thumb--hover, .psld-thumb--focus, .psld-thumb--pressed) + .psld-bubble {
+      opacity: 1;
+      transform: none;
+      transition-timing-function: var(--motion-ease-enter), var(--motion-ease-enter), var(--motion-ease-easing);
+    }
+    @media (hover: hover) {
+      .psld:not([data-disabled]) .psld-thumb:hover + .psld-bubble { opacity: 1; transform: none; transition-timing-function: var(--motion-ease-enter), var(--motion-ease-enter), var(--motion-ease-easing); }
+    }
+    /* 표식 — 아래 2 에 13 / 18 · fg-neutral-muted. 눈금 없음은 양 끝 둘, 2 ~ 5 구간은 단계마다(끝 둘은 끝에 맞추고 나머지는 단계 자리 가운데) */
+    .psld-markers { display: flex; justify-content: space-between; gap: var(--spacing-x2); font-size: var(--text-t3); line-height: var(--text-t3--line-height); color: var(--color-fg-neutral-muted); font-variant-numeric: tabular-nums; }
+    .psld--discrete .psld-markers { position: relative; display: block; height: var(--text-t3--line-height); }
+    .psld--discrete .psld-marker { position: absolute; top: 0; left: calc(var(--psld-r) + var(--psld-at) * (100% - 2 * var(--psld-r))); translate: -50% 0; white-space: nowrap; }
+    .psld--discrete .psld-marker:first-child { left: 0; translate: none; }
+    .psld--discrete .psld-marker:last-child { right: 0; left: auto; translate: none; }
+    /* 막힘 — 전용 색(트랙 bg-disabled · 채움 · 손잡이 · 표식 · 머리 값 fg-disabled), 흐리게 하지 않는다 */
+    .psld[data-disabled] .psld-control { cursor: not-allowed; }
+    .psld[data-disabled] .psld-track { background: var(--color-bg-disabled); }
+    .psld[data-disabled] :is(.psld-fill, .psld-thumb) { background: var(--color-fg-disabled); }
+    .psld[data-disabled] .psld-thumb { cursor: not-allowed; }
+    .psld[data-disabled] .psld-markers { color: var(--color-fg-disabled); }
+    .psld[data-disabled] .psld-bubble { display: none; }
+    /* 머리 값 — Field 머리 오른쪽, 16 / 22 · 700 · fg-neutral · 고정폭 숫자(라벨과 한 줄) */
+    .psld-value { flex-shrink: 0; margin-left: auto; font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 700; color: var(--color-fg-neutral); font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .psld-field[data-disabled] .psld-value { color: var(--color-fg-disabled); }
+    /* 부위 — 손잡이 줄 44 를 점선으로(갤러리 전용) */
+    .psld--guide .psld-control { outline: 1px dashed var(--color-fg-informative, var(--color-fg-neutral-subtle)); outline-offset: -1px; }
+    .psld--guide .psld-thumb { box-shadow: 0 0 0 12px color-mix(in srgb, var(--color-fg-informative, var(--color-fg-neutral-subtle)) 12%, transparent); }
+    /* 모션 줄이기 — 건너뛰기 · 누름 크기는 바로, 말풍선은 확대 · 이동 없이 투명도만 바뀐다(slider.md Reduced motion · v104) */
+    @media (prefers-reduced-motion: reduce) {
+      .psld-fill, .psld-thumb { transition: none; }
+      .psld-bubble { transform: none; transition-property: opacity; }
+    }
+
+    /* 켜고 끄는 아이콘 단추 — 보이는 40 · 모서리 8(누름 · 호버 바탕에만) · 누르는 44(::before — 둘레로 2) · 아이콘 20.
+       끔 fg-neutral-muted · 선 2, 켬 fg-neutral · 선 2.5 — 바탕은 켬 · 끔에 따라 바뀌지 않는다. 끔 · 켬 아이콘을 둘 다 담고 aria-pressed 로 하나를 보인다 */
+    .ptgl {
+      position: relative;
+      display: inline-grid;
+      flex-shrink: 0;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: var(--radius-r2);
+      background: transparent;
+      color: var(--color-fg-neutral-muted);
+      font: inherit;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background-color var(--motion-duration-color-transition) var(--motion-ease-easing), scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    .ptgl::before { content: ""; position: absolute; inset: -2px; border-radius: inherit; }
+    .ptgl-icon { display: grid; grid-area: 1 / 1; place-items: center; }
+    .ptgl-icon > svg { width: 20px; height: 20px; stroke-width: 2; }
+    .ptgl[aria-pressed="true"] { color: var(--color-fg-neutral); }
+    .ptgl[aria-pressed="true"] .ptgl-icon > svg { stroke-width: 2.5; }
+    .ptgl[aria-pressed="true"] .ptgl-icon--off,
+    .ptgl:not([aria-pressed="true"]) .ptgl-icon--on { display: none; }
+    @media (hover: hover) {
+      .ptgl:not(:disabled):hover { background: var(--color-bg-layer-default-pressed); }
+    }
+    .ptgl--hover { background: var(--color-bg-layer-default-pressed); }
+    .ptgl:not(:disabled):active,
+    .ptgl--pressed { background: var(--color-bg-layer-default-pressed); scale: calc(1 - 2 / 40); }
+    .ptgl:focus { outline: none; }
+    .ptgl:focus-visible,
+    .ptgl--focus { outline: 2px solid var(--pinp-ring); outline-offset: 2px; }
+    .ptgl:disabled { color: var(--color-fg-disabled); cursor: not-allowed; }
+    /* 브랜드 채움 위(tone inverted — 순자산 카드) — 켬 · 끔 모두 흰 아이콘, 원 · 바탕 없음, 누르면 축소만 */
+    .ptgl--inverted,
+    .ptgl--inverted[aria-pressed="true"] { color: var(--color-static-white); }
+    .ptgl--inverted:not(:disabled):is(:hover, :active),
+    .ptgl--inverted:is(.ptgl--hover, .ptgl--pressed) { background: transparent; }
+    /* 브랜드 채움 위 포커스 링은 흰색(static-white) — stroke-focus-ring 은 채움에 묻힌다(toggle.yaml inverted focused) */
+    .ptgl--inverted:focus-visible,
+    .ptgl--inverted.ptgl--focus { outline-color: var(--color-static-white); }
+    @media (prefers-reduced-motion: reduce) {
+      .ptgl:not(:disabled):active, .ptgl--pressed { scale: 1; }
+    }
+    /* 부위 — 보이는 40(점선) · 누르는 44(점선, 바깥) — 갤러리 전용 */
+    .ptgl[data-ptgl-guide] { outline: 1px dashed var(--color-fg-neutral-subtle); outline-offset: -1px; }
+    .ptgl[data-ptgl-guide]::before { outline: 1px dashed var(--color-fg-informative, var(--color-fg-neutral-subtle)); outline-offset: -1px; }
+    /* 카드 안 — 메모 카드 제목 줄의 고정(위 · 오른쪽 8 을 당긴다 · 카드 링크 위에 놓인다), 순자산 카드 머리(줄 높이를 밀지 않게 위아래로 넘친다) */
+    .pdata-memo > .ptgl { margin: calc(-1 * var(--spacing-x2)) calc(-1 * var(--spacing-x2)) 0 0; }
+    .pcard--peers .ptgl { z-index: 1; }
+    .pinp-hero-head { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-x2); }
+    .pinp-hero-head > .ptgl { margin: -11px calc(-1 * var(--spacing-x2)) -11px 0; }
+    /* 단추 넷 표 · 직접 줄 · 증권 상세 머리 · App Key 칸 */
+    .pinp-tgl-table { display: flex; flex-direction: column; font-family: var(--font-sans); }
+    .pinp-tgl-row { display: grid; grid-template-columns: minmax(104px, 1.2fr) minmax(0, 1fr) minmax(0, 1fr); gap: var(--spacing-x3); align-items: start; padding: var(--spacing-x3) 0; border-top: 1px solid var(--color-stroke-neutral-subtle); }
+    .pinp-tgl-row--head { padding: 0 0 var(--spacing-x2); border-top: 0; font-size: var(--text-t2); line-height: var(--text-t2--line-height); font-weight: 700; color: var(--color-fg-neutral-subtle); }
+    .pinp-tgl-name { font-size: var(--text-t4); line-height: var(--text-t4--line-height); font-weight: 700; color: var(--color-fg-neutral); }
+    .pinp-tgl-name > span { display: block; margin-top: var(--spacing-x0_5); font-size: var(--text-t2); line-height: var(--text-t2--line-height); font-weight: 400; color: var(--color-fg-neutral-subtle); }
+    .pinp-tgl-cell { display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-x1); min-width: 0; }
+    .pinp-tgl-read { font-size: var(--text-t2); line-height: var(--text-t2--line-height); color: var(--color-fg-neutral-subtle); }
+    .pinp-tgl-strip { display: flex; flex-wrap: wrap; gap: var(--spacing-x2); }
+    .pinp-stock { display: flex; align-items: center; gap: var(--spacing-x3); padding: var(--spacing-x3) var(--spacing-x4) var(--spacing-x3) var(--spacing-x5); border: 1px solid var(--color-stroke-neutral-weak); border-radius: var(--radius-r4); background: var(--color-bg-layer-default); color: var(--color-fg-neutral); }
+    .pinp-stock-body { display: flex; flex: 1; flex-direction: column; gap: var(--spacing-x0_5); min-width: 0; }
+    .pinp-stock-name { font-size: var(--text-t5); line-height: var(--text-t5--line-height); font-weight: 700; color: var(--color-fg-neutral); }
+    .pinp-stock-meta { font-size: var(--text-t3); line-height: var(--text-t3--line-height); color: var(--color-fg-neutral-subtle); font-variant-numeric: tabular-nums; }
+    .pinp-secret .ptgl { margin: 0 var(--spacing-x1_5) 0 calc(-1 * var(--spacing-x1)); }
+
+    /* 인증 코드 칸 — 03g 의 입력칸 한 칸 + 고정폭 숫자. 다시 받기는 칸 꼬리 아래 12 · 왼쪽(Button neutralWeak medium 40) */
+    .potp-input .ptf-input-value { font-variant-numeric: tabular-nums; }
+    .potp-resend { align-self: flex-start; margin-top: var(--spacing-x3); font-variant-numeric: tabular-nums; }
+    .pinp-otp { display: flex; flex-direction: column; min-height: 520px; background: var(--color-bg-layer-default); color: var(--color-fg-neutral); font-family: var(--font-sans); }
+    .pinp-otp-body { display: flex; flex: 1; flex-direction: column; align-items: stretch; padding: var(--spacing-x2) var(--spacing-x6) var(--spacing-x6); }
+    .pinp-otp-title { font-size: var(--text-t7); line-height: var(--text-t7--line-height); font-weight: 700; color: var(--color-fg-neutral); }
+    .pinp-otp-lead { margin: var(--spacing-x2) 0 var(--spacing-x6); font-size: var(--text-t5); line-height: var(--text-t5--line-height); color: var(--color-fg-neutral-muted); }
+    .pinp-otp-foot { padding: var(--spacing-x3) var(--spacing-x6) var(--spacing-x4); }
+    .pinp-otp-foot > .btn,
+    .pinp-otp-confirm > .btn { width: 100%; }
+    .pinp-otp-confirm { margin-top: var(--spacing-x6); }
+    .pinp-live[data-potp-host] { display: flex; flex-direction: column; }
+    .pinp-resend-row { display: flex; flex-wrap: wrap; gap: var(--spacing-x2); }
+
+    /* 색 고르기 — 묶음(radiogroup) .pcsw > [지금 색 칸 + 세로 선] + 격자 5 × 2(원 40 · 사이 12 · 폭 248) */
+    .pcsw { display: flex; align-items: stretch; max-width: 100%; font-family: var(--font-sans); }
+    .pcsw-grid { display: grid; flex-shrink: 0; grid-template-columns: repeat(5, 40px); gap: var(--spacing-x3); width: 248px; }
+    .pcsw-swatch {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: var(--radius-full);
+      background: var(--pcsw-bg);
+      color: var(--color-fg-neutral-inverted);
+      cursor: pointer;
+      outline: 2px solid transparent;
+      outline-offset: 2px;
+      -webkit-tap-highlight-color: transparent;
+      transition: scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    .pcsw-swatch::before { content: ""; position: absolute; inset: -2px; border-radius: inherit; }
+    .pcsw-swatch::after { content: ""; position: absolute; inset: -8px; border: 2px solid transparent; border-radius: inherit; pointer-events: none; }
+    .pcsw-swatch--red { --pcsw-bg: var(--color-chart-red); }
+    .pcsw-swatch--orange { --pcsw-bg: var(--color-chart-orange); }
+    .pcsw-swatch--yellow { --pcsw-bg: var(--color-chart-yellow); }
+    .pcsw-swatch--green { --pcsw-bg: var(--color-chart-green); }
+    .pcsw-swatch--blue { --pcsw-bg: var(--color-chart-blue); }
+    .pcsw-swatch--indigo { --pcsw-bg: var(--color-chart-indigo); }
+    .pcsw-swatch--violet { --pcsw-bg: var(--color-chart-violet); }
+    .pcsw-swatch--pink { --pcsw-bg: var(--color-chart-pink); }
+    .pcsw-swatch--brown { --pcsw-bg: var(--color-chart-brown); }
+    .pcsw-swatch--gray { --pcsw-bg: var(--color-chart-gray); }
+    /* 지금 색 — 팔레트 밖 저장 색 그대로(두 모드 같은 값). 체크는 fg-neutral · fg-neutral-inverted 가운데 그 색 위 대비가 큰 쪽(같으면 inverted) —
+       두 색이 모드마다 바뀌어 페이지 끝 스크립트가 그 자리에서 재 data-pcsw-ink 를 단다(레시피의 useCheckTone) */
+    .pcsw-swatch--custom { --pcsw-bg: var(--pcsw-c); }
+    .pcsw-swatch--custom[data-pcsw-ink="neutral"] { color: var(--color-fg-neutral); }
+    /* 자동 — 차트가 쓸 색을 2px 점선 원(stroke-neutral-solid)으로 */
+    .pcsw-swatch--auto { border: 2px dashed var(--color-stroke-neutral-solid); }
+    .pcsw-check { display: none; }
+    .pcsw-check > svg { width: 16px; height: 16px; stroke-width: 2.5; }
+    .pcsw-swatch[aria-checked="true"] { outline-color: var(--color-stroke-neutral-contrast); }
+    .pcsw-swatch[aria-checked="true"] .pcsw-check { display: grid; }
+    .pcsw-swatch:focus-visible::after,
+    .pcsw-swatch--focus::after { border-color: var(--pinp-ring, var(--color-stroke-focus-ring, var(--color-fg-neutral))); }
+    .pcsw-swatch:not(:disabled):active,
+    .pcsw-swatch--pressed { scale: calc(1 - 2 / 40); }
+    .pcsw-swatch:disabled { cursor: not-allowed; }
+    .pcsw-swatch:disabled[aria-checked="true"] { outline-color: var(--color-stroke-neutral-solid); }
+    @media (prefers-reduced-motion: reduce) {
+      .pcsw-swatch:not(:disabled):active, .pcsw-swatch--pressed { scale: 1; }
+    }
+    .pcsw-current { display: flex; flex-shrink: 0; flex-direction: column; align-items: center; gap: var(--spacing-x1_5); }
+    .pcsw-current-label { font-size: var(--text-t2); line-height: var(--text-t2--line-height); color: var(--color-fg-neutral-muted); white-space: nowrap; }
+    .pcsw-divider { flex-shrink: 0; width: 1px; margin: 0 var(--spacing-x4); background: var(--color-stroke-neutral-weak); }
+    /* 지금 색 칸이 있는 묶음 — 놓인 자리가 321(칸 40 + 16 + 선 1 + 16 + 격자 248)보다 좁으면(360 폰 본문 312) 지금 색 칸 · 선 · 격자를 세로로 둔다.
+       선은 가로 1px, 사이는 그대로 16(color-swatch.yaml divider.stackBelow — 레시피는 묶음에 @container 를 걸고 321 로 가른다) */
+    .pcsw-field:has(.pcsw-current) { container-type: inline-size; }
+    @container (max-width: 320.98px) {
+      .pcsw:has(> .pcsw-current) { flex-direction: column; align-items: flex-start; width: fit-content; }
+      .pcsw:has(> .pcsw-current) > .pcsw-divider { align-self: stretch; width: auto; height: 1px; margin: var(--spacing-x4) 0; }
+    }
+    /* 10색 표 · 모두 고른 그림 · 기본 카테고리 줄(타일 40 — 차트 색 옅은 바탕 + 그 색 아이콘) */
+    .pinp-swatch-legend { display: grid; grid-template-columns: repeat(auto-fill, minmax(116px, 1fr)); gap: var(--spacing-x3); font-family: var(--font-sans); font-size: var(--text-t3); line-height: var(--text-t3--line-height); color: var(--color-fg-neutral); }
+    .pinp-swatch-legend-item { display: grid; grid-template-columns: 24px 1fr; column-gap: var(--spacing-x2); align-items: center; }
+    .pinp-swatch-legend-item > code { grid-column: 2; font-size: 11px; color: var(--color-fg-neutral-subtle); }
+    .pinp-swatch-legend .pinp-swatch-dot { grid-row: span 2; width: 24px; height: 24px; cursor: default; }
+    .pinp-swatch-all { display: flex; flex-wrap: wrap; gap: var(--spacing-x3); padding: var(--spacing-x1); }
+    .pinp-cats { display: flex; flex-direction: column; gap: var(--spacing-x2); margin: 0 0 var(--spacing-x6); padding: 0; list-style: none; font-family: var(--font-sans); }
+    .pinp-cat { display: flex; align-items: center; gap: var(--spacing-x3); font-size: var(--text-t4); line-height: var(--text-t4--line-height); color: var(--color-fg-neutral); }
+    .pinp-cat--new { font-weight: 700; }
+    .pinp-tile { display: inline-grid; flex-shrink: 0; place-items: center; width: 40px; height: 40px; border-radius: var(--radius-r3); background: var(--pinp-tile-bg); color: var(--pinp-tile-fg); }
+    .pinp-tile > svg { width: 20px; height: 20px; }
+    .pinp-tile--red { --pinp-tile-bg: var(--color-chart-red-weak); --pinp-tile-fg: var(--color-chart-red); }
+    .pinp-tile--orange { --pinp-tile-bg: var(--color-chart-orange-weak); --pinp-tile-fg: var(--color-chart-orange); }
+    .pinp-tile--yellow { --pinp-tile-bg: var(--color-chart-yellow-weak); --pinp-tile-fg: var(--color-chart-yellow); }
+    .pinp-tile--green { --pinp-tile-bg: var(--color-chart-green-weak); --pinp-tile-fg: var(--color-chart-green); }
+    .pinp-tile--blue { --pinp-tile-bg: var(--color-chart-blue-weak); --pinp-tile-fg: var(--color-chart-blue); }
+    .pinp-tile--indigo { --pinp-tile-bg: var(--color-chart-indigo-weak); --pinp-tile-fg: var(--color-chart-indigo); }
+    .pinp-tile--violet { --pinp-tile-bg: var(--color-chart-violet-weak); --pinp-tile-fg: var(--color-chart-violet); }
+    .pinp-tile--pink { --pinp-tile-bg: var(--color-chart-pink-weak); --pinp-tile-fg: var(--color-chart-pink); }
+    .pinp-tile--brown { --pinp-tile-bg: var(--color-chart-brown-weak); --pinp-tile-fg: var(--color-chart-brown); }
+    .pinp-tile--gray { --pinp-tile-bg: var(--color-chart-gray-weak); --pinp-tile-fg: var(--color-chart-gray); }
+
+    /* 아이콘 고르기 — 여는 자리 안 .pipk > 찾기 칸(위에 붙는다) · 격자(listbox) · 결과 없음. 칸 48 · 모서리 12 · 아이콘 24, 들어가는 만큼 열(사이 최소 4 · 남는 폭은 사이에) · 줄 사이 4 */
+    /* 찾기 칸(.pipk-search)은 스크롤 상자 밖이라 늘 위에 있고 흐리지 않는다. 묶음 머리 · 격자는 .pipk-scroll(Scroll Fog overlayBody — 위 20 · 아래 80 늘 켜짐,
+       본문 안 여백 · 스크롤 여유 그만큼) 안에서 스크롤한다. 찾기 칸 ↔ 첫 머리 글 · 찾는 동안 격자 32(흐림 여백 20 + 위 12 — icon-picker.yaml grid.searchGap) */
+    .pipk { display: flex; flex-direction: column; min-width: 0; min-height: 0; font-family: var(--font-sans); }
+    .pipk-search { flex: none; }
+    .pipk-scroll { flex: 1 1 auto; min-height: 0; }
+    .pipk-grid { display: flex; flex-direction: column; }
+    .pipk-grid > .pipk-cells:first-child { padding-top: var(--spacing-x3); }
+    .pipk-group-head { padding: var(--spacing-x3) 0 var(--spacing-x2); font-size: var(--text-t4); line-height: var(--text-t4--line-height); font-weight: 500; color: var(--color-fg-neutral-subtle); }
+    /* 열 — 시트 6(본문이 308 보다 좁은 폰은 들어가는 만큼) · 팝오버 7. 남는 폭은 칸 사이에(레시피의 GRID_COLUMNS — 시트는 본문 폭 @container 로 가른다) */
+    .pipk-cells { display: grid; grid-template-columns: repeat(auto-fill, 48px); justify-content: space-between; gap: var(--spacing-x1); }
+    .pipk--sheet .pipk-scroll { container-type: inline-size; }
+    @container (min-width: 308px) { .pipk--sheet .pipk-cells { grid-template-columns: repeat(6, 48px); } }
+    /* 시트 · 팝오버의 본문 자리 — 스크롤은 안의 .pipk-scroll 이 한다(바깥 본문은 높이만 준다) */
+    :is(.pov-sheet-body, .pov-pop-body):has(> .pipk) { display: flex; flex-direction: column; overflow: hidden; padding-bottom: 0; }
+    :is(.pov-sheet-body, .pov-pop-body) > .pipk { flex: 1 1 auto; }
+    .pipk--popover .pipk-cells { grid-template-columns: repeat(7, 48px); }
+    .pipk-cell {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      box-sizing: border-box;
+      border-radius: var(--radius-r3);
+      background: transparent;
+      color: var(--color-fg-neutral);
+      cursor: pointer;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: background-color var(--motion-duration-color-transition) var(--motion-ease-easing), scale var(--motion-duration-pressed-scale) var(--motion-ease-pressed-scale);
+    }
+    .pipk-cell > svg { width: 24px; height: 24px; stroke-width: 2; pointer-events: none; }
+    /* 고른 칸 — 안쪽 2px 짙은 테두리(내용이 밀리지 않는다) + 선 2.5. 바탕은 칠하지 않는다 */
+    .pipk-cell[aria-selected="true"] { box-shadow: inset 0 0 0 2px var(--color-stroke-neutral-contrast); }
+    .pipk-cell[aria-selected="true"] > svg { stroke-width: 2.5; }
+    @media (hover: hover) {
+      .pipk-cell:hover { background: var(--color-bg-layer-floating-pressed); }
+    }
+    .pipk-cell--hover { background: var(--color-bg-layer-floating-pressed); }
+    .pipk-cell:active,
+    .pipk-cell--pressed { background: var(--color-bg-layer-floating-pressed); scale: calc(1 - 2 / 48); }
+    .pipk-cell:focus-visible,
+    .pipk-cell--focus { outline: 2px solid var(--pinp-ring); outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) {
+      .pipk-cell:active, .pipk-cell--pressed { scale: 1; }
+    }
+    .pipk-empty { padding: var(--spacing-x6) 0 var(--spacing-x2); }
+    /* 팝오버 — 폭 408(칸 48 × 7 + 사이 4 × 6 + 좌우 24 × 2) · 최대 높이 600 */
+    .pov-popover.pipk-pop { width: 408px; max-width: none; }
+    .pinp-anchor-form { width: 360px; max-width: 100%; }
+    .pinp-float { box-sizing: border-box; display: flex; flex-direction: column; width: 100%; max-width: 408px; max-height: 420px; overflow: hidden; padding: 0 var(--spacing-x6); border-radius: var(--radius-r5); background: var(--color-bg-layer-floating); box-shadow: var(--shadow-s3); color: var(--color-fg-neutral); }
+    .pinp-float > .pipk { flex: 1 1 auto; }
+    .pinp-float .pipk-search { padding-top: var(--spacing-x6); }
+    .pinp-float .pipk-scroll { scrollbar-width: thin; }
+    .pinp-live--ipk { max-width: 408px; }
+    .pinp-float--live { margin-top: var(--spacing-x2); max-height: 460px; }
+    .pinp-samples--find { grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); }
+    .pipk-trigger-icon { color: var(--color-fg-neutral-muted); }
+
+    /* 다크 — 역할 색을 이 블록의 부품 · 갤러리 틀 안에서만 다크 짝으로 바꾼다(.pdata-* 와 같다). 라이트 틀(.pdsp-theme--light)과 그 안은 빼고,
+       다크 틀(.pdsp-theme--dark)은 페이지가 라이트여도 바꾼다 — 끼운 03g 의 Field · 입력칸 · 03h 의 Input Button · 03r 의 상단 바 · 03s 의 카드도 이 짝을 이어받는다 */
+    [data-theme="dark"] :is(.psld, .psld-field, .ptgl, .pcsw, .pcsw-field, .pipk, .pinp-phone, .pinp-desk, .pinp-surface, .pinp-float, .pinp-stock, .pinp-tgl-table, .pinp-stack--floor, .pinp-cap, .pinp-live-status, .pinp-log, .pinp-otp, .pinp-swatch-legend, .pinp-swatch-all, .pinp-cats):not(.pdsp-theme--light, .pdsp-theme--light *),
+    .pdsp-theme--dark {
+      --color-bg-layer-default: var(--color-bg-layer-default-dark);
+      --color-bg-layer-default-pressed: var(--color-bg-layer-default-pressed-dark);
+      --color-bg-layer-floating: var(--color-bg-layer-floating-dark);
+      --color-bg-layer-floating-pressed: var(--color-bg-layer-floating-pressed-dark);
+      --color-bg-layer-basement: var(--color-bg-layer-basement-dark);
+      --color-bg-neutral-weak: var(--color-bg-neutral-weak-dark);
+      --color-bg-neutral-weak-pressed: var(--color-bg-neutral-weak-pressed-dark);
+      --color-bg-neutral-inverted: var(--color-bg-neutral-inverted-dark);
+      --color-bg-disabled: var(--color-bg-disabled-dark);
+      --color-fg-neutral: var(--color-fg-neutral-dark);
+      --color-fg-neutral-muted: var(--color-fg-neutral-muted-dark);
+      --color-fg-neutral-subtle: var(--color-fg-neutral-subtle-dark);
+      --color-fg-neutral-inverted: var(--color-fg-neutral-inverted-dark);
+      --color-fg-disabled: var(--color-fg-disabled-dark);
+      --color-fg-placeholder: var(--color-fg-placeholder-dark);
+      --color-fg-critical: var(--color-fg-critical-dark);
+      --color-fg-informative: var(--color-fg-informative-dark);
+      --color-stroke-neutral-subtle: var(--color-stroke-neutral-subtle-dark);
+      --color-stroke-neutral-weak: var(--color-stroke-neutral-weak-dark);
+      --color-stroke-neutral-solid: var(--color-stroke-neutral-solid-dark);
+      --color-stroke-neutral-contrast: var(--color-stroke-neutral-contrast-dark);
+      --color-stroke-critical-solid: var(--color-stroke-critical-solid-dark);
+      --color-stroke-focus-ring: var(--color-stroke-focus-ring-dark);
+      --color-chart-red: var(--color-chart-red-dark);
+      --color-chart-orange: var(--color-chart-orange-dark);
+      --color-chart-yellow: var(--color-chart-yellow-dark);
+      --color-chart-green: var(--color-chart-green-dark);
+      --color-chart-blue: var(--color-chart-blue-dark);
+      --color-chart-indigo: var(--color-chart-indigo-dark);
+      --color-chart-violet: var(--color-chart-violet-dark);
+      --color-chart-pink: var(--color-chart-pink-dark);
+      --color-chart-brown: var(--color-chart-brown-dark);
+      --color-chart-gray: var(--color-chart-gray-dark);
+      --color-chart-red-weak: var(--color-chart-red-weak-dark);
+      --color-chart-orange-weak: var(--color-chart-orange-weak-dark);
+      --color-chart-yellow-weak: var(--color-chart-yellow-weak-dark);
+      --color-chart-green-weak: var(--color-chart-green-weak-dark);
+      --color-chart-blue-weak: var(--color-chart-blue-weak-dark);
+      --color-chart-indigo-weak: var(--color-chart-indigo-weak-dark);
+      --color-chart-violet-weak: var(--color-chart-violet-weak-dark);
+      --color-chart-pink-weak: var(--color-chart-pink-weak-dark);
+      --color-chart-brown-weak: var(--color-chart-brown-weak-dark);
+      --color-chart-gray-weak: var(--color-chart-gray-weak-dark);
+      --shadow-s3: var(--shadow-s3-dark);
+    }
+    [data-theme="dark"] .pinp-surface--hero,
+    .pdsp-theme--dark .pinp-surface--hero { --pinp-hero-end: var(--color-brand-300-dark, var(--color-bg-neutral-inverted)); }
 
     /* todo-card */
     .todo-list { display: flex; flex-direction: column; gap: 2px; }
@@ -16021,37 +17250,8 @@ export function pageCss() {
     .cb { display: flex; justify-content: space-between; align-items: center; padding: var(--spacing-sm) var(--spacing-md); background: var(--color-surface-input); border: 1px solid var(--color-border-default); border-radius: var(--radius-sm); cursor: pointer; }
     .cb-caret { color: var(--color-text-tertiary); }
 
-    /* Slider */
-    /* Slider — spec: track 4px / thumb 16 / primary fill / thumb fill text-on-accent(#fff)
-       — 다크 모드에서도 흰색 유지(surface-default는 dark swap되어 어두워짐). */
-    .sld { padding: var(--spacing-sm) 0; }
-    .sld-track { position: relative; width: 100%; height: 4px; background: var(--color-surface-input); border-radius: var(--radius-full); }
-    .sld-fill { height: 100%; background: var(--color-primary); border-radius: var(--radius-full); }
-    .sld-thumb { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 16px; height: 16px; background: var(--color-text-on-accent); border: 2px solid var(--color-primary); border-radius: var(--radius-full); box-shadow: var(--shadow-sm); }
-    .sld-meta { display: flex; justify-content: space-between; font-size: var(--text-caption); color: var(--color-text-tertiary); margin-top: var(--spacing-md); }
-
-    /* Toggle */
-    .tg-row { display: flex; gap: var(--spacing-sm); flex-wrap: wrap; }
-    .tg { padding: var(--spacing-xs) var(--spacing-md); border: 1px solid var(--color-border-default); background: transparent; color: var(--color-text-secondary); border-radius: var(--radius-md); cursor: pointer; font-family: inherit; font-size: var(--text-caption); }
-    .tg:hover { background: var(--color-surface-input); }
-    .tg--on { background: var(--color-surface-input); color: var(--color-text-primary); border-color: var(--color-border-strong); font-weight: 600; }
-
-    /* Toggle Group */
-    .tgg { display: inline-flex; border: 1px solid var(--color-border-default); border-radius: var(--radius-md); overflow: hidden; }
-    .tgg-item { padding: var(--spacing-xs) var(--spacing-md); border: none; background: transparent; color: var(--color-text-secondary); cursor: pointer; font-family: inherit; font-size: var(--text-caption); }
-    .tgg-item + .tgg-item { border-left: 1px solid var(--color-border-default); }
-    .tgg-item:hover { background: var(--color-surface-input); }
-    .tgg-item--active { background: var(--color-surface-input); color: var(--color-text-primary); font-weight: 600; }
-    /* solid visual (v3) — active 채움 primary + 흰글씨 + 600, shadow 없음 (subtle 과 차이 = 채움 색). */
-    .tgg--solid .tgg-item--active { background: var(--color-primary); color: var(--color-text-on-accent, #fff); }
-
-    /* Input OTP */
-    /* OTP — spec: specs/components/input-otp.md (단일 SoT) */
-    .otp { display: flex; gap: var(--spacing-xs); align-items: center; }
-    .otp-cell { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--color-surface-input); border: 1px solid var(--color-border-default); border-radius: var(--radius-md); font-size: var(--text-title-md); font-weight: 600; line-height: 1; color: var(--color-text-primary); font-family: ui-monospace, monospace; }
-    .otp-cell--filled { background: var(--color-surface-default); }
-    .otp-cell--focus { outline: 2px solid var(--color-border-focus); outline-offset: 1px; }
-    .otp-sep { display: inline-flex; align-items: center; color: var(--color-text-tertiary); padding: 0 var(--spacing-xs); }
+    /* 옛 Slider(.sld — 브랜드 채움 · 흰 손잡이 16 + 테두리 · 그림자) · Toggle(.tg — 글 토글) · Toggle Group(.tgg) · Input OTP(.otp — 칸 6 × 40)는 걷었다(2026-10-09).
+       슬라이더 · 켜고 끄는 아이콘 단추 · 인증 코드 칸은 입력 블록의 .psld · .ptgl · .potp-* 다(03t, slider.md · toggle.md · input-otp.md). Toggle Group 은 걷었다 */
 
     /* Accordion / Collapsible */
     /* Accordion — accordion.md SoT (FAQ 스타일, 외곽 wrapper 없음 + item 사이 border-bottom only) */
@@ -16083,24 +17283,8 @@ export function pageCss() {
 
     /* 옛 Date Range Picker(.drp — 두 칸 · 화살표 · 브랜드 일수 알약) · Time Picker v72(.tp — 치는 칸 · 24시간)는 걷었다. 기간 · 시각은 Date Picker 블록의 .pdp · .pwheel 이다(03n) */
 
-    /* ColorSwatch — color-swatch.md SoT (palette grid single-select) */
-    .csw { display: grid; gap: var(--spacing-sm); }
-    .csw-cell { position: relative; aspect-ratio: 1; border: 2px solid transparent; border-radius: var(--radius-tile); cursor: pointer; transition: transform var(--motion-duration-fast) var(--motion-ease-out); display: inline-flex; align-items: center; justify-content: center; padding: 0; font: inherit; }
-    .csw-cell:hover { transform: scale(1.05); }
-    .csw-cell--active { border-color: currentColor; }
-
-    /* IconPicker — icon-picker.md SoT (popover trigger + grid 8-col) */
-    .ipk-trigger { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 1px solid var(--color-border-default); background: var(--color-surface-default); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); cursor: pointer; color: var(--color-text-primary); font: inherit; }
-    .ipk-trigger:hover { background: var(--color-surface-input); }
-    /* 열린 표면은 Popover 다(icon-picker.tsx 의 PopoverContent) — 옛 1px 테두리 · 모서리 8 · shadow-md 는 걷고 03k 의 팝오버 모양(bg-layer-floating · 모서리 20 · shadow-s3)으로 그린다 */
-    .ipk-content { width: 320px; padding: var(--spacing-md); background: var(--color-bg-layer-floating); border-radius: var(--radius-r5); box-shadow: var(--shadow-s3); }
-    /* 검색칸 — Input prefixIcon · clearable(.ptf-input, 웹 기본 반응형). 옛 36 칸 + 절대 위치 아이콘은 걷었다(icon-picker.md 2026-10-01) */
-    .ipk-search { margin-bottom: var(--spacing-sm); }
-    .ipk-grid { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px; max-height: 240px; overflow-y: auto; }
-    .ipk-cell { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--radius-sm); background: transparent; border: none; color: var(--color-text-secondary); cursor: pointer; transition: background-color var(--motion-duration-fast) var(--motion-ease-out), color var(--motion-duration-fast) var(--motion-ease-out); }
-    .ipk-cell:hover { background: var(--color-surface-input); color: var(--color-text-primary); }
-    .ipk-cell--active { background: var(--color-primary, var(--color-text-primary)); color: var(--color-text-on-accent, #fff); }
-    .ipk-footer { margin-top: var(--spacing-sm); padding-top: var(--spacing-sm); border-top: 1px solid var(--color-border-subtle, var(--color-border-default)); font-size: 11px; color: var(--color-text-tertiary); text-align: center; }
+    /* 옛 ColorSwatch(.csw — 폭을 나눈 정사각 칸 · currentColor 테두리 · 마우스 1.05배) · IconPicker(.ipk — 40 정사각 트리거 · 8열 × 32 · 고른 칸 브랜드 채움)는
+       걷었다(2026-10-09). 색 · 아이콘 고르기는 입력 블록의 .pcsw · .pipk 다(03t, color-swatch.md · icon-picker.md) */
 
     /* 옛 SearchableList(.sl · .sl-row · .sl-thumb …  — 테두리 상자 · 바탕 칠한 고른 줄)는 걷었다 — 검색해서 고르기는 데이터 표시 블록의 .psl 이다(03s, searchable-list.md 2026-10-08) */
 
@@ -16159,32 +17343,15 @@ export function pageCss() {
     [data-theme="dark"] .ld-host,
     [data-theme="dark"] .batch-card,
     [data-theme="dark"] .sc-card,
-    [data-theme="dark"] .ipk-trigger,
     [data-theme="dark"] .swatch { background: var(--color-surface-default-dark); }
-    [data-theme="dark"] .ipk-content { background: var(--color-bg-layer-floating-dark); box-shadow: var(--shadow-s3-dark); }
-    [data-theme="dark"] .ipk-trigger { border-color: var(--color-border-default-dark); }
-    [data-theme="dark"] .ipk-footer { border-color: var(--color-border-default-dark); }
-    [data-theme="dark"] .ipk-cell:hover { background: var(--color-surface-input-dark); }
     [data-theme="dark"] .cmd,
     [data-theme="dark"] .sa { background: var(--color-bg-page-dark); }
-    [data-theme="dark"] .cb,
-    [data-theme="dark"] .otp-cell,
-    [data-theme="dark"] .otp-cell--filled { background: var(--color-surface-input-dark); }
-    [data-theme="dark"] .otp-cell--filled { background: var(--color-surface-default-dark); }
+    [data-theme="dark"] .cb { background: var(--color-surface-input-dark); }
     [data-theme="dark"] .col-trigger,
-    [data-theme="dark"] .tg,
-    [data-theme="dark"] .tgg,
-    [data-theme="dark"] .tgg-item + .tgg-item,
     [data-theme="dark"] .acc-item { border-color: var(--color-border-default-dark); }
     [data-theme="dark"] .acc-trigger:hover { color: var(--color-text-secondary-dark); }
-    [data-theme="dark"] .tg--on,
-    [data-theme="dark"] .tgg-item--active,
-    [data-theme="dark"] .tg:hover,
-    [data-theme="dark"] .tgg-item:hover,
     [data-theme="dark"] .col-trigger:hover,
     [data-theme="dark"] .cmd-item:hover { background: var(--color-surface-input-dark); }
-    /* solid segmented active 는 다크에서도 primary 유지(subtle dark override 보다 specificity 우선). */
-    [data-theme="dark"] .tgg--solid .tgg-item--active { background: var(--color-primary); color: var(--color-text-on-accent, #fff); }
     [data-theme="dark"] .cmd-input { background: var(--color-surface-default-dark); border-color: var(--color-border-default-dark); color: var(--color-text-primary-dark); }
     [data-theme="dark"] .stp-connector { background: var(--color-border-default-dark); }
     [data-theme="dark"] .stp-item--current .stp-circle {
@@ -16387,6 +17554,7 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     ${renderImageGallery(brand, tokens)}
     ${renderNavGallery(brand)}
     ${renderDataGallery(brand)}
+    ${renderInputGallery(brand)}
     ${renderVignettes(brand)}
     ${renderListingDetail(brand)}
     ${renderCalendar(brand)}
@@ -16403,7 +17571,6 @@ function renderHtml(brandName, css, tokens, sourceFile) {
     ${renderShadcnData(brand)}
     ${renderShadcnExtras(brand)}
     ${renderBatchV73V78(brand)}
-    ${renderBatchSpecs5(brand)}
     ${renderTokenCatalog(tokens)}
     <p style="text-align:center;color:var(--color-text-tertiary);font-size:var(--text-caption);margin-top:var(--spacing-3xl);">
       source <code>${escape(sourceFile)}</code> · Porest Design System
@@ -18945,6 +20112,651 @@ function renderHtml(brandName, css, tokens, sourceFile) {
         list.addEventListener("mousedown", function (e) { if (closest(e, ".psl-option")) e.preventDefault(); });
         list.addEventListener("click", function (e) { var o = closest(e, ".psl-option"); if (!o) return; pick(o); input.focus(); });
       });
+    })();
+    // 입력 (2026-10-09) — slider.tsx · toggle.tsx · input-otp.tsx · color-swatch.tsx · icon-picker.tsx 가 하는 일 가운데 그림에 필요한 것을 흉내 낸다(03t 의 "직접" 견본).
+    // 슬라이더 — 말풍선 상자는 트랙 안에서만 둔다(끝에서 안으로 민다 — --psld-shift, 폭이 바뀌면 다시 잰다). [data-psld-live] 는 끌기 · 누르기 · 키보드를 받는다 —
+    //   손잡이를 누르면 24 + 말풍선, 트랙을 누르면 가장 가까운 손잡이가 그 자리(가장 가까운 단계)로 150ms 에 건너뛰고 그대로 끌면 끌기가 된다(누르기만 하면 말풍선은 없다).
+    //   ← ↓ · → ↑ 한 단계 · Shift + 화살표 · PageUp · PageDown 10단계 · Home · End 끝(범위는 다른 손잡이 값까지 — 넘지 않는다). commit 은 손을 뗄 때 · 키마다 한 번 요청(0.8초)을
+    //   보내고 요청 중에도 막지 않는다 — 겹치면 마지막 요청의 결과만 반영하고, 실패하면 값을 되돌리고 Field 오류(설명 자리를 대신 · 한 번 알림)로 알린다.
+    // 켜고 끄는 단추 — [data-ptgl-live] 는 누르면 aria-pressed 를 바꾸고 읽는 말을 곁에 적는다. server 는 요청(0.8초)을 흉내 내고, 실패하면 되돌린 뒤 03l 의 스낵바
+    //   (critical · "다시 시도" — 6초)를 띄운다. "다시 시도" 는 같은 요청을 다시 보낸다. 빠르게 여러 번 누르면 마지막 요청만 반영한다.
+    // 인증 코드 — [data-potp] 칸은 치기 · 붙여넣기 모두 숫자만 뽑아 앞 6자리를 쓴다(maxLength 없이). 고치면 오류를 걷고 설명 줄로 돌아온다. 다시 받기는 보내면 초점을 칸으로
+    //   옮기고 60초 동안 "다시 받기(n초)" 로 막는다. 확인은 6자리가 안 되면 · 틀리면 Field 오류를 보이고 초점을 칸으로 옮긴다.
+    // 색 고르기 — [data-pcsw-live] radiogroup. 누르기 · Space 로 고르고, ← → 차례(줄 끝에서 다음 줄 · 지금 색 칸이 맨 앞) · ↑ ↓ 위아래 줄의 같은 칸 · Home · End 로 옮기며 고른다.
+    // 아이콘 고르기 — [data-pipk-trigger] 가 여는 자리를 열고 닫는다(열면 고른 칸으로 초점 · 보이게 스크롤). 찾기 칸은 치는 대로 거르고 결과 수를 한 번 알린다(0건은 Result Section).
+    //   격자는 ← → 차례 · ↑ ↓ 보이는 위아래 줄의 가장 가까운 칸 · Home · End 그 줄의 처음 · 끝 · Enter · Space 고르기(고르면 닫고 초점은 트리거로) · Esc(찾는 말 지우기 → 닫기).
+    (function () {
+      if (!document.querySelector(".pinp-section")) return;
+      var ALERT = ${JSON.stringify(TEXT_FIELD_ICON.circleAlert)};
+      var EMPTY = ${JSON.stringify(resultSection({ kind: "empty", size: "medium", icon: "searchX", title: "@@QUERY@@", description: "다른 말로 찾거나 묶음에서 골라주세요.", level: 3 }))};
+      var IPK = (${categoryIconLib.toString()})(${JSON.stringify(CATEGORY_ICON_SET.entries)});
+      function closest(e, sel) { return e.target && e.target.closest ? e.target.closest(sel) : null; }
+      function inInput(el) { return !!(el && el.closest && el.closest(".pinp-section")); }
+      function statusNear(el) { var s = el.closest(".ptf-sample"); return s ? s.querySelector(".pinp-live-status") : null; }
+      function say(el, text) { var out = statusNear(el); if (out) out.textContent = text; }
+      function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+
+      // 미리보기 링크(카드 링크) — 옮기지 않는다
+      document.addEventListener("click", function (e) { var a = closest(e, "a[data-pdata-link]"); if (a && inInput(a)) e.preventDefault(); });
+
+      // ── Field 오류 — 오류 글이 설명 자리를 대신하고(설명은 숨김) 화면 밖 polite 자리가 한 번 읽는다. 걷으면 설명이 돌아온다 ──
+      function fieldError(field, message, target) {
+        var footer = field.querySelector(".ptf-field-footer");
+        if (!footer) { footer = document.createElement("div"); footer.className = "ptf-field-footer"; field.insertBefore(footer, field.querySelector(".ptf-live")); }
+        var error = footer.querySelector(".ptf-error");
+        var desc = footer.querySelector(".ptf-desc");
+        var live = field.querySelector(".ptf-live");
+        if (message) {
+          if (!error) { error = document.createElement("p"); error.className = "ptf-error"; error.id = (target.id || "pinp") + "-error"; error.setAttribute("aria-hidden", "true"); footer.insertBefore(error, footer.firstChild); }
+          error.innerHTML = ALERT + "<span></span>";
+          error.lastChild.textContent = message;
+          error.hidden = false;
+          if (desc) desc.hidden = true;
+          field.setAttribute("data-invalid", "");
+          var box = target.closest(".ptf-input");
+          if (box) box.setAttribute("data-invalid", "");
+          target.setAttribute("aria-invalid", "true");
+          target.setAttribute("aria-describedby", error.id);
+          if (live) live.textContent = message;
+        } else {
+          if (error) error.hidden = true;
+          if (desc) desc.hidden = false;
+          field.removeAttribute("data-invalid");
+          var box2 = target.closest(".ptf-input");
+          if (box2) box2.removeAttribute("data-invalid");
+          target.removeAttribute("aria-invalid");
+          if (desc && desc.id) target.setAttribute("aria-describedby", desc.id); else target.removeAttribute("aria-describedby");
+          if (live) live.textContent = "";
+        }
+      }
+
+      // ── 슬라이더 ──
+      var R = 10;
+      function num(el, k) { return Number(el.getAttribute(k)); }
+      function suffixOf(thumb) { return (thumb.getAttribute("aria-valuetext") || "").replace(thumb.getAttribute("aria-valuenow"), ""); }
+      function thumbsOf(root) { return Array.prototype.slice.call(root.querySelectorAll(".psld-thumb")); }
+      // 말풍선 상자 — 손잡이 가운데(x)에서 상자 폭의 반을 뺀 자리를 0 ~ 트랙 폭 − 상자 폭으로 자르고, 그만큼 민다(화살표는 손잡이를 가리킨다)
+      function clampBubble(bubble) {
+        var root = bubble.closest(".psld");
+        var box = bubble.firstElementChild;
+        var W = root.querySelector(".psld-control").offsetWidth;
+        var p = parseFloat(bubble.style.getPropertyValue("--psld-p")) || 0;
+        var x = R + p * (W - 2 * R);
+        var w = box.offsetWidth;
+        var left = x - w / 2;
+        var shift = Math.max(0, Math.min(W - w, left)) - left;
+        box.style.setProperty("--psld-shift", Math.round(shift * 100) / 100 + "px");
+      }
+      function headValue(root) {
+        var field = root.closest(".psld-field");
+        var out = field ? field.querySelector(".psld-value") : null;
+        if (!out) return;
+        var t = thumbsOf(root);
+        out.textContent = t.length > 1 ? t[0].getAttribute("aria-valuetext") + " ~ " + t[1].getAttribute("aria-valuetext") : t[0].getAttribute("aria-valuetext");
+      }
+      function setValue(root, i, v) {
+        var min = num(root, "data-min"), max = num(root, "data-max");
+        var t = thumbsOf(root);
+        var thumb = t[i];
+        var p = max === min ? 0 : (v - min) / (max - min);
+        var text = v + thumb._suffix;
+        thumb.style.setProperty("--psld-p", String(p));
+        thumb.nextElementSibling.style.setProperty("--psld-p", String(p));
+        thumb.setAttribute("aria-valuenow", String(v));
+        thumb.setAttribute("aria-valuetext", text);
+        thumb.nextElementSibling.firstElementChild.textContent = text;
+        if (t.length > 1) {
+          root.style.setProperty("--psld-from", t[0].style.getPropertyValue("--psld-p"));
+          root.style.setProperty("--psld-to", t[1].style.getPropertyValue("--psld-p"));
+        } else root.style.setProperty("--psld-to", String(p));
+        clampBubble(thumb.nextElementSibling);
+        headValue(root);
+      }
+      // 끝 — 범위면 다른 손잡이 값까지(넘지 않는다)
+      function bounds(root, i) {
+        var t = thumbsOf(root);
+        var lo = num(root, "data-min"), hi = num(root, "data-max");
+        if (t.length > 1) { if (i === 0) hi = num(t[1], "aria-valuenow"); else lo = num(t[0], "aria-valuenow"); }
+        return [lo, hi];
+      }
+      function valueAt(root, clientX) {
+        var rect = root.querySelector(".psld-control").getBoundingClientRect();
+        var p = Math.max(0, Math.min(1, (clientX - rect.left - R) / (rect.width - 2 * R)));
+        var min = num(root, "data-min"), max = num(root, "data-max"), step = num(root, "data-step");
+        return Math.max(min, Math.min(max, min + Math.round((p * (max - min)) / step) * step));
+      }
+      function values(root) { return thumbsOf(root).map(function (t) { return num(t, "aria-valuenow"); }).join(","); }
+      // 손을 뗄 때 · 키마다 한 번 — commit 은 요청을 흉내 낸다(0.8초 · 요청 중에도 막지 않는다 · 마지막 요청만 반영 · 실패하면 되돌림)
+      function commit(root) {
+        var host = root.closest("[data-psld-host]");
+        var kind = root.getAttribute("data-psld-live");
+        var t = thumbsOf(root);
+        var text = t.map(function (x) { return x.getAttribute("aria-valuetext"); }).join(" ~ ");
+        if (kind === "form") { say(root, "폼의 값 " + text + " — 손을 떼도 보내지 않는다(저장 버튼이 반영한다)."); return; }
+        if (kind === "range") { say(root, "범위 " + text + " — 두 손잡이는 서로를 넘지 않는다."); return; }
+        var field = root.closest(".psld-field");
+        var thumb = t[0];
+        var v = num(thumb, "aria-valuenow");
+        if (host._saved == null) host._saved = Number(host.getAttribute("data-psld-saved"));
+        host._seq = (host._seq || 0) + 1;
+        var seq = host._seq;
+        var fail = !!host._failNext;
+        host._failNext = false;
+        var failBtn = host.querySelector("[data-psld-fail]");
+        if (failBtn) failBtn.firstElementChild.textContent = "다음 저장을 실패로";
+        fieldError(field, "", thumb);
+        var log = host.querySelector("[data-psld-log]");
+        var line = document.createElement("li");
+        line.textContent = "요청 " + seq + " — " + text + " 보내는 중…";
+        log.appendChild(line);
+        while (log.children.length > 4) log.removeChild(log.firstChild);
+        say(root, "요청 " + seq + "번 — 요청 중에도 끌고 키를 누를 수 있다.");
+        setTimeout(function () {
+          if (seq !== host._seq) { line.textContent = "요청 " + seq + " — " + text + " · 뒤에 요청이 있어 반영하지 않는다"; return; }
+          if (fail) {
+            line.textContent = "요청 " + seq + " — " + text + " · 실패, " + host._saved + thumb._suffix + " 로 되돌렸다";
+            setValue(root, 0, host._saved);
+            fieldError(field, field.querySelector(".ptf-error") ? field.querySelector(".ptf-error").textContent : "저장하지 못했어요.", thumb);
+            say(root, "실패 — 값을 되돌리고 Field 꼬리에 알렸다.");
+          } else {
+            host._saved = v;
+            line.textContent = "요청 " + seq + " — " + text + " · 저장됨";
+            say(root, "저장됨 — " + text);
+          }
+        }, 800);
+      }
+      function initSlider(root) {
+        thumbsOf(root).forEach(function (t) { t._suffix = suffixOf(t); clampBubble(t.nextElementSibling); });
+        var host = root.closest("[data-psld-host]");
+        if (host && host.getAttribute("data-psld-host") === "commit") host.setAttribute("data-psld-saved", thumbsOf(root)[0].getAttribute("aria-valuenow"));
+      }
+      var sliders = Array.prototype.slice.call(document.querySelectorAll(".pinp-section .psld"));
+      sliders.forEach(initSlider);
+      window.addEventListener("load", function () { sliders.forEach(function (s) { thumbsOf(s).forEach(function (t) { clampBubble(t.nextElementSibling); }); }); });
+      if (window.ResizeObserver) {
+        var sro = new ResizeObserver(function (entries) {
+          entries.forEach(function (entry) {
+            var el = entry.target;
+            if (el._w === el.offsetWidth) return;
+            el._w = el.offsetWidth;
+            requestAnimationFrame(function () { thumbsOf(el.closest(".psld")).forEach(function (t) { clampBubble(t.nextElementSibling); }); });
+          });
+        });
+        sliders.forEach(function (s) { sro.observe(s.querySelector(".psld-control")); });
+      }
+      // 마지막 입력이 키보드인가 — 레시피의 trackInput. 손잡이의 링 · 말풍선은 키보드로 초점이 왔을 때와 손잡이의 키 누름으로만 건다
+      var lastInput = "pointer";
+      document.addEventListener("keydown", function (e) { if (!e.metaKey && !e.ctrlKey && !e.altKey) lastInput = "keyboard"; }, true);
+      document.addEventListener("pointerdown", function () { lastInput = "pointer"; }, true);
+      document.addEventListener("focusin", function (e) {
+        var t = e.target;
+        if (t && t.matches && t.matches(".psld-thumb") && lastInput === "keyboard") t.setAttribute("data-focus-visible", "");
+      });
+      document.addEventListener("focusout", function (e) {
+        var t = e.target;
+        if (t && t.matches && t.matches(".psld-thumb")) t.removeAttribute("data-focus-visible");
+      });
+      document.addEventListener("pointerdown", function (e) {
+        var ctl = closest(e, "[data-psld-live] .psld-control");
+        if (!ctl || e.button !== 0) return;
+        var root = ctl.closest(".psld");
+        if (root.hasAttribute("data-disabled")) return;
+        var t = thumbsOf(root);
+        var onThumb = closest(e, ".psld-thumb");
+        var v0 = valueAt(root, e.clientX);
+        var i = onThumb ? t.indexOf(onThumb) : 0;
+        if (!onThumb && t.length > 1) {
+          var a = num(t[0], "aria-valuenow"), b = num(t[1], "aria-valuenow");
+          i = a === b ? (v0 < a ? 0 : 1) : Math.abs(v0 - a) <= Math.abs(v0 - b) ? 0 : 1;
+        }
+        var thumb = t[i];
+        var before = values(root);
+        e.preventDefault();
+        thumb.focus({ preventScroll: true });
+        var dragging = false;
+        function drag() { if (dragging) return; dragging = true; thumb.setAttribute("data-pressed", ""); root.setAttribute("data-dragging", ""); }
+        function to(x) { var bd = bounds(root, i); setValue(root, i, Math.max(bd[0], Math.min(bd[1], valueAt(root, x)))); }
+        var hold = 0;
+        if (onThumb) drag();
+        else { to(e.clientX); hold = setTimeout(drag, 150); }
+        try { ctl.setPointerCapture(e.pointerId); } catch (err) { /* 미리보기 — 잡지 못해도 끌기는 된다 */ }
+        function move(ev) {
+          if (!dragging && Math.abs(ev.clientX - e.clientX) < 3) return;
+          drag();
+          to(ev.clientX);
+        }
+        function up() {
+          clearTimeout(hold);
+          ctl.removeEventListener("pointermove", move);
+          ctl.removeEventListener("pointerup", up);
+          ctl.removeEventListener("pointercancel", up);
+          thumb.removeAttribute("data-pressed");
+          root.removeAttribute("data-dragging");
+          if (values(root) !== before) commit(root);
+        }
+        ctl.addEventListener("pointermove", move);
+        ctl.addEventListener("pointerup", up);
+        ctl.addEventListener("pointercancel", up);
+      });
+      document.addEventListener("keydown", function (e) {
+        var thumb = e.target && e.target.closest ? e.target.closest("[data-psld-live] .psld-thumb") : null;
+        if (!thumb) return;
+        var root = thumb.closest(".psld");
+        var i = thumbsOf(root).indexOf(thumb);
+        var step = num(root, "data-step");
+        var v = num(thumb, "aria-valuenow");
+        var bd = bounds(root, i);
+        var big = step * 10;
+        var next;
+        if (e.key === "ArrowRight" || e.key === "ArrowUp") next = v + (e.shiftKey ? big : step);
+        else if (e.key === "ArrowLeft" || e.key === "ArrowDown") next = v - (e.shiftKey ? big : step);
+        else if (e.key === "PageUp") next = v + big;
+        else if (e.key === "PageDown") next = v - big;
+        else if (e.key === "Home") next = bd[0];
+        else if (e.key === "End") next = bd[1];
+        else return;
+        e.preventDefault();
+        thumb.setAttribute("data-focus-visible", "");
+        next = Math.max(bd[0], Math.min(bd[1], next));
+        if (next === v) return;
+        setValue(root, i, next);
+        commit(root);
+      });
+      document.addEventListener("click", function (e) {
+        var btn = closest(e, "[data-psld-fail]");
+        if (!btn) return;
+        var host = btn.closest("[data-psld-host]");
+        host._failNext = !host._failNext;
+        btn.firstElementChild.textContent = host._failNext ? "다음 저장은 실패한다 — 취소" : "다음 저장을 실패로";
+      });
+
+      // ── 켜고 끄는 단추 ──
+      function readOut(btn, on) { return '"' + btn.getAttribute("aria-label") + ", " + (on ? "눌림" : "안 눌림") + '" — aria-pressed="' + on + '"'; }
+      function send(btn, on) {
+        var host = btn.closest("[data-ptgl-server]");
+        if (btn._saved == null) btn._saved = !on;
+        btn._seq = (btn._seq || 0) + 1;
+        var seq = btn._seq;
+        var fail = !!host._failNext;
+        host._failNext = false;
+        var failBtn = host.querySelector("[data-ptgl-fail]");
+        if (failBtn) failBtn.firstElementChild.textContent = "다음 요청을 실패로";
+        say(btn, readOut(btn, on) + " · 보내는 중…");
+        setTimeout(function () {
+          if (seq !== btn._seq) return;
+          if (fail) {
+            btn.setAttribute("aria-pressed", btn._saved ? "true" : "false");
+            var what = (btn.getAttribute("data-ptgl-what") || "|").split("|");
+            var trigger = host.querySelector("[data-ptgl-snack]");
+            host._retry = { btn: btn, on: on };
+            trigger.setAttribute("data-psnack-message", (on ? what[0] : what[1]) + " 다시 시도해주세요.");
+            trigger.click();
+            say(btn, "실패 — 단추를 되돌리고 스낵바로 알렸다(다시 시도 · 6초).");
+          } else {
+            btn._saved = on;
+            say(btn, readOut(btn, on) + " · 저장됨");
+          }
+        }, 800);
+      }
+      document.addEventListener("click", function (e) {
+        var btn = closest(e, "[data-ptgl-live]");
+        if (btn && !btn.disabled) {
+          var on = btn.getAttribute("aria-pressed") !== "true";
+          btn.setAttribute("aria-pressed", on ? "true" : "false");
+          if (btn.getAttribute("data-ptgl-live") === "server") send(btn, on);
+          else say(btn, readOut(btn, on));
+          return;
+        }
+        var fail = closest(e, "[data-ptgl-fail]");
+        if (fail) {
+          var host = fail.closest("[data-ptgl-server]");
+          host._failNext = !host._failNext;
+          fail.firstElementChild.textContent = host._failNext ? "다음 요청은 실패한다 — 취소" : "다음 요청을 실패로";
+          return;
+        }
+        var retry = closest(e, "[data-ptgl-server] .psnack-action");
+        if (retry) {
+          var h = retry.closest("[data-ptgl-server]");
+          var r = h._retry;
+          if (!r) return;
+          h._retry = null;
+          r.btn.setAttribute("aria-pressed", r.on ? "true" : "false");
+          send(r.btn, r.on);
+        }
+      });
+
+      // ── 인증 코드 ──
+      // 숫자만 — 전각 숫자는 반각으로(NFKC) 바꾸고 숫자 아닌 글을 뺀다(레시피의 digitsOf)
+      function allDigits(s) { return String(s).normalize("NFKC").replace(/[^0-9]/g, ""); }
+      function digits(s) { return allDigits(s).slice(0, 6); }
+      document.addEventListener("input", function (e) {
+        var el = e.target;
+        if (!el.matches || !el.matches("[data-potp]") || e.isComposing) return;
+        var raw = el.value, next = digits(raw);
+        // 걸러져 글이 바뀌면 칸의 글을 고치고 커서를 그 앞 숫자 뒤에 둔다
+        if (next !== raw) { var at = Math.min(next.length, allDigits(raw.slice(0, el.selectionStart == null ? raw.length : el.selectionStart)).length); el.value = next; el.setSelectionRange(at, at); }
+        var field = el.closest(".ptf-field");
+        if (field.hasAttribute("data-invalid")) fieldError(field, "", el);
+      });
+      // 붙여넣기 — 숫자가 6자리 이상인 글(받은 코드)은 칸의 값을 그 코드로 바꾼다(앞에 있던 숫자와 섞이지 않게). 짧으면 커서 자리에 넣고 숫자만 남긴다
+      function pasteInto(el, text) {
+        var got = allDigits(text);
+        if (got.length >= 6) el.value = got.slice(0, 6);
+        else {
+          var a = el.selectionStart == null ? el.value.length : el.selectionStart, b = el.selectionEnd == null ? a : el.selectionEnd;
+          el.value = el.value.slice(0, a) + text + el.value.slice(b);
+          el.setSelectionRange(a + text.length, a + text.length);
+        }
+        el.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+      document.addEventListener("paste", function (e) {
+        var el = e.target;
+        if (!el.matches || !el.matches("[data-potp]")) return;
+        var text = e.clipboardData ? e.clipboardData.getData("text") : "";
+        if (allDigits(text).length >= 6) { e.preventDefault(); pasteInto(el, text); }
+        setTimeout(function () { say(el, '붙인 글 "' + text + '" → ' + el.value); }, 0);
+      });
+      function resendLabel(btn, left) {
+        btn.firstElementChild.textContent = left > 0 ? "다시 받기(" + left + "초)" : "다시 받기";
+        btn.disabled = left > 0;
+      }
+      document.addEventListener("click", function (e) {
+        var send2 = closest(e, "[data-potp-resend]");
+        if (send2 && !send2.disabled) {
+          var host = send2.closest("[data-potp-host]");
+          var input = document.getElementById(send2.getAttribute("data-potp-resend"));
+          host._left = 60;
+          resendLabel(send2, host._left);
+          if (input) input.focus();
+          say(send2, "메일로 코드를 보냈어요. — 초점은 코드 칸으로, 단추는 60초 동안 막힌다.");
+          clearInterval(host._timer);
+          host._timer = setInterval(function () {
+            host._left = Math.max(0, host._left - 1);
+            resendLabel(send2, host._left);
+            if (!host._left) clearInterval(host._timer);
+          }, 1000);
+          return;
+        }
+        var fast = closest(e, "[data-potp-fast]");
+        if (fast) {
+          var hf = fast.closest("[data-potp-host]");
+          var rb = hf.querySelector("[data-potp-resend]");
+          if (!hf._left) { say(fast, "코드를 먼저 받아 보세요."); return; }
+          hf._left = Math.max(0, hf._left - 10);
+          resendLabel(rb, hf._left);
+          if (!hf._left) clearInterval(hf._timer);
+          return;
+        }
+        var paste = closest(e, "[data-potp-paste]");
+        if (paste) {
+          var hp = paste.closest("[data-potp-host]");
+          var el = hp.querySelector("[data-potp]");
+          var text = paste.getAttribute("data-potp-paste");
+          // 단추는 빈 칸에 붙인다 — data-potp-before 가 있으면 그 글이 칸에 있는 채로(커서는 끝) 붙인다
+          var before = paste.getAttribute("data-potp-before") || "";
+          el.value = before;
+          el.focus();
+          el.setSelectionRange(before.length, before.length);
+          pasteInto(el, text);
+          say(paste, (before ? '칸에 "' + before + '" 가 있을 때 ' : "") + '붙인 글 "' + text + '" → ' + el.value);
+          return;
+        }
+        var ok = closest(e, "[data-potp-confirm]");
+        if (ok) {
+          var hc = ok.closest("[data-potp-host]");
+          var code = hc.querySelector("[data-potp]");
+          var field = code.closest(".ptf-field");
+          if (code.value.length < 6) { fieldError(field, "인증 코드 6자리를 입력해주세요.", code); code.focus(); say(ok, "6자리가 안 된다 — 확인은 켜 두고 누를 때 알린다."); }
+          else if (code.value !== "123456") { fieldError(field, ${JSON.stringify(POTP_ERROR)}, code); code.focus(); say(ok, "틀림 — 오류 글이 설명 줄을 대신한다. 고치면 돌아온다."); }
+          else { fieldError(field, "", code); say(ok, "확인했어요 — 맞는 코드다."); }
+        }
+      });
+
+      // ── 색 고르기 ──
+      // 지금 색(팔레트 밖 저장 색)의 체크 — fg-neutral · fg-neutral-inverted 가운데 그 색 위 대비가 큰 쪽(같으면 inverted). 칸 안에 숨긴 글을 두고
+      // 두 색 · 칸 색을 그 자리의 값으로 읽는다 — 라이트 · 다크 틀이 다르게 풀린다. 테마를 바꾸면 다시 잰다(레시피의 useCheckTone)
+      function rgbOf(text) { var a = (text || "").indexOf("("), b = (text || "").indexOf(")"); if (a < 0 || b < a) return null; return text.slice(a + 1, b).split(",").slice(0, 3).map(function (v) { return parseFloat(v) / 255; }); }
+      function lumOf(c) { var l = c.map(function (v) { return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126 * l[0] + 0.7152 * l[1] + 0.0722 * l[2]; }
+      function contrast(a, b) { var x = lumOf(a), y = lumOf(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+      function inkCustom() {
+        document.querySelectorAll(".pcsw-swatch--custom").forEach(function (sw) {
+          var probe = document.createElement("span");
+          probe.style.display = "none";
+          sw.appendChild(probe);
+          function read(v) { probe.style.color = ""; probe.style.color = v; return rgbOf(getComputedStyle(probe).color); }
+          var bg = read(getComputedStyle(sw).getPropertyValue("--pcsw-c").trim()), fg = read("var(--color-fg-neutral)"), inv = read("var(--color-fg-neutral-inverted)");
+          probe.remove();
+          if (!bg || !fg || !inv) return;
+          sw.setAttribute("data-pcsw-ink", contrast(inv, bg) >= contrast(fg, bg) ? "inverted" : "neutral");
+        });
+      }
+      inkCustom();
+      new MutationObserver(inkCustom).observe(document.documentElement, { attributes: true, attributeFilter: ["class", "data-theme", "style"] });
+      if (window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", inkCustom);
+      function swatches(group) { return Array.prototype.slice.call(group.querySelectorAll(".pcsw-swatch")); }
+      function pickSwatch(group, cell, focus) {
+        var all = swatches(group);
+        all.forEach(function (c) { var on = c === cell; c.setAttribute("aria-checked", on ? "true" : "false"); c.tabIndex = on ? 0 : -1; });
+        if (focus) cell.focus();
+        var label = group.closest(".ptf-field").querySelector(".ptf-label").textContent;
+        say(group, '"' + label + ", 라디오 그룹 · " + cell.getAttribute("aria-label") + ", 선택됨, " + (all.indexOf(cell) + 1) + "/" + all.length + '"');
+      }
+      document.addEventListener("click", function (e) {
+        var cell = closest(e, "[data-pcsw-live] .pcsw-swatch");
+        if (cell && !cell.disabled) pickSwatch(cell.closest(".pcsw"), cell, true);
+      });
+      document.addEventListener("keydown", function (e) {
+        var cell = e.target && e.target.closest ? e.target.closest("[data-pcsw-live] .pcsw-swatch") : null;
+        if (!cell) return;
+        var group = cell.closest(".pcsw");
+        var all = swatches(group);
+        var grid = Array.prototype.slice.call(group.querySelectorAll(".pcsw-grid > .pcsw-swatch"));
+        var i = all.indexOf(cell);
+        var g = grid.indexOf(cell);
+        var next = null;
+        if (e.key === "ArrowRight") next = all[(i + 1) % all.length];
+        else if (e.key === "ArrowLeft") next = all[(i - 1 + all.length) % all.length];
+        else if (e.key === "ArrowDown" && g >= 0) next = grid[(g + 5) % grid.length];
+        else if (e.key === "ArrowUp" && g >= 0) next = grid[(g - 5 + grid.length) % grid.length];
+        else if (e.key === "Home") next = all[0];
+        else if (e.key === "End") next = all[all.length - 1];
+        else if (e.key === " ") { e.preventDefault(); pickSwatch(group, cell, true); return; }
+        // Enter 는 고르지 않는다 — 진짜 radio 처럼 폼을 보낸다(레시피의 submitImplicitly). 미리보기에는 폼이 없어 단추의 Enter 누르기만 막는다
+        else if (e.key === "Enter") { e.preventDefault(); say(group, "Enter — 고르지 않고 폼을 보낸다(Radio 묶음과 같다)."); return; }
+        else if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); return; }
+        else return;
+        e.preventDefault();
+        pickSwatch(group, next, true);
+      });
+
+      // ── 아이콘 고르기 ──
+      document.querySelectorAll("[data-pipk-host]").forEach(function (host) {
+        var trigger = host.querySelector("[data-pipk-trigger]");
+        var surface = document.getElementById(host.getAttribute("data-pipk-host"));
+        var panel = surface.querySelector(".pipk");
+        var grid = panel.querySelector(".pipk-grid");
+        var input = panel.querySelector(".pipk-search .ptf-input-value");
+        var empty = panel.querySelector(".pipk-empty");
+        var count = panel.querySelector(".pipk-count");
+        var cellById = {};
+        grid.querySelectorAll(".pipk-cell").forEach(function (c) { cellById[c.getAttribute("data-pipk-id")] = c.outerHTML; });
+        var groupsHtml = grid.innerHTML;
+        var first = grid.querySelector('.pipk-cell[aria-selected="true"]');
+        var value = first ? first.getAttribute("data-pipk-id") : "";
+        var announce = 0;
+        function visible() { return Array.prototype.slice.call(grid.querySelectorAll(".pipk-cell")); }
+        function rove(cell, focus) {
+          visible().forEach(function (c) { c.tabIndex = c === cell ? 0 : -1; });
+          if (focus && cell) { cell.focus({ preventScroll: true }); cell.scrollIntoView({ block: focus === "center" ? "center" : "nearest" }); }
+        }
+        function mark() {
+          visible().forEach(function (c) {
+            var on = c.getAttribute("data-pipk-id") === value;
+            c.setAttribute("aria-selected", on ? "true" : "false");
+          });
+          var sel = grid.querySelector('.pipk-cell[aria-selected="true"]');
+          rove(sel || visible()[0], false);
+        }
+        function filter(q) {
+          var trimmed = q.trim();
+          clearTimeout(announce);
+          if (!trimmed) {
+            grid.innerHTML = groupsHtml;
+            grid.hidden = false;
+            empty.hidden = true;
+            empty.innerHTML = "";
+            count.textContent = "";
+            mark();
+            return;
+          }
+          var hits = IPK.search(q);
+          grid.innerHTML = '<div class="pipk-cells">' + hits.map(function (it) { return cellById[it.id]; }).join("") + "</div>";
+          grid.hidden = !hits.length;
+          empty.hidden = !!hits.length;
+          empty.innerHTML = hits.length ? "" : EMPTY.replace("@@QUERY@@", esc("'" + q.trim() + "'에 대한 아이콘이 없어요"));
+          mark();
+          announce = setTimeout(function () {
+            count.textContent = hits.length ? "검색 결과 " + hits.length + "개" : "";
+            say(host, hits.length ? '"검색 결과 ' + hits.length + '개" — 화면 밖으로 한 번' : "0건 — Result Section 이 알린다");
+          }, 500);
+        }
+        function open(on) {
+          surface.hidden = !on;
+          trigger.setAttribute("aria-expanded", on ? "true" : "false");
+          if (on) {
+            var sel = grid.querySelector('.pipk-cell[aria-selected="true"]') || visible()[0];
+            rove(sel, "center");
+            say(host, "열렸다 — 초점은 고른 칸(" + (sel ? sel.getAttribute("aria-label") : "") + ")");
+          } else {
+            if (input.value) { input.value = ""; filter(""); }
+          }
+        }
+        function choose(cell) {
+          value = cell.getAttribute("data-pipk-id");
+          var it = IPK.find(value);
+          var icon = trigger.closest(".pib").querySelector(".pipk-trigger-icon");
+          icon.innerHTML = cell.innerHTML;
+          trigger.closest(".pib").querySelector(".pib-value").textContent = it.name;
+          open(false);
+          mark();
+          trigger.focus();
+          say(host, '고르고 닫았다 — "아이콘, ' + it.name + '" · 저장 값 ' + value);
+        }
+        trigger.addEventListener("click", function () { open(surface.hidden); });
+        document.addEventListener("pointerdown", function (e) { if (!surface.hidden && !host.contains(e.target)) open(false); });
+        input.addEventListener("input", function () { filter(input.value); });
+        panel.addEventListener("click", function (e) {
+          var cell = closest(e, ".pipk-cell");
+          if (cell) { choose(cell); return; }
+          if (closest(e, ".ptf-clear")) setTimeout(function () { filter(input.value); }, 0);
+        });
+        panel.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") {
+            e.preventDefault();
+            if (input.value) { input.value = ""; input.dispatchEvent(new Event("input", { bubbles: true })); input.focus(); }
+            else { open(false); trigger.focus(); }
+            return;
+          }
+          if (e.target === input) {
+            if (e.key === "ArrowDown" && visible()[0]) { e.preventDefault(); rove(visible()[0], true); }
+            return;
+          }
+          var cell = e.target.closest ? e.target.closest(".pipk-cell") : null;
+          if (!cell) return;
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); choose(cell); return; }
+          var all = visible();
+          var i = all.indexOf(cell);
+          var box = cell.getBoundingClientRect();
+          var next = null;
+          var rowOf = function (y) { return all.filter(function (c) { return Math.abs(c.getBoundingClientRect().top - y) < 2; }); };
+          if (e.key === "ArrowRight") next = all[Math.min(all.length - 1, i + 1)];
+          else if (e.key === "ArrowLeft") next = all[Math.max(0, i - 1)];
+          else if (e.key === "Home") next = rowOf(box.top)[0];
+          else if (e.key === "End") { var row = rowOf(box.top); next = row[row.length - 1]; }
+          else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+            var down = e.key === "ArrowDown";
+            var tops = all.map(function (c) { return c.getBoundingClientRect().top; });
+            var target = null;
+            tops.forEach(function (t) { if (down ? t > box.top + 2 : t < box.top - 2) { if (target === null || (down ? t < target : t > target)) target = t; } });
+            if (target !== null) {
+              var cx = box.left + box.width / 2;
+              rowOf(target).forEach(function (c) { var r = c.getBoundingClientRect(); var d = Math.abs(r.left + r.width / 2 - cx); if (!next || d < next._d) { next = c; next._d = d; } });
+            }
+          } else return;
+          e.preventDefault();
+          if (next) rove(next, true);
+        });
+      });
+      // ── 칸 툴팁 — 색 칸 · 아이콘 칸의 이름을 porest Tooltip(03m 의 말풍선 .pbub--tooltip)으로 보인다(네이티브 title 은 쓰지 않는다 — color-swatch.yaml
+      //    swatch.tooltip · icon-picker 칸). 마우스는 200ms 뒤 · 키보드 초점은 바로 열고, 칸 · 말풍선을 모두 벗어나면 100ms 뒤 닫는다. 하나가 열려 있거나
+      //    닫힌 지 300ms 안에 옆 칸으로 옮기면 기다리지 않는다(TooltipProvider). 누르기 · Esc · 스크롤에 닫는다. 자리는 칸 위 12(위가 모자라면 아래)
+      var tipEl = null, tipFor = null, tipOpenT = 0, tipCloseT = 0, tipClosedAt = 0;
+      // 지금 색 칸은 이름이 아래 글로 보여 툴팁이 없다(레시피 — 격자 칸만 Tooltip 트리거)
+      function tipCell(el) { return el && el.closest ? el.closest("[data-pcsw-live] .pcsw-grid > .pcsw-swatch, [data-pipk-live] .pipk-cell") : null; }
+      function hideTip() {
+        clearTimeout(tipOpenT); clearTimeout(tipCloseT);
+        if (!tipEl || tipEl.hidden) return;
+        tipEl.hidden = true;
+        if (tipFor) tipFor.removeAttribute("aria-describedby");
+        tipFor = null;
+        tipClosedAt = Date.now();
+      }
+      function showTip(cell) {
+        clearTimeout(tipOpenT); clearTimeout(tipCloseT);
+        var host = cell.closest(".pinp-live");
+        if (!host) return;
+        if (!tipEl) {
+          tipEl = document.createElement("div");
+          tipEl.className = "pbub pbub--tooltip pinp-tip";
+          tipEl.id = "pinp-tip";
+          tipEl.setAttribute("role", "tooltip");
+          tipEl.innerHTML = '<div class="pbub-title"></div><svg class="pbub-arrow" viewBox="0 0 12 8" aria-hidden="true"><path d="M0,0 H12 L8,6 Q6,8 4,6 Z"/></svg>';
+          tipEl.addEventListener("pointerleave", function () { tipCloseT = setTimeout(hideTip, 100); });
+          tipEl.addEventListener("pointerenter", function () { clearTimeout(tipCloseT); });
+        }
+        if (tipEl.parentNode !== host) host.appendChild(tipEl);
+        if (tipFor && tipFor !== cell) tipFor.removeAttribute("aria-describedby");
+        tipEl.firstChild.textContent = cell.getAttribute("aria-label");
+        tipEl.hidden = false;
+        var hb = host.getBoundingClientRect(), cb = cell.getBoundingClientRect(), tb = tipEl.getBoundingClientRect();
+        var side = cb.top - tb.height - 12 < 8 ? "bottom" : "top";
+        var x = cb.left + cb.width / 2 - hb.left;
+        var left = Math.max(0, Math.min(hb.width - tb.width, x - tb.width / 2));
+        tipEl.setAttribute("data-side", side);
+        tipEl.setAttribute("data-pbub-side", side);
+        tipEl.style.left = left + "px";
+        tipEl.style.top = (side === "top" ? cb.top - hb.top - 12 - tb.height : cb.bottom - hb.top + 12) + "px";
+        tipEl.style.setProperty("--pbub-arrow-x", (x - left) + "px");
+        cell.setAttribute("aria-describedby", tipEl.id);
+        tipFor = cell;
+      }
+      document.addEventListener("pointerover", function (e) {
+        if (e.pointerType !== "mouse") return;
+        var cell = tipCell(e.target);
+        if (!cell || cell === tipFor || cell.disabled) return;
+        clearTimeout(tipOpenT); clearTimeout(tipCloseT);
+        if ((tipEl && !tipEl.hidden) || Date.now() - tipClosedAt < 300) showTip(cell);
+        else tipOpenT = setTimeout(function () { showTip(cell); }, 200);
+      });
+      document.addEventListener("pointerout", function (e) {
+        var cell = tipCell(e.target);
+        if (!cell) return;
+        var to = e.relatedTarget;
+        if (to && (cell.contains(to) || (tipEl && tipEl.contains(to)))) return;
+        clearTimeout(tipOpenT);
+        if (tipFor === cell) tipCloseT = setTimeout(hideTip, 100);
+      });
+      document.addEventListener("focusin", function (e) {
+        var cell = tipCell(e.target);
+        if (cell && lastInput === "keyboard") showTip(cell);
+      });
+      document.addEventListener("focusout", function (e) {
+        if (tipCell(e.target) && tipFor === tipCell(e.target)) setTimeout(function () { if (!tipCell(document.activeElement)) hideTip(); }, 0);
+      });
+      document.addEventListener("pointerdown", function () { hideTip(); }, true);
+      document.addEventListener("keydown", function (e) { if (e.key === "Escape") hideTip(); }, true);
+      // 스크롤되면(격자 · 페이지) 자리를 다시 잰다 — 화살표로 옮긴 칸이 스크롤돼도 툴팁은 그 칸을 따라간다
+      document.addEventListener("scroll", function () { if (tipEl && !tipEl.hidden && tipFor) showTip(tipFor); }, true);
     })();
   </script>
 </body>

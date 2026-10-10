@@ -9,7 +9,7 @@
  * ROOT · VARIANT · BODY · PRESS_WHOLE · PRESS_WHOLE_SURFACE · PRESS_PEERS · HERO_GLOW · CARD_ACTION · CARD_LINK · DELTA_TONE · ARROW 는
  * recipes/shadcn/components/ui/card.tsx 의 상수와, HEADER · HEADER_BODY · TITLE · CONTENT · DELTA* · STAT* · HERO_* 는 그 파일의 JSX 에 적힌
  * 클래스와 글자 하나까지 같아야 한다 — 두 파일을 함께 고친다. 둘레의 부품은 그 레시피의 값을 옮겨 썼다 — LIST_* 는 list.tsx(list-examples.mjs),
- * BUTTON_* 는 button.tsx(button-examples.mjs)의 것과 같다 — 이 파일이 쓰는 줄 · 변형 · 크기와 그에 걸리는 compound 만 옮겼다.
+ * TOGGLE_* 는 toggle.tsx(toggle-examples.mjs)의 것과 같다 — 메모 카드의 고정 단추(켜고 끄는 아이콘 단추 · tone default)만 옮겼다(2026-10-09).
  * 규칙은 specs/components/card.md, 수치 원본은 specs/components/card.yaml. 증감은 DESIGN.md Colors 의 "증감 — 방향 색 (2026-10-08)" 이다.
  *
  * Preview 는 정적 HTML 이다 — 페이지의 Tailwind v4 browser CDN 이 클래스를 utility 로 만든다.
@@ -145,21 +145,30 @@ const LIST_SUFFIX_DEFAULTS = { disabled: false, highlighted: false };
 const LIST_ACTION_BASE = "cursor-pointer appearance-none border-0 bg-transparent p-0 font-[inherit] text-[inherit] no-underline outline-none after:absolute after:inset-0 after:content-[''] focus-visible:after:outline-2 focus-visible:after:-outline-offset-2 focus-visible:after:outline-stroke-focus-ring data-[disabled]:cursor-not-allowed";
 const LIST_TILE_BASE = "inline-grid size-10 shrink-0 place-items-center rounded-r3 [&>svg]:size-5";
 
-// ── button.tsx 의 cva 와 같은 값 — 메모 카드의 고정 버튼(ghost · iconOnly · medium) ──
+// ── toggle.tsx 의 cva 와 같은 값 — 메모 카드의 고정 단추(tone default) ──
 
-const BUTTON_BASE = "relative inline-flex items-center justify-center whitespace-nowrap font-sans font-bold before:absolute before:left-1/2 before:top-1/2 before:h-full before:min-h-11 before:w-full before:min-w-11 before:-translate-x-1/2 before:-translate-y-1/2 before:content-[''] [transition:background-color_var(--motion-duration-color-transition)_var(--motion-ease-easing),color_var(--motion-duration-color-transition)_var(--motion-ease-easing),scale_var(--motion-duration-pressed-scale)_var(--motion-ease-pressed-scale)] active:[scale:calc(1-2/var(--press-basis))] motion-reduce:active:[scale:1] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stroke-focus-ring disabled:cursor-not-allowed disabled:[scale:1] disabled:bg-bg-disabled disabled:text-fg-disabled aria-busy:cursor-progress aria-busy:text-transparent aria-busy:[&>svg:not([data-slot=progress-circle])]:invisible aria-busy:active:[scale:1] [--progress-thickness:2px] [&_svg]:pointer-events-none [&_svg]:shrink-0";
-const BUTTON_VARIANTS = {
-  variant: {
-    ghost: "bg-transparent text-fg-neutral hover:bg-bg-layer-default-pressed active:bg-bg-layer-default-pressed aria-busy:bg-bg-layer-default-pressed disabled:bg-transparent [--progress-track:var(--color-gray-500)] [--progress-range:var(--color-fg-neutral)]",
+const TOGGLE_BASE = [
+  "relative inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-r2 border-0 bg-transparent p-0",
+  // 누르는 영역 44 — 보이는 40 둘레로 2 씩
+  "before:absolute before:left-1/2 before:top-1/2 before:size-11 before:-translate-x-1/2 before:-translate-y-1/2 before:content-['']",
+  // 아이콘 20 · 끔 선 2 · 켬 선 2.5(막혀도 그대로)
+  "[&_svg]:pointer-events-none [&_svg]:size-5 [&_svg]:shrink-0 [&_svg]:[stroke-width:2] aria-pressed:[&_svg]:[stroke-width:2.5]",
+  // 바탕은 color-transition, 축소는 pressed-scale
+  "[transition:background-color_var(--motion-duration-color-transition)_var(--motion-ease-easing),scale_var(--motion-duration-pressed-scale)_var(--motion-ease-pressed-scale)]",
+  "[--press-basis:40] active:[scale:calc(1-2/var(--press-basis))] motion-reduce:active:[scale:1]",
+  // 키보드 포커스 링 2px · 띄움 2px — 색은 톤마다
+  "focus-visible:outline-2 focus-visible:outline-offset-2",
+  "disabled:cursor-not-allowed disabled:bg-transparent disabled:text-fg-disabled disabled:[scale:1]",
+].join(" ");
+const TOGGLE_VARIANTS = {
+  tone: {
+    default:
+      "text-fg-neutral-muted enabled:aria-pressed:text-fg-neutral hover:bg-bg-layer-default-pressed active:bg-bg-layer-default-pressed focus-visible:outline-stroke-focus-ring",
   },
-  size: { medium: "h-10 rounded-r2 [--press-basis:40] [--progress-size:16px]" },
-  layout: { iconOnly: "" },
-  ghostColor: { neutral: "" },
 };
-const BUTTON_COMPOUND = [
-  { size: "medium", layout: "iconOnly", className: "w-10 p-x2_5 [&_svg]:size-[18px]" },
-];
-const BUTTON_DEFAULTS = { variant: "neutralSolid", size: "medium", layout: "withText", ghostColor: "neutral" };
+const TOGGLE_DEFAULTS = { tone: "default" };
+// 아이콘 자리 — toggle.tsx 의 JSX
+const TOGGLE_ICON = "pointer-events-none flex";
 
 // ── cva · cn 풀이 ─────────────────────────────────────────────────────────
 
@@ -206,6 +215,7 @@ const GROUPS = [
   [/^text-t\d+$/, "font-size"],
   [/^w-/, "width"],
   [/^shadow-/, "shadow"],
+  [/^shrink(?:-|$)/, "shrink"],
 ];
 // 여백은 면(위 · 오른쪽 · 아래 · 왼쪽)으로 견준다 — 뒤의 p-0 은 앞의 px · py · pl 을 지우고, 뒤의 pl 은 앞의 px 를 지우지 않는다(twMerge 와 같다)
 const PAD_SIDES = { p: "trbl", px: "lr", py: "tb", pt: "t", pr: "r", pb: "b", pl: "l", ps: "l", pe: "r" };
@@ -298,7 +308,7 @@ function listButtonItem({ title, detail, prefix, suffix }) {
 // <ListTile> — 카테고리 타일 40(모서리 12 · 아이콘 20). 바탕 · 아이콘 색은 부르는 쪽(카테고리 색 — 차트 색의 옅은 바탕 + 그 색 아이콘)
 const listTile = (icon, className) => `<span data-list-tile="" class="${merge(`${listTileVariants()} ${className}`)}">${svg(PATHS[icon])}</span>`;
 
-const buttonVariants = cvaOf(BUTTON_BASE, { variants: BUTTON_VARIANTS, compoundVariants: BUTTON_COMPOUND, defaultVariants: BUTTON_DEFAULTS });
+const toggleVariants = cvaOf(TOGGLE_BASE, { variants: TOGGLE_VARIANTS, defaultVariants: TOGGLE_DEFAULTS });
 
 // ── <Card> 조각 — card.tsx 가 그리는 DOM ─────────────────────────────────
 
@@ -413,10 +423,10 @@ import { List } from "@/components/ui/list"
   {
     title: "누르는 카드",
     description:
-      "카드 전체가 한 곳으로 가면(href · onClick — press \"whole\") 카드가 링크 · 버튼이다 — 마우스를 올리면 · 누르는 동안 면이 bg-layer-default-pressed 로 바뀌고, 누르는 동안 카드 전체가 2px 거리만큼 준다(배율 (기준 − 2) ÷ 기준, 기준 max(높이, 폭 ÷ 4, 24) 를 누르는 순간 잰다 — 모션 줄이기면 색만). 카드를 누르면 열리는데 안에 대등한 동작(고정 · ⋮)이 더 있으면 press=\"peers\" — 카드를 덮는 CardLink 가 누르는 자리이고 안의 버튼은 그 위에 놓여 따로 눌린다. 버튼을 눌러도 카드가 열리지 않고, 카드는 면 색만 바뀌고 줄지 않는다(\"전체가 줄어들면 무엇이 눌린 것인지 모호해집니다\"). 테두리 · 글자색은 그대로이고 그림자 · 위로 뜨기는 없다. 키보드 포커스에만 카드 바깥 2px 링(띄움 2)이다. 고정 버튼은 제목 줄 오른쪽이다 — 버튼 상자 40 이 줄 높이를 밀지 않게 위 · 오른쪽 8 을 당긴다.",
+      "카드 전체가 한 곳으로 가면(href · onClick — press \"whole\") 카드가 링크 · 버튼이다 — 마우스를 올리면 · 누르는 동안 면이 bg-layer-default-pressed 로 바뀌고, 누르는 동안 카드 전체가 2px 거리만큼 준다(배율 (기준 − 2) ÷ 기준, 기준 max(높이, 폭 ÷ 4, 24) 를 누르는 순간 잰다 — 모션 줄이기면 색만). 카드를 누르면 열리는데 안에 대등한 동작(고정 · ⋮)이 더 있으면 press=\"peers\" — 카드를 덮는 CardLink 가 누르는 자리이고 안의 버튼은 그 위에 놓여 따로 눌린다. 버튼을 눌러도 카드가 열리지 않고, 카드는 면 색만 바뀌고 줄지 않는다(\"전체가 줄어들면 무엇이 눌린 것인지 모호해집니다\"). 테두리 · 글자색은 그대로이고 그림자 · 위로 뜨기는 없다. 키보드 포커스에만 카드 바깥 2px 링(띄움 2)이다. 고정 단추는 제목 줄 오른쪽의 켜고 끄는 아이콘 단추(Toggle — 끔 fg-neutral-muted · 선 2, 켬 fg-neutral · 선 2.5)다 — 상자 40 이 줄 높이를 밀지 않게 위 · 오른쪽 8 을 당긴다.",
     jsx: `import { Pin } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardLink } from "@/components/ui/card"
+import { Toggle } from "@/components/ui/toggle"
 
 {/* 한 곳으로 — 색 + 2px 축소 */}
 <Card href={\`/desk/budget/\${budget.id}\`}>
@@ -425,10 +435,10 @@ import { Card, CardContent, CardLink } from "@/components/ui/card"
 
 {/* 카드를 누르면 열리고 고정 버튼이 따로 — 색만, 축소 없음 */}
 <Card press="peers">
-  {/* 고정 버튼은 제목 줄 오른쪽 — 버튼 상자 40 이 줄 높이를 밀지 않게 위 · 오른쪽 8 을 당긴다 */}
+  {/* 고정 버튼은 제목 줄 오른쪽 — 켜고 끄는 아이콘 단추(Toggle). 상자 40 이 줄 높이를 밀지 않게 위 · 오른쪽 8 을 당긴다 */}
   <div className="flex items-start justify-between gap-x2">
     <CardLink href={\`/desk/memo/\${memo.id}\`}>{memo.title}</CardLink>
-    <Button variant="ghost" layout="iconOnly" className="-mr-x2 -mt-x2 shrink-0" aria-label={\`\${memo.title} 고정\`} aria-pressed={memo.pinned} onClick={togglePin}><Pin /></Button>
+    <Toggle className="-mr-x2 -mt-x2 shrink-0" aria-label={\`\${memo.title} 고정\`} pressed={memo.pinned} onPressedChange={(pinned) => setPinned(memo.id, pinned)} icon={<Pin />} />
   </div>
   <CardContent>…</CardContent>
 </Card>`,
@@ -442,10 +452,10 @@ import { Card, CardContent, CardLink } from "@/components/ui/card"
           floor(
             card({
               press: "peers",
-              children: `<div class="flex items-start justify-between gap-x2">${cardLink("회의록 — 10월 8일")}<button type="button" aria-label="회의록 — 10월 8일 고정" aria-pressed="false" class="${merge(`${buttonVariants({ variant: "ghost", layout: "iconOnly" })} -mr-x2 -mt-x2 shrink-0`)}">${svg(PATHS.pin)}</button></div>${cardContent(`<p class="m-0 font-sans text-t4 text-fg-neutral-muted">표 컴포넌트 정리 · 다음 주 화요일까지</p>`)}`,
+              children: `<div class="flex items-start justify-between gap-x2">${cardLink("회의록 — 10월 8일")}<button type="button" data-slot="toggle" data-tone="default" class="${merge(`${toggleVariants()} -mr-x2 -mt-x2 shrink-0`)}" aria-label="회의록 — 10월 8일 고정" aria-pressed="false"><span aria-hidden="true" data-slot="toggle-icon" class="${TOGGLE_ICON}">${svg(PATHS.pin)}</span></button></div>${cardContent(`<p class="m-0 font-sans text-t4 text-fg-neutral-muted">표 컴포넌트 정리 · 다음 주 화요일까지</p>`)}`,
             }),
           ),
-          "press \"peers\" — CardLink + 고정 버튼(색만)",
+          "press \"peers\" — CardLink + 고정 단추 Toggle(색만)",
         ),
       ]),
   },

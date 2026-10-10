@@ -2,18 +2,19 @@
 // 말풍선은 help-bubble.yaml 을 푼 값(menuKit().bubble — menu-view 의 BubbleView)으로, 버튼은 button.yaml 로 그린다.
 import type { CSSProperties, ReactNode } from 'react';
 import { Info } from 'lucide-react';
-import { ButtonView, type IconName } from './button-view';
-import { HIDE_TIP, LEAVE_RULE, TOOLBAR } from './menu-data';
+import { ButtonView } from './button-view';
+import { HIDE_TIP, LEAVE_RULE } from './menu-data';
 import type { BubbleSide } from './menu-look';
 import { iconBtn, mk, type Brand } from './menu-screens';
 import { BubbleView, type BubbleViewProps } from './menu-view';
 import { GestureMark } from './overlay-view';
 import { Phone, WebWindow, rc, type Mode } from './kit';
-import { Side } from './nav-screens';
+import { Bar, NK, ScreenTitle, Shell, Side } from './nav-screens';
+import type { TopAction } from './nav-shared';
+import { TopIconButton } from './nav-view';
 import { cardFace } from './card-face';
 
 export const bl = (brand: Brand = 'desk') => mk(brand).bubble;
-export const TOOL_ICON: Record<(typeof TOOLBAR)[number]['value'], IconName> = { search: 'search', hide: 'eye-off', reset: 'rotate-ccw' };
 
 // 말풍선(멈춘 그림) — 값은 help-bubble.yaml
 export function Bubble({ brand = 'desk', ...p }: Omit<BubbleViewProps, 'look'> & { brand?: Brand }) {
@@ -39,8 +40,10 @@ export function BubbleAt({ trigger, side = 'top', align = 'center', triggerSize 
 export const InfoButton = ({ mode = 'auto', brand = 'hr', label = '연차 사용 규정 안내', state = 'enabled' }: { mode?: Mode; brand?: Brand; label?: string; state?: 'enabled' | 'pressed' | 'focused' | 'hovered' }) => (
   <ButtonView look={iconBtn(brand, 'neutralSubtle')} mode={mode} state={state} icon="info" ariaLabel={label} />
 );
-export const ToolButton = ({ icon, label, mode = 'auto', brand = 'desk', state = 'enabled' }: { icon: IconName; label: string; mode?: Mode; brand?: Brand; state?: 'enabled' | 'pressed' | 'focused' | 'hovered' }) => (
-  <ButtonView look={iconBtn(brand)} mode={mode} state={state} icon={icon} ariaLabel={label} />
+// 금액 가리기 — 제품에서는 상단 바(폰 머리 · Desk 웹 데스크톱 머리)에만 있는 켜고 끄는 단추다. Top Navigation 아이콘 버튼(44 · 24) +
+// aria-pressed, 이름은 늘 "금액 가리기", 아이콘은 지금 상태(금액이 보이면 eye · 가렸으면 eye-off), 끔도 이웃과 같은 fg-neutral(19B)
+export const EyeToggle = ({ mode = 'auto', brand = 'desk', state, hidden = false }: { mode?: Mode; brand?: Brand; state?: 'pressed' | 'focused' | 'hovered'; hidden?: boolean }) => (
+  <TopIconButton look={NK(brand).top} mode={mode} state={state} pressed={hidden} icon={hidden ? 'eye-off' : 'eye'} label="금액 가리기" />
 );
 
 // HR 휴가 요약 — 남은 연차 + ⓘ(눌러서 여는 규정 안내). ⓘ 를 판 가운데에 두어 말풍선이 가운데로 열린다
@@ -86,7 +89,8 @@ const ASSETS: [string, string][] = [
   ['토스뱅크 통장', '820,000원'],
 ];
 export function AssetsPhone({ mode = 'auto', scale = 0.62, h = 560, bubble = true }: { mode?: Mode; scale?: number; h?: number; bubble?: boolean }) {
-  const btn = <ToolButton icon="eye-off" label="금액 가리기" mode={mode} />;
+  // 상단 바 안 — Top Navigation 아이콘 버튼(44 · 24). 켜고 끄는 단추라도 끔은 이웃과 같은 fg-neutral(19B), 금액이 보이니 eye
+  const btn = <TopIconButton look={NK().top} mode={mode} icon="eye" label="금액 가리기" pressed={false} />;
   return (
     <Phone
       title="자산"
@@ -95,7 +99,7 @@ export function AssetsPhone({ mode = 'auto', scale = 0.62, h = 560, bubble = tru
       scale={scale}
       h={h}
       bg="bg-layer-default"
-      right={bubble ? <BubbleAt side="bottom" align="end" trigger={btn} bubble={(p) => <Bubble mode={mode} title={HIDE_TIP.title} description={HIDE_TIP.description} close {...p} />} /> : btn}
+      right={bubble ? <BubbleAt side="bottom" align="end" triggerSize={NK().top.icon.size} trigger={btn} bubble={(p) => <Bubble mode={mode} title={HIDE_TIP.title} description={HIDE_TIP.description} close {...p} />} /> : btn}
     >
       <div style={{ display: 'flex', flexDirection: 'column', padding: '12px 24px 0' }}>
         {ASSETS.map(([name, amount], i) => (
@@ -109,33 +113,36 @@ export function AssetsPhone({ mode = 'auto', scale = 0.62, h = 560, bubble = tru
   );
 }
 
-// Desk 웹 — 접힌 사이드바(Side Navigation 56 — side-navigation.yaml) + 본문 툴바. tip 은 툴팁이 뜬 자리
-export function DeskToolWindow({ mode = 'auto', tip, w = 460, h = 300 }: { mode?: Mode; tip: 'toolbar' | 'sidebar'; w?: number; h?: number }) {
+// Desk 웹 — 접힌 사이드바(Side Navigation 56 — side-navigation.yaml) + 데스크톱 머리(top-navigation.yaml desktop — 내역 추가 · 금액 가리기 ·
+// 알림 · 설정) + 본문 맨 위 화면 제목. tip 은 툴팁이 뜬 자리 — 'header' 는 머리의 금액 가리기(호버), 'sidebar' 는 접힌 사이드바의 자산
+export const DESK_HEADER: TopAction[] = [
+  { icon: 'eye', label: '금액 가리기', pressed: false },
+  { icon: 'bell', label: '알림' },
+  { icon: 'settings', label: '설정' },
+];
+export function DeskToolWindow({ mode = 'auto', tip, w = 460, h = 300 }: { mode?: Mode; tip: 'header' | 'sidebar'; w?: number; h?: number }) {
   const b = bl();
+  const actions = DESK_HEADER.map((a, i) => (i === 0 && tip === 'header' ? { ...a, state: 'hovered' as const } : a));
+  // 툴팁 — 금액 가리기 아래(머리 아래 본문 위로), 화살표는 단추 가운데
+  const below = (
+    <span aria-hidden style={{ position: 'absolute', zIndex: 6, top: `calc(100% + ${b.bodyOffset}px)`, left: '50%', transform: 'translateX(-50%)' }}>
+      <Bubble mode={mode} title="금액 가리기" side="bottom" />
+    </span>
+  );
   return (
     <WebWindow mode={mode} w={w} h={h}>
-      <div style={{ display: 'flex', height: '100%' }}>
-        <Side mode={mode} collapsed current="ledger" height="100%" tip={tip === 'sidebar' ? 'assets' : undefined} states={tip === 'sidebar' ? { assets: 'hovered' } : undefined} />
-        <div style={{ flex: '1 1 0%', minWidth: 0, padding: '16px 24px', background: rc('bg-layer-basement', mode) }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-            <span style={{ fontSize: 20, lineHeight: '28px', fontWeight: 700, color: rc('fg-neutral', mode) }}>가계부</span>
-            <span style={{ display: 'flex', gap: 2 }}>
-              {TOOLBAR.map((t) =>
-                tip === 'toolbar' && t.value === 'hide' ? (
-                  <BubbleAt key={t.value} side="bottom" trigger={<ToolButton icon={TOOL_ICON[t.value]} label={t.label} mode={mode} state="hovered" />} bubble={(p) => <Bubble mode={mode} title={t.label} {...p} />} />
-                ) : (
-                  <ToolButton key={t.value} icon={TOOL_ICON[t.value]} label={t.label} mode={mode} />
-                ),
-              )}
-            </span>
-          </div>
-          <div style={{ marginTop: 18 + (tip === 'toolbar' ? b.height : 0), display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {[72, 56, 64].map((wd, i) => (
-              <span key={i} style={{ display: 'block', height: 44, borderRadius: 10, background: rc('bg-layer-default', mode), width: `${wd}%` }} />
-            ))}
-          </div>
+      <Shell
+        mode={mode}
+        side={<Side mode={mode} collapsed current="ledger" height="100%" tip={tip === 'sidebar' ? 'assets' : undefined} states={tip === 'sidebar' ? { assets: 'hovered' } : undefined} />}
+        header={<Bar mode={mode} type="desktop" actions={actions} primary={{ label: '내역 추가', icon: 'plus' }} actionPins={tip === 'header' ? { 0: below } : undefined} />}
+      >
+        <ScreenTitle mode={mode}>가계부</ScreenTitle>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, paddingTop: 16, paddingLeft: NK().margin, paddingRight: NK().margin }}>
+          {[72, 56, 64].map((wd, i) => (
+            <span key={i} style={{ display: 'block', height: 44, borderRadius: 10, background: rc('bg-layer-default', mode), width: `${wd}%` }} />
+          ))}
         </div>
-      </div>
+      </Shell>
     </WebWindow>
   );
 }

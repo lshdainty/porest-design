@@ -222,7 +222,7 @@
 
 ## Button 과 Chip
 
-SEED 는 Button 과 Chip 을 이렇게 가른다. porest 에는 아직 Chip 이 없고, 선택 · 필터는 [toggle-group](toggle-group.md) 이 맡는다.
+SEED 는 Button 과 Chip 을 이렇게 가른다. porest 도 같다 — 선택 · 필터는 [Chip](chip.md)(같은 내용을 2 ~ 4가지로 바로 다르게 보면 [Segmented Control](segmented-control.md))이 맡는다. Toggle Group 은 2026-10-09 걷었다.
 
 | | Button | Chip |
 |---|---|---|
@@ -237,7 +237,7 @@ SEED 는 Button 과 Chip 을 이렇게 가른다. porest 에는 아직 Chip 이 
 
 **반반 바(split bar)** — 액션 **둘**이 무게가 같고 한 묶음으로 읽힐 때, 본문 폭을 채운 네모 바를 반으로 갈라 각 칸에 하나씩 둔다(예: 내역 분할의 `항목 추가` · `균등 분할`).
 
-- 컨테이너: `display:flex; width:100%; background:var(--color-bg-layer-basement); border:1px solid var(--color-stroke-neutral-weak); border-radius:var(--radius-r2); overflow:hidden`. 트랙 톤은 [`toggle-group`](toggle-group.md) 의 segmented 와 같다.
+- 컨테이너: `display:flex; width:100%; background:var(--color-bg-layer-basement); border:1px solid var(--color-stroke-neutral-weak); border-radius:var(--radius-r2); overflow:hidden`.
 - 각 칸: `flex:1` 의 `ghost` 버튼, 모서리 없음(컨테이너가 깎는다).
 - 칸 사이는 1px `stroke-neutral-weak` 구분선을 **글자 높이만큼만** 긋는다 — 끝까지 그으면 두 칸이 벽으로 막힌 것처럼 보인다.
 - **얇게 — `xsmall` 높이(32).** 목록에 줄을 더하는 성격이라 본문 행보다 무거우면 안 된다. 알약 모양은 쓰지 않는다(segmented 와 헷갈린다).
@@ -454,7 +454,7 @@ const [saving, setSaving] = useState(false)
 
 **앱에 옮길 때 — `cn` 부터.** 새 cva 는 porest 스케일 이름(`text-t4` · `px-x4` · `rounded-r2`)을 쓴다. 기본 tailwind-merge 는 `text-t4` 를 글자색으로 읽어 앞의 `text-fg-neutral-inverted` 를 지우고(짙은 버튼의 흰 글자가 사라진다), `px-x4` 를 여백으로 못 읽어 `p-0` 덮어쓰기가 먹지 않는다. 레시피 `lib/utils.ts` 처럼 spacing · radius · text 스케일을 `extendTailwindMerge` 에 등록한다 — Desk 웹의 `cn` 은 지금 옛 글자 이름만 안다.
 
-**다른 컴포넌트에 남은 옛 이름** — 버튼을 부르는 레시피 코드(alert-dialog · calendar · carousel · pagination · sidebar)와 그 스펙, 모달 footer 규칙(dialog · drawer · alert-dialog)은 이 변경에서 옮겼다. 아래는 옛 이름을 글로만 적고 있어 각 컴포넌트 차례에 옮긴다 — 예제 속 JSX(tooltip · sheet · popover · form · dropdown-menu · drawer · dialog · card · alert-dialog · table · spinner 예제), 스펙 본문(table · popover · spinner · toggle-group · collapsible · context-menu · dropdown-menu · icon-picker · calendar 의 nav `outline`), DESIGN.md 의 다른 컴포넌트 절(Form 의 `button-primary` lg · Pagination 의 페이지 버튼), 미리보기의 빈 화면 · 폼 · 결재 행(Outline 과 Solid 를 한 줄에 둔다 — Outline 조합 규칙과 어긋난다).
+**다른 컴포넌트에 남은 옛 이름** — 버튼을 부르는 레시피 코드(alert-dialog · calendar · carousel · pagination · sidebar)와 그 스펙, 모달 footer 규칙(dialog · drawer · alert-dialog)은 이 변경에서 옮겼다. 아래는 옛 이름을 글로만 적고 있어 각 컴포넌트 차례에 옮긴다 — 예제 속 JSX(tooltip · sheet · popover · form · dropdown-menu · drawer · dialog · card · alert-dialog · table · spinner 예제), 스펙 본문(table · popover · spinner · collapsible · context-menu · dropdown-menu · calendar 의 nav `outline` — toggle-group 은 2026-10-09 걷었고 icon-picker 는 Input Button 으로 다시 썼다), DESIGN.md 의 다른 컴포넌트 절(Form 의 `button-primary` lg · Pagination 의 페이지 버튼), 미리보기의 빈 화면 · 폼 · 결재 행(Outline 과 Solid 를 한 줄에 둔다 — Outline 조합 규칙과 어긋난다).
 
 ### 2026-09-16 — `default`(36) 를 정식 사이즈로 올리고 모달 footer 를 그걸로
 

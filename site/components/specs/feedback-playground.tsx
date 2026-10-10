@@ -21,15 +21,19 @@ const ROWS: DemoRow[] = [
 const SNACK_TEXT: Record<SnackTone, [string, string]> = {
   neutral: ['거래를 삭제했어요.', '거래 3건을 삭제했어요. 휴지통에서 30일 동안 되살릴 수 있어요.'],
   positive: ['관심 종목에 넣었어요.', '미리 낸 돈 중 32,000원이 계좌로 돌아왔어요. 잔액이 맞는지 확인해 주세요.'],
-  critical: ['관심 종목에 넣지 못했어요.', '관심 종목에 넣지 못했어요. 잠시 뒤 다시 눌러 주세요.'],
+  // 액션 없는 가벼운 실패 — 같은 단추를 한 번 더 누르면 되는 일(4초). 관심 등록 실패는 "다시 시도" 를 고르면(RETRY_TEXT)
+  critical: ['계좌번호를 복사하지 못했어요.', '계좌번호를 복사하지 못했어요. 한 번 더 눌러주세요.'],
 };
+// 켜고 끄는 단추(관심 등록)의 실패 — 되돌린 뒤 같은 요청을 다시 보내는 "다시 시도"(6초 — Toggle 20A · snackbar.md 의 코드)
+const RETRY_TEXT = '관심 종목에 넣지 못했어요. 다시 시도해주세요.';
 const SNACK_ACTIONS = [
   ['none', '없음'],
   ['undo', '되돌리기'],
   ['fix', '잔액 고치기'],
+  ['retry', '다시 시도'],
 ] as const;
 type SnackActionKey = (typeof SNACK_ACTIONS)[number][0];
-const ACTION_LABEL: Record<Exclude<SnackActionKey, 'none'>, [string, string]> = { undo: ['되돌리기', 'undo'], fix: ['잔액 고치기', 'openBalance'] };
+const ACTION_LABEL: Record<Exclude<SnackActionKey, 'none'>, [string, string]> = { undo: ['되돌리기', 'undo'], fix: ['잔액 고치기', 'openBalance'], retry: ['다시 시도', '() => setWatched(stock.id, true)'] };
 
 // 남은 시간 — 띠가 떠 있는 동안만 0.1초마다 다시 센다
 function useRemaining(host: SnackbarHost) {
@@ -55,7 +59,7 @@ export function SnackbarPlayground({ looks }: { looks: Record<Brand, SnackbarLoo
   const look = looks[brand];
   const host = useSnackbarHost(look);
   const remain = useRemaining(host);
-  const message = SNACK_TEXT[tone][len === 'short' ? 0 : 1];
+  const message = tone === 'critical' && act === 'retry' ? RETRY_TEXT : SNACK_TEXT[tone][len === 'short' ? 0 : 1];
   const action = act === 'none' ? undefined : { label: ACTION_LABEL[act][0] };
   const show = () => host.show({ tone, message, action });
   const code = useMemo(() => {

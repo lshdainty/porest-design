@@ -4,7 +4,8 @@ import type { CSSProperties, ReactNode } from 'react';
 import { Figure, Panel, MARK, MARK_LINE } from '../foundations/ui';
 import { buttonLook } from './button-look';
 import { HelpBubblePlayground, HideTipDemo, LeaveRuleDemo } from './bubble-demos';
-import { AssetsPhone, Bubble, BubbleAt, InfoButton, InfoGlyph, LeaveSummary, LeaveWindow, ToolButton, bl } from './bubble-screens';
+import { AssetsPhone, Bubble, BubbleAt, EyeToggle, InfoButton, InfoGlyph, LeaveSummary, LeaveWindow, bl } from './bubble-screens';
+import { NK } from './nav-screens';
 import { LEAVE_RULE } from './menu-data';
 import { Board, Scaled, iconBtn, mk } from './menu-screens';
 import { Legend, Note, RuleBody, Shot, ov, pinStyle } from './overlay-screens';
@@ -133,7 +134,7 @@ const Layout: Fig = ({ caption }) => {
             {/* 한 줄 — 제목만 */}
             <LayoutRow top={b.height + b.bodyOffset}>
               <BubbleAt
-                trigger={<ToolButton icon="eye-off" label="금액 가리기" />}
+                trigger={<EyeToggle />}
                 bubble={(p) => (
                   <Bubble
                     title="금액 가리기"
@@ -256,7 +257,7 @@ const Placement: Fig = ({ caption }) => {
         <div className="grid gap-4 sm:grid-cols-2">
           {(['top', 'bottom', 'left', 'right'] as const).map((side) => (
             <Cell key={side} label={side === 'top' ? '위(기본)' : side === 'bottom' ? '아래 — 위에 자리가 없으면' : side === 'left' ? '왼쪽' : '오른쪽'}>
-              <BubbleAt side={side} trigger={<ToolButton icon="eye-off" label="금액 가리기" />} bubble={(p) => <Bubble title="금액 가리기" {...p} />} />
+              <BubbleAt side={side} trigger={<EyeToggle />} bubble={(p) => <Bubble title="금액 가리기" {...p} />} />
             </Cell>
           ))}
         </div>
@@ -289,7 +290,7 @@ const RoleGuide: Fig = ({ caption }) => {
         <Shot strong="Tooltip — 마우스 · 키보드" cap="아이콘 버튼의 이름 · 줄인 글 — 손가락으로는 열리지 않는다">
           <Board pad={24} style={{ width: 280, paddingTop: 24 + bl().height + bl().bodyOffset }}>
             <div className="flex justify-center">
-              <BubbleAt trigger={<ToolButton icon="eye-off" label="금액 가리기" state="hovered" />} bubble={(p) => <Bubble title="금액 가리기" {...p} />} />
+              <BubbleAt trigger={<EyeToggle state="hovered" />} bubble={(p) => <Bubble title="금액 가리기" {...p} />} />
             </div>
           </Board>
         </Shot>
@@ -342,7 +343,7 @@ const TouchGuide: Fig = ({ caption }) => {
 
 // ── 코드 미리보기(실제로 열고 닫는다) ────────────────────────
 const ExInfo: Fig = () => <LeaveRuleDemo kit={mk('hr')} info={iconBtn('hr', 'neutralSubtle')} />;
-const ExClose: Fig = () => <HideTipDemo kit={mk()} ghost={iconBtn()} />;
+const ExClose: Fig = () => <HideTipDemo kit={mk()} top={NK().top} />;
 
 export const helpBubbleFigures: Record<string, Fig> = {
   hero: Hero,

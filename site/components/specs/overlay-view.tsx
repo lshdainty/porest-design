@@ -267,6 +267,10 @@ export type SheetSurfaceProps = {
   bodyPad?: boolean;
   // 본문 끝 흐림(축 scrollFog) — 넘칠 수 있는 본문(목록 · 긴 폼)에 건다. 걸면 늘 켜져 있다
   fog?: boolean;
+  // 본문 위에 붙는 칸 — 스크롤 상자(본문) 밖이라 흐리지 않고 스크롤해도 그 자리다(목록 위 찾기 칸). 좌우 여백은 본문과 같다
+  top?: ReactNode;
+  // 넘친 본문이 Tab 을 받을지 — 칸이 초점을 받아 스스로 보이게 스크롤되는 격자(roving)는 끈다(Tab 하나)
+  bodyTabStop?: boolean;
   // 멈춘 그림 — 본문을 위로 올린 만큼
   offset?: number;
   // 안전 영역(그림 속 기기의 홈 표시줄 · 실제 화면은 env(safe-area-inset-bottom)) — 바닥 아래에 더한다
@@ -283,7 +287,7 @@ export type SheetSurfaceProps = {
 };
 
 export const SheetSurface = forwardRef<HTMLDivElement, SheetSurfaceProps>(function SheetSurface(
-  { look, mode = 'auto', title, description, close = true, closeState, onClose, handle = false, onHandle, footer, children, bodyPad = true, fog = false, offset, safe = 0, maxHeight, titleId, descId, marks, decor, rootProps, style, bodyRef, bodyStyle },
+  { look, mode = 'auto', title, description, close = true, closeState, onClose, handle = false, onHandle, footer, children, bodyPad = true, fog = false, top, bodyTabStop = true, offset, safe = 0, maxHeight, titleId, descId, marks, decor, rootProps, style, bodyRef, bodyStyle },
   ref,
 ) {
   const r = look.radius;
@@ -330,13 +334,18 @@ export const SheetSurface = forwardRef<HTMLDivElement, SheetSurfaceProps>(functi
         ))}
       {close && <OvCloseButton look={look.close} ring={look.ring} mode={mode} state={closeState} onClick={closeState ? undefined : onClose} marks={marks} />}
       <Head hd={look.header} title={title} description={description} t={look.title} d={look.description} mode={mode} close={close} titleId={titleId} descId={descId} marks={marks} decor={decor?.header} />
+      {top ? (
+        <div data-ov-top="" style={{ position: 'relative', flex: 'none', paddingLeft: bodyPad ? look.body.padX : 0, paddingRight: bodyPad ? look.body.padX : 0 }}>
+          {top}
+        </div>
+      ) : null}
       <Body
         fog={fog ? look.fog : undefined}
         padX={bodyPad ? look.body.padX : 0}
         trail={footer ? 0 : look.body.padBottom}
         hasHead
         state={{ scrolled: false }}
-        focusable={body.state.overflow}
+        focusable={bodyTabStop && body.state.overflow}
         offset={offset}
         live={live}
         mode={mode}
@@ -494,6 +503,10 @@ export type PopoverSurfaceProps = {
   fog?: boolean;
   // 본문 좌우 여백 — 줄이 화면 여백을 가지는 목록(사람)은 뺀다
   bodyPad?: boolean;
+  // 본문 위에 붙는 칸 — 스크롤 상자 밖(흐리지 않는다). 머리가 없으면 본문 위 여백이 이 칸 위로 간다
+  top?: ReactNode;
+  // 넘친 본문이 Tab 을 받을지 — 칸이 초점을 받는 격자(roving)는 끈다
+  bodyTabStop?: boolean;
   titleId?: string;
   descId?: string;
   ariaLabel?: string;
@@ -504,7 +517,7 @@ export type PopoverSurfaceProps = {
 };
 
 export const PopoverSurface = forwardRef<HTMLDivElement, PopoverSurfaceProps>(function PopoverSurface(
-  { look, mode = 'auto', width, avail, title, description, close, closeState, onClose, footer, children, maxHeight, scroll, fog = false, bodyPad = true, titleId, descId, marks, decor, rootProps, style },
+  { look, mode = 'auto', width, avail, title, description, close, closeState, onClose, footer, children, maxHeight, scroll, fog = false, bodyPad = true, top, bodyTabStop = true, titleId, descId, marks, decor, rootProps, style },
   ref,
 ) {
   const live = !scroll;
@@ -537,16 +550,21 @@ export const PopoverSurface = forwardRef<HTMLDivElement, PopoverSurfaceProps>(fu
     >
       {hasHead && showClose && <OvCloseButton look={look.close} ring={look.ring} mode={mode} state={closeState} onClick={closeState ? undefined : onClose} marks={marks} />}
       {hasHead && <Head hd={look.header} title={title} description={description} t={look.title} d={look.description} mode={mode} close={showClose} titleId={titleId} descId={descId} marks={marks} decor={decor?.header} divider={{ ...look.scroll.divider, on: state.scrolled }} />}
+      {top ? (
+        <div data-ov-top="" style={{ position: 'relative', flex: 'none', paddingTop: hasHead ? 0 : look.body.padTop, paddingLeft: bodyPad ? look.body.padX : 0, paddingRight: bodyPad ? look.body.padX : 0 }}>
+          {top}
+        </div>
+      ) : null}
       <Body
         scroll={look.scroll}
         fog={fog ? look.scroll.fog : undefined}
         padX={bodyPad ? look.body.padX : 0}
-        // 머리가 없는 고르는 패널 — 본문 위 여백(YAML body.paddingTop — 머리가 없을 때만)
-        padTop={hasHead ? 0 : look.body.padTop}
+        // 머리가 없는 고르는 패널 — 본문 위 여백(YAML body.paddingTop — 머리가 없을 때만). 위에 붙는 칸이 있으면 그 칸 위로 간다
+        padTop={hasHead || top ? 0 : look.body.padTop}
         trail={footer ? 0 : look.body.padBottom}
         hasHead={hasHead}
         state={state}
-        focusable={live && body.state.overflow}
+        focusable={live && bodyTabStop && body.state.overflow}
         offset={scroll?.offset}
         live={live}
         mode={mode}

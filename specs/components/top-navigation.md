@@ -180,7 +180,7 @@ HR 웹 768 미만은 하단 탭 바가 없다 — 모든 화면이 `standard` �
 - `TopNavigationMenuButton` — ☰ (이름 "주 메뉴", `aria-haspopup="dialog"` · `aria-expanded` · `aria-controls`). HR 폰의 주 메뉴 Side Panel 을 연다.
 - `TopNavigationTitle` — 제목(`<h1 tabIndex={-1} data-screen-title>`). 한 줄 말줄임.
 - `TopNavigationActions` — 오른쪽 자리. 자식은 `TopNavigationIconButton` 3개까지 또는 `TopNavigationTextButton` 하나, `desktop` 이면 맨 앞에 `TopNavigationPrimaryButton` 하나.
-- `TopNavigationIconButton` — 상자 44 · 아이콘 24. `aria-label` 필수, `notification`(벨의 알림 점 — 이름에 "새 알림 있음" 을 넣는 것은 부르는 쪽), `<button type="button">` 속성.
+- `TopNavigationIconButton` — 상자 44 · 아이콘 24. `aria-label` 필수, `notification`(벨의 알림 점 — 이름에 "새 알림 있음" 을 넣는 것은 부르는 쪽), `<button type="button">` 속성. `aria-pressed` 를 주면 켜고 끄는 단추다 — 이름은 그대로 두고, 아이콘은 지금 상태를 넘긴다. 켬은 선 2.5, 끔은 선 2 이고 색은 켬 · 끔 모두 이웃 버튼과 같은 `fg-neutral` 이다 — [Toggle](toggle.md) 의 흐린 끔(`fg-neutral-muted`)은 상단 바에서 쓰지 않는다. 아이콘 줄에서 하나만 흐리면 막힌 단추처럼 보인다(사용자 결정 2026-10-09 19B).
 - `TopNavigationTextButton` — 글 버튼(`<button type="button">`).
 - `TopNavigationPrimaryButton` — 데스크톱 머리의 주 버튼([Button](button.md) `brandSolid` · `small` 그대로 + 오른쪽 8).
 - `ScreenTitle` — 데스크톱 본문 맨 위 제목(`<h1 tabIndex={-1} data-screen-title>` · `text-screen-title`).
@@ -231,13 +231,14 @@ import { TopNavigation, TopNavigationActions, TopNavigationBackButton, TopNaviga
 [그림: Desk 데스크톱 머리 — 주 버튼 + 아이콘 셋, 본문 제목](../../site/components/specs/top-navigation.tsx#ex-desktop)
 
 ```tsx
-import { Bell, EyeOff, Plus, Settings } from "lucide-react"
+import { Bell, Eye, EyeOff, Plus, Settings } from "lucide-react"
 import { ScreenTitle, TopNavigation, TopNavigationActions, TopNavigationIconButton, TopNavigationPrimaryButton } from "@/components/ui/top-navigation"
 
 <TopNavigation type="desktop">
   <TopNavigationActions>
     <TopNavigationPrimaryButton onClick={openAddTransaction}><Plus />내역 추가</TopNavigationPrimaryButton>
-    <TopNavigationIconButton aria-label="금액 가리기" aria-pressed={hidden} onClick={toggleHidden}><EyeOff /></TopNavigationIconButton>
+    {/* 켜고 끄는 단추 — 이름은 고정, 아이콘은 지금 상태(가렸으면 eye-off — Toggle) */}
+    <TopNavigationIconButton aria-label="금액 가리기" aria-pressed={hidden} onClick={toggleHidden}>{hidden ? <EyeOff /> : <Eye />}</TopNavigationIconButton>
     <TopNavigationIconButton notification={hasUnread} aria-label={hasUnread ? "알림, 새 알림 있음" : "알림"} onClick={openNotifications}><Bell /></TopNavigationIconButton>
     <TopNavigationIconButton aria-label="설정" onClick={openSettings}><Settings /></TopNavigationIconButton>
   </TopNavigationActions>

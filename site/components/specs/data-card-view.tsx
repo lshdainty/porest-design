@@ -282,7 +282,8 @@ export function StatView({ look, mode = 'auto', label, value, size = 'large', de
 // ── 순자산 카드(hero) ──────────────────────────────────────
 export type HeroPart = 'root' | 'glow' | 'label' | 'amount' | 'detail';
 // press="whole" — 누르면 2px 거리 축소만 한다. 브랜드 채움 그라디언트에는 누름 색 짝이 없어 면 색은 그대로다(card.md 누름 · SEED Feedback)
-export function HeroCardView({ look, mode = 'auto', label, amount, delta, detail, width = '100%', press = 'none', state: frozen, live = false, onClick, marks, pins, override }: { look: CardLook; mode?: ViewMode; label: string; amount: string; delta?: DeltaSpec; detail?: string; width?: number | string; press?: 'none' | 'whole'; state?: CardState; live?: boolean; onClick?: () => void; marks?: Partial<Record<HeroPart, CSSProperties>>; pins?: Partial<Record<HeroPart, ReactNode>>; override?: { end?: string; radius?: number; deltaColor?: 'direction'; dimText?: boolean } }) {
+// labelEnd — 라벨 줄 오른쪽(순자산 카드의 금액 가리기 Toggle — 흰 아이콘). 상자 40 은 라벨 줄 높이 안에서 위아래로 넘치고(줄을 밀지 않는다), 오른쪽은 카드 머리 간격만큼 당긴다
+export function HeroCardView({ look, mode = 'auto', label, amount, delta, detail, width = '100%', press = 'none', state: frozen, live = false, onClick, marks, pins, override, labelEnd }: { look: CardLook; mode?: ViewMode; label: string; amount: string; delta?: DeltaSpec; detail?: string; width?: number | string; press?: 'none' | 'whole'; state?: CardState; live?: boolean; onClick?: () => void; marks?: Partial<Record<HeroPart, CSSProperties>>; pins?: Partial<Record<HeroPart, ReactNode>>; override?: { end?: string; radius?: number; deltaColor?: 'direction'; dimText?: boolean }; labelEnd?: ReactNode }) {
   const h = look.hero;
   const end = splitVars(mode, [{ slot: 't', c: h.end }]);
   const endColor = override?.end ?? sv(h.end, mode, 't');
@@ -355,9 +356,10 @@ export function HeroCardView({ look, mode = 'auto', label, amount, delta, detail
       {/* 장식 빛 — 오른쪽 위, 카드 밖으로 나간 부분은 모서리가 자른다. 보조 기술에 숨긴다 */}
       <span aria-hidden style={{ position: 'absolute', right: g.right, top: g.top, width: g.size, height: g.size, borderRadius: 9999, background: `radial-gradient(circle, ${g.color} 0%, transparent ${g.stop}%)`, pointerEvents: 'none', zIndex: -1, ...marks?.glow }} />
       {pins?.glow}
-      <div style={{ position: 'relative', fontFamily: h.label.fontFamily, fontSize: h.label.fontSize, lineHeight: h.label.lineHeight, fontWeight: h.label.fontWeight, opacity: override?.dimText ? 0.72 : undefined, ...marks?.label }}>
+      <div style={{ position: 'relative', display: labelEnd ? 'flex' : undefined, alignItems: labelEnd ? 'center' : undefined, justifyContent: labelEnd ? 'space-between' : undefined, columnGap: labelEnd ? look.header.gap : undefined, fontFamily: h.label.fontFamily, fontSize: h.label.fontSize, lineHeight: h.label.lineHeight, fontWeight: h.label.fontWeight, opacity: override?.dimText ? 0.72 : undefined, ...marks?.label }}>
         {pins?.label}
-        {label}
+        <span style={{ minWidth: 0 }}>{label}</span>
+        {labelEnd && <span style={{ display: 'flex', alignItems: 'center', flexShrink: 0, height: h.label.lineHeight, marginRight: -look.header.gap }}>{labelEnd}</span>}
       </div>
       <div style={{ position: 'relative', marginTop: h.amount.marginTop, fontFamily: h.amount.fontFamily, fontSize: h.amount.fontSize, lineHeight: h.amount.lineHeight, fontWeight: h.amount.fontWeight, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap', ...marks?.amount }}>
         {pins?.amount}

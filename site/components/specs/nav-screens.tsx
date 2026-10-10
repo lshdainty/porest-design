@@ -274,8 +274,9 @@ export function Shell({ mode = 'auto', brand = 'desk', side, header, children, b
     </div>
   );
 }
+// 금액 가리기는 켜고 끄는 단추 — 이름 고정 · 아이콘은 지금 상태(금액이 보이면 eye), 끔도 이웃과 같은 fg-neutral(Toggle · 19B)
 export const DESK_HEADER_ACTIONS: TopAction[] = [
-  { icon: 'eye-off', label: '금액 가리기' },
+  { icon: 'eye', label: '금액 가리기', pressed: false },
   { icon: 'bell', label: '알림, 새 알림 있음', notification: true },
   { icon: 'settings', label: '설정' },
 ];

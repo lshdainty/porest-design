@@ -4,16 +4,27 @@
 import { useState, type ReactNode } from 'react';
 import type { ButtonLook } from './button-look';
 import { ButtonView, type IconName } from './button-view';
-import { COPY_REASON, HIDE_TIP, LEAVE_RULE, LONG_TIP, TOOLBAR } from './menu-data';
+import { COPY_REASON, HIDE_TIP, LEAVE_RULE } from './menu-data';
 import { mcv, type BubbleSide, type MTone, type MenuKit, type ViewMode } from './menu-shared';
 import { HelpBubbleControl, TooltipControl, TooltipGroup, type TriggerRender } from './menu-view';
 import { BRANDS, MODES, Seg } from './select-playground';
 import { DemoFrame } from './menu-demos';
+import { ncv, type NavIcon, type TopNavLook } from './nav-shared';
+import { TopIconButton, TopNavBar } from './nav-view';
 
 type Brand = 'desk' | 'hr';
 const FONT = "'Pretendard Variable', Pretendard, sans-serif";
 const tone = (kit: MenuKit, name: MTone, mode: ViewMode) => mcv(kit.tone[name], mode);
-const TOOL_ICON: Record<(typeof TOOLBAR)[number]['value'], IconName> = { search: 'search', hide: 'eye-off', reset: 'rotate-ccw' };
+// 금액 가리기는 제품에서 상단 바(폰 머리 · Desk 웹 데스크톱 머리)에만 있는 켜고 끄는 단추다 — Top Navigation 아이콘 버튼 + aria-pressed,
+// 이름은 고정, 아이콘은 지금 상태(보이면 eye · 가렸으면 eye-off), 끔도 이웃과 같은 fg-neutral(19B)
+type HeadBtn = { key: string; icon: NavIcon; label: string };
+const HEAD_BUTTONS: HeadBtn[] = [
+  { key: 'hide', icon: 'eye', label: '금액 가리기' },
+  { key: 'bell', icon: 'bell', label: '알림' },
+  { key: 'settings', icon: 'settings', label: '설정' },
+];
+// 긴 툴팁(플레이그라운드) — 한 줄을 넘는 글은 최대 폭에서 줄을 바꾼다. 두 줄을 넘으면 Help Bubble 이다
+const LONG_SETTINGS_TIP = '알림 · 금액 가리기 · 테마 · 연결한 계정을 바꾸는 설정으로 가요.';
 
 // 트리거 — Button ghost · iconOnly(이름은 aria-label)
 function IconTrigger({ look, mode, icon, label, render }: { look: ButtonLook; mode: ViewMode; icon: IconName; label: string; render: Parameters<TriggerRender>[0] }) {
@@ -48,7 +59,7 @@ const AMOUNTS: [string, string][] = [
   ['현대카드 M', '−352,400원'],
   ['토스뱅크 통장', '820,000원'],
 ];
-export function HideTipDemo({ kit, ghost, mode = 'auto' }: { kit: MenuKit; ghost: ButtonLook; mode?: ViewMode }) {
+export function HideTipDemo({ kit, top, mode = 'auto' }: { kit: MenuKit; top: TopNavLook; mode?: ViewMode }) {
   const [hidden, setHidden] = useState(false);
   const [seen, setSeen] = useState(false);
   const [round, setRound] = useState(0);
@@ -57,35 +68,41 @@ export function HideTipDemo({ kit, ghost, mode = 'auto' }: { kit: MenuKit; ghost
     <DemoFrame kit={kit} mode={mode} w={400}>
       {/* 처음부터 열린 안내 — 화면이 자리를 잡는 동안에도 트리거를 따라가게 이 판 안에 띄운다 */}
       <div ref={setBox} style={{ position: 'relative' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-        <span style={{ fontSize: 17, lineHeight: '24px', fontWeight: 700, color: tone(kit, 'fg-neutral', mode) }}>자산</span>
-        {/* Anchor — 자리만 잡는다. 누르면 원래 동작(금액 가리기) */}
-        <HelpBubbleControl
-          key={round}
-          look={kit.bubble}
+        {/* 상단 바(탭 첫 화면 — 큰 제목) 오른쪽의 금액 가리기. Anchor 는 자리만 잡는다 — 누르면 원래 동작(help-bubble.md 코드) */}
+        <TopNavBar
+          look={top}
           mode={mode}
-          title={HIDE_TIP.title}
-          description={HIDE_TIP.description}
-          closeButton
-          side="bottom"
-          defaultOpen={!seen}
-          outsideCloses={false}
-          anchorOnly
-          container={box}
-          onOpenChange={(o) => !o && setSeen(true)}
-          trigger={(r) => (
-            <ButtonView look={ghost} mode={mode} icon={hidden ? 'eye' : 'eye-off'} ariaLabel={hidden ? '금액 보이기' : '금액 가리기'} buttonRef={r.ref} rootProps={r.props} onClick={() => setHidden((h) => !h)} />
-          )}
+          type="root"
+          title="자산"
+          // 카드 위 끝 · 양 끝까지 — 화면의 상단 바처럼
+          width={`calc(100% + ${kit.card.pad * 2}px)`}
+          style={{ marginTop: -kit.card.pad, marginLeft: -kit.card.pad, marginRight: -kit.card.pad }}
+          trailing={
+            <HelpBubbleControl
+              key={round}
+              look={kit.bubble}
+              mode={mode}
+              title={HIDE_TIP.title}
+              description={HIDE_TIP.description}
+              closeButton
+              side="bottom"
+              defaultOpen={!seen}
+              outsideCloses={false}
+              anchorOnly
+              container={box}
+              onOpenChange={(o) => !o && setSeen(true)}
+              trigger={(r) => <TopIconButton look={top} mode={mode} live icon={hidden ? 'eye-off' : 'eye'} label="금액 가리기" pressed={hidden} onClick={() => setHidden((h) => !h)} buttonRef={r.ref} rootProps={r.props} />}
+            />
+          }
         />
-      </div>
-      <div style={{ paddingTop: 96 }}>
-        {AMOUNTS.map(([name, amount], i) => (
-          <div key={name} style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '10px 0', borderBottom: i === AMOUNTS.length - 1 ? 'none' : `1px solid ${tone(kit, 'stroke-neutral-subtle', mode)}` }}>
-            <span style={{ fontSize: 15, lineHeight: '20px', color: tone(kit, 'fg-neutral', mode) }}>{name}</span>
-            <span style={{ fontSize: 15, lineHeight: '20px', fontWeight: 600, fontVariantNumeric: 'tabular-nums', color: tone(kit, 'fg-neutral', mode) }}>{hidden ? '••••••원' : amount}</span>
-          </div>
-        ))}
-      </div>
+        <div style={{ paddingTop: 96 }}>
+          {AMOUNTS.map(([name, amount], i) => (
+            <div key={name} style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '10px 0', borderBottom: i === AMOUNTS.length - 1 ? 'none' : `1px solid ${tone(kit, 'stroke-neutral-subtle', mode)}` }}>
+              <span style={{ fontSize: 15, lineHeight: '20px', color: tone(kit, 'fg-neutral', mode) }}>{name}</span>
+              <span style={{ fontSize: 15, lineHeight: '20px', fontWeight: 600, fontVariantNumeric: 'tabular-nums', color: tone(kit, 'fg-neutral', mode) }}>{hidden ? '••••••원' : amount}</span>
+            </div>
+          ))}
+        </div>
       </div>
       <Status kit={kit} mode={mode}>
         {seen ? (
@@ -110,44 +127,68 @@ export function HideTipDemo({ kit, ghost, mode = 'auto' }: { kit: MenuKit; ghost
   );
 }
 
-// ── Tooltip 코드 — 아이콘 버튼의 이름 ────────────────────────
-export function ToolbarTooltipDemo({ kit, ghost, mode = 'auto' }: { kit: MenuKit; ghost: ButtonLook; mode?: ViewMode }) {
-  const [hidden, setHidden] = useState(false);
-  const [status, setStatus] = useState('');
+// ── Tooltip 코드 — 아이콘 버튼의 이름(Desk 웹 데스크톱 머리 — 내역 추가 · 금액 가리기 · 알림 · 설정) ─────
+// 머리의 아이콘 버튼마다 툴팁 — 금액 가리기는 켜고 끄는 단추라 이름이 고정이고 툴팁도 그대로다(tooltip.md 코드)
+function HeaderTips({ kit, top, mode, hidden, onHide, onTap, tips, side = 'bottom', container, width }: { kit: MenuKit; top: TopNavLook; mode: ViewMode; hidden: boolean; onHide: () => void; onTap?: (label: string) => void; tips?: Partial<Record<string, string>>; side?: BubbleSide; container?: HTMLElement | null; width?: string | number }) {
   return (
-    <DemoFrame kit={kit} mode={mode} w={400}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, paddingTop: 44 }}>
-        <span style={{ fontSize: 17, lineHeight: '24px', fontWeight: 700, color: tone(kit, 'fg-neutral', mode) }}>가계부</span>
+    <TopNavBar
+      look={top}
+      mode={mode}
+      type="desktop"
+      live
+      width={width}
+      primary={{ label: '내역 추가', icon: 'plus' }}
+      onPrimary={() => onTap?.('내역 추가')}
+      trailing={
         <TooltipGroup>
-          <span style={{ display: 'flex', gap: 4 }}>
-            {TOOLBAR.map((t) => {
-              const label = t.value === 'hide' && hidden ? '금액 보이기' : t.label;
-              const icon: IconName = t.value === 'hide' && hidden ? 'eye' : TOOL_ICON[t.value];
-              return (
-                <TooltipControl
-                  key={t.value}
-                  look={kit.bubble}
-                  mode={mode}
-                  text={label}
-                  trigger={(r) => (
-                    <ButtonView
-                      look={ghost}
-                      mode={mode}
-                      icon={icon}
-                      ariaLabel={label}
-                      buttonRef={r.ref}
-                      rootProps={r.props}
-                      onClick={() => {
-                        if (t.value === 'hide') setHidden((h) => !h);
-                        setStatus(t.value === 'hide' ? (hidden ? '금액을 보여 줘요.' : '금액을 가렸어요.') : t.value === 'search' ? '검색 칸을 열어요.' : '필터를 지웠어요.');
-                      }}
-                    />
-                  )}
-                />
-              );
-            })}
+          <span style={{ display: 'flex' }}>
+            {HEAD_BUTTONS.map((b) => (
+              <TooltipControl
+                key={`${b.key}${side}${tips?.[b.key] ?? ''}`}
+                look={kit.bubble}
+                mode={mode}
+                text={tips?.[b.key] ?? b.label}
+                side={side}
+                container={container}
+                trigger={(r) =>
+                  b.key === 'hide' ? (
+                    <TopIconButton look={top} mode={mode} live icon={hidden ? 'eye-off' : 'eye'} label={b.label} pressed={hidden} onClick={onHide} buttonRef={r.ref} rootProps={r.props} />
+                  ) : (
+                    <TopIconButton look={top} mode={mode} live icon={b.icon} label={b.label} onClick={() => onTap?.(b.label)} buttonRef={r.ref} rootProps={r.props} />
+                  )
+                }
+              />
+            ))}
           </span>
         </TooltipGroup>
+      }
+    />
+  );
+}
+export function ToolbarTooltipDemo({ kit, top, mode = 'auto' }: { kit: MenuKit; top: TopNavLook; mode?: ViewMode }) {
+  const [hidden, setHidden] = useState(false);
+  const [status, setStatus] = useState('');
+  const st = top.desktop.screenTitle;
+  return (
+    <DemoFrame kit={kit} mode={mode} w={460}>
+      {/* 카드 위 끝 · 양 끝까지 — 데스크톱 머리처럼 */}
+      <div style={{ marginTop: -kit.card.pad, marginLeft: -kit.card.pad, marginRight: -kit.card.pad, background: ncv(top.bg, mode) }}>
+        <HeaderTips
+          kit={kit}
+          top={top}
+          mode={mode}
+          hidden={hidden}
+          onHide={() => {
+            setHidden((h) => !h);
+            setStatus(hidden ? '금액을 보여줘요.' : '금액을 가렸어요.');
+          }}
+          onTap={(label) => setStatus(`${label} — 누름`)}
+        />
+      </div>
+      <div style={{ paddingTop: top.desktop.navToTitle, fontFamily: st.fontFamily, fontSize: st.fontSize, lineHeight: st.lineHeight, fontWeight: st.fontWeight, color: tone(kit, 'fg-neutral', mode) }}>가계부</div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 12, fontSize: 15, lineHeight: '20px', color: tone(kit, 'fg-neutral', mode) }}>
+        <span>이번 달 지출</span>
+        <span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{hidden ? '••••••원' : '1,240,000원'}</span>
       </div>
       <Status kit={kit} mode={mode}>
         {status || '마우스를 올리면 잠시 뒤, Tab 으로 옮기면 바로 이름이 떠요. 손가락으로 누르면 뜨지 않아요.'}
@@ -278,54 +319,45 @@ export function HelpBubblePlayground({ kits, infos }: { kits: Record<Brand, Menu
 }
 
 // ── Tooltip 플레이그라운드 ────────────────────────────────
-export function TooltipPlayground({ kits, ghosts }: { kits: Record<Brand, MenuKit>; ghosts: Record<Brand, ButtonLook> }) {
+export function TooltipPlayground({ kits, tops }: { kits: Record<Brand, MenuKit>; tops: Record<Brand, TopNavLook> }) {
   const [brand, setBrand] = useState<Brand>('desk');
+  const [hidden, setHidden] = useState(false);
   const [mode, setMode] = useState<ViewMode>('auto');
   const [len, setLen] = useState<'short' | 'long'>('short');
   const [side, setSide] = useState<BubbleSide>('top');
   const [stage, setStage] = useState<HTMLDivElement | null>(null);
   const kit = kits[brand];
-  const text = (t: (typeof TOOLBAR)[number]) => (t.value === 'reset' && len === 'long' ? LONG_TIP : t.label);
+  const top = tops[brand];
   const code = [
+    'import { Settings } from "lucide-react"',
+    'import { TopNavigationIconButton } from "@/components/ui/top-navigation"',
     'import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"',
     '',
     '{/* 화면에 한 번 — 이어서 여는 툴팁은 기다리지 않는다 */}',
     '<TooltipProvider>',
     '  <Tooltip>',
     '    <TooltipTrigger asChild>',
-    '      <Button variant="ghost" layout="iconOnly" aria-label="필터 초기화">',
-    '        <RotateCcw />',
-    '      </Button>',
+    '      <TopNavigationIconButton aria-label="설정" onClick={openSettings}><Settings /></TopNavigationIconButton>',
     '    </TooltipTrigger>',
-    `    <TooltipContent${side !== 'top' ? ` side="${side}"` : ''}>${len === 'long' ? LONG_TIP : '필터 초기화'}</TooltipContent>`,
+    `    <TooltipContent${side !== 'top' ? ` side="${side}"` : ''}>${len === 'long' ? LONG_SETTINGS_TIP : '설정'}</TooltipContent>`,
     '  </Tooltip>',
     '</TooltipProvider>',
   ].join('\n');
+  // 머리를 판 가운데 · 툴팁 쪽의 반대편에 둔다 — 고른 위치로 열릴 자리를 남긴다
+  const place = side === 'right' ? { left: 24, top: '50%', transform: 'translateY(-50%)' } : side === 'left' ? { right: 24, top: '50%', transform: 'translateY(-50%)' } : side === 'top' ? { left: '50%', bottom: 24, transform: 'translateX(-50%)' } : { left: '50%', top: 24, transform: 'translateX(-50%)' };
   return (
     <PlayFrame
       stage={
-        <div ref={setStage} data-brand={brand} className="relative w-full max-w-[560px] overflow-hidden rounded-xl" style={{ isolation: 'isolate', height: 260, background: tone(kit, 'bg-layer-default', mode), fontFamily: FONT }}>
-          <div style={{ position: 'absolute', display: 'flex', gap: 4, ...(side === 'right' ? { left: 24, top: '50%', transform: 'translateY(-50%)' } : side === 'left' ? { right: 24, top: '50%', transform: 'translateY(-50%)' } : { left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }) }}>
-            <TooltipGroup>
-              {TOOLBAR.map((t) => (
-                <TooltipControl
-                  key={`${t.value}${side}${len}${brand}`}
-                  look={kit.bubble}
-                  mode={mode}
-                  text={text(t)}
-                  side={side}
-                  container={stage}
-                  trigger={(r) => <ButtonView look={ghosts[brand]} mode={mode} icon={TOOL_ICON[t.value]} ariaLabel={t.label} buttonRef={r.ref} rootProps={r.props} />}
-                />
-              ))}
-            </TooltipGroup>
+        <div ref={setStage} data-brand={brand} className="relative w-full max-w-[560px] overflow-hidden rounded-xl" style={{ isolation: 'isolate', height: 260, background: tone(kit, 'bg-layer-basement', mode), fontFamily: FONT }}>
+          <div style={{ position: 'absolute', borderRadius: 12, background: ncv(top.bg, mode), ...place }}>
+            <HeaderTips kit={kit} top={top} mode={mode} hidden={hidden} onHide={() => setHidden((h) => !h)} tips={{ settings: len === 'long' ? LONG_SETTINGS_TIP : '설정' }} side={side} container={stage} width="max-content" />
           </div>
         </div>
       }
       controls={
         <>
           <Seg
-            label="글(필터 초기화)"
+            label="글(설정)"
             value={len}
             options={[
               ['short', '짧게(이름)'],

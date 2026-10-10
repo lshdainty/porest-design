@@ -77,14 +77,16 @@
 [그림: 아이콘 버튼 툴팁](../../site/components/specs/tooltip.tsx#ex-icon)
 
 ```tsx
+import { Eye, EyeOff } from "lucide-react"
+import { TopNavigationIconButton } from "@/components/ui/top-navigation"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
+{/* Desk 웹 데스크톱 머리의 아이콘 버튼(금액 가리기 · 알림 · 설정) */}
 <Tooltip>
   <TooltipTrigger asChild>
-    {/* 이름은 aria-label — 툴팁은 그 이름을 마우스 · 키보드 사용자에게 보여 준다 */}
-    <Button variant="ghost" layout="iconOnly" aria-label="금액 가리기">
-      <EyeOff />
-    </Button>
+    {/* 이름은 aria-label — 툴팁은 그 이름을 마우스 · 키보드 사용자에게 보여 준다.
+        켜고 끄는 단추는 이름이 고정이라 툴팁도 그대로다 — 켬은 aria-pressed 가 알린다 */}
+    <TopNavigationIconButton aria-label="금액 가리기" aria-pressed={hidden} onClick={toggleHidden}>{hidden ? <EyeOff /> : <Eye />}</TopNavigationIconButton>
   </TooltipTrigger>
   <TooltipContent>금액 가리기</TooltipContent>
 </Tooltip>

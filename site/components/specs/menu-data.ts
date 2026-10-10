@@ -82,10 +82,4 @@ export const SWIPE_SHEET: MenuGroup[] = [{ items: [PIN, EDIT] }, { items: [DELET
 export const LEAVE_RULE = { title: '연차 사용 규정', description: '입사 1년 미만은 한 달에 1일씩 생기고, 1년이 지나면 15일이 생겨요.' };
 export const HIDE_TIP = { title: '금액을 가릴 수 있어요', description: '누르면 화면의 금액이 모두 가려져요.' };
 export const COPY_REASON = '복사할 지난달 예산이 없어요.';
-// 툴팁 — 아이콘 버튼의 이름(aria-label 과 같은 글)
-export const TOOLBAR = [
-  { value: 'search', label: '검색' },
-  { value: 'hide', label: '금액 가리기' },
-  { value: 'reset', label: '필터 초기화' },
-] as const;
-export const LONG_TIP = '고른 기간 · 카테고리 · 결제 수단을 모두 지우고 처음 목록으로 돌아가요.';
+// 툴팁 — 아이콘 버튼의 이름은 Desk 웹 데스크톱 머리(금액 가리기 · 알림 · 설정)의 것을 쓴다(bubble-screens · bubble-demos). 본문 툴바는 제품에 없다

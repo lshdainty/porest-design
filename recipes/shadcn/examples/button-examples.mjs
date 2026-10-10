@@ -474,14 +474,14 @@ export const buttonExamples = [
       "ghost 는 ghostColor 로 글자색만 바꾼다 — 배경 · 누름은 그대로다. neutral(기본) · neutralSubtle(목록 행 · 툴바의 보조 액션) · brand(본문 속 \"자세히 보기\" — 옛 accent · link) · critical(확인 창을 여는 삭제 — 옛 dangerSoft).",
     jsx: `<div className="flex flex-wrap items-center gap-x2">
   <Button variant="ghost">편집</Button>
-  <Button variant="ghost" ghostColor="neutralSubtle">금액 가리기</Button>
+  <Button variant="ghost" ghostColor="neutralSubtle">더보기</Button>
   <Button variant="ghost" ghostColor="brand">자세히 보기</Button>
   <Button variant="ghost" ghostColor="critical">삭제</Button>
 </div>`,
     render: () =>
       surface(`<div style="${GALLERY}">
   ${labeled(btn({ variant: "ghost", children: "편집" }), "neutral")}
-  ${labeled(btn({ variant: "ghost", ghostColor: "neutralSubtle", children: "금액 가리기" }), "neutralSubtle")}
+  ${labeled(btn({ variant: "ghost", ghostColor: "neutralSubtle", children: "더보기" }), "neutralSubtle")}
   ${labeled(btn({ variant: "ghost", ghostColor: "brand", children: "자세히 보기" }), "brand")}
   ${labeled(btn({ variant: "ghost", ghostColor: "critical", children: "삭제" }), "critical")}
 </div>`),

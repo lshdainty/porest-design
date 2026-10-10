@@ -4,6 +4,8 @@ import type { CSSProperties, ReactNode } from 'react';
 import { Figure, Panel } from '../foundations/ui';
 import { buttonLook, type ButtonCombo, type ButtonState } from './button-look';
 import { ButtonView, LoadingDemo, type IconName } from './button-view';
+import { chipLook } from './chip-look';
+import { ChipGroupView, ChipView } from './chip-view';
 import { AlertBox, Card, Field, Heading, KV, Line, Phone, Row, Sheet, Stat, Verdict, WebDialog, WebWindow, cardStack, rc, type Mode } from './kit';
 
 type Fig = (p: { caption?: string }) => ReactNode;
@@ -543,22 +545,13 @@ const ChipCompare: Fig = ({ caption }) => (
         <Cap strong="Button">액션을 실행한다 — 라벨만 봐도 무슨 일이 일어날지 안다</Cap>
       </div>
       <div className="flex flex-1 flex-col items-center gap-4 rounded-xl pk-surface p-6">
-        <div className="flex gap-1.5">
+        {/* 고르기 칩 — chip.yaml 그대로(하나 고르기 · 고른 칩은 짙은 채움). Toggle Group 은 2026-10-09 걷었다 */}
+        <ChipGroupView look={chipLook()}>
           {['전체', '식비', '교통', '쇼핑'].map((t, i) => (
-            <span
-              key={t}
-              className="flex h-8 items-center rounded-full border px-3.5 text-[13px] font-medium"
-              style={{
-                background: i === 1 ? rc('bg-neutral-inverted') : rc('bg-layer-default'),
-                color: i === 1 ? rc('fg-neutral-inverted') : rc('fg-neutral'),
-                borderColor: i === 1 ? 'transparent' : rc('stroke-neutral-weak'),
-              }}
-            >
-              {t}
-            </span>
+            <ChipView key={t} look={chipLook()} state="enabled" selected={i === 1} label={t} />
           ))}
-        </div>
-        <Cap strong="고르기(Toggle Group)">지금 켜진 조건을 보인다 — 둘 이상 묶어서 쓴다</Cap>
+        </ChipGroupView>
+        <Cap strong="고르기(Chip)">지금 켜진 조건을 보인다 — 둘 이상 묶어서 쓴다</Cap>
       </div>
     </div>
   </Panel>

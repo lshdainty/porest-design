@@ -18,7 +18,7 @@
 
 [그림: Field 는 머리 · 입력 · 꼬리로 이뤄진다](../../site/components/specs/field.tsx#anatomy)
 
-| ⓐ Header | 머리 — 라벨, 필수 점 또는 "선택", 오른쪽의 보조 액션. |
+| ⓐ Header | 머리 — 라벨, 필수 점 또는 "선택", 오른쪽의 보조 액션(Slider 는 이 자리에 지금 값). |
 | ⓑ Input | 입력 — Text Input · Textarea · [Select](select.md) · [Input Button](input-button.md), Checkbox · Radio · Select Box 묶음. |
 | ⓒ Footer | 꼬리 — 왼쪽에 설명 또는 오류, 오른쪽에 글자 수. |
 
@@ -42,7 +42,7 @@
 
 ### Input
 
-Field 는 어떤 입력이든 감싼다 — 칸 이름 · 설명 · 오류를 입력마다 따로 짜지 않는다. 지금 들어가는 입력은 Text Input([Input](input.md)) · [Textarea](textarea.md) · 고르는 칸([Select](select.md) · [Input Button](input-button.md))과 Checkbox · Radio · Select Box 묶음이다. 고르는 칸은 버튼이라 라벨을 눌러도 포커스만 옮긴다(목록 · 시트를 열지 않는다).
+Field 는 어떤 입력이든 감싼다 — 칸 이름 · 설명 · 오류를 입력마다 따로 짜지 않는다. 지금 들어가는 입력은 Text Input([Input](input.md) — 인증 코드 칸 [Input OTP](input-otp.md) 도) · [Textarea](textarea.md) · 고르는 칸([Select](select.md) · [Input Button](input-button.md) — [Icon Picker](icon-picker.md) 도) · [Slider](slider.md)와 Checkbox · Radio · Select Box · [Color Swatch](color-swatch.md) 묶음이다. 고르는 칸은 버튼이라 라벨을 눌러도 포커스만 옮긴다(목록 · 시트를 열지 않는다).
 
 [그림: 입력 — 한 줄 · 여러 줄 · 선택 상자 묶음을 같은 둘레로](../../site/components/specs/field.tsx#input-slot)
 

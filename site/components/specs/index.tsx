@@ -16,14 +16,17 @@ import { checkboxFigures } from './checkbox';
 import { contentPlaceholderFigures } from './content-placeholder';
 import { datePickerFigures } from './date-picker';
 import { chipFigures } from './chip';
+import { colorSwatchFigures } from './color-swatch';
 import { dialogFigures } from './dialog';
 import { dividerFigures } from './divider';
 import { fieldFigures } from './field';
 import { floatingActionButtonFigures } from './floating-action-button';
 import { helpBubbleFigures } from './help-bubble';
+import { iconPickerFigures } from './icon-picker';
 import { imageFrameFigures } from './image-frame';
 import { inputFigures } from './input';
 import { inputButtonFigures } from './input-button';
+import { inputOtpFigures } from './input-otp';
 import { listFigures } from './list';
 import { logoTileFigures } from './logo-tile';
 import { menuFigures } from './menu';
@@ -43,6 +46,7 @@ import { sideNavigationFigures } from './side-navigation';
 import { sidePanelFigures } from './side-panel';
 import { scrollFogFigures } from './scroll-fog';
 import { skeletonFigures } from './skeleton';
+import { sliderFigures } from './slider';
 import { segmentedControlFigures } from './segmented-control';
 import { snackbarFigures } from './snackbar';
 import { swipeActionsFigures } from './swipe-actions';
@@ -53,6 +57,7 @@ import { tablePaginationFigures } from './table-pagination';
 import { tabsFigures } from './tabs';
 import { textareaFigures } from './textarea';
 import { timePickerFigures } from './time-picker';
+import { toggleFigures } from './toggle';
 import { tooltipFigures } from './tooltip';
 import { topNavigationFigures } from './top-navigation';
 import { wheelPickerFigures } from './wheel-picker';
@@ -73,14 +78,17 @@ const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactN
   'content-placeholder': contentPlaceholderFigures,
   'date-picker': datePickerFigures,
   chip: chipFigures,
+  'color-swatch': colorSwatchFigures,
   dialog: dialogFigures,
   divider: dividerFigures,
   field: fieldFigures,
   'floating-action-button': floatingActionButtonFigures,
   'help-bubble': helpBubbleFigures,
+  'icon-picker': iconPickerFigures,
   'image-frame': imageFrameFigures,
   input: inputFigures,
   'input-button': inputButtonFigures,
+  'input-otp': inputOtpFigures,
   list: listFigures,
   'logo-tile': logoTileFigures,
   menu: menuFigures,
@@ -100,6 +108,7 @@ const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactN
   'side-panel': sidePanelFigures,
   'scroll-fog': scrollFogFigures,
   skeleton: skeletonFigures,
+  slider: sliderFigures,
   'segmented-control': segmentedControlFigures,
   snackbar: snackbarFigures,
   'swipe-actions': swipeActionsFigures,
@@ -110,6 +119,7 @@ const FIGURES: Record<string, Record<string, (p: { caption?: string }) => ReactN
   tabs: tabsFigures,
   textarea: textareaFigures,
   'time-picker': timePickerFigures,
+  toggle: toggleFigures,
   tooltip: tooltipFigures,
   'top-navigation': topNavigationFigures,
   'wheel-picker': wheelPickerFigures,

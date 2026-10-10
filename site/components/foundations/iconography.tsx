@@ -1,7 +1,7 @@
 // Iconography 페이지 — 크기 단계 · 바닥 · 선 굵기 · 아이콘 버튼 크기는 DESIGN.md Iconography 절에서 읽는다
 import type { ReactNode } from 'react';
 import {
-  Bell, BellOff, Calendar, ChartPie, Check, ChevronRight, CreditCard, Filter, House, ListTodo, Pencil, PiggyBank, Plus,
+  Bell, BellOff, Calendar, ChartPie, Check, ChevronRight, CreditCard, EyeOff, Filter, House, ListTodo, Pencil, PiggyBank, Pin, Plus,
   Receipt, Search, Settings, Star, StickyNote, Trash2, Wallet, X, type LucideIcon,
 } from 'lucide-react';
 import { color, design, proseValue, px, sectionNumber, sectionTable } from '@/lib/design-tokens';
@@ -98,20 +98,41 @@ export function IconSizeFigure() {
 export function IconStateFigure() {
   const on = onStroke(), base = baseStroke();
   const muted = color('fg-neutral-muted'), strong = color('fg-neutral'), brand = color('fg-brand');
+  const size = Math.max(...sizes());
   const item = (I: LucideIcon, c: string, w: number, label: string, sub: string) => (
     <div className="flex flex-col items-center gap-2">
-      <I size={24} strokeWidth={w} color={c} aria-hidden />
+      <I size={size} strokeWidth={w} color={c} aria-hidden />
       <b className="text-[12px] text-[#1A1F2E]">{label}</b>
       <Cap>{sub}</Cap>
     </div>
   );
+  const row = (title: string, children: ReactNode) => (
+    <div className="flex flex-col gap-3">
+      <span className="text-[12px] font-semibold text-[#62697A]">{title}</span>
+      <div className="grid grid-cols-4 gap-4">{children}</div>
+    </div>
+  );
   return (
-    <Figure caption="lucide 에는 채움이 없어, 켜짐 · 선택은 진한 색 + 굵은 선, 꺼짐은 사선이 그어진 -off 아이콘으로 보인다">
-      <div className="grid w-[520px] grid-cols-4 gap-4 rounded-xl bg-white px-6 py-6">
-        {item(Bell, muted, base, '기본', `선 ${base}`)}
-        {item(Bell, strong, on, '켜짐 · 선택', `진한 색 + 선 ${on}`)}
-        {item(Star, brand, on, '브랜드로 강조', `브랜드 색 + 선 ${on}`)}
-        {item(BellOff, muted, base, '꺼짐', `-off 아이콘 · 선 ${base}`)}
+    <Figure caption="lucide 에는 채움이 없어, 켜짐 · 선택은 진한 색 + 굵은 선이다. 꺼짐의 사선(-off)은 기능이 꺼지는 단추만 — 모으기 단추(관심 · 고정)는 같은 아이콘이 흐린 선 · 진한 굵은 선으로 갈린다">
+      <div className="flex w-[520px] flex-col gap-6 rounded-xl bg-white px-6 py-6">
+        {row(
+          '기능이 꺼지는 단추 — 알림 · 금액 가리기',
+          <>
+            {item(Bell, muted, base, '기본', `선 ${base}`)}
+            {item(Bell, strong, on, '켜짐 · 선택', `진한 색 + 선 ${on}`)}
+            {item(BellOff, muted, base, '꺼짐', `-off 아이콘 · 선 ${base}`)}
+            {item(EyeOff, strong, on, '금액을 가림', `지금 상태 eye-off · 선 ${on}`)}
+          </>,
+        )}
+        {row(
+          '모으기 단추 — 관심 · 고정(사선 없이)',
+          <>
+            {item(Star, muted, base, '관심 — 꺼짐', `흐린 색 · 선 ${base}`)}
+            {item(Star, strong, on, '관심 — 켜짐', `진한 색 · 선 ${on}`)}
+            {item(Pin, muted, base, '고정 — 꺼짐', `흐린 색 · 선 ${base}`)}
+            {item(Star, brand, on, '브랜드로 강조', `브랜드 색 + 선 ${on}`)}
+          </>,
+        )}
       </div>
     </Figure>
   );

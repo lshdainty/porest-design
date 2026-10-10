@@ -187,18 +187,23 @@ snackbar.show({ message: "거래를 저장했어요." })`,
   {
     title: "되돌리기 — 액션이 있으면 6초",
     description:
-      "액션은 하나 · 동작 이름(되돌리기 · 잔액 고치기)이고, 있으면 6초 머문다. 14 · 700 · 반전 짝 색(fg-brand-inverted — 짙은 띠 위에서 보이게)이고 누르는 영역은 글 + 좌우 8 × 44, 누르면 그 일을 하고 닫는다. 시간이 지나면 사라지므로 같은 일을 할 다른 길(목록 · 상세)도 둔다. 다시 하면 되는 가벼운 실패는 tone=\"critical\"(circle-alert · fg-critical-inverted), 성공을 눈에 띄게 알릴 때만 positive(circle-check)다 — 아이콘은 상자 24 안에 오른쪽 2(그림 22)라 글이 띠 가장자리에서 40 에 선다. 저장 · 불러오기 실패는 스낵바가 아니라 그 자리의 Callout · Result Section 이다. 한 번에 하나 — 새 show() 는 지금 띠를 바로 바꾼다(미리보기는 두 띠를 따로 그렸다).",
+      "액션은 하나 · 동작 이름(되돌리기 · 잔액 고치기)이고, 있으면 6초 머문다. 14 · 700 · 반전 짝 색(fg-brand-inverted — 짙은 띠 위에서 보이게)이고 누르는 영역은 글 + 좌우 8 × 44, 누르면 그 일을 하고 닫는다. 시간이 지나면 사라지므로 같은 일을 할 다른 길(목록 · 상세)도 둔다. 다시 하면 되는 가벼운 실패는 tone=\"critical\"(circle-alert · fg-critical-inverted) + \"다시 시도\"(같은 요청을 다시 보낸다 — 켜고 끄는 단추는 되돌린 뒤, Toggle 20A), 성공을 눈에 띄게 알릴 때만 positive(circle-check)다 — 아이콘은 상자 24 안에 오른쪽 2(그림 22)라 글이 띠 가장자리에서 40 에 선다. 저장 · 불러오기 실패는 스낵바가 아니라 그 자리의 Callout · Result Section 이다. 한 번에 하나 — 새 show() 는 지금 띠를 바로 바꾼다(미리보기는 두 띠를 따로 그렸다).",
     jsx: `snackbar.show({
   message: "거래를 삭제했어요.",
   action: { label: "되돌리기", onClick: () => restoreTransaction(id) },
 })
 
-// 가볍게 실패 — 다시 하면 되는 일만. 저장 · 불러오기 실패는 그 자리에서 알린다
-snackbar.show({ tone: "critical", message: "관심 종목에 넣지 못했어요. 다시 눌러 주세요." })`,
+// 가볍게 실패 — 다시 하면 되는 일만. 저장 · 불러오기 실패는 그 자리에서 알린다.
+// 켜고 끄는 단추(관심 등록)는 되돌린 뒤 같은 요청을 다시 보내는 "다시 시도" 를 단다(Toggle 20A)
+snackbar.show({
+  tone: "critical",
+  message: "관심 종목에 넣지 못했어요. 다시 시도해주세요.",
+  action: { label: "다시 시도", onClick: () => setWatched(stock.id, true) },
+})`,
     render: () =>
       grid([
         labeled(screen(`${ledger()}${region(snackbar({ message: "거래를 삭제했어요.", action: "되돌리기" }))}`), "액션 — 6초 · 누르면 되돌리고 닫힌다"),
-        labeled(screen(`${ledger()}${region(snackbar({ tone: "critical", message: "관심 종목에 넣지 못했어요. 다시 눌러 주세요." }))}`), "critical — 4초 · circle-alert"),
+        labeled(screen(`${ledger()}${region(snackbar({ tone: "critical", message: "관심 종목에 넣지 못했어요. 다시 시도해주세요.", action: "다시 시도" }))}`), "critical — 다시 시도 · 6초 · circle-alert"),
       ]),
   },
 

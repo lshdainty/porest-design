@@ -52,7 +52,8 @@ function RegionMarks() {
 const MESSAGES: { tone?: 'neutral' | 'positive' | 'critical'; message: string; action?: string }[] = [
   { message: '거래를 저장했어요.' },
   { message: '거래를 삭제했어요.', action: '되돌리기' },
-  { tone: 'critical', message: '관심 종목에 넣지 못했어요. 다시 눌러 주세요.' },
+  // 켜고 끄는 단추(관심 등록)의 실패 — 되돌린 뒤 "다시 시도"(Toggle 20A)
+  { tone: 'critical', message: '관심 종목에 넣지 못했어요. 다시 시도해주세요.', action: '다시 시도' },
 ];
 const Hero: Fig = ({ caption }) => {
   const row = (mode: 'light' | 'dark') => (
@@ -222,7 +223,8 @@ const Layout: Fig = ({ caption }) => {
 const TONE_ROWS: { tone: 'neutral' | 'positive' | 'critical'; message: string; note: (l: SnackbarLook, m: 'light' | 'dark') => string }[] = [
   { tone: 'neutral', message: '거래를 저장했어요.', note: () => 'neutral(기본) — 아이콘 없음' },
   { tone: 'positive', message: '관심 종목에 넣었어요.', note: (l, m) => `positive — fg-positive-inverted ${l.icon.color.positive[m].toUpperCase()}` },
-  { tone: 'critical', message: '관심 종목에 넣지 못했어요.', note: (l, m) => `critical — fg-critical-inverted ${l.icon.color.critical[m].toUpperCase()}` },
+  // 액션 없는 가벼운 실패 — 같은 단추를 한 번 더 누르면 되는 일(관심 등록 실패는 "다시 시도" 가 달려 이 자리에 두지 않는다)
+  { tone: 'critical', message: '계좌번호를 복사하지 못했어요.', note: (l, m) => `critical — fg-critical-inverted ${l.icon.color.critical[m].toUpperCase()}` },
 ];
 const Tones: Fig = ({ caption }) => {
   const panel = (mode: 'light' | 'dark') => (
@@ -468,7 +470,7 @@ const WritingGuide: Fig = ({ caption }) => (
           <div className="flex flex-col gap-2">
             <S message="거래를 저장했어요." />
             <S message="거래를 삭제했어요." action={{ label: '되돌리기' }} />
-            <S tone="critical" message="관심 종목에 넣지 못했어요. 다시 눌러 주세요." />
+            <S tone="critical" message="관심 종목에 넣지 못했어요. 다시 시도해주세요." action={{ label: '다시 시도' }} />
           </div>
         </W>
       </Verdict>

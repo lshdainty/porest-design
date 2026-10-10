@@ -117,13 +117,15 @@ import { HelpBubble, HelpBubbleContent, HelpBubbleTrigger } from "@/components/u
 [그림: 금액 가리기 안내](../../site/components/specs/help-bubble.tsx#ex-close)
 
 ```tsx
+import { Eye, EyeOff } from "lucide-react"
 import { HelpBubble, HelpBubbleAnchor, HelpBubbleContent } from "@/components/ui/help-bubble"
+import { TopNavigationIconButton } from "@/components/ui/top-navigation"
 
-{/* 처음 쓰는 사람에게 한 번 — 닫으면 다시 열지 않는다. Anchor 는 자리만 잡는다(누르면 원래 동작).
+{/* 처음 쓰는 사람에게 한 번 — 닫으면 다시 열지 않는다. Anchor 는 자리만 잡는다(누르면 원래 동작 — 상단 바의 금액 가리기).
     closeOnInteractOutside={false} — 바깥 누르기 · 바깥으로 간 초점(Tab)에 닫히지 않는다. 닫기 버튼 · Esc · 말풍선에서 Tab 으로 나가기로 닫는다 */}
 <HelpBubble defaultOpen={!seen} onOpenChange={(open) => !open && markSeen()}>
   <HelpBubbleAnchor asChild>
-    <Button variant="ghost" layout="iconOnly" aria-label="금액 가리기"><EyeOff /></Button>
+    <TopNavigationIconButton aria-label="금액 가리기" aria-pressed={hidden} onClick={toggleHidden}>{hidden ? <EyeOff /> : <Eye />}</TopNavigationIconButton>
   </HelpBubbleAnchor>
   <HelpBubbleContent title="금액을 가릴 수 있어요" description="누르면 화면의 금액이 모두 가려져요." showCloseButton closeOnInteractOutside={false} side="bottom" />
 </HelpBubble>

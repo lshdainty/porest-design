@@ -4,8 +4,12 @@
  * "코드" 절과 같고, 뒤의 하나(이어서 옮기기)는 md 의 Properties(여는 방식)를 코드로 더 보인다.
  *
  * 말풍선의 모양 BUBBLE · BUBBLE_TITLE · ARROW_PATH · ARROW 는 tooltip.tsx 가 가져다 쓰는 recipes/shadcn/components/ui/help-bubble.tsx 의 상수
- * (BubbleArrow 의 경로 · 클래스)와 글자 하나까지 같아야 한다 — help-bubble-examples.mjs 의 것과도 같다(help-bubble.tsx 를 고치면 셋을 함께).
+ * (BubbleArrow 의 경로 · 클래스)와, CUT 은 tooltip.tsx 의 상수와 글자 하나까지 같아야 한다 — help-bubble-examples.mjs 의 것과도 같다(help-bubble.tsx 를
+ * 고치면 셋을 함께).
  * 트리거 BUTTON_* 는 button.tsx 의 cva 와 같다(button-examples.mjs 의 것 — 이 파일이 쓰는 변형 · 크기 · 배치와 그에 걸리는 compound 만 옮겼다).
+ * 금액 가리기 · 알림 · 설정은 Desk 웹 데스크톱 머리의 아이콘 버튼(TopNavigationIconButton — 44 · 24)이다. 금액 가리기는 켜고 끄는 단추라
+ * 이름 고정 · aria-pressed · 지금 상태 아이콘이고 끔도 fg-neutral 이다 — TN_* 는 top-navigation.tsx 의 상수(top-navigation-examples.mjs 의 것),
+ * NB_TARGET 은 notification-badge.tsx 의 것과 같다(2026-10-09).
  * 규칙은 specs/components/tooltip.md, 수치 원본은 specs/components/help-bubble.yaml 의 opens: hover.
  *
  * Preview 는 정적 HTML 이다 — 페이지의 Tailwind v4 browser CDN 이 클래스를 utility 로 만든다.
@@ -37,14 +41,19 @@ const BUBBLE = [
   "data-[instant]:animate-none!",
 ].join(" ");
 
-// 글 — Help Bubble 의 제목 자리(t3 13 / 18 · 700). 레시피는 cn(BUBBLE, BUBBLE_TITLE, className)
+// 글 — Help Bubble 의 제목 자리(t3 13 / 18 · 700). 레시피는 cn(BUBBLE, BUBBLE_TITLE, CUT, className)
 const BUBBLE_TITLE = "m-0 block whitespace-pre-line text-t3 font-bold";
+
+// ── tooltip.tsx 의 상수와 같은 값 ─────────────────────────────────────────
+
+// 걷힌 툴팁 — 흐려지며 닫히던 중에 다른 툴팁이 열리면 남은 사라짐을 보이지 않게 둔다(data-cut — 한 번에 하나만 보인다)
+const CUT = "data-[cut]:invisible";
 
 // 화살표 — 12 × 8, 끝 모서리 2(SEED getHelpBubbleArrowTipPath). BubbleArrow 의 경로 · 클래스
 const ARROW_PATH = "M0,0 H12 L8,6 Q6,8 4,6 Z";
 const ARROW = "block fill-bg-neutral-inverted";
 
-// ── button.tsx 의 cva 와 같은 값 — 아이콘 버튼(ghost · medium · 아이콘만) · 막힌 버튼(neutralWeak · medium) ──
+// ── button.tsx 의 cva 와 같은 값 — 막힌 버튼(neutralWeak · medium · 글) ──
 
 const BUTTON_BASE = [
   "relative inline-flex items-center justify-center whitespace-nowrap font-sans font-bold",
@@ -62,23 +71,39 @@ const BUTTON_VARIANTS = {
   variant: {
     neutralWeak:
       "bg-bg-neutral-weak text-fg-neutral hover:bg-bg-neutral-weak-pressed active:bg-bg-neutral-weak-pressed aria-busy:bg-bg-neutral-weak-pressed [--progress-track:var(--color-gray-500)] [--progress-range:var(--color-fg-neutral)]",
-    ghost:
-      "bg-transparent text-fg-neutral hover:bg-bg-layer-default-pressed active:bg-bg-layer-default-pressed aria-busy:bg-bg-layer-default-pressed disabled:bg-transparent [--progress-track:var(--color-gray-500)] [--progress-range:var(--color-fg-neutral)]",
   },
   size: {
     medium: "h-10 rounded-r2 [--press-basis:40] [--progress-size:16px]",
   },
-  layout: { withText: "", iconOnly: "" },
+  layout: { withText: "" },
   ghostColor: { neutral: "", neutralSubtle: "", brand: "", critical: "" },
   flush: { left: "", right: "" },
 };
 
 const BUTTON_COMPOUND = [
   { size: "medium", layout: "withText", className: "px-x4 py-x2_5 gap-x1_5 text-t4 [&_svg]:size-4" },
-  { size: "medium", layout: "iconOnly", className: "w-10 p-x2_5 [&_svg]:size-[18px]" },
 ];
 
 const BUTTON_DEFAULTS = { variant: "neutralSolid", size: "medium", layout: "withText", ghostColor: "neutral" };
+
+// ── top-navigation.tsx 의 상수와 같은 값 — 상단 바 아이콘 버튼(44 · 24) · notification-badge.tsx 의 TARGET ──
+
+const TN_PRESS_TRANSITION =
+  "[transition:background-color_var(--motion-duration-color-transition)_var(--motion-ease-easing),scale_var(--motion-duration-pressed-scale)_var(--motion-ease-pressed-scale)]";
+const TN_FOCUS_INSIDE = "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-stroke-focus-ring";
+// 아이콘 버튼 — 상자 44 = 누르는 영역 · 아이콘 24, 버튼끼리 붙는다
+const TN_ICON_BUTTON = [
+  "relative flex size-[44px] shrink-0 cursor-pointer items-center justify-center rounded-r2 border-0 bg-transparent p-0 text-fg-neutral",
+  "[&_svg]:size-6 [&_svg]:shrink-0",
+  // 켜고 끄는 단추(aria-pressed) — 끔 선 2 · 켬 선 2.5, 색은 그대로 fg-neutral(19B). aria-pressed 가 없는 버튼의 선은 건드리지 않는다
+  "aria-[pressed=false]:[&_svg]:[stroke-width:2] aria-pressed:[&_svg]:[stroke-width:2.5]",
+  TN_PRESS_TRANSITION,
+  "hover:bg-bg-layer-default-pressed active:bg-bg-layer-default-pressed active:[scale:calc(1-2/44)] motion-reduce:active:[scale:1]",
+  TN_FOCUS_INSIDE,
+  "disabled:cursor-not-allowed disabled:bg-transparent disabled:text-fg-disabled disabled:[scale:1]",
+].join(" ");
+// 아이콘 · 점 자리(NotificationBadge 의 TARGET — 점이 없어도 감싼다)
+const NB_TARGET = "relative inline-flex";
 
 // ── cva · cn 풀이 ─────────────────────────────────────────────────────────
 
@@ -118,7 +143,6 @@ function splitVariants(cls) {
 }
 
 // cn()(twMerge) 처럼 같은 속성을 다시 쓴 클래스는 뒤의 것만 남긴다. 이 파일이 합치는 클래스에 나오는 무리만 안다 — 배경 · 임의 속성([prop:…]).
-// 그래서 ghost 버튼의 disabled:bg-transparent 가 바탕의 disabled:bg-bg-disabled 를 지운다(Button 은 cn(buttonVariants(…)) 이다)
 const GROUPS = [[/^bg-/, "bg"]];
 
 function merge(classList) {
@@ -151,11 +175,9 @@ const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replac
 const svg = (paths) =>
   `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
 const ICONS = {
-  search: svg('<path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/>'),
-  eyeOff: svg(
-    '<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/>',
-  ),
-  rotateCcw: svg('<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>'),
+  eye: svg('<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>'),
+  bell: svg('<path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/>'),
+  settings: svg('<path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/>'),
 };
 
 // 미리보기 틀 — 트리거 위에 툴팁. isolation 이 z-(--z-tooltip) 을 틀 안에 가두고, container-type 이 가용 폭(100cqw)을 틀 폭으로 잰다
@@ -175,23 +197,25 @@ function tooltipContent({ uid, text, instant = false }) {
     `data-state="${instant ? "instant-open" : "delayed-open"}"`,
     'data-slot="tooltip-content"',
     instant && 'data-instant=""',
-    `class="${BUBBLE} ${BUBBLE_TITLE}"`,
+    `class="${BUBBLE} ${BUBBLE_TITLE} ${CUT}"`,
     'style="--radix-popper-available-width:calc(100cqw - 32px);"',
   ]);
   const arrow = `<span style="position:absolute; left:calc(50% - 6px); bottom:0px; transform:translateY(100%);"><svg aria-hidden="true" width="12" height="8" viewBox="0 0 12 8" preserveAspectRatio="none" data-slot="tooltip-arrow" class="${ARROW}"><path d="${ARROW_PATH}"/></svg></span>`;
   return `<div data-radix-popper-content-wrapper="" style="position:absolute; left:50%; bottom:calc(100% + 12px); transform:translateX(-50%); min-width:max-content; z-index:var(--z-tooltip);"><div ${content}>${esc(text)}${arrow}<span id="${uid}" role="tooltip" style="${VISUALLY_HIDDEN}">${esc(text)}</span></div></div>`;
 }
 
-// <TooltipTrigger asChild><Button variant="ghost" layout="iconOnly" aria-label> — open 이면 aria-describedby 로 툴팁을 잇는다
-function iconButton({ uid, icon, name, open = false, instant = false }) {
+// <TooltipTrigger asChild><TopNavigationIconButton aria-label> — 상자 44 · 아이콘 24(아이콘은 NotificationBadge 의 자리에 든다).
+// open 이면 aria-describedby 로 툴팁을 잇는다. pressed 가 있으면 켜고 끄는 단추(aria-pressed)
+function iconButton({ uid, icon, name, open = false, instant = false, pressed }) {
   const trigger = `<button ${attrs([
     'type="button"',
+    'data-slot="tooltip-trigger"',
+    `class="${TN_ICON_BUTTON}"`,
+    `aria-label="${esc(name)}"`,
+    pressed != null && `aria-pressed="${pressed ? "true" : "false"}"`,
     open && `aria-describedby="${uid}"`,
     `data-state="${open ? (instant ? "instant-open" : "delayed-open") : "closed"}"`,
-    'data-slot="tooltip-trigger"',
-    `class="${button({ variant: "ghost", layout: "iconOnly" })}"`,
-    `aria-label="${esc(name)}"`,
-  ])}>${icon}</button>`;
+  ])}><span aria-hidden="true" data-slot="notification-badge-target" class="${NB_TARGET}">${icon}</span></button>`;
   return `<span style="position:relative; display:inline-flex;">${trigger}${open ? tooltipContent({ uid, text: name, instant }) : ""}</span>`;
 }
 
@@ -202,18 +226,21 @@ export const tooltipExamples = [
     title: "아이콘 버튼의 이름",
     description:
       "툴팁은 마우스를 올리거나 키보드 초점이 오면 트리거 옆에 뜨는 짧은 설명 — 보조다. 아이콘 버튼의 이름은 늘 aria-label 에 두고, 툴팁은 그 이름을 마우스 · 키보드 사용자에게 보여 줄 뿐 대신하지 않는다(같은 글). 모양은 Help Bubble 과 한 벌이다 — 짙은 바탕(다크에서는 밝은 바탕) · 모서리 12 · 위아래 10 · 좌우 12 · 글 13/18 · 700, 화살표 12 × 8 · 트리거 위 4(몸통과는 12). 마우스를 올리면 200ms 뒤에 열고, 트리거와 말풍선을 모두 벗어나면 100ms 뒤에 닫는다 — 말풍선 위로 옮겨도 닫히지 않는다(WCAG 1.4.13). 키보드 초점이면 바로 열고, 손가락으로 누르면 열지 않는다. 네이티브 title 은 쓰지 않는다.",
-    jsx: `import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+    jsx: `import { Eye, EyeOff } from "lucide-react"
+import { TopNavigationIconButton } from "@/components/ui/top-navigation"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
+{/* Desk 웹 데스크톱 머리의 아이콘 버튼(금액 가리기 · 알림 · 설정) */}
 <Tooltip>
   <TooltipTrigger asChild>
-    {/* 이름은 aria-label — 툴팁은 그 이름을 마우스 · 키보드 사용자에게 보여 준다 */}
-    <Button variant="ghost" layout="iconOnly" aria-label="금액 가리기">
-      <EyeOff />
-    </Button>
+    {/* 이름은 aria-label — 툴팁은 그 이름을 마우스 · 키보드 사용자에게 보여 준다.
+        켜고 끄는 단추는 이름이 고정이라 툴팁도 그대로다 — 켬은 aria-pressed 가 알린다 */}
+    <TopNavigationIconButton aria-label="금액 가리기" aria-pressed={hidden} onClick={toggleHidden}>{hidden ? <EyeOff /> : <Eye />}</TopNavigationIconButton>
   </TooltipTrigger>
   <TooltipContent>금액 가리기</TooltipContent>
 </Tooltip>`,
-    render: () => `<div style="${STAGE}">${iconButton({ uid: "tooltip-ex-icon", icon: ICONS.eyeOff, name: "금액 가리기", open: true })}</div>`,
+    // 데스크톱 머리의 금액 가리기(끔 — 금액이 보이니 eye · 이름 고정 + aria-pressed · 끔도 fg-neutral 선 2)
+    render: () => `<div style="${STAGE}">${iconButton({ uid: "tooltip-ex-icon", icon: ICONS.eye, name: "금액 가리기", open: true, pressed: false })}</div>`,
   },
 
   {
@@ -235,35 +262,38 @@ export const tooltipExamples = [
   {
     title: "이어서 옮기기 — TooltipProvider",
     description:
-      "화면에 TooltipProvider 를 한 번 두면, 하나가 열려 있거나 닫힌 지 300ms 안에 옆 트리거로 옮긴 툴팁은 기다리지 않고 모션 없이 바로 연다(data-instant) — 앞의 툴팁은 그때 바로 닫히고 한 번에 하나만 열린다. 그림은 검색에서 옆으로 옮겨 필터 초기화의 툴팁이 바로 열린 순간이다. 지연 값(200 · 100 · 300ms)은 고정이라 바꾸지 않는다. 글자가 이미 보이는 버튼에는 같은 말의 툴팁을 두지 않는다.",
-    jsx: `import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+      "화면에 TooltipProvider 를 한 번 두면, 하나가 열려 있거나 닫힌 지 300ms 안에 옆 트리거로 옮긴 툴팁은 기다리지 않고 모션 없이 바로 연다(data-instant) — 앞의 툴팁은 그때 바로 닫히고 한 번에 하나만 열린다. 그림은 데스크톱 머리의 금액 가리기에서 옆으로 옮겨 알림의 툴팁이 바로 열린 순간이다. 지연 값(200 · 100 · 300ms)은 고정이라 바꾸지 않는다. 글자가 이미 보이는 버튼에는 같은 말의 툴팁을 두지 않는다.",
+    jsx: `import { Bell, Eye, EyeOff, Settings } from "lucide-react"
+import { TopNavigationIconButton } from "@/components/ui/top-navigation"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
-{/* 화면에 한 번 — 옆 트리거로 옮기면 기다리지 않는다 */}
+{/* 화면에 한 번 — 옆 트리거로 옮기면 기다리지 않는다. Desk 웹 데스크톱 머리의 아이콘 버튼(금액 가리기 · 알림 · 설정) */}
 <TooltipProvider>
   <Tooltip>
     <TooltipTrigger asChild>
-      <Button variant="ghost" layout="iconOnly" aria-label="검색"><Search /></Button>
-    </TooltipTrigger>
-    <TooltipContent>검색</TooltipContent>
-  </Tooltip>
-  <Tooltip>
-    <TooltipTrigger asChild>
-      <Button variant="ghost" layout="iconOnly" aria-label="금액 가리기"><EyeOff /></Button>
+      <TopNavigationIconButton aria-label="금액 가리기" aria-pressed={hidden} onClick={toggleHidden}>{hidden ? <EyeOff /> : <Eye />}</TopNavigationIconButton>
     </TooltipTrigger>
     <TooltipContent>금액 가리기</TooltipContent>
   </Tooltip>
   <Tooltip>
     <TooltipTrigger asChild>
-      <Button variant="ghost" layout="iconOnly" aria-label="필터 초기화"><RotateCcw /></Button>
+      <TopNavigationIconButton aria-label="알림"><Bell /></TopNavigationIconButton>
     </TooltipTrigger>
-    <TooltipContent>필터 초기화</TooltipContent>
+    <TooltipContent>알림</TooltipContent>
+  </Tooltip>
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <TopNavigationIconButton aria-label="설정"><Settings /></TopNavigationIconButton>
+    </TooltipTrigger>
+    <TooltipContent>설정</TooltipContent>
   </Tooltip>
 </TooltipProvider>`,
+    // 상단 바 아이콘 버튼은 서로 붙는다(사이 0) — 금액 가리기에서 옆으로 옮겨 알림의 툴팁이 바로 열린 순간
     render: () =>
-      `<div style="${STAGE}"><div style="display:flex; gap:var(--spacing-x1);">${[
-        iconButton({ uid: "tooltip-ex-chain-search", icon: ICONS.search, name: "검색" }),
-        iconButton({ uid: "tooltip-ex-chain-hide", icon: ICONS.eyeOff, name: "금액 가리기" }),
-        iconButton({ uid: "tooltip-ex-chain-reset", icon: ICONS.rotateCcw, name: "필터 초기화", open: true, instant: true }),
+      `<div style="${STAGE}"><div style="display:flex;">${[
+        iconButton({ uid: "tooltip-ex-chain-hide", icon: ICONS.eye, name: "금액 가리기", pressed: false }),
+        iconButton({ uid: "tooltip-ex-chain-bell", icon: ICONS.bell, name: "알림", open: true, instant: true }),
+        iconButton({ uid: "tooltip-ex-chain-settings", icon: ICONS.settings, name: "설정" }),
       ].join("")}</div></div>`,
   },
 ];

@@ -16,7 +16,8 @@ import { BUBBLE, BUBBLE_POSITION, BUBBLE_TITLE, BubbleArrow } from "@/components
  *
  * 여는 방식 — 툴팁은 마우스 · 키보드의 보조다. 손가락으로는 열지 않는다(이름 · 막힌 이유는 툴팁에만 두지 않는다).
  *   - 마우스를 올리면 200ms 뒤 연다. 하나가 열려 있거나 닫힌 지 300ms 안이면 옆 트리거는 기다리지 않고 모션 없이 바로 연다 —
- *     앞의 툴팁은 그때 바로(모션 없이) 닫는다. 한 번에 하나만 열린다.
+ *     앞의 툴팁은 그때 바로(모션 없이) 닫는다. 이미 흐려지며 닫히던 중이어도(초점이 떠남 · 마우스가 떠난 뒤 100ms) 그 자리에서
+ *     걷는다(data-cut — 보이지 않게 두고 남은 사라짐이 끝나면 Radix 가 지운다). 한 번에 하나만 보인다.
  *   - 트리거와 말풍선을 모두 벗어나면 100ms 뒤 닫는다 — 말풍선 위로 옮기는 동안은 열어 둔다(WCAG 1.4.13). 키보드로 연 툴팁은
  *     포인터가 지나가도 닫지 않는다(초점이 떠나면 닫는다).
  *   - 키보드 초점(focus-visible)이 오면 바로 연다. 손가락 · 마우스로 눌러 생긴 초점에는 열지 않는다.
@@ -61,9 +62,10 @@ function useOpenState(prop: boolean | undefined, defaultOpen: boolean | undefine
   return [value, setOpen] as const;
 }
 
-// 지금 열린 툴팁 — 하나가 열리면 앞의 것을 바로(모션 없이) 닫는다. 마지막으로 닫힌 시각은 이어 여는 툴팁이 모션을 건너뛸지 정한다
-type Owner = { close: () => void };
-const shown: { owner: Owner | null; closedAt: number } = { owner: null, closedAt: Number.NEGATIVE_INFINITY };
+// 지금 열린 툴팁 — 하나가 열리면 앞의 것을 바로(모션 없이) 닫는다. 마지막으로 닫힌 시각은 이어 여는 툴팁이 모션을 건너뛸지 정한다.
+// fading 은 흐려지며 닫히는 중인 툴팁 — 다른 툴팁이 열리면 남은 사라짐을 걷는다(cut — 둘이 함께 보이지 않게)
+type Owner = { close: () => void; cut: () => void };
+const shown: { owner: Owner | null; closedAt: number; fading: Owner | null } = { owner: null, closedAt: Number.NEGATIVE_INFINITY, fading: null };
 
 // ── Provider ─────────────────────────────────────────────────
 const ProviderContext = React.createContext(false);
@@ -85,6 +87,8 @@ type CloseReason = "escape" | "blur" | "press";
 type TooltipContextValue = {
   /** 이어서 열렸다 · 바로 닫힌다 — 모션 없이 */
   instant: boolean;
+  /** 흐려지며 닫히던 중에 다른 툴팁이 열렸다 — 남은 사라짐 없이 보이지 않게 */
+  cut: boolean;
   /** 포인터가 트리거 · 말풍선에 들어왔다 · 나갔다 */
   hover: (part: "trigger" | "content", inside: boolean) => void;
   /** 다음 닫기 요청의 까닭 — 같은 처리 안에서 Radix 가 부르는 닫기에만 붙는다 */
@@ -115,6 +119,7 @@ function Tooltip({ open: openProp, defaultOpen, onOpenChange, disabled = false, 
   const inProvider = React.useContext(ProviderContext);
   const [open, setOpenState] = useOpenState(openProp, defaultOpen, onOpenChange);
   const [instant, setInstant] = React.useState(false);
+  const [cut, setCut] = React.useState(false);
   const openRef = React.useRef(open);
   React.useLayoutEffect(() => {
     openRef.current = open;
@@ -128,7 +133,7 @@ function Tooltip({ open: openProp, defaultOpen, onOpenChange, disabled = false, 
   const focusRequestRef = React.useRef(false);
   const openTimerRef = React.useRef<number | undefined>(undefined);
   const timerRef = React.useRef<number | undefined>(undefined);
-  const owner = React.useRef<Owner>({ close: () => undefined }).current;
+  const owner = React.useRef<Owner>({ close: () => undefined, cut: () => undefined }).current;
   const disabledRef = React.useRef(disabled);
   React.useLayoutEffect(() => {
     disabledRef.current = disabled;
@@ -144,6 +149,9 @@ function Tooltip({ open: openProp, defaultOpen, onOpenChange, disabled = false, 
         shown.owner = null;
         shown.closedAt = Date.now();
       }
+      // 흐려지며 닫힌다 — 그동안 다른 툴팁이 열리면 걷힌다. 바로 닫으면(jump) 걷을 것이 없다
+      if (!jump) shown.fading = owner;
+      else if (shown.fading === owner) shown.fading = null;
       setInstant(jump);
       setOpenState(false);
     },
@@ -151,6 +159,7 @@ function Tooltip({ open: openProp, defaultOpen, onOpenChange, disabled = false, 
   );
   React.useLayoutEffect(() => {
     owner.close = () => hide(true);
+    owner.cut = () => setCut(true);
   }, [owner, hide]);
 
   const show = React.useCallback(() => {
@@ -160,8 +169,13 @@ function Tooltip({ open: openProp, defaultOpen, onOpenChange, disabled = false, 
     const other = shown.owner && shown.owner !== owner ? shown.owner : null;
     const jump = other !== null || Date.now() - shown.closedAt < SKIP_DELAY;
     other?.close();
+    // 흐려지며 닫히던 툴팁(초점이 떠남 · 마우스가 떠난 뒤)은 남은 사라짐 없이 걷는다 — 열린 것과 함께 보이지 않게
+    const fading = shown.fading && shown.fading !== owner ? shown.fading : null;
+    shown.fading = null;
+    fading?.cut();
     shown.owner = owner;
     openRef.current = true;
+    setCut(false);
     setInstant(jump);
     setOpenState(true);
   }, [owner, setOpenState]);
@@ -195,9 +209,12 @@ function Tooltip({ open: openProp, defaultOpen, onOpenChange, disabled = false, 
     }, OPEN_DELAY);
   };
 
+  // 걷힘은 닫혀 있는 동안만 — 부르는 쪽이 open 으로 다시 열어도 보인다
+  const cutShown = cut && !open;
   const value = React.useMemo<TooltipContextValue>(
     () => ({
       instant,
+      cut: cutShown,
       hover: (part, inside) => {
         hoverRef.current[part] = inside;
         // 트리거에 새로 올렸다 · 떠났다 — 누름으로 거둔 열기를 푼다. 떠나면 기다리던 열기도 거둔다
@@ -233,7 +250,7 @@ function Tooltip({ open: openProp, defaultOpen, onOpenChange, disabled = false, 
         window.clearTimeout(openTimerRef.current);
       },
     }),
-    [instant, hide],
+    [instant, cutShown, hide],
   );
 
   // 막히면 바로 닫는다 · 사라지면 지운다
@@ -245,6 +262,7 @@ function Tooltip({ open: openProp, defaultOpen, onOpenChange, disabled = false, 
       window.clearTimeout(timerRef.current);
       window.clearTimeout(openTimerRef.current);
       if (shown.owner === owner) shown.owner = null;
+      if (shown.fading === owner) shown.fading = null;
     },
     [owner],
   );
@@ -311,6 +329,10 @@ const TooltipTrigger = React.forwardRef<
 });
 TooltipTrigger.displayName = "TooltipTrigger";
 
+// 걷힌 툴팁 — 남은 사라짐(흐려짐)을 보이지 않게 둔다. 사라짐 모션 자체는 그대로 끝까지 돌아 Radix 가 그 끝에 지운다 — 모션을 없애면(animate-none)
+// Radix Presence 가 지금 모션의 이름이 none 이라 끝을 알아채지 못해 말풍선을 지우지 않는다
+const CUT = "data-[cut]:invisible";
+
 export interface TooltipContentProps
   extends Omit<React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>, "sideOffset" | "arrowPadding" | "collisionPadding"> {}
 
@@ -323,10 +345,11 @@ const TooltipContent = React.forwardRef<React.ElementRef<typeof TooltipPrimitive
           ref={ref}
           data-slot="tooltip-content"
           data-instant={ctx.instant ? "" : undefined}
+          data-cut={ctx.cut ? "" : undefined}
           side={side}
           align={align}
           {...BUBBLE_POSITION}
-          className={cn(BUBBLE, BUBBLE_TITLE, className)}
+          className={cn(BUBBLE, BUBBLE_TITLE, CUT, className)}
           onPointerEnter={(e) => {
             onPointerEnter?.(e);
             if (e.pointerType !== "touch") ctx.hover("content", true);

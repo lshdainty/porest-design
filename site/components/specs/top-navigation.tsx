@@ -7,7 +7,7 @@ import { Figure, Panel as Plate } from '../foundations/ui';
 import { buttonLook } from './button-look';
 import { ButtonView } from './button-view';
 import { Card, Verdict, rc, type Mode } from './kit';
-import { TopNavPlayground } from './nav-playground';
+import { DeskHeaderLive, TopNavPlayground } from './nav-playground';
 import {
   Arrow,
   Band,
@@ -289,7 +289,7 @@ const TrailingGuide: Fig = ({ caption }) => {
   const four: TopAction[] = [
     { icon: 'search', label: '검색' },
     { icon: 'bell', label: '알림' },
-    { icon: 'eye-off', label: '금액 가리기' },
+    { icon: 'eye', label: '금액 가리기', pressed: false },
     { icon: 'settings', label: '설정' },
   ];
   return (
@@ -643,7 +643,8 @@ const ExStandard: Fig = ({ caption }) => (
 const ExDesktop: Fig = ({ caption }) => (
   <CodePreview caption={caption} w={720} pad={16} bg="bg-layer-basement" padX={0}>
     <div style={{ paddingBottom: 12 }}>
-      <Bar type="desktop" actions={[{ icon: 'eye-off', label: '금액 가리기' }, { icon: 'bell', label: '알림, 새 알림 있음', notification: true }, { icon: 'settings', label: '설정' }]} primary={{ label: '내역 추가', icon: 'plus' }} live as="header" />
+      {/* 금액 가리기는 켜고 끄는 단추 — 누르면 아이콘이 지금 상태(eye ↔ eye-off)로, 이름은 그대로 · aria-pressed(top-navigation.md 코드) */}
+      <DeskHeaderLive look={NK('desk').top} />
       <ScreenTitle>가계부</ScreenTitle>
     </div>
   </CodePreview>

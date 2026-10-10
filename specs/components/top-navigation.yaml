@@ -76,8 +76,10 @@ rules:
         size: { value: 44px, note: "보이는 상자 = 누르는 영역(SEED top-navigation-icon-button). 본문 아이콘 버튼(Button medium iconOnly 40 · 18)과 따로" }
         radius: { value: $radius-r2, note: "rootage r2 8 — 누를 때만 보인다" }
         iconSize: { value: 24px, note: "lucide 선 아이콘(v106 — 상단은 선 아이콘)" }
-        color: $color-fg-neutral
-        background: { value: transparent, note: "누를 때 · 마우스를 올릴 때만 칠한다" }
+        strokeWidth: { value: 2px, note: "lucide 기본" }
+        strokeWidthOn: { value: 2.5px, note: "켜고 끄는 단추(aria-pressed=\"true\" — 금액 가리기)의 켬(v106). 끔은 2" }
+        color: { value: $color-fg-neutral, note: "켜고 끄는 단추도 켬 · 끔 모두 이 색 — 끔을 흐리게(Toggle 의 fg-neutral-muted) 두지 않아 아이콘 줄이 고르다. 켬 · 끔은 굵기(2 · 2.5)와 아이콘(eye · eye-off)으로만 갈린다(사용자 결정 2026-10-09 19B)" }
+        background: { value: transparent, note: "누를 때 · 마우스를 올릴 때만 칠한다 — 켜고 끄는 단추도 켬 · 끔에 따라 바뀌지 않는다" }
         touchTarget: { value: 44 × 44, note: "AA ✓ · AAA ✓ — 보이지 않는 여백을 더하지 않는다" }
         transitionProperty: background-color
         transitionDuration: $motion-duration-color-transition

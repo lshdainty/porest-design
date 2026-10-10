@@ -60,6 +60,8 @@ const FOCUS_INSIDE = "focus-visible:outline-2 focus-visible:-outline-offset-2 fo
 const ICON_BUTTON = [
   "relative flex size-[44px] shrink-0 cursor-pointer items-center justify-center rounded-r2 border-0 bg-transparent p-0 text-fg-neutral",
   "[&_svg]:size-6 [&_svg]:shrink-0",
+  // 켜고 끄는 단추(aria-pressed) — 끔 선 2 · 켬 선 2.5, 색은 그대로 fg-neutral(19B). aria-pressed 가 없는 버튼의 선은 건드리지 않는다
+  "aria-[pressed=false]:[&_svg]:[stroke-width:2] aria-pressed:[&_svg]:[stroke-width:2.5]",
   PRESS_TRANSITION,
   "hover:bg-bg-layer-default-pressed active:bg-bg-layer-default-pressed active:[scale:calc(1-2/44)] motion-reduce:active:[scale:1]",
   FOCUS_INSIDE,
@@ -161,7 +163,7 @@ const ICONS = {
   menu: svg('<line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/>'),
   search: svg('<path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/>'),
   bell: svg('<path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/>'),
-  eyeOff: svg('<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/>'),
+  eye: svg('<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>'),
   settings: svg('<path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/>'),
   plus: svg('<path d="M5 12h14"/><path d="M12 5v14"/>'),
   share: svg('<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/>'),
@@ -292,14 +294,15 @@ import { TopNavigation, TopNavigationActions, TopNavigationIconButton, TopNaviga
   {
     title: "데스크톱 머리 — Desk",
     description:
-      "768 이상의 Desk 웹은 사이드바 오른쪽 · 본문 위에 type=\"desktop\" 머리를 둔다 — 높이 56 · 선 없음, 왼쪽은 본문 여백 32 에서 시작하고 맨 끝 아이콘 버튼의 상자는 화면 끝에서 6 이다(폰과 같은 규칙). 오른쪽에 주 버튼 하나(TopNavigationPrimaryButton — Button brandSolid small 36 그대로 + 첫 아이콘 버튼과 8)와 아이콘 버튼 3개까지(금액 가리기 · 알림 · 설정)다. 머리에는 제목을 두지 않는다 — 화면 제목은 본문 맨 위 ScreenTitle(h1 · text-screen-title 26/35 · 700, 머리 아래 spacing-nav-to-title 20)이다. 머리는 header 라 main 밖에 둔다. HR 은 데스크톱 머리를 두지 않는다 — 접기 버튼은 사이드바 머리에, 테마는 설정에 있다. 미리보기는 사이드바를 뺀 머리 · 본문이다.",
-    jsx: `import { Bell, EyeOff, Plus, Settings } from "lucide-react"
+      "768 이상의 Desk 웹은 사이드바 오른쪽 · 본문 위에 type=\"desktop\" 머리를 둔다 — 높이 56 · 선 없음, 왼쪽은 본문 여백 32 에서 시작하고 맨 끝 아이콘 버튼의 상자는 화면 끝에서 6 이다(폰과 같은 규칙). 오른쪽에 주 버튼 하나(TopNavigationPrimaryButton — Button brandSolid small 36 그대로 + 첫 아이콘 버튼과 8)와 아이콘 버튼 3개까지(금액 가리기 · 알림 · 설정)다. 금액 가리기는 켜고 끄는 단추다 — 이름은 고정하고 aria-pressed 를 주며 아이콘은 지금 상태(보이면 eye · 가렸으면 eye-off)이고, 켬은 선 2.5 · 끔은 선 2 이며 끔도 이웃 버튼과 같은 fg-neutral 이다(Toggle 의 흐린 끔은 상단 바에서 쓰지 않는다). 머리에는 제목을 두지 않는다 — 화면 제목은 본문 맨 위 ScreenTitle(h1 · text-screen-title 26/35 · 700, 머리 아래 spacing-nav-to-title 20)이다. 머리는 header 라 main 밖에 둔다. HR 은 데스크톱 머리를 두지 않는다 — 접기 버튼은 사이드바 머리에, 테마는 설정에 있다. 미리보기는 사이드바를 뺀 머리 · 본문이다.",
+    jsx: `import { Bell, Eye, EyeOff, Plus, Settings } from "lucide-react"
 import { ScreenTitle, TopNavigation, TopNavigationActions, TopNavigationIconButton, TopNavigationPrimaryButton } from "@/components/ui/top-navigation"
 
 <TopNavigation type="desktop">
   <TopNavigationActions>
     <TopNavigationPrimaryButton onClick={openAddTransaction}><Plus />내역 추가</TopNavigationPrimaryButton>
-    <TopNavigationIconButton aria-label="금액 가리기" aria-pressed={hidden} onClick={toggleHidden}><EyeOff /></TopNavigationIconButton>
+    {/* 켜고 끄는 단추 — 이름은 고정, 아이콘은 지금 상태(가렸으면 eye-off — Toggle) */}
+    <TopNavigationIconButton aria-label="금액 가리기" aria-pressed={hidden} onClick={toggleHidden}>{hidden ? <EyeOff /> : <Eye />}</TopNavigationIconButton>
     <TopNavigationIconButton notification={hasUnread} aria-label={hasUnread ? "알림, 새 알림 있음" : "알림"} onClick={openNotifications}><Bell /></TopNavigationIconButton>
     <TopNavigationIconButton aria-label="설정" onClick={openSettings}><Settings /></TopNavigationIconButton>
   </TopNavigationActions>
@@ -312,7 +315,7 @@ import { ScreenTitle, TopNavigation, TopNavigationActions, TopNavigationIconButt
       `<div style="max-width:100%; overflow-x:auto;"><div style="${DESK}">${topNavigation(
         "desktop",
         actions(
-          `${primaryButton("내역 추가")}${iconButton({ icon: "eyeOff", name: "금액 가리기", extra: ['aria-pressed="false"'] })}${iconButton({ icon: "bell", name: "알림, 새 알림 있음", notification: true })}${iconButton({ icon: "settings", name: "설정" })}`,
+          `${primaryButton("내역 추가")}${iconButton({ icon: "eye", name: "금액 가리기", extra: ['aria-pressed="false"'] })}${iconButton({ icon: "bell", name: "알림, 새 알림 있음", notification: true })}${iconButton({ icon: "settings", name: "설정" })}`,
         ),
       )}<div style="padding:0 var(--layout-margin);"><h1 tabindex="-1" data-screen-title="" data-slot="screen-title" class="${SCREEN_TITLE} ${FOCUS_INSIDE}" style="${H1_FIX.screen}">가계부</h1><div style="${CARD}">${rows(LEDGER.slice(0, 3))}</div></div></div></div>`,
   },
@@ -362,13 +365,14 @@ import { ScreenTitle, TopNavigation, TopNavigationActions, TopNavigationIconButt
     title: "오른쪽 — 셋까지 · 넘치면 ⋯ · 긴 제목",
     description:
       "오른쪽 아이콘 버튼은 2개를 권장하고 3개까지 둔다(SEED) — 더 있으면 자주 쓰는 것만 남기고 나머지를 ⋯ 하나에 모은다(이름 \"{화면 이름} 더보기\" — 1280 이상 Menu, 미만 Menu Sheet). 제목은 한 줄이다 — 길면 말줄임(…)하고 오른쪽 자리 앞 8 을 비운다(TopNavigationActions 의 왼쪽 8). 글자 크기 설정은 1.2배까지만 따른다 — 더 커져도 바 높이 56 을 넘지 않는다.",
-    jsx: `import { Ellipsis, EyeOff, Search } from "lucide-react"
+    jsx: `import { Ellipsis, Eye, EyeOff, Search } from "lucide-react"
 
 <TopNavigation type="root">
   <TopNavigationTitle>가계부</TopNavigationTitle>
   <TopNavigationActions>
     <TopNavigationIconButton aria-label="검색" onClick={openSearch}><Search /></TopNavigationIconButton>
-    <TopNavigationIconButton aria-label="금액 가리기" aria-pressed={hidden} onClick={toggleHidden}><EyeOff /></TopNavigationIconButton>
+    {/* 켜고 끄는 단추 — 이름은 고정, 아이콘은 지금 상태(가렸으면 eye-off). 끔도 이웃과 같은 fg-neutral */}
+    <TopNavigationIconButton aria-label="금액 가리기" aria-pressed={hidden} onClick={toggleHidden}>{hidden ? <EyeOff /> : <Eye />}</TopNavigationIconButton>
     {/* 나머지는 ⋯ 하나에 — 1280 미만은 Menu Sheet */}
     <TopNavigationIconButton aria-label="가계부 더보기" onClick={openMore}><Ellipsis /></TopNavigationIconButton>
   </TopNavigationActions>
@@ -377,7 +381,7 @@ import { ScreenTitle, TopNavigation, TopNavigationActions, TopNavigationIconButt
       grid([
         labeled(
           phone(
-            topNavigation("root", `${title("root", "가계부")}${actions(`${iconButton({ icon: "search", name: "검색" })}${iconButton({ icon: "eyeOff", name: "금액 가리기", extra: ['aria-pressed="false"'] })}${iconButton({ icon: "ellipsis", name: "가계부 더보기" })}`)}`),
+            topNavigation("root", `${title("root", "가계부")}${actions(`${iconButton({ icon: "search", name: "검색" })}${iconButton({ icon: "eye", name: "금액 가리기", extra: ['aria-pressed="false"'] })}${iconButton({ icon: "ellipsis", name: "가계부 더보기" })}`)}`),
             LEDGER,
             220,
           ),
